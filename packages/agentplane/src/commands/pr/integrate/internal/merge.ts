@@ -6,6 +6,7 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
 import { gitRevParse } from "../../../shared/git-ops.js";
 import type { PrMeta } from "../../../shared/pr-meta.js";
+import { requireCleanTaskWorktree } from "../../../shared/task-worktree-cleanliness.js";
 import { computeVerifyState, runVerifyCommands } from "../verify.js";
 import { moveCollidingTaskArtifacts } from "./merge-artifacts.js";
 import { runWithIntegrationMutation } from "./merge-mutation.js";
@@ -37,6 +38,28 @@ function normalizeOneLine(value: string, maxChars: number): string {
   return trimmed.length > maxChars ? `${trimmed.slice(0, Math.max(1, maxChars - 3))}...` : trimmed;
 }
 
+async function assertBaseHeadStillExpected(opts: {
+  gitRoot: string;
+  base: string;
+  expectedBaseSha: string;
+  operation: string;
+}): Promise<void> {
+  const currentBaseHead = await gitRevParse(opts.gitRoot, [opts.base]);
+  if (currentBaseHead === opts.expectedBaseSha) return;
+  throw new CliError({
+    code: "E_GIT_RACE",
+    message:
+      `Base branch moved before ${opts.operation}: expected=${opts.expectedBaseSha} ` +
+      `current=${currentBaseHead}`,
+    context: {
+      reason_code: "integration_queue_base_changed",
+      base: opts.base,
+      expected_base_sha: opts.expectedBaseSha,
+      current_base_sha: currentBaseHead,
+    },
+  });
+}
+
 async function listCommitChangedPaths(opts: {
   gitRoot: string;
   revision: string;
@@ -59,6 +82,8 @@ export async function runSquashMerge(opts: {
   gitRoot: string;
   base: string;
   branch: string;
+  sourceSha: string;
+  expectedBaseSha: string;
   headBeforeMerge: string;
   taskId: string;
   taskTitle: string;
@@ -81,7 +106,22 @@ export async function runSquashMerge(opts: {
       taskId: opts.taskId,
       changedPaths: opts.changedPaths,
       run: async () => {
-        await execFileAsync("git", ["merge", "--squash", opts.branch], {
+        await assertBaseHeadStillExpected({
+          gitRoot: opts.gitRoot,
+          base: opts.base,
+          expectedBaseSha: opts.expectedBaseSha,
+          operation: "squash integration",
+        });
+        const currentBranchHead = await gitRevParse(opts.gitRoot, [opts.branch]);
+        if (currentBranchHead !== opts.sourceSha) {
+          throw new CliError({
+            code: "E_GIT_RACE",
+            message:
+              `Task branch moved before squash integration: expected=${opts.sourceSha} ` +
+              `current=${currentBranchHead}`,
+          });
+        }
+        await execFileAsync("git", ["merge", "--squash", opts.sourceSha], {
           cwd: opts.gitRoot,
           env: gitEnv(),
         });
@@ -115,7 +155,7 @@ export async function runSquashMerge(opts: {
 
   const { stdout: subjectOut } = await execFileAsync(
     "git",
-    ["log", "-1", "--pretty=format:%s", opts.branch],
+    ["log", "-1", "--pretty=format:%s", opts.sourceSha],
     {
       cwd: opts.gitRoot,
       env: gitEnv(),
@@ -131,7 +171,7 @@ export async function runSquashMerge(opts: {
   if (!shouldFallback) {
     const headPaths = await listCommitChangedPaths({
       gitRoot: opts.gitRoot,
-      revision: opts.branch,
+      revision: opts.sourceSha,
     });
     shouldFallback =
       headPaths.length > 0 && headPaths.every((filePath) => isTaskArtifactPath(filePath));
@@ -171,7 +211,10 @@ export async function runSquashMerge(opts: {
 
 export async function runMergeCommit(opts: {
   gitRoot: string;
+  base: string;
   branch: string;
+  sourceSha: string;
+  expectedBaseSha: string;
   taskId: string;
   taskTitle: string;
   taskTags: string[];
@@ -194,13 +237,28 @@ export async function runMergeCommit(opts: {
       taskId: opts.taskId,
       changedPaths: opts.changedPaths,
       run: async () => {
+        await assertBaseHeadStillExpected({
+          gitRoot: opts.gitRoot,
+          base: opts.base,
+          expectedBaseSha: opts.expectedBaseSha,
+          operation: "merge integration",
+        });
+        const currentBranchHead = await gitRevParse(opts.gitRoot, [opts.branch]);
+        if (currentBranchHead !== opts.sourceSha) {
+          throw new CliError({
+            code: "E_GIT_RACE",
+            message:
+              `Task branch moved before merge integration: expected=${opts.sourceSha} ` +
+              `current=${currentBranchHead}`,
+          });
+        }
         await execFileAsync(
           "git",
           [
             "merge",
             "--no-ff",
             "--signoff",
-            opts.branch,
+            opts.sourceSha,
             "-m",
             `🔀 ${suffix} integrate: ${fallbackIntegrateSummary(opts)}`,
           ],
@@ -209,7 +267,10 @@ export async function runMergeCommit(opts: {
       },
     });
   } catch (err) {
-    await execFileAsync("git", ["merge", "--abort"], { cwd: opts.gitRoot, env: gitEnv() });
+    await execFileAsync("git", ["merge", "--abort"], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    }).catch(() => null);
     await movedArtifacts.restore();
     throw err;
   }
@@ -222,6 +283,8 @@ export async function runRebaseFastForward(opts: {
   worktreePath: string;
   base: string;
   branch: string;
+  expectedBranchHeadSha: string;
+  expectedBaseSha: string;
   headBeforeMerge: string;
   rawVerify: string[];
   metaSource: PrMeta | null;
@@ -249,6 +312,21 @@ export async function runRebaseFastForward(opts: {
       taskId: opts.taskId,
       changedPaths: opts.changedPaths,
       run: async () => {
+        await assertBaseHeadStillExpected({
+          gitRoot: opts.gitRoot,
+          base: opts.base,
+          expectedBaseSha: opts.expectedBaseSha,
+          operation: "rebase integration",
+        });
+        const currentBranchHead = await gitRevParse(opts.gitRoot, [opts.branch]);
+        if (currentBranchHead !== opts.expectedBranchHeadSha) {
+          throw new CliError({
+            code: "E_GIT_RACE",
+            message:
+              `Task branch moved before rebase integration: expected=${opts.expectedBranchHeadSha} ` +
+              `current=${currentBranchHead}`,
+          });
+        }
         await execFileAsync("git", ["rebase", opts.base], {
           cwd: opts.worktreePath,
           env: gitEnv(),
@@ -287,6 +365,12 @@ export async function runRebaseFastForward(opts: {
     );
   }
 
+  await requireCleanTaskWorktree({
+    gitRoot: opts.gitRoot,
+    branch: opts.branch,
+    taskId: opts.taskId,
+  });
+
   const movedArtifacts = await moveCollidingTaskArtifacts({
     gitRoot: opts.gitRoot,
     workflowDir: opts.workflowDir,
@@ -301,7 +385,13 @@ export async function runRebaseFastForward(opts: {
       taskId: opts.taskId,
       changedPaths: opts.changedPaths,
       run: async () => {
-        await execFileAsync("git", ["merge", "--ff-only", opts.branch], {
+        await assertBaseHeadStillExpected({
+          gitRoot: opts.gitRoot,
+          base: opts.base,
+          expectedBaseSha: opts.expectedBaseSha,
+          operation: "fast-forward integration",
+        });
+        await execFileAsync("git", ["merge", "--ff-only", branchHeadSha], {
           cwd: opts.gitRoot,
           env: gitEnv(),
         });

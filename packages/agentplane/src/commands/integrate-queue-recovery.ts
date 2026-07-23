@@ -17,10 +17,29 @@ export function decideIntegrationQueueRecovery(opts: {
   report: PrFlowStatusReport;
 }): IntegrationQueueRecoveryDecision {
   const { report } = opts;
+  if (report.providerObservation?.state === "unavailable") {
+    return {
+      action: "keep",
+      reason:
+        "provider state is unavailable; keep the active queue reservation until remote truth is observable",
+    };
+  }
   if (opts.entry.status === "claimed") {
     return {
       action: "keep",
       reason: "integration claim is still active; waiting for claim owner or lease expiry",
+    };
+  }
+  if (
+    opts.entry.status === "handoff" &&
+    opts.entry.active_operation === "integration" &&
+    report.pr.state === "OPEN"
+  ) {
+    return {
+      action: "keep",
+      reason:
+        "integration reservation is fail-closed while the provider PR remains open; " +
+        "inspect the interrupted integration before releasing it",
     };
   }
   if (report.pr.state === "OPEN") {

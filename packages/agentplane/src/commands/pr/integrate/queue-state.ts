@@ -1,6 +1,7 @@
 import path from "node:path";
 import { hostname } from "node:os";
-import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
 
 import { CliError } from "../../../shared/errors.js";
 import { gitMutationDiagnosticContext } from "../../../shared/git-mutation.js";
@@ -23,6 +24,8 @@ export type IntegrationQueueEntry = {
   claimed_by?: string;
   claimed_at?: string;
   lease_expires_at?: string;
+  claim_token?: string;
+  active_operation?: "integration";
   reason?: string;
 };
 
@@ -38,12 +41,26 @@ export type IntegrationQueueMutexContext = {
   queuePath: string;
 };
 
+export type IntegrationQueueMutexInspection =
+  | { state: "absent" }
+  | { state: "dead_same_host"; owner: { pid: number; host: string } }
+  | { state: "live"; owner: { pid: number; host: string } }
+  | { state: "foreign_host"; owner: { pid: number; host: string } }
+  | { state: "invalid"; reason: string };
+
 export type QueueClock = {
   now: () => Date;
 };
 
 const DEFAULT_QUEUE_LEASE_MS = 30 * 60 * 1000;
 const DEFAULT_QUEUE_CLOCK: QueueClock = { now: () => new Date() };
+const INTEGRATION_QUEUE_STATUSES = new Set<IntegrationQueueStatus>([
+  "queued",
+  "claimed",
+  "handoff",
+  "done",
+  "rework",
+]);
 
 function integrationQueuePath(gitRoot: string): string {
   return path.join(gitRoot, ".agentplane", "cache", "integration-queue.json");
@@ -63,27 +80,98 @@ export function emptyIntegrationQueue(): IntegrationQueueState {
   return { schema_version: 1, entries: [] };
 }
 
+export function integrationQueueEntryMatchesSnapshot(
+  current: IntegrationQueueEntry | undefined,
+  expected: IntegrationQueueEntry,
+): current is IntegrationQueueEntry {
+  return (
+    current?.task_id === expected.task_id &&
+    current.status === expected.status &&
+    current.branch === expected.branch &&
+    current.base === expected.base &&
+    current.head_sha === expected.head_sha &&
+    current.base_sha === expected.base_sha &&
+    current.updated_at === expected.updated_at &&
+    current.claimed_by === expected.claimed_by &&
+    current.claimed_at === expected.claimed_at &&
+    current.lease_expires_at === expected.lease_expires_at &&
+    current.claim_token === expected.claim_token &&
+    current.active_operation === expected.active_operation
+  );
+}
+
 function parseQueueState(text: string): IntegrationQueueState {
-  const parsed = JSON.parse(text) as Partial<IntegrationQueueState>;
-  if (parsed.schema_version !== 1 || !Array.isArray(parsed.entries)) {
-    return emptyIntegrationQueue();
+  let parsed: Partial<IntegrationQueueState>;
+  try {
+    parsed = JSON.parse(text) as Partial<IntegrationQueueState>;
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    throw invalidQueueState(`queue JSON is invalid: ${reason}`);
   }
-  return {
-    schema_version: 1,
-    entries: parsed.entries.filter((entry): entry is IntegrationQueueEntry => {
-      const maybe = entry as Partial<IntegrationQueueEntry>;
-      return (
-        typeof maybe.task_id === "string" &&
-        typeof maybe.branch === "string" &&
-        typeof maybe.base === "string" &&
-        typeof maybe.head_sha === "string" &&
-        typeof maybe.base_sha === "string" &&
-        Array.isArray(maybe.changed_paths) &&
-        typeof maybe.priority === "number" &&
-        typeof maybe.status === "string"
-      );
-    }),
-  };
+  if (parsed.schema_version !== 1 || !Array.isArray(parsed.entries)) {
+    throw invalidQueueState(
+      `unsupported queue schema or entries payload: schema=${String(parsed.schema_version)}`,
+    );
+  }
+  const entries: IntegrationQueueEntry[] = [];
+  const taskIds = new Set<string>();
+  let activeLanes = 0;
+  for (const [index, entry] of parsed.entries.entries()) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw invalidQueueState(`entry ${index} is not an object`);
+    }
+    const maybe = entry as Partial<IntegrationQueueEntry>;
+    const status = maybe.status;
+    const valid =
+      typeof maybe.task_id === "string" &&
+      maybe.task_id.trim().length > 0 &&
+      typeof maybe.branch === "string" &&
+      maybe.branch.trim().length > 0 &&
+      typeof maybe.base === "string" &&
+      maybe.base.trim().length > 0 &&
+      typeof maybe.head_sha === "string" &&
+      maybe.head_sha.trim().length > 0 &&
+      typeof maybe.base_sha === "string" &&
+      maybe.base_sha.trim().length > 0 &&
+      Array.isArray(maybe.changed_paths) &&
+      maybe.changed_paths.every((value) => typeof value === "string") &&
+      typeof maybe.priority === "number" &&
+      Number.isFinite(maybe.priority) &&
+      typeof maybe.enqueued_at === "string" &&
+      typeof maybe.updated_at === "string" &&
+      typeof status === "string" &&
+      INTEGRATION_QUEUE_STATUSES.has(status as IntegrationQueueStatus);
+    if (!valid) throw invalidQueueState(`entry ${index} is malformed or has an unknown status`);
+    if (
+      (status === "claimed" || status === "handoff") &&
+      (typeof maybe.claimed_by !== "string" ||
+        typeof maybe.claimed_at !== "string" ||
+        typeof maybe.lease_expires_at !== "string")
+    ) {
+      throw invalidQueueState(`active entry ${index} is missing claim identity`);
+    }
+    if (taskIds.has(maybe.task_id!)) {
+      throw invalidQueueState(`duplicate task_id ${maybe.task_id}`);
+    }
+    taskIds.add(maybe.task_id!);
+    if (status === "claimed" || status === "handoff") activeLanes += 1;
+    entries.push(maybe as IntegrationQueueEntry);
+  }
+  if (activeLanes > 1) {
+    throw invalidQueueState(`multiple active integration lanes found: ${activeLanes}`);
+  }
+  return { schema_version: 1, entries };
+}
+
+function invalidQueueState(reason: string): CliError {
+  return new CliError({
+    code: "E_GIT_RACE",
+    message: `Integration queue state is invalid; refusing to continue: ${reason}`,
+    context: {
+      reason_code: "integration_queue_state_invalid",
+      reason,
+    },
+  });
 }
 
 export async function readIntegrationQueue(gitRoot: string): Promise<IntegrationQueueState> {
@@ -116,9 +204,52 @@ async function readQueueMutexOwner(lockPath: string): Promise<unknown> {
   }
 }
 
+function processIsAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (err) {
+    return (err as { code?: unknown } | null)?.code !== "ESRCH";
+  }
+}
+
+export async function inspectIntegrationQueueMutex(
+  gitRoot: string,
+  opts: {
+    currentHost?: string;
+    isProcessAlive?: (pid: number) => boolean;
+  } = {},
+): Promise<IntegrationQueueMutexInspection> {
+  const mutex = resolveIntegrationQueueMutexContext(gitRoot);
+  try {
+    await stat(mutex.lockPath);
+  } catch (err) {
+    if ((err as { code?: unknown } | null)?.code === "ENOENT") return { state: "absent" };
+    throw err;
+  }
+
+  const rawOwner = await readQueueMutexOwner(mutex.lockPath);
+  if (!rawOwner || typeof rawOwner !== "object") {
+    return { state: "invalid", reason: "integration queue lock owner is missing or invalid" };
+  }
+  const pid = Number((rawOwner as { pid?: unknown }).pid);
+  const rawHost = (rawOwner as { host?: unknown }).host;
+  const host = typeof rawHost === "string" ? rawHost.trim() : "";
+  if (!Number.isSafeInteger(pid) || pid <= 0 || !host) {
+    return { state: "invalid", reason: "integration queue lock owner identity is invalid" };
+  }
+  const owner = { pid, host };
+  if (host !== (opts.currentHost ?? hostname())) return { state: "foreign_host", owner };
+  if ((opts.isProcessAlive ?? processIsAlive)(pid)) return { state: "live", owner };
+  return { state: "dead_same_host", owner };
+}
+
 export async function withIntegrationQueueMutex<T>(
   gitRoot: string,
   run: (ctx: IntegrationQueueMutexContext) => Promise<T>,
+  opts: {
+    writeOwner?: (path: string, content: string) => Promise<void>;
+  } = {},
 ): Promise<T> {
   const mutex = resolveIntegrationQueueMutexContext(gitRoot);
   await mkdir(mutex.locksDir, { recursive: true });
@@ -140,7 +271,7 @@ export async function withIntegrationQueueMutex<T>(
           workflowMode: "branch_pr",
           mutationKind: "integration",
           remediation:
-            "Wait for the active integration queue operation to finish, then retry. Worktree Git mutation mutexes remain independent.",
+            "Inspect the lock with `agentplane integrate queue doctor --json`, reconcile queue state against provider/base evidence, then manually remove the exact lock path only after confirming no active writer.",
         }),
         integration_queue_path: mutex.queuePath,
         integration_queue_lock_path: mutex.lockPath,
@@ -149,8 +280,8 @@ export async function withIntegrationQueueMutex<T>(
     });
   }
 
-  await writeFile(
-    path.join(mutex.lockPath, "owner.json"),
+  const ownerPath = path.join(mutex.lockPath, "owner.json");
+  const ownerContent =
     JSON.stringify(
       {
         pid: process.pid,
@@ -164,9 +295,14 @@ export async function withIntegrationQueueMutex<T>(
       },
       null,
       2,
-    ) + "\n",
-    "utf8",
-  );
+    ) + "\n";
+  try {
+    if (opts.writeOwner) await opts.writeOwner(ownerPath, ownerContent);
+    else await writeFile(ownerPath, ownerContent, "utf8");
+  } catch (err) {
+    await rm(mutex.lockPath, { recursive: true, force: true });
+    throw err;
+  }
 
   try {
     return await run(mutex);
@@ -183,6 +319,19 @@ export function upsertQueuedEntry(
   const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
   const now = resolvedClock.now().toISOString();
   const existing = state.entries.find((candidate) => candidate.task_id === entry.task_id);
+  if (existing?.status === "claimed" || existing?.status === "handoff") {
+    throw new CliError({
+      code: "E_HANDOFF",
+      message:
+        `Integration queue entry ${entry.task_id} is active (${existing.status}); ` +
+        "release or recover the active lane before enqueueing it again",
+      context: {
+        reason_code: "integration_queue_entry_active",
+        task_id: entry.task_id,
+        queue_status: existing.status,
+      },
+    });
+  }
   const nextEntry: IntegrationQueueEntry = {
     ...entry,
     status: "queued",
@@ -212,10 +361,13 @@ export function expireClaimedEntries(
       ) {
         return entry;
       }
-      const { claimed_by, claimed_at, lease_expires_at, ...rest } = entry;
+      const { claimed_by, claimed_at, lease_expires_at, claim_token, active_operation, ...rest } =
+        entry;
       void claimed_by;
       void claimed_at;
       void lease_expires_at;
+      void claim_token;
+      void active_operation;
       return {
         ...rest,
         status: "queued",
@@ -254,6 +406,7 @@ export function claimNextQueuedEntry(
     lease_expires_at: new Date(
       now.getTime() + (opts.leaseMs ?? DEFAULT_QUEUE_LEASE_MS),
     ).toISOString(),
+    claim_token: randomUUID(),
     updated_at: now.toISOString(),
     reason: undefined,
   };
@@ -284,6 +437,28 @@ export function markQueueEntry(
   };
 }
 
+export function reserveQueueEntryForIntegration(
+  state: IntegrationQueueState,
+  taskId: string,
+  clock?: QueueClock,
+): IntegrationQueueState {
+  const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
+  return {
+    schema_version: 1,
+    entries: state.entries.map((entry) =>
+      entry.task_id === taskId
+        ? {
+            ...entry,
+            status: "handoff",
+            active_operation: "integration",
+            updated_at: resolvedClock.now().toISOString(),
+            reason: "integration in progress",
+          }
+        : entry,
+    ),
+  };
+}
+
 export function queueBaseConflictReason(opts: {
   entry: IntegrationQueueEntry;
   currentBaseSha: string;
@@ -295,12 +470,12 @@ export function queueBaseConflictReason(opts: {
   const overlappingPaths = opts.baseChangedPaths
     .filter((changedPath) => queuedPaths.has(changedPath))
     .toSorted();
-  if (overlappingPaths.length === 0) return null;
-
-  return [
-    `base branch advanced after enqueue: queued=${opts.entry.base_sha} current=${opts.currentBaseSha}`,
-    `overlapping paths: ${overlappingPaths.join(", ")}`,
-  ].join("; ");
+  const reason =
+    `base branch advanced after enqueue: queued=${opts.entry.base_sha} ` +
+    `current=${opts.currentBaseSha}`;
+  return overlappingPaths.length > 0
+    ? `${reason}; overlapping paths: ${overlappingPaths.join(", ")}`
+    : reason;
 }
 
 function markEntryStatus(
@@ -309,16 +484,19 @@ function markEntryStatus(
   reason: string | undefined,
   clock: QueueClock,
 ): IntegrationQueueEntry {
+  const { active_operation, ...entryWithoutActiveOperation } = entry;
+  void active_operation;
   const next = {
-    ...entry,
+    ...entryWithoutActiveOperation,
     status,
     updated_at: clock.now().toISOString(),
     reason,
   };
   if (status === "claimed" || status === "handoff") return next;
-  const { claimed_by, claimed_at, lease_expires_at, ...released } = next;
+  const { claimed_by, claimed_at, lease_expires_at, claim_token, ...released } = next;
   void claimed_by;
   void claimed_at;
   void lease_expires_at;
+  void claim_token;
   return released;
 }

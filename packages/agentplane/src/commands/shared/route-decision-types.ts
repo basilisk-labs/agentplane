@@ -6,6 +6,13 @@ import type { SourceConfidence as RouteSourceConfidence } from "./source-confide
 
 export type RouteNextAction = RouteBatchNextAction;
 
+export type RouteCleanupProbe =
+  | { state: "not_requested" }
+  | { state: "unavailable"; reason: string }
+  | { state: "already_clean" }
+  | { state: "candidate"; count: number }
+  | { state: "blocked"; reasons: string[] };
+
 export type RouteRepairStep = {
   code: string;
   command: string | null;
@@ -52,6 +59,7 @@ export type TaskRouteDecision = {
   };
   batchOwnership: RouteBatchOwnership;
   prFlow: PrFlowStatusReport | null;
+  cleanupProbe: RouteCleanupProbe;
   cleanupCandidateCount: number | null;
   blockers: RouteBlocker[];
   ambiguities: RouteAmbiguity[];

@@ -7,7 +7,7 @@ export type RouteExecutionPacket = {
   actionKind: "local_command" | "provider_action" | "wait" | "stop";
   safeToMutate: boolean;
   requiresProviderAction: boolean;
-  recommendedRole: "ORCHESTRATOR" | "CODER" | "INTEGRATOR" | "EVALUATOR" | "USER";
+  recommendedRole: "ORCHESTRATOR" | "CODER" | "TESTER" | "INTEGRATOR" | "EVALUATOR" | "USER";
   authoritativeCheckout: RouteOracle["authoritativeCheckout"];
   authoritativeCheckoutPath: string | null;
   mutationPathHint: string | null;
@@ -40,19 +40,23 @@ function recommendedRoleFor(opts: {
   if (opts.nextAction.code === "approve_plan") return "ORCHESTRATOR";
   if (
     opts.nextAction.code === "open_pr" ||
+    opts.nextAction.code === "publish_pr_head" ||
     opts.nextAction.code === "update_pr_artifacts" ||
     opts.nextAction.code === "verify_or_update_pr"
   ) {
     return "CODER";
   }
   if (opts.nextAction.code === "quality_review_required") return "EVALUATOR";
+  if (opts.nextAction.code === "verification_required") return "TESTER";
   if (opts.nextAction.code === "implementation_rework_required") return "CODER";
   if (opts.nextAction.code === "record_pre_merge_closure") return "CODER";
   if (
     opts.nextAction.code === "wait_hosted_checks" ||
+    opts.nextAction.code === "refresh_remote_route" ||
     opts.nextAction.code === "open_close_tail" ||
     opts.nextAction.code === "sync_hosted_close" ||
     opts.nextAction.code === "cleanup" ||
+    opts.nextAction.code === "cleanup_blocked" ||
     opts.nextAction.code === "reconcile_included_task_closure"
   ) {
     return "INTEGRATOR";
@@ -74,8 +78,12 @@ function evidenceMissingFor(opts: {
   for (const blocker of opts.blockers) {
     if (blocker.code === "missing_pr_branch") missing.add("task_branch");
     if (blocker.code === "remote_pr_missing") missing.add("remote_pr");
+    if (blocker.code === "pr_head_unpublished") missing.add("published_pr_head");
+    if (blocker.code === "hosted_pr_head_mismatch") missing.add("aligned_hosted_pr_head");
+    if (blocker.code === "provider_pr_unavailable") missing.add("live_provider_pr_state");
     if (blocker.code === "pr_meta_stale") missing.add("fresh_pr_artifacts");
     if (blocker.code === "close_tail_missing") missing.add("close_tail_pr");
+    if (blocker.code === "cleanup_blocked") missing.add("proven_merged_cleanup_identity");
     if (blocker.code === "runner_alive") missing.add("runner_terminal_state");
     if (blocker.code === "dirty_task_artifacts") missing.add("task_artifact_cleanup_commit");
     if (blocker.code === "quality_review_missing") missing.add("evaluator_quality_review");
@@ -84,6 +92,12 @@ function evidenceMissingFor(opts: {
       missing.add("verified_implementation_rework");
     }
     if (blocker.code === "pre_merge_closure_missing") missing.add("pre_merge_closure");
+    if (blocker.code === "pre_merge_closure_stale") missing.add("fresh_pre_merge_closure");
+    if (blocker.code === "task_worktree_dirty") missing.add("clean_committed_task_worktree");
+    if (blocker.code === "task_worktree_state_unavailable") {
+      missing.add("confirmed_task_worktree_state");
+    }
+    if (blocker.code === "verification_required") missing.add("verification_record");
     if (blocker.code === "missing_included_batch_metadata") {
       missing.add("structured_branch_pr_batch_metadata");
     }
@@ -92,11 +106,18 @@ function evidenceMissingFor(opts: {
 }
 
 function verificationCandidateFor(nextAction: RouteBatchNextAction): string | null {
+  if (nextAction.code === "verification_required") {
+    return "agentplane task verify-show <task-id>";
+  }
   if (nextAction.code === "verify_or_update_pr") return "agentplane pr check <task-id>";
   if (nextAction.code.includes("verify")) return nextAction.command;
   if (nextAction.code === "quality_review_required") return null;
   if (nextAction.code === "update_pr_artifacts") return "agentplane pr check <task-id>";
   if (nextAction.code === "wait_hosted_checks") return "agentplane pr check <task-id>";
+  if (nextAction.code === "publish_pr_head") return "agentplane pr flow status <task-id>";
+  if (nextAction.code === "retry_provider_lookup") return "agentplane pr flow status <task-id>";
+  if (nextAction.code === "refresh_remote_route")
+    return "agentplane task next-action <task-id> --remote --explain";
   return null;
 }
 
@@ -139,6 +160,15 @@ function automationBoundaryMustNotFor(code: string): string[] {
     open_pr: [
       "do not create/link the hosted PR manually; agentplane pr open owns branch publish, PR artifacts, and PR creation/linking",
     ],
+    publish_pr_head: [
+      "do not push or relink the hosted PR manually; agentplane pr open owns final branch publication and PR head alignment",
+    ],
+    retry_provider_lookup: [
+      "do not queue or merge while the live GitHub PR head cannot be confirmed",
+    ],
+    refresh_remote_route: [
+      "do not enqueue, publish, or clean a DONE task from local-only PR metadata; recompute with live provider state",
+    ],
     update_pr_artifacts: [
       "do not repair stale PR artifacts with manual edits or amend commits; agentplane pr update/pr check own PR artifact freshness",
     ],
@@ -169,6 +199,17 @@ function automationBoundaryMustNotFor(code: string): string[] {
     ],
     cleanup: [
       "do not delete task branches/worktrees manually; agentplane cleanup merged owns merged-work cleanup",
+    ],
+    cleanup_blocked: [
+      "do not delete task branches/worktrees while exact merged identity or closure proof is blocked",
+    ],
+    resolve_task_worktree_state: [
+      "do not publish, enqueue, claim, reserve, verify, or integrate while the actual task worktree has uncommitted changes or cannot be inspected",
+      "do not infer whether uncommitted changes are intended; return that semantic decision to the CODER",
+    ],
+    verification_required: [
+      "do not close, enqueue, claim, reserve, or integrate before TESTER records an evidence-based verification outcome",
+      "do not synthesize a verification outcome or executable verification command from route state",
     ],
   };
   return rules[code] ?? [];
@@ -212,6 +253,12 @@ function returnControlWhenFor(opts: {
 }): string {
   if (opts.nextAction.code === "implementation_rework_required") {
     return "after the CODER completes implementation rework and records verification; recompute task next-action before PR handling";
+  }
+  if (opts.nextAction.code === "resolve_task_worktree_state") {
+    return "after the CODER makes the task worktree clean and records fresh verification; recompute task next-action before PR handling";
+  }
+  if (opts.nextAction.code === "verification_required") {
+    return "after TESTER records the evidence-based verification outcome; recompute task next-action before PR handling";
   }
   if (opts.actionKind === "local_command") {
     return "after the exact command exits; recompute task next-action before any further step";

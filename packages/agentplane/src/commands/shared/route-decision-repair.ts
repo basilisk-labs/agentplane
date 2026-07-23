@@ -45,6 +45,13 @@ const REPAIR_BY_BLOCKER_CODE = {
     summary: "wait for hosted checks and merge the open close-tail PR through the provider",
     mutates: false,
   }),
+  cleanup_blocked: () => ({
+    code: "inspect_cleanup_blocker",
+    command: null,
+    summary:
+      "inspect the exact provider/head/closure proof blocker before retrying targeted cleanup",
+    mutates: false,
+  }),
   dirty_task_artifacts: (decision) => ({
     code: "commit_direct_task_artifacts",
     command: `agentplane commit ${decision.task.id} --close --unstage-others`,
@@ -83,10 +90,28 @@ const REPAIR_BY_BLOCKER_CODE = {
     summary: "approve the task plan before owner-scoped execution",
     mutates: true,
   }),
+  pr_head_unpublished: (decision) => ({
+    code: "publish_pr_head",
+    command: `agentplane pr open ${decision.task.id} --author ${decision.task.owner}`,
+    summary: "publish the final local task branch head through the canonical PR command",
+    mutates: true,
+  }),
   pr_meta_stale: (decision) => ({
     code: "update_pr_artifacts",
     command: `agentplane pr update ${decision.task.id}`,
     summary: "refresh stale local PR metadata",
+    mutates: true,
+  }),
+  provider_pr_unavailable: (decision) => ({
+    code: "retry_provider_lookup",
+    command: `agentplane pr flow status ${decision.task.id}`,
+    summary: "retry live GitHub PR observation before publication or integration",
+    mutates: false,
+  }),
+  hosted_pr_head_mismatch: (decision) => ({
+    code: "publish_pr_head",
+    command: `agentplane pr open ${decision.task.id} --author ${decision.task.owner}`,
+    summary: "align the hosted PR head with the local task branch through the canonical PR command",
     mutates: true,
   }),
   pre_merge_closure_missing: (decision) => ({
@@ -96,6 +121,15 @@ const REPAIR_BY_BLOCKER_CODE = {
       `--body "Verified: pre-merge closure packet is ready for the task PR." ` +
       `--result "pre-merge closure" --commit HEAD --pre-merge-closure`,
     summary: "record task DONE and pre-merge closure on the task branch before integration",
+    mutates: true,
+  }),
+  pre_merge_closure_stale: (decision) => ({
+    code: "record_pre_merge_closure",
+    command:
+      `agentplane finish ${decision.task.id} --author ${decision.task.owner} ` +
+      `--body "Verified: refreshed pre-merge closure packet is ready for the task PR." ` +
+      `--result "pre-merge closure" --commit HEAD --pre-merge-closure --force`,
+    summary: "record a fresh pre-merge closure after the latest verified implementation",
     mutates: true,
   }),
   quality_review_missing: qualityReviewRepair,
@@ -110,6 +144,26 @@ const REPAIR_BY_BLOCKER_CODE = {
     code: "inspect_runner",
     command: `agentplane task resume-context ${decision.task.id}`,
     summary: "inspect active runner state before reclaiming",
+    mutates: false,
+  }),
+  task_worktree_dirty: () => ({
+    code: "resolve_task_worktree_state",
+    command: null,
+    summary:
+      "inspect uncommitted task-worktree changes and commit intended work or restore unintended work before continuing",
+    mutates: false,
+  }),
+  task_worktree_state_unavailable: () => ({
+    code: "inspect_task_worktree_state",
+    command: null,
+    summary: "restore inspectable task-worktree state before continuing the branch_pr lifecycle",
+    mutates: false,
+  }),
+  verification_required: () => ({
+    code: "verification_required",
+    command: null,
+    summary:
+      "hand the committed task implementation to TESTER and record an evidence-based verification outcome",
     mutates: false,
   }),
 } satisfies Record<RouteBlockerCode, RepairFactory>;

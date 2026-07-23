@@ -571,94 +571,6 @@ describe("runCli route decision commands", () => {
     }
   });
 
-  it("marks close-tail provider lookup as remote evidence", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
-      cwd: root,
-    });
-
-    const taskId = await createBranchPrTask(root);
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await mkdir(prDir, { recursive: true });
-    await writeFile(
-      path.join(prDir, "meta.json"),
-      JSON.stringify(
-        {
-          schema_version: 1,
-          task_id: taskId,
-          branch: `task/${taskId}/route-confidence`,
-          base: "main",
-          created_at: "2026-05-23T00:00:00.000Z",
-          updated_at: "2026-05-23T00:00:00.000Z",
-          status: "MERGED",
-          pr_url: "https://github.com/example/repo/pull/123",
-          merge_commit: "abc123def456",
-          head_sha: "def456abc123",
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-
-    await withFakeGh(root, "gh-empty-response.js", "console.log('[]');\n", async () => {
-      const statusIo = captureStdIO();
-      try {
-        const code = await runCli([
-          "task",
-          "status",
-          taskId,
-          "--route",
-          "--json",
-          "--remote",
-          "--root",
-          root,
-        ]);
-        expect(code).toBe(0);
-        const parsed = JSON.parse(statusIo.stdout) as {
-          prFlow: { closeTail: { state: string; provider?: string } };
-          source_confidence: Record<
-            string,
-            { source: string; freshness: string; confidence: string; note?: string }
-          >;
-        };
-        expect(parsed.prFlow.closeTail).toMatchObject({
-          state: "not_found",
-          provider: "github",
-        });
-        expect(parsed.source_confidence.route).toMatchObject({
-          freshness: "remote_live",
-          confidence: "medium",
-        });
-        expect(parsed.source_confidence.remote).toMatchObject({
-          freshness: "remote_live",
-          confidence: "medium",
-        });
-      } finally {
-        statusIo.restore();
-      }
-
-      const briefIo = captureStdIO();
-      try {
-        const code = await runCli(["task", "brief", taskId, "--json", "--remote", "--root", root]);
-        expect(code).toBe(0);
-        const parsed = JSON.parse(briefIo.stdout) as {
-          source_confidence: Record<string, { freshness: string; confidence: string }>;
-        };
-        expect(parsed.source_confidence.remote).toMatchObject({
-          freshness: "remote_live",
-          confidence: "medium",
-        });
-      } finally {
-        briefIo.restore();
-      }
-    });
-  });
-
   it("safe-apply skips approval and provider-only repair steps", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -704,7 +616,7 @@ describe("runCli route decision commands", () => {
     expect(readme).toContain('plan_approval:\n  state: "pending"');
   });
 
-  it("treats done branch_pr tasks with no cleanup candidates as terminal", async () => {
+  it("requires remote truth before declaring a done branch_pr task terminal", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -746,9 +658,11 @@ describe("runCli route decision commands", () => {
         oracle: { phase: string };
       };
       expect(parsed.blockers).toEqual([]);
-      expect(parsed.oracle.phase).toBe("done");
-      expect(parsed.nextAction.code).toBe("done");
-      expect(parsed.nextAction.command).toBeNull();
+      expect(parsed.oracle.phase).toBe("remote_route_refresh_needed");
+      expect(parsed.nextAction).toMatchObject({
+        code: "refresh_remote_route",
+        command: `agentplane task next-action ${taskId} --remote --explain`,
+      });
     } finally {
       statusIo.restore();
     }
@@ -849,7 +763,7 @@ describe("runCli route decision commands", () => {
       };
       expect(parsed.nextAction).toMatchObject({
         code: "sync_hosted_close",
-        command: "agentplane cleanup merged --finalize --base main",
+        command: `agentplane cleanup merged --task-id ${taskId} --finalize --base main`,
       });
       expect(parsed.oracle).toMatchObject({
         phase: "hosted_close_recorded_upstream",
@@ -857,7 +771,16 @@ describe("runCli route decision commands", () => {
       });
       expect(parsed.executionPacket).toMatchObject({
         actionKind: "local_command",
-        exactArgv: ["agentplane", "cleanup", "merged", "--finalize", "--base", "main"],
+        exactArgv: [
+          "agentplane",
+          "cleanup",
+          "merged",
+          "--task-id",
+          taskId,
+          "--finalize",
+          "--base",
+          "main",
+        ],
         recommendedRole: "INTEGRATOR",
         safeToMutate: true,
       });

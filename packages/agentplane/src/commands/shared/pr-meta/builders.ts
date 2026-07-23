@@ -185,6 +185,9 @@ export function buildVerifiedPrMeta(opts: {
     last_verified_at: opts.at,
     verify: opts.meta.verify ? { ...opts.meta.verify, status: opts.state } : { status: opts.state },
   };
+  if (opts.state === "fail") {
+    delete (nextMeta as PrMeta & { pre_merge_closure?: unknown }).pre_merge_closure;
+  }
   setLastVerifiedDiffstatDigest(nextMeta, opts.meta[DIFFSTAT_DIGEST_FIELD]);
   return nextMeta;
 }

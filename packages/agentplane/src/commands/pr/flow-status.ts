@@ -9,6 +9,7 @@ import { CliError } from "../../shared/errors.js";
 import {
   loadBackendTask,
   loadCommandContext,
+  resolveTaskBranchFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
 import {
@@ -26,11 +27,16 @@ import { readIntegrationQueue, type IntegrationQueueEntry } from "../pr/integrat
 import { checkGithubUnresolvedReviewThreads } from "./internal/github-review-threads.js";
 import { resolveHostedChecksStatus, type HostedChecksSummary } from "./hosted-checks.js";
 import { renderPrFlowStatusRows } from "./flow-status.render.js";
+import {
+  resolvePrHeadPublicationStatus,
+  type PrHeadPublicationStatus,
+} from "./head-publication.js";
 
 import { resolvePrPaths } from "./internal/pr-paths.js";
 import {
-  tryLookupExistingGithubPrByBranch,
-  tryLookupExistingGithubPrByNumber,
+  observeExistingGithubPrByBranch,
+  observeExistingGithubPrByNumber,
+  type GithubPrLookupResult,
 } from "./internal/sync-github.js";
 
 type ProviderName = "github";
@@ -51,6 +57,7 @@ export type RemotePrStatus =
 export type CloseTailStatus =
   | { state: "not_applicable"; reason: string }
   | { state: "recorded_on_base"; base: string }
+  | { state: "unavailable"; provider: ProviderName; branch: string; reason: string }
   | {
       state: "open" | "merged" | "not_found";
       provider: ProviderName;
@@ -71,6 +78,8 @@ export type PrFlowStatusReport = {
     metaHeadSha: string | null;
   };
   pr: RemotePrStatus;
+  providerObservation?: GithubPrLookupResult;
+  publication?: PrHeadPublicationStatus;
   closeTail: CloseTailStatus;
   hostedChecks: HostedChecksSummary;
   reviewThreads: ReviewThreadsStatus;
@@ -219,12 +228,18 @@ async function resolveHandoffStatus(opts: {
   };
 }
 
-function remoteStatusFromObserved(
-  observed: Awaited<ReturnType<typeof tryLookupExistingGithubPrByBranch>>,
+function remoteStatusFromObservation(
+  observation: GithubPrLookupResult,
   meta: PrMeta | null,
   queueEntry: IntegrationQueueEntry | null,
 ): RemotePrStatus {
-  if (!observed) return remoteStatusFromLocalEvidence(meta, queueEntry);
+  if (observation.state === "unavailable") {
+    return remoteStatusFromLocalEvidence(meta, queueEntry);
+  }
+  if (observation.state === "not_found") {
+    return { provider: "github", state: "not_found", source: "lookup" };
+  }
+  const observed = observation.pr;
   return {
     provider: "github",
     state: observed.status,
@@ -283,11 +298,20 @@ async function resolveCloseTailStatus(opts: {
     taskId: opts.taskId,
     commit: mergeCommit,
   });
-  const observed = await tryLookupExistingGithubPrByBranch({
+  const observation = await observeExistingGithubPrByBranch({
     gitRoot: opts.gitRoot,
     branch,
     baseBranch: base || null,
   });
+  if (observation.state === "unavailable") {
+    return {
+      state: "unavailable",
+      provider: "github",
+      branch,
+      reason: observation.reason,
+    };
+  }
+  const observed = observation.state === "found" ? observation.pr : null;
   if (observed?.status === "OPEN" || observed?.status === "MERGED") {
     return {
       state: observed.status === "MERGED" ? "merged" : "open",
@@ -315,6 +339,9 @@ function deriveNextAction(report: PrFlowStatusReport): string {
   }
   if (report.closeTail.state === "open") {
     return `wait hosted checks and merge close-tail PR #${report.closeTail.prNumber ?? "unknown"}`;
+  }
+  if (report.closeTail.state === "unavailable") {
+    return `retry GitHub close-tail lookup for ${report.closeTail.branch}`;
   }
   return `wait hosted close, or run agentplane task hosted-close-pr ${report.task.id}`;
 }
@@ -344,30 +371,48 @@ export async function resolvePrFlowStatus(opts: {
   const queue = await readIntegrationQueue(resolved.gitRoot);
   const queueEntry = queue.entries.find((candidate) => candidate.task_id === task.id) ?? null;
   const metaBranch = meta?.branch?.trim() ?? "";
-  const rawBranch = metaBranch.length > 0 ? metaBranch : (queueEntry?.branch.trim() ?? "");
+  const inferredTaskBranch =
+    metaBranch.length === 0 && !queueEntry
+      ? await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: task.id })
+      : null;
+  const rawBranch =
+    metaBranch.length > 0
+      ? metaBranch
+      : (queueEntry?.branch.trim() ?? inferredTaskBranch?.trim() ?? "");
   const branch = rawBranch.length > 0 ? rawBranch : null;
   const branchHeadSha = await resolveBranchHeadSha(resolved.gitRoot, branch);
   const baseHint = normalizeBaseBranch(meta?.base) ?? normalizeBaseBranch(queueEntry?.base);
   const storedPrNumber = Number(meta?.pr_number ?? queueEntry?.pr_number ?? 0);
-  const observedByNumber =
+  const observedByNumber: GithubPrLookupResult | null =
     Number.isInteger(storedPrNumber) && storedPrNumber > 0
-      ? await tryLookupExistingGithubPrByNumber({
+      ? await observeExistingGithubPrByNumber({
           gitRoot: resolved.gitRoot,
           prNumber: storedPrNumber,
           branch,
           baseBranch: baseHint,
         })
       : null;
-  const observed =
-    observedByNumber ??
-    (branch
-      ? await tryLookupExistingGithubPrByBranch({
+  const providerObservation: GithubPrLookupResult =
+    observedByNumber?.state === "found" || observedByNumber?.state === "unavailable" || !branch
+      ? (observedByNumber ?? {
+          state: "unavailable",
+          reason: "task branch and recorded GitHub PR number are unavailable",
+        })
+      : await observeExistingGithubPrByBranch({
           gitRoot: resolved.gitRoot,
           branch,
           baseBranch: baseHint,
-        })
-      : null);
-  const pr = remoteStatusFromObserved(observed, meta, queueEntry);
+        });
+  const pr = remoteStatusFromObservation(providerObservation, meta, queueEntry);
+  const publication = await resolvePrHeadPublicationStatus({
+    gitRoot: resolved.gitRoot,
+    branch,
+    localHeadSha: branchHeadSha,
+    providerObservation:
+      providerObservation.state === "found"
+        ? { state: "found", headSha: providerObservation.pr.headSha }
+        : providerObservation,
+  });
   const baseBranch =
     pr.state === "not_found"
       ? (normalizeBaseBranch(meta?.base) ?? "main")
@@ -422,6 +467,8 @@ export async function resolvePrFlowStatus(opts: {
       metaHeadSha: meta?.head_sha ?? null,
     },
     pr,
+    providerObservation,
+    publication,
     closeTail,
     hostedChecks,
     reviewThreads,

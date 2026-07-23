@@ -1,134 +1,22 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { TaskData } from "../../backends/task-backend.js";
-import {
-  resolveBaseBranch,
-  gitEnv,
-  gitDiffNames,
-  findWorktreeForBranch,
-  gitListBranchesByPrefixes,
-  parseTaskIdFromCloseBranch,
-  parseTaskIdFromBranch,
-} from "@agentplaneorg/core/git";
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import { gitEnv, resolveBaseBranch } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { createCliEmitter, unknownEntityMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureGitClean } from "../guard/index.js";
-import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitBranchExists, gitCurrentBranch, gitIsAncestor } from "../shared/git-ops.js";
+import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
 import { cleanupMergedLocalBranch } from "../shared/merged-branch-cleanup.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
-import { parsePrMeta } from "../shared/pr-meta.js";
-import {
-  loadTaskFromContext,
-  loadCommandContext,
-  type CommandContext,
-} from "../shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { archivePrArtifacts } from "./internal/archive-pr.js";
+import { resolveCleanupPlan, type CleanupCandidate } from "./cleanup-merged-proof.js";
+
 const output = createCliEmitter();
-
-type CleanupBranchKind = "task" | "task-close";
-
-export type CleanupCandidate = {
-  taskId: string;
-  branch: string;
-  worktreePath: string | null;
-};
-
-function resolveCleanupBranchTaskId(opts: {
-  branch: string;
-  prefix: string;
-  closePrefix: string;
-}): { taskId: string; kind: CleanupBranchKind } | null {
-  const taskId = parseTaskIdFromBranch(opts.prefix, opts.branch);
-  if (taskId) return { taskId, kind: "task" };
-  const closeTaskId = parseTaskIdFromCloseBranch(opts.branch, opts.closePrefix);
-  if (closeTaskId) return { taskId: closeTaskId, kind: "task-close" };
-  return null;
-}
-
-async function readCleanupPrMetaIfPresent(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-}) {
-  const metaPath = path.join(opts.gitRoot, opts.workflowDir, opts.taskId, "pr", "meta.json");
-  try {
-    const raw = await readFile(metaPath, "utf8");
-    return parsePrMeta(raw, opts.taskId);
-  } catch {
-    return null;
-  }
-}
-
-async function taskLifecycleIsOnBase(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  baseBranch: string;
-  task: TaskData;
-  taskId: string;
-}): Promise<boolean> {
-  const taskCommitHash = opts.task.commit?.hash?.trim() ?? "";
-  if (taskCommitHash && (await gitIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))) {
-    return true;
-  }
-  const meta = await readCleanupPrMetaIfPresent({
-    gitRoot: opts.gitRoot,
-    workflowDir: opts.workflowDir,
-    taskId: opts.taskId,
-  });
-  const mergeCommit = meta?.status === "MERGED" ? (meta.merge_commit?.trim() ?? "") : "";
-  return (
-    mergeCommit.length > 0 && (await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
-  );
-}
-
-export async function resolveCleanupCandidates(opts: {
-  ctx: CommandContext;
-  gitRoot: string;
-  workflowDir: string;
-  baseBranch: string;
-}): Promise<CleanupCandidate[]> {
-  const prefix = opts.ctx.config.branch.task_prefix;
-  const closePrefix = opts.ctx.config.branch.task_close_prefix;
-  const branches = await gitListBranchesByPrefixes(opts.gitRoot, [prefix, closePrefix]);
-  const taskCache = new Map<string, TaskData | null>();
-
-  const candidates: CleanupCandidate[] = [];
-  for (const branch of branches) {
-    if (branch === opts.baseBranch) continue;
-    const target = resolveCleanupBranchTaskId({ branch, prefix, closePrefix });
-    if (!target) continue;
-    let task = taskCache.get(target.taskId) ?? null;
-    if (!taskCache.has(target.taskId)) {
-      try {
-        task = await loadTaskFromContext({ ctx: opts.ctx, taskId: target.taskId });
-      } catch {
-        task = null;
-      }
-      taskCache.set(target.taskId, task);
-    }
-    if (!task) continue;
-    const status = normalizeTaskStatus(task.status);
-    if (status !== "DONE") continue;
-    const diff = await gitDiffNames(opts.gitRoot, opts.baseBranch, branch);
-    const lifecycleOnBase = await taskLifecycleIsOnBase({
-      gitRoot: opts.gitRoot,
-      workflowDir: opts.workflowDir,
-      baseBranch: opts.baseBranch,
-      task,
-      taskId: target.taskId,
-    });
-    if (diff.length > 0 && !lifecycleOnBase) continue;
-    const worktreePath = await findWorktreeForBranch(opts.gitRoot, branch);
-    candidates.push({ taskId: target.taskId, branch, worktreePath });
-  }
-  return candidates;
-}
 
 function isMissingRemoteBranchDelete(error: unknown): boolean {
   const stdout = String((error as { stdout?: string } | null)?.stdout ?? "");
@@ -149,11 +37,29 @@ async function deleteRemoteBranchIfPresent(gitRoot: string, branch: string): Pro
     });
     return true;
   } catch (error) {
-    if (isMissingRemoteBranchDelete(error)) {
-      return false;
-    }
+    if (isMissingRemoteBranchDelete(error)) return false;
     throw error;
   }
+}
+
+function normalizeRequestedTaskIds(taskIds: readonly string[] | undefined): string[] {
+  return [
+    ...new Set(
+      (taskIds ?? []).map((taskId) => taskId.trim()).filter((taskId) => taskId.length > 0),
+    ),
+  ].toSorted((a, b) => a.localeCompare(b));
+}
+
+async function worktreeIsDirty(worktreePath: string): Promise<boolean> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["status", "--porcelain", "--untracked-files=all"],
+    {
+      cwd: worktreePath,
+      env: gitEnv(),
+    },
+  );
+  return stdout.trim().length > 0;
 }
 
 export async function cmdCleanupMerged(opts: {
@@ -170,6 +76,7 @@ export async function cmdCleanupMerged(opts: {
   preserveDirty?: boolean;
   report?: string;
   skipUnsafeWorktrees?: boolean;
+  taskIds?: readonly string[];
 }): Promise<number> {
   try {
     const ctx =
@@ -232,18 +139,39 @@ export async function cmdCleanupMerged(opts: {
     }
 
     const repoRoot = await resolvePathFallback(resolved.gitRoot);
-    const candidates = await resolveCleanupCandidates({
+    const requestedTaskIds = normalizeRequestedTaskIds(opts.taskIds);
+    const targeted = requestedTaskIds.length > 0;
+    const resolution = await resolveCleanupPlan({
       ctx,
       gitRoot: resolved.gitRoot,
       workflowDir: config.paths.workflow_dir,
       baseBranch,
+      taskIds: requestedTaskIds,
     });
 
-    const sortedCandidates = candidates.toSorted((a, b) => a.taskId.localeCompare(b.taskId));
+    const sortedCandidates = resolution.candidates.toSorted(
+      (a, b) => a.taskId.localeCompare(b.taskId) || a.branch.localeCompare(b.branch),
+    );
+    const sortedBlocked = resolution.blocked.toSorted(
+      (a, b) => a.taskId.localeCompare(b.taskId) || a.branch.localeCompare(b.branch),
+    );
+    if (sortedBlocked.length > 0) {
+      const details = sortedBlocked
+        .map((item) => `- task=${item.taskId} branch=${item.branch}: ${item.reason}`)
+        .join("\n");
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `Refusing targeted cleanup because merged identity is not proven:\n${details}`,
+      });
+    }
+
     const reportRows: string[] = [
-      `cleanup merged report`,
+      "cleanup merged report",
       `base=${baseBranch}`,
       `mode=${opts.yes ? "apply" : "dry-run"}`,
+      `tasks=${targeted ? requestedTaskIds.join(",") : "*"}`,
+      `matched_tasks=${[...resolution.matchedTaskIds].toSorted().join(",") || "-"}`,
       `candidates=${sortedCandidates.length}`,
     ];
 
@@ -251,19 +179,34 @@ export async function cmdCleanupMerged(opts: {
       const archiveLabel = opts.archive ? " archive=on" : "";
       const fetchLabel = opts.fetch ? " fetch=on" : "";
       const remoteLabel = opts.deleteRemoteBranches ? " remote=delete" : "";
-      output.line(`cleanup merged (base=${baseBranch}${archiveLabel}${fetchLabel}${remoteLabel})`);
-      if (sortedCandidates.length === 0) {
-        output.line("no candidates");
-        return 0;
-      }
+      const tasksLabel = targeted ? ` tasks=${requestedTaskIds.join(",")}` : "";
+      output.line(
+        `cleanup merged (base=${baseBranch}${tasksLabel}${archiveLabel}${fetchLabel}${remoteLabel})`,
+      );
       for (const item of sortedCandidates) {
-        output.line(`- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"}`);
+        output.line(
+          `- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"} proof=${item.proof}`,
+        );
       }
     }
     for (const item of sortedCandidates) {
       reportRows.push(
-        `candidate task=${item.taskId} branch=${item.branch} worktree=${item.worktreePath ?? "-"}`,
+        `candidate task=${item.taskId} branch=${item.branch} worktree=${item.worktreePath ?? "-"} proof=${item.proof}`,
       );
+    }
+
+    if (sortedCandidates.length === 0) {
+      await writeCleanupReportIfRequested({
+        gitRoot: resolved.gitRoot,
+        report: opts.report,
+        rows: reportRows,
+      });
+      if (!opts.quiet) {
+        output.line(
+          targeted ? `already clean: task=${requestedTaskIds.join(",")}` : "no candidates",
+        );
+      }
+      return 0;
     }
 
     if (!opts.yes) {
@@ -272,40 +215,47 @@ export async function cmdCleanupMerged(opts: {
         report: opts.report,
         rows: reportRows,
       });
-      if (!opts.quiet) {
-        output.line("Re-run with --yes to delete these branches/worktrees.");
-      }
+      if (!opts.quiet) output.line("Re-run with --yes to delete these branches/worktrees.");
       return 0;
     }
 
     const skipUnsafeWorktrees = opts.skipUnsafeWorktrees === true;
-    let deletedRemoteBranches = 0;
+    const preparedCandidates: {
+      item: CleanupCandidate;
+      worktreePath: string | null;
+    }[] = [];
     let skippedUnsafe = 0;
     for (const item of sortedCandidates) {
       const worktreePath = item.worktreePath ? await resolvePathFallback(item.worktreePath) : null;
+      let unsafeMessage: string | null = null;
       if (worktreePath) {
         const outsideRepo = !isPathWithin(repoRoot, worktreePath);
         const currentWorktree = worktreePath === repoRoot;
-        if (outsideRepo || currentWorktree) {
-          if (skipUnsafeWorktrees) {
-            skippedUnsafe += 1;
-            continue;
-          }
-          if (outsideRepo) {
-            throw new CliError({
-              exitCode: 5,
-              code: "E_GIT",
-              message: `Refusing to remove worktree outside repo: ${worktreePath}`,
-            });
-          }
-          throw new CliError({
-            exitCode: 5,
-            code: "E_GIT",
-            message: "Refusing to remove the current worktree",
-          });
+        if (outsideRepo) {
+          unsafeMessage = `Refusing to remove worktree outside repo: ${worktreePath}`;
+        } else if (currentWorktree) {
+          unsafeMessage = "Refusing to remove the current worktree";
+        } else if (opts.preserveDirty !== true && (await worktreeIsDirty(worktreePath))) {
+          unsafeMessage =
+            `Refusing to remove dirty worktree: ${worktreePath}. ` +
+            "Commit its changes or rerun with --preserve-dirty.";
         }
       }
+      if (unsafeMessage) {
+        if (skipUnsafeWorktrees) {
+          skippedUnsafe += 1;
+          reportRows.push(
+            `skipped task=${item.taskId} branch=${item.branch} reason=${unsafeMessage}`,
+          );
+          continue;
+        }
+        throw new CliError({ exitCode: 5, code: "E_GIT", message: unsafeMessage });
+      }
+      preparedCandidates.push({ item, worktreePath });
+    }
 
+    let deletedRemoteBranches = 0;
+    for (const { item, worktreePath } of preparedCandidates) {
       if (opts.archive) {
         const taskDir = path.join(resolved.gitRoot, config.paths.workflow_dir, item.taskId);
         await archivePrArtifacts(taskDir);
@@ -316,6 +266,7 @@ export async function cmdCleanupMerged(opts: {
         branch: item.branch,
         worktreePathHint: worktreePath,
         preserveDirty: opts.preserveDirty === true,
+        expectedHeadSha: item.expectedHeadSha,
       });
       reportRows.push(
         `deleted task=${item.taskId} branch=${item.branch} worktree=${worktreePath ?? "-"} preserve_dirty=${cleanup.preservedDirtyState ? "yes" : "no"} stash=${cleanup.stashMessage ?? "-"}`,
@@ -348,7 +299,7 @@ export async function cmdCleanupMerged(opts: {
       output.success(
         "cleanup merged",
         undefined,
-        `deleted=${candidates.length - skippedUnsafe}${remoteDetail}${skippedDetail}`,
+        `deleted=${preparedCandidates.length}${remoteDetail}${skippedDetail}`,
       );
     }
     return 0;

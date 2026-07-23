@@ -30,24 +30,25 @@ function parseGhPrChecks(stdout: string): HostedCheckRow[] {
   return Array.isArray(rows) ? rows : [];
 }
 
-function isPendingGhCheckState(state: string): boolean {
-  return ["PENDING", "QUEUED", "IN_PROGRESS", "WAITING", "REQUESTED", "EXPECTED"].includes(state);
-}
-
 function isFailingGhCheckState(state: string): boolean {
   return ["FAIL", "FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED"].includes(state);
+}
+
+function isPassingGhCheckState(state: string): boolean {
+  return ["SUCCESS", "SKIPPED", "NEUTRAL"].includes(state);
 }
 
 function summarizeHostedChecks(
   checks: HostedCheckRow[],
   requiredChecks: readonly string[] = [],
 ): Extract<HostedChecksSummary, { checked: true }> {
-  const pending = checks.filter((check) =>
-    isPendingGhCheckState((check.state ?? "").toUpperCase()),
-  ).length;
   const failing = checks.filter((check) =>
     isFailingGhCheckState((check.state ?? "").toUpperCase()),
   ).length;
+  const passing = checks.filter((check) =>
+    isPassingGhCheckState((check.state ?? "").toUpperCase()),
+  ).length;
+  const pending = checks.length - failing - passing;
   const names = new Set(checks.map((check) => (check.name ?? "").trim()).filter(Boolean));
   const missingRequired = requiredChecks
     .map((name) => name.trim())
@@ -57,7 +58,7 @@ function summarizeHostedChecks(
     total: checks.length,
     pending,
     failing,
-    passing: Math.max(0, checks.length - pending - failing),
+    passing,
     missingRequired,
     rows: checks,
   };
@@ -165,8 +166,17 @@ export async function waitForHostedChecks(opts: {
     await sleep(Math.min(pollIntervalMs, Math.max(1, timeoutMs - (Date.now() - startedAt))));
   }
 
+  const message = `${renderHostedCheckFailure(lastStatus)} after ${timeoutMs}ms`;
+  if (!lastStatus.checked) {
+    throw new CliError({
+      code: "E_NETWORK",
+      message,
+      context: { reason_code: "hosted_checks_unavailable" },
+    });
+  }
   throw new CliError({
-    code: "E_VALIDATION",
-    message: `${renderHostedCheckFailure(lastStatus)} after ${timeoutMs}ms`,
+    code: "E_HANDOFF",
+    message,
+    context: { reason_code: "hosted_checks_pending" },
   });
 }

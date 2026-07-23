@@ -29,6 +29,9 @@ const mocks = vi.hoisted(() => ({
   isTaskLocalOnlyAdvance: vi.fn(),
   ensurePrArtifactsSynced: vi.fn(),
   requiresPullRequestMergePath: vi.fn(),
+  requireOpenGithubPrAtHead: vi.fn(),
+  assessPreMergeClosureFreshness: vi.fn(),
+  requireCleanTaskWorktree: vi.fn(),
 }));
 
 vi.mock("../../../../cli/fs-utils.js", () => ({ fileExists: mocks.fileExists }));
@@ -38,6 +41,7 @@ vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
   gitDiffNames: mocks.gitDiffNames,
   gitDiffStat: mocks.gitDiffStat,
+  gitEnv: () => process.env,
   resolveBaseBranch: mocks.resolveBaseBranch,
 }));
 vi.mock("../../../shared/git-ops.js", () => ({
@@ -77,6 +81,15 @@ vi.mock("../../internal/sync.js", () => ({
 }));
 vi.mock("./github-protection.js", () => ({
   requiresPullRequestMergePath: mocks.requiresPullRequestMergePath,
+}));
+vi.mock("../../provider-head.js", () => ({
+  requireOpenGithubPrAtHead: mocks.requireOpenGithubPrAtHead,
+}));
+vi.mock("../../../task/hosted-close-premerge.js", () => ({
+  assessPreMergeClosureFreshness: mocks.assessPreMergeClosureFreshness,
+}));
+vi.mock("../../../shared/task-worktree-cleanliness.js", () => ({
+  requireCleanTaskWorktree: mocks.requireCleanTaskWorktree,
 }));
 
 function mkCtx(workflowMode: "direct" | "branch_pr" = "branch_pr") {
@@ -143,7 +156,9 @@ function seedCommon(): void {
   mocks.ensureCommittedPrArtifactsOnBranch.mockResolvedValue();
   mocks.gitDiffNames.mockResolvedValue(["src/app.ts"]);
   mocks.gitDiffStat.mockResolvedValue("src/app.ts | 1 +\n");
-  mocks.gitBranchUpstream.mockResolvedValue(null);
+  mocks.gitBranchUpstream.mockImplementation((_gitRoot: string, branch: string) =>
+    branch === "task/T-1" ? "origin/task/T-1" : null,
+  );
   mocks.gitRevParse.mockResolvedValue("deadbeef");
   mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
   mocks.computeVerifyState.mockReturnValue({
@@ -155,6 +170,25 @@ function seedCommon(): void {
   mocks.isTaskLocalOnlyAdvance.mockResolvedValue(false);
   mocks.ensurePrArtifactsSynced.mockResolvedValue({ branch: "task/T-1" });
   mocks.requiresPullRequestMergePath.mockResolvedValue(false);
+  mocks.requireOpenGithubPrAtHead.mockResolvedValue({
+    prNumber: 101,
+    prUrl: "https://github.com/example/repo/pull/101",
+    status: "OPEN",
+    mergedAt: null,
+    mergeCommit: null,
+    base: "main",
+    headSha: "deadbeef",
+  });
+  mocks.assessPreMergeClosureFreshness.mockResolvedValue({
+    fresh: true,
+    basisCommit: "deadbeef",
+  });
+  mocks.requireCleanTaskWorktree.mockResolvedValue({
+    state: "clean",
+    branch: "task/T-1",
+    worktreePath: "/repo/.agentplane/worktrees/T-1",
+    changedPaths: [],
+  });
 }
 
 describe("pr/integrate/internal/prepare", () => {
@@ -176,6 +210,75 @@ describe("pr/integrate/internal/prepare", () => {
     await expect(
       prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false, base: "   " }),
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE", message: "Invalid value for --base." });
+  });
+
+  it("rejects a dirty task worktree before reading integration artifacts or provider state", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.requireCleanTaskWorktree.mockRejectedValueOnce(
+      new CliError({
+        code: "E_VALIDATION",
+        message: "Task worktree contains uncommitted changes for T-1",
+        context: { reason_code: "task_worktree_dirty" },
+      }),
+    );
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_worktree_dirty" },
+    });
+    expect(mocks.ensureCommittedPrArtifactsOnBranch).not.toHaveBeenCalled();
+    expect(mocks.requireOpenGithubPrAtHead).not.toHaveBeenCalled();
+  });
+
+  it("rejects a live branch head that moved past the queue reservation", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+
+    await expect(
+      prepareIntegrate({
+        cwd: "/repo",
+        taskId: "T-1",
+        runVerify: false,
+        expectedHeadSha: "queued-head",
+      }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "integration_queue_head_changed",
+        expected_head_sha: "queued-head",
+        current_head_sha: "deadbeef",
+      },
+    });
+    expect(mocks.requireOpenGithubPrAtHead).not.toHaveBeenCalled();
+  });
+
+  it("rejects a live base head that moved past the queue reservation", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+
+    await expect(
+      prepareIntegrate({
+        cwd: "/repo",
+        taskId: "T-1",
+        runVerify: false,
+        expectedHeadSha: "deadbeef",
+        expectedBaseSha: "queued-base",
+      }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_GIT_RACE",
+      context: {
+        reason_code: "integration_queue_base_changed",
+        expected_base_sha: "queued-base",
+        current_base_sha: "deadbeef",
+      },
+    });
+    expect(mocks.requireOpenGithubPrAtHead).not.toHaveBeenCalled();
   });
 
   it("explains the base-checkout rerun route when integrate is invoked from the task branch worktree", async () => {
@@ -391,8 +494,10 @@ describe("pr/integrate/internal/prepare", () => {
     });
     mocks.gitRevParse
       .mockResolvedValueOnce("artifactsha")
+      .mockResolvedValueOnce("basesha")
       .mockResolvedValueOnce("implsha")
-      .mockResolvedValueOnce("basesha");
+      .mockResolvedValueOnce("basesha")
+      .mockResolvedValueOnce("artifactsha");
     mocks.gitDiffNames
       .mockResolvedValueOnce(["src/app.ts", ".agentplane/tasks/T-1/README.md"])
       .mockResolvedValueOnce([".agentplane/tasks/T-1/README.md"])
@@ -405,7 +510,7 @@ describe("pr/integrate/internal/prepare", () => {
     });
   });
 
-  it("does not require self-referential evaluated_sha freshness for protected-base PR merge", async () => {
+  it("accepts a protected-base closure commit when review covers the last semantic commit", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
     mocks.requiresPullRequestMergePath.mockResolvedValue(true);
@@ -423,14 +528,53 @@ describe("pr/integrate/internal/prepare", () => {
       last_verified_diffstat_sha256: "sha256:current",
       verify: { status: "pass" },
     });
-    mocks.gitRevParse.mockResolvedValue("current-head");
+    mocks.gitRevParse
+      .mockResolvedValueOnce("closure-head")
+      .mockResolvedValueOnce("base-head")
+      .mockResolvedValueOnce("previous-head")
+      .mockResolvedValueOnce("base-head")
+      .mockResolvedValueOnce("closure-head");
+    mocks.gitDiffNames
+      .mockResolvedValueOnce(["src/app.ts"])
+      .mockResolvedValueOnce([".agentplane/tasks/T-1/README.md"])
+      .mockResolvedValueOnce(["src/app.ts"]);
 
     await expect(
       prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
     ).resolves.toMatchObject({
-      branchHeadSha: "current-head",
+      branchHeadSha: "closure-head",
       protectedBaseRequiresPrMerge: true,
     });
+  });
+
+  it("rejects protected-base integration when semantic code changed after review", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.requiresPullRequestMergePath.mockResolvedValue(true);
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.loadTaskFromContext.mockResolvedValue({
+      id: "T-1",
+      verify: [],
+      quality_review: qualityReview("reviewed-head"),
+    });
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: undefined,
+      last_verified_sha: null,
+      diffstat_sha256: "sha256:current",
+      last_verified_diffstat_sha256: "sha256:current",
+      verify: { status: "pass" },
+    });
+    mocks.gitRevParse.mockResolvedValueOnce("semantic-head").mockResolvedValueOnce("reviewed-head");
+    mocks.gitDiffNames
+      .mockResolvedValueOnce(["src/app.ts"])
+      .mockResolvedValueOnce(["src/new-behavior.ts"]);
+
+    const promise = prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false });
+    await expect(promise).rejects.toMatchObject<CliError>({
+      code: "E_VALIDATION",
+    });
+    await expect(promise).rejects.toThrow(/expected_sha=semantic-head/u);
   });
 
   it("excludes only the configured task registry path from diffstat", async () => {

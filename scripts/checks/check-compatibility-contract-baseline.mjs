@@ -15,6 +15,7 @@ import {
   collectCompatibilitySurface,
   createGitSource,
   createWorktreeSource,
+  diffCliTopology,
   diffJsonPaths,
   gitReferenceAvailable,
   hashJson,
@@ -34,7 +35,7 @@ const candidatePath = path.join(
   repoRoot,
   "scripts",
   "baselines",
-  "v0.7-workflow-contract-candidate.json",
+  "v0.7-compatibility-candidate.json",
 );
 
 function readBaseline() {
@@ -268,16 +269,20 @@ function validateReviewedCandidate({
 }) {
   assertOnlyKeys(
     candidate,
-    ["schema_version", "candidate_id", "source_task", "base", "candidate", "review", "deltas"],
+    ["schema_version", "candidate_id", "source_tasks", "base", "candidate", "review", "deltas"],
     [],
     "compatibility candidate",
   );
-  assert(candidate.schema_version === 1, "compatibility candidate schema_version drift");
+  assert(candidate.schema_version === 2, "compatibility candidate schema_version drift");
   assert(
-    candidate.candidate_id === "agentplane.compatibility.v0.7.workflow-contract",
+    candidate.candidate_id === "agentplane.compatibility.v0.7.cumulative",
     "compatibility candidate id drift",
   );
-  assert(candidate.source_task === "202607221846-4VB97J", "compatibility source task drift");
+  const expectedSourceTasks = ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"];
+  assert(
+    hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+    "compatibility source task inventory drift",
+  );
 
   assertOnlyKeys(
     candidate.base,
@@ -319,7 +324,11 @@ function validateReviewedCandidate({
   assert(candidate.review.scope === "exact_delta_set", "candidate review scope drift");
   assert(
     hashJson(candidate.review.conditions) ===
-      hashJson(["final_focused_tests_pass", "baseline_anchor_byte_identical"]),
+      hashJson([
+        "final_focused_tests_pass",
+        "baseline_anchor_byte_identical",
+        "source_task_provenance_exact",
+      ]),
     "candidate review conditions drift",
   );
 
@@ -335,7 +344,15 @@ function validateReviewedCandidate({
   for (const delta of candidate.deltas) {
     assertOnlyKeys(
       delta,
-      ["section", "from_sha256", "to_sha256", "classification", "summary", "evidence"],
+      [
+        "section",
+        "source_tasks",
+        "from_sha256",
+        "to_sha256",
+        "classification",
+        "summary",
+        "evidence",
+      ],
       [],
       `compatibility delta ${delta.section ?? "unknown"}`,
     );
@@ -352,16 +369,94 @@ function validateReviewedCandidate({
       `${delta.section}: summary missing`,
     );
   }
+  const expectedDeltaSources = {
+    cli_topology: expectedSourceTasks,
+    workflow_schema: ["202607221846-4VB97J"],
+    tarball_policy: ["202607221846-4VB97J"],
+  };
+  for (const delta of candidate.deltas) {
+    assert(
+      hashJson(delta.source_tasks) === hashJson(expectedDeltaSources[delta.section]),
+      `${delta.section}: source task provenance drift`,
+    );
+  }
 
   const cliDelta = candidate.deltas.find((delta) => delta.section === "cli_topology");
-  const beforeCommands = new Set(
-    exactMainSurface.cli_topology.commands.map((command) => command.id.join(" ")),
+  const cliTopologyDelta = diffCliTopology(exactMainSurface, currentSurface);
+  const addedCommands = cliTopologyDelta.added_command_descriptors.map((command) =>
+    command.id.join(" "),
   );
-  const afterCommands = new Set(
-    currentSurface.cli_topology.commands.map((command) => command.id.join(" ")),
+  const removedCommands = cliTopologyDelta.removed_command_descriptors.map((command) =>
+    command.id.join(" "),
   );
-  const addedCommands = [...afterCommands].filter((id) => !beforeCommands.has(id)).toSorted();
-  const removedCommands = [...beforeCommands].filter((id) => !afterCommands.has(id)).toSorted();
+  const expectedAddedCommandDescriptors = [
+    {
+      id: ["workflow", "migrate"],
+      visibility: "user",
+      group: "Workflow",
+      args: [],
+      options: [
+        { name: "dry-run", kind: "boolean", valueHint: null, default: false },
+        { name: "rollback", kind: "string", valueHint: "<receipt-path>" },
+      ],
+    },
+  ];
+  const expectedAddedOptions = [
+    {
+      command: "cleanup merged",
+      name: "task-id",
+      kind: "string",
+      valueHint: "<task-id>",
+      repeatable: true,
+    },
+    {
+      command: "evaluator run",
+      name: "provenance",
+      kind: "string",
+      valueHint: "<human_supplied|evaluator_supplied>",
+      choices: ["human_supplied", "evaluator_supplied"],
+    },
+    {
+      command: "workflow migrate",
+      name: "dry-run",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "workflow migrate",
+      name: "rollback",
+      kind: "string",
+      valueHint: "<receipt-path>",
+    },
+  ];
+  const expectedAdditionSources = [
+    { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
+    {
+      kind: "option",
+      command: "cleanup merged",
+      name: "task-id",
+      source_task: "202607230554-YFYT83",
+    },
+    {
+      kind: "option",
+      command: "evaluator run",
+      name: "provenance",
+      source_task: "202607221846-YGWMA2",
+    },
+    {
+      kind: "option",
+      command: "workflow migrate",
+      name: "dry-run",
+      source_task: "202607221846-4VB97J",
+    },
+    {
+      kind: "option",
+      command: "workflow migrate",
+      name: "rollback",
+      source_task: "202607221846-4VB97J",
+    },
+  ];
   assert(cliDelta?.classification === "additive", "CLI candidate delta must be additive");
   assert(
     hashJson(cliDelta.evidence) ===
@@ -370,17 +465,51 @@ function validateReviewedCandidate({
           from: exactMainSurface.cli_topology.command_count,
           to: currentSurface.cli_topology.command_count,
         },
+        positional_count: {
+          from: exactMainSurface.cli_topology.positional_count,
+          to: currentSurface.cli_topology.positional_count,
+        },
         option_count: {
           from: exactMainSurface.cli_topology.option_count,
           to: currentSurface.cli_topology.option_count,
         },
         added_commands: addedCommands,
         removed_commands: removedCommands,
+        added_command_descriptors: cliTopologyDelta.added_command_descriptors,
+        removed_command_descriptors: cliTopologyDelta.removed_command_descriptors,
+        mutated_command_shells: cliTopologyDelta.mutated_command_shells,
+        added_options: cliTopologyDelta.added_options,
+        removed_options: cliTopologyDelta.removed_options,
+        mutated_options: cliTopologyDelta.mutated_options,
+        addition_sources: expectedAdditionSources,
       }),
     "CLI candidate evidence drift",
   );
   assert(hashJson(addedCommands) === hashJson(["workflow migrate"]), "unexpected CLI addition");
+  assert(
+    hashJson(cliTopologyDelta.added_command_descriptors) ===
+      hashJson(expectedAddedCommandDescriptors),
+    "new CLI command descriptor is not in the approved delta",
+  );
+  assert(
+    hashJson(cliTopologyDelta.added_options) === hashJson(expectedAddedOptions),
+    "CLI option addition is not in the approved delta",
+  );
+  assert(
+    hashJson(cliDelta.evidence.addition_sources) === hashJson(expectedAdditionSources),
+    "CLI addition source-task provenance drift",
+  );
   assert(removedCommands.length === 0, "candidate removes an existing CLI command");
+  assert(
+    cliTopologyDelta.removed_command_descriptors.length === 0,
+    "candidate removes an existing CLI command descriptor",
+  );
+  assert(
+    cliTopologyDelta.mutated_command_shells.length === 0,
+    "candidate mutates an existing CLI command shell",
+  );
+  assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
+  assert(cliTopologyDelta.mutated_options.length === 0, "candidate mutates an existing CLI option");
 
   const schemaDelta = candidate.deltas.find((delta) => delta.section === "workflow_schema");
   const workflowSchema = JSON.parse(

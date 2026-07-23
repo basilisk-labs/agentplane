@@ -17,6 +17,7 @@ import { PolicyEngine } from "../../../policy/engine.js";
 import { gitRevParse } from "../../shared/git-ops.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { throwIfPolicyDecisionDenied } from "../../shared/policy-deny.js";
+import { requireCleanTaskWorktree } from "../../shared/task-worktree-cleanliness.js";
 
 import { finalizeIntegrate } from "./internal/finalize.js";
 import { runMergeCommit, runRebaseFastForward, runSquashMerge } from "./internal/merge.js";
@@ -34,6 +35,8 @@ export async function cmdIntegrate(opts: {
   taskId: string;
   branch?: string;
   base?: string;
+  expectedHeadSha?: string;
+  expectedBaseSha?: string;
   mergeStrategy: "squash" | "merge" | "rebase";
   runVerify: boolean;
   dryRun: boolean;
@@ -51,6 +54,8 @@ export async function cmdIntegrate(opts: {
       taskId: opts.taskId,
       branch: opts.branch,
       base: opts.base,
+      expectedHeadSha: opts.expectedHeadSha,
+      expectedBaseSha: opts.expectedBaseSha,
       runVerify: opts.runVerify,
     });
 
@@ -73,6 +78,11 @@ export async function cmdIntegrate(opts: {
     let alreadyVerifiedSha = prepared.alreadyVerifiedSha;
     let shouldRunVerify = prepared.shouldRunVerify;
     let branchHeadSha = prepared.branchHeadSha;
+    const explicitExpectedBaseSha = opts.expectedBaseSha?.trim();
+    const expectedBaseSha =
+      explicitExpectedBaseSha && explicitExpectedBaseSha.length > 0
+        ? explicitExpectedBaseSha
+        : prepared.baseHeadSha;
     const changedPaths = prepared.changedPaths;
 
     throwIfPolicyDecisionDenied(
@@ -103,6 +113,14 @@ export async function cmdIntegrate(opts: {
     }
 
     if (protectedBaseRequiresPrMerge) {
+      const preMutationGuard = async (): Promise<void> => {
+        await requireCleanTaskWorktree({
+          gitRoot: resolved.gitRoot,
+          branch,
+          taskId: task.id,
+        });
+      };
+      await preMutationGuard();
       await handleProtectedBaseIntegrate({
         ctx: prepared.ctx,
         taskId: task.id,
@@ -110,6 +128,7 @@ export async function cmdIntegrate(opts: {
         base,
         branchHeadSha,
         metaSource,
+        preMutationGuard,
       });
     }
 
@@ -134,6 +153,11 @@ export async function cmdIntegrate(opts: {
           message: "Unable to locate or create a worktree for verify execution",
         });
       }
+      await requireCleanTaskWorktree({
+        gitRoot: resolved.gitRoot,
+        branch,
+        taskId: task.id,
+      });
       verifyEntries.push(
         ...(await runVerifyCommands({
           commands: verifyCommands,
@@ -163,11 +187,19 @@ export async function cmdIntegrate(opts: {
     const headBeforeMerge = await gitRevParse(resolved.gitRoot, ["HEAD"]);
     let mergeHash = "";
 
+    await requireCleanTaskWorktree({
+      gitRoot: resolved.gitRoot,
+      branch,
+      taskId: task.id,
+    });
+
     if (opts.mergeStrategy === "squash") {
       mergeHash = await runSquashMerge({
         gitRoot: resolved.gitRoot,
         base,
         branch,
+        sourceSha: branchHeadSha,
+        expectedBaseSha,
         headBeforeMerge,
         taskId: task.id,
         taskTitle: task.title,
@@ -180,6 +212,9 @@ export async function cmdIntegrate(opts: {
       mergeHash = await runMergeCommit({
         gitRoot: resolved.gitRoot,
         branch,
+        sourceSha: branchHeadSha,
+        base,
+        expectedBaseSha,
         taskId: task.id,
         taskTitle: task.title,
         taskTags: task.tags,
@@ -200,6 +235,8 @@ export async function cmdIntegrate(opts: {
         worktreePath,
         base,
         branch,
+        expectedBranchHeadSha: branchHeadSha,
+        expectedBaseSha,
         headBeforeMerge,
         rawVerify: task.verify,
         metaSource: metaSource ?? null,
@@ -249,6 +286,7 @@ export async function cmdIntegrate(opts: {
       gitRoot: resolved.gitRoot,
       branch,
       worktreePathHint: worktreePath,
+      expectedHeadSha: branchHeadSha,
     });
     if (
       cleanup.removedWorktree &&

@@ -3,11 +3,14 @@ import os from "node:os";
 import { gitDiffNames } from "@agentplaneorg/core/git";
 
 import { createCliEmitter } from "../cli/output.js";
+import { CliError } from "../shared/errors.js";
 import { loadBackendTask, type CommandContext } from "./shared/task-backend.js";
-import { gitRevParse } from "./shared/git-ops.js";
+import { gitBranchUpstream, gitRevParse } from "./shared/git-ops.js";
 import { resolvePrFlowStatus } from "./pr/flow-status.js";
+import { isProviderHeadUnavailableError, requireOpenGithubPrAtHead } from "./pr/provider-head.js";
 import {
   markQueueEntry,
+  integrationQueueEntryMatchesSnapshot,
   queueBaseConflictReason,
   readIntegrationQueue,
   withIntegrationQueueMutex,
@@ -15,6 +18,11 @@ import {
   type IntegrationQueueEntry,
 } from "./pr/integrate/queue-state.js";
 import { decideIntegrationQueueRecovery } from "./integrate-queue-recovery.js";
+import {
+  assertTaskWorktreeClean,
+  inspectTaskWorktreeCleanliness,
+  summarizeTaskWorktreeChanges,
+} from "./shared/task-worktree-cleanliness.js";
 
 export function defaultIntegrationQueueWorker(): string {
   return `${os.userInfo().username}@${os.hostname()}`;
@@ -72,11 +80,98 @@ async function rejectIfQueuedBaseConflicts(opts: {
   };
 }
 
+async function rejectIfQueuedTaskWorktreeIsDirty(opts: {
+  gitRoot: string;
+  entry: IntegrationQueueEntry;
+}): Promise<IntegrationQueueEntry | null> {
+  const probe = await inspectTaskWorktreeCleanliness({
+    gitRoot: opts.gitRoot,
+    branch: opts.entry.branch,
+  });
+  if (probe.state === "dirty") {
+    return {
+      ...opts.entry,
+      status: "rework",
+      updated_at: new Date().toISOString(),
+      reason:
+        `task worktree contains uncommitted changes after enqueue: ` +
+        summarizeTaskWorktreeChanges(probe.changedPaths),
+    };
+  }
+  assertTaskWorktreeClean({ taskId: opts.entry.task_id, probe });
+  return null;
+}
+
+export async function rejectIfQueuedEntryPublicationIsStale(opts: {
+  gitRoot: string;
+  entry: IntegrationQueueEntry;
+}): Promise<IntegrationQueueEntry | null> {
+  let upstreamRef: string | null = null;
+  let upstreamHead: string | null = null;
+  try {
+    upstreamRef = await gitBranchUpstream(opts.gitRoot, opts.entry.branch);
+    upstreamHead = upstreamRef ? await gitRevParse(opts.gitRoot, [upstreamRef]) : null;
+  } catch (err) {
+    return {
+      ...opts.entry,
+      status: "rework",
+      updated_at: new Date().toISOString(),
+      reason: `queued branch upstream could not be resolved: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    };
+  }
+  if (!upstreamRef || upstreamHead !== opts.entry.head_sha) {
+    return {
+      ...opts.entry,
+      status: "rework",
+      updated_at: new Date().toISOString(),
+      reason:
+        `queued branch head is not published upstream: queued=${opts.entry.head_sha} ` +
+        `upstream=${upstreamHead ?? "<missing>"}`,
+    };
+  }
+  try {
+    await requireOpenGithubPrAtHead({
+      gitRoot: opts.gitRoot,
+      branch: opts.entry.branch,
+      base: opts.entry.base,
+      expectedHeadSha: opts.entry.head_sha,
+      prNumber: opts.entry.pr_number,
+    });
+    return null;
+  } catch (err) {
+    if (isProviderHeadUnavailableError(err)) {
+      throw new CliError({
+        code: "E_HANDOFF",
+        message:
+          `queued provider validation is temporarily unavailable for ${opts.entry.task_id}: ` +
+          (err instanceof Error ? err.message : String(err)),
+        context: {
+          reason_code: "integration_queue_provider_unavailable",
+          task_id: opts.entry.task_id,
+          branch: opts.entry.branch,
+        },
+      });
+    }
+    return {
+      ...opts.entry,
+      status: "rework",
+      updated_at: new Date().toISOString(),
+      reason: err instanceof Error ? err.message : String(err),
+    };
+  }
+}
+
 export async function rejectIfQueuedEntryIsStale(opts: {
   gitRoot: string;
   entry: IntegrationQueueEntry;
 }): Promise<IntegrationQueueEntry | null> {
-  return (await rejectIfQueuedHeadChanged(opts)) ?? (await rejectIfQueuedBaseConflicts(opts));
+  return (
+    (await rejectIfQueuedTaskWorktreeIsDirty(opts)) ??
+    (await rejectIfQueuedHeadChanged(opts)) ??
+    (await rejectIfQueuedBaseConflicts(opts))
+  );
 }
 
 export async function recoverStaleActiveLane(opts: {
@@ -106,7 +201,7 @@ export async function recoverStaleActiveLane(opts: {
   const updated = await withIntegrationQueueMutex(opts.gitRoot, async () => {
     const queue = await readIntegrationQueue(opts.gitRoot);
     const current = queue.entries.find((entry) => entry.task_id === opts.entry.task_id);
-    if (current?.status !== "handoff") return false;
+    if (!integrationQueueEntryMatchesSnapshot(current, opts.entry)) return false;
     await writeIntegrationQueue(
       opts.gitRoot,
       markQueueEntry(queue, opts.entry.task_id, decision.status, decision.reason),
@@ -135,7 +230,7 @@ export async function normalizeTerminalQueueEntries(opts: {
   );
   const decisions: {
     taskId: string;
-    fromStatus: IntegrationQueueEntry["status"];
+    snapshot: IntegrationQueueEntry;
     reason: string;
   }[] = [];
 
@@ -146,7 +241,9 @@ export async function normalizeTerminalQueueEntries(opts: {
       rootOverride: opts.rootOverride ?? null,
       taskId: entry.task_id,
     }).catch(() => null);
-    if (loaded?.task.status !== "DONE" && entry.status !== "handoff") continue;
+    if (loaded?.task.status !== "DONE" && entry.status !== "handoff") {
+      continue;
+    }
     const report = await resolvePrFlowStatus({
       ctx: opts.ctx,
       cwd: opts.cwd,
@@ -156,7 +253,7 @@ export async function normalizeTerminalQueueEntries(opts: {
     if (!report) continue;
     const decision = decideIntegrationQueueRecovery({ entry, report });
     if (decision.action !== "mark" || decision.status !== "done") continue;
-    decisions.push({ taskId: entry.task_id, fromStatus: entry.status, reason: decision.reason });
+    decisions.push({ taskId: entry.task_id, snapshot: entry, reason: decision.reason });
   }
 
   if (decisions.length === 0) return;
@@ -166,7 +263,7 @@ export async function normalizeTerminalQueueEntries(opts: {
     const applied: { taskId: string; reason: string }[] = [];
     for (const decision of decisions) {
       const current = queue.entries.find((entry) => entry.task_id === decision.taskId);
-      if (current?.status !== decision.fromStatus) continue;
+      if (!integrationQueueEntryMatchesSnapshot(current, decision.snapshot)) continue;
       queue = markQueueEntry(queue, decision.taskId, "done", decision.reason);
       applied.push({ taskId: decision.taskId, reason: decision.reason });
     }

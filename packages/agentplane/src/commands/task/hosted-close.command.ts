@@ -33,6 +33,7 @@ import {
   taskIsClosedForMerge,
 } from "./hosted-close-premerge.js";
 export {
+  assessPreMergeClosureFreshness,
   isExplicitHostedCloseFollowupBranch,
   legacyPreMergeClosureWasRecordedAfterVerification,
   preMergeClosureAllowsMissingBasisCommit,

@@ -46,6 +46,67 @@ async function createBranchPrTask(root: string): Promise<string> {
 }
 
 describe("runCli route decision open PR metadata", () => {
+  it("routes an existing task worktree without PR metadata directly to pr open", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Publish the already-created task branch.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed task artifacts"], { cwd: root });
+    const branch = `task/${taskId}/bootstrap-existing`;
+    const worktreePath = path.join(
+      root,
+      ".agentplane",
+      "worktrees",
+      `${taskId}-bootstrap-existing`,
+    );
+    await mkdir(path.dirname(worktreePath), { recursive: true });
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath], { cwd: root });
+    const { stdout: branches } = await execFileAsync(
+      "git",
+      ["branch", "--format=%(refname:short)"],
+      { cwd: root },
+    );
+    expect(branches).toContain(branch);
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        next_action: { code: string; command: string };
+        route_oracle: {
+          authoritativeCheckout: string;
+          authoritativeCheckoutPath: string | null;
+        };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "open_pr",
+        command: `agentplane pr open ${taskId} --author CODER`,
+      });
+      expect(parsed.route_oracle.authoritativeCheckout).toBe("task_worktree");
+      expect(parsed.route_oracle.authoritativeCheckoutPath).toContain(taskId);
+    } finally {
+      nextIo.restore();
+    }
+  });
+
   it("routes local open PR metadata to pre-merge closure without remote lookup", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
@@ -67,6 +128,8 @@ describe("runCli route decision open PR metadata", () => {
       root,
     ]);
     await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed task workflow"], { cwd: root });
 
     const branch = `task/${taskId}/route-decision`;
     await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });

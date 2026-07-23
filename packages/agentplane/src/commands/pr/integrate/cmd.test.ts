@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   cleanupIntegratedBranch: vi.fn(),
@@ -17,8 +18,11 @@ const mocks = vi.hoisted(() => ({
   runSquashMerge: vi.fn(),
   runVerifyCommands: vi.fn(),
   shouldRecommendPostIntegrateBootstrap: vi.fn(),
-  tryLookupExistingGithubPrByBranch: vi.fn(),
+  requireOpenGithubPrAtHead: vi.fn(),
+  checkGithubUnresolvedReviewThreads: vi.fn(),
+  throwIfGithubReviewThreadsUnresolved: vi.fn(),
   writeTaskHandoff: vi.fn(),
+  requireCleanTaskWorktree: vi.fn(),
 }));
 
 vi.mock("../../../cli/output.js", () => ({
@@ -68,9 +72,20 @@ vi.mock("../../shared/task-handoff.js", () => ({
   resolveTaskHandoffPaths: mocks.resolveTaskHandoffPaths,
   writeTaskHandoff: mocks.writeTaskHandoff,
 }));
-vi.mock("../internal/sync-github.js", () => ({
-  tryLookupExistingGithubPrByBranch: mocks.tryLookupExistingGithubPrByBranch,
+vi.mock("../provider-head.js", () => ({
+  requireOpenGithubPrAtHead: mocks.requireOpenGithubPrAtHead,
 }));
+vi.mock("../internal/github-review-threads.js", () => ({
+  checkGithubUnresolvedReviewThreads: mocks.checkGithubUnresolvedReviewThreads,
+  throwIfGithubReviewThreadsUnresolved: mocks.throwIfGithubReviewThreadsUnresolved,
+}));
+vi.mock("../../shared/task-worktree-cleanliness.js", () => ({
+  requireCleanTaskWorktree: mocks.requireCleanTaskWorktree,
+}));
+
+function requestBodyText(value: unknown): string {
+  return typeof value === "string" ? value : "{}";
+}
 
 describe("pr/integrate/cmd", () => {
   let emitter: {
@@ -98,8 +113,26 @@ describe("pr/integrate/cmd", () => {
       success: vi.fn(),
     };
     mocks.createCliEmitter.mockReturnValue(emitter);
-    mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
-    mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue(null);
+    mocks.execFileAsync.mockImplementation((_command: string, args: string[]) =>
+      Promise.resolve({
+        stdout:
+          args.includes("api") && args.includes("PUT") ? JSON.stringify({ merged: true }) : "",
+        stderr: "",
+      }),
+    );
+    mocks.checkGithubUnresolvedReviewThreads.mockResolvedValue({
+      checked: true,
+      unresolved: [],
+    });
+    mocks.requireOpenGithubPrAtHead.mockResolvedValue({
+      prNumber: 338,
+      prUrl: "https://github.com/example/repo/pull/338",
+      status: "OPEN",
+      mergedAt: null,
+      mergeCommit: null,
+      base: "main",
+      headSha: "head-sha",
+    });
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: { config: {}, git: {}, taskBackend: {}, resolvedProject: { gitRoot: "/repo" } },
       resolved: { gitRoot: "/repo" },
@@ -126,6 +159,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: ["packages/agentplane/src/cli.ts"],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -148,6 +182,12 @@ describe("pr/integrate/cmd", () => {
       (payload: Record<string, unknown>) => payload,
     );
     mocks.writeTaskHandoff.mockResolvedValue();
+    mocks.requireCleanTaskWorktree.mockResolvedValue({
+      state: "clean",
+      branch: "task/T-1",
+      worktreePath: "/repo/.agentplane/worktrees/T-1",
+      changedPaths: [],
+    });
     mocks.cleanupIntegratedBranch.mockResolvedValue({
       removedBranch: true,
       removedWorktree: false,
@@ -289,7 +329,35 @@ describe("pr/integrate/cmd", () => {
     expect(emitter.warn).not.toHaveBeenCalled();
   });
 
-  it("queues the task GitHub PR merge from local integrate when protected-base PR metadata is available", async () => {
+  it("rechecks task-worktree cleanliness immediately before a local merge", async () => {
+    mocks.requireCleanTaskWorktree.mockRejectedValueOnce(
+      new CliError({
+        code: "E_VALIDATION",
+        message: "Task worktree contains uncommitted changes for T-1",
+        context: { reason_code: "task_worktree_dirty" },
+      }),
+    );
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    await expect(
+      cmdIntegrate({
+        cwd: "/repo",
+        taskId: "T-1",
+        mergeStrategy: "squash",
+        runVerify: false,
+        dryRun: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_worktree_dirty" },
+    });
+    expect(mocks.runSquashMerge).not.toHaveBeenCalled();
+    expect(mocks.runMergeCommit).not.toHaveBeenCalled();
+    expect(mocks.runRebaseFastForward).not.toHaveBeenCalled();
+  });
+
+  it("immediately merges the task GitHub PR at the prepared head", async () => {
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
         config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -322,6 +390,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: [],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -341,16 +410,18 @@ describe("pr/integrate/cmd", () => {
 
     expect(caught).toMatchObject({ code: "E_HANDOFF" });
     const cliError = caught as { context?: { reason_code?: unknown } };
-    expect(cliError.context?.reason_code).toBe("protected_base_auto_merge_enabled");
+    expect(cliError.context?.reason_code).toBe("protected_base_github_merge_completed");
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
       "gh",
       [
-        "pr",
-        "merge",
-        "--auto",
-        "--rebase",
-        "--delete-branch",
-        "https://github.com/example/repo/pull/338",
+        "api",
+        "-X",
+        "PUT",
+        "repos/example/repo/pulls/338/merge",
+        "-f",
+        "merge_method=rebase",
+        "-f",
+        "sha=head-sha",
       ],
       expect.objectContaining({ cwd: "/repo" }),
     );
@@ -373,24 +444,77 @@ describe("pr/integrate/cmd", () => {
     expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
   });
 
-  it("falls back to the GitHub API when gh is unavailable and an explicit token exists", async () => {
+  it("blocks every provider PUT when the worktree becomes dirty during provider preflight", async () => {
+    const prepared = (await mocks.prepareIntegrate()) as unknown as Record<string, unknown>;
+    mocks.prepareIntegrate.mockClear();
+    mocks.prepareIntegrate.mockResolvedValue({
+      ...prepared,
+      protectedBaseRequiresPrMerge: true,
+    });
+    let worktreeDirty = false;
+    mocks.requireCleanTaskWorktree.mockImplementation(() =>
+      worktreeDirty
+        ? Promise.reject(
+            new CliError({
+              code: "E_VALIDATION",
+              message: "Task worktree contains uncommitted changes for T-1",
+              context: { reason_code: "task_worktree_dirty" },
+            }),
+          )
+        : Promise.resolve({
+            state: "clean",
+            branch: "task/T-1",
+            worktreePath: "/repo/.agentplane/worktrees/T-1",
+            changedPaths: [],
+          }),
+    );
+    mocks.checkGithubUnresolvedReviewThreads.mockImplementationOnce(() => {
+      worktreeDirty = true;
+      return Promise.resolve({ checked: true, unresolved: [] });
+    });
+    const fetchMock = vi.fn().mockResolvedValue(Response.json({ merged: true }));
+    vi.stubGlobal("fetch", fetchMock);
+    const originalGhToken = process.env.GH_TOKEN;
+    process.env.GH_TOKEN = "test-token";
+    const { cmdIntegrate } = await import("./cmd.js");
+
+    try {
+      await expect(
+        cmdIntegrate({
+          cwd: "/repo",
+          taskId: "T-1",
+          mergeStrategy: "merge",
+          runVerify: false,
+          dryRun: false,
+          quiet: true,
+        }),
+      ).rejects.toMatchObject<CliError>({
+        code: "E_VALIDATION",
+        context: { reason_code: "task_worktree_dirty" },
+      });
+      expect(mocks.requireCleanTaskWorktree).toHaveBeenCalledTimes(2);
+      expect(mocks.checkGithubUnresolvedReviewThreads).toHaveBeenCalledTimes(1);
+      expect(
+        mocks.execFileAsync.mock.calls.filter((call) => {
+          const args: unknown = (call as unknown[])[1];
+          return Array.isArray(args) && args.includes("PUT");
+        }),
+      ).toEqual([]);
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
+    } finally {
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+    }
+  });
+
+  it("falls back to an exact-head GitHub REST merge when gh is unavailable", async () => {
     const originalGhToken = process.env.GH_TOKEN;
     const originalGithubToken = process.env.GITHUB_TOKEN;
     process.env.GH_TOKEN = "test-token";
     delete process.env.GITHUB_TOKEN;
     mocks.execFileAsync.mockRejectedValueOnce(Object.assign(new Error("spawn gh ENOENT"), {}));
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(
-        Response.json({
-          data: { repository: { pullRequest: { id: "PR_node_id" } } },
-        }),
-      )
-      .mockResolvedValueOnce(
-        Response.json({
-          data: { enablePullRequestAutoMerge: { pullRequest: { number: 338 } } },
-        }),
-      );
+    const fetchMock = vi.fn().mockResolvedValueOnce(Response.json({ merged: true }));
     vi.stubGlobal("fetch", fetchMock);
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
@@ -424,6 +548,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: [],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -443,11 +568,13 @@ describe("pr/integrate/cmd", () => {
       }).catch((err: unknown) => err);
 
       expect(caught).toMatchObject({ code: "E_HANDOFF" });
-      expect(fetchMock).toHaveBeenCalledTimes(2);
-      expect(JSON.stringify(fetchMock.mock.calls[1]?.[1])).toContain("enablePullRequestAutoMerge");
-      expect(JSON.stringify(fetchMock.mock.calls[1]?.[1])).toContain("REBASE");
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      const requestBody = JSON.parse(
+        requestBodyText((fetchMock.mock.calls[0]?.[1] as { body?: unknown } | undefined)?.body),
+      ) as Record<string, unknown>;
+      expect(requestBody).toEqual({ merge_method: "rebase", sha: "head-sha" });
       expect(String((caught as Error).message)).toContain(
-        "GitHub PR rebase merge queued through GitHub API auto-merge",
+        "GitHub PR rebase-merged through GitHub API",
       );
       expect(mocks.runSquashMerge).not.toHaveBeenCalled();
       expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
@@ -459,7 +586,7 @@ describe("pr/integrate/cmd", () => {
     }
   });
 
-  it("does not attempt API auto-merge fallback without a resolved pullRequestId", async () => {
+  it("pins both GitHub REST merge strategies to the prepared head", async () => {
     const originalGhToken = process.env.GH_TOKEN;
     const originalGithubToken = process.env.GITHUB_TOKEN;
     process.env.GH_TOKEN = "test-token";
@@ -467,9 +594,6 @@ describe("pr/integrate/cmd", () => {
     mocks.execFileAsync.mockRejectedValueOnce(Object.assign(new Error("spawn gh ENOENT"), {}));
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(
-        Response.json({ errors: [{ message: "lookup unavailable" }] }, { status: 200 }),
-      )
       .mockResolvedValueOnce(Response.json({ message: "rebase unavailable" }, { status: 405 }))
       .mockResolvedValueOnce(Response.json({ message: "merge unavailable" }, { status: 405 }));
     vi.stubGlobal("fetch", fetchMock);
@@ -505,6 +629,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: [],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -524,15 +649,19 @@ describe("pr/integrate/cmd", () => {
       }).catch((err: unknown) => err);
 
       expect(caught).toMatchObject({ code: "E_HANDOFF" });
-      expect(fetchMock).toHaveBeenCalledTimes(3);
-      const requestBodies = fetchMock.mock.calls.map((call) =>
-        JSON.stringify((call[1] as { body?: unknown } | undefined)?.body ?? ""),
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      const requestBodies = fetchMock.mock.calls.map(
+        (call) =>
+          JSON.parse(requestBodyText((call[1] as { body?: unknown } | undefined)?.body)) as Record<
+            string,
+            unknown
+          >,
       );
-      expect(requestBodies.join("\n")).not.toContain("mergeMethod:MERGE");
-      expect(requestBodies.join("\n")).not.toContain('"pullRequestId":""');
-      expect(String((caught as Error).message)).toContain(
-        "api auto_merge=skipped because pullRequestId was not resolved",
-      );
+      expect(requestBodies).toEqual([
+        { merge_method: "rebase", sha: "head-sha" },
+        { merge_method: "merge", sha: "head-sha" },
+      ]);
+      expect(String((caught as Error).message)).toContain("api direct_rebase=");
       expect(mocks.runSquashMerge).not.toHaveBeenCalled();
       expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
     } finally {
@@ -545,8 +674,11 @@ describe("pr/integrate/cmd", () => {
 
   it("keeps the queue lane in handoff after an immediate GitHub PR merge", async () => {
     mocks.execFileAsync.mockImplementation((_cmd: string, args: string[]) => {
-      if (args.includes("--auto")) return Promise.reject(new Error("auto merge unavailable"));
-      return Promise.resolve({ stdout: "", stderr: "" });
+      return Promise.resolve({
+        stdout:
+          args.includes("api") && args.includes("PUT") ? JSON.stringify({ merged: true }) : "",
+        stderr: "",
+      });
     });
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
@@ -580,6 +712,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: [],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -606,13 +739,14 @@ describe("pr/integrate/cmd", () => {
     expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
   });
 
-  it("treats already-merged gh delete-branch failures as protected-base merge progress", async () => {
+  it("does not treat an already-merged error string as a successful merge receipt", async () => {
+    const originalGhToken = process.env.GH_TOKEN;
+    const originalGithubToken = process.env.GITHUB_TOKEN;
+    delete process.env.GH_TOKEN;
+    delete process.env.GITHUB_TOKEN;
     mocks.execFileAsync.mockImplementation((_cmd: string, args: string[]) => {
       if (args.includes("--version") || args.includes("status")) {
         return Promise.resolve({ stdout: "", stderr: "" });
-      }
-      if (args.includes("--auto")) {
-        return Promise.reject(new Error("auto merge unavailable"));
       }
       return Promise.reject(
         new Error(
@@ -652,6 +786,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: [],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -660,26 +795,39 @@ describe("pr/integrate/cmd", () => {
     });
     const { cmdIntegrate } = await import("./cmd.js");
 
-    const caught = await cmdIntegrate({
-      cwd: "/repo",
-      taskId: "T-1",
-      mergeStrategy: "squash",
-      runVerify: false,
-      dryRun: false,
-      quiet: false,
-    }).catch((err: unknown) => err);
+    try {
+      const caught = await cmdIntegrate({
+        cwd: "/repo",
+        taskId: "T-1",
+        mergeStrategy: "squash",
+        runVerify: false,
+        dryRun: false,
+        quiet: false,
+      }).catch((err: unknown) => err);
 
-    expect(caught).toMatchObject({ code: "E_HANDOFF" });
-    expect((caught as { context?: { reason_code?: unknown } }).context?.reason_code).toBe(
-      "protected_base_github_merge_completed",
-    );
-    expect(String((caught as Error).message)).toContain("GitHub PR was already merged");
-    expect(String((caught as Error).message)).not.toContain("Unable to drive");
-    expect(mocks.buildTaskHandoffArtifact).toHaveBeenCalled();
-    expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
+      expect(caught).toMatchObject({ code: "E_HANDOFF" });
+      expect((caught as { context?: { reason_code?: unknown } }).context?.reason_code).toBe(
+        "protected_base_integrate_handoff",
+      );
+      expect(String((caught as Error).message)).toContain("Unable to drive");
+      expect(mocks.buildTaskHandoffArtifact).toHaveBeenCalled();
+      expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
+    } finally {
+      if (originalGhToken === undefined) delete process.env.GH_TOKEN;
+      else process.env.GH_TOKEN = originalGhToken;
+      if (originalGithubToken === undefined) delete process.env.GITHUB_TOKEN;
+      else process.env.GITHUB_TOKEN = originalGithubToken;
+    }
   });
 
-  it("records a first-class protected-base handoff route when GitHub merge cannot be attempted", async () => {
+  it("refuses protected-base integration when live PR identity cannot be confirmed", async () => {
+    mocks.requireOpenGithubPrAtHead.mockRejectedValue(
+      new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "GitHub PR was not found for task/T-1",
+      }),
+    );
     mocks.prepareIntegrate.mockResolvedValue({
       ctx: {
         config: { paths: { workflow_dir: ".agentplane/tasks" } },
@@ -710,6 +858,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: [],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -727,35 +876,15 @@ describe("pr/integrate/cmd", () => {
       quiet: false,
     }).catch((err: unknown) => err);
 
-    expect(caught).toMatchObject({ code: "E_HANDOFF" });
-
-    expect(mocks.buildTaskHandoffArtifact).toHaveBeenCalled();
-    const handoffCall = mocks.buildTaskHandoffArtifact.mock.calls[0]?.[0] as
-      | {
-          route?: Record<string, unknown>;
-          next_actions?: string[];
-        }
-      | undefined;
-    expect(handoffCall?.route).toMatchObject({
-      kind: "protected_base_integrate",
-      status: "awaiting_github_merge",
-      local_mutation: "not_performed",
-      finalize_via: "github_task_pr_merge_then_hosted_close",
-      pr_number: null,
-      pr_url: null,
-      handoff_show_command: "agentplane task handoff show T-1",
-      base_pull_command: "git pull --ff-only",
-    });
-    expect(handoffCall?.next_actions).toEqual(
-      expect.arrayContaining(["agentplane task handoff show T-1", "git pull --ff-only"]),
-    );
-    expect(mocks.writeTaskHandoff).toHaveBeenCalled();
+    expect(caught).toMatchObject({ code: "E_VALIDATION" });
+    expect(mocks.buildTaskHandoffArtifact).not.toHaveBeenCalled();
+    expect(mocks.writeTaskHandoff).not.toHaveBeenCalled();
     expect(mocks.runSquashMerge).not.toHaveBeenCalled();
     expect(mocks.finalizeIntegrate).not.toHaveBeenCalled();
   });
 
   it("resolves the protected-base GitHub PR target from live branch state", async () => {
-    mocks.tryLookupExistingGithubPrByBranch.mockResolvedValue({
+    mocks.requireOpenGithubPrAtHead.mockResolvedValue({
       prNumber: 339,
       prUrl: "https://github.com/example/repo/pull/339",
       status: "OPEN",
@@ -794,6 +923,7 @@ describe("pr/integrate/cmd", () => {
       base: "main",
       verifyLogText: "",
       branchHeadSha: "head-sha",
+      baseHeadSha: "base-sha",
       changedPaths: [],
       verifyCommands: [],
       alreadyVerifiedSha: null,
@@ -812,20 +942,24 @@ describe("pr/integrate/cmd", () => {
     }).catch((err: unknown) => err);
 
     expect(caught).toMatchObject({ code: "E_HANDOFF" });
-    expect(mocks.tryLookupExistingGithubPrByBranch).toHaveBeenCalledWith({
+    expect(mocks.requireOpenGithubPrAtHead).toHaveBeenCalledWith({
       gitRoot: "/repo",
       branch: "task/T-1",
-      baseBranch: "main",
+      base: "main",
+      expectedHeadSha: "head-sha",
+      prNumber: null,
     });
     expect(mocks.execFileAsync).toHaveBeenCalledWith(
       "gh",
       [
-        "pr",
-        "merge",
-        "--auto",
-        "--rebase",
-        "--delete-branch",
-        "https://github.com/example/repo/pull/339",
+        "api",
+        "-X",
+        "PUT",
+        "repos/example/repo/pulls/339/merge",
+        "-f",
+        "merge_method=rebase",
+        "-f",
+        "sha=head-sha",
       ],
       expect.objectContaining({ cwd: "/repo" }),
     );

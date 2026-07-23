@@ -8,6 +8,7 @@ export type RouteBlockerCode =
   | "branch_head_missing"
   | "close_tail_missing"
   | "close_tail_open"
+  | "cleanup_blocked"
   | "dirty_task_artifacts"
   | "human_input_required"
   | "implementation_rework_required"
@@ -15,12 +16,19 @@ export type RouteBlockerCode =
   | "missing_pr_branch"
   | "on_base_checkout"
   | "plan_not_approved"
+  | "pr_head_unpublished"
   | "pr_meta_stale"
+  | "provider_pr_unavailable"
+  | "hosted_pr_head_mismatch"
   | "pre_merge_closure_missing"
+  | "pre_merge_closure_stale"
   | "quality_review_missing"
   | "quality_review_stale"
   | "remote_pr_missing"
-  | "runner_alive";
+  | "runner_alive"
+  | "task_worktree_dirty"
+  | "task_worktree_state_unavailable"
+  | "verification_required";
 
 export type RouteBlocker = {
   code: RouteBlockerCode;
@@ -133,6 +141,20 @@ export function deriveRouteOracle(opts: {
       authoritativeCheckout: "base_checkout",
     });
   }
+  if (code === "resolve_task_worktree_state") {
+    return buildOracle(opts, {
+      phase: "task_worktree_blocked",
+      authoritativeCheckout:
+        opts.batchOwnership.role === "included" ? "primary_task_worktree" : "task_worktree",
+    });
+  }
+  if (code === "verification_required") {
+    return buildOracle(opts, {
+      phase: "verification_required",
+      authoritativeCheckout:
+        opts.batchOwnership.role === "included" ? "primary_task_worktree" : "task_worktree",
+    });
+  }
   if (opts.batchOwnership.role === "included") {
     return buildOracle(opts, {
       phase: "batch_delegate",
@@ -163,10 +185,22 @@ export function deriveRouteOracle(opts: {
       authoritativeCheckout: "task_worktree",
     });
   }
-  if (code === "open_pr") {
+  if (code === "open_pr" || code === "publish_pr_head") {
     return buildOracle(opts, {
-      phase: "pr_needed",
+      phase: code === "open_pr" ? "pr_needed" : "pr_head_publication_needed",
       authoritativeCheckout: "task_worktree",
+    });
+  }
+  if (code === "retry_provider_lookup") {
+    return buildOracle(opts, {
+      phase: "provider_state_unavailable",
+      authoritativeCheckout: "base_checkout",
+    });
+  }
+  if (code === "refresh_remote_route") {
+    return buildOracle(opts, {
+      phase: "remote_route_refresh_needed",
+      authoritativeCheckout: "base_checkout",
     });
   }
   if (code === "update_pr_artifacts" || code === "verify_or_update_pr") {
@@ -226,6 +260,12 @@ export function deriveRouteOracle(opts: {
   if (code === "cleanup") {
     return buildOracle(opts, {
       phase: "done_pending_cleanup",
+      authoritativeCheckout: "base_checkout",
+    });
+  }
+  if (code === "cleanup_blocked") {
+    return buildOracle(opts, {
+      phase: "cleanup_blocked",
       authoritativeCheckout: "base_checkout",
     });
   }

@@ -78,7 +78,11 @@ describe("integrate queue spec parsing/validation", () => {
       enqueue("T-2"),
     );
 
-    const repaired = applyIntegrationQueueDoctorRepairs(latestQueue, [staleSnapshotFinding]);
+    const expectedEntry = latestQueue.entries.find((entry) => entry.task_id === "T-1");
+    expect(expectedEntry).toBeDefined();
+    const repaired = applyIntegrationQueueDoctorRepairs(latestQueue, [
+      { ...staleSnapshotFinding, expected_entry: expectedEntry! },
+    ]);
 
     expect(repaired.entries.find((entry) => entry.task_id === "T-1")).toMatchObject({
       status: "done",
@@ -97,12 +101,19 @@ describe("integrate queue spec parsing/validation", () => {
       "operator already released the lane",
     );
 
+    const latestEntry = latestQueue.entries.find((entry) => entry.task_id === "T-1");
+    expect(latestEntry).toBeDefined();
     const repaired = applyIntegrationQueueDoctorRepairs(latestQueue, [
       {
         task_id: "T-1",
         status: "handoff",
         reason: "task is already DONE; queue entry is terminal stale",
         repair: "mark_done",
+        expected_entry: {
+          ...latestEntry!,
+          status: "handoff",
+          updated_at: "2026-01-01T00:00:00.000Z",
+        },
       },
     ]);
 
