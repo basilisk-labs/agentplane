@@ -12,8 +12,8 @@ Created: 2026-07-23T03:42:12.404Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title.
+- State: ok
+- Note: Hosted rework resolved: evaluator rework now requires an actionable finding, five social titles wrap below the cross-platform limit, and full local CI passed with 2230 unit tests plus critical CLI, docs, Windows, and coverage gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -56,8 +56,8 @@ Created: 2026-07-23T03:42:12.404Z
  .../src/cli/run-cli.core.tasks.incidents.test.ts   |   2 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
  .../evaluator/evaluator-quality-artifacts.ts       |  15 +-
- .../evaluator/evaluator-run.command.test.ts        |  78 +++++-
- .../src/commands/evaluator/evaluator.command.ts    |  15 +-
+ .../evaluator/evaluator-run.command.test.ts        | 100 +++++++-
+ .../src/commands/evaluator/evaluator.command.ts    |  19 +-
  .../src/commands/evaluator/evaluator.spec.ts       |  22 +-
  .../src/commands/shared/route-decision-blockers.ts |  36 ++-
  .../commands/shared/route-decision-next-action.ts  |  17 +-
@@ -92,16 +92,20 @@ Created: 2026-07-23T03:42:12.404Z
  schemas/tasks-export.schema.json                   |   4 +
  scripts/baselines/trust-boundary-violations.json   |  36 ---
  .../v0.7-workflow-contract-candidate.json          |  10 +-
- website/scripts/generate-social-images.mjs         |  55 ++++-
+ website/scripts/generate-social-images.mjs         |  56 ++++-
+ .../docs/adr/0006-no-effect-fp-ts-migration.png    | Bin 63732 -> 61663 bytes
  .../docs/archive/v0-3/cli-bug-ledger-v0-3-x.png    | Bin 64869 -> 63041 bytes
  .../archive/v0-3/framework-refactor-program.png    | Bin 67228 -> 67371 bytes
- .../internal/v0.7-agent-efficiency-baseline.png    | Bin 0 -> 64133 bytes
+ .../static/img/social/docs/context/agent-guide.png | Bin 64728 -> 62709 bytes
+ .../developer/cloud-backend-integration-plan.png   | Bin 64385 -> 61892 bytes
+ .../docs/examples/debug-agent-run-with-traces.png  | Bin 63647 -> 61238 bytes
+ .../internal/v0.7-agent-efficiency-baseline.png    | Bin 0 -> 62253 bytes
  .../social/docs/internal/v0.7-refactor-plan.png    | Bin 0 -> 57912 bytes
  website/static/img/social/docs/user/website-ia.png | Bin 63166 -> 62132 bytes
  .../img/social/docs/user/workflow-migration.png    | Bin 61355 -> 63204 bytes
- website/static/img/social/manifest.json            |  26 +-
+ website/static/img/social/manifest.json            |  34 ++-
  website/static/llms-full.txt                       |   7 +-
- 72 files changed, 931 insertions(+), 148 deletions(-)
+ 76 files changed, 960 insertions(+), 154 deletions(-)
 ```
 
 </details>

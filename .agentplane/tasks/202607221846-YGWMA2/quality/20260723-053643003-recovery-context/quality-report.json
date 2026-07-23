@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221846-YGWMA2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-23T05:36:43.003Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Hosted rework is complete: actionable rework routing, verdict neutrality, and cross-platform social-title safety satisfy the task contract.",
+  "evaluated_sha": "8b62546ba7994eb6a5d79633e94cc680845f34fe",
+  "blueprint_digest": "0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b",
+  "findings": [
+    "Evaluator rework recording rejects empty findings, while a fresh actionable rework review produces an implementation_rework_required stop routed to CODER with no PR command and preserves the evaluator report.",
+    "Missing or stale review routes remain verdict-neutral, and the trust-boundary ratchet reports zero automatic-semantic-verdict violations.",
+    "All five regenerated social cards are unclipped; deterministic wrapping plus truncation and rendered-width guards fail closed before an overflowing asset can pass validation.",
+    "Focused evaluator, route, quality-gate, trust-ratchet, and strict 220-image checks pass, with full repository CI covering the remaining regression surface."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221846-YGWMA2/README.md",
+    "packages/agentplane/src/commands/evaluator/evaluator.command.ts",
+    "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts",
+    "website/scripts/generate-social-images.mjs",
+    "bun run ci:local:full: 372 test files / 2230 tests plus critical CLI, docs, Windows, and coverage gates passed",
+    "social strict check: 220 images passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted checks must rerun against the published 8b62546ba implementation head before integration."
+  ],
+  "residual_risks": [
+    "Fallback font metrics remain platform-dependent, but deterministic wrapping and fail-closed width validation prevent clipped assets from publishing."
+  ]
+}
