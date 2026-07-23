@@ -195,6 +195,15 @@ export function deriveNextAction(opts: {
       requiresApproval: false,
     };
   }
+  if (opts.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
+    return {
+      code: "implementation_rework_required",
+      command: null,
+      summary:
+        "return control to the CODER for implementation rework in the task worktree, then verify again",
+      requiresApproval: false,
+    };
+  }
   if (opts.blockers.some((blocker) => blocker.code === "missing_pr_branch")) {
     return {
       code: "start_or_recover_worktree",

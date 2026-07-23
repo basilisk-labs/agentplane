@@ -10,6 +10,7 @@ export type RouteBlockerCode =
   | "close_tail_open"
   | "dirty_task_artifacts"
   | "human_input_required"
+  | "implementation_rework_required"
   | "missing_included_batch_metadata"
   | "missing_pr_branch"
   | "on_base_checkout"
@@ -77,8 +78,9 @@ function buildOracle(
 ): RouteOracle {
   const actionKind = actionKindFor({ task: opts.task, nextAction: opts.nextAction });
   const authoritativeCheckoutPath = checkoutPathFor(route.authoritativeCheckout, opts.paths ?? {});
+  const semanticImplementationHandoff = opts.nextAction.code === "implementation_rework_required";
   const safeToMutate =
-    actionKind === "local_command" &&
+    (actionKind === "local_command" || semanticImplementationHandoff) &&
     opts.nextAction.requiresApproval !== true &&
     opts.blockers.every((blocker) => blocker.code !== "runner_alive") &&
     authoritativeCheckoutPath !== null;
@@ -176,6 +178,12 @@ export function deriveRouteOracle(opts: {
   if (code === "quality_review_required") {
     return buildOracle(opts, {
       phase: "quality_review_needed",
+      authoritativeCheckout: "task_worktree",
+    });
+  }
+  if (code === "implementation_rework_required") {
+    return buildOracle(opts, {
+      phase: "implementation_rework_required",
       authoritativeCheckout: "task_worktree",
     });
   }
