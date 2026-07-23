@@ -6,7 +6,7 @@ Created: 2026-07-23T03:42:12.404Z
 
 - Task: `202607221846-YGWMA2`
 - Title: Remove automatic semantic pass verdicts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts`
 - Canonical task record: `.agentplane/tasks/202607221846-YGWMA2/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-23T03:42:12.404Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-23T03:42:12.404Z
+- Updated: 2026-07-23T05:19:11.314Z
 - Branch: task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
