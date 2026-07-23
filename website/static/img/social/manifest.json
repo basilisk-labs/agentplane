@@ -114,7 +114,7 @@
       "section": "Archive",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "CLI bug ledger (v0.3.x archive)",
-      "svgSha256": "6711a99c52320e9aee26eff3b340e810303c4526c2a57f66c4f8f6203004db99"
+      "svgSha256": "227bed1d5372c1142bec2de5e45189cdcd262cb5c6036e25fa849dc680eb9a8b"
     },
     {
       "route": "/docs/archive/v0-3/framework-refactor-program",
@@ -122,7 +122,7 @@
       "section": "Archive",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Framework refactor program (v0.3 archive)",
-      "svgSha256": "bd273eb88579d759b90430c6d64614dacbf7a97a573ea848407b8c4492f22c80"
+      "svgSha256": "a65f70821df0f38e7612a3703e150db10e5086dc063c6e3a5886a9ae59e854dd"
     },
     {
       "route": "/docs/compare",
@@ -1682,7 +1682,7 @@
       "section": "User",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Website information architecture",
-      "svgSha256": "d4663fa9e38542f8f101e4bfcb5f1400cd09944f9dc130eb0be4fb56d92075f2"
+      "svgSha256": "a2dd3bfde9b6fc42f5ec355c32b2061beef04739dd10d4c0f6d3dfbdbdad629b"
     },
     {
       "route": "/docs/user/workflow-migration",
@@ -1690,7 +1690,7 @@
       "section": "User",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Workflow migration and recovery",
-      "svgSha256": "3e8897433f6d335edd10fc1c308f0e3132500047adfdb09d693570fe19cd16f6"
+      "svgSha256": "ec6cbb58c9214fbbca8d0438834df4d10ca347e8bc994060b4b4dcb3e614a50b"
     },
     {
       "route": "/docs/user/workflow",

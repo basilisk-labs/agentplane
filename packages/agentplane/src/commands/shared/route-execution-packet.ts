@@ -46,6 +46,7 @@ function recommendedRoleFor(opts: {
     return "CODER";
   }
   if (opts.nextAction.code === "quality_review_required") return "EVALUATOR";
+  if (opts.nextAction.code === "implementation_rework_required") return "CODER";
   if (opts.nextAction.code === "record_pre_merge_closure") return "CODER";
   if (
     opts.nextAction.code === "wait_hosted_checks" ||
@@ -79,6 +80,9 @@ function evidenceMissingFor(opts: {
     if (blocker.code === "dirty_task_artifacts") missing.add("task_artifact_cleanup_commit");
     if (blocker.code === "quality_review_missing") missing.add("evaluator_quality_review");
     if (blocker.code === "quality_review_stale") missing.add("fresh_evaluator_quality_review");
+    if (blocker.code === "implementation_rework_required") {
+      missing.add("verified_implementation_rework");
+    }
     if (blocker.code === "pre_merge_closure_missing") missing.add("pre_merge_closure");
     if (blocker.code === "missing_included_batch_metadata") {
       missing.add("structured_branch_pr_batch_metadata");
@@ -146,6 +150,10 @@ function automationBoundaryMustNotFor(code: string): string[] {
       "do not publish or queue the PR before quality_review is recorded for the current implementation head",
       "do not synthesize verdict, summary, or findings from lint, tests, route state, or other mechanical checks",
     ],
+    implementation_rework_required: [
+      "do not update, open, publish, queue, or integrate the PR until implementation rework is complete and verified again",
+      "do not overwrite or synthesize the persisted EVALUATOR verdict, summary, or findings",
+    ],
     record_pre_merge_closure: [
       "do not queue integration before the pre-merge closure marker is committed on the task branch",
     ],
@@ -189,6 +197,12 @@ function mustNotFor(opts: {
   if (opts.actionKind === "wait") {
     return [...base, "do not reclaim or force progress without explicit parent approval"];
   }
+  if (opts.nextAction.code === "implementation_rework_required") {
+    return [
+      ...base,
+      "do not mutate task lifecycle or PR state while control belongs to implementation rework",
+    ];
+  }
   return [...base, "do not perform further task mutation for this route state"];
 }
 
@@ -196,6 +210,9 @@ function returnControlWhenFor(opts: {
   actionKind: RouteExecutionPacket["actionKind"];
   nextAction: RouteBatchNextAction;
 }): string {
+  if (opts.nextAction.code === "implementation_rework_required") {
+    return "after the CODER completes implementation rework and records verification; recompute task next-action before PR handling";
+  }
   if (opts.actionKind === "local_command") {
     return "after the exact command exits; recompute task next-action before any further step";
   }
@@ -226,6 +243,7 @@ export function deriveRouteExecutionPacket(opts: {
   oracle: RouteOracle;
 }): RouteExecutionPacket {
   const actionKind = actionKindFor({ task: opts.task, nextAction: opts.nextAction });
+  const semanticImplementationHandoff = opts.nextAction.code === "implementation_rework_required";
   const requiresProviderAction = actionKind === "provider_action";
   const stopReason =
     actionKind === "stop"
@@ -239,7 +257,9 @@ export function deriveRouteExecutionPacket(opts: {
   return {
     schemaVersion: 1,
     actionKind,
-    safeToMutate: actionKind === "local_command" && opts.oracle.mutationPathHint !== null,
+    safeToMutate:
+      (actionKind === "local_command" || semanticImplementationHandoff) &&
+      opts.oracle.mutationPathHint !== null,
     requiresProviderAction,
     recommendedRole: recommendedRoleFor({ nextAction: opts.nextAction, actionKind }),
     authoritativeCheckout: opts.oracle.authoritativeCheckout,

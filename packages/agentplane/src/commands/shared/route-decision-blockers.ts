@@ -40,9 +40,12 @@ async function qualityReviewIsFreshForHead(opts: {
   task: TaskData;
   headSha: string | null;
   batchOwnership: RouteBatchOwnership;
+  expectedState: "pass" | "rework";
 }): Promise<boolean> {
   const review = opts.task.quality_review;
-  if (review?.state !== "pass" || !hasAcceptedQualityReviewProvenance(review)) return false;
+  if (review?.state !== opts.expectedState || !hasAcceptedQualityReviewProvenance(review)) {
+    return false;
+  }
   if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) return false;
   if (review.findings.length === 0) return false;
   if (!opts.headSha || !review.evaluated_sha) return true;
@@ -157,6 +160,30 @@ export async function deriveBlockers(opts: {
     addBlocker(blockers, "plan_not_approved", "task plan is not approved");
   }
   if (opts.workflowMode === "branch_pr") {
+    const taskIsDoing = String(opts.task.status).toUpperCase() === "DOING";
+    let implementationReworkRequired =
+      taskIsDoing && opts.task.verification?.state === "needs_rework";
+    if (
+      !implementationReworkRequired &&
+      taskIsDoing &&
+      opts.task.verification?.state === "ok" &&
+      opts.task.quality_review?.state === "rework"
+    ) {
+      implementationReworkRequired = await qualityReviewIsFreshForHead({
+        ctx: opts.ctx,
+        task: opts.task,
+        headSha: opts.prFlow?.branch.headSha ?? opts.resume.head_sha,
+        batchOwnership: opts.batchOwnership,
+        expectedState: "rework",
+      });
+    }
+    if (implementationReworkRequired) {
+      addBlocker(
+        blockers,
+        "implementation_rework_required",
+        "implementation rework is required before PR publication or integration",
+      );
+    }
     if (
       opts.batchOwnership.role !== "included" &&
       !opts.resume.pr_branch &&
@@ -200,10 +227,7 @@ export async function deriveBlockers(opts: {
         "implementation PR is merged but close-tail is missing",
       );
     }
-    if (
-      opts.task.verification?.state === "ok" &&
-      String(opts.task.status).toUpperCase() === "DOING"
-    ) {
+    if (opts.task.verification?.state === "ok" && taskIsDoing && !implementationReworkRequired) {
       const review = opts.task.quality_review;
       const headSha = opts.prFlow?.branch.headSha ?? opts.resume.head_sha;
       if (review) {
@@ -212,6 +236,7 @@ export async function deriveBlockers(opts: {
           task: opts.task,
           headSha,
           batchOwnership: opts.batchOwnership,
+          expectedState: "pass",
         });
         if (reviewIsFresh) {
           const preMerge = await readLocalPreMergeState({ ctx: opts.ctx, taskId: opts.task.id });

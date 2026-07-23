@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -268,6 +268,163 @@ describe("runCli quality route decisions", () => {
       expect(nextIo.stdout).not.toContain("No blocking findings.");
     } finally {
       nextIo.restore();
+    }
+  });
+
+  it("hands fresh evaluator rework findings back to the CODER without a PR command", async () => {
+    const root = await setupRoot();
+    const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise rework routing.");
+    await runCliSilent([
+      "evaluator",
+      "run",
+      taskId,
+      "--provenance",
+      "evaluator_supplied",
+      "--verdict",
+      "rework",
+      "--summary",
+      "The implementation requires a focused route correction.",
+      "--finding",
+      "The current route advances to PR handling instead of returning control to implementation.",
+      "--evidence",
+      `.agentplane/tasks/${taskId}/README.md`,
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: evaluator rework artifacts"], { cwd: root });
+
+    const qualityRoot = path.join(root, ".agentplane", "tasks", taskId, "quality");
+    const [reviewDir] = await readdir(qualityRoot);
+    expect(reviewDir).toBeTruthy();
+    const reportPath = path.join(qualityRoot, reviewDir!, "quality-report.json");
+    const reportBeforeRoute = await readFile(reportPath, "utf8");
+
+    const freshReviewIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(freshReviewIo.stdout) as {
+        execution_packet: { recommendedRole: string };
+        next_action: { code: string; command: string | null };
+      };
+      expect(parsed.next_action).toMatchObject({
+        code: "implementation_rework_required",
+        command: null,
+      });
+      expect(parsed.execution_packet.recommendedRole).toBe("CODER");
+    } finally {
+      freshReviewIo.restore();
+    }
+
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--rework",
+      "--by",
+      "EVALUATOR",
+      "--note",
+      "Implementation rework is required by the persisted evaluator report.",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: record implementation rework"], {
+      cwd: root,
+    });
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        route_oracle: {
+          phase: string;
+          authoritativeCheckout: string;
+          authoritativeCheckoutPath: string | null;
+          mutationPathHint: string | null;
+          nextCommand: string | null;
+          blocker: { code: string };
+        };
+        execution_packet: {
+          actionKind: string;
+          safeToMutate: boolean;
+          recommendedRole: string;
+          exactArgv: string[] | null;
+          mustNot: string[];
+        };
+        operator_guidance: {
+          canExecuteNow: boolean;
+          operatorAction: string;
+          executorContext: {
+            currentAgentMustExecute: boolean;
+            instruction: string;
+          };
+        };
+        next_action: { code: string; command: string | null; summary: string };
+        blockers: { code: string }[];
+      };
+      expect(parsed.blockers.map((blocker) => blocker.code)).toContain(
+        "implementation_rework_required",
+      );
+      expect(parsed.route_oracle).toMatchObject({
+        phase: "implementation_rework_required",
+        authoritativeCheckout: "task_worktree",
+        nextCommand: null,
+        blocker: { code: "implementation_rework_required" },
+      });
+      expect(typeof parsed.route_oracle.authoritativeCheckoutPath).toBe("string");
+      expect(typeof parsed.route_oracle.mutationPathHint).toBe("string");
+      expect(parsed.route_oracle.mutationPathHint).toBe(
+        parsed.route_oracle.authoritativeCheckoutPath,
+      );
+      expect(parsed.execution_packet).toMatchObject({
+        actionKind: "stop",
+        safeToMutate: true,
+        recommendedRole: "CODER",
+        exactArgv: null,
+      });
+      expect(parsed.operator_guidance).toMatchObject({
+        canExecuteNow: false,
+        operatorAction: "stop",
+        executorContext: {
+          currentAgentMustExecute: true,
+          instruction: "current_agent_performs_semantic_rework",
+        },
+      });
+      expect(parsed.execution_packet.mustNot.join("\n")).toContain(
+        "do not update, open, publish, queue, or integrate the PR",
+      );
+      expect(parsed.next_action).toMatchObject({
+        code: "implementation_rework_required",
+        command: null,
+      });
+      expect(parsed.next_action.summary).not.toContain("The implementation requires");
+      expect(nextIo.stdout).not.toContain("--verdict pass");
+      expect(nextIo.stdout).not.toContain("Quality review passed.");
+      expect(nextIo.stdout).not.toContain("No blocking findings.");
+    } finally {
+      nextIo.restore();
+    }
+
+    expect(await readFile(reportPath, "utf8")).toBe(reportBeforeRoute);
+
+    const repairIo = captureStdIO();
+    try {
+      const code = await runCli(["flow", "repair", taskId, "--dry-run", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(repairIo.stdout) as {
+        repair_plan: { code: string; command: string | null; mutates: boolean }[];
+      };
+      expect(parsed.repair_plan).toContainEqual(
+        expect.objectContaining({
+          code: "implementation_rework_required",
+          command: null,
+          mutates: false,
+        }),
+      );
+    } finally {
+      repairIo.restore();
     }
   });
 

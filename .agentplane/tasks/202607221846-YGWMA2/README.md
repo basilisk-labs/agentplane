@@ -4,7 +4,7 @@ title: "Remove automatic semantic pass verdicts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -31,22 +31,40 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-23T04:39:13.025Z"
-  updated_by: "EVALUATOR"
-  note: "Independent review requires rework: workflow migration social preview clips its title, and the route should surface an explicit rework transition after a recorded evaluator rework verdict."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-07-23T05:05:50.295Z"
+  updated_by: "CODER"
+  note: "Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI, docs, platform, and coverage gates."
+  attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-07-23T04:39:13.025Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-23T05:13:22.168Z"
   updated_by: "EVALUATOR"
-  note: "Independent review requires rework: workflow migration social preview clips its title, and the route should surface an explicit rework transition after a recorded evaluator rework verdict."
-  evaluated_sha: "2982c33516cf1a4318073218ae4b8587f7b3164e"
+  note: "The audited RF-00 implementation and rework fixes remain unchanged at 6f8a8590f; only managed task and PR evidence was refreshed."
+  evaluated_sha: "6f8a8590f2e2875067b0805bf698ea133a41bf08"
   blueprint_digest: "0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b"
   evidence_refs:
     - ".agentplane/tasks/202607221846-YGWMA2/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051322168-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051322168-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051322168-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json"
+    - "git diff --name-status d836982ea..6f8a8590f: only YGWMA2 README and managed PR artifacts"
+    - "git diff --quiet d836982ea..6f8a8590f excluding YGWMA2 task/PR artifacts: exit 0"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
+    - "packages/agentplane/src/commands/shared/route-execution-packet.ts"
+    - "scripts/baselines/trust-boundary-violations.json"
+    - "website/scripts/generate-social-images.mjs"
+    - "website/static/img/social/docs/user/workflow-migration.png"
+    - "focused Vitest: 5 files / 35 tests passed"
+    - "bun run ci:local:full: 372 test files / 2229 tests plus critical CLI, docs, platform, and coverage gates passed"
+    - "social strict check: 220 images passed"
+  findings:
+    - "No implementation drift from audited d836982ea was found, so the prior semantic, provenance, routing, and visual conclusions still apply."
+    - "RF-00 trust ratchet reports zero current automatic-semantic-verdict violations, and no production or template surface constructs a fixed pass verdict."
+    - "Fresh rework returns implementation_rework_required to CODER with null argv and blocks PR publication or integration until verification."
+    - "All 220 social images pass strict rendered-width validation and the inspected workflow migration card is not clipped."
 commit: null
 comments:
   -
@@ -72,8 +90,14 @@ events:
     author: "EVALUATOR"
     state: "needs_rework"
     note: "Independent review requires rework: workflow migration social preview clips its title, and the route should surface an explicit rework transition after a recorded evaluator rework verdict."
+  -
+    type: "verify"
+    at: "2026-07-23T05:05:50.295Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI, docs, platform, and coverage gates."
 doc_version: 3
-doc_updated_at: "2026-07-23T04:39:13.131Z"
+doc_updated_at: "2026-07-23T05:05:50.415Z"
 doc_updated_by: "CODER"
 description: "RF-00: remove preselected evaluator pass outcomes from route control, repair guidance, context task contracts, templates, and fixtures; emit a typed evaluator episode or quality-review stop instead."
 sections:
@@ -157,6 +181,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-23T05:05:50.295Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI, docs, platform, and coverage gates.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T04:39:13.131Z, excerpt_hash=sha256:e5191b3bfe3839fd43f388edb72efc40ec3afb7f27cb5430ec928ec14af5e8e8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json
+    - old_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+    - current_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-YGWMA2
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
@@ -166,6 +220,10 @@ sections:
     - Observation: The committed social image clips the page title, while task next-action classifies a fresh evaluator rework verdict as a stale quality review.
       Impact: Visual output regresses and the CLI leaves the executor without a formal next rework command.
       Resolution: Fix title wrapping and return a typed rework action for a fresh evaluator rework review, then re-run focused and visual checks.
+
+    - Observation: Independent review found a clipped workflow-migration social title and a fresh evaluator rework route that fell through to PR artifact handling.
+      Impact: The visual artifact regressed and the CLI did not formalize the implementation handoff before publication.
+      Resolution: Added deterministic title wrapping and overflow/truncation guards, introduced implementation_rework_required with a bounded CODER task-worktree handoff, and reran the full local CI successfully.
 id_source: "generated"
 ---
 ## Summary
@@ -257,6 +315,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-23T05:05:50.295Z — VERIFY — ok
+
+By: CODER
+
+Note: Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI, docs, platform, and coverage gates.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T04:39:13.131Z, excerpt_hash=sha256:e5191b3bfe3839fd43f388edb72efc40ec3afb7f27cb5430ec928ec14af5e8e8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json
+- old_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+- current_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-YGWMA2
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -270,3 +358,7 @@ DecisionContextRef:
 - Observation: The committed social image clips the page title, while task next-action classifies a fresh evaluator rework verdict as a stale quality review.
   Impact: Visual output regresses and the CLI leaves the executor without a formal next rework command.
   Resolution: Fix title wrapping and return a typed rework action for a fresh evaluator rework review, then re-run focused and visual checks.
+
+- Observation: Independent review found a clipped workflow-migration social title and a fresh evaluator rework route that fell through to PR artifact handling.
+  Impact: The visual artifact regressed and the CLI did not formalize the implementation handoff before publication.
+  Resolution: Added deterministic title wrapping and overflow/truncation guards, introduced implementation_rework_required with a bounded CODER task-worktree handoff, and reran the full local CI successfully.

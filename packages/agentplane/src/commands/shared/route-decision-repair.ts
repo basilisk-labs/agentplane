@@ -18,6 +18,14 @@ const qualityReviewRepair: RepairFactory = () => ({
   mutates: false,
 });
 
+const implementationReworkHandoff: RepairFactory = () => ({
+  code: "implementation_rework_required",
+  command: null,
+  summary:
+    "return control to the CODER for implementation rework in the task worktree, then verify again",
+  mutates: false,
+});
+
 const REPAIR_BY_BLOCKER_CODE = {
   branch_head_missing: (decision) => ({
     code: "fetch_branch",
@@ -49,6 +57,7 @@ const REPAIR_BY_BLOCKER_CODE = {
     summary: "answer the open user question before continuing task execution",
     mutates: true,
   }),
+  implementation_rework_required: implementationReworkHandoff,
   missing_included_batch_metadata: () => ({
     code: "repair_included_batch_metadata",
     command: null,

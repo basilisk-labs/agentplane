@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221846-YGWMA2",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-23T04:38:05.339Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Code, route, provenance, and evidence checks pass, but the committed workflow migration social card has a clipped title and requires visual rework.",
+  "evaluated_sha": "2982c33516cf1a4318073218ae4b8587f7b3164e",
+  "blueprint_digest": "0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b",
+  "findings": [
+    "website/static/img/social/docs/user/workflow-migration.png clips the 'Workflow migration and recovery' title at the right edge; the previous main artifact wrapped without clipping."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221846-YGWMA2/README.md",
+    "website/static/img/social/docs/user/workflow-migration.png",
+    "docs/user/workflow-migration.mdx:2"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The automated social freshness check validates freshness but does not detect layout clipping."
+  ]
+}

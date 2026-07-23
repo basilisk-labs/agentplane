@@ -64,6 +64,7 @@ type RouteExecutorContext = {
   currentAgentMustExecute: boolean;
   instruction:
     | "current_agent_executes_safe_command"
+    | "current_agent_performs_semantic_rework"
     | "runner_route_follow_runner_lifecycle"
     | "current_agent_waits_for_provider_or_recompute";
   warning: string;
@@ -261,6 +262,19 @@ function deriveExecutorContext(
       instruction: "runner_route_follow_runner_lifecycle",
       warning:
         "runner route is active; inspect runner artifacts/status before local mutation or verification",
+    };
+  }
+  if (
+    decision.nextAction.code === "implementation_rework_required" &&
+    decision.executionPacket.safeToMutate
+  ) {
+    return {
+      executor: "current_agent",
+      runnerRouteActive,
+      currentAgentMustExecute: true,
+      instruction: "current_agent_performs_semantic_rework",
+      warning:
+        "current CODER owns semantic implementation rework in the authoritative task worktree; preserve the evaluator report and recompute the route after verification",
     };
   }
   if (currentAgentMustExecute) {

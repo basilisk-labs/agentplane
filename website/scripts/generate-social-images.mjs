@@ -17,6 +17,8 @@ const manifestPath = path.join(socialRoot, "manifest.json");
 
 const WIDTH = 1280;
 const HEIGHT = 640;
+const TITLE_MAX_RENDERED_WIDTH = 1184;
+const TITLE_MEASURE_CANVAS_WIDTH = 4096;
 const SOCIAL_PREVIEW_SUBTITLE =
   "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.";
 
@@ -178,10 +180,49 @@ async function renderCard(entry, logoDataUri) {
     .toBuffer();
 }
 
+function titleLayout(title) {
+  const lines = wrapWords(title, title.length > 28 ? 30 : 25, 2);
+  return {
+    lines,
+    fontSize: lines.length > 1 ? 64 : 80,
+    lineHeight: lines.length > 1 ? 76 : 90,
+  };
+}
+
+async function measureRenderedTextWidth(value, fontSize) {
+  const svg = `
+<svg width="${TITLE_MEASURE_CANVAS_WIDTH}" height="160" xmlns="http://www.w3.org/2000/svg">
+  <text x="8" y="110" font-family="Inter, Arial, sans-serif" font-size="${fontSize}" font-weight="760" fill="#050505">${escapeXml(value)}</text>
+</svg>`;
+  const { info } = await sharp(Buffer.from(svg))
+    .trim({ background: { r: 255, g: 255, b: 255, alpha: 0 } })
+    .png()
+    .toBuffer({ resolveWithObject: true });
+  return info.width;
+}
+
+async function assertTitleFits(entry) {
+  const layout = titleLayout(entry.title);
+  const normalizedTitle = entry.title.trim().replace(/\s+/g, " ");
+
+  if (layout.lines.join(" ") !== normalizedTitle) {
+    throw new Error(
+      `social title truncation: route=${entry.route} title=${JSON.stringify(normalizedTitle)} lines=${JSON.stringify(layout.lines)}`,
+    );
+  }
+
+  for (const line of layout.lines) {
+    const renderedWidth = await measureRenderedTextWidth(line, layout.fontSize);
+    if (renderedWidth > TITLE_MAX_RENDERED_WIDTH) {
+      throw new Error(
+        `social title overflow: route=${entry.route} width=${renderedWidth} max=${TITLE_MAX_RENDERED_WIDTH} line=${JSON.stringify(line)}`,
+      );
+    }
+  }
+}
+
 function renderCardSvg(entry, logoDataUri) {
-  const titleLines = wrapWords(entry.title, entry.title.length > 28 ? 32 : 25, 2);
-  const titleFontSize = titleLines.length > 1 ? 64 : 80;
-  const titleLineHeight = titleLines.length > 1 ? 76 : 90;
+  const title = titleLayout(entry.title);
   const subtitleLines = wrapWords(entry.subtitle, 62, 2);
 
   return `
@@ -195,12 +236,12 @@ function renderCardSvg(entry, logoDataUri) {
   <image href="${logoDataUri}" x="56" y="76" width="390" height="78" preserveAspectRatio="xMinYMid meet"/>
   <rect x="56" y="190" width="${Math.max(112, entry.section.length * 13 + 34)}" height="38" rx="19" fill="#f4f8ff" stroke="#d7e7ff"/>
   <text x="73" y="216" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="700" fill="#2f78d8">${escapeXml(entry.section)}</text>
-  ${renderTextLines(titleLines, {
+  ${renderTextLines(title.lines, {
     x: 56,
     y: 318,
-    lineHeight: titleLineHeight,
+    lineHeight: title.lineHeight,
     fontFamily: "Inter, Arial, sans-serif",
-    fontSize: titleFontSize,
+    fontSize: title.fontSize,
     fontWeight: "760",
     fill: "#050505",
   })}
@@ -257,6 +298,8 @@ async function main() {
   const expectedManifest = renderManifest(entries, logo);
 
   for (const entry of entries) {
+    await assertTitleFits(entry);
+
     if (check) {
       const exists = await fileExists(entry.outputPath);
 
