@@ -8,10 +8,10 @@
   "pr_number": 4605,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4605",
   "pre_merge_closure": {
-    "basis_commit": "c989777ba53545e457dbd24793a5cf454ca9ffaa",
+    "basis_commit": "bd71f4bc8148eee25944dfa1cbdf222af22bc842",
     "branch": "task/202607221846-Y89CFB/build-supervisor-owned-execution-receipts",
     "pr_number": 4605,
-    "recorded_at": "2026-07-23T17:35:24.733Z",
+    "recorded_at": "2026-07-23T17:46:54.373Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
