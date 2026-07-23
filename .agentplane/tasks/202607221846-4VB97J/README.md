@@ -4,7 +4,7 @@ title: "Align Workflow schema, migration, and runtime version contracts"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -39,19 +39,19 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-23T02:24:52.137Z"
+  updated_at: "2026-07-23T02:27:34.283Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for the current PR-artifact head; code delta from independently reviewed 827ea46e is unchanged."
-  evaluated_sha: "be8809984b2b6810a2ad6dd13d17a02ded2c9c4a"
+  note: "Quality review passed for implementation head 48c84a7f; only task-artifact refreshes distinguish it from independently reviewed code."
+  evaluated_sha: "48c84a7f468ab71235cc6af34e0d8f3d6afbb4e2"
   blueprint_digest: "c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c"
   evidence_refs:
     - ".agentplane/tasks/202607221846-4VB97J/README.md"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022452137-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022452137-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022452137-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022734283-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022734283-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022734283-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json"
   findings:
-    - "All recovery integrity findings are closed and the current implementation retains 82/82 focused tests, exact compatibility digest, schema parity, and verified task evidence."
+    - "All recovery integrity findings remain closed; 82/82 focused tests, exact compatibility digest, schema parity, and verified task evidence pass."
 commit: null
 comments:
   -

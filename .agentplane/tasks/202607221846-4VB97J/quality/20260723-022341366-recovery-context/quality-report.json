@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221846-4VB97J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-23T02:23:41.366Z",
+  "verdict": "pass",
+  "summary": "Workflow v1/v2 contract, migration, rollback, restore, schemas, upgrade, and compatibility surfaces pass independent review at 827ea46e.",
+  "evaluated_sha": "827ea46ee0d50ce57c1c7d452d8d3ecfedd4a8cd",
+  "blueprint_digest": "c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c",
+  "findings": [
+    "Deterministic receipt replay, future-version restore rejection, and invalid UTF-8 fail before writes; focused workflow tests pass 82/82 and migration plus file-ops pass 20/20."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221846-4VB97J/README.md",
+    "packages/agentplane/src/workflow-runtime/migration.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Static symlink checks leave a narrow TOCTOU window before atomic rename; canonical Bun-only checks require hosted CI because Bun is unavailable locally."
+  ]
+}
