@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -59,8 +59,8 @@ quality_review:
     - "Temporary filesystem paths are now passed to static parent and descendant scripts through argv; no repository-controlled or generated path is interpolated into executable JavaScript."
     - "The production supervisor contract is unchanged, and both process-group cleanup and detached-child fail-closed regressions still pass."
 commit:
-  hash: "c989777ba53545e457dbd24793a5cf454ca9ffaa"
-  message: "🛡️ Y89CFB task: add supervisor-owned execution receipts"
+  hash: "bd71f4bc8148eee25944dfa1cbdf222af22bc842"
+  message: "🧩 Y89CFB task: record CodeQL review follow-up"
 comments:
   -
     author: "CODER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -95,8 +98,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-23T17:46:54.340Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-23T17:35:24.702Z"
+doc_updated_at: "2026-07-23T17:46:54.341Z"
 doc_updated_by: "CODER"
 description: "RF-01b: create ExecutionReceipt from observed process, Git, check, artifact, and hash evidence; prevent agent output from overriding it and consume it in success and verification policy."
 sections:
@@ -194,6 +204,10 @@ sections:
     - Observation: Observed process, Git delta, artifact hashes, checks, and receipt bindings come from supervisor evidence; agent claims cannot override them.
       Impact: Execution success can no longer be inferred from agent output or incomplete process containment.
       Resolution: Accept RF01b with bounded-containment required for observed_success and limited containment recorded as unverified.
+extensions:
+  implementation_commit:
+    hash: "2bd094a42f1f33a7b83c5a6e0700690084b3fda2"
+    message: "🧪 Y89CFB task: avoid dynamic code in process test"
 id_source: "generated"
 ---
 ## Summary
