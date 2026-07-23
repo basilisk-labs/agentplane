@@ -22,7 +22,7 @@ RF-03: default executor/context runs to workspace-write and evaluator runs to re
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-23T18:45:27.072Z
+- Updated: 2026-07-23T18:45:49.697Z
 - Branch: task/202607221846-9XC1H0/enforce-role-scoped-sandboxes-and-actual-write-b
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
