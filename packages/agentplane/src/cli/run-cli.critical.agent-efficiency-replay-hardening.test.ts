@@ -58,9 +58,9 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     expect(safety.replayDriverDiagnosticCode(exact)).toBe("CODEX_EXIT");
     expect(
       safety.replayDriverDiagnosticCode(
-        Buffer.from("RF04_DRIVER_ERROR:CODEX_FINAL_STATUS_CONFLICT\n"),
+        Buffer.from("RF04_DRIVER_ERROR:CODEX_FINAL_STATUS_ORDER\n"),
       ),
-    ).toBe("CODEX_FINAL_STATUS_CONFLICT");
+    ).toBe("CODEX_FINAL_STATUS_ORDER");
     const rejectedDiagnostics = [
       Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\nraw-secret"),
       Buffer.from("RF04_DRIVER_ERROR:CODEX_EXIT\nRF04_DRIVER_ERROR:SECOND\n"),

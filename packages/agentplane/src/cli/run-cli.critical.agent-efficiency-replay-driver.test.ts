@@ -391,12 +391,12 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     expect(JSON.stringify(result)).not.toContain("hidden reasoning");
   });
 
-  it("collapses repeated identical schema-valid statuses without retaining raw messages", async () => {
+  it("uses the last schema-valid status before turn completion without retaining raw messages", async () => {
     const replayDriver = await driver();
     const collector = replayDriver.createCodexJsonlCollector();
     const rawMessages = [
-      { text: '{"status":"done"}', type: "agent_message" },
-      { content: '{ "status": "done" }', type: "agent_message" },
+      { text: '{"status":"blocked"}', type: "agent_message" },
+      { content: '{ "status": "reviewed" }', type: "agent_message" },
       { text: '{\n  "status": "done"\n}', type: "agent_message" },
     ];
 
@@ -413,13 +413,36 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     expect(JSON.stringify(result)).not.toContain(rawMessages[1]?.content);
   });
 
-  it("fails closed on conflicting schema-valid statuses", async () => {
+  it("fails closed on status messages after turn completion", async () => {
+    const replayDriver = await driver();
+    const collector = replayDriver.createCodexJsonlCollector();
+    replayDriver.acceptCodexJsonlLine(
+      collector,
+      JSON.stringify({
+        item: { text: '{"status":"done"}', type: "agent_message" },
+        type: "item.completed",
+      }),
+    );
+    replayDriver.acceptCodexJsonlLine(collector, completed());
+    for (const text of ['{"status":"reviewed"}', "not-json"]) {
+      expect(() =>
+        replayDriver.acceptCodexJsonlLine(
+          collector,
+          JSON.stringify({
+            item: { text, type: "agent_message" },
+            type: "item.completed",
+          }),
+        ),
+      ).toThrow("CODEX_FINAL_STATUS_ORDER");
+    }
+  });
+
+  it("resolves every ordered status transition to the last pre-completion value", async () => {
     const replayDriver = await driver();
     const statuses = ["blocked", "done", "reviewed"] as const;
 
     for (const first of statuses) {
-      for (const second of statuses) {
-        if (first === second) continue;
+      for (const last of statuses) {
         const collector = replayDriver.createCodexJsonlCollector();
         replayDriver.acceptCodexJsonlLine(
           collector,
@@ -428,15 +451,15 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
             type: "item.completed",
           }),
         );
-        expect(() =>
-          replayDriver.acceptCodexJsonlLine(
-            collector,
-            JSON.stringify({
-              item: { content: JSON.stringify({ status: second }), type: "agent_message" },
-              type: "item.completed",
-            }),
-          ),
-        ).toThrow("CODEX_FINAL_STATUS_CONFLICT");
+        replayDriver.acceptCodexJsonlLine(
+          collector,
+          JSON.stringify({
+            item: { content: JSON.stringify({ status: last }), type: "agent_message" },
+            type: "item.completed",
+          }),
+        );
+        replayDriver.acceptCodexJsonlLine(collector, completed());
+        expect(replayDriver.finalizeCodexJsonlCollector(collector).final_status).toBe(last);
       }
     }
   });
