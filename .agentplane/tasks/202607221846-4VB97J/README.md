@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -40,19 +40,23 @@ verification:
   attempts: 1
 quality_review:
   state: "pass"
-  updated_at: "2026-07-23T02:27:34.283Z"
+  updated_at: "2026-07-23T03:06:42.939Z"
   updated_by: "EVALUATOR"
-  note: "Quality review passed for implementation head 48c84a7f; only task-artifact refreshes distinguish it from independently reviewed code."
-  evaluated_sha: "48c84a7f468ab71235cc6af34e0d8f3d6afbb4e2"
+  note: "CI rework at 816b1f592 preserves the finite typed legacy v1 surface, removes only dead exports, and passes the full hosted-equivalent local suite."
+  evaluated_sha: "816b1f5920215469790609d2b34d5336ec410921"
   blueprint_digest: "c9b8bb5a1d8bdb6d57881e7eda28adcf417ae290621eaacfd414c4bd1a28f54c"
   evidence_refs:
     - ".agentplane/tasks/202607221846-4VB97J/README.md"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022734283-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022734283-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-022734283-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-030642939-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-030642939-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-4VB97J/quality/20260723-030642939-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-4VB97J/blueprint/resolved-snapshot.json"
+    - "commit 816b1f592"
+    - "bun run test:fast: 372 files, 2216 tests passed"
+    - "format, schemas, compatibility, lint, typecheck, arch, knip, docs, workflow and test:critical passed"
   findings:
-    - "All recovery integrity findings remain closed; 82/82 focused tests, exact compatibility digest, schema parity, and verified task evidence pass."
+    - "No P0-P2 finding: v1 tasks/framework and extension fields survive raw migration without materialized defaults, while arbitrary roots and v1.workflow remain rejected."
+    - "Static cleanup keeps the public core config subpath intact and returns the Knip baseline to zero new debt."
 commit: null
 comments:
   -
