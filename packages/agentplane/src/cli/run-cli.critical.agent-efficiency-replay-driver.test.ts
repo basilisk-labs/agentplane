@@ -391,6 +391,80 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
     expect(JSON.stringify(result)).not.toContain("hidden reasoning");
   });
 
+  it("collapses repeated identical schema-valid statuses without retaining raw messages", async () => {
+    const replayDriver = await driver();
+    const collector = replayDriver.createCodexJsonlCollector();
+    const rawMessages = [
+      { text: '{"status":"done"}', type: "agent_message" },
+      { content: '{ "status": "done" }', type: "agent_message" },
+      { text: '{\n  "status": "done"\n}', type: "agent_message" },
+    ];
+
+    for (const item of rawMessages) {
+      replayDriver.acceptCodexJsonlLine(
+        collector,
+        JSON.stringify({ item, type: "item.completed" }),
+      );
+    }
+    replayDriver.acceptCodexJsonlLine(collector, completed());
+
+    const result = replayDriver.finalizeCodexJsonlCollector(collector);
+    expect(result.final_status).toBe("done");
+    expect(JSON.stringify(result)).not.toContain(rawMessages[1]?.content);
+  });
+
+  it("fails closed on conflicting schema-valid statuses", async () => {
+    const replayDriver = await driver();
+    const statuses = ["blocked", "done", "reviewed"] as const;
+
+    for (const first of statuses) {
+      for (const second of statuses) {
+        if (first === second) continue;
+        const collector = replayDriver.createCodexJsonlCollector();
+        replayDriver.acceptCodexJsonlLine(
+          collector,
+          JSON.stringify({
+            item: { text: JSON.stringify({ status: first }), type: "agent_message" },
+            type: "item.completed",
+          }),
+        );
+        expect(() =>
+          replayDriver.acceptCodexJsonlLine(
+            collector,
+            JSON.stringify({
+              item: { content: JSON.stringify({ status: second }), type: "agent_message" },
+              type: "item.completed",
+            }),
+          ),
+        ).toThrow("CODEX_FINAL_STATUS_CONFLICT");
+      }
+    }
+  });
+
+  it("still validates every repeated status message independently", async () => {
+    const replayDriver = await driver();
+
+    for (const invalid of ["not-json", '{"status":"done","extra":true}', '{"status":"unknown"}']) {
+      const collector = replayDriver.createCodexJsonlCollector();
+      replayDriver.acceptCodexJsonlLine(
+        collector,
+        JSON.stringify({
+          item: { text: '{"status":"done"}', type: "agent_message" },
+          type: "item.completed",
+        }),
+      );
+      expect(() =>
+        replayDriver.acceptCodexJsonlLine(
+          collector,
+          JSON.stringify({
+            item: { text: invalid, type: "agent_message" },
+            type: "item.completed",
+          }),
+        ),
+      ).toThrow(invalid === "not-json" ? "CODEX_FINAL_STATUS_JSON" : "CODEX_FINAL_STATUS_SHAPE");
+    }
+  });
+
   it("fails closed on duplicate, missing, malformed, or estimated provider usage", async () => {
     const replayDriver = await driver();
 

@@ -121,8 +121,11 @@ export function acceptCodexJsonlLine(collector, line) {
     ) {
       fail("CODEX_FINAL_STATUS_SHAPE");
     }
-    if (collector.finalStatus !== null) fail("CODEX_FINAL_STATUS_COUNT");
-    collector.finalStatus = parsed.status;
+    if (collector.finalStatus === null) {
+      collector.finalStatus = parsed.status;
+    } else if (collector.finalStatus !== parsed.status) {
+      fail("CODEX_FINAL_STATUS_CONFLICT");
+    }
     return;
   }
   if (event?.type !== "turn.completed") return;

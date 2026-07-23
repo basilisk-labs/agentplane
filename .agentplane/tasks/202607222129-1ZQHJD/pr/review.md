@@ -33,18 +33,18 @@ Created: 2026-07-22T21:30:53.096Z
  .agentplane/tasks/202607221907-DK2CJF/README.md    |    2 +
  .github/workflows/ci.yml                           |    4 +
  .github/workflows/prepublish.yml                   |    3 +
- docs/internal/v0.7-agent-efficiency-baseline.md    |  134 +-
+ docs/internal/v0.7-agent-efficiency-baseline.md    |  136 +-
  docs/internal/v0.7-refactor-plan.md                |    1 +
  package.json                                       |    4 +-
- ...critical.agent-efficiency-replay-driver.test.ts |  430 ++++++
- ...tical.agent-efficiency-replay-hardening.test.ts |  683 +++++++++
+ ...critical.agent-efficiency-replay-driver.test.ts |  504 +++++++
+ ...tical.agent-efficiency-replay-hardening.test.ts |  688 +++++++++
  ...un-cli.critical.agent-efficiency-replay.test.ts |  958 +++++++++++++
  scripts/README.md                                  |   66 +-
  scripts/bench/capture-agent-efficiency-replay.mjs  |  595 ++++++++
  .../internal/agent-efficiency-anchor-runtime.mjs   |  254 ++++
  .../agent-efficiency-anchor-supervisor.mjs         |  554 ++++++++
  .../internal/agent-efficiency-capture-runtime.mjs  |  130 ++
- .../internal/agent-efficiency-codex-runtime.mjs    |  264 ++++
+ .../internal/agent-efficiency-codex-runtime.mjs    |  267 ++++
  .../agent-efficiency-dependency-manifest.mjs       |  485 +++++++
  .../internal/agent-efficiency-driver-contract.mjs  |  112 ++
  .../internal/agent-efficiency-fixture-effects.mjs  |  133 ++
@@ -53,7 +53,7 @@ Created: 2026-07-22T21:30:53.096Z
  scripts/lib/agent-efficiency-replay-harness.mjs    |  133 ++
  scripts/lib/agent-efficiency-replay-safety.mjs     |  317 +++++
  scripts/lib/agent-efficiency-replay.mjs            | 1480 ++++++++++++++++++++
- 24 files changed, 7475 insertions(+), 44 deletions(-)
+ 24 files changed, 7559 insertions(+), 44 deletions(-)
 ```
 
 </details>
