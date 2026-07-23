@@ -1,33 +1,83 @@
 ---
-title: "Workflow contract recovery"
-description: "How to repair .agentplane/WORKFLOW.md and its last-known-good snapshot."
+title: "Workflow migration and recovery"
+description: "How to migrate .agentplane/WORKFLOW.md from v1 to v2 and recover exact source bytes."
 ---
 
 ## Target state
 
 Each repository should have:
 
-- `.agentplane/WORKFLOW.md` validated by schema + strict template checks.
+- `.agentplane/WORKFLOW.md` using canonical front matter `version: 2`.
 - `.agentplane/workflows/last-known-good.md` snapshot.
 - `agentplane doctor` passing without `ERROR`.
 
+The runtime still reads v1 during the compatibility window, but every supported writer persists v2.
+Versions other than 1 and 2 are rejected and are never rewritten automatically.
+
+## Migrate v1 to v2
+
+1. Preview the complete candidate. This command does not write files:
+
+```bash
+agentplane workflow migrate --dry-run
+```
+
+2. Apply the migration:
+
+```bash
+agentplane workflow migrate
+```
+
+The command first stores the exact original bytes and source/target SHA-256 hashes in a receipt
+under `.agentplane/workflows/migrations/`, then replaces the last-known-good snapshot with the
+validated target. Each file uses atomic replacement, and `.agentplane/WORKFLOW.md` is replaced last
+as the commit point. This is receipt-backed recovery, not a multi-file atomic transaction.
+
+3. Validate the migrated workflow:
+
+```bash
+agentplane doctor
+```
+
+Re-running `agentplane workflow migrate` on v2 reports a no-op.
+
+## Exact-byte rollback
+
+Use the receipt path printed by the apply command:
+
+```bash
+agentplane workflow migrate \
+  --rollback .agentplane/workflows/migrations/workflow-v1-to-v2-<digest>.json
+```
+
+Preview receipt validation without restoring bytes:
+
+```bash
+agentplane workflow migrate --dry-run \
+  --rollback .agentplane/workflows/migrations/workflow-v1-to-v2-<digest>.json
+```
+
+Rollback refuses to run if the active workflow no longer matches the receipt target hash. This
+prevents a later edit from being overwritten. It prepares the exact source as last-known-good first,
+then atomically replaces the active workflow as the rollback commit point.
+
 ## Repair steps
 
-1. Apply safe doctor fixes:
+Apply safe doctor fixes and then recheck:
 
 ```bash
 agentplane doctor --fix
 agentplane doctor
 ```
 
-2. If doctor reports that the active workflow contract needs maintainer-level recovery, inspect the
-   hidden recovery surface:
+If doctor reports that the active workflow contract needs maintainer-level recovery, inspect the
+hidden recovery surface:
 
 ```bash
 agentplane help --all
 ```
 
-3. Re-run `agentplane doctor` after the recovery command reports success.
+Re-run `agentplane doctor` after the recovery command reports success.
 
 ## Kill-switch (emergency only)
 

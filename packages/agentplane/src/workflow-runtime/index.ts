@@ -8,3 +8,4 @@ export * from "./template.js";
 export * from "./build.js";
 export * from "./file-ops.js";
 export * from "./fix.js";
+export * from "./migration.js";

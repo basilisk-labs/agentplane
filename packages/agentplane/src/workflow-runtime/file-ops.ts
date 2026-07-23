@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-import { parseWorkflowMarkdown } from "./markdown.js";
+import { parseWorkflowMarkdown, serializeWorkflowMarkdown } from "./markdown.js";
 import { emitWorkflowEvent } from "./observability.js";
 import { resolveWorkflowPaths } from "./paths.js";
 import type { WorkflowDiagnostic, WorkflowDocument, WorkflowValidationResult } from "./types.js";
@@ -131,10 +131,15 @@ export async function publishWorkflowCandidate(
     return { ok: false, diagnostics };
   }
 
+  const normalizedCandidateText = serializeWorkflowMarkdown(
+    parsed.document.frontMatter as unknown as Record<string, unknown>,
+    parsed.document.sections,
+  );
+
   try {
     await fs.mkdir(path.dirname(paths.workflowPath), { recursive: true });
     await fs.mkdir(paths.workflowDir, { recursive: true });
-    await fs.writeFile(tempPath, candidateText, "utf8");
+    await fs.writeFile(tempPath, normalizedCandidateText, "utf8");
     await fs.rename(tempPath, paths.workflowPath);
     await fs.copyFile(paths.workflowPath, paths.lastKnownGoodPath);
     emitWorkflowEvent({
@@ -212,9 +217,14 @@ export async function restoreWorkflowFromLastKnownGood(
     return { ok: false, diagnostics };
   }
 
+  const normalizedLastKnownGoodText = serializeWorkflowMarkdown(
+    parsed.document.frontMatter as unknown as Record<string, unknown>,
+    parsed.document.sections,
+  );
+
   try {
     await fs.mkdir(path.dirname(paths.workflowPath), { recursive: true });
-    await fs.writeFile(tempPath, lkgText, "utf8");
+    await fs.writeFile(tempPath, normalizedLastKnownGoodText, "utf8");
     await fs.rename(tempPath, paths.workflowPath);
     emitWorkflowEvent({
       event: "workflow_restore_completed",

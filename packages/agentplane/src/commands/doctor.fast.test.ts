@@ -221,9 +221,30 @@ describe("doctor.fast", () => {
       path.join(ws.root, ".agentplane", "workflows", "last-known-good.md"),
       "utf8",
     );
+    expect(workflowText).toContain("version: 2");
     expect(workflowText).toContain('mode: "direct"');
     expect(workflowText).toContain("Workflow mode: {{ workflow.mode }}");
     expect(lastKnownGoodText).toContain('mode: "direct"');
+  });
+
+  it("diagnoses a future WORKFLOW version before config loading and never downgrades it", async () => {
+    const ws = await mkWorkspace();
+    const workflowPath = path.join(ws.root, ".agentplane", "WORKFLOW.md");
+    const future = VALID_WORKFLOW.replace("version: 1", "version: 3");
+    await writeFile(workflowPath, future, "utf8");
+    const stderr = spyOnStderrWrite();
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: true, dev: false },
+      );
+
+      expect(rc).toBe(1);
+      expect(stderr.mock.calls.flat().join("\n")).toContain("WF_UNSUPPORTED_VERSION");
+      await expect(readFile(workflowPath, "utf8")).resolves.toBe(future);
+    } finally {
+      stderr.mockRestore();
+    }
   });
 
   it("fails when both policy gateway files are missing", async () => {

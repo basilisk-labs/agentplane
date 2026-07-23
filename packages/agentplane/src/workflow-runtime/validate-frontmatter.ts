@@ -1,40 +1,14 @@
 import path from "node:path";
 
-import type { AgentplaneConfig } from "@agentplaneorg/core/config";
+import {
+  UnsupportedWorkflowVersionError,
+  safeParseWorkflowFrontMatter,
+  type AgentplaneConfig,
+} from "@agentplaneorg/core/config";
+import type { ZodIssue } from "zod";
 
 import type { WorkflowDiagnostic, WorkflowFrontMatter } from "./types.js";
-import {
-  expectBoolean,
-  expectIntegerInRange,
-  expectString,
-  isRecord,
-  pushDiagnostic,
-} from "./validation-helpers.js";
-
-const ROOT_KEYS = new Set([
-  "version",
-  "mode",
-  "workflow",
-  "owners",
-  "approvals",
-  "workspace",
-  "paths",
-  "tasks",
-  "branch",
-  "framework",
-  "execution",
-  "runner",
-  "feedback",
-  "recipes",
-  "commit",
-  "acr",
-  "scheduler",
-  "evaluator",
-  "observability",
-  "retry_policy",
-  "timeouts",
-  "in_scope_paths",
-]);
+import { pushDiagnostic } from "./validation-helpers.js";
 
 type WorkflowFrontMatterValidationOptions = {
   repoRoot?: string;
@@ -42,271 +16,129 @@ type WorkflowFrontMatterValidationOptions = {
   config?: AgentplaneConfig | null;
 };
 
-function validateUnknownKeys(diags: WorkflowDiagnostic[], raw: Record<string, unknown>): void {
-  for (const key of Object.keys(raw)) {
-    if (!ROOT_KEYS.has(key)) {
+function issuePath(issue: ZodIssue): string {
+  return issue.path.length > 0
+    ? `front_matter.${issue.path.map(String).join(".")}`
+    : "front_matter";
+}
+
+function valueAtPath(raw: Record<string, unknown>, issue: ZodIssue): unknown {
+  let current: unknown = raw;
+  for (const segment of issue.path) {
+    if (!current || typeof current !== "object") return undefined;
+    if (typeof segment === "symbol") return undefined;
+    current = (current as Record<string | number, unknown>)[segment];
+  }
+  return current;
+}
+
+function flattenIssues(issues: readonly ZodIssue[]): ZodIssue[] {
+  const flattened: ZodIssue[] = [];
+  for (const issue of issues) {
+    if (issue.code === "invalid_union" && "errors" in issue) {
+      flattened.push(...flattenIssues(issue.errors.flat()));
+      continue;
+    }
+    flattened.push(issue);
+  }
+  return flattened;
+}
+
+function diagnosticCodeForIssue(
+  issue: ZodIssue,
+  raw: Record<string, unknown>,
+): WorkflowDiagnostic["code"] {
+  if (issue.code === "unrecognized_keys") return "WF_SCHEMA_UNKNOWN_KEY";
+  if (issue.code === "too_small" || issue.code === "too_big") return "WF_SCHEMA_RANGE";
+  if (issue.code === "invalid_value") return "WF_SCHEMA_ENUM";
+  if (issue.code === "invalid_type" && valueAtPath(raw, issue) === undefined) {
+    return "WF_SCHEMA_MISSING";
+  }
+  return "WF_SCHEMA_TYPE";
+}
+
+function pushSchemaDiagnostics(
+  diags: WorkflowDiagnostic[],
+  raw: Record<string, unknown>,
+  issues: readonly ZodIssue[],
+): void {
+  const seen = new Set<string>();
+  for (const issue of flattenIssues(issues)) {
+    const code = diagnosticCodeForIssue(issue, raw);
+    const issueKeys =
+      issue.code === "unrecognized_keys" && "keys" in issue && Array.isArray(issue.keys)
+        ? issue.keys
+        : [null];
+    for (const unknownKey of issueKeys) {
+      const basePath = issuePath(issue);
+      const diagnosticPath = unknownKey ? `${basePath}.${unknownKey}` : basePath;
+      const key = `${code}:${diagnosticPath}:${issue.message}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
       pushDiagnostic(diags, {
-        code: "WF_SCHEMA_UNKNOWN_KEY",
+        code,
         severity: "ERROR",
-        path: `front_matter.${key}`,
-        message: `Unknown front matter key: ${key}`,
+        path: diagnosticPath,
+        message: issue.message,
       });
     }
   }
 }
 
-function validateMode(
-  diags: WorkflowDiagnostic[],
-  value: unknown,
-  path = "front_matter.mode",
-): "direct" | "branch_pr" | undefined {
-  const mode = expectString(diags, value, path, true);
-  if (!mode) return undefined;
-  if (mode !== "direct" && mode !== "branch_pr") {
+function validatePaths(diags: WorkflowDiagnostic[], paths: string[], repoRoot?: string): void {
+  if (!repoRoot) return;
+  const resolvedRoot = path.resolve(repoRoot);
+  const rootPrefix = `${resolvedRoot}${path.sep}`;
+  for (const value of paths) {
+    const candidate = path.resolve(resolvedRoot, value.replaceAll(/[*]{1,2}$/g, ""));
+    if (candidate === resolvedRoot || candidate.startsWith(rootPrefix)) continue;
     pushDiagnostic(diags, {
-      code: "WF_SCHEMA_ENUM",
-      severity: "ERROR",
-      path,
-      message: `${path} must be one of: direct, branch_pr.`,
-    });
-    return undefined;
-  }
-  return mode;
-}
-
-function validateOwners(
-  diags: WorkflowDiagnostic[],
-  value: unknown,
-  knownAgentIds: Set<string> | null,
-): { orchestrator: string } | undefined {
-  if (!isRecord(value)) {
-    pushDiagnostic(diags, {
-      code: value === undefined ? "WF_SCHEMA_MISSING" : "WF_SCHEMA_TYPE",
-      severity: "ERROR",
-      path: "front_matter.owners",
-      message: "front_matter.owners must be an object.",
-    });
-    return undefined;
-  }
-  const orchestrator = expectString(
-    diags,
-    value.orchestrator,
-    "front_matter.owners.orchestrator",
-    true,
-  );
-  if (!orchestrator) return undefined;
-  if (knownAgentIds && !knownAgentIds.has(orchestrator)) {
-    pushDiagnostic(diags, {
-      code: "WF_OWNER_NOT_FOUND",
-      severity: "ERROR",
-      path: "front_matter.owners.orchestrator",
-      message: `Owner ${orchestrator} was not found in .agentplane/agents/*.json.`,
-    });
-  }
-  return { orchestrator };
-}
-
-function validateApprovals(
-  diags: WorkflowDiagnostic[],
-  value: unknown,
-): WorkflowFrontMatter["approvals"] | undefined {
-  if (!isRecord(value)) {
-    pushDiagnostic(diags, {
-      code: value === undefined ? "WF_SCHEMA_MISSING" : "WF_SCHEMA_TYPE",
-      severity: "ERROR",
-      path: "front_matter.approvals",
-      message: "front_matter.approvals must be an object.",
-    });
-    return undefined;
-  }
-  const require_plan = expectBoolean(
-    diags,
-    value.require_plan,
-    "front_matter.approvals.require_plan",
-    true,
-  );
-  const require_verify = expectBoolean(
-    diags,
-    value.require_verify,
-    "front_matter.approvals.require_verify",
-    true,
-  );
-  const require_network = expectBoolean(
-    diags,
-    value.require_network,
-    "front_matter.approvals.require_network",
-    true,
-  );
-  if (require_plan === undefined || require_verify === undefined || require_network === undefined) {
-    return undefined;
-  }
-  return { require_plan, require_verify, require_network };
-}
-
-function validateRetryPolicy(
-  diags: WorkflowDiagnostic[],
-  value: unknown,
-): WorkflowFrontMatter["retry_policy"] | undefined {
-  if (!isRecord(value)) {
-    pushDiagnostic(diags, {
-      code: value === undefined ? "WF_SCHEMA_MISSING" : "WF_SCHEMA_TYPE",
-      severity: "ERROR",
-      path: "front_matter.retry_policy",
-      message: "front_matter.retry_policy must be an object.",
-    });
-    return undefined;
-  }
-  const normal_exit_continuation = expectBoolean(
-    diags,
-    value.normal_exit_continuation,
-    "front_matter.retry_policy.normal_exit_continuation",
-    true,
-  );
-  const abnormal_backoff = expectString(
-    diags,
-    value.abnormal_backoff,
-    "front_matter.retry_policy.abnormal_backoff",
-    true,
-  );
-  if (abnormal_backoff && abnormal_backoff !== "exponential") {
-    pushDiagnostic(diags, {
-      code: "WF_SCHEMA_ENUM",
-      severity: "ERROR",
-      path: "front_matter.retry_policy.abnormal_backoff",
-      message: "front_matter.retry_policy.abnormal_backoff must be exponential.",
-    });
-  }
-  const max_attempts = expectIntegerInRange(
-    diags,
-    value.max_attempts,
-    "front_matter.retry_policy.max_attempts",
-    1,
-    100,
-    true,
-  );
-  if (normal_exit_continuation === undefined || !abnormal_backoff || max_attempts === undefined) {
-    return undefined;
-  }
-  return {
-    normal_exit_continuation,
-    abnormal_backoff: "exponential",
-    max_attempts,
-  };
-}
-
-function validateTimeouts(
-  diags: WorkflowDiagnostic[],
-  value: unknown,
-): WorkflowFrontMatter["timeouts"] | undefined {
-  if (!isRecord(value)) {
-    pushDiagnostic(diags, {
-      code: value === undefined ? "WF_SCHEMA_MISSING" : "WF_SCHEMA_TYPE",
-      severity: "ERROR",
-      path: "front_matter.timeouts",
-      message: "front_matter.timeouts must be an object.",
-    });
-    return undefined;
-  }
-  const stall_seconds = expectIntegerInRange(
-    diags,
-    value.stall_seconds,
-    "front_matter.timeouts.stall_seconds",
-    1,
-    86_400,
-    true,
-  );
-  if (stall_seconds === undefined) return undefined;
-  return { stall_seconds };
-}
-
-function validateScopePaths(
-  diags: WorkflowDiagnostic[],
-  value: unknown,
-  repoRoot?: string,
-): string[] | undefined {
-  if (!Array.isArray(value)) {
-    pushDiagnostic(diags, {
-      code: value === undefined ? "WF_SCHEMA_MISSING" : "WF_SCHEMA_TYPE",
+      code: "WF_PATH_OUTSIDE_ROOT",
       severity: "ERROR",
       path: "front_matter.in_scope_paths",
-      message: "front_matter.in_scope_paths must be an array.",
+      message: `Path escapes repository root: ${value}`,
     });
-    return undefined;
   }
-  const normalized = value
-    .map((item) => (typeof item === "string" ? item.trim() : ""))
-    .filter((item) => item.length > 0);
+}
 
-  if (normalized.length === 0) {
-    pushDiagnostic(diags, {
-      code: "WF_SCHEMA_RANGE",
-      severity: "ERROR",
-      path: "front_matter.in_scope_paths",
-      message: "front_matter.in_scope_paths must contain at least one path.",
-    });
-    return undefined;
-  }
-
-  if (repoRoot) {
-    for (const p of normalized) {
-      const candidate = path.resolve(repoRoot, p.replaceAll(/[*]{1,2}$/g, ""));
-      const rootPrefix = `${path.resolve(repoRoot)}${path.sep}`;
-      if (!(candidate === path.resolve(repoRoot) || candidate.startsWith(rootPrefix))) {
-        pushDiagnostic(diags, {
-          code: "WF_PATH_OUTSIDE_ROOT",
-          severity: "ERROR",
-          path: "front_matter.in_scope_paths",
-          message: `Path escapes repository root: ${p}`,
-        });
-      }
-    }
-  }
-
-  return normalized;
+function validateOwner(
+  diags: WorkflowDiagnostic[],
+  owner: string,
+  knownAgentIds?: Set<string>,
+): void {
+  if (!knownAgentIds || knownAgentIds.has(owner)) return;
+  pushDiagnostic(diags, {
+    code: "WF_OWNER_NOT_FOUND",
+    severity: "ERROR",
+    path: "front_matter.owners.orchestrator",
+    message: `Owner ${owner} was not found in .agentplane/agents/*.json.`,
+  });
 }
 
 function validateConfigParity(
   diags: WorkflowDiagnostic[],
-  opts: {
-    mode?: "direct" | "branch_pr";
-    approvals?: WorkflowFrontMatter["approvals"];
-    config?: AgentplaneConfig | null;
-  },
+  frontMatter: WorkflowFrontMatter,
+  config?: AgentplaneConfig | null,
 ): void {
-  if (opts.config && opts.mode && opts.config.workflow_mode !== opts.mode) {
+  if (!config) return;
+  if (config.workflow_mode !== frontMatter.workflow.mode) {
     pushDiagnostic(diags, {
       code: "WF_POLICY_MISMATCH",
       severity: "ERROR",
       path: "front_matter.workflow.mode",
-      message: `workflow mode mismatch: WORKFLOW.md=${opts.mode}, config=${opts.config.workflow_mode}`,
+      message: `workflow mode mismatch: WORKFLOW.md=${frontMatter.workflow.mode}, config=${config.workflow_mode}`,
     });
   }
 
-  if (!opts.config || !opts.approvals) return;
-  const cfgApprovals = opts.config.agents?.approvals;
-  if (!cfgApprovals) return;
-  if (cfgApprovals.require_plan !== opts.approvals.require_plan) {
+  const configApprovals = config.agents?.approvals;
+  if (!configApprovals) return;
+  for (const key of ["require_plan", "require_verify", "require_network"] as const) {
+    if (configApprovals[key] === frontMatter.approvals[key]) continue;
     pushDiagnostic(diags, {
       code: "WF_POLICY_MISMATCH",
       severity: "WARN",
-      path: "front_matter.approvals.require_plan",
-      message: "Approval mismatch with resolved AgentPlane config (require_plan).",
-    });
-  }
-  if (cfgApprovals.require_verify !== opts.approvals.require_verify) {
-    pushDiagnostic(diags, {
-      code: "WF_POLICY_MISMATCH",
-      severity: "WARN",
-      path: "front_matter.approvals.require_verify",
-      message: "Approval mismatch with resolved AgentPlane config (require_verify).",
-    });
-  }
-  if (cfgApprovals.require_network !== opts.approvals.require_network) {
-    pushDiagnostic(diags, {
-      code: "WF_POLICY_MISMATCH",
-      severity: "WARN",
-      path: "front_matter.approvals.require_network",
-      message: "Approval mismatch with resolved AgentPlane config (require_network).",
+      path: `front_matter.approvals.${key}`,
+      message: `Approval mismatch with resolved AgentPlane config (${key}).`,
     });
   }
 }
@@ -316,48 +148,23 @@ export function validateWorkflowFrontMatter(
   raw: Record<string, unknown>,
   opts?: WorkflowFrontMatterValidationOptions,
 ): WorkflowFrontMatter | undefined {
-  validateUnknownKeys(diags, raw);
-  const workflow = isRecord(raw.workflow) ? raw.workflow : undefined;
-  const scheduler = isRecord(raw.scheduler) ? raw.scheduler : undefined;
-
-  const version = expectIntegerInRange(
-    diags,
-    raw.version,
-    "front_matter.version",
-    1,
-    Number.MAX_SAFE_INTEGER,
-    true,
-  );
-  const mode =
-    workflow === undefined
-      ? validateMode(diags, raw.mode)
-      : validateMode(diags, workflow.mode, "front_matter.workflow.mode");
-  const owners = validateOwners(diags, raw.owners, opts?.knownAgentIds ?? null);
-  const approvals = validateApprovals(diags, raw.approvals);
-  const retry_policy = validateRetryPolicy(diags, raw.retry_policy ?? scheduler?.retry_policy);
-  const timeouts = validateTimeouts(diags, raw.timeouts ?? scheduler?.timeouts);
-  const in_scope_paths = validateScopePaths(diags, raw.in_scope_paths, opts?.repoRoot);
-
-  validateConfigParity(diags, { mode, approvals, config: opts?.config });
-
-  if (
-    version === undefined ||
-    !mode ||
-    !owners ||
-    !approvals ||
-    !retry_policy ||
-    !timeouts ||
-    !in_scope_paths
-  ) {
+  const parsed = safeParseWorkflowFrontMatter(raw);
+  if (!parsed.success) {
+    if (parsed.error instanceof UnsupportedWorkflowVersionError) {
+      pushDiagnostic(diags, {
+        code: "WF_UNSUPPORTED_VERSION",
+        severity: "ERROR",
+        path: "front_matter.version",
+        message: parsed.error.message,
+      });
+    } else {
+      pushSchemaDiagnostics(diags, raw, parsed.error.issues);
+    }
     return undefined;
   }
-  return {
-    version,
-    mode,
-    owners,
-    approvals,
-    retry_policy,
-    timeouts,
-    in_scope_paths,
-  };
+
+  validatePaths(diags, parsed.data.in_scope_paths, opts?.repoRoot);
+  validateOwner(diags, parsed.data.owners.orchestrator, opts?.knownAgentIds);
+  validateConfigParity(diags, parsed.data, opts?.config);
+  return parsed.data;
 }

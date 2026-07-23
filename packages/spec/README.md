@@ -14,9 +14,11 @@ If you are an end user, install the CLI instead:
 npm install -g agentplane
 ```
 
-v1 preserves current repository artifact schemas plus legacy import/export compatibility contracts:
+The package preserves current repository artifact schemas plus legacy import/export compatibility
+contracts:
 
-- `.agentplane/WORKFLOW.md` front matter as the current project source of truth
+- `.agentplane/WORKFLOW.md` v1 and v2 front matter as the current project source of truth; both
+  normalize to v2 meaning
 - legacy `.agentplane/config.json` import fallback
 - Task README frontmatter (YAML, represented here as a JSON object schema)
 - `tasks.json` export snapshot (including checksum metadata)
@@ -42,6 +44,7 @@ v1 canonicalization rules:
 packages/spec/
   README.md
   schemas/
+    workflow.schema.json
     config.schema.json
     task-readme-frontmatter.schema.json
     tasks-export.schema.json
@@ -50,6 +53,8 @@ packages/spec/
     task-observation.schema.json
     acr-v0.1.schema.json
   examples/
+    workflow-v1.json
+    workflow-v2.json
     config.json      legacy import compatibility example
     task-readme-frontmatter.json
     tasks.json

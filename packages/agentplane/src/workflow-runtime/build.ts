@@ -1,3 +1,5 @@
+import { safeParseWorkflowFrontMatter } from "@agentplaneorg/core/config";
+
 import { parseWorkflowMarkdown, serializeWorkflowMarkdown } from "./markdown.js";
 import { emitWorkflowEvent } from "./observability.js";
 import { renderTemplateStrict, validateTemplateStrict } from "./template.js";
@@ -38,6 +40,12 @@ function mergeSections(
   return out;
 }
 
+function normalizeSupportedLayer(raw: Record<string, unknown>): Record<string, unknown> {
+  if (raw.version !== 1 && raw.version !== 2) return raw;
+  const parsed = safeParseWorkflowFrontMatter(raw);
+  return parsed.success ? (parsed.data as Record<string, unknown>) : raw;
+}
+
 export function buildWorkflowFromTemplates(input: WorkflowBuildInput): WorkflowBuildOutput {
   emitWorkflowEvent({ event: "workflow_build_started" });
   const diagnostics: WorkflowDiagnostic[] = [];
@@ -51,8 +59,8 @@ export function buildWorkflowFromTemplates(input: WorkflowBuildInput): WorkflowB
   if (override) diagnostics.push(...override.diagnostics);
 
   const mergedFrontMatter = mergeRecord(
-    base.document.frontMatterRaw,
-    override?.document.frontMatterRaw ?? {},
+    normalizeSupportedLayer(base.document.frontMatterRaw),
+    normalizeSupportedLayer(override?.document.frontMatterRaw ?? {}),
   );
   const runtimeWorkflow = input.runtimeContext.workflow;
   if (runtimeWorkflow && typeof runtimeWorkflow === "object" && !Array.isArray(runtimeWorkflow)) {
@@ -98,7 +106,8 @@ export function buildWorkflowFromTemplates(input: WorkflowBuildInput): WorkflowB
   diagnostics.push(...renderedPrompt.diagnostics);
   mergedSections["Prompt Template"] = renderedPrompt.text;
 
-  const renderedText = serializeWorkflowMarkdown(mergedFrontMatter, mergedSections);
+  const renderedFrontMatter = normalizeSupportedLayer(mergedFrontMatter);
+  const renderedText = serializeWorkflowMarkdown(renderedFrontMatter, mergedSections);
   const parsedRendered = parseWorkflowMarkdown(renderedText);
   diagnostics.push(...parsedRendered.diagnostics);
   const schema = validateWorkflowDocument(parsedRendered.document);

@@ -176,6 +176,26 @@ export function serializeWorkflowMarkdown(
   return `---\n${toYamlObject(frontMatter)}\n---\n\n${renderedSections.join("\n\n")}\n`;
 }
 
+export function replaceWorkflowFrontMatter(
+  text: string,
+  frontMatter: Record<string, unknown>,
+): string {
+  const newline = text.startsWith("---\r\n") ? "\r\n" : "\n";
+  const opening = `---${newline}`;
+  if (!text.startsWith(opening)) {
+    throw new Error("Workflow front matter opening delimiter is missing.");
+  }
+  const closing = `${newline}---${newline}`;
+  const closingIndex = text.indexOf(closing, opening.length);
+  if (closingIndex === -1) {
+    throw new Error("Workflow front matter closing delimiter is missing.");
+  }
+
+  const body = text.slice(closingIndex + closing.length);
+  const yaml = toYamlObject(frontMatter).replaceAll("\n", newline);
+  return `${opening}${yaml}${closing}${body}`;
+}
+
 export function diagnosticsToValidationResult(
   diagnostics: WorkflowDiagnostic[],
 ): WorkflowValidationResult {

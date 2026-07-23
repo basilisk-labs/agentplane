@@ -30,9 +30,19 @@ const baselinePath = path.join(
   "baselines",
   "v0.6.24-compatibility-contract.json",
 );
+const candidatePath = path.join(
+  repoRoot,
+  "scripts",
+  "baselines",
+  "v0.7-workflow-contract-candidate.json",
+);
 
 function readBaseline() {
   return JSON.parse(readFileSync(baselinePath, "utf8"));
+}
+
+function readCandidate() {
+  return JSON.parse(readFileSync(candidatePath, "utf8"));
 }
 
 function assert(condition, message) {
@@ -248,6 +258,191 @@ function validateBaseline(baseline) {
   };
 }
 
+function validateReviewedCandidate({
+  baseline,
+  candidate,
+  exactMainSurface,
+  currentSurface,
+  currentDigest,
+  currentSectionDigests,
+}) {
+  assertOnlyKeys(
+    candidate,
+    ["schema_version", "candidate_id", "source_task", "base", "candidate", "review", "deltas"],
+    [],
+    "compatibility candidate",
+  );
+  assert(candidate.schema_version === 1, "compatibility candidate schema_version drift");
+  assert(
+    candidate.candidate_id === "agentplane.compatibility.v0.7.workflow-contract",
+    "compatibility candidate id drift",
+  );
+  assert(candidate.source_task === "202607221846-4VB97J", "compatibility source task drift");
+
+  assertOnlyKeys(
+    candidate.base,
+    ["baseline_id", "reference", "commit_sha", "surface_sha256"],
+    [],
+    "compatibility candidate base",
+  );
+  assert(candidate.base.baseline_id === baseline.baseline_id, "candidate baseline id drift");
+  assert(candidate.base.reference === "exact_main", "candidate base reference must be exact_main");
+  assert(
+    candidate.base.commit_sha === baseline.references.exact_main.commit_sha,
+    "candidate base commit drift",
+  );
+  assert(
+    candidate.base.surface_sha256 === baseline.references.exact_main.surface_sha256,
+    "candidate base surface drift",
+  );
+
+  assertOnlyKeys(
+    candidate.candidate,
+    ["surface_sha256", "section_digests"],
+    [],
+    "compatibility candidate surface",
+  );
+  assert(candidate.candidate.surface_sha256 === currentDigest, "candidate surface digest drift");
+  assert(
+    hashJson(candidate.candidate.section_digests) === hashJson(currentSectionDigests),
+    "candidate section digest inventory drift",
+  );
+
+  assertOnlyKeys(
+    candidate.review,
+    ["state", "reviewed_by", "scope", "conditions"],
+    [],
+    "compatibility candidate review",
+  );
+  assert(candidate.review.state === "approved", "compatibility candidate is not approved");
+  assert(candidate.review.reviewed_by === "ORCHESTRATOR", "candidate reviewer drift");
+  assert(candidate.review.scope === "exact_delta_set", "candidate review scope drift");
+  assert(
+    hashJson(candidate.review.conditions) ===
+      hashJson(["final_focused_tests_pass", "baseline_anchor_byte_identical"]),
+    "candidate review conditions drift",
+  );
+
+  assert(Array.isArray(candidate.deltas), "compatibility candidate deltas are missing");
+  const changedSections = changedSurfaceSections(exactMainSurface, currentSurface).toSorted();
+  const deltaSections = candidate.deltas.map((delta) => delta.section).toSorted();
+  assert(
+    hashJson(deltaSections) === hashJson(changedSections),
+    `candidate delta set drift: expected ${changedSections.join(", ")}, got ${deltaSections.join(", ")}`,
+  );
+  assert(new Set(deltaSections).size === deltaSections.length, "candidate delta sections repeat");
+
+  for (const delta of candidate.deltas) {
+    assertOnlyKeys(
+      delta,
+      ["section", "from_sha256", "to_sha256", "classification", "summary", "evidence"],
+      [],
+      `compatibility delta ${delta.section ?? "unknown"}`,
+    );
+    assert(
+      delta.from_sha256 === baseline.references.exact_main.section_digests[delta.section],
+      `${delta.section}: candidate from digest drift`,
+    );
+    assert(
+      delta.to_sha256 === currentSectionDigests[delta.section],
+      `${delta.section}: candidate to digest drift`,
+    );
+    assert(
+      typeof delta.summary === "string" && delta.summary.length > 0,
+      `${delta.section}: summary missing`,
+    );
+  }
+
+  const cliDelta = candidate.deltas.find((delta) => delta.section === "cli_topology");
+  const beforeCommands = new Set(
+    exactMainSurface.cli_topology.commands.map((command) => command.id.join(" ")),
+  );
+  const afterCommands = new Set(
+    currentSurface.cli_topology.commands.map((command) => command.id.join(" ")),
+  );
+  const addedCommands = [...afterCommands].filter((id) => !beforeCommands.has(id)).toSorted();
+  const removedCommands = [...beforeCommands].filter((id) => !afterCommands.has(id)).toSorted();
+  assert(cliDelta?.classification === "additive", "CLI candidate delta must be additive");
+  assert(
+    hashJson(cliDelta.evidence) ===
+      hashJson({
+        command_count: {
+          from: exactMainSurface.cli_topology.command_count,
+          to: currentSurface.cli_topology.command_count,
+        },
+        option_count: {
+          from: exactMainSurface.cli_topology.option_count,
+          to: currentSurface.cli_topology.option_count,
+        },
+        added_commands: addedCommands,
+        removed_commands: removedCommands,
+      }),
+    "CLI candidate evidence drift",
+  );
+  assert(hashJson(addedCommands) === hashJson(["workflow migrate"]), "unexpected CLI addition");
+  assert(removedCommands.length === 0, "candidate removes an existing CLI command");
+
+  const schemaDelta = candidate.deltas.find((delta) => delta.section === "workflow_schema");
+  const workflowSchema = JSON.parse(
+    readFileSync(path.join(repoRoot, "schemas", "workflow.schema.json"), "utf8"),
+  );
+  const supportedInputVersions = (workflowSchema.anyOf ?? [])
+    .map((branch) => branch?.properties?.version?.const)
+    .filter((value) => Number.isInteger(value));
+  assert(schemaDelta?.classification === "backward_compatible", "workflow schema review drift");
+  assert(
+    hashJson(schemaDelta.evidence) ===
+      hashJson({
+        schema_id: workflowSchema.$id,
+        title: workflowSchema.title,
+        supported_input_versions: supportedInputVersions,
+      }),
+    "workflow schema candidate evidence drift",
+  );
+  assert(hashJson(supportedInputVersions) === hashJson([1, 2]), "workflow schema versions drift");
+  assert(
+    currentSurface.workflow_schema.schema_id === exactMainSurface.workflow_schema.schema_id &&
+      currentSurface.workflow_schema.title === exactMainSurface.workflow_schema.title &&
+      currentSurface.workflow_schema.schema_uri === exactMainSurface.workflow_schema.schema_uri,
+    "workflow schema identity drift is not approved",
+  );
+
+  const tarballDelta = candidate.deltas.find((delta) => delta.section === "tarball_policy");
+  const packageName = "@agentplaneorg/core";
+  const beforePackage = exactMainSurface.tarball_policy.packages.find(
+    (pkg) => pkg.name === packageName,
+  );
+  const afterPackage = currentSurface.tarball_policy.packages.find(
+    (pkg) => pkg.name === packageName,
+  );
+  assert(beforePackage && afterPackage, "core tarball policy package missing");
+  const addedSourceFiles = afterPackage.source_files
+    .filter((file) => !beforePackage.source_files.includes(file))
+    .toSorted();
+  const removedSourceFiles = beforePackage.source_files
+    .filter((file) => !afterPackage.source_files.includes(file))
+    .toSorted();
+  assert(tarballDelta?.classification === "additive", "tarball candidate delta must be additive");
+  assert(
+    hashJson(tarballDelta.evidence) ===
+      hashJson({
+        package: packageName,
+        source_file_count: {
+          from: beforePackage.source_file_count,
+          to: afterPackage.source_file_count,
+        },
+        added_source_files: addedSourceFiles,
+        removed_source_files: removedSourceFiles,
+      }),
+    "tarball candidate evidence drift",
+  );
+  assert(
+    hashJson(addedSourceFiles) === hashJson(["schemas/workflow.schema.json"]),
+    "unexpected core tarball source-file addition",
+  );
+  assert(removedSourceFiles.length === 0, "candidate removes a core tarball source file");
+}
+
 function verifyLocalReferenceIfAvailable(ref, expectedDigest, expectedCommitSha = null) {
   if (!gitReferenceAvailable(repoRoot, ref)) return "offline-frozen";
   if (expectedCommitSha) assertGitRefMatchesSha(repoRoot, ref, expectedCommitSha);
@@ -262,21 +457,37 @@ try {
   const { exactMainSurface, registry } = validateBaseline(baseline);
   const currentSurface = collectCompatibilitySurface(createWorktreeSource(repoRoot));
   validateSurface(currentSurface, "working tree");
-  const currentDigest = compatibilitySurfaceDigest(surfaceSectionDigests(currentSurface));
+  const currentSectionDigests = surfaceSectionDigests(currentSurface);
+  const currentDigest = compatibilitySurfaceDigest(currentSectionDigests);
   const expectedDigest = baseline.references.exact_main.surface_sha256;
+  let candidateStatus = "not-required";
   if (currentDigest !== expectedDigest) {
-    const sections = changedSurfaceSections(exactMainSurface, currentSurface);
-    const paths = diffJsonPaths(exactMainSurface, currentSurface).slice(0, 20);
-    throw new Error(
-      [
-        "compatibility contract ratchet failed against task-parent main.",
-        `expected=${expectedDigest}`,
-        `current=${currentDigest}`,
-        `changed_sections=${sections.join(", ") || "unknown"}`,
-        ...paths.map((entry) => `  - ${entry}`),
-        "Refresh the baseline only after an explicit compatibility review.",
-      ].join("\n"),
-    );
+    try {
+      const candidate = readCandidate();
+      validateReviewedCandidate({
+        baseline,
+        candidate,
+        exactMainSurface,
+        currentSurface,
+        currentDigest,
+        currentSectionDigests,
+      });
+      candidateStatus = `approved:${candidate.candidate_id}`;
+    } catch (error) {
+      const sections = changedSurfaceSections(exactMainSurface, currentSurface);
+      const paths = diffJsonPaths(exactMainSurface, currentSurface).slice(0, 20);
+      throw new Error(
+        [
+          "compatibility contract ratchet failed against task-parent main.",
+          `expected=${expectedDigest}`,
+          `current=${currentDigest}`,
+          `changed_sections=${sections.join(", ") || "unknown"}`,
+          ...paths.map((entry) => `  - ${entry}`),
+          `candidate=${error instanceof Error ? error.message : String(error)}`,
+          "Record an exact reviewed candidate without modifying the immutable baseline anchor.",
+        ].join("\n"),
+      );
+    }
   }
 
   const publishedStatus = verifyLocalReferenceIfAvailable(
@@ -292,10 +503,11 @@ try {
     [
       "compatibility contract baseline OK",
       `current=${currentDigest}`,
+      `candidate=${candidateStatus}`,
       `published_tag=${publishedStatus}`,
       `exact_main=${exactMainStatus}`,
       `preexisting_drift=${driftLabel}`,
-      `cli=${exactMainSurface.cli_topology.command_count}commands/${exactMainSurface.cli_topology.positional_count}args/${exactMainSurface.cli_topology.option_count}options`,
+      `cli=${currentSurface.cli_topology.command_count}commands/${currentSurface.cli_topology.positional_count}args/${currentSurface.cli_topology.option_count}options`,
       `npm_registry=offline-frozen:${registry.packageCount}packages/${registry.fileCount}files`,
     ].join(" ") + "\n",
   );

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "mode": "branch_pr",
+  "owners": {
+    "orchestrator": "ORCHESTRATOR"
+  },
+  "approvals": {
+    "require_plan": true,
+    "require_verify": true,
+    "require_network": true
+  },
+  "retry_policy": {
+    "normal_exit_continuation": true,
+    "abnormal_backoff": "exponential",
+    "max_attempts": 5
+  },
+  "timeouts": {
+    "stall_seconds": 900
+  },
+  "in_scope_paths": ["**"]
+}

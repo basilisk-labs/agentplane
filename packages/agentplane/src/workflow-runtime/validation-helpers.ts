@@ -28,7 +28,8 @@ export function remediationForWorkflowDiagnostic(
     case "WF_SCHEMA_TYPE":
     case "WF_SCHEMA_ENUM":
     case "WF_SCHEMA_RANGE":
-    case "WF_SCHEMA_UNKNOWN_KEY": {
+    case "WF_SCHEMA_UNKNOWN_KEY":
+    case "WF_UNSUPPORTED_VERSION": {
       return {
         code: diagnostic.code,
         why: `The workflow field ${safePath} does not match the supported schema.`,

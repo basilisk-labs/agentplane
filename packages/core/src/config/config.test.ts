@@ -368,6 +368,93 @@ describe("config", () => {
     expect(path.basename(loaded.path)).toBe("WORKFLOW.md");
   });
 
+  it("saveConfig preserves v2-only and extension fields from the active WORKFLOW", async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-v2-preserve-"));
+    const agentplaneDir = path.join(tmp, ".agentplane");
+    await mkdir(agentplaneDir, { recursive: true });
+    const source = `---
+version: 2
+workflow:
+  mode: direct
+  extension_flag: keep-workflow
+owners:
+  orchestrator: ORCHESTRATOR
+approvals:
+  require_plan: true
+  require_verify: true
+  require_network: true
+workspace:
+  agents_dir: .agentplane/agents
+  tasks_path: .agentplane/tasks.json
+  workflow_dir: .agentplane/tasks
+  worktrees_dir: .agentplane/worktrees
+  isolation: per_task
+  cleanup: after_finish
+  operator_note: keep-workspace
+scheduler:
+  concurrency: 2
+  custom_backoff: keep-scheduler
+retry_policy:
+  normal_exit_continuation: true
+  abnormal_backoff: exponential
+  max_attempts: 7
+timeouts:
+  stall_seconds: 1200
+in_scope_paths:
+  - packages/**
+---
+
+## Prompt Template
+Keep me
+
+## Checks
+- verify
+
+## Fallback
+last_known_good: .agentplane/workflows/last-known-good.md
+`;
+    await writeFile(path.join(agentplaneDir, "WORKFLOW.md"), source, "utf8");
+
+    const loaded = await loadConfig(agentplaneDir);
+    const raw = { ...loaded.raw };
+    setByDottedKey(raw, "workflow_mode", "branch_pr");
+    await saveConfig(agentplaneDir, raw);
+
+    const text = await readFile(path.join(agentplaneDir, "WORKFLOW.md"), "utf8");
+    expect(text).toContain("version: 2");
+    expect(text).toContain("mode: branch_pr");
+    expect(text).toContain("extension_flag: keep-workflow");
+    expect(text).toContain("operator_note: keep-workspace");
+    expect(text).toContain("custom_backoff: keep-scheduler");
+    expect(text).toContain("max_attempts: 7");
+    expect(text).toContain("stall_seconds: 1200");
+    expect(text).toContain("- packages/**");
+    expect(text).toContain("Keep me");
+  });
+
+  it("saveConfig refuses to overwrite an unsupported future WORKFLOW", async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-future-"));
+    const agentplaneDir = path.join(tmp, ".agentplane");
+    await mkdir(agentplaneDir, { recursive: true });
+    const source = `---
+version: 3
+workflow:
+  mode: direct
+---
+
+## Prompt Template
+Future
+`;
+    const workflowPath = path.join(agentplaneDir, "WORKFLOW.md");
+    await writeFile(workflowPath, source, "utf8");
+
+    await expect(saveConfig(agentplaneDir, makeConfigRecord())).rejects.toMatchObject({
+      code: "WF_UNSUPPORTED_VERSION",
+      version: 3,
+    });
+    await expect(readFile(workflowPath, "utf8")).resolves.toBe(source);
+  });
+
   it("validateConfig rejects unsupported schema_version", () => {
     const raw = defaultConfig() as unknown as Record<string, unknown>;
     raw.schema_version = 999;
