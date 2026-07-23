@@ -6,7 +6,7 @@ Created: 2026-07-22T21:30:53.096Z
 
 - Task: `202607222129-1ZQHJD`
 - Title: Capture anchored multi-run RF-04 replay telemetry
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607222129-1ZQHJD/capture-anchored-multi-run-rf-04-replay-telemetr`
 - Canonical task record: `.agentplane/tasks/202607222129-1ZQHJD/README.md`
 
