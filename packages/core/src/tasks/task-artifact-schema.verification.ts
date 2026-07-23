@@ -16,6 +16,7 @@ const QUALITY_REVIEW_STATE_VALUES = [
   "blocked",
   "human_review",
 ] as const;
+const QUALITY_REVIEW_PROVENANCE_VALUES = ["human_supplied", "evaluator_supplied"] as const;
 
 export const TASK_PLAN_APPROVAL_SCHEMA = z
   .object({
@@ -40,6 +41,7 @@ export const TASK_VERIFICATION_SCHEMA = z
 export const TASK_QUALITY_REVIEW_SCHEMA = z
   .object({
     state: z.enum(QUALITY_REVIEW_STATE_VALUES),
+    provenance: z.enum(QUALITY_REVIEW_PROVENANCE_VALUES).optional(),
     updated_at: NULLABLE_ISO_UTC_TIMESTAMP,
     updated_by: z.string().nullable(),
     note: z.string().nullable(),

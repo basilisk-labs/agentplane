@@ -173,7 +173,7 @@ export function deriveRouteOracle(opts: {
       authoritativeCheckout: "task_worktree",
     });
   }
-  if (code === "run_quality_review") {
+  if (code === "quality_review_required") {
     return buildOracle(opts, {
       phase: "quality_review_needed",
       authoritativeCheckout: "task_worktree",

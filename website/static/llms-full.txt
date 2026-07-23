@@ -1417,12 +1417,15 @@ the repository.
 ```bash
 agentplane evaluator list
 agentplane evaluator show recovery-context
-agentplane evaluator run <task-id> --verdict pass --summary "Reviewed diff and checks." --finding "No unresolved quality findings." --evidence .agentplane/tasks/<task-id>/README.md
+agentplane evaluator run <task-id> --provenance human_supplied --verdict human_review --summary "A human decision is required." --finding "Acceptance remains ambiguous." --evidence .agentplane/tasks/<task-id>/README.md
 ```
 
 Evaluators are repository-local prompt modules under `.agentplane/evaluators`. The current public
 surface lists available evaluator prompts, prints the exact prompt module an agent can use for a
-separate review pass, and records a structured quality review report for task closure gates.
+separate review pass, and records a supplied structured quality review report for task closure
+gates. `evaluator run` does not execute a model and therefore requires explicit provenance;
+select `human_supplied` only for a human-provided decision and `evaluator_supplied` only when an
+independently run EVALUATOR produced the recorded values. Omitting `--provenance` is rejected.
 
 `agentplane init` seeds `.agentplane/evaluators/recovery-context.md`, a preview evaluator for
 recovery-context and invariant review. `agentplane evaluator run` writes task-local evaluator

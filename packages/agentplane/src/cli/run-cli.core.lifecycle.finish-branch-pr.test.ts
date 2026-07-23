@@ -41,6 +41,8 @@ async function recordEvaluatorPass(root: string, taskId: string): Promise<void> 
     "evaluator",
     "run",
     taskId,
+    "--provenance",
+    "evaluator_supplied",
     "--verdict",
     "pass",
     "--summary",

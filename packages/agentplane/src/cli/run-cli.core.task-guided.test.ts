@@ -127,6 +127,8 @@ describe("runCli task guided shortcuts", { timeout: 180_000 }, () => {
         "evaluator",
         "run",
         taskId,
+        "--provenance",
+        "evaluator_supplied",
         "--verdict",
         "pass",
         "--summary",

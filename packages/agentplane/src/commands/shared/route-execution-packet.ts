@@ -45,7 +45,7 @@ function recommendedRoleFor(opts: {
   ) {
     return "CODER";
   }
-  if (opts.nextAction.code === "run_quality_review") return "EVALUATOR";
+  if (opts.nextAction.code === "quality_review_required") return "EVALUATOR";
   if (opts.nextAction.code === "record_pre_merge_closure") return "CODER";
   if (
     opts.nextAction.code === "wait_hosted_checks" ||
@@ -90,7 +90,7 @@ function evidenceMissingFor(opts: {
 function verificationCandidateFor(nextAction: RouteBatchNextAction): string | null {
   if (nextAction.code === "verify_or_update_pr") return "agentplane pr check <task-id>";
   if (nextAction.code.includes("verify")) return nextAction.command;
-  if (nextAction.code === "run_quality_review") return nextAction.command;
+  if (nextAction.code === "quality_review_required") return null;
   if (nextAction.code === "update_pr_artifacts") return "agentplane pr check <task-id>";
   if (nextAction.code === "wait_hosted_checks") return "agentplane pr check <task-id>";
   return null;
@@ -142,8 +142,9 @@ function automationBoundaryMustNotFor(code: string): string[] {
       "do not repair stale PR artifacts with manual edits or amend commits; agentplane pr update/pr check own PR artifact freshness",
       "do not amend only to align quality_review.evaluated_sha; rerun evaluator on current HEAD, then recompute the route",
     ],
-    run_quality_review: [
+    quality_review_required: [
       "do not publish or queue the PR before quality_review is recorded for the current implementation head",
+      "do not synthesize verdict, summary, or findings from lint, tests, route state, or other mechanical checks",
     ],
     record_pre_merge_closure: [
       "do not queue integration before the pre-merge closure marker is committed on the task branch",

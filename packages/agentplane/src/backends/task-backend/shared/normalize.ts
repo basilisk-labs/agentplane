@@ -44,6 +44,10 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
   }
   const updatedAt =
     value.updated_at === null || typeof value.updated_at === "string" ? value.updated_at : null;
+  const provenance =
+    value.provenance === "human_supplied" || value.provenance === "evaluator_supplied"
+      ? value.provenance
+      : undefined;
   const updatedBy =
     value.updated_by === null || typeof value.updated_by === "string" ? value.updated_by : null;
   const note = value.note === null || typeof value.note === "string" ? value.note : null;
@@ -57,6 +61,7 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
       : null;
   return {
     state,
+    ...(provenance ? { provenance } : {}),
     updated_at: updatedAt,
     updated_by: updatedBy,
     note,

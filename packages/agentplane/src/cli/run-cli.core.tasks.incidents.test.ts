@@ -174,6 +174,8 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
           "evaluator",
           "run",
           taskId,
+          "--provenance",
+          "evaluator_supplied",
           "--verdict",
           "pass",
           "--summary",

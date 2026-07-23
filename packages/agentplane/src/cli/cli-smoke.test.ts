@@ -157,6 +157,8 @@ describe("agentplane CLI smoke", () => {
         "evaluator",
         "run",
         taskId,
+        "--provenance",
+        "evaluator_supplied",
         "--verdict",
         "pass",
         "--summary",

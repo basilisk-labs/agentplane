@@ -71,6 +71,14 @@ describe("context ingest task creation", () => {
         "agentplane context finalize-task <created-task-id>",
       ]),
     );
+    const qualityReviewStep = task.verify.find((step) => step.includes("evaluator run"));
+    expect(qualityReviewStep).toContain("--provenance human_supplied");
+    expect(qualityReviewStep).toContain("--verdict <pass|rework|blocked|human_review>");
+    expect(qualityReviewStep).not.toContain("--verdict pass");
+    expect(qualityReviewStep).not.toContain("Maximum-assimilation context lifecycle verified.");
+    expect(qualityReviewStep).not.toContain(
+      "Curated context, topology, coverage, and evaluator scenarios satisfy the task contract.",
+    );
   });
 
   it("records deprecated workspace mode aliases without weakening the task", () => {

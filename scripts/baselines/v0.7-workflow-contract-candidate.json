@@ -9,9 +9,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "170415cdad0511383b7d0feea7a30689b5493eea9edb328adebb1ee9104cba08",
+    "surface_sha256": "bb201ac1d2f4a2f968644898928eb2d585a1e5f6d921a79096643f4ea74b2ee3",
     "section_digests": {
-      "cli_topology": "3848fb22f961d029de98f88ed754623cac8ac4c445340d6d3162f9cc1d6988c5",
+      "cli_topology": "1aa67c77566fbf891bced67aeea04b04bbbf06e455f1c69dfe5acb0ceb9e28cb",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -30,12 +30,12 @@
     {
       "section": "cli_topology",
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "3848fb22f961d029de98f88ed754623cac8ac4c445340d6d3162f9cc1d6988c5",
+      "to_sha256": "1aa67c77566fbf891bced67aeea04b04bbbf06e455f1c69dfe5acb0ceb9e28cb",
       "classification": "additive",
-      "summary": "Adds the public workflow migrate command with dry-run and rollback options; no command is removed.",
+      "summary": "Adds the public workflow migrate command with dry-run and rollback options plus explicit evaluator provenance recording; no command or option is removed.",
       "evidence": {
         "command_count": { "from": 243, "to": 244 },
-        "option_count": { "from": 767, "to": 769 },
+        "option_count": { "from": 767, "to": 770 },
         "added_commands": ["workflow migrate"],
         "removed_commands": []
       }

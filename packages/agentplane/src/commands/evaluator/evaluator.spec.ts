@@ -14,11 +14,13 @@ export type EvaluatorShowParsed = {
 };
 
 export type EvaluatorRunVerdict = "pass" | "rework" | "blocked" | "human_review";
+export type EvaluatorRunProvenance = "human_supplied" | "evaluator_supplied";
 
 export type EvaluatorRunParsed = {
   taskId: string;
   evaluator: string;
   verdict: EvaluatorRunVerdict;
+  provenance: EvaluatorRunProvenance;
   summary: string;
   findings: string[];
   evidenceRefs: string[];
@@ -86,6 +88,14 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
     },
     {
       kind: "string",
+      name: "provenance",
+      valueHint: "<human_supplied|evaluator_supplied>",
+      choices: ["human_supplied", "evaluator_supplied"],
+      description:
+        "Origin of the supplied review values. This command records a result; it does not execute an evaluator.",
+    },
+    {
+      kind: "string",
       name: "summary",
       valueHint: "<text>",
       description: "Concise evaluator judgement summary.",
@@ -142,8 +152,8 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
   ],
   examples: [
     {
-      cmd: 'agentplane evaluator run 202605232011-MAW1PK --verdict pass --summary "Reviewed diff and checks." --finding "No unresolved findings after diff and verification review." --evidence .agentplane/tasks/202605232011-MAW1PK/README.md',
-      why: "Record a structured EVALUATOR quality review.",
+      cmd: 'agentplane evaluator run 202605232011-MAW1PK --provenance human_supplied --verdict human_review --summary "A human decision is required." --finding "Acceptance remains ambiguous." --evidence .agentplane/tasks/202605232011-MAW1PK/README.md',
+      why: "Record an explicitly human-supplied semantic review.",
     },
   ],
   validateRaw: (raw) => {
@@ -161,12 +171,20 @@ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
         message: "Provide --verdict.",
       });
     }
+    if (!raw.opts.provenance) {
+      throw usageError({
+        spec: evaluatorRunSpec,
+        command: "evaluator run",
+        message: "Provide --provenance.",
+      });
+    }
   },
   parse: (raw) => ({
     taskId: String(raw.args.taskId ?? "").trim(),
     evaluator:
       typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
     verdict: String(raw.opts.verdict) as EvaluatorRunVerdict,
+    provenance: String(raw.opts.provenance) as EvaluatorRunProvenance,
     summary: typeof raw.opts.summary === "string" ? raw.opts.summary.trim() : "",
     findings: toStringList(raw.opts.finding),
     evidenceRefs: toStringList(raw.opts.evidence),

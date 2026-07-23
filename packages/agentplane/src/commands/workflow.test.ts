@@ -857,6 +857,7 @@ describe("commands/workflow", () => {
       {
         taskId,
         evaluator: "recovery-context",
+        provenance: "evaluator_supplied",
         verdict: "pass",
         summary: "Quality gate passed",
         findings: ["Workflow finish fixture has committed implementation evidence."],

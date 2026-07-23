@@ -190,6 +190,8 @@ describe("runCli route decision batch ownership", () => {
       "evaluator",
       "run",
       primaryTaskId,
+      "--provenance",
+      "evaluator_supplied",
       "--verdict",
       "pass",
       "--summary",
@@ -222,7 +224,7 @@ describe("runCli route decision batch ownership", () => {
       };
       expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("quality_review_stale");
       expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("pr_meta_stale");
-      expect(parsed.nextAction.code).not.toBe("run_quality_review");
+      expect(parsed.nextAction.code).not.toBe("quality_review_required");
       expect(implementationHead.trim()).toMatch(/^[0-9a-f]{40}$/u);
     } finally {
       statusIo.restore();

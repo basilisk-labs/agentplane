@@ -1,8 +1,10 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { resolveBlueprint } from "../../blueprints/index.js";
+import type { TaskData } from "../../backends/task-backend.js";
 import { blueprintResolveInputFromTask } from "../blueprint/task-input.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import { hasAcceptedQualityReviewProvenance } from "./quality-review-gate.js";
 
 type EvidenceState = "present" | "missing" | "unknown";
 
@@ -63,6 +65,31 @@ function sectionText(task: { sections?: Record<string, string> }, name: string):
   return task.sections?.[name] ?? "";
 }
 
+export function qualityReportEvidenceState(review: TaskData["quality_review"]): {
+  state: EvidenceState;
+  reason: string;
+} {
+  if (review?.state !== "pass") {
+    return { state: "missing", reason: "quality_review.state=pass is absent" };
+  }
+  if (!hasAcceptedQualityReviewProvenance(review)) {
+    return {
+      state: "missing",
+      reason: "quality_review provenance and updated_by are missing or inconsistent",
+    };
+  }
+  if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) {
+    return { state: "missing", reason: "quality_review evidence lacks quality-report.json" };
+  }
+  if (review.findings.length === 0) {
+    return { state: "missing", reason: "quality_review pass findings are empty" };
+  }
+  return {
+    state: "present",
+    reason: `quality_review.state=pass provenance=${review.provenance ?? "legacy_evaluator"}`,
+  };
+}
+
 function evidenceState(
   task: Awaited<ReturnType<typeof loadTaskFromContext>>,
   kind: string,
@@ -79,9 +106,7 @@ function evidenceState(
       : { state: "missing", reason: "task commit metadata is absent" };
   }
   if (kind === "quality_report") {
-    return task.quality_review?.state === "pass"
-      ? { state: "present", reason: "quality_review.state=pass" }
-      : { state: "missing", reason: "quality_review.state=pass is absent" };
+    return qualityReportEvidenceState(task.quality_review);
   }
   if (kind === "check_result") {
     return task.verification?.state === "ok" || verificationText.trim().length > 0
