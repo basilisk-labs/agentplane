@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers",
   "created_at": "2026-07-23T00:32:03.635Z",
-  "diffstat_sha256": "sha256:921e749e95c03e3074b71f5334799712c38a3e268c8688159d777bf49885e756",
+  "diffstat_sha256": "sha256:53961cb9d3a5be3042242cbe1da581b904e807852c5f98c701a01591fd1b91b8",
   "last_verified_at": null,
   "schema_version": 1,
   "task_id": "202607221846-4VB97J",

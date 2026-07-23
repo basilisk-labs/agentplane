@@ -60,9 +60,7 @@ export function workflowFrontMatterToConfigRaw(
   const approvals = cloneRecord(normalized.approvals);
   const workspace = cloneRecord(normalized.workspace);
   const tasks = cloneRecord(normalized.tasks);
-  const raw: Record<string, unknown> = {};
-
-  raw.workflow_mode = workflow.mode;
+  const raw: Record<string, unknown> = { workflow_mode: workflow.mode };
   for (const key of [
     "status_commit_policy",
     "commit_automation",
