@@ -142,6 +142,8 @@ describe("release-critical direct lifecycle", () => {
         "evaluator",
         "run",
         taskId,
+        "--provenance",
+        "evaluator_supplied",
         "--verdict",
         "pass",
         "--summary",

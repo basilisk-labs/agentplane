@@ -175,6 +175,43 @@ describe("task-backend helpers", () => {
     expect(data.depends_on).toEqual([]);
   });
 
+  it("taskRecordToData preserves explicit quality-review provenance", () => {
+    const record = {
+      id: "202601300000-ABCD",
+      frontmatter: {
+        id: "202601300000-ABCD",
+        title: "Task",
+        description: "Desc",
+        status: "DOING",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        quality_review: {
+          state: "pass",
+          provenance: "human_supplied",
+          updated_at: "2026-01-30T00:00:00.000Z",
+          updated_by: "HUMAN",
+          note: "Supplied decision",
+          evaluated_sha: "abcdef1",
+          blueprint_digest: null,
+          evidence_refs: ["quality-report.json"],
+          findings: ["Supplied finding"],
+        },
+      },
+      body: "## Summary\n\nDoc text\n",
+    } as unknown as TaskRecord;
+
+    expect(taskRecordToData(record).quality_review).toMatchObject({
+      state: "pass",
+      provenance: "human_supplied",
+      updated_by: "HUMAN",
+      note: "Supplied decision",
+      findings: ["Supplied finding"],
+    });
+  });
+
   it("taskRecordToData preserves blocked runner outcomes", () => {
     const record = {
       id: "202601300000-BLOCK",

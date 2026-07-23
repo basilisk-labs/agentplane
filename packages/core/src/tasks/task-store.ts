@@ -45,8 +45,10 @@ export type VerificationResult = {
 };
 
 export type QualityReviewState = "pending" | "pass" | "rework" | "blocked" | "human_review";
+export type QualityReviewProvenance = "human_supplied" | "evaluator_supplied";
 export type QualityReviewResult = {
   state: QualityReviewState;
+  provenance?: QualityReviewProvenance;
   updated_at: string | null;
   updated_by: string | null;
   note: string | null;

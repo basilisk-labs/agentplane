@@ -443,42 +443,6 @@
       "rationale": "agent-writable RunnerResultManifest exposes observed field timeout_reason"
     },
     {
-      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/shared/route-decision-next-action.ts:literal:deriveNextAction:fedad6c7a30d:ast:FunctionDeclaration:deriveNextAction:1:TemplateExpression:fedad6c7a30d:1",
-      "rule_id": "trust.no-automatic-semantic-verdict",
-      "rf_owners": ["RF-00"],
-      "owner_task_ids": ["202607221846-YGWMA2"],
-      "path": "packages/agentplane/src/commands/shared/route-decision-next-action.ts",
-      "locator": "literal:deriveNextAction:fedad6c7a30d:ast:FunctionDeclaration:deriveNextAction:1:TemplateExpression:fedad6c7a30d:1",
-      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
-    },
-    {
-      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/shared/route-decision-repair.ts:literal:qualityReviewRepair:c618f47d8cd8:ast:VariableDeclaration:qualityReviewRepair:1/ArrowFunction:anonymous:1:TemplateExpression:c618f47d8cd8:1",
-      "rule_id": "trust.no-automatic-semantic-verdict",
-      "rf_owners": ["RF-00"],
-      "owner_task_ids": ["202607221846-YGWMA2"],
-      "path": "packages/agentplane/src/commands/shared/route-decision-repair.ts",
-      "locator": "literal:qualityReviewRepair:c618f47d8cd8:ast:VariableDeclaration:qualityReviewRepair:1/ArrowFunction:anonymous:1:TemplateExpression:c618f47d8cd8:1",
-      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
-    },
-    {
-      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/commands/task/quality-review-gate.ts:literal:fix:d68c883be221:ast:FunctionDeclaration:assertEvaluatorQualityReviewPassed:1/VariableDeclaration:fix:1:TemplateExpression:d68c883be221:1",
-      "rule_id": "trust.no-automatic-semantic-verdict",
-      "rf_owners": ["RF-00"],
-      "owner_task_ids": ["202607221846-YGWMA2"],
-      "path": "packages/agentplane/src/commands/task/quality-review-gate.ts",
-      "locator": "literal:fix:d68c883be221:ast:FunctionDeclaration:assertEvaluatorQualityReviewPassed:1/VariableDeclaration:fix:1:TemplateExpression:d68c883be221:1",
-      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
-    },
-    {
-      "violation_id": "trust.no-automatic-semantic-verdict:packages/agentplane/src/context/ingest-task.ts:literal:buildIngestMetadata:52a3288bd62b:ast:FunctionDeclaration:buildIngestMetadata:1:StringLiteral:52a3288bd62b:1",
-      "rule_id": "trust.no-automatic-semantic-verdict",
-      "rf_owners": ["RF-00"],
-      "owner_task_ids": ["202607221846-YGWMA2"],
-      "path": "packages/agentplane/src/context/ingest-task.ts",
-      "locator": "literal:buildIngestMetadata:52a3288bd62b:ast:FunctionDeclaration:buildIngestMetadata:1:StringLiteral:52a3288bd62b:1",
-      "rationale": "fixed --verdict pass command manufactures a semantic verdict"
-    },
-    {
       "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/context/task-context.ts:builder:assembleRunnerTaskContext.data+comments:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:5160a3833a16:1",
       "rule_id": "trust.no-duplicate-runner-task-representation",
       "rf_owners": ["RF-21"],

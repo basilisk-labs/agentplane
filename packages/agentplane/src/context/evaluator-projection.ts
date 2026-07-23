@@ -15,6 +15,7 @@ type QualityReportInput = {
   task_id: string;
   evaluator_id: string;
   generated_at: string;
+  provenance: "human_supplied" | "evaluator_supplied";
   verdict: string;
   summary: string;
   findings: string[];
@@ -72,6 +73,7 @@ export async function projectEvaluatorQualityReportToContext(opts: {
     task_id: opts.report.task_id,
     evaluator_id: opts.report.evaluator_id,
     generated_at: opts.report.generated_at,
+    provenance: opts.report.provenance,
     summary: opts.report.summary,
     entrypoints,
     expected_findings: opts.report.findings,

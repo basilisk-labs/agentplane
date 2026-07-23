@@ -101,6 +101,7 @@ export {
   type TaskFrontmatter,
   type TaskOrigin,
   type TaskPriority,
+  type QualityReviewProvenance,
   type QualityReviewResult,
   type QualityReviewState,
   type TaskRecord,

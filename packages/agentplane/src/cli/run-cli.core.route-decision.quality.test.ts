@@ -154,8 +154,14 @@ describe("runCli quality route decisions", () => {
       expect(code).toBe(0);
       const parsed = JSON.parse(nextIo.stdout) as {
         route_oracle: { phase: string; authoritativeCheckout: string; blocker: { code: string } };
-        execution_packet: { recommendedRole: string; evidenceMissing: string[] };
-        next_action: { code: string; command: string };
+        execution_packet: {
+          actionKind: string;
+          safeToMutate: boolean;
+          recommendedRole: string;
+          evidenceMissing: string[];
+          exactArgv: string[] | null;
+        };
+        next_action: { code: string; command: string | null };
         blockers: { code: string }[];
       };
       expect(parsed.blockers.map((blocker) => blocker.code)).toContain("quality_review_missing");
@@ -166,8 +172,100 @@ describe("runCli quality route decisions", () => {
       });
       expect(parsed.execution_packet.recommendedRole).toBe("EVALUATOR");
       expect(parsed.execution_packet.evidenceMissing).toContain("evaluator_quality_review");
-      expect(parsed.next_action.code).toBe("run_quality_review");
-      expect(parsed.next_action.command).toContain(`agentplane evaluator run ${taskId}`);
+      expect(parsed.execution_packet).toMatchObject({
+        actionKind: "stop",
+        safeToMutate: false,
+        exactArgv: null,
+      });
+      expect(parsed.next_action).toMatchObject({
+        code: "quality_review_required",
+        command: null,
+      });
+      expect(nextIo.stdout).not.toContain("--verdict pass");
+      expect(nextIo.stdout).not.toContain("Quality review passed.");
+      expect(nextIo.stdout).not.toContain("No blocking findings.");
+    } finally {
+      nextIo.restore();
+    }
+
+    const repairIo = captureStdIO();
+    try {
+      const code = await runCli(["flow", "repair", taskId, "--dry-run", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(repairIo.stdout) as {
+        repair_plan: { code: string; command: string | null; mutates: boolean }[];
+      };
+      expect(parsed.repair_plan).toContainEqual(
+        expect.objectContaining({
+          code: "quality_review_required",
+          command: null,
+          mutates: false,
+        }),
+      );
+      expect(repairIo.stdout).not.toContain("--verdict pass");
+    } finally {
+      repairIo.restore();
+    }
+  });
+
+  it("stops for a stale quality review without synthesizing a replacement verdict", async () => {
+    const root = await setupRoot();
+    const { taskId } = await createVerifiedOpenPrFixture(root, "Exercise stale review routing.");
+    await runCliSilent([
+      "evaluator",
+      "run",
+      taskId,
+      "--provenance",
+      "evaluator_supplied",
+      "--verdict",
+      "pass",
+      "--summary",
+      "The reviewed implementation satisfies the task contract.",
+      "--finding",
+      "The implementation and verification evidence were reviewed independently.",
+      "--evidence",
+      `.agentplane/tasks/${taskId}/README.md`,
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: quality artifacts"], { cwd: root });
+
+    await writeFile(path.join(root, "impl.txt"), "implementation changed after review\n");
+    await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: change reviewed implementation"], {
+      cwd: root,
+    });
+    const { stdout: changedHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as Record<string, unknown>;
+    await writeFile(
+      metaPath,
+      `${JSON.stringify({ ...meta, head_sha: changedHead.trim() }, null, 2)}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}/pr/meta.json`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: refresh PR metadata"], { cwd: root });
+
+    const nextIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(nextIo.stdout) as {
+        blockers: { code: string }[];
+        next_action: { code: string; command: string | null };
+        execution_packet: { actionKind: string; exactArgv: string[] | null };
+      };
+      expect(parsed.blockers.map((blocker) => blocker.code)).toContain("quality_review_stale");
+      expect(parsed.next_action).toEqual(
+        expect.objectContaining({ code: "quality_review_required", command: null }),
+      );
+      expect(parsed.execution_packet).toMatchObject({ actionKind: "stop", exactArgv: null });
+      expect(nextIo.stdout).not.toContain("--verdict pass");
+      expect(nextIo.stdout).not.toContain("Quality review passed.");
+      expect(nextIo.stdout).not.toContain("No blocking findings.");
     } finally {
       nextIo.restore();
     }
@@ -183,6 +281,8 @@ describe("runCli quality route decisions", () => {
       "evaluator",
       "run",
       taskId,
+      "--provenance",
+      "evaluator_supplied",
       "--verdict",
       "pass",
       "--summary",

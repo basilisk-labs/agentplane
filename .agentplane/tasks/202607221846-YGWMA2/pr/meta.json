@@ -1,0 +1,14 @@
+{
+  "base": "main",
+  "branch": "task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts",
+  "created_at": "2026-07-23T03:42:12.404Z",
+  "diffstat_sha256": "sha256:b33f4e03203d805839cd84d580fed9ffff8db39d4ea185e9a7d9fa3d37a25bd7",
+  "last_verified_at": "2026-07-23T04:39:13.025Z",
+  "last_verified_diffstat_sha256": "sha256:b33f4e03203d805839cd84d580fed9ffff8db39d4ea185e9a7d9fa3d37a25bd7",
+  "schema_version": 1,
+  "task_id": "202607221846-YGWMA2",
+  "updated_at": "2026-07-23T03:42:12.404Z",
+  "verify": {
+    "status": "fail"
+  }
+}

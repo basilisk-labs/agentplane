@@ -181,6 +181,13 @@ async function resolveEvaluatedSha(opts: {
 }
 
 function assertRunnableReviewInput(parsed: EvaluatorRunParsed): void {
+  if (parsed.provenance !== "human_supplied" && parsed.provenance !== "evaluator_supplied") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Provide --provenance for evaluator run.",
+    });
+  }
   if (!parsed.summary) {
     throw new CliError({
       exitCode: 2,
@@ -242,6 +249,7 @@ export const runEvaluatorShow: CommandHandler<EvaluatorShowParsed> = async (ctx,
 
 export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p) => {
   assertRunnableReviewInput(p);
+  const provenance = p.provenance;
   const rows = await loadCatalogForCommand(ctx, true);
   const evaluator = rows.find((row) => row.id === p.evaluator);
   if (!evaluator) {
@@ -321,6 +329,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
     evaluator_id: evaluator.id,
     evaluator_profile: evaluator.profile,
     generated_at: at,
+    provenance,
     verdict: p.verdict,
     summary: p.summary,
     evaluated_sha: evaluatedSha,
@@ -339,6 +348,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
       taskId: p.taskId,
       taskReadmePath: rel(taskReadmePath),
       reportPath: rel(reportPath),
+      provenance,
     }),
     "utf8",
   );
@@ -375,8 +385,9 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
         intents: setTaskFieldsIntent({
           quality_review: {
             state: p.verdict,
+            provenance,
             updated_at: at,
-            updated_by: "EVALUATOR",
+            updated_by: provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
             note: p.summary,
             evaluated_sha: evaluatedSha,
             blueprint_digest: snapshot?.current.digest ?? null,
@@ -391,6 +402,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
   const payload = {
     task_id: p.taskId,
     evaluator_id: evaluator.id,
+    provenance,
     verdict: p.verdict,
     recorded: p.record,
     report_path: rel(reportPath),
@@ -404,6 +416,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
     process.stdout.write(
       [
         `evaluator run ${p.taskId}`,
+        `provenance: ${provenance}`,
         `verdict: ${p.verdict}`,
         `recorded: ${String(p.record)}`,
         `report: ${payload.report_path}`,

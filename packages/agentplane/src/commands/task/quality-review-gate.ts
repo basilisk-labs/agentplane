@@ -2,6 +2,13 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 
+export function hasAcceptedQualityReviewProvenance(review: TaskData["quality_review"]): boolean {
+  if (!review) return false;
+  if (review.provenance === "human_supplied") return review.updated_by === "HUMAN";
+  if (review.provenance === "evaluator_supplied") return review.updated_by === "EVALUATOR";
+  return review.provenance === undefined && review.updated_by === "EVALUATOR";
+}
+
 export function assertEvaluatorQualityReviewPassed(opts: {
   task: TaskData;
   expectedSha?: string | null;
@@ -10,32 +17,35 @@ export function assertEvaluatorQualityReviewPassed(opts: {
 }): void {
   const review = opts.task.quality_review;
   const fix =
-    `agentplane evaluator run ${opts.task.id} --verdict pass --summary "..." ` +
-    `--finding "..." --evidence <path-or-check>`;
+    `agentplane evaluator run ${opts.task.id} --provenance <human_supplied|evaluator_supplied> ` +
+    `--verdict <pass|rework|blocked|human_review> --summary "<supplied-summary>" ` +
+    `--finding "<supplied-finding>" --evidence <path-or-check>`;
 
   if (!review) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: [
-        `${opts.command} requires an EVALUATOR quality review after verification.`,
+        `${opts.command} requires a semantic quality review after verification.`,
         `task=${opts.task.id}`,
         "quality_review=missing",
-        `Fix: ${fix}`,
+        "quality_review_required: run an EVALUATOR episode or obtain an explicit human decision; formal checks must not choose the verdict.",
+        `Human record: ${fix}`,
       ].join("\n"),
     });
   }
 
-  if (review.state !== "pass" || review.updated_by !== "EVALUATOR") {
+  if (review.state !== "pass" || !hasAcceptedQualityReviewProvenance(review)) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: [
-        `${opts.command} requires quality_review.state=pass by EVALUATOR.`,
+        `${opts.command} requires quality_review.state=pass from an EVALUATOR or an explicit HUMAN record.`,
         `task=${opts.task.id}`,
         `quality_review.state=${review.state}`,
         `quality_review.updated_by=${review.updated_by ?? "missing"}`,
-        `Fix: ${fix}`,
+        `quality_review.provenance=${review.provenance ?? "legacy_or_missing"}`,
+        `Human record: ${fix}`,
       ].join("\n"),
     });
   }
@@ -49,7 +59,7 @@ export function assertEvaluatorQualityReviewPassed(opts: {
         `task=${opts.task.id}`,
         `quality_review.evaluated_sha=${review.evaluated_sha ?? "missing"}`,
         `expected_sha=${opts.expectedSha}`,
-        `Fix: ${fix}`,
+        `Human record: ${fix}`,
       ].join("\n"),
     });
   }
@@ -63,7 +73,7 @@ export function assertEvaluatorQualityReviewPassed(opts: {
         `task=${opts.task.id}`,
         `quality_review.blueprint_digest=${review.blueprint_digest}`,
         `expected_blueprint_digest=${opts.expectedBlueprintDigest}`,
-        `Fix: ${fix}`,
+        `Human record: ${fix}`,
       ].join("\n"),
     });
   }
@@ -73,10 +83,10 @@ export function assertEvaluatorQualityReviewPassed(opts: {
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: [
-        `${opts.command} requires a structured EVALUATOR quality report.`,
+        `${opts.command} requires a structured semantic quality report.`,
         `task=${opts.task.id}`,
         "quality_review.evidence_refs=missing quality-report.json",
-        `Fix: ${fix}`,
+        `Human record: ${fix}`,
       ].join("\n"),
     });
   }
@@ -86,10 +96,10 @@ export function assertEvaluatorQualityReviewPassed(opts: {
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: [
-        `${opts.command} requires non-empty EVALUATOR findings for pass reviews.`,
+        `${opts.command} requires non-empty semantic findings for pass reviews.`,
         `task=${opts.task.id}`,
         "quality_review.findings=empty",
-        `Fix: ${fix}`,
+        `Human record: ${fix}`,
       ].join("\n"),
     });
   }

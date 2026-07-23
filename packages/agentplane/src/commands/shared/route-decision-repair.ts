@@ -10,13 +10,12 @@ type DecisionForAmbiguity = Omit<
 type DecisionForRepair = Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">;
 type RepairFactory = (decision: DecisionForRepair) => RouteRepairStep;
 
-const qualityReviewRepair: RepairFactory = (decision) => ({
-  code: "run_quality_review",
-  command:
-    `agentplane evaluator run ${decision.task.id} --verdict pass --summary "Quality review passed." ` +
-    `--finding "No blocking findings." --evidence .agentplane/tasks/${decision.task.id}/README.md`,
-  summary: "record EVALUATOR quality review before PR publication or integration",
-  mutates: true,
+const qualityReviewRepair: RepairFactory = () => ({
+  code: "quality_review_required",
+  command: null,
+  summary:
+    "semantic quality review is required; run an EVALUATOR episode or explicitly record a human-supplied review",
+  mutates: false,
 });
 
 const REPAIR_BY_BLOCKER_CODE = {

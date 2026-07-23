@@ -206,6 +206,7 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
             : key === "quality_review"
               ? ([
                   "state",
+                  "provenance",
                   "updated_at",
                   "updated_by",
                   "note",

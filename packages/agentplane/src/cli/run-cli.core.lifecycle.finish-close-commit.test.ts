@@ -43,6 +43,8 @@ async function recordEvaluatorReview(root: string, taskId: string, note: string)
       "evaluator",
       "run",
       taskId,
+      "--provenance",
+      "evaluator_supplied",
       "--verdict",
       "pass",
       "--summary",

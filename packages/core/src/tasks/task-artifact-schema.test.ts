@@ -603,6 +603,47 @@ describe("task-artifact-schema", () => {
     ).not.toThrow();
   });
 
+  it("accepts explicit quality-review provenance while preserving legacy records", () => {
+    const frontmatter = {
+      id: "202603251535-DPZ4NN",
+      title: "Quality review provenance fixture",
+      status: "DOING",
+      priority: "high",
+      owner: "CODER",
+      depends_on: [],
+      tags: ["code"],
+      verify: [],
+      plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+      verification: { state: "ok", attempts: 1, updated_at: null, updated_by: null, note: null },
+      quality_review: {
+        state: "pass",
+        provenance: "human_supplied",
+        updated_at: "2026-03-25T17:20:00.000Z",
+        updated_by: "HUMAN",
+        note: "Supplied review",
+        evaluated_sha: "abcdef1",
+        blueprint_digest: null,
+        evidence_refs: [".agentplane/tasks/202603251535-DPZ4NN/quality/run/quality-report.json"],
+        findings: ["Human supplied finding"],
+      },
+      comments: [],
+      events: [],
+      doc_version: 3,
+      doc_updated_at: "2026-03-25T17:20:00.000Z",
+      doc_updated_by: "CODER",
+      description: "Fixture",
+      id_source: "generated",
+    } satisfies Record<string, unknown>;
+
+    expect(() => validateTaskReadmeFrontmatter(frontmatter)).not.toThrow();
+    const legacy = structuredClone(frontmatter);
+    delete (legacy.quality_review as Record<string, unknown>).provenance;
+    expect(() => validateTaskReadmeFrontmatter(legacy)).not.toThrow();
+    const invalid = structuredClone(frontmatter);
+    (invalid.quality_review as Record<string, unknown>).provenance = "router_inferred";
+    expect(() => validateTaskReadmeFrontmatter(invalid)).toThrow(/quality_review\.provenance/);
+  });
+
   it("defaults missing verification attempts in task README frontmatter", () => {
     expect(() =>
       validateTaskReadmeFrontmatter({

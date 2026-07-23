@@ -38,6 +38,7 @@ describe("maximum-assimilation evaluator projection", () => {
       task_id: task.id,
       evaluator_id: "recovery-context",
       generated_at: "2026-07-21T16:20:00.000Z",
+      provenance: "human_supplied" as const,
       verdict: "pass",
       summary: "Context quality review passed.",
       findings: ["Curated context remains usable without raw inputs."],
@@ -72,6 +73,7 @@ describe("maximum-assimilation evaluator projection", () => {
     expect(rows[0]).toMatchObject({
       scenario_id: "scenario.evaluator.202607211617-xmv6xv",
       task_id: task.id,
+      provenance: "human_supplied",
       verdict: "pass",
       summary: "Updated review.",
       entrypoints: ["context/wiki/reports/coverage.md"],

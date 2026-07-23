@@ -21,16 +21,24 @@ function task(overrides: Partial<TaskData> = {}): TaskData {
 
 describe("EVALUATOR quality review gate", () => {
   it("rejects missing quality review", () => {
-    expect(() =>
-      assertEvaluatorQualityReviewPassed({
-        task: task(),
-        expectedSha: "head",
-        command: "finish",
-      }),
-    ).toThrow(/quality_review=missing/);
+    expect(() => {
+      try {
+        assertEvaluatorQualityReviewPassed({
+          task: task(),
+          expectedSha: "head",
+          command: "finish",
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        expect(message).toContain("quality_review=missing");
+        expect(message).toContain("quality_review_required");
+        expect(message).not.toContain("--verdict pass");
+        throw error;
+      }
+    }).toThrow(/quality_review=missing/);
   });
 
-  it("rejects non-pass or non-EVALUATOR reviews", () => {
+  it("rejects non-pass or unprovenanced reviews", () => {
     expect(() =>
       assertEvaluatorQualityReviewPassed({
         task: task({
@@ -48,7 +56,7 @@ describe("EVALUATOR quality review gate", () => {
         expectedSha: "head",
         command: "integrate",
       }),
-    ).toThrow(/quality_review.state=pass by EVALUATOR/);
+    ).toThrow(/quality_review.state=pass from an EVALUATOR or an explicit HUMAN record/);
   });
 
   it("rejects stale evaluated commits", () => {
@@ -134,7 +142,7 @@ describe("EVALUATOR quality review gate", () => {
         expectedBlueprintDigest: "digest",
         command: "finish",
       }),
-    ).toThrow(/structured EVALUATOR quality report/);
+    ).toThrow(/structured semantic quality report/);
   });
 
   it("rejects pass reviews without findings", () => {
@@ -156,7 +164,7 @@ describe("EVALUATOR quality review gate", () => {
         expectedBlueprintDigest: "digest",
         command: "finish",
       }),
-    ).toThrow(/non-empty EVALUATOR findings/);
+    ).toThrow(/non-empty semantic findings/);
   });
 
   it("accepts a fresh EVALUATOR pass", () => {
@@ -182,5 +190,53 @@ describe("EVALUATOR quality review gate", () => {
         command: "finish",
       }),
     ).not.toThrow();
+  });
+
+  it("accepts a fresh explicitly human-supplied pass", () => {
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            provenance: "human_supplied",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "HUMAN",
+            note: "Human accepted the reviewed result.",
+            evaluated_sha: "head",
+            blueprint_digest: "digest",
+            evidence_refs: [
+              ".agentplane/tasks/T-1/README.md",
+              ".agentplane/tasks/T-1/quality/run/quality-report.json",
+            ],
+            findings: ["The human reviewer supplied this semantic finding."],
+          },
+        }),
+        expectedSha: "head",
+        expectedBlueprintDigest: "digest",
+        command: "finish",
+      }),
+    ).not.toThrow();
+  });
+
+  it("rejects a HUMAN reviewer without explicit human provenance", () => {
+    expect(() =>
+      assertEvaluatorQualityReviewPassed({
+        task: task({
+          quality_review: {
+            state: "pass",
+            updated_at: "2026-02-09T00:00:00.000Z",
+            updated_by: "HUMAN",
+            note: "Missing provenance.",
+            evaluated_sha: "head",
+            blueprint_digest: "digest",
+            evidence_refs: [".agentplane/tasks/T-1/quality/run/quality-report.json"],
+            findings: ["The record has no explicit provenance."],
+          },
+        }),
+        expectedSha: "head",
+        expectedBlueprintDigest: "digest",
+        command: "finish",
+      }),
+    ).toThrow(/quality_review.provenance=legacy_or_missing/);
   });
 });

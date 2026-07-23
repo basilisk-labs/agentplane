@@ -10,6 +10,7 @@ import { getHumanInputState } from "../task/human-input.js";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
+import { hasAcceptedQualityReviewProvenance } from "../task/quality-review-gate.js";
 
 function addBlocker(blockers: RouteBlocker[], code: RouteBlockerCode, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
@@ -41,7 +42,7 @@ async function qualityReviewIsFreshForHead(opts: {
   batchOwnership: RouteBatchOwnership;
 }): Promise<boolean> {
   const review = opts.task.quality_review;
-  if (review?.state !== "pass" || review.updated_by !== "EVALUATOR") return false;
+  if (review?.state !== "pass" || !hasAcceptedQualityReviewProvenance(review)) return false;
   if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) return false;
   if (review.findings.length === 0) return false;
   if (!opts.headSha || !review.evaluated_sha) return true;

@@ -565,6 +565,22 @@
       "svgSha256": "1775a5d8b827bb44b5d162079d3fecda2920f0319354ceae72483b33dd42b686"
     },
     {
+      "route": "/docs/internal/v0.7-agent-efficiency-baseline",
+      "output": "static/img/social/docs/internal/v0.7-agent-efficiency-baseline.png",
+      "section": "Internal",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "V0.7 Agent Efficiency Baseline",
+      "svgSha256": "ff997a3e14e9ec918cc564d2254e771fd52326596bc25321d3b472514244824d"
+    },
+    {
+      "route": "/docs/internal/v0.7-refactor-plan",
+      "output": "static/img/social/docs/internal/v0.7-refactor-plan.png",
+      "section": "Internal",
+      "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
+      "title": "V0.7 Refactor Plan",
+      "svgSha256": "5dbf1f75eab0ec36b52a83f2ad5872643ee33721bd2f1a846179e219eba976f8"
+    },
+    {
       "route": "/docs/launch/checklist",
       "output": "static/img/social/docs/launch/checklist.png",
       "section": "Launch",
@@ -1673,8 +1689,8 @@
       "output": "static/img/social/docs/user/workflow-migration.png",
       "section": "User",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
-      "title": "Workflow contract recovery",
-      "svgSha256": "6a3e46a24b900bb8e83cc7350f2c144b5eb3e7cb3da68ef1039019cb7235b579"
+      "title": "Workflow migration and recovery",
+      "svgSha256": "3e8897433f6d335edd10fc1c308f0e3132500047adfdb09d693570fe19cd16f6"
     },
     {
       "route": "/docs/user/workflow",

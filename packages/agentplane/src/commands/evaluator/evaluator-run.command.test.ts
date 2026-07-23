@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+import { readTask } from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
@@ -67,6 +68,8 @@ describe("evaluator run command", () => {
   it("parses structured review evidence and findings as repeatable fields", () => {
     const { parsed } = parseCommandArgv(evaluatorRunSpec, [
       "T-1",
+      "--provenance",
+      "human_supplied",
       "--verdict",
       "pass",
       "--summary",
@@ -92,6 +95,7 @@ describe("evaluator run command", () => {
       taskId: "T-1",
       evaluator: "recovery-context",
       verdict: "pass",
+      provenance: "human_supplied",
       summary: "Reviewed diff and verification evidence.",
       findings: [
         "No unresolved implementation findings after diff review.",
@@ -107,7 +111,75 @@ describe("evaluator run command", () => {
   });
 
   it("requires an explicit verdict", () => {
-    expect(() => parseCommandArgv(evaluatorRunSpec, ["T-1"])).toThrow(/Provide --verdict/);
+    expect(() =>
+      parseCommandArgv(evaluatorRunSpec, ["T-1", "--provenance", "human_supplied"]),
+    ).toThrow(/Provide --verdict/);
+  });
+
+  it("requires explicit provenance instead of attributing an omitted origin to a human", () => {
+    expect(() => parseCommandArgv(evaluatorRunSpec, ["T-1", "--verdict", "human_review"])).toThrow(
+      /Provide --provenance/,
+    );
+  });
+
+  it("preserves supplied review values with explicit human provenance", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV00";
+    await addTask(root, taskId);
+    await commitPath(root, "src/review-target.txt", "review target", "feat: review target");
+
+    const summary = "A human reviewed the acceptance criteria and implementation evidence.";
+    const findings = [
+      "The supplied verdict reflects a human semantic decision.",
+      "The supplied evidence covers the committed review target.",
+    ];
+    await runEvaluatorRun(
+      { cwd: root, rootOverride: undefined },
+      {
+        taskId,
+        evaluator: "recovery-context",
+        provenance: "human_supplied",
+        verdict: "pass",
+        summary,
+        findings,
+        evidenceRefs: ["src/review-target.txt"],
+        missingTests: [],
+        hiddenAssumptions: [],
+        residualRisks: [],
+        json: false,
+        record: true,
+      },
+    );
+
+    const { stdout } = await execFileAsync(
+      "find",
+      [`.agentplane/tasks/${taskId}/quality`, "-name", "quality-report.json", "-print"],
+      { cwd: root },
+    );
+    const reportPath = stdout.trim();
+    const report = JSON.parse(await readFile(path.join(root, reportPath), "utf8")) as Record<
+      string,
+      unknown
+    >;
+    expect(report).toMatchObject({
+      provenance: "human_supplied",
+      verdict: "pass",
+      summary,
+      findings,
+    });
+
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toMatchObject({
+      provenance: "human_supplied",
+      state: "pass",
+      updated_by: "HUMAN",
+      note: summary,
+      findings,
+    });
+    expect(
+      await readFile(path.join(root, `.agentplane/tasks/${taskId}/README.md`), "utf8"),
+    ).toContain('provenance: "human_supplied"');
   });
 
   it("records the last non-task-artifact commit as evaluated_sha", async () => {
@@ -133,6 +205,7 @@ describe("evaluator run command", () => {
       {
         taskId,
         evaluator: "recovery-context",
+        provenance: "human_supplied",
         verdict: "pass",
         summary: "Quality gate passed",
         findings: ["Implementation evidence was reviewed."],
@@ -172,6 +245,7 @@ describe("evaluator run command", () => {
       {
         taskId,
         evaluator: "recovery-context",
+        provenance: "human_supplied",
         verdict: "pass",
         summary: "Metadata work unit reviewed",
         findings: ["Current task metadata is the auditable review target."],
@@ -212,6 +286,7 @@ describe("evaluator run command", () => {
         {
           taskId,
           evaluator: "recovery-context",
+          provenance: "human_supplied",
           verdict: "pass",
           summary,
           findings: ["Current task metadata is the auditable review target."],
@@ -261,6 +336,7 @@ describe("evaluator run command", () => {
       {
         taskId,
         evaluator: "recovery-context",
+        provenance: "human_supplied",
         verdict: "pass",
         summary: "No current committed work unit",
         findings: ["Unrelated workflow history is not a valid review target."],

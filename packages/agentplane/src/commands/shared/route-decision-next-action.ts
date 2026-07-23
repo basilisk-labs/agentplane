@@ -218,12 +218,10 @@ export function deriveNextAction(opts: {
     )
   ) {
     return {
-      code: "run_quality_review",
-      command:
-        `agentplane evaluator run ${id} --verdict pass --summary "Quality review passed." ` +
-        `--finding "No blocking findings." --evidence .agentplane/tasks/${id}/README.md`,
+      code: "quality_review_required",
+      command: null,
       summary:
-        "record EVALUATOR quality review before publishing or integrating the branch_pr task",
+        "semantic quality review is required; run an EVALUATOR episode or explicitly record a human-supplied review",
       requiresApproval: false,
     };
   }

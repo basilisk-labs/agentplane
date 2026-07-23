@@ -61,7 +61,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         evidence: ["quality_report"],
         protected: true,
         allowedCommands: [
-          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
         ],
       },
       { kind: "finish", evidence: ["commit"], protected: true },
@@ -185,7 +185,7 @@ export const CODE_WORKFLOW_LIFECYCLE_CONTRACTS = {
         evidence: ["quality_report"],
         protected: true,
         allowedCommands: [
-          "agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review",
+          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
         ],
       },
       { kind: "hosted_checks", evidence: ["check_result", "external_link"] },

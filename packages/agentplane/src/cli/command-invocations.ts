@@ -12,7 +12,7 @@ const COMMAND_INVOCATIONS = new Map<string, string>([
   ["demo", "agentplane demo"],
   [
     "evaluator run",
-    'agentplane evaluator run <task-id> --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]',
+    'agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]',
   ],
   ["preflight", "agentplane preflight"],
   ["quickstart", "agentplane quickstart"],

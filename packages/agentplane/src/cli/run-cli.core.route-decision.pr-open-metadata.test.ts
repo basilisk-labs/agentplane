@@ -101,6 +101,8 @@ describe("runCli route decision open PR metadata", () => {
       "evaluator",
       "run",
       taskId,
+      "--provenance",
+      "evaluator_supplied",
       "--verdict",
       "pass",
       "--summary",

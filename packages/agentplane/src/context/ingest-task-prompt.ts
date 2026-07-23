@@ -78,7 +78,7 @@ export function buildContextAssimilationPromptModule(
       "- `agentplane context verify-task <task-id>`",
       "- `agentplane context doctor`",
       "- a smoke `agentplane context search` using exact source terminology",
-      "- `agentplane evaluator run <task-id> ...` with evidence for topology, granularity, links, provenance, coverage, alias safety, raw-deletion resilience, and leakage review.",
+      "- `agentplane evaluator run <task-id> --provenance evaluator_supplied ...` with evidence for topology, granularity, links, provenance, coverage, alias safety, raw-deletion resilience, and leakage review.",
     ].join("\n"),
     mutability: "replaceable",
     merge: { mode: "pick_one", conflict: "error", precedence: 100 },

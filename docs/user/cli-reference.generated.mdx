@@ -3883,6 +3883,7 @@ Options:
 
 - `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
 - `--verdict <pass|rework|blocked|human_review>`: Quality verdict to record. (choices=pass|rework|blocked|human_review)
+- `--provenance <human_supplied|evaluator_supplied>`: Origin of the supplied review values. This command records a result; it does not execute an evaluator. (choices=human_supplied|evaluator_supplied)
 - `--summary <text>`: Concise evaluator judgement summary.
 - `--finding <text>`: Structured review finding. May be repeated. (repeatable)
 - `--evidence <path-or-note>`: Evidence reference checked by the evaluator. May be repeated. (repeatable)
@@ -3896,10 +3897,10 @@ Options:
 Examples:
 
 ```sh
-agentplane evaluator run 202605232011-MAW1PK --verdict pass --summary "Reviewed diff and checks." --finding "No unresolved findings after diff and verification review." --evidence .agentplane/tasks/202605232011-MAW1PK/README.md
+agentplane evaluator run 202605232011-MAW1PK --provenance human_supplied --verdict human_review --summary "A human decision is required." --finding "Acceptance remains ambiguous." --evidence .agentplane/tasks/202605232011-MAW1PK/README.md
 ```
 
-- Record a structured EVALUATOR quality review.
+- Record an explicitly human-supplied semantic review.
 
 ### evaluator show
 

@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
-import type { EvaluatorRunParsed } from "./evaluator.spec.js";
+import type { EvaluatorRunParsed, EvaluatorRunProvenance } from "./evaluator.spec.js";
 
 export const QUALITY_REPORT_FILE = "quality-report.json";
 export const EVALUATOR_PROMPT_FILE = "evaluator-prompt.md";
@@ -13,6 +13,7 @@ export type EvaluatorQualityReport = {
   evaluator_id: string;
   evaluator_profile: string;
   generated_at: string;
+  provenance: EvaluatorRunProvenance;
   verdict: EvaluatorRunParsed["verdict"];
   summary: string;
   evaluated_sha: string | null;
@@ -59,17 +60,19 @@ export function renderEvaluatorPrompt(opts: {
   taskId: string;
   taskReadmePath: string;
   reportPath: string;
+  provenance: EvaluatorRunProvenance;
 }): string {
   return [
-    "# AgentPlane EVALUATOR quality review",
+    "# AgentPlane semantic quality review record",
     "",
-    "Use the evaluator module below as binding review procedure.",
+    "AgentPlane records supplied review values here; this command does not execute an evaluator.",
+    "Use the evaluator module below as the review procedure before supplying a result.",
     "Do not edit implementation files. Inspect task scope, diff, verification evidence, and residual risk.",
-    "Write the final structured review to the report path as JSON matching the requested report shape.",
     "",
     `- task_id: ${opts.taskId}`,
     `- task_readme: ${opts.taskReadmePath}`,
     `- report_path: ${opts.reportPath}`,
+    `- provenance: ${opts.provenance}`,
     "",
     "Required report fields:",
     "- verdict: pass | rework | blocked | human_review",
@@ -89,7 +92,9 @@ export function renderEvaluatorPrompt(opts: {
 
 export function renderOpinionMarkdown(report: EvaluatorQualityReport): string {
   return [
-    `# EVALUATOR opinion: ${report.verdict}`,
+    `# Semantic quality review: ${report.verdict}`,
+    "",
+    `Provenance: ${report.provenance}`,
     "",
     report.summary,
     "",
