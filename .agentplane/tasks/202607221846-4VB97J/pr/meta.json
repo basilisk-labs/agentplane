@@ -8,10 +8,10 @@
   "pr_number": 4599,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4599",
   "pre_merge_closure": {
-    "basis_commit": "96b0c85105edd82ba99a7f25f777373dc69f9058",
+    "basis_commit": "65003955f31a787c0bd080cfabd001c589f95760",
     "branch": "task/202607221846-4VB97J/align-workflow-schema-migration-and-runtime-vers",
     "pr_number": 4599,
-    "recorded_at": "2026-07-23T02:31:36.758Z",
+    "recorded_at": "2026-07-23T03:21:34.254Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
