@@ -3,14 +3,22 @@
   "branch": "task/202607221846-C2XADX/generate-runner-manifest-examples-from-canonical",
   "created_at": "2026-07-23T17:58:52.150Z",
   "diffstat_sha256": "sha256:aea979dfe1ec118a9bcf0813b7abb33129ad85d64444feca73940a8829d6a4c9",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-23T18:31:55.387Z",
+  "last_verified_diffstat_sha256": "sha256:aea979dfe1ec118a9bcf0813b7abb33129ad85d64444feca73940a8829d6a4c9",
   "pr_number": 4606,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4606",
+  "pre_merge_closure": {
+    "basis_commit": "e1a327cf74f173b2f518ebb73cff6a0d3293b674",
+    "branch": "task/202607221846-C2XADX/generate-runner-manifest-examples-from-canonical",
+    "pr_number": 4606,
+    "recorded_at": "2026-07-23T18:33:31.794Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221846-C2XADX",
   "updated_at": "2026-07-23T17:58:56.069Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

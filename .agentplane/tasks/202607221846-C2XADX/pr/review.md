@@ -6,14 +6,14 @@ Created: 2026-07-23T17:58:52.150Z
 
 - Task: `202607221846-C2XADX`
 - Title: Generate runner manifest examples from canonical fixtures
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221846-C2XADX/generate-runner-manifest-examples-from-canonical`
 - Canonical task record: `.agentplane/tasks/202607221846-C2XADX/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: PASS at 45ba511d2: bootstrap/public fixtures cover completed, blocked, needs_context, and failed; all rendered bootstrap examples round-trip through the production parser and remain bound to work_order_id. Focused runner/core tests: 5 files, 59/59. schemas:check: pass. spec:examples:check: 14 validated plus 1 compatibility-only route. test:critical: 11 chunks, 71/71. typecheck, guards/trust ratchet, lint:core, arch:check, git diff check: pass. Deterministic schema sync preserved identical hashes. RF01 superseded the historical missing-evidence wording: typed negatives now prove missing blocker, missing knowledge_request, forbidden exit_code, and malformed JSON. A prior monolithic suite run showed 8 cross-file isolation failures in prompt/release smoke tests; the three affected files pass together in isolation, 19/19, so hosted CI remains the final concurrency check.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
