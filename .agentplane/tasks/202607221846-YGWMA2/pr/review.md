@@ -6,14 +6,14 @@ Created: 2026-07-23T03:42:12.404Z
 
 - Task: `202607221846-YGWMA2`
 - Title: Remove automatic semantic pass verdicts
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts`
 - Canonical task record: `.agentplane/tasks/202607221846-YGWMA2/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI, docs, platform, and coverage gates.
+- State: needs_rework
+- Note: Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

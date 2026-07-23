@@ -15,13 +15,12 @@ RF-00: remove preselected evaluator pass outcomes from route control, repair gui
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap
-with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI,
-docs, platform, and coverage gates.
+Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font
+metrics overflow one social title.
 ```
 - Canonical workflow state lives in the task README.
 

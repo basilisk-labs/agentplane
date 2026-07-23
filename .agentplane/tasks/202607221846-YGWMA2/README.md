@@ -2,10 +2,10 @@
 id: "202607221846-YGWMA2"
 title: "Remove automatic semantic pass verdicts"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -32,43 +32,23 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-23T05:05:50.295Z"
-  updated_by: "CODER"
-  note: "Rework resolved: typed CODER handoff now blocks PR actions for evaluator rework, social titles wrap with rendered-width enforcement, and full local CI passed with 2229 unit tests plus critical CLI, docs, platform, and coverage gates."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-23T05:14:43.959Z"
+  state: "needs_rework"
+  updated_at: "2026-07-23T05:24:59.105Z"
   updated_by: "EVALUATOR"
-  note: "The audited RF-00 implementation and rework fixes remain unchanged at 0fcb2e169; only the managed YGWMA2 README advanced after PR artifact synchronization."
-  evaluated_sha: "0fcb2e16939fb9d3aa7c639d8e8fcec8d292a3c6"
+  note: "Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-07-23T05:24:59.105Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title."
+  evaluated_sha: "c5d664b2fb001974d3ca56fe75f8804d8589e67e"
   blueprint_digest: "0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b"
   evidence_refs:
     - ".agentplane/tasks/202607221846-YGWMA2/README.md"
-    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051443959-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051443959-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-YGWMA2/quality/20260723-051443959-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json"
-    - "git diff --name-status 6f8a8590f..0fcb2e169: only YGWMA2 README"
-    - "git diff --quiet 6f8a8590f..0fcb2e169 excluding YGWMA2 README: exit 0"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts"
-    - "packages/agentplane/src/commands/shared/route-execution-packet.ts"
-    - "scripts/baselines/trust-boundary-violations.json"
-    - "website/scripts/generate-social-images.mjs"
-    - "website/static/img/social/docs/user/workflow-migration.png"
-    - "focused Vitest: 5 files / 35 tests passed"
-    - "bun run ci:local:full: 372 test files / 2229 tests plus critical CLI, docs, platform, and coverage gates passed"
-    - "social strict check: 220 images passed"
-  findings:
-    - "The implementation diff from audited d836982ea remains byte-identical, so the prior semantic, provenance, routing, and visual conclusions remain valid."
-    - "RF-00 trust ratchet reports zero current automatic-semantic-verdict violations, with no fixed pass verdict in production or template surfaces."
-    - "Fresh rework returns implementation_rework_required to CODER with null argv and blocks PR publication or integration until verification."
-    - "All 220 social images pass strict rendered-width validation and inspected regenerated cards have no clipping."
-commit:
-  hash: "d0a23d1ba1274c45ff7a908b1ffcf4bfb64e7689"
-  message: "🧐 YGWMA2 task: record final quality review"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json"
+  findings: []
+commit: null
 comments:
   -
     author: "CODER"
@@ -109,8 +89,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-23T05:24:59.105Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title."
 doc_version: 3
-doc_updated_at: "2026-07-23T05:19:41.444Z"
+doc_updated_at: "2026-07-23T05:25:01.503Z"
 doc_updated_by: "CODER"
 description: "RF-00: remove preselected evaluator pass outcomes from route control, repair guidance, context task contracts, templates, and fixtures; emit a typed evaluator episode or quality-review stop instead."
 sections:
@@ -224,6 +210,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-23T05:24:59.105Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T05:19:41.444Z, excerpt_hash=sha256:e5191b3bfe3839fd43f388edb72efc40ec3afb7f27cb5430ec928ec14af5e8e8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json
+    - old_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+    - current_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-YGWMA2
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane integrate queue enqueue 202607221846-YGWMA2 --branch task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts
+    - diagnostic_command: agentplane pr check 202607221846-YGWMA2
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
@@ -237,6 +253,10 @@ sections:
     - Observation: Independent review found a clipped workflow-migration social title and a fresh evaluator rework route that fell through to PR artifact handling.
       Impact: The visual artifact regressed and the CLI did not formalize the implementation handoff before publication.
       Resolution: Added deterministic title wrapping and overflow/truncation guards, introduced implementation_rework_required with a bounded CODER task-worktree handoff, and reran the full local CI successfully.
+
+    - Observation: A valid rework record without findings is accepted but not routed to CODER; Ubuntu rendered Cloud backend integration plan at 1188 px against a 1184 px limit.
+      Impact: The CLI can request another semantic review instead of implementation rework, and Docs CI blocks publication despite a local pass.
+      Resolution: Make rework freshness independent of findings or require them consistently, add regression coverage, and use a deterministic title layout with cross-platform width margin.
 extensions:
   implementation_commit:
     hash: "0fcb2e16939fb9d3aa7c639d8e8fcec8d292a3c6"
@@ -362,6 +382,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-23T05:24:59.105Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted gates require rework: finding-free evaluator rework is misrouted as stale, and Ubuntu font metrics overflow one social title.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-23T05:19:41.444Z, excerpt_hash=sha256:e5191b3bfe3839fd43f388edb72efc40ec3afb7f27cb5430ec928ec14af5e8e8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-YGWMA2-remove-automatic-semantic-pass-verdicts/.agentplane/tasks/202607221846-YGWMA2/blueprint/resolved-snapshot.json
+- old_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+- current_digest: 0a86af4c9407a97894bb9809f1142ffe546b0b84e01fb110d6dfd537068cc68b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-YGWMA2
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane integrate queue enqueue 202607221846-YGWMA2 --branch task/202607221846-YGWMA2/remove-automatic-semantic-pass-verdicts
+- diagnostic_command: agentplane pr check 202607221846-YGWMA2
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -379,3 +429,7 @@ DecisionContextRef:
 - Observation: Independent review found a clipped workflow-migration social title and a fresh evaluator rework route that fell through to PR artifact handling.
   Impact: The visual artifact regressed and the CLI did not formalize the implementation handoff before publication.
   Resolution: Added deterministic title wrapping and overflow/truncation guards, introduced implementation_rework_required with a bounded CODER task-worktree handoff, and reran the full local CI successfully.
+
+- Observation: A valid rework record without findings is accepted but not routed to CODER; Ubuntu rendered Cloud backend integration plan at 1188 px against a 1184 px limit.
+  Impact: The CLI can request another semantic review instead of implementation rework, and Docs CI blocks publication despite a local pass.
+  Resolution: Make rework freshness independent of findings or require them consistently, add regression coverage, and use a deterministic title layout with cross-platform width margin.

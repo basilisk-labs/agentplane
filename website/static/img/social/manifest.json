@@ -50,7 +50,7 @@
       "section": "Adr",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "0006 No Effect Fp Ts Migration",
-      "svgSha256": "b578cd36d592f433030baf882d5d2e9b48a65ed91ad34c039faac332a2961158"
+      "svgSha256": "da199f6cc2d5fa572029472d0db46f36ffb0e2788317109840d11f5e8d46cf39"
     },
     {
       "route": "/docs/adr/0007-freeze-yaml-parser-stack",
@@ -170,7 +170,7 @@
       "section": "Context",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Agent guide to project context",
-      "svgSha256": "ec3fe6d6573c26ef1d9dd122a0d5d2a8478eeac1ebc563c9f8320b7789aeb9ba"
+      "svgSha256": "91dee63857e8e52188b98052d4410aa57926274aef7afc67b16a609dfe9b4d89"
     },
     {
       "route": "/docs/context/files",
@@ -290,7 +290,7 @@
       "section": "Developer",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Cloud backend integration plan",
-      "svgSha256": "b6d8aabef1216eb7241c615bcbc670ea018b8ac9b6818e17e86fa332e042a2bc"
+      "svgSha256": "2f3954c6856b0606b7df1baa8edff9c0862916b94e8085cd44c820050ea056f7"
     },
     {
       "route": "/docs/developer/code-quality",
@@ -490,7 +490,7 @@
       "section": "Examples",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "Debug an agent run with traces",
-      "svgSha256": "746ba45ae2f1bb0b8bd6fc560f95dccd5cb07019bb1d48fccf600a10f58f2679"
+      "svgSha256": "26cce6820e644a4447f32d7b6b429863125da315bf189dae699ce6a109120083"
     },
     {
       "route": "/docs/examples/export-traces",
@@ -570,7 +570,7 @@
       "section": "Internal",
       "subtitle": "New release: ship agent work faster with repo-local plans, checks, traces, and PR evidence.",
       "title": "V0.7 Agent Efficiency Baseline",
-      "svgSha256": "ff997a3e14e9ec918cc564d2254e771fd52326596bc25321d3b472514244824d"
+      "svgSha256": "f09c6932ab0b18111f1ad1bcbc02dc753f3a5aa6c73d1dac613fdc99a2d742c2"
     },
     {
       "route": "/docs/internal/v0.7-refactor-plan",
