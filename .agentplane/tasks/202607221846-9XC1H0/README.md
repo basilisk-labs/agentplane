@@ -1,10 +1,10 @@
 ---
 id: "202607221846-9XC1H0"
 title: "Enforce role-scoped sandboxes and actual write boundaries"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,9 +27,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-23T18:44:52.366Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Enforce role-derived sandbox defaults, authority-backed danger mode, and observed write-boundary rejection with adapter downgrade evidence."
+events:
+  -
+    type: "status"
+    at: "2026-07-23T18:45:27.018Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Enforce role-derived sandbox defaults, authority-backed danger mode, and observed write-boundary rejection with adapter downgrade evidence."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:46:58.451Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-23T18:45:27.018Z"
+doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
   Summary: |-

@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607221846-9XC1H0/enforce-role-scoped-sandboxes-and-actual-write-b",
+  "created_at": "2026-07-23T18:45:27.072Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607221846-9XC1H0",
+  "updated_at": "2026-07-23T18:45:27.072Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
