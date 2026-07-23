@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -47,6 +48,30 @@ async function makeRepo(): Promise<string> {
   await fs.mkdir(path.join(root, ".agentplane", "workflows"), { recursive: true });
   await fs.writeFile(path.join(root, ".agentplane", "WORKFLOW.md"), V1_WORKFLOW, "utf8");
   return root;
+}
+
+function sha256Bytes(value: string | Buffer): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+async function replaceReceiptSource(receiptPath: string, source: string | Buffer) {
+  const sourceBytes = typeof source === "string" ? Buffer.from(source, "utf8") : source;
+  const receipt = JSON.parse(await fs.readFile(receiptPath, "utf8")) as Record<string, unknown>;
+  receipt.source_base64 = sourceBytes.toString("base64");
+  receipt.source_sha256 = sha256Bytes(sourceBytes);
+  await fs.writeFile(receiptPath, `${JSON.stringify(receipt, null, 2)}\n`, "utf8");
+  return receipt;
+}
+
+async function readPublishedWorkflowBytes(root: string): Promise<{
+  active: Buffer;
+  lastKnownGood: Buffer;
+}> {
+  const [active, lastKnownGood] = await Promise.all([
+    fs.readFile(path.join(root, ".agentplane", "WORKFLOW.md")),
+    fs.readFile(path.join(root, ".agentplane", "workflows", "last-known-good.md")),
+  ]);
+  return { active, lastKnownGood };
 }
 
 describe("workflow migration", () => {
@@ -217,6 +242,60 @@ describe("workflow migration", () => {
       await fs.rm(outside, { recursive: true, force: true });
     }
   });
+
+  it("rejects an alternate valid v1 receipt that does not reproduce the active target", async () => {
+    const root = await makeRepo();
+    try {
+      const applied = await applyWorkflowMigration(root, {
+        now: "2026-07-23T00:00:00.000Z",
+      });
+      const before = await readPublishedWorkflowBytes(root);
+      const alternateV1 = V1_WORKFLOW.replace("mode: branch_pr", "mode: direct");
+      const alternatePlan = planWorkflowMigration(alternateV1);
+      const receipt = await replaceReceiptSource(applied.receiptPath!, alternateV1);
+      expect(alternatePlan.sourceSha256).toBe(receipt.source_sha256);
+      expect(alternatePlan.targetSha256).not.toBe(receipt.target_sha256);
+
+      await expect(
+        rollbackWorkflowMigration(root, applied.receiptPath!, { dryRun: true }),
+      ).rejects.toThrow("source does not reproduce the active migration target");
+      await expect(rollbackWorkflowMigration(root, applied.receiptPath!)).rejects.toThrow(
+        "source does not reproduce the active migration target",
+      );
+      const after = await readPublishedWorkflowBytes(root);
+      expect(after.active.equals(before.active)).toBe(true);
+      expect(after.lastKnownGood.equals(before.lastKnownGood)).toBe(true);
+    } finally {
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it.each([
+    ["malformed", "not a workflow\n"],
+    ["future", V1_WORKFLOW.replace("version: 1", "version: 3")],
+    ["v2", planWorkflowMigration(V1_WORKFLOW).targetText],
+  ])(
+    "rejects %s receipt source without changing published workflow bytes",
+    async (_label, source) => {
+      const root = await makeRepo();
+      try {
+        const applied = await applyWorkflowMigration(root, {
+          now: "2026-07-23T00:00:00.000Z",
+        });
+        const before = await readPublishedWorkflowBytes(root);
+        await replaceReceiptSource(applied.receiptPath!, source);
+
+        await expect(rollbackWorkflowMigration(root, applied.receiptPath!)).rejects.toThrow(
+          "source is not a valid v1 migration input",
+        );
+        const after = await readPublishedWorkflowBytes(root);
+        expect(after.active.equals(before.active)).toBe(true);
+        expect(after.lastKnownGood.equals(before.lastKnownGood)).toBe(true);
+      } finally {
+        await fs.rm(root, { recursive: true, force: true });
+      }
+    },
+  );
 
   it("leaves the active workflow exact when apply fails before its commit point", async () => {
     const root = await makeRepo();

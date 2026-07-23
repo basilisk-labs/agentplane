@@ -1,6 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import {
+  UnsupportedWorkflowVersionError,
+  safeParseWorkflowFrontMatter,
+} from "@agentplaneorg/core/config";
+
 import { parseWorkflowMarkdown, serializeWorkflowMarkdown } from "./markdown.js";
 import { emitWorkflowEvent } from "./observability.js";
 import { resolveWorkflowPaths } from "./paths.js";
@@ -30,6 +35,22 @@ async function listAgentIds(agentplaneDir: string): Promise<Set<string>> {
     // best effort
   }
   return ids;
+}
+
+async function readUnsupportedActiveVersion(
+  workflowPath: string,
+): Promise<UnsupportedWorkflowVersionError | null> {
+  try {
+    const activeText = await fs.readFile(workflowPath, "utf8");
+    const parsed = parseWorkflowMarkdown(activeText, workflowPath);
+    const frontMatter = safeParseWorkflowFrontMatter(parsed.document.frontMatterRaw);
+    return !frontMatter.success && frontMatter.error instanceof UnsupportedWorkflowVersionError
+      ? frontMatter.error
+      : null;
+  } catch {
+    // Restore remains available for missing, unreadable, or otherwise malformed active files.
+    return null;
+  }
 }
 
 export async function readWorkflowDocument(
@@ -221,6 +242,27 @@ export async function restoreWorkflowFromLastKnownGood(
     parsed.document.frontMatter as unknown as Record<string, unknown>,
     parsed.document.sections,
   );
+
+  const unsupportedActiveVersion = await readUnsupportedActiveVersion(paths.workflowPath);
+  if (unsupportedActiveVersion) {
+    emitWorkflowEvent({
+      event: "workflow_restore_failed",
+      code: "WF_UNSUPPORTED_VERSION",
+      details: { reason: unsupportedActiveVersion.message },
+    });
+    return {
+      ok: false,
+      diagnostics: [
+        ...diagnostics,
+        {
+          code: "WF_UNSUPPORTED_VERSION",
+          severity: "ERROR",
+          path: "front_matter.version",
+          message: unsupportedActiveVersion.message,
+        },
+      ],
+    };
+  }
 
   try {
     await fs.mkdir(path.dirname(paths.workflowPath), { recursive: true });

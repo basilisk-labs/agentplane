@@ -63,6 +63,34 @@ describe("workflow-runtime/file-ops", () => {
     }
   });
 
+  it("refuses to restore over an unsupported future active version", async () => {
+    const root = await setupRepo({ writeWorkflowConfig: false });
+    try {
+      const paths = resolveWorkflowPaths(root);
+      await publishWorkflowCandidate(root, DEFAULT_WORKFLOW_TEMPLATE);
+      const futureWorkflow = DEFAULT_WORKFLOW_TEMPLATE.replace("version: 2", "version: 3");
+      await fs.writeFile(paths.workflowPath, futureWorkflow, "utf8");
+      const [activeBefore, lastKnownGoodBefore] = await Promise.all([
+        fs.readFile(paths.workflowPath),
+        fs.readFile(paths.lastKnownGoodPath),
+      ]);
+
+      const restored = await restoreWorkflowFromLastKnownGood(root);
+      expect(restored.ok).toBe(false);
+      expect(restored.diagnostics.map((diagnostic) => diagnostic.code)).toContain(
+        "WF_UNSUPPORTED_VERSION",
+      );
+      const [activeAfter, lastKnownGoodAfter] = await Promise.all([
+        fs.readFile(paths.workflowPath),
+        fs.readFile(paths.lastKnownGoodPath),
+      ]);
+      expect(activeAfter.equals(activeBefore)).toBe(true);
+      expect(lastKnownGoodAfter.equals(lastKnownGoodBefore)).toBe(true);
+    } finally {
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+
   it("does not read legacy root WORKFLOW.md as a fallback", async () => {
     const root = await setupRepo({ writeWorkflowConfig: false });
     try {

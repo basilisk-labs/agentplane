@@ -213,6 +213,42 @@ async function assertReceiptPathInsideRepo(repoRoot: string, receiptPath: string
   return absolute;
 }
 
+function assertReceiptSourceReproducesTarget(
+  receipt: WorkflowMigrationReceipt,
+  source: Buffer,
+  currentTargetSha256: string,
+): void {
+  if (sha256Bytes(source) !== receipt.source_sha256) {
+    throw new Error("Workflow migration receipt source bytes do not match source_sha256.");
+  }
+
+  const sourceText = source.toString("utf8");
+  if (!Buffer.from(sourceText, "utf8").equals(source)) {
+    throw new Error("Workflow migration receipt source is not a valid v1 migration input.");
+  }
+
+  let sourcePlan: WorkflowMigrationPlan;
+  try {
+    sourcePlan = planWorkflowMigration(sourceText);
+  } catch {
+    throw new Error("Workflow migration receipt source is not a valid v1 migration input.");
+  }
+  if (sourcePlan.sourceVersion !== 1 || !sourcePlan.changed) {
+    throw new Error("Workflow migration receipt source is not a valid v1 migration input.");
+  }
+  if (sourcePlan.sourceSha256 !== receipt.source_sha256) {
+    throw new Error("Workflow migration receipt source bytes do not match source_sha256.");
+  }
+  if (
+    sourcePlan.targetSha256 !== receipt.target_sha256 ||
+    sourcePlan.targetSha256 !== currentTargetSha256
+  ) {
+    throw new Error(
+      "Workflow migration receipt source does not reproduce the active migration target.",
+    );
+  }
+}
+
 export async function rollbackWorkflowMigration(
   repoRoot: string,
   receiptPath: string,
@@ -229,15 +265,14 @@ export async function rollbackWorkflowMigration(
     "active WORKFLOW.md path",
   );
   const current = await readFile(paths.workflowPath);
-  if (sha256Bytes(current) !== receipt.target_sha256) {
+  const currentTargetSha256 = sha256Bytes(current);
+  if (currentTargetSha256 !== receipt.target_sha256) {
     throw new Error(
       "Refusing workflow rollback because the active WORKFLOW.md no longer matches the migration target.",
     );
   }
   const source = Buffer.from(receipt.source_base64, "base64");
-  if (sha256Bytes(source) !== receipt.source_sha256) {
-    throw new Error("Workflow migration receipt source bytes do not match source_sha256.");
-  }
+  assertReceiptSourceReproducesTarget(receipt, source, currentTargetSha256);
   if (opts.dryRun) {
     return {
       restored: false,
