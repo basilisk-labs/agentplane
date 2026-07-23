@@ -8,10 +8,10 @@
   "pr_number": 4602,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4602",
   "pre_merge_closure": {
-    "basis_commit": "b17723dd746a9aed7c6e3d3dca25f276e43657cd",
+    "basis_commit": "d43f49d290b33c0231f121adb8cdad28d71850c9",
     "branch": "task/202607222129-1ZQHJD/capture-anchored-multi-run-rf-04-replay-telemetr",
     "pr_number": 4602,
-    "recorded_at": "2026-07-23T14:16:33.342Z",
+    "recorded_at": "2026-07-23T14:20:08.548Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
