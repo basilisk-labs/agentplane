@@ -4,7 +4,7 @@ title: "Build supervisor-owned execution receipts"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -26,9 +26,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-23T15:58:08.885Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
