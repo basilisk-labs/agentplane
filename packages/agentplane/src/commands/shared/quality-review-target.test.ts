@@ -131,4 +131,73 @@ describe("quality review target resolver", () => {
 
     await expect(resolveTarget({ root, taskId })).resolves.toBeNull();
   });
+
+  it("returns no singular target when unrelated task metadata follows the review", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-PRIMARY";
+    const reviewedSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/manual-note.md`,
+      "reviewed primary metadata\n",
+      "docs: review primary metadata",
+    );
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/manual-note.md",
+      "unrelated task metadata\n",
+      "docs: update unrelated task",
+    );
+
+    await expect(
+      resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha }),
+    ).resolves.toBeNull();
+  });
+
+  it("treats included-task metadata as a new batch review target", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-PRIMARY";
+    const includedTaskId = "202607240736-INCLUDED";
+    const reviewedSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/manual-note.md`,
+      "reviewed primary metadata\n",
+      "docs: review primary metadata",
+    );
+    const includedMetadataSha = await commitPath(
+      root,
+      `.agentplane/tasks/${includedTaskId}/manual-note.md`,
+      "new included metadata\n",
+      "docs: update included task",
+    );
+
+    await expect(
+      resolveQualityReviewTargetSha({
+        gitRoot: root,
+        workflowDir: ".agentplane/tasks",
+        taskId,
+        taskIds: [taskId, includedTaskId],
+        previousEvaluatedSha: reviewedSha,
+      }),
+    ).resolves.toBe(includedMetadataSha);
+  });
+
+  it("returns no target when the recorded review is not an ancestor of unrelated history", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-CURRENT";
+    await commitPath(root, "src/base.ts", "export {};\n", "feat: establish semantic base");
+    await commitPath(
+      root,
+      ".agentplane/tasks/202607240736-OTHER/manual-note.md",
+      "unrelated task metadata\n",
+      "docs: update unrelated task",
+    );
+
+    await expect(
+      resolveTarget({
+        root,
+        taskId,
+        previousEvaluatedSha: "f".repeat(40),
+      }),
+    ).resolves.toBeNull();
+  });
 });

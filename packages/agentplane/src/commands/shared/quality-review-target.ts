@@ -25,6 +25,7 @@ export async function resolveQualityReviewTargetSha(opts: {
   gitRoot: string;
   workflowDir: string;
   taskId: string;
+  taskIds?: readonly string[];
   headSha?: string | null;
   previousEvaluatedSha?: string | null;
 }): Promise<string | null> {
@@ -36,8 +37,13 @@ export async function resolveQualityReviewTargetSha(opts: {
   if (!head) return null;
 
   const workflowDir = normalizeWorkflowDir(opts.workflowDir);
-  const taskArtifactPrefix = `${workflowDir}/${opts.taskId}/`;
+  const taskIds = [...new Set([opts.taskId, ...(opts.taskIds ?? [])])];
+  const taskArtifactPrefixes = taskIds.map((taskId) => `${workflowDir}/${taskId}/`);
   const workflowArtifactPrefix = `${workflowDir}/`;
+  const taskRelativePath = (name: string): string | null => {
+    const prefix = taskArtifactPrefixes.find((candidate) => name.startsWith(candidate));
+    return prefix ? name.slice(prefix.length) : null;
+  };
   const previousEvaluatedSha = await (async (): Promise<string | null> => {
     const candidate = opts.previousEvaluatedSha?.trim();
     if (!candidate) return null;
@@ -66,18 +72,21 @@ export async function resolveQualityReviewTargetSha(opts: {
       return current;
     }
 
-    const touchesCurrentTask = changed.some((name) => name.startsWith(taskArtifactPrefix));
-    const touchesOnlyCurrentTask = changed.every((name) => name.startsWith(taskArtifactPrefix));
+    const touchesCurrentTaskSet = changed.some((name) => taskRelativePath(name) !== null);
+    const touchesOnlyCurrentTaskSet = changed.every((name) => taskRelativePath(name) !== null);
     const touchesOnlyWorkflowArtifacts = changed.every((name) =>
       name.startsWith(workflowArtifactPrefix),
     );
 
-    if (!touchesOnlyCurrentTask && !touchesOnlyWorkflowArtifacts) {
+    if (!touchesOnlyCurrentTaskSet && !touchesOnlyWorkflowArtifacts) {
       return current;
     }
 
-    if (touchesOnlyCurrentTask) {
-      const taskRelativePaths = changed.map((name) => name.slice(taskArtifactPrefix.length));
+    if (touchesOnlyCurrentTaskSet) {
+      const taskRelativePaths = changed.flatMap((name) => {
+        const relativePath = taskRelativePath(name);
+        return relativePath === null ? [] : [relativePath];
+      });
       const touchesDerivedArtifacts = taskRelativePaths.some(
         (name) =>
           name.startsWith("quality/") || name.startsWith("pr/") || name.startsWith("blueprint/"),
@@ -94,7 +103,7 @@ export async function resolveQualityReviewTargetSha(opts: {
       continue;
     }
 
-    if (touchesCurrentTask) {
+    if (touchesCurrentTaskSet) {
       return currentTaskArtifactHead ?? current;
     }
     return currentTaskArtifactHead;

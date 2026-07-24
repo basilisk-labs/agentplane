@@ -103,25 +103,17 @@ async function qualityReviewIsFreshForHead(opts: {
   if (!opts.headSha) return true;
   if (!review.evaluated_sha) return false;
   if (review.evaluated_sha === opts.headSha) return true;
-  if (opts.batchOwnership.role === "none") {
-    const expectedSha = await resolveQualityReviewTargetSha({
-      gitRoot: opts.ctx.resolvedProject.gitRoot,
-      workflowDir: opts.ctx.config.paths.workflow_dir,
-      taskId: opts.task.id,
-      headSha: opts.headSha,
-      previousEvaluatedSha: review.evaluated_sha,
-    }).catch(() => null);
-    return expectedSha === review.evaluated_sha;
-  }
-  const taskIds = opts.batchOwnership.allTaskIds;
-  return isTaskSetLocalOnlyAdvance({
+  const taskIds =
+    opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
+  const expectedSha = await resolveQualityReviewTargetSha({
     gitRoot: opts.ctx.resolvedProject.gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
-    tasksPath: opts.ctx.config.paths.tasks_path,
+    taskId: opts.task.id,
     taskIds,
-    fromRef: review.evaluated_sha,
-    toRef: opts.headSha,
-  }).catch(() => false);
+    headSha: opts.headSha,
+    previousEvaluatedSha: review.evaluated_sha,
+  }).catch(() => null);
+  return expectedSha === review.evaluated_sha;
 }
 
 async function readLocalPrMeta(opts: {
