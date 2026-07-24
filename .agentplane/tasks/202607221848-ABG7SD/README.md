@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -41,22 +41,22 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T10:07:09.959Z"
+  updated_at: "2026-07-24T10:18:02.890Z"
   updated_by: "EVALUATOR"
-  note: "Runtime CLI/error documentation, installed-tarball behavior, compatibility provenance, and Node support gates align at DCO head 8bf0104e."
-  evaluated_sha: "8bf0104e2379a265002107bd24096f686e87d280"
+  note: "Hosted verify-unit regression is corrected at DCO head 3ff89179 without weakening the release-ready contract."
+  evaluated_sha: "3ff891791141db79b8679742d903d72e066198b3"
   blueprint_digest: "dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5"
   evidence_refs:
     - ".agentplane/tasks/202607221848-ABG7SD/README.md"
-    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-100709959-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-100709959-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-100709959-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-101802890-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-101802890-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-101802890-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-ABG7SD/blueprint/resolved-snapshot.json"
-    - ".github/workflows/ci.yml"
-    - "scripts/release/check-local-tarball-install-smoke.mjs"
-    - "commit:8bf0104e2379a265002107bd24096f686e87d280"
+    - "packages/agentplane/src/commands/release/ci-workflow-contract.test.ts"
+    - "https://github.com/basilisk-labs/agentplane/actions/runs/30085162677/job/89455569371"
+    - "bun run test:fast: 427/427 files, 2679/2679 tests"
   findings:
-    - "Independent semantic review found no code blocker: exact JSON projections prevent field leakage; the 4-cell core/recipes Node matrix is a direct mandatory PR verification dependency; RF04 offline replay remains 50/70/27/170."
+    - "Independent review confirmed the one-line expectation now explicitly requires verify-package-node-runtime success; it does not broaden alternatives or remove assertions. Exact local test:fast passes 427 files and 2679 tests."
 commit:
   hash: "8bf0104e2379a265002107bd24096f686e87d280"
   message: "🧩 ABG7SD cli: align runtime contracts"
