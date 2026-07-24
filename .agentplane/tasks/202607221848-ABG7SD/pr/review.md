@@ -38,6 +38,7 @@ Created: 2026-07-24T09:04:20.081Z
  ...-cli.critical.agent-efficiency-baseline.test.ts |   6 +-
  .../agentplane/src/cli/spec/docs-render.test.ts    |  19 ++
  packages/agentplane/src/cli/spec/docs-render.ts    |  57 ++++-
+ .../commands/release/ci-workflow-contract.test.ts  |   2 +-
  .../release/workflow-node-version-contract.test.ts | 120 ++++++++-
  packages/agentplane/src/shared/errors.test.ts      |  58 +++++
  packages/agentplane/src/shared/errors.ts           |  69 +++++-
@@ -45,7 +46,7 @@ Created: 2026-07-24T09:04:20.081Z
  .../check-compatibility-contract-baseline.mjs      |  42 +++-
  .../release/check-local-tarball-install-smoke.mjs  | 267 ++++++++++++++++++++-
  scripts/release/check-package-node-runtime.mjs     | 164 +++++++++++++
- 16 files changed, 1024 insertions(+), 41 deletions(-)
+ 17 files changed, 1025 insertions(+), 42 deletions(-)
 ```
 
 </details>
