@@ -80,6 +80,7 @@ export type StateFingerprintComponentInput =
       state: "missing" | "unavailable";
       source: string;
       reason_code: string;
+      evidence?: unknown;
     };
 
 export type StateFingerprintInput = {
@@ -87,13 +88,19 @@ export type StateFingerprintInput = {
   components: Record<StateFingerprintComponentName, StateFingerprintComponentInput>;
 };
 
-export type StateFingerprintPolicy = {
-  required_components: readonly StateFingerprintComponentName[];
-  provider: {
-    required: boolean;
-    unavailable: "reject" | "allow_if_unchanged";
-  };
-};
+export const STATE_FINGERPRINT_POLICY_ZOD_SCHEMA = z
+  .object({
+    required_components: z.array(z.enum(STATE_FINGERPRINT_COMPONENT_NAMES)).readonly(),
+    provider: z
+      .object({
+        required: z.boolean(),
+        unavailable: z.enum(["reject", "allow_if_unchanged"]),
+      })
+      .strict(),
+  })
+  .strict();
+
+export type StateFingerprintPolicy = z.infer<typeof STATE_FINGERPRINT_POLICY_ZOD_SCHEMA>;
 
 export type StateFingerprintChange = {
   component: StateFingerprintComponentName;
@@ -194,11 +201,20 @@ function buildComponent(input: StateFingerprintComponentInput): StateFingerprint
   return {
     state: input.state,
     source,
-    digest: digestCanonical({
-      state: input.state,
-      source,
-      reason_code: reasonCode,
-    }),
+    digest: digestCanonical(
+      input.evidence === undefined
+        ? {
+            state: input.state,
+            source,
+            reason_code: reasonCode,
+          }
+        : {
+            state: input.state,
+            source,
+            reason_code: reasonCode,
+            evidence: input.evidence,
+          },
+    ),
     reason_code: reasonCode,
   };
 }
@@ -238,6 +254,10 @@ export function validateStateFingerprint(input: unknown): StateFingerprint {
   return parsed;
 }
 
+export function validateStateFingerprintPolicy(input: unknown): StateFingerprintPolicy {
+  return STATE_FINGERPRINT_POLICY_ZOD_SCHEMA.parse(input);
+}
+
 export function evaluateStateFingerprintPrecondition(opts: {
   expected: StateFingerprint;
   current: StateFingerprint;
@@ -245,6 +265,7 @@ export function evaluateStateFingerprintPrecondition(opts: {
 }): StateFingerprintPreconditionDiagnostic {
   const expected = validateStateFingerprint(opts.expected);
   const current = validateStateFingerprint(opts.current);
+  const policy = validateStateFingerprintPolicy(opts.policy);
   const changed_components = STATE_FINGERPRINT_COMPONENT_NAMES.flatMap((component) => {
     const expectedComponent = expected.components[component];
     const currentComponent = current.components[component];
@@ -274,7 +295,7 @@ export function evaluateStateFingerprintPrecondition(opts: {
     });
   }
   const unavailable_required_components = normalizeRequiredComponents(
-    opts.policy.required_components,
+    policy.required_components,
   ).filter((component) => current.components[component].state !== "present");
   const base = {
     expected_digest: expected.digest,
@@ -297,7 +318,7 @@ export function evaluateStateFingerprintPrecondition(opts: {
       reason_code: "state_fingerprint_required_component_unavailable",
     };
   }
-  if (current.components.provider.state === "missing" && opts.policy.provider.required) {
+  if (current.components.provider.state === "missing" && policy.provider.required) {
     return {
       ...base,
       status: "blocked",
@@ -305,7 +326,7 @@ export function evaluateStateFingerprintPrecondition(opts: {
     };
   }
   if (current.components.provider.state === "unavailable") {
-    if (opts.policy.provider.required || opts.policy.provider.unavailable === "reject") {
+    if (policy.provider.required || policy.provider.unavailable === "reject") {
       return {
         ...base,
         status: "blocked",

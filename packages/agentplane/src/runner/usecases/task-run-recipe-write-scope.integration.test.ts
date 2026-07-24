@@ -16,6 +16,7 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import type { RunnerRecipeContext, RunnerTarget } from "../types.js";
+import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 
 installRunCliIntegrationHarness();
@@ -27,6 +28,7 @@ afterEach(() => {
 });
 
 async function createDoingCodeTask(root: string, title: string): Promise<string> {
+  await initializeRunnerPolicyFixture(root);
   const io = captureStdIO();
   let taskId = "";
   try {

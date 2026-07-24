@@ -19,6 +19,7 @@ import { cmdContextVerifyTask } from "../../commands/context/verify-task.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveSupervisorExecutionReceiptLocator } from "../task-run-paths.js";
+import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 
 installRunCliIntegrationHarness();
@@ -46,6 +47,7 @@ async function createDoingTask(
     extensions?: Record<string, unknown>;
   },
 ): Promise<string> {
+  await initializeRunnerPolicyFixture(root);
   const io = captureStdIO();
   let taskId = "";
   try {

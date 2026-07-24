@@ -96,6 +96,20 @@ export function createRunnerRunState(opts: {
   prepared_metadata?: RunnerRunState["prepared_metadata"];
 }): RunnerRunState {
   const created_at = opts.created_at ?? new Date().toISOString();
+  const stateFingerprint =
+    opts.bundle.state_fingerprint && opts.bundle.state_fingerprint_policy
+      ? {
+          schema_version: 1 as const,
+          kind: "runner_state_fingerprint_record" as const,
+          outcome: "prepared" as const,
+          precondition_fingerprint: opts.bundle.state_fingerprint,
+          precondition_policy: opts.bundle.state_fingerprint_policy,
+          state_before: null,
+          state_after: null,
+          precondition: null,
+          effect_applied: null,
+        }
+      : undefined;
   return {
     schema_version: opts.bundle.schema_version,
     runner_api_version: opts.bundle.runner_api_version,
@@ -117,6 +131,7 @@ export function createRunnerRunState(opts: {
     created_at,
     updated_at: created_at,
     prepared_metadata: opts.prepared_metadata,
+    state_fingerprint: stateFingerprint,
   };
 }
 
@@ -259,6 +274,7 @@ export function evolveRunnerRunState(opts: {
   result?: RunnerResult;
   updated_at?: string;
   supervision?: RunnerSupervisionState;
+  state_fingerprint?: RunnerRunState["state_fingerprint"];
 }): RunnerRunState {
   const updated_at = opts.updated_at ?? new Date().toISOString();
   return {
@@ -266,6 +282,7 @@ export function evolveRunnerRunState(opts: {
     status: opts.status,
     updated_at,
     supervision: opts.supervision ?? opts.state.supervision,
+    state_fingerprint: opts.state_fingerprint ?? opts.state.state_fingerprint,
     result: opts.result,
   };
 }

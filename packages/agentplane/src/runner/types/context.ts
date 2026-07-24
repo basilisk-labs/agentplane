@@ -3,7 +3,7 @@ import type {
   RunnerTraceConfig,
   RunnerTimeoutConfig,
 } from "@agentplaneorg/core/config";
-import type { StateFingerprint } from "@agentplaneorg/core/schemas";
+import type { StateFingerprint, StateFingerprintPolicy } from "@agentplaneorg/core/schemas";
 
 import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
@@ -139,5 +139,6 @@ export type RunnerContextBundle = {
   playbook?: RunnerExecutionPlaybookContract;
   route_decision?: Record<string, unknown>;
   state_fingerprint?: StateFingerprint;
+  state_fingerprint_policy?: StateFingerprintPolicy;
   execution: RunnerExecutionContract;
 };
