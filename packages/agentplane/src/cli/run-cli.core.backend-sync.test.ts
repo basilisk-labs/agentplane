@@ -29,6 +29,7 @@ import {
 } from "../agents/agents-template.js";
 import { renderPolicyGatewayTemplateText } from "../shared/policy-gateway.js";
 import * as taskBackend from "../backends/task-backend.js";
+import { cloudProjectionIdentitySha256 } from "../backends/task-backend/cloud-projection-identity.js";
 import {
   captureStdIO,
   cleanGitEnv,
@@ -439,11 +440,11 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: stubTaskBackend({ id: "redmine", sync }),
-      backendId: "redmine",
+      backend: stubTaskBackend({ id: "cloud", sync }),
+      backendId: "cloud",
       resolved,
       config: defaultConfig(),
-      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "cloud", "backend.json"),
     } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
 
@@ -452,11 +453,12 @@ describe("runCli", () => {
       const code = await runCli([
         "backend",
         "sync",
-        "redmine",
+        "cloud",
         "--direction",
         "push",
         "--conflict",
-        "prefer-local",
+        "fail",
+        "--bootstrap-projection",
         "--yes",
         "--root",
         root,
@@ -464,9 +466,11 @@ describe("runCli", () => {
       expect(code).toBe(0);
       expect(sync).toHaveBeenCalledWith({
         direction: "push",
-        conflict: "prefer-local",
+        conflict: "fail",
         quiet: false,
         confirm: true,
+        identityOrigin: "explicit",
+        identityTransition: "bootstrap_local",
       });
     } finally {
       io.restore();
@@ -516,6 +520,8 @@ describe("runCli", () => {
         conflict: "diff",
         quiet: true,
         confirm: true,
+        identityOrigin: "explicit",
+        identityTransition: "routine",
       });
     } finally {
       io.restore();
@@ -611,6 +617,7 @@ describe("runCli", () => {
         "push",
         "--conflict",
         "fail",
+        "--bootstrap-projection",
         "--yes",
         "--root",
         root,
@@ -630,7 +637,18 @@ describe("runCli", () => {
     await mkdir(path.join(root, ".agentplane", "backends", "cloud"), { recursive: true });
     await writeFile(
       path.join(root, ".agentplane", "backends", "cloud", "state.json"),
-      `${JSON.stringify({ last_checked_at: "2026-05-01T00:00:00.000Z" }, null, 2)}\n`,
+      `${JSON.stringify(
+        {
+          last_checked_at: "2026-05-01T00:00:00.000Z",
+          projection_identity_sha256: cloudProjectionIdentitySha256({
+            endpoint: "https://cloud.example",
+            projectId: "project-1",
+            provider: null,
+          }),
+        },
+        null,
+        2,
+      )}\n`,
       "utf8",
     );
     const fetchSpy = vi.spyOn(globalThis, "fetch").mockImplementation((input) => {
@@ -737,11 +755,11 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: stubTaskBackend({ id: "redmine", sync }),
-      backendId: "redmine",
+      backend: stubTaskBackend({ id: "cloud", sync }),
+      backendId: "cloud",
       resolved,
       config: defaultConfig(),
-      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "cloud", "backend.json"),
     } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
 
@@ -749,21 +767,24 @@ describe("runCli", () => {
     try {
       const code = await runCli([
         "sync",
-        "redmine",
+        "cloud",
         "--direction",
-        "push",
+        "pull",
         "--conflict",
-        "prefer-local",
+        "prefer-remote",
+        "--adopt-projection-identity",
         "--yes",
         "--root",
         root,
       ]);
       expect(code).toBe(0);
       expect(sync).toHaveBeenCalledWith({
-        direction: "push",
-        conflict: "prefer-local",
+        direction: "pull",
+        conflict: "prefer-remote",
         quiet: false,
         confirm: true,
+        identityOrigin: "explicit",
+        identityTransition: "adopt_remote",
       });
     } finally {
       io.restore();

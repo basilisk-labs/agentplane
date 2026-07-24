@@ -89,6 +89,8 @@ describe("runCli", { timeout: BRANCH_META_MAINTENANCE_TIMEOUT_MS }, () => {
         conflict: "prefer-remote",
         quiet: false,
         confirm: true,
+        identityOrigin: "explicit",
+        identityTransition: "routine",
       });
     } finally {
       io.restore();
@@ -122,6 +124,8 @@ describe("runCli", { timeout: BRANCH_META_MAINTENANCE_TIMEOUT_MS }, () => {
         conflict: "diff",
         quiet: false,
         confirm: true,
+        identityOrigin: "explicit",
+        identityTransition: "routine",
       });
     } finally {
       io.restore();

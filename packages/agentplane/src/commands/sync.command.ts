@@ -34,6 +34,20 @@ export const syncSpec: CommandSpec<SyncParsed> = {
       default: "diff",
       description: "Conflict handling policy (default: diff).",
     },
+    {
+      kind: "boolean",
+      name: "bootstrap-projection",
+      default: false,
+      description:
+        "Explicitly bind a missing cloud checkpoint by pushing the confirmed local cache (requires push + conflict=fail).",
+    },
+    {
+      kind: "boolean",
+      name: "adopt-projection-identity",
+      default: false,
+      description:
+        "Explicitly adopt the active cloud identity and remote projection (requires pull + conflict=prefer-remote).",
+    },
     { kind: "boolean", name: "yes", default: false, description: "Auto-approve network access." },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],
@@ -51,6 +65,8 @@ export const syncSpec: CommandSpec<SyncParsed> = {
     backendId: raw.args.id ? String(raw.args.id) : null,
     direction: (raw.opts.direction ?? "push") as SyncParsed["direction"],
     conflict: (raw.opts.conflict ?? "diff") as SyncParsed["conflict"],
+    bootstrapProjection: raw.opts["bootstrap-projection"] === true,
+    adoptProjectionIdentity: raw.opts["adopt-projection-identity"] === true,
     yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
   }),

@@ -43,6 +43,7 @@ vi.mock("node:fs/promises", async (importOriginal) => {
 import type { CommandContext } from "../commands/shared/task-backend.js";
 import { TaskStore } from "../commands/shared/task-store.js";
 import { CloudBackend, LocalBackend, type TaskData } from "./task-backend.js";
+import { cloudProjectionIdentitySha256 } from "./task-backend/cloud-projection-identity.js";
 
 const TASK_ID = "202607240700-CAS1";
 const tempRoots: string[] = [];
@@ -137,7 +138,14 @@ describe("task backend revision CAS", () => {
     await mkdir(path.dirname(statePath), { recursive: true });
     await writeFile(
       statePath,
-      `${JSON.stringify({ last_checked_at: new Date().toISOString() })}\n`,
+      `${JSON.stringify({
+        last_checked_at: new Date().toISOString(),
+        projection_identity_sha256: cloudProjectionIdentitySha256({
+          endpoint: "https://cloud.example",
+          projectId: "project-1",
+          provider: null,
+        }),
+      })}\n`,
       "utf8",
     );
     const backend = new CloudBackend(

@@ -41,7 +41,6 @@ type CloudSyncDeps = {
   cache: Pick<LocalBackend, "listTasks" | "writeTasks" | "deleteTask">;
   request: <T>(pathname: string, init: RequestInit, opts?: { timeoutMs?: number }) => Promise<T>;
   readState: () => ReturnType<typeof readCloudBackendState>;
-  clearPendingPush: () => Promise<void>;
   assertNoPendingPushForPull: () => Promise<void>;
   requestCloudSyncState: (
     projectId: string,
@@ -58,6 +57,7 @@ export async function performCloudBackendSync(
     timeoutMs?: number;
     syncStateTimeoutMs?: number;
     remoteCreatePolicy: CloudRemoteCreatePolicy;
+    bindProjectionIdentity: boolean;
   },
 ): Promise<void> {
   const localTasks = await deps.cache.listTasks();
@@ -125,13 +125,9 @@ export async function performCloudBackendSync(
     });
     return;
   }
-  if (!pull.lastCheckedAt) {
-    await deps.clearPendingPush();
-    return;
-  }
   const existing = await deps.readState();
   await writeCloudBackendState(deps.statePath, {
-    last_checked_at: pull.lastCheckedAt,
+    last_checked_at: pull.lastCheckedAt ?? existing.last_checked_at,
     last_start_ready_pull_at: existing.last_start_ready_pull_at,
     pending_push: null,
     projection_identity_sha256: deps.projectionIdentitySha256,
@@ -144,6 +140,7 @@ async function applyCloudPullResponse(opts: {
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
     quiet: boolean;
     remoteCreatePolicy: CloudRemoteCreatePolicy;
+    bindProjectionIdentity: boolean;
   };
   localTasks: TaskData[];
   state: CloudSyncStateSnapshot;
@@ -222,7 +219,7 @@ async function applyCloudPullResponse(opts: {
     }
     await Promise.all(plan.removedIds.map((taskId) => opts.deps.cache.deleteTask(taskId)));
   }
-  if (opts.pull.lastCheckedAt) {
+  if (opts.pull.lastCheckedAt && opts.opts.bindProjectionIdentity) {
     const state = await opts.deps.readState();
     await writeCloudBackendState(opts.deps.statePath, {
       last_checked_at: opts.pull.lastCheckedAt,
