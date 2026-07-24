@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
     - "Per-task hard-link claims, generation-scoped recovery, TaskData revision CAS, immutable pre-spawn decisions, cooperative cancellation, monotonic supervision timestamps, and legacy run fallback close the prior evaluator findings."
     - "Independent semantic audit found no P0/P1 blocker; focused verification passed 9 files and 50 tests, while the repository contract and full fast suite are green."
 commit:
-  hash: "9ba290cb4e04c80cd485c0ed8fd552ce7b35d594"
-  message: "🔒 9XC1H0 task: pre-merge closure"
+  hash: "07d20cb0ec3d7948cb9d10222de88eeccd5d722e"
+  message: "✅ 9XC1H0 task: refresh verification evidence"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -118,8 +121,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at f161a6e56: RF-03 sandbox/write-boundary behavior and reworked lifecycle authority are verified. Checks passed: bun run typecheck; bun run ci:contract; bun run test:critical (71/71); bun run test:fast (425 files, 2659/2659); independent semantic suite (9 files, 50/50); active-claim reconciliation (4/4); git diff --check."
+  -
+    type: "status"
+    at: "2026-07-24T06:05:12.663Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T06:04:05.774Z"
+doc_updated_at: "2026-07-24T06:05:12.663Z"
 doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
