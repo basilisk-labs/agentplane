@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -58,8 +58,8 @@ quality_review:
   findings:
     - "Independent review confirmed the one-line expectation now explicitly requires verify-package-node-runtime success; it does not broaden alternatives or remove assertions. Exact local test:fast passes 427 files and 2679 tests."
 commit:
-  hash: "8bf0104e2379a265002107bd24096f686e87d280"
-  message: "🧩 ABG7SD cli: align runtime contracts"
+  hash: "70c4256abe977cdf41fea3547fa852c5e4c04070"
+  message: "🧩 ABG7SD task: record follow-up quality review"
 comments:
   -
     author: "CODER"
@@ -67,6 +67,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -94,8 +97,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T10:19:12.761Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T10:07:51.066Z"
+doc_updated_at: "2026-07-24T10:19:12.761Z"
 doc_updated_by: "CODER"
 description: "Correct the verified drift between documented and runtime exit/error shapes, structured remediation fields, package engine ranges, and the CI support matrix before 0.7 compatibility is frozen."
 sections:
@@ -188,6 +198,10 @@ sections:
     - Observation: HEAD changes only lifecycle metadata and the resolved blueprint snapshot; no CLI error/exit-code contract, generated reference, Node support alignment, or tests exist.
       Impact: The approved Verify Steps cannot be executed and the task cannot pass verification.
       Resolution: Return control to CODER to implement the runtime-derived CLI contract, installed-tarball coverage, Node support alignment, and declared checks before re-verification.
+extensions:
+  implementation_commit:
+    hash: "3ff891791141db79b8679742d903d72e066198b3"
+    message: "🧪 ABG7SD cli: align release-ready contract"
 id_source: "generated"
 ---
 ## Summary

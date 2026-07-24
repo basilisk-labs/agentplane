@@ -8,10 +8,10 @@
   "pr_number": 4611,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4611",
   "pre_merge_closure": {
-    "basis_commit": "8bf0104e2379a265002107bd24096f686e87d280",
+    "basis_commit": "70c4256abe977cdf41fea3547fa852c5e4c04070",
     "branch": "task/202607221848-ABG7SD/align-cli-error-exit-code-and-node-support-contr",
     "pr_number": 4611,
-    "recorded_at": "2026-07-24T10:07:51.125Z",
+    "recorded_at": "2026-07-24T10:19:12.813Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
