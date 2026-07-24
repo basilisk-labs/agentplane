@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,8 @@ quality_review:
     - "The direct supervisor, context supervisor, and beta.1 qualification tasks all depend on 202607242236-1BFWEY; no legacy LoopSpec or ap loop runtime surface is introduced."
     - "Review-driven acceptance closes the two material gaps: context/CURATOR rework consumes the shared journal budget, while current/legacy/absent schema fixtures, idempotent migration, transactional rollback/recovery, and installed-package smoke are required before beta.1."
 commit:
-  hash: "d740b2e1bc5ffa265bebd8aa4312acd90d5ba235"
-  message: "🧐 S7WDVM task: refresh evaluator evidence"
+  hash: "573a735dd372dfcd82367625e7925cc47d00da92"
+  message: "🧐 S7WDVM task: pre-merge closure"
 comments:
   -
     author: "PLANNER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "PLANNER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "PLANNER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -112,8 +115,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T22:58:21.341Z"
+    author: "PLANNER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:57:15.810Z"
+doc_updated_at: "2026-07-24T22:58:21.342Z"
 doc_updated_by: "PLANNER"
 description: "Add a beta.1 implementation leaf for a durable supervisor episode journal and hard execution budgets, wire its release-DAG dependencies, and update the canonical AgentPlane 0.7 refactor plan without implementing runtime code."
 sections:
