@@ -4,7 +4,7 @@ title: "Align integration quality review targets for metadata-only tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -40,22 +40,22 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T08:10:22.479Z"
+  updated_at: "2026-07-24T08:25:15.428Z"
   updated_by: "EVALUATOR"
-  note: "Integration freshness can fail open when the shared resolver returns no current-task target."
-  evaluated_sha: "14eed3b7b0fec317f175bb0e407db2b4d2a0fb25"
+  note: "Batch quality-review target is inconsistent across evaluator, route, and integrate"
+  evaluated_sha: "bd2fcd6ff9e3d79aa7639dea6677f2224686a8d8"
   blueprint_digest: "d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae"
   evidence_refs:
     - ".agentplane/tasks/202607240736-FCBKJQ/README.md"
-    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-081022479-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-081022479-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-081022479-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-082515428-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-082515428-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-082515428-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607240736-FCBKJQ/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+    - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
     - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
-    - "packages/agentplane/src/commands/task/quality-review-gate.ts"
+    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
   findings:
-    - "prepareIntegrate forwards a null expected SHA into assertEvaluatorQualityReviewPassed, whose conditional comparison then skips freshness validation even though the route oracle marks the same state stale."
+    - "Evaluator resolves only the primary task while route and integrate resolve primary plus included task IDs, so an included-task metadata unit can make a freshly recorded review immediately stale."
 commit: null
 comments:
   -
