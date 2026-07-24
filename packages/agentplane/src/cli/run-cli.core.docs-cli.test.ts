@@ -50,6 +50,9 @@ describe("runCli docs cli", () => {
 
       const text = await readFile(outPath, "utf8");
       expect(text).toContain("# CLI Reference (Generated)");
+      expect(text).toContain("## Runtime error contract");
+      expect(text).toContain("`E_RUNTIME` → exit `8`");
+      expect(text).toContain("`E_HANDOFF` → exit `9`");
       expect(text).toContain("## Task");
       expect(text).toContain("### task new");
       expect(text).toContain("### task begin");

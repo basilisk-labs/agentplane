@@ -166,11 +166,15 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607221846-YGWMA2",
           "202607230554-YFYT83",
           "202607221846-9XC1H0",
+          "202607221848-ABG7SD",
         ],
         candidate: {
-          surface_sha256: "174782f185b73b4356df5e8e33ce722af7fb33b3e023d6460e1d498db3751dbd",
+          surface_sha256: "57b789caa3dcaf39a6e0d0fa8afd7dbd2bd3aa75304ebe80617f59aa2b49eb40",
           section_digests: {
             cli_topology: "ba9b2aa5ec996c1cab5ccc64ecc0796a2381157442d44f73b6472a5406c75cda",
+            machine_output_contract:
+              "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+            package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
           },
         },
         contract_artifacts: {

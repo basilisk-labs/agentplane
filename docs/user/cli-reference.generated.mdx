@@ -1,6 +1,55 @@
 # CLI Reference (Generated)
 
-This page is generated from the CLI command specs. Do not edit it by hand; edit the specs instead.
+This page is generated from CLI command specs and runtime error metadata. Do not edit it by hand; edit those sources instead.
+
+## Runtime error contract
+
+The following reference is generated from the runtime error and exit-code metadata.
+
+### Exit codes
+
+- `0` — Success: Command completed successfully.
+- `1` — Internal: Unexpected or unclassified failure.
+- `2` — Usage: Invalid or incomplete command invocation.
+- `3` — Validation: Input, schema, or repository invariant validation failed.
+- `4` — IO: Filesystem or other local IO operation failed.
+- `5` — Git: Git operation or workflow guardrail failed.
+- `6` — Backend: Configured task backend failed.
+- `7` — Network: Explicitly requested network operation failed.
+- `8` — Runtime: Selected runtime or provider failed.
+- `9` — Handoff: Task or agent handoff failed.
+
+### JSON error envelope
+
+- Root field: `error`.
+- Required error fields: `code`, `message`.
+- Optional error fields: `context`, `state`, `likely_cause`, `hint`, `remediation`, `next_action`, `reason_decode`.
+- `remediation` required fields: `code`, `why`, `fix`, `safe_command`, `stop_condition`.
+- `next_action` required fields: `command`, `reason`; optional fields: `reasonCode`.
+- `reason_decode` required fields: `code`, `category`, `summary`, `action`.
+
+Field names and casing are exact. Optional fields are omitted when no value is available.
+
+### Error codes
+
+- `E_USAGE` → exit `2`: Command invocation is incomplete or invalid.
+- `E_DEPRECATED_FLAG` → exit `2`: A deprecated or disabled flag was used.
+- `E_VALIDATION` → exit `3`: Input, schema, or repository invariants failed validation.
+- `E_IO` → exit `4`: A filesystem or other local IO operation failed.
+- `E_COMMIT_ALLOW_EMPTY` → exit `2`: A commit path override did not select any paths.
+- `E_COMMIT_ALLOW_NO_MATCH` → exit `2`: A commit path override matched no eligible paths.
+- `E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED` → exit `2`: A commit attempted to include a protected task artifact without authorization.
+- `E_PHASE_POLICY` → exit `2`: The requested lifecycle transition is blocked by policy.
+- `E_GIT` → exit `5`: A Git operation or workflow guardrail failed.
+- `E_GIT_LOCKED` → exit `5`: Git state is locked by another operation.
+- `E_GIT_PERMISSION` → exit `5`: Git could not access a required path or repository resource.
+- `E_GIT_RACE` → exit `5`: Git state changed while the command was executing.
+- `E_GIT_STAGE_FAILED` → exit `5`: Git could not stage the requested paths.
+- `E_BACKEND` → exit `6`: The configured task backend failed.
+- `E_NETWORK` → exit `7`: An explicitly requested network operation failed.
+- `E_RUNTIME` → exit `8`: The selected runtime or provider failed.
+- `E_HANDOFF` → exit `9`: A task or agent handoff failed.
+- `E_INTERNAL` → exit `1`: An unexpected or unclassified AgentPlane failure occurred.
 
 ## Index
 

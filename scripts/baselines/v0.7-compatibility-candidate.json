@@ -5,7 +5,8 @@
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
-    "202607221846-9XC1H0"
+    "202607221846-9XC1H0",
+    "202607221848-ABG7SD"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -14,11 +15,11 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "174782f185b73b4356df5e8e33ce722af7fb33b3e023d6460e1d498db3751dbd",
+    "surface_sha256": "57b789caa3dcaf39a6e0d0fa8afd7dbd2bd3aa75304ebe80617f59aa2b49eb40",
     "section_digests": {
       "cli_topology": "ba9b2aa5ec996c1cab5ccc64ecc0796a2381157442d44f73b6472a5406c75cda",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
-      "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
+      "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
       "agent_facing_context_contracts": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
       "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
@@ -313,6 +314,27 @@
         "schema_id": "https://agentplane.dev/schemas/workflow.schema.json",
         "title": "Agentplane Workflow Contract",
         "supported_input_versions": [1, 2]
+      }
+    },
+    {
+      "section": "machine_output_contract",
+      "source_tasks": ["202607221848-ABG7SD"],
+      "from_sha256": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
+      "to_sha256": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+      "classification": "behavior_preserving_hardening",
+      "summary": "Projects next_action and reason_decode onto their documented keys so structurally compatible objects cannot leak undeclared fields; the published envelope schema and current payloads are unchanged.",
+      "evidence": {
+        "envelope_contract_unchanged": true,
+        "source_contract": {
+          "path": "packages/agentplane/src/shared/errors.ts",
+          "marker": "formatJsonError",
+          "from_sha256": "21224231c4b7e84e69432130463e188c960e1b0ae26a51f0305833b01de60562",
+          "to_sha256": "a8283f4bfb97f5c6333294c5ef36f8ff5209a786907b2c3871eeeea37854120a"
+        },
+        "projected_nested_fields": {
+          "next_action": ["command", "reason", "reasonCode"],
+          "reason_decode": ["code", "category", "summary", "action"]
+        }
       }
     },
     {

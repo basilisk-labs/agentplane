@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202607221848-ABG7SD/align-cli-error-exit-code-and-node-support-contr",
+  "created_at": "2026-07-24T09:04:20.081Z",
+  "diffstat_sha256": "sha256:6550d3939542a0542f5613a9ad77149d7dc7ecdc7015ea8cf1e60dc2a6e1c26e",
+  "last_verified_at": "2026-07-24T10:06:16.421Z",
+  "last_verified_diffstat_sha256": "sha256:f2497022096a4c78f7ec90b510b0107987d6ea7efd58bf14247e4da9cf5b72cf",
+  "pr_number": 4611,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4611",
+  "pre_merge_closure": {
+    "basis_commit": "70c4256abe977cdf41fea3547fa852c5e4c04070",
+    "branch": "task/202607221848-ABG7SD/align-cli-error-exit-code-and-node-support-contr",
+    "pr_number": 4611,
+    "recorded_at": "2026-07-24T10:19:12.813Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202607221848-ABG7SD",
+  "updated_at": "2026-07-24T09:06:11.144Z",
+  "verify": {
+    "status": "pass"
+  }
+}
