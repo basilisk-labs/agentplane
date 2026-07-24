@@ -4,7 +4,7 @@ title: "Amend the AgentPlane 0.7 graph with the effect-in-doubt safety gate"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -35,6 +35,27 @@ verification:
   updated_by: "PLANNER"
   note: "PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint --verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0 errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-24T22:23:25.323Z"
+  updated_by: "EVALUATOR"
+  note: "The graph adds the right safety leaves, but its contracts still underspecify cross-process single-spawn verification, typed runner consumption of effect resolution, and the boundary between provider-key forwarding and provider exactly-once."
+  evaluated_sha: "56e4640e8e72ea1eefc4b691830ce6c9b9e63f6d"
+  blueprint_digest: "d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4"
+  evidence_refs:
+    - ".agentplane/tasks/202607242201-6BN1GV/README.md"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-222325323-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-222325323-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-222325323-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202607242204-SX8T09/README.md"
+    - ".agentplane/tasks/202607221850-R7WS01/README.md"
+    - "docs/internal/v0.7-refactor-plan.md"
+  findings:
+    - "SX8T09 does not explicitly verify concurrent starts by two supervisor processes for the same operation key and generation, an atomic single winner, and exactly one adapter spawn."
+    - "R7WS01 does not explicitly consume typed effect_in_doubt, applied, and not_applied states with resolution provenance, and it does not explicitly forbid generic retry."
+    - "The roadmap does not clearly distinguish provider_key_forwarded from provider exactly-once; provider exactly-once is supportable only with a documented and verified provider deduplication contract."
 commit: null
 comments:
   -
