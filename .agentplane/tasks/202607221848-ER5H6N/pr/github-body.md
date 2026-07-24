@@ -22,7 +22,7 @@ RF-08: standardize reproducible references into the existing context knowledge p
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T22:17:13.092Z
+- Updated: 2026-07-24T22:23:15.250Z
 - Branch: task/202607221848-ER5H6N/define-digest-addressed-knowledgeref-contracts
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
