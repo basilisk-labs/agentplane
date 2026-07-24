@@ -26,6 +26,23 @@ The merged RF-03 head also passed the complete `main` Core CI push workflow on
 `4a69a44a25b7c9c6ef801ad584a18930d03955fe`, including contract, static, unit, critical CLI,
 workflow, coverage, Windows, release-ready, and aggregate PR verification jobs.
 
+## Cleanup closure
+
+The two dependency worktrees still registered during the first semantic review were removed through
+the task-scoped CLI cleanup route:
+
+- `agentplane cleanup merged --task-id 202607221846-4VB97J --finalize --base main`
+- `agentplane cleanup merged --task-id 202607221846-9XC1H0 --finalize --base main`
+
+Post-cleanup proof:
+
+- `git worktree list --porcelain` has no `4VB97J` or `9XC1H0` entry;
+- `git branch --list '*4VB97J*' '*9XC1H0*'` returns no local branch;
+- `git ls-remote --heads origin 'task/202607221846-4VB97J/*' 'task/202607221846-9XC1H0/*'`
+  returns no remote branch;
+- the protected `agentplane-loops` checkout remains clean at
+  `14d0bd8f51954b9148ef4251628c4c0e549007b6`.
+
 ## Deterministic gates
 
 | Command | Result | Evidence |
@@ -41,8 +58,8 @@ stored evidence only.
 
 ## Metric comparison
 
-- The frozen pre-0.7 structural baseline remains exact: 10 scenarios, 10 measured cost metrics, and
-  structural digest
+- The frozen pre-0.7 structural baseline remains exact: 10 scenarios and 10 observed scalar cells
+  across 17 metric kinds, of which six have observed values. Its structural digest is
   `sha256:a9b855c5887f697c21690d7386c627c555f8d46d7b083cab8c54636411e47351`.
 - The replay structural digest remains
   `sha256:006ddc6d2b8e8c350a879edeb7140d36dbbd31c0c745b96f57792871b9099ee4`; the diagnostic digest
@@ -69,8 +86,8 @@ stored evidence only.
 4. The immutable RF-04 v1 capture remains sensitive to a Git auto-maintenance race on Linux. The
    offline replay is deterministic; changing the production harness requires a versioned v2 capture
    rather than rewriting stored provenance.
-5. Nineteen reviewed trust-boundary violations remain ratcheted. They are assigned to later RF-05,
-   RF-24, RF-25, and RF-27 work and may not increase.
+5. Nineteen reviewed trust-boundary violations remain ratcheted: ten belong to RF-21, four to
+   RF-06b/RF-09/RF-25, and five to RF-05a/RF-05b. They may not increase.
 
 ## Decision
 
