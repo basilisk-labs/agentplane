@@ -41,6 +41,7 @@ import {
   normalizePositiveInteger,
   type CloudConfigOverride,
 } from "./cloud-backend-utils.js";
+import { cloudProjectionIdentitySha256 } from "./cloud-projection-identity.js";
 import { firstNonEmptyString } from "./shared/strings.js";
 
 export type { CloudBackendSettings } from "./cloud-backend-settings.js";
@@ -67,6 +68,7 @@ export class CloudBackend implements TaskBackend {
   private readonly autoSyncPullOnWrite: boolean;
   private readonly autoSyncPullOnStartReady: boolean;
   private readonly autoSyncPushOnWrite: boolean;
+  private readonly projectionIdentitySha256: string;
   constructor(
     settings: CloudBackendSettings,
     opts: {
@@ -89,6 +91,11 @@ export class CloudBackend implements TaskBackend {
     );
     this.provider =
       firstNonEmptyString(process.env.AGENTPLANE_CLOUD_PROVIDER, settings.provider) || null;
+    this.projectionIdentitySha256 = cloudProjectionIdentitySha256({
+      endpoint: this.endpoint,
+      projectId: this.projectId,
+      provider: this.provider,
+    });
     this.remoteCreatePolicy = normalizeCloudRemoteCreatePolicy(
       firstNonEmptyString(
         process.env.AGENTPLANE_CLOUD_REMOTE_CREATE_POLICY,
@@ -176,6 +183,8 @@ export class CloudBackend implements TaskBackend {
       remote_projection: {
         provider: this.provider,
         project_id: this.projectId || null,
+        identity_sha256: this.projectionIdentitySha256,
+        checkpoint_identity_sha256: state.projection_identity_sha256,
       },
     };
   }
@@ -252,6 +261,7 @@ export class CloudBackend implements TaskBackend {
       autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
       missingConfigKeys: () => missingCloudConfigKeys(this.configSnapshot()),
       projectId: this.projectId,
+      projectionIdentitySha256: this.projectionIdentitySha256,
       statePath: this.statePath,
       requestCloudSyncState: this.requestCloudSyncState.bind(this),
       sync: this.sync.bind(this),
@@ -271,6 +281,7 @@ export class CloudBackend implements TaskBackend {
       {
         provider: this.provider,
         projectId: this.projectId,
+        projectionIdentitySha256: this.projectionIdentitySha256,
         statePath: this.statePath,
         cache: this.cache,
         request: this.request.bind(this),
@@ -332,6 +343,7 @@ export class CloudBackend implements TaskBackend {
         autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
         autoSyncPullOnWrite: this.autoSyncPullOnWrite,
         projectId: this.projectId,
+        projectionIdentitySha256: this.projectionIdentitySha256,
         staleAfterSeconds: this.staleAfterSeconds,
         missingConfigKeys: () => missingCloudConfigKeys(this.configSnapshot()),
         readState: this.readState.bind(this),
@@ -350,7 +362,12 @@ export class CloudBackend implements TaskBackend {
     if (!this.autoSyncNetworkAllowed) return;
     if (missingCloudConfigKeys(this.configSnapshot()).length > 0) return;
     const state = await this.readState();
-    if (!isStale(state.last_checked_at, this.staleAfterSeconds)) return;
+    if (
+      state.projection_identity_sha256 === this.projectionIdentitySha256 &&
+      !isStale(state.last_checked_at, this.staleAfterSeconds)
+    ) {
+      return;
+    }
     await this.sync({
       direction: "pull",
       conflict: "fail",
@@ -394,6 +411,7 @@ export class CloudBackend implements TaskBackend {
         failed_at: new Date().toISOString(),
         reason: cloudPendingPushReason(error),
       },
+      projection_identity_sha256: state.projection_identity_sha256,
     });
   }
 
@@ -404,6 +422,7 @@ export class CloudBackend implements TaskBackend {
       last_checked_at: state.last_checked_at,
       last_start_ready_pull_at: state.last_start_ready_pull_at,
       pending_push: null,
+      projection_identity_sha256: state.projection_identity_sha256,
     });
   }
 
@@ -413,6 +432,7 @@ export class CloudBackend implements TaskBackend {
       token: this.token,
       projectId: this.projectId,
       provider: this.provider,
+      projectionIdentitySha256: this.projectionIdentitySha256,
       statePath: this.statePath,
       staleAfterSeconds: this.staleAfterSeconds,
       configOverrides: this.configOverrides,

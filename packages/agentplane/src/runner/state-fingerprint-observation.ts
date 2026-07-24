@@ -3,8 +3,7 @@ import path from "node:path";
 
 import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
 
-import type { TaskBackendProjectionObservation, TaskData } from "../backends/task-backend.js";
-import { isStale } from "../backends/task-backend/cloud-backend-utils.js";
+import type { TaskData } from "../backends/task-backend.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -17,13 +16,12 @@ import { collectRunnerBasePrompts } from "./context/base-prompts.js";
 import { assembleRunnerTaskContext } from "./context/task-context.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "./sandbox-policy.js";
 import { authorityComponent, dangerAuthorityFromBundle } from "./state-fingerprint-authority.js";
+import { observeBackendProjection } from "./state-fingerprint-backend-projection.js";
 import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
 import { resolveRunnerBlueprintPlan } from "./usecases/task-run-blueprint-plan.js";
 
-const BACKEND_CONFIG_MAX_BYTES = 1024 * 1024;
 const POLICY_MODULE_MAX_BYTES = 1024 * 1024;
 const KNOWLEDGE_MANIFEST_MAX_BYTES = 16 * 1024 * 1024;
-const PROJECTION_CLOCK_SKEW_TOLERANCE_MS = 60_000;
 
 export type RunnerStateFingerprintComponentProbes = {
   load_context?: () => Promise<CommandContext>;
@@ -175,166 +173,6 @@ function blueprintComponent(
     state: "present",
     source: "blueprint_resolver",
     value: projection,
-  };
-}
-
-function relativeConfigPath(ctx: CommandContext): string {
-  return path
-    .relative(ctx.resolvedProject.gitRoot, ctx.backendConfigPath)
-    .split(path.sep)
-    .join("/");
-}
-
-async function observeBackendConfig(
-  ctx: CommandContext,
-): Promise<
-  | { state: "present"; sha256: string }
-  | { state: "missing"; reason_code: "backend_config_defaulted" }
-  | { state: "unavailable"; reason_code: "backend_config_unreadable" }
-> {
-  try {
-    return {
-      state: "present",
-      sha256: digestText(
-        await readContainedStableTextNoFollow({
-          repository_root: ctx.resolvedProject.gitRoot,
-          file_path: ctx.backendConfigPath,
-          label: "task backend configuration",
-          max_bytes: BACKEND_CONFIG_MAX_BYTES,
-        }),
-      ),
-    };
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
-      return {
-        state: "missing",
-        reason_code: "backend_config_defaulted",
-      };
-    }
-    return {
-      state: "unavailable",
-      reason_code: "backend_config_unreadable",
-    };
-  }
-}
-
-function observeProjectionFreshness(observation: TaskBackendProjectionObservation):
-  | {
-      state: "fresh";
-      value: TaskBackendProjectionObservation & {
-        projection_freshness: TaskBackendProjectionObservation["projection_freshness"] & {
-          stale: false;
-        };
-      };
-    }
-  | {
-      state: "unavailable";
-      reason_code:
-        | "backend_projection_freshness_unavailable"
-        | "backend_projection_pending_push"
-        | "backend_projection_stale";
-      evidence: TaskBackendProjectionObservation & {
-        projection_freshness: TaskBackendProjectionObservation["projection_freshness"] & {
-          stale: boolean;
-        };
-      };
-    } {
-  const lastCheckedAt = observation.projection_freshness.last_checked_at;
-  const staleAfterSeconds = observation.projection_freshness.stale_after_seconds;
-  const checkedAt = lastCheckedAt ? Date.parse(lastCheckedAt) : Number.NaN;
-  const nowMs = Date.now();
-  const ageMs = nowMs - checkedAt;
-  const bounded =
-    Number.isFinite(checkedAt) &&
-    Number.isSafeInteger(staleAfterSeconds) &&
-    (staleAfterSeconds ?? 0) > 0 &&
-    ageMs >= -PROJECTION_CLOCK_SKEW_TOLERANCE_MS;
-  const stale = !bounded || isStale(lastCheckedAt, staleAfterSeconds, nowMs);
-  const evidence = {
-    ...observation,
-    projection_freshness: {
-      ...observation.projection_freshness,
-      stale,
-    },
-  };
-  if (observation.projection_freshness.pending_push) {
-    return {
-      state: "unavailable",
-      reason_code: "backend_projection_pending_push",
-      evidence,
-    };
-  }
-  if (!bounded) {
-    return {
-      state: "unavailable",
-      reason_code: "backend_projection_freshness_unavailable",
-      evidence,
-    };
-  }
-  if (stale) {
-    return {
-      state: "unavailable",
-      reason_code: "backend_projection_stale",
-      evidence,
-    };
-  }
-  return {
-    state: "fresh",
-    value: {
-      ...observation,
-      projection_freshness: {
-        ...observation.projection_freshness,
-        stale: false,
-      },
-    },
-  };
-}
-
-async function observeBackendProjection(
-  ctx: CommandContext,
-): Promise<StateFingerprintComponentInput> {
-  const config = await observeBackendConfig(ctx);
-  if (config.state === "unavailable") {
-    return unavailableComponent("task_backend_runtime", config.reason_code);
-  }
-  let projection: TaskBackendProjectionObservation | null = null;
-  if (ctx.taskBackend.capabilities.canonical_source === "remote") {
-    if (!ctx.taskBackend.observeProjection) {
-      return unavailableComponent(
-        "task_backend_runtime",
-        "backend_projection_freshness_unavailable",
-      );
-    }
-    try {
-      projection = await ctx.taskBackend.observeProjection();
-      const freshness = observeProjectionFreshness(projection);
-      if (freshness.state === "unavailable") {
-        return unavailableComponent(
-          "task_backend_runtime",
-          freshness.reason_code,
-          freshness.evidence,
-        );
-      }
-      projection = freshness.value;
-    } catch {
-      return unavailableComponent(
-        "task_backend_runtime",
-        "backend_projection_observation_unavailable",
-      );
-    }
-  }
-  return {
-    state: "present",
-    source: "task_backend_runtime",
-    value: {
-      backend_id: ctx.backendId,
-      backend_config_path: relativeConfigPath(ctx),
-      backend_config: config,
-      capabilities: ctx.taskBackend.capabilities ?? null,
-      projection_revision: projection?.projection_revision ?? null,
-      projection_freshness: projection?.projection_freshness ?? null,
-      remote_projection: projection?.remote_projection ?? null,
-    },
   };
 }
 

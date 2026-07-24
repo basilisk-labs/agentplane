@@ -107,6 +107,8 @@ export type TaskBackendProjectionObservation = {
   remote_projection: {
     provider: string | null;
     project_id: string | null;
+    identity_sha256: string;
+    checkpoint_identity_sha256: string | null;
   } | null;
 };
 

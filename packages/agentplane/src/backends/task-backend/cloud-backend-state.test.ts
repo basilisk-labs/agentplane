@@ -15,6 +15,7 @@ describe("cloud backend state", () => {
       last_checked_at: null,
       last_start_ready_pull_at: null,
       pending_push: null,
+      projection_identity_sha256: null,
     });
   });
 
@@ -26,12 +27,14 @@ describe("cloud backend state", () => {
       last_checked_at: "2026-05-14T09:00:00.000Z",
       last_start_ready_pull_at: "2026-05-14T09:02:00.000Z",
       pending_push: null,
+      projection_identity_sha256: `sha256:${"a".repeat(64)}`,
     });
 
     await expect(readCloudBackendState(statePath)).resolves.toEqual({
       last_checked_at: "2026-05-14T09:00:00.000Z",
       last_start_ready_pull_at: "2026-05-14T09:02:00.000Z",
       pending_push: null,
+      projection_identity_sha256: `sha256:${"a".repeat(64)}`,
     });
     await expect(readFile(statePath, "utf8")).resolves.toContain(
       '"last_checked_at": "2026-05-14T09:00:00.000Z"',
@@ -49,6 +52,7 @@ describe("cloud backend state", () => {
         failed_at: "2026-05-14T09:01:00.000Z",
         reason: "Cloud request failed",
       },
+      projection_identity_sha256: `sha256:${"b".repeat(64)}`,
     });
 
     await expect(readCloudBackendState(statePath)).resolves.toEqual({
@@ -58,6 +62,7 @@ describe("cloud backend state", () => {
         failed_at: "2026-05-14T09:01:00.000Z",
         reason: "Cloud request failed",
       },
+      projection_identity_sha256: `sha256:${"b".repeat(64)}`,
     });
   });
 });

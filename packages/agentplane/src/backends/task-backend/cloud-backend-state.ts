@@ -4,6 +4,7 @@ import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 
 const CLOUD_BACKEND_STATE_MAX_BYTES = 64 * 1024;
+const SHA256_DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/u;
 
 export type CloudBackendPendingPush = {
   failed_at: string;
@@ -14,10 +15,16 @@ export type CloudBackendState = {
   last_checked_at: string | null;
   last_start_ready_pull_at: string | null;
   pending_push: CloudBackendPendingPush | null;
+  projection_identity_sha256: string | null;
 };
 
 function emptyCloudBackendState(): CloudBackendState {
-  return { last_checked_at: null, last_start_ready_pull_at: null, pending_push: null };
+  return {
+    last_checked_at: null,
+    last_start_ready_pull_at: null,
+    pending_push: null,
+    projection_identity_sha256: null,
+  };
 }
 
 function parseCloudBackendState(raw: unknown): CloudBackendState {
@@ -26,12 +33,18 @@ function parseCloudBackendState(raw: unknown): CloudBackendState {
       last_checked_at?: unknown;
       last_start_ready_pull_at?: unknown;
       pending_push?: unknown;
+      projection_identity_sha256?: unknown;
     };
     return {
       last_checked_at: typeof state.last_checked_at === "string" ? state.last_checked_at : null,
       last_start_ready_pull_at:
         typeof state.last_start_ready_pull_at === "string" ? state.last_start_ready_pull_at : null,
       pending_push: readPendingPush(state.pending_push),
+      projection_identity_sha256:
+        typeof state.projection_identity_sha256 === "string" &&
+        SHA256_DIGEST_PATTERN.test(state.projection_identity_sha256)
+          ? state.projection_identity_sha256
+          : null,
     };
   }
   return emptyCloudBackendState();

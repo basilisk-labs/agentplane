@@ -1,5 +1,8 @@
 import { BackendError } from "./shared.js";
-import { pendingCloudPushError } from "./cloud-pending-push.js";
+import {
+  pendingCloudPushError,
+  pendingCloudPushIdentityMismatchError,
+} from "./cloud-pending-push.js";
 import type { CloudBackendState } from "./cloud-backend-state.js";
 import type { CloudSyncStateSnapshot } from "./cloud-backend-sync.js";
 import { CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS, isStale } from "./cloud-backend-utils.js";
@@ -9,6 +12,7 @@ type CloudMutationReadinessDeps = {
   autoSyncNetworkAllowed: boolean;
   autoSyncPullOnWrite: boolean;
   projectId: string;
+  projectionIdentitySha256: string;
   staleAfterSeconds: number | null;
   missingConfigKeys: () => string[];
   readState: () => Promise<CloudBackendState>;
@@ -26,11 +30,19 @@ export async function ensureCloudProjectionFreshForLocalMutation(
 ): Promise<void> {
   let state = await deps.readState();
   if (state.pending_push) {
+    if (state.projection_identity_sha256 !== deps.projectionIdentitySha256) {
+      throw pendingCloudPushIdentityMismatchError(state.pending_push);
+    }
     const recovered = await tryRecoverPendingPushFromSyncState(deps);
     if (!recovered) throw pendingCloudPushError(state.pending_push);
     state = await deps.readState();
   }
-  if (!isStale(state.last_checked_at, deps.staleAfterSeconds)) return;
+  if (
+    state.projection_identity_sha256 === deps.projectionIdentitySha256 &&
+    !isStale(state.last_checked_at, deps.staleAfterSeconds)
+  ) {
+    return;
+  }
 
   if (deps.autoSyncEnabled && deps.autoSyncPullOnWrite) {
     await deps.maybeAutoPull({ mode: "write", reason: `mutation_preflight:${opts.reason}` });
@@ -38,7 +50,12 @@ export async function ensureCloudProjectionFreshForLocalMutation(
     if (refreshed.pending_push) {
       throw pendingCloudPushError(refreshed.pending_push);
     }
-    if (!isStale(refreshed.last_checked_at, deps.staleAfterSeconds)) return;
+    if (
+      refreshed.projection_identity_sha256 === deps.projectionIdentitySha256 &&
+      !isStale(refreshed.last_checked_at, deps.staleAfterSeconds)
+    ) {
+      return;
+    }
   }
 
   throw new BackendError(

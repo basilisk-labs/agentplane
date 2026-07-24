@@ -8,6 +8,7 @@ export type CloudBackendConfigSnapshot = {
   token: string;
   projectId: string;
   provider: string | null;
+  projectionIdentitySha256: string;
   statePath: string;
   staleAfterSeconds: number | null;
   configOverrides: CloudConfigOverride[];
@@ -71,7 +72,9 @@ export async function inspectCloudBackendConfiguration(opts: {
     freshness: {
       lastCheckedAt: state.last_checked_at,
       staleAfterSeconds: opts.config.staleAfterSeconds,
-      stale: isStale(state.last_checked_at, opts.config.staleAfterSeconds),
+      stale:
+        state.projection_identity_sha256 !== opts.config.projectionIdentitySha256 ||
+        isStale(state.last_checked_at, opts.config.staleAfterSeconds),
       statePath: opts.config.statePath,
       pendingPush: state.pending_push,
     },
