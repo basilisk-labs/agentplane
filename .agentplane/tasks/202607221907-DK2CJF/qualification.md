@@ -1,6 +1,6 @@
 # AgentPlane 0.7.0-alpha.1 qualification evidence
 
-Reviewed SHA: `35e4925a7d8797f349775a5cfc76f94c63d3070d`
+Reviewed gate SHA: `1bf9c6dc89571964023a0d2c835a9d3345b5ff90`
 
 ## Dependency fan-in
 
