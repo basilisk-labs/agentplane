@@ -24,7 +24,7 @@ Created: 2026-07-24T09:04:20.081Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T09:04:20.081Z
+- Updated: 2026-07-24T09:06:11.144Z
 - Branch: task/202607221848-ABG7SD/align-cli-error-exit-code-and-node-support-contr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
