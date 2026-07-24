@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -58,8 +58,8 @@ quality_review:
     - "R7WS01 now consumes typed effect_in_doubt, applied, and not_applied states with resolution provenance and explicitly forbids generic retry for unresolved effects."
     - "The roadmap now classifies provider_key_forwarded separately from provider exactly-once and permits the latter only under a documented, integration-tested provider deduplication contract."
 commit:
-  hash: "0b9d9e4d5ae9c51184054007d87a3aa28fcc137e"
-  message: "🚧 6BN1GV task: clarify effect safety contracts"
+  hash: "4b9fc053d23a21195260700a97ae720b6cd2a740"
+  message: "🚧 6BN1GV task: pre-merge closure"
 comments:
   -
     author: "PLANNER"
@@ -67,6 +67,9 @@ comments:
   -
     author: "PLANNER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "PLANNER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -94,8 +97,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T22:33:34.101Z"
+    author: "PLANNER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:32:55.251Z"
+doc_updated_at: "2026-07-24T22:33:34.102Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
@@ -196,6 +206,10 @@ sections:
     - Observation: RF-06 effect uncertainty needed separate journal and resolution verification boundaries.
       Impact: The alpha.2 gate and downstream runner lifecycle now fail closed until both safety contracts are complete.
       Resolution: Persist two atomic CODER leaves and one reviewed graph amendment with exact dependency fan-in.
+extensions:
+  implementation_commit:
+    hash: "0b9d9e4d5ae9c51184054007d87a3aa28fcc137e"
+    message: "🚧 6BN1GV task: clarify effect safety contracts"
 id_source: "generated"
 ---
 ## Summary
