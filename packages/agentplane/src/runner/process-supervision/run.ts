@@ -110,7 +110,7 @@ export async function runSupervisedProcess(opts: {
     });
 
     const pid = typeof child.pid === "number" ? child.pid : null;
-    let started_at = clock.nowIso();
+    const started_at = clock.nowIso();
     let heartbeat_at = started_at;
     let stdout_tail = "";
     let stderr_tail = "";
@@ -197,8 +197,6 @@ export async function runSupervisedProcess(opts: {
         );
       }
       clock.advanceToIso(initialState.updated_at);
-      started_at = clock.nowIso();
-      heartbeat_at = started_at;
       const observedIdentity =
         pid === null ? null : await readObservedProcessIdentity(pid).catch(() => null);
       const processIdentity =
@@ -210,6 +208,7 @@ export async function runSupervisedProcess(opts: {
               observed_at: clock.nowIso(),
             }
           : null;
+      const runningStateAt = clock.nowIso();
       const supervision = mergeSupervisionState(initialState.supervision, {
         pid,
         command: renderInvocationCommand(opts.invocation),
@@ -224,7 +223,7 @@ export async function runSupervisedProcess(opts: {
         state: evolveRunnerRunState({
           state: initialState,
           status: "running",
-          updated_at: started_at,
+          updated_at: runningStateAt,
           supervision,
         }),
       });
