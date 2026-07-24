@@ -4,7 +4,7 @@ title: "Align integration quality review targets for metadata-only tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -38,24 +38,27 @@ verification:
   note: "Focused 67/67 tests, critical CLI 71/71, ci:contract, lint, typecheck, formatting, and architecture checks passed on f5b90e983."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T08:25:15.428Z"
+  updated_at: "2026-07-24T08:35:45.091Z"
   updated_by: "EVALUATOR"
-  note: "Batch quality-review target is inconsistent across evaluator, route, and integrate"
-  evaluated_sha: "bd2fcd6ff9e3d79aa7639dea6677f2224686a8d8"
+  note: "Quality-review target resolution is consistent across evaluator, route, and integration."
+  evaluated_sha: "f5b90e98344d4ad2d9dadb89905f620ee7c3a892"
   blueprint_digest: "d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae"
   evidence_refs:
     - ".agentplane/tasks/202607240736-FCBKJQ/README.md"
-    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-082515428-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-082515428-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-082515428-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-083545091-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-083545091-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-083545091-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607240736-FCBKJQ/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/evaluator/evaluator.command.ts"
+    - "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts"
     - "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts"
     - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+    - "focused 67/67; critical 71/71; ci:contract; lint; typecheck; arch"
   findings:
-    - "Evaluator resolves only the primary task while route and integrate resolve primary plus included task IDs, so an included-task metadata unit can make a freshly recorded review immediately stale."
+    - "No blocking findings remain: evaluator and prepare use the same normalized primary-plus-included task set, route resolves the equivalent PR batch set, and integration fails closed when no target can be resolved."
+    - "Real-Git regressions prove included-task metadata becomes the review target while included quality and PR artifact tails preserve the reviewed SHA."
 commit: null
 comments:
   -
