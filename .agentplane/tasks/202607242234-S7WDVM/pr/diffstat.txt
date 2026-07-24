@@ -1,5 +1,6 @@
  .agentplane/tasks/202607221850-0SFMS7/README.md |   3 +-
- .agentplane/tasks/202607221908-MR9EA9/README.md |   3 +-
- .agentplane/tasks/202607242236-1BFWEY/README.md | 103 ++++++++++++++++++++++++
- docs/internal/v0.7-refactor-plan.md             |  20 ++++-
- 4 files changed, 125 insertions(+), 4 deletions(-)
+ .agentplane/tasks/202607221850-8HBF4J/README.md |  18 ++---
+ .agentplane/tasks/202607221908-MR9EA9/README.md |  18 ++---
+ .agentplane/tasks/202607242236-1BFWEY/README.md | 102 ++++++++++++++++++++++++
+ docs/internal/v0.7-refactor-plan.md             |  28 ++++++-
+ 5 files changed, 141 insertions(+), 28 deletions(-)
