@@ -12,6 +12,7 @@ import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
+import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
@@ -241,6 +242,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
     gitRoot,
     workflowDir: command.config.paths.workflow_dir,
     taskId: p.taskId,
+    taskIds: [p.taskId, ...normalizeBranchPrBatchIncludedTaskIds(task, p.taskId)],
     previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
   });
   const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: command, task }).catch(() => null);

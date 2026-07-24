@@ -7,6 +7,9 @@ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { parseCommandArgv } from "../../cli/spec/parse.js";
+import { loadCommandContext } from "../shared/task-backend.js";
+import { applyTaskMutation } from "../shared/task-mutation.js";
+import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdTaskAdd } from "../workflow.js";
 
 import { runEvaluatorRun } from "./evaluator.command.js";
@@ -62,6 +65,30 @@ async function readEvaluatedSha(
     evaluated_sha: string | null;
   };
   return report.evaluated_sha;
+}
+
+async function setPrimaryBatchOwnership(
+  root: string,
+  primaryTaskId: string,
+  includedTaskIds: string[],
+): Promise<void> {
+  const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+  await applyTaskMutation({
+    ctx,
+    taskId: primaryTaskId,
+    build: (current) => ({
+      intents: setTaskFieldsIntent({
+        extensions: {
+          ...current.extensions,
+          branch_pr_batch: {
+            role: "primary",
+            primary_task_id: primaryTaskId,
+            included_task_ids: includedTaskIds,
+          },
+        },
+      }),
+    }),
+  });
 }
 
 describe("evaluator run command", () => {
@@ -336,6 +363,97 @@ describe("evaluator run command", () => {
     );
 
     await runReview("Repeated metadata review");
+
+    expect(await readEvaluatedSha(root, taskId, 2)).toBe(metadataSha);
+  });
+
+  it("anchors an included-task metadata work unit for a primary batch review", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV05";
+    const includedTaskId = "202605240900-EV06";
+    await addTask(root, taskId);
+    await addTask(root, includedTaskId);
+    await setPrimaryBatchOwnership(root, taskId, [includedTaskId]);
+    const metadataSha = await commitPath(
+      root,
+      `.agentplane/tasks/${includedTaskId}/manual-note.md`,
+      "included metadata work unit",
+      "docs: record included metadata-only work unit",
+    );
+
+    await runEvaluatorRun(
+      { cwd: root, rootOverride: undefined },
+      {
+        taskId,
+        evaluator: "recovery-context",
+        provenance: "human_supplied",
+        verdict: "pass",
+        summary: "Included metadata work unit reviewed",
+        findings: ["The included task metadata is part of the primary batch review target."],
+        evidenceRefs: [`.agentplane/tasks/${includedTaskId}/manual-note.md`],
+        missingTests: [],
+        hiddenAssumptions: [],
+        residualRisks: [],
+        json: false,
+        record: true,
+      },
+    );
+
+    expect(await readEvaluatedSha(root, taskId)).toBe(metadataSha);
+  });
+
+  it("keeps a primary batch review anchored across included-task derived artifacts", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV07";
+    const includedTaskId = "202605240900-EV08";
+    await addTask(root, taskId);
+    await addTask(root, includedTaskId);
+    await setPrimaryBatchOwnership(root, taskId, [includedTaskId]);
+    const metadataSha = await commitPath(
+      root,
+      `.agentplane/tasks/${includedTaskId}/manual-note.md`,
+      "included metadata work unit",
+      "docs: record included metadata-only work unit",
+    );
+
+    const runReview = async (summary: string): Promise<void> => {
+      await runEvaluatorRun(
+        { cwd: root, rootOverride: undefined },
+        {
+          taskId,
+          evaluator: "recovery-context",
+          provenance: "human_supplied",
+          verdict: "pass",
+          summary,
+          findings: ["The included task metadata is part of the primary batch review target."],
+          evidenceRefs: [`.agentplane/tasks/${includedTaskId}/manual-note.md`],
+          missingTests: [],
+          hiddenAssumptions: [],
+          residualRisks: [],
+          json: false,
+          record: true,
+        },
+      );
+    };
+
+    await runReview("Initial primary batch review");
+    expect(await readEvaluatedSha(root, taskId)).toBe(metadataSha);
+    await commitPath(
+      root,
+      `.agentplane/tasks/${includedTaskId}/quality/report.json`,
+      "{}\n",
+      "test: record included quality artifact",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${includedTaskId}/pr/meta.json`,
+      "{}\n",
+      "test: refresh included PR metadata",
+    );
+
+    await runReview("Repeated primary batch review");
 
     expect(await readEvaluatedSha(root, taskId, 2)).toBe(metadataSha);
   });
