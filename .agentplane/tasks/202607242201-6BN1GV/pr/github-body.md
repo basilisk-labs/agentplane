@@ -16,14 +16,21 @@ Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 ex
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable
+from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint
+--verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0
+errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T22:08:21.434Z
+- Updated: 2026-07-24T22:11:13.250Z
 - Branch: task/202607242201-6BN1GV/amend-the-agentplane-0-7-graph-with-the-effect-i
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
