@@ -5,6 +5,7 @@ import {
   assertStateFingerprintPrecondition,
   buildStateFingerprint,
   executePreparedOperation,
+  validateStateFingerprintPolicy,
   type StateFingerprintComponentName,
   type StateFingerprintInput,
   type StateFingerprintPolicy,
@@ -157,6 +158,44 @@ describe("StateFingerprint", () => {
     );
   });
 
+  it("includes unavailable-component evidence in stale-state comparison", async () => {
+    const expectedInput = input();
+    expectedInput.components.provider = {
+      state: "unavailable",
+      source: "provider_observation",
+      reason_code: "provider_projection_stale",
+      evidence: { provider_revision: "provider-1", stale: true },
+    };
+    const currentInput = input();
+    currentInput.components.provider = {
+      state: "unavailable",
+      source: "provider_observation",
+      reason_code: "provider_projection_stale",
+      evidence: { provider_revision: "provider-2", stale: true },
+    };
+    const expected = buildStateFingerprint(expectedInput);
+    const current = buildStateFingerprint(currentInput);
+    const apply = vi.fn(() => Promise.resolve("applied"));
+
+    await expect(
+      executePreparedOperation({
+        prepared: {
+          operation: { id: "op-provider-stale-evidence" },
+          precondition_fingerprint: expected,
+          precondition_policy: POLICY,
+        },
+        capture_state: () => Promise.resolve(current),
+        apply,
+      }),
+    ).rejects.toMatchObject({
+      reason_code: "state_fingerprint_stale",
+      diagnostic: {
+        changed_components: [expect.objectContaining({ component: "provider" })],
+      },
+    });
+    expect(apply).not.toHaveBeenCalled();
+  });
+
   it("does not invoke the effect when provider truth is unavailable under fail-closed policy", async () => {
     const fingerprint = buildStateFingerprint(input());
     const apply = vi.fn(() => Promise.resolve("applied"));
@@ -177,6 +216,29 @@ describe("StateFingerprint", () => {
     ).rejects.toMatchObject({
       reason_code: "state_fingerprint_provider_unavailable",
     });
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid runtime policy before invoking the effect", async () => {
+    const fingerprint = buildStateFingerprint(input());
+    const invalidPolicy = {
+      ...POLICY,
+      provider: { required: false, unavailable: "permit" },
+    } as unknown as StateFingerprintPolicy;
+    const apply = vi.fn(() => Promise.resolve("applied"));
+
+    expect(() => validateStateFingerprintPolicy(invalidPolicy)).toThrow();
+    await expect(
+      executePreparedOperation({
+        prepared: {
+          operation: { id: "op-invalid-policy" },
+          precondition_fingerprint: fingerprint,
+          precondition_policy: invalidPolicy,
+        },
+        capture_state: () => Promise.resolve(fingerprint),
+        apply,
+      }),
+    ).rejects.toThrow();
     expect(apply).not.toHaveBeenCalled();
   });
 

@@ -57,5 +57,6 @@ export type {
   RunnerProcessTreeObservation,
   RunnerRunRecord,
   RunnerRunState,
+  RunnerStateFingerprintRecord,
   RunnerSupervisionState,
 } from "./types/state.js";

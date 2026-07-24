@@ -1,8 +1,11 @@
 import { createHash } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 import { captureStdIO, runCliSilent } from "@agentplane/testkit";
 import { expect } from "vitest";
 
+import { loadPolicyTemplates } from "../../agents/agents-template.js";
 import { runCli } from "../../cli/run-cli.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
@@ -29,11 +32,26 @@ export function sha256(text: string): string {
   return createHash("sha256").update(text, "utf8").digest("hex");
 }
 
+export async function initializeRunnerPolicyFixture(root: string): Promise<void> {
+  const policyRoot = path.join(root, ".agentplane", "policy");
+  await mkdir(policyRoot, { recursive: true });
+  for (const template of await loadPolicyTemplates()) {
+    const target = path.join(policyRoot, template.relativePath);
+    await mkdir(path.dirname(target), { recursive: true });
+    try {
+      await writeFile(target, template.contents, { encoding: "utf8", flag: "wx" });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+    }
+  }
+}
+
 export async function createDoingRunnerTask(opts: {
   root: string;
   title: string;
   plan_text: string;
 }): Promise<string> {
+  await initializeRunnerPolicyFixture(opts.root);
   let taskId = "";
   {
     const io = captureStdIO();

@@ -1,4 +1,9 @@
 import type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
+import type {
+  StateFingerprint,
+  StateFingerprintPolicy,
+  StateFingerprintPreconditionDiagnostic,
+} from "@agentplaneorg/core/schemas";
 import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
 
 import type { RunnerAdapterCapabilities } from "./capabilities.js";
@@ -106,6 +111,18 @@ export type RunnerPreparedMetadata = {
   invocation: RunnerInvocationSnapshot;
 };
 
+export type RunnerStateFingerprintRecord = {
+  schema_version: 1;
+  kind: "runner_state_fingerprint_record";
+  outcome: "prepared" | "accepted" | "refused";
+  precondition_fingerprint: StateFingerprint;
+  precondition_policy: StateFingerprintPolicy;
+  state_before: StateFingerprint | null;
+  state_after: StateFingerprint | null;
+  precondition: StateFingerprintPreconditionDiagnostic | null;
+  effect_applied: boolean | null;
+};
+
 export type RunnerRunState = {
   schema_version: typeof RUNNER_BUNDLE_SCHEMA_VERSION;
   runner_api_version: typeof RUNNER_API_VERSION;
@@ -128,6 +145,7 @@ export type RunnerRunState = {
   updated_at: string;
   prepared_metadata?: RunnerPreparedMetadata;
   supervision?: RunnerSupervisionState;
+  state_fingerprint?: RunnerStateFingerprintRecord;
   result?: RunnerResult;
 };
 

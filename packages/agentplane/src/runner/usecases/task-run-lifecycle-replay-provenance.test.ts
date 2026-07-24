@@ -19,7 +19,10 @@ import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from ".
 
 import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
-import { recordFailedExternalRunnerAnchor } from "./task-run-lifecycle.testkit.js";
+import {
+  initializeRunnerPolicyFixture,
+  recordFailedExternalRunnerAnchor,
+} from "./task-run-lifecycle.testkit.js";
 
 installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;
@@ -29,6 +32,7 @@ afterEach(() => {
 });
 
 async function createDoingRunnerTask(root: string, title: string): Promise<string> {
+  await initializeRunnerPolicyFixture(root);
   let taskId = "";
   {
     const io = captureStdIO();

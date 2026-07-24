@@ -18,6 +18,7 @@ import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 
 import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
+import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
 import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 
@@ -33,6 +34,7 @@ afterEach(() => {
 });
 
 async function createDoingTask(root: string, title: string): Promise<string> {
+  await initializeRunnerPolicyFixture(root);
   let taskId = "";
   {
     const io = captureStdIO();

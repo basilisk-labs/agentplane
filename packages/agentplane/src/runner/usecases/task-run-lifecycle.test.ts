@@ -36,6 +36,7 @@ import { runnerReplayDangerAuthoritySource } from "./task-run-lifecycle-shared.j
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 import {
   INITIAL_DANGER_AUTHORITY,
+  initializeRunnerPolicyFixture,
   recordFailedExternalRunnerAnchor,
   replayDangerAuthority,
   sha256,
@@ -50,6 +51,7 @@ afterEach(() => {
 });
 
 async function createDoingTask(root: string, title: string): Promise<string> {
+  await initializeRunnerPolicyFixture(root);
   let taskId = "";
   {
     const io = captureStdIO();

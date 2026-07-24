@@ -16,7 +16,6 @@ import { buildFrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 
 import type { RunnerAdapter } from "../adapters/shared.js";
-import { evolveRunnerRunState } from "../artifacts.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { collectRunnerBasePrompts } from "../context/base-prompts.js";
@@ -27,7 +26,7 @@ import { RunnerRunRepository } from "../run-repository.js";
 import { createRunnerRunId, resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "../sandbox-policy.js";
 import {
-  buildPreparedRunnerStateFingerprint,
+  capturePreparedRunnerStateFingerprint,
   captureRunnerPreparationGitSnapshot,
   RUNNER_STATE_FINGERPRINT_POLICY,
 } from "../state-fingerprint.js";
@@ -58,7 +57,14 @@ import {
   writeTaskBlueprintSnapshot,
 } from "./task-run-blueprint-plan.js";
 import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
-import { executeStateBoundRunnerInvocation } from "./task-run-state-fingerprint.js";
+import {
+  executeStateBoundRunnerInvocation,
+  RunnerStateFingerprintCliError,
+} from "./task-run-state-fingerprint.js";
+import {
+  persistRunnerStateFingerprintRefusal,
+  persistRunnerStateFingerprintSuccess,
+} from "./task-run-state-fingerprint-persistence.js";
 import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
@@ -310,12 +316,13 @@ export async function prepareTaskRunnerExecution(opts: {
     authoritative_checkout_path: route_decision.executionPacket.authoritativeCheckoutPath,
     mutation_path_hint: route_decision.executionPacket.mutationPathHint,
   });
-  const precondition_fingerprint = buildPreparedRunnerStateFingerprint({
+  const precondition_fingerprint = await capturePreparedRunnerStateFingerprint({
     ctx: command,
     bundle,
     git: preparationGitSnapshot,
   });
   bundle.state_fingerprint = precondition_fingerprint;
+  bundle.state_fingerprint_policy = RUNNER_STATE_FINGERPRINT_POLICY;
   const repository = RunnerRunRepository.fromBundle(bundle);
   await repository.createFreshDirectory({
     run_id: bundle.execution.run_id,
@@ -453,54 +460,52 @@ export async function executeTaskRunnerExecution(opts: {
     cleanupBundle = prepared.bundle;
     releaseActiveClaim = false;
     const adapter = createRunnerAdapter(ctx.config);
-    const guardedExecution = await executeStateBoundRunnerInvocation({
+    let guardedExecution;
+    try {
+      guardedExecution = await executeStateBoundRunnerInvocation({
+        ctx,
+        task_id: opts.task_id,
+        bundle: prepared.bundle,
+        invocation: prepared.invocation,
+        precondition_fingerprint: prepared.precondition_fingerprint,
+        precondition_policy: prepared.precondition_policy,
+        apply: async (invocation) => {
+          if (opts.replay_provenance) {
+            await persistReplayAnchorBeforeExecution({
+              ctx,
+              task_id: opts.task_id,
+              bundle: prepared.bundle,
+              state: prepared.state,
+              provenance: opts.replay_provenance,
+            });
+          }
+          return await adapter.execute(invocation);
+        },
+      });
+    } catch (error) {
+      if (!(error instanceof RunnerStateFingerprintCliError)) throw error;
+      await persistRunnerStateFingerprintRefusal({
+        ctx,
+        task_id: opts.task_id,
+        bundle: prepared.bundle,
+        invocation: prepared.invocation,
+        prepared_state: prepared.state,
+        error,
+      });
+      releaseActiveClaim = true;
+      throw error;
+    }
+    const preconditionFingerprint = guardedExecution.precondition_fingerprint;
+    const preconditionPolicy = guardedExecution.precondition_policy;
+    const result = guardedExecution.result;
+    const state = await persistRunnerStateFingerprintSuccess({
       ctx,
       task_id: opts.task_id,
       bundle: prepared.bundle,
       invocation: prepared.invocation,
-      precondition_fingerprint: prepared.precondition_fingerprint,
-      precondition_policy: prepared.precondition_policy,
-      apply: async (invocation) => {
-        if (opts.replay_provenance) {
-          await persistReplayAnchorBeforeExecution({
-            ctx,
-            task_id: opts.task_id,
-            bundle: prepared.bundle,
-            state: prepared.state,
-            provenance: opts.replay_provenance,
-          });
-        }
-        return await adapter.execute(invocation);
-      },
-    });
-    const preconditionFingerprint = guardedExecution.precondition_fingerprint;
-    const preconditionPolicy = guardedExecution.precondition_policy;
-    const result = guardedExecution.result;
-    const runRepository = await RunnerRunRepository.openExistingTaskRun({
-      git_root: ctx.resolvedProject.gitRoot,
-      workflow_dir: ctx.config.paths.workflow_dir,
-      task_id: opts.task_id,
-      run_id: prepared.invocation.run_id,
-      storage: "supervisor",
-    });
-    const observedTerminal = await runRepository.readState();
-    const state =
-      observedTerminal &&
-      observedTerminal.status !== "prepared" &&
-      observedTerminal.status !== "running"
-        ? observedTerminal
-        : evolveRunnerRunState({
-            state: prepared.state,
-            status: result.status,
-            result,
-            updated_at: result.ended_at,
-          });
-    await persistRunnerOutcomeToTask({
-      ctx,
-      task_id: opts.task_id,
-      bundle: prepared.bundle,
-      state,
-      ordering_authority: "current_active_claim",
+      prepared_state: prepared.state,
+      result,
+      state_fingerprint: guardedExecution.state_fingerprint,
     });
     const claimedRunAuthority = await inspectTaskRunnerClaimedRunAuthority(
       {
