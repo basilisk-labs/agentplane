@@ -4,7 +4,7 @@ title: "Supervise direct task execution end to end"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -13,6 +13,7 @@ depends_on:
   - "202607221850-8HBF4J"
   - "202607221850-DRWR0V"
   - "202607221850-R7WS01"
+  - "202607242236-1BFWEY"
 tags:
   - "direct"
   - "milestone-beta1"
