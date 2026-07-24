@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -96,7 +96,7 @@ events:
     state: "needs_rework"
     note: "Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded journal, and durable journal migration/install-smoke acceptance was not explicit."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:49:26.015Z"
+doc_updated_at: "2026-07-24T22:53:03.630Z"
 doc_updated_by: "PLANNER"
 description: "Add a beta.1 implementation leaf for a durable supervisor episode journal and hard execution budgets, wire its release-DAG dependencies, and update the canonical AgentPlane 0.7 refactor plan without implementing runtime code."
 sections:
@@ -108,7 +108,7 @@ sections:
     - In scope: Add a beta.1 implementation leaf for a durable supervisor episode journal and hard execution budgets, wire its release-DAG dependencies, and update the canonical AgentPlane 0.7 refactor plan without implementing runtime code.
     - Out of scope: unrelated refactors not required for "Amend AgentPlane 0.7 graph with bounded supervisor execution".
   Plan: "1. Create one CODER beta.1 leaf that defines a durable supervisor episode journal, deterministic transition and stop records, bounded feedback deltas, and hard limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes. 2. Depend the leaf on typed evaluator execution, shared supervisor extraction, and typed runner lifecycle results; make direct supervision and the beta.1 qualification gate depend on the new leaf. 3. Update docs/internal/v0.7-refactor-plan.md and the affected task dependency metadata without implementing runtime code or exposing the legacy ap loop surface. 4. Verify routing, task graph consistency, docs formatting, and AgentPlane doctor; publish through branch_pr and integrate into main."
-  Verify Steps: "1. Inspect the new CODER leaf with agentplane task brief and next-action. Expected: it is atomic, plan-approved, tagged v0.7/wave-supervisor, waits only on typed evaluator/shared supervisor/typed runner prerequisites, and exposes concrete code-level Verify Steps. 2. Inspect direct-supervisor and beta.1-gate dependencies. Expected: both include the new leaf without cycles, while later milestones remain transitively gated. 3. Review docs/internal/v0.7-refactor-plan.md. Expected: leaf count, beta.1 table row, dependency names, wave-gate text, and explicit non-goal for the legacy ap loop surface agree with task metadata. 4. Run node .agentplane/policy/check-routing.mjs, agentplane doctor, bun run format:check, and the task-state consistency check selected by repository scripts. Expected: all pass with no generated drift. 5. Confirm git diff contains only the planning task, new implementation task, affected dependency task records, canonical 0.7 plan, and CLI-owned task export artifacts."
+  Verify Steps: "1. Inspect the new CODER leaf with agentplane task brief and next-action. Expected: it is atomic, plan-complete and approval-ready, remains TODO/unstarted, is tagged v0.7/wave-supervisor, waits on typed evaluator/shared supervisor/typed runner prerequisites, and exposes concrete code-level Verify Steps. 2. Inspect direct-supervisor, context-supervisor, and beta.1-gate dependencies. Expected: all required multi-episode paths include the new leaf without cycles, while later milestones remain transitively gated. 3. Review docs/internal/v0.7-refactor-plan.md and task 202607242236-1BFWEY. Expected: leaf count, beta.1 table rows, bounded supervisor constraint, schema fixtures, migrator idempotency/rollback, installed-package smoke, and explicit non-goal for the legacy ap loop surface agree with task metadata. 4. Run node .agentplane/policy/check-routing.mjs, agentplane doctor, bun run format:check, and bun run task-state:check. Expected: all pass with no generated drift. 5. Confirm git diff contains only the planning task, new implementation task, affected direct/context/gate dependency task records, canonical 0.7 plan, review-driven lifecycle evidence, and CLI-owned PR artifacts."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-24T22:42:49.173Z — VERIFY — ok
@@ -208,7 +208,7 @@ Add a beta.1 implementation leaf for a durable supervisor episode journal and ha
 
 ## Verify Steps
 
-1. Inspect the new CODER leaf with agentplane task brief and next-action. Expected: it is atomic, plan-approved, tagged v0.7/wave-supervisor, waits only on typed evaluator/shared supervisor/typed runner prerequisites, and exposes concrete code-level Verify Steps. 2. Inspect direct-supervisor and beta.1-gate dependencies. Expected: both include the new leaf without cycles, while later milestones remain transitively gated. 3. Review docs/internal/v0.7-refactor-plan.md. Expected: leaf count, beta.1 table row, dependency names, wave-gate text, and explicit non-goal for the legacy ap loop surface agree with task metadata. 4. Run node .agentplane/policy/check-routing.mjs, agentplane doctor, bun run format:check, and the task-state consistency check selected by repository scripts. Expected: all pass with no generated drift. 5. Confirm git diff contains only the planning task, new implementation task, affected dependency task records, canonical 0.7 plan, and CLI-owned task export artifacts.
+1. Inspect the new CODER leaf with agentplane task brief and next-action. Expected: it is atomic, plan-complete and approval-ready, remains TODO/unstarted, is tagged v0.7/wave-supervisor, waits on typed evaluator/shared supervisor/typed runner prerequisites, and exposes concrete code-level Verify Steps. 2. Inspect direct-supervisor, context-supervisor, and beta.1-gate dependencies. Expected: all required multi-episode paths include the new leaf without cycles, while later milestones remain transitively gated. 3. Review docs/internal/v0.7-refactor-plan.md and task 202607242236-1BFWEY. Expected: leaf count, beta.1 table rows, bounded supervisor constraint, schema fixtures, migrator idempotency/rollback, installed-package smoke, and explicit non-goal for the legacy ap loop surface agree with task metadata. 4. Run node .agentplane/policy/check-routing.mjs, agentplane doctor, bun run format:check, and bun run task-state:check. Expected: all pass with no generated drift. 5. Confirm git diff contains only the planning task, new implementation task, affected direct/context/gate dependency task records, canonical 0.7 plan, review-driven lifecycle evidence, and CLI-owned PR artifacts.
 
 ## Verification
 
