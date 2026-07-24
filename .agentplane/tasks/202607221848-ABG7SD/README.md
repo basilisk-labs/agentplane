@@ -1,10 +1,10 @@
 ---
 id: "202607221848-ABG7SD"
 title: "Align CLI error, exit-code, and Node support contracts"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,9 +27,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-24T09:03:13.942Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: align generated CLI error, exit-code, installed-tarball, and Node support contracts."
+events:
+  -
+    type: "status"
+    at: "2026-07-24T09:04:19.991Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: align generated CLI error, exit-code, installed-tarball, and Node support contracts."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:48:42.500Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-24T09:04:19.991Z"
+doc_updated_by: "CODER"
 description: "Correct the verified drift between documented and runtime exit/error shapes, structured remediation fields, package engine ranges, and the CI support matrix before 0.7 compatibility is frozen."
 sections:
   Summary: |-
