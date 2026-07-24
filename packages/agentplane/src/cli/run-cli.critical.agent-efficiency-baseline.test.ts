@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("244commands/165args/771options");
+      expect(compatibility.stdout).toContain("244commands/165args/773options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -161,11 +161,54 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       expect(compatibilityCandidate).toMatchObject({
         schema_version: 2,
         candidate_id: "agentplane.compatibility.v0.7.cumulative",
-        source_tasks: ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"],
+        source_tasks: [
+          "202607221846-4VB97J",
+          "202607221846-YGWMA2",
+          "202607230554-YFYT83",
+          "202607221846-9XC1H0",
+        ],
         candidate: {
-          surface_sha256: "cd5fb5b60eb7d554c6fe2bd14cdf9cfbe31625c4ba2d5f9a787968a4c6d31246",
+          surface_sha256: "8b69ad6c096cd4b873785454cc1d1570a980529b47599e40a3561fc8dacb5951",
           section_digests: {
-            cli_topology: "f44122c97483b733ffa7c1de543d95f37672532562e2f5526525c1f6a0b23e4a",
+            cli_topology: "61e9b7ce283f2e6381c68c95783a5e0b63180288d06de34d6e91a0b349a91f11",
+          },
+        },
+        contract_artifacts: {
+          execution_receipt_schema: {
+            path: "schemas/execution-receipt.schema.json",
+            sha256: "2182ce7788ff3cffea246a15864c27350b6787555588ba1444fbc3fc5b0f3db9",
+            comparison: "canonical_json_exact",
+            source_task: "202607221846-9XC1H0",
+          },
+          core_execution_receipt_exports: {
+            comparison: "required_named_reexports",
+            source_task: "202607221846-9XC1H0",
+            entrypoints: [
+              {
+                path: "packages/core/src/index.ts",
+                module: "./schemas/index.js",
+                required_symbols: expect.arrayContaining([
+                  "EXECUTION_RECEIPT_V1_ZOD_SCHEMA",
+                  "EXECUTION_RECEIPT_V2_ZOD_SCHEMA",
+                  "ExecutionReceiptV1",
+                  "ExecutionReceiptV2",
+                  "renderExecutionReceiptV1ValidFixtureJson",
+                  "renderExecutionReceiptV2ValidFixtureJson",
+                ]) as unknown,
+              },
+              {
+                path: "packages/core/src/schemas/index.ts",
+                module: "../runner/execution-receipt.js",
+                required_symbols: expect.arrayContaining([
+                  "EXECUTION_RECEIPT_V1_ZOD_SCHEMA",
+                  "EXECUTION_RECEIPT_V2_ZOD_SCHEMA",
+                  "ExecutionReceiptV1",
+                  "ExecutionReceiptV2",
+                  "renderExecutionReceiptV1ValidFixtureJson",
+                  "renderExecutionReceiptV2ValidFixtureJson",
+                ]) as unknown,
+              },
+            ],
           },
         },
       });

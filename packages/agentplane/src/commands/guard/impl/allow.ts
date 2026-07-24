@@ -9,7 +9,11 @@ import {
   type GitMutationKind,
   withGitMutationMutex,
 } from "../../../shared/git-mutation.js";
-import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../../shared/git-path.js";
+import {
+  gitPathIsUnderPrefix,
+  gitPathPrefixIsUnderPrefix,
+  normalizeGitPathPrefix,
+} from "../../../shared/git-path.js";
 import { CliError } from "../../../shared/errors.js";
 import {
   protectedPathAllowPrefixes,
@@ -51,7 +55,7 @@ function normalizeAllowPrefixes(prefixes: string[]): string[] {
 
   const compact: string[] = [];
   for (const prefix of unique) {
-    if (compact.some((existing) => gitPathIsUnderPrefix(prefix, existing))) continue;
+    if (compact.some((existing) => gitPathPrefixIsUnderPrefix(prefix, existing))) continue;
     compact.push(prefix);
   }
   return compact;

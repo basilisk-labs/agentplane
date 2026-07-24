@@ -22,9 +22,10 @@ export function buildRunnerPolicyDecision(opts: {
   adapter_id: string;
   capabilities: RunnerAdapterCapabilities | undefined;
   recipe: RunnerRecipeContext | undefined;
+  requested?: Record<string, unknown>;
 }): RunnerPolicyDecision {
   const profile = readRecipeRunProfile(opts.recipe);
-  const requested = toRequestedMap(profile);
+  const requested = opts.requested ?? toRequestedMap(profile);
   const effective: Record<string, unknown> = {};
   const fields: RunnerPolicyDecision["fields"] = {};
   const capabilityFields = opts.capabilities?.fields ?? {};

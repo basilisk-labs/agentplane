@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { readFile, rm, writeFile } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
@@ -11,6 +11,7 @@ import {
   runCliSilent,
   writeDefaultConfig,
 } from "@agentplane/testkit";
+import * as taskRunUsecases from "../runner/usecases/task-run.js";
 
 installRunCliIntegrationHarness();
 
@@ -75,8 +76,34 @@ describe("runCli task run", () => {
     ]);
 
     const io = captureStdIO();
+    const prepareSpy = vi.spyOn(taskRunUsecases, "prepareTaskRunnerExecution");
     try {
-      expect(await runCli(["task", "run", taskId, "--dry-run", "--json", "--root", root])).toBe(0);
+      expect(
+        await runCli([
+          "task",
+          "run",
+          taskId,
+          "--dry-run",
+          "--sandbox",
+          "danger-full-access",
+          "--allow-danger-full-access",
+          "--json",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      expect(prepareSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          task_id: taskId,
+          mode: "dry_run",
+          sandbox_override: "danger-full-access",
+          danger_authority: {
+            danger_full_access_authorized: true,
+            provenance: "explicit_operator",
+            source: "task run --allow-danger-full-access",
+          },
+        }),
+      );
       const payload = JSON.parse(io.stdout) as {
         task_id: string;
         mode: string;
@@ -95,8 +122,11 @@ describe("runCli task run", () => {
         `/goal Execute AgentPlane task ${taskId}: Run task through Codex goal`,
       );
       expect(bootstrap).toContain("Use bundle.json as the complete runner input.");
-      expect(bootstrap).toContain("Execute-mode runs must write a valid JSON result manifest");
+      expect(bootstrap).toContain(
+        "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
+      );
     } finally {
+      prepareSpy.mockRestore();
       io.restore();
     }
 

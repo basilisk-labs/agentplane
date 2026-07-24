@@ -1,8 +1,8 @@
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
-import { resolveLatestRunnerRunId, RunnerRunRepository } from "../run-repository.js";
-import { resolveTaskRunnerPaths, type TaskRunnerPaths } from "../task-run-paths.js";
+import { openLatestRunnerRun, RunnerRunRepository } from "../run-repository.js";
+import type { TaskRunnerPaths } from "../task-run-paths.js";
 import type { RunnerContextBundle, RunnerEvent, RunnerRunState } from "../types.js";
 
 export type LoadedTaskRunnerInspection = {
@@ -11,6 +11,7 @@ export type LoadedTaskRunnerInspection = {
   run_id: string;
   selection: "explicit" | "latest";
   paths: TaskRunnerPaths;
+  repository: RunnerRunRepository;
   bundle: RunnerContextBundle;
   state: RunnerRunState;
   events: RunnerEvent[];
@@ -37,21 +38,28 @@ export async function loadTaskRunnerInspection(opts: {
     });
   }
 
-  const runId =
-    typeof opts.run_id === "string" && opts.run_id.trim().length > 0
-      ? opts.run_id
-      : await resolveLatestRunnerRunId({
+  const explicitRunId =
+    typeof opts.run_id === "string" && opts.run_id.trim().length > 0 ? opts.run_id : null;
+  const selected = explicitRunId
+    ? {
+        run_id: explicitRunId,
+        repository: await RunnerRunRepository.openExistingTaskRun({
           git_root: executionContext.repo.git_root,
           workflow_dir: executionContext.repo.workflow_dir,
           task_id: opts.task_id,
-        });
-  const paths = resolveTaskRunnerPaths({
-    git_root: executionContext.repo.git_root,
-    workflow_dir: executionContext.repo.workflow_dir,
-    task_id: opts.task_id,
-    run_id: runId,
-  });
-  const repository = new RunnerRunRepository(paths);
+          run_id: explicitRunId,
+          storage: "supervisor",
+        }),
+      }
+    : await openLatestRunnerRun({
+        git_root: executionContext.repo.git_root,
+        workflow_dir: executionContext.repo.workflow_dir,
+        task_id: opts.task_id,
+        storage: "supervisor",
+      });
+  const runId = selected.run_id;
+  const repository = selected.repository;
+  const paths = repository.paths as TaskRunnerPaths;
   const [record, eventsData] = await Promise.all([
     repository.readRequiredRecord({
       task_id: opts.task_id,
@@ -67,8 +75,9 @@ export async function loadTaskRunnerInspection(opts: {
     ctx: executionContext.command,
     task_id: opts.task_id,
     run_id: runId,
-    selection: opts.run_id ? "explicit" : "latest",
+    selection: explicitRunId ? "explicit" : "latest",
     paths,
+    repository,
     bundle: record.bundle,
     state: record.state,
     events: eventsData.events,

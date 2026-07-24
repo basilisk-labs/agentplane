@@ -141,8 +141,10 @@ agentplane task run logs <task-id> --stream events --follow
 ```
 
 Use them from the parent/orchestrator context to monitor child runners without taking over their
-lifecycle authority. Do not introduce them into ordinary task execution unless the task route or
-recipe explicitly delegates runner control.
+lifecycle authority. They resolve supervisor-owned artifacts independently of the current linked
+worktree; do not construct or mutate the internal Git-administration paths directly. Do not
+introduce them into ordinary task execution unless the task route or recipe explicitly delegates
+runner control.
 
 ## Advanced task projections
 
@@ -225,8 +227,14 @@ raw/proposal scaffold path, not the semantic truth path. Write modes also mark h
 READMEs with `extensions.context_harvest` for raw ingestion and
 `extensions.context_task_extraction` for queued semantic extraction, so later broad runs can skip
 unchanged ingested or queued tasks by source digest instead of guessing from wiki files. Write modes
-require `agentplane context init` first. Use `context verify-task` before closing work that creates
-or relies on context artifacts. See [Local context](local-context).
+require `agentplane context init` first.
+
+During the v0.7 supervisor migration, a persisted execution receipt is diagnostic evidence, not an
+authentication channel. `context verify-task` and `context finalize-task` therefore fail closed with
+`compatibility_unverified` when only a repository-local receipt is available. Run the component
+checks (`context wiki lint`, `context graph validate`, `context doctor`) and record independent
+verification with `ap verify`; the beta supervisor restores the authenticated end-to-end gate. See
+[Local context](local-context).
 
 `context wiki` helpers keep markdown pages usable by both humans and agents. `wiki new` creates a
 page with Agentplane frontmatter, `wiki lint` checks the page manifest and source-link hygiene,

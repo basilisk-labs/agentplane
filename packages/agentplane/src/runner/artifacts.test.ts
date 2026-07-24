@@ -173,7 +173,7 @@ describe("runner artifacts", () => {
         executable: "codex",
         argv_count: 3,
         env_keys: ["AGENTPLANE_RUNNER_ADAPTER", "AGENTPLANE_RUNNER_MODE"],
-        cwd: paths.run_dir,
+        cwd: tempDir,
         has_result_path: true,
         has_output_last_message_path: true,
       },

@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
-import { cmdContextVerifyTask } from "./verify-task.js";
+import { validateContextTaskArtifacts } from "../../context/verify-task.js";
 
 let tempRoots: string[] = [];
 
@@ -432,17 +432,17 @@ describe("maximum-assimilation context verify-task gates", () => {
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     await writeMaximumAssimilationArtifacts(root);
     const task = maxAssimilationTask();
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: task.runner.evidence.changed_paths,
     });
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
-    await cmdContextVerifyTask({
+    await validateContextTaskArtifacts({
       ctx: contextFor(root, task),
-      cwd: root,
-      parsed: { taskId: task.id },
+      task,
+      changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
     });
 
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
@@ -455,17 +455,17 @@ describe("maximum-assimilation context verify-task gates", () => {
     await write(root, "context/raw/specs/payment-api.md", "# Payment API\n\nPublic source.\n");
     await writeMaximumAssimilationArtifacts(root, { glossary: false });
     const task = maxAssimilationTask();
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: task.runner.evidence.changed_paths,
     });
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx: contextFor(root, task),
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/maximum-assimilation requires a root glossary file/u);
   });

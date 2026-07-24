@@ -18,6 +18,10 @@ function policyFieldCapabilityId(adapterId: string, fieldName: string): string {
   return `runner.adapter.${adapterId}.policy_field.${fieldName}`;
 }
 
+function filesystemEffectContainmentCapabilityId(adapterId: string): string {
+  return `runner.adapter.${adapterId}.filesystem_effect_containment`;
+}
+
 export function resolveRunnerAdapterCapabilityRegistry(opts: {
   adapter_id: string;
   capabilities: RunnerAdapterCapabilities | undefined;
@@ -35,9 +39,40 @@ export function resolveRunnerAdapterCapabilityRegistry(opts: {
       metadata: {
         adapter_id: adapterId,
         declared_fields: Object.keys(opts.capabilities?.fields ?? {}).toSorted(),
+        filesystem_effect_containment:
+          opts.capabilities?.filesystem_effect_containment?.level ?? "unsupported",
       },
     },
   ];
+
+  const effectContainment = opts.capabilities?.filesystem_effect_containment;
+  if (effectContainment) {
+    const available =
+      (effectContainment.level === "native" || effectContainment.level === "wrapper") &&
+      effectContainment.descendant_inheritance === "enforced";
+    entries.push({
+      id: filesystemEffectContainmentCapabilityId(adapterId),
+      kind: "runner_adapter",
+      availability: available ? "available" : "unavailable",
+      source: source(adapterId),
+      summary: "Inherited filesystem-effect containment",
+      supported_values: [...effectContainment.supported_sandboxes],
+      ...(available
+        ? {}
+        : {
+            reason:
+              "The adapter does not enforce an inherited filesystem boundary for descendant commands.",
+          }),
+      metadata: {
+        adapter_id: adapterId,
+        level: effectContainment.level,
+        boundary: effectContainment.boundary,
+        descendant_inheritance: effectContainment.descendant_inheritance,
+        lifetime_containment: effectContainment.lifetime_containment,
+        ...(effectContainment.note ? { note: effectContainment.note } : {}),
+      },
+    });
+  }
 
   for (const [fieldName, capability] of Object.entries(opts.capabilities?.fields ?? {})) {
     const hasRequest = Object.hasOwn(requested, fieldName);

@@ -18,9 +18,7 @@
     "next_action": "retry",
     "next_command": "agentplane task run retry 202603271853-R98CCP run_20260327_abc123",
     "resume_command": "agentplane task run resume 202603271853-R98CCP run_20260327_abc123",
-    "retry_command": "agentplane task run retry 202603271853-R98CCP run_20260327_abc123",
-    "state_path": "/repo/.agentplane/tasks/202603271853-R98CCP/runs/run_20260327_abc123/run-state.json",
-    "trace_path": "/repo/.agentplane/tasks/202603271853-R98CCP/runs/run_20260327_abc123/agent-trace.jsonl"
+    "retry_command": "agentplane task run retry 202603271853-R98CCP run_20260327_abc123"
   },
   "next_actions": [
     "Inspect the failed run trace before retrying.",
@@ -29,6 +27,6 @@
   "risks": ["The previous run failed after partially updating generated artifacts."],
   "open_questions": ["Should the retry reuse the same run id or start a fresh one?"],
   "evidence_paths": [
-    ".agentplane/tasks/202603271853-R98CCP/runs/run_20260327_abc123/agent-trace.jsonl"
+    "agentplane-run://tasks/202603271853-R98CCP/run_20260327_abc123/execution-receipt.json"
   ]
 }

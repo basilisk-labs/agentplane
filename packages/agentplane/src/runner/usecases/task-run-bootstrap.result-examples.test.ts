@@ -83,6 +83,28 @@ describe("runner bootstrap result examples", () => {
     }
   });
 
+  it("routes read-only Codex semantic output through the supervisor", () => {
+    const bundle = makeRunnerContextBundle({ runId: "read-only-run" });
+    bundle.execution.sandbox_policy = {
+      requested: "read-only",
+      source: "role_default",
+      role: "EVALUATOR",
+      authority: {
+        danger_full_access_authorized: false,
+        provenance: null,
+        source: null,
+      },
+    };
+
+    const bootstrap = renderTaskRunnerBootstrap(bundle);
+
+    expect(bootstrap).toContain("Do not attempt to write result_path or any other file.");
+    expect(bootstrap).toContain("the supervisor writes and validates result_path");
+    expect(bootstrap).not.toContain(
+      "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
+    );
+  });
+
   it.each([
     [
       "blocked without blocker",

@@ -20,11 +20,15 @@ function normalizeRelativePolicyPath(value: string): string | null {
   return normalized.replace(/\/+$/u, "");
 }
 
-export function normalizeRecipeArtifactPrefixes(raw: string[] | undefined): string[] {
+export function normalizeRecipeArtifactPrefixes(
+  raw: string[] | undefined,
+  opts: { task_id?: string } = {},
+): string[] {
   const invalidPrefixes: string[] = [];
   const normalizedPrefixes = (raw ?? [])
     .map((entry) => {
-      const normalized = normalizeRelativePolicyPath(entry);
+      const interpolated = opts.task_id ? entry.replaceAll("<task-id>", opts.task_id) : entry;
+      const normalized = normalizeRelativePolicyPath(interpolated);
       if (!normalized) invalidPrefixes.push(entry);
       return normalized;
     })

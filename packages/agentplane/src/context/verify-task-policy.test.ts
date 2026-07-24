@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { EXECUTION_RECEIPT_V1_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
+import { EXECUTION_RECEIPT_V2_VALID_FIXTURE } from "@agentplaneorg/core/schemas";
 
 import {
   isTaskPathMatch,
@@ -33,7 +33,7 @@ describe("context verify-task policy", () => {
   });
 
   it("reads changed paths only from an observed execution receipt", () => {
-    expect(readChangedPaths(EXECUTION_RECEIPT_V1_VALID_FIXTURE)).toEqual([
+    expect(readChangedPaths(EXECUTION_RECEIPT_V2_VALID_FIXTURE)).toEqual([
       "packages/core/src/runner/execution-receipt.ts",
     ]);
   });

@@ -6,7 +6,20 @@ export {
 export type { RunnerTarget } from "./types/target.js";
 export type { RunnerPromptBlock, RunnerPromptRole } from "./types/prompts.js";
 export type { RunnerAdapterCapabilities } from "./types/capabilities.js";
-export type { RunnerPolicyDecision, RunnerPolicyRefusal } from "./types/policy.js";
+export {
+  RUNNER_DANGER_FULL_ACCESS_SANDBOX,
+  RUNNER_READ_ONLY_SANDBOX,
+  RUNNER_SANDBOX_MODES,
+  RUNNER_WORKSPACE_WRITE_SANDBOX,
+  type RunnerDangerFullAccessAuthority,
+  type RunnerPolicyFieldDecision,
+  type RunnerPolicyDecision,
+  type RunnerPolicyRefusal,
+  type RunnerSandboxAuthority,
+  type RunnerSandboxMode,
+  type RunnerSandboxPolicy,
+  type RunnerWriteScopePolicy,
+} from "./types/policy.js";
 export type {
   RunnerArtifactPaths,
   RunnerContextBundle,

@@ -1,7 +1,24 @@
-import { chmod, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import type * as NodeCrypto from "node:crypto";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+const cryptoMock = vi.hoisted(() => ({
+  nextHex: null as string | null,
+}));
+
+vi.mock("node:crypto", async (importOriginal) => {
+  const actual = await importOriginal<typeof NodeCrypto>();
+  return {
+    ...actual,
+    randomBytes: (size: number) => {
+      const fixed = cryptoMock.nextHex;
+      cryptoMock.nextHex = null;
+      return fixed === null ? actual.randomBytes(size) : Buffer.from(fixed, "hex");
+    },
+  };
+});
 
 import { atomicWriteFile } from "./atomic-write.js";
 
@@ -14,6 +31,7 @@ async function makeTempDir(): Promise<string> {
 }
 
 afterEach(async () => {
+  cryptoMock.nextHex = null;
   while (tempDirs.length > 0) {
     const dir = tempDirs.pop();
     if (!dir) continue;
@@ -58,4 +76,22 @@ describe("atomicWriteFile", () => {
     const contents = await readFile(target, "utf8");
     expect(["first\n", "second\n"]).toContain(contents);
   });
+
+  it.skipIf(process.platform === "win32")(
+    "does not follow a pre-planted temp-file symlink",
+    async () => {
+      const dir = await makeTempDir();
+      const target = path.join(dir, "secure.json");
+      const victim = path.join(dir, "victim.txt");
+      await writeFile(victim, "sentinel\n", "utf8");
+      const fixedHex = "ab".repeat(16);
+      cryptoMock.nextHex = fixedHex;
+      await symlink(victim, `${target}.tmp-${fixedHex}`, "file");
+
+      await atomicWriteFile(target, "safe\n", "utf8");
+
+      expect(await readFile(target, "utf8")).toBe("safe\n");
+      expect(await readFile(victim, "utf8")).toBe("sentinel\n");
+    },
+  );
 });

@@ -48,6 +48,21 @@ describe("policy/evaluatePolicy", () => {
     expect(res.errors.map((e) => e.message).join("\n")).toContain("Repo-wide allowlist");
   });
 
+  it("does not reinterpret a literal backslash in an observed Git path as a separator", () => {
+    const changedPath = String.raw`src\escape`;
+    const res = evaluatePolicy(
+      makeCtx({
+        git: { stagedPaths: [changedPath] },
+        allow: { prefixes: ["src"] },
+      }),
+    );
+
+    expect(res.ok).toBe(false);
+    expect(res.errors.map((error) => error.message)).toContain(
+      `Staged file is outside allowlist: ${changedPath}`,
+    );
+  });
+
   it("rejects protected policy paths without override", () => {
     const res = evaluatePolicy(
       makeCtx({

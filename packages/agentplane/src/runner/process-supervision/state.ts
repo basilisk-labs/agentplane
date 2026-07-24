@@ -26,7 +26,7 @@ export function buildInvocationEventData(
   return {
     executable: invocation.argv[0] ?? null,
     argv_count: invocation.argv.length,
-    cwd: invocation.run_dir,
+    cwd: invocation.repository_root,
     env_keys: Object.keys(invocation.env).toSorted(),
     has_bootstrap_path:
       typeof invocation.bootstrap_path === "string" && invocation.bootstrap_path.trim().length > 0,

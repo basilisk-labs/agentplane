@@ -1,9 +1,12 @@
+import path from "node:path";
+
 import type {
   TaskData,
   TaskRunnerHistoryEntry,
   TaskRunnerTarget,
 } from "../backends/task-backend.js";
 
+import { createSupervisorExecutionReceiptLocator } from "./task-run-paths.js";
 import type { RunnerRunState, RunnerTarget } from "./types.js";
 
 const RUNNER_OUTCOME_BEGIN = "<!-- BEGIN RUNNER OUTCOME -->";
@@ -51,8 +54,52 @@ export function replaceRunnerOutcomeSection(sectionText: string | null, entryTex
   return parts.join("\n").trimEnd();
 }
 
-function runArtifactsDirForTask(taskId: string, runId: string): string {
-  return `.agentplane/tasks/${taskId}/runs/${runId}`;
+function runArtifactsLocatorForTask(taskId: string, runId: string): string {
+  return `ap task run inspect ${taskId} --run-id ${runId}`;
+}
+
+function isMachineDependentAbsolutePath(value: string): boolean {
+  return path.isAbsolute(value) || path.win32.isAbsolute(value);
+}
+
+function isLegacyRunnerArtifactPath(value: string): boolean {
+  const normalized = value.replaceAll("\\", "/");
+  return (
+    /(?:^|\/)\.agentplane\/tasks\/[^/]+\/runs\/[^/]+\//u.test(normalized) ||
+    /(?:^|\/)(?:\.git\/)?agentplane\/runner\/tasks\/[^/]+\/runs\/[^/]+\//u.test(normalized)
+  );
+}
+
+function isDurableRunnerReference(value: string): boolean {
+  return (
+    value.trim().length > 0 &&
+    !isMachineDependentAbsolutePath(value) &&
+    !isLegacyRunnerArtifactPath(value)
+  );
+}
+
+function durableRunnerReferences(values: readonly string[] | null | undefined): string[] {
+  if (!values?.length) return [];
+  return [
+    ...new Set(
+      values.map((value) => value.trim()).filter((value) => isDurableRunnerReference(value)),
+    ),
+  ];
+}
+
+function durableExecutionReceipt(
+  receipt: TaskRunnerHistoryEntry["execution_receipt"] | null | undefined,
+  taskId: string,
+  runId: string,
+): TaskRunnerHistoryEntry["execution_receipt"] | undefined {
+  if (!receipt) return undefined;
+  return {
+    ...receipt,
+    path: createSupervisorExecutionReceiptLocator({
+      task_id: taskId,
+      run_id: runId,
+    }),
+  };
 }
 
 function formatRunnerAdapterLabel(adapterId: string): string {
@@ -85,7 +132,22 @@ function renderTaskRunnerSummary(opts: {
 
 export function stripRunnerHistory(
   outcome: NonNullable<TaskData["runner"]> | TaskRunnerHistoryEntry,
+  taskId = outcome.target.task_id,
 ): TaskRunnerHistoryEntry {
+  const outputPaths = durableRunnerReferences(outcome.output_paths);
+  const evidencePaths = durableRunnerReferences(outcome.evidence?.evidence_paths);
+  const { evidence_paths: _legacyEvidencePaths, ...evidenceWithoutPaths } = outcome.evidence ?? {};
+  const evidence = outcome.evidence
+    ? {
+        ...evidenceWithoutPaths,
+        ...(evidencePaths.length > 0 ? { evidence_paths: evidencePaths } : {}),
+      }
+    : undefined;
+  const executionReceipt = taskId
+    ? durableExecutionReceipt(outcome.execution_receipt, taskId, outcome.run_id)
+    : outcome.execution_receipt?.path.startsWith("agentplane-run://")
+      ? { ...outcome.execution_receipt }
+      : undefined;
   return {
     run_id: outcome.run_id,
     status: outcome.status,
@@ -97,19 +159,22 @@ export function stripRunnerHistory(
     exit_code: outcome.exit_code,
     target: { ...outcome.target },
     ...(outcome.summary ? { summary: outcome.summary } : {}),
-    ...(outcome.output_paths?.length ? { output_paths: [...outcome.output_paths] } : {}),
+    ...(outputPaths.length > 0 ? { output_paths: outputPaths } : {}),
     ...(outcome.metrics ? { metrics: { ...outcome.metrics } } : {}),
-    ...(outcome.evidence ? { evidence: { ...outcome.evidence } } : {}),
-    ...(outcome.execution_receipt ? { execution_receipt: { ...outcome.execution_receipt } } : {}),
+    ...(evidence ? { evidence } : {}),
+    ...(executionReceipt ? { execution_receipt: executionReceipt } : {}),
   };
 }
 
 function runnerHistoryFromTask(
   outcome: NonNullable<TaskData["runner"]> | null | undefined,
+  taskId?: string,
 ): TaskRunnerHistoryEntry[] {
   if (!outcome) return [];
-  if (outcome.history?.length) return outcome.history.map((entry) => stripRunnerHistory(entry));
-  return [stripRunnerHistory(outcome)];
+  if (outcome.history?.length) {
+    return outcome.history.map((entry) => stripRunnerHistory(entry, taskId));
+  }
+  return [stripRunnerHistory(outcome, taskId)];
 }
 
 function renderRunnerMetrics(
@@ -171,8 +236,9 @@ function renderRunnerEvidence(
 ): string[] {
   if (!evidence) return [];
   const lines: string[] = [];
-  if (evidence.evidence_paths?.length) {
-    lines.push(`EvidencePaths: ${evidence.evidence_paths.join(", ")}`);
+  const evidencePaths = durableRunnerReferences(evidence.evidence_paths);
+  if (evidencePaths.length > 0) {
+    lines.push(`EvidencePaths: ${evidencePaths.join(", ")}`);
   }
   if (evidence.changed_paths?.length) {
     lines.push(`ChangedPaths: ${evidence.changed_paths.join(", ")}`);
@@ -302,7 +368,11 @@ function renderRunnerOutcomeEntry(opts: {
   const entryOutputPaths = opts.entry.output_paths;
   const entryMetrics = opts.entry.metrics;
   const entryEvidence = opts.entry.evidence;
-  const executionReceipt = opts.entry.execution_receipt;
+  const executionReceipt = durableExecutionReceipt(
+    opts.entry.execution_receipt,
+    opts.task_id,
+    opts.entry.run_id,
+  );
   const lines = [
     `#### ${opts.entry.updated_at} — RUNNER — ${opts.entry.status}`,
     "",
@@ -316,7 +386,7 @@ function renderRunnerOutcomeEntry(opts: {
     "",
     `UpdatedAt: ${opts.entry.updated_at}`,
     "",
-    `RunArtifacts: ${runArtifactsDirForTask(opts.task_id, opts.entry.run_id)}`,
+    `RunArtifacts: ${runArtifactsLocatorForTask(opts.task_id, opts.entry.run_id)}`,
     "",
     `ExitCode: ${opts.entry.exit_code ?? "null"}`,
   ];
@@ -329,16 +399,21 @@ function renderRunnerOutcomeEntry(opts: {
   if (summary) {
     lines.push("", `Summary: ${encodeRunnerManagedText(summary)}`);
   }
-  if (opts.projection?.result?.artifacts?.length) {
+  const projectedArtifacts =
+    opts.projection?.result?.artifacts?.filter((artifact) =>
+      isDurableRunnerReference(artifact.path),
+    ) ?? [];
+  if (projectedArtifacts.length > 0) {
     lines.push(
       "",
-      `Artifacts: ${opts.projection.result.artifacts
+      `Artifacts: ${projectedArtifacts
         .map((artifact) => (artifact.label ? `${artifact.label}=${artifact.path}` : artifact.path))
         .join(", ")}`,
     );
   }
-  if (!opts.projection?.result?.artifacts?.length && entryOutputPaths?.length) {
-    lines.push("", `Outputs: ${entryOutputPaths.join(", ")}`);
+  const durableOutputPaths = durableRunnerReferences(entryOutputPaths);
+  if (projectedArtifacts.length === 0 && durableOutputPaths.length > 0) {
+    lines.push("", `Outputs: ${durableOutputPaths.join(", ")}`);
   }
   if (capabilitiesUsed?.length) {
     lines.push("", `Capabilities: ${capabilitiesUsed.join(", ")}`);
@@ -368,9 +443,10 @@ function projectTaskRunnerEvidence(
 ): TaskRunnerHistoryEntry["evidence"] | undefined {
   const source = result?.evidence;
   if (!source && !result?.execution_receipt) return undefined;
+  const evidencePaths = durableRunnerReferences(source?.evidence_paths);
   return {
     ...(result?.execution_receipt ? { provenance: "supervisor_observed" as const } : {}),
-    ...(source?.evidence_paths?.length ? { evidence_paths: [...source.evidence_paths] } : {}),
+    ...(evidencePaths.length > 0 ? { evidence_paths: evidencePaths } : {}),
     ...(source?.changed_paths?.length ? { changed_paths: [...source.changed_paths] } : {}),
     ...(source?.conflict_paths?.length ? { conflict_paths: [...source.conflict_paths] } : {}),
     ...(typeof source?.files_changed_count === "number"
@@ -387,7 +463,10 @@ function projectTaskRunnerEvidence(
   };
 }
 
-function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskRunnerHistoryEntry {
+function buildTaskRunnerHistoryEntry(
+  projection: RunnerOutcomeProjection,
+  taskId: string,
+): TaskRunnerHistoryEntry {
   const { state, result } = projection;
   const evidence = projectTaskRunnerEvidence(result);
   const outcome: TaskRunnerHistoryEntry = {
@@ -410,22 +489,28 @@ function buildTaskRunnerHistoryEntry(projection: RunnerOutcomeProjection): TaskR
   const semanticLines = renderAgentSemanticResult(result);
   outcome.summary =
     semanticLines.length > 0 ? [machineSummary, ...semanticLines].join(" | ") : machineSummary;
-  if (result?.output_paths?.length) outcome.output_paths = [...result.output_paths];
+  const outputPaths = durableRunnerReferences(result?.output_paths);
+  if (outputPaths.length > 0) outcome.output_paths = outputPaths;
   if (result?.metrics) outcome.metrics = { ...result.metrics };
   if (evidence) outcome.evidence = evidence;
   if (result?.execution_receipt) {
-    outcome.execution_receipt = { ...result.execution_receipt };
+    outcome.execution_receipt = durableExecutionReceipt(
+      result.execution_receipt,
+      taskId,
+      state.run_id,
+    );
   }
   return outcome;
 }
 
 function mergeTaskRunnerHistory(opts: {
+  task_id: string;
   latest: TaskRunnerHistoryEntry;
   previous?: NonNullable<TaskData["runner"]> | null;
 }): TaskRunnerHistoryEntry[] {
   const merged: TaskRunnerHistoryEntry[] = [];
   const seen = new Set<string>();
-  for (const entry of [opts.latest, ...runnerHistoryFromTask(opts.previous)]) {
+  for (const entry of [opts.latest, ...runnerHistoryFromTask(opts.previous, opts.task_id)]) {
     if (seen.has(entry.run_id)) continue;
     seen.add(entry.run_id);
     merged.push(stripRunnerHistory(entry));
@@ -435,11 +520,16 @@ function mergeTaskRunnerHistory(opts: {
 }
 
 export function buildTaskRunnerOutcome(opts: {
+  task_id: string;
   projection: RunnerOutcomeProjection;
   previous?: NonNullable<TaskData["runner"]> | null;
 }): NonNullable<TaskData["runner"]> {
-  const latest = buildTaskRunnerHistoryEntry(opts.projection);
-  const history = mergeTaskRunnerHistory({ latest, previous: opts.previous });
+  const latest = buildTaskRunnerHistoryEntry(opts.projection, opts.task_id);
+  const history = mergeTaskRunnerHistory({
+    task_id: opts.task_id,
+    latest,
+    previous: opts.previous,
+  });
   return history.length > 1 ? { ...latest, history } : latest;
 }
 
@@ -450,7 +540,7 @@ export function renderRunnerOutcomeHistory(opts: {
 }): string {
   const history = opts.outcome.history?.length
     ? opts.outcome.history
-    : [stripRunnerHistory(opts.outcome)];
+    : [stripRunnerHistory(opts.outcome, opts.task_id)];
   const [latest, ...previous] = history;
   return [
     renderRunnerOutcomeEntry({

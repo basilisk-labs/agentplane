@@ -4,6 +4,7 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
+import { RUNNER_READ_ONLY_SANDBOX } from "../types.js";
 
 type EvaluatorSkepticismLevel = NonNullable<
   RunnerContextBundle["execution"]["evaluator_skepticism_level"]
@@ -119,6 +120,12 @@ export function renderTaskRunnerBootstrap(
   const routeExecutionPacket = objectField(routeDecision, "executionPacket");
   const routeWorkspace = objectField(routeDecision, "workspace");
   const routeMustNot = stringArrayField(routeExecutionPacket, "mustNot");
+  const sandboxPolicy = bundle.execution.sandbox_policy;
+  const supervisorOwnsSemanticResult =
+    bundle.execution.adapter_id === "codex" &&
+    sandboxPolicy?.requested === RUNNER_READ_ONLY_SANDBOX;
+  const writeScope = bundle.execution.write_scope;
+  const sandboxDecision = bundle.execution.policy_decision?.fields.sandbox;
   return [
     ...(codexGoalLine ? [codexGoalLine, ""] : []),
     "# agentplane runner bootstrap",
@@ -139,6 +146,12 @@ export function renderTaskRunnerBootstrap(
     `- result_path: ${bundle.execution.artifact_paths.result_path}`,
     `- receipt_path: ${bundle.execution.artifact_paths.receipt_path}`,
     `- bootstrap_path: ${bundle.execution.artifact_paths.bootstrap_path}`,
+    `- sandbox_requested: ${sandboxPolicy?.requested ?? "unknown"}`,
+    `- sandbox_source: ${sandboxPolicy?.source ?? "unknown"}`,
+    `- execution_role: ${sandboxPolicy?.role ?? "unknown"}`,
+    `- sandbox_enforcement: ${sandboxDecision?.status ?? "unknown"}`,
+    `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
+    `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
     ...(routeDecision
       ? [
           `- checkout_role: ${stringField(routeWorkspace, "checkoutRole") ?? "unknown"}`,
@@ -162,6 +175,7 @@ export function renderTaskRunnerBootstrap(
     "Treat the rendered route fields as supervisor-resolved constraints. Do not recompute workflow state or invoke task lifecycle commands from this run.",
     "For file-edit tools that do not accept cwd/workdir, use absolute paths under route_mutation_path_hint when route_safe_to_mutate is true; otherwise stop before mutating files.",
     "Stop according to route_return_control_when; the parent supervisor owns the next state transition.",
+    "Treat protected_paths as forbidden even when the native sandbox permits them. The supervisor evaluates actual writes after the run.",
     ...(routeMustNot.length > 0
       ? ["Route must-not rules:", ...routeMustNot.map((rule) => `- ${rule}`)]
       : []),
@@ -191,7 +205,9 @@ export function renderTaskRunnerBootstrap(
             : []),
         ]
       : []),
-    "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest to result_path before exiting.",
+    supervisorOwnsSemanticResult
+      ? "This is a read-only Codex run. Do not attempt to write result_path or any other file. Return the AgentSemanticResult v2 object as the final structured response; the supervisor writes and validates result_path outside the sandbox."
+      : "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest to result_path before exiting.",
     "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
     ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),
     "",

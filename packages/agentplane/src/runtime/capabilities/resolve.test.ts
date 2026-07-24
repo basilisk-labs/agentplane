@@ -180,6 +180,36 @@ describe("runtime capability registry", () => {
     });
   });
 
+  it("publishes inherited filesystem-effect containment as a typed adapter capability", () => {
+    const registry = resolveRunnerAdapterCapabilityRegistry({
+      adapter_id: "codex",
+      capabilities: {
+        adapter_id: "codex",
+        fields: {},
+        filesystem_effect_containment: {
+          level: "native",
+          supported_sandboxes: ["read-only", "workspace-write"],
+          boundary: "workspace",
+          descendant_inheritance: "enforced",
+          lifetime_containment: "not_provided",
+        },
+      },
+    });
+
+    expect(
+      getCapabilityEntries(registry, "runner.adapter.codex.filesystem_effect_containment")[0],
+    ).toMatchObject({
+      availability: "available",
+      supported_values: ["read-only", "workspace-write"],
+      metadata: {
+        level: "native",
+        boundary: "workspace",
+        descendant_inheritance: "enforced",
+        lifetime_containment: "not_provided",
+      },
+    });
+  });
+
   it("deduplicates merged registries and supports filtered listing", () => {
     const left = createCapabilityRegistry([
       {

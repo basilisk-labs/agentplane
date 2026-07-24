@@ -1,12 +1,17 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
 import { waitForCondition } from "@agentplane/testkit";
 
+import { captureRunnerArtifactDirectoryBoundary } from "./run-directory-boundary.js";
 import { runSupervisedProcess } from "./process-supervision/run.js";
-import { compressedTraceArtifactPath, readTraceArtifactText } from "./trace-artifacts.js";
+import {
+  applyFinalTraceRetention,
+  compressedTraceArtifactPath,
+  readTraceArtifactText,
+} from "./trace-artifacts.js";
 
 async function waitForTraceMatch(opts: {
   path: string;
@@ -36,6 +41,73 @@ describe("runSupervisedProcess", () => {
       await rm(tempDir, { recursive: true, force: true });
       tempDir = "";
     }
+  });
+
+  it("checks the run-directory boundary immediately before process spawn", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-pre-spawn-"));
+    const runDir = path.join(tempDir, "run");
+    const markerPath = path.join(tempDir, "spawned.txt");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      `await import("node:fs/promises").then(({ writeFile }) => writeFile(${JSON.stringify(markerPath)}, "spawned", "utf8"));\n`,
+      "utf8",
+    );
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-pre-spawn",
+      work_order_id: "run-pre-spawn",
+      repository_root: tempDir,
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+    const boundary = await captureRunnerArtifactDirectoryBoundary({
+      run_dir: runDir,
+      artifact_root: tempDir,
+      artifact_paths: [
+        invocation.bundle_path,
+        invocation.state_path,
+        invocation.events_path,
+        invocation.result_path,
+        invocation.receipt_path,
+        invocation.trace_path,
+        invocation.stderr_path,
+      ],
+    });
+    await rename(runDir, path.join(tempDir, "original-run"));
+    await mkdir(runDir);
+
+    await expect(
+      runSupervisedProcess({
+        invocation,
+        stdin_text: "",
+        start_message: "must not start",
+        assert_artifact_boundary: boundary.assertStable,
+      }),
+    ).rejects.toThrow(/run_dir identity changed immediately before spawning child process/u);
+    await expect(readFile(markerPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
   });
 
   it("streams stdout/stderr into trace artifacts before process exit", async () => {
@@ -202,6 +274,62 @@ describe("runSupervisedProcess", () => {
     expect(await readFile(invocation.stderr_path, "utf8")).toContain("stderr-49");
   });
 
+  it("terminates newline-heavy output after the supervision byte budget", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-output-budget-"));
+    const runDir = path.join(tempDir, "run");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      [
+        "for (let i = 0; i < 1000; i += 1) {",
+        "  process.stdout.write(`short-line-${i}\\n`);",
+        "}",
+        "setTimeout(() => process.exit(0), 5000);",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-output-budget",
+      work_order_id: "run-output-budget",
+      repository_root: tempDir,
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+
+    await expect(
+      runSupervisedProcess({
+        invocation,
+        stdin_text: "",
+        start_message: "test runner started",
+        max_output_bytes: 256,
+      }),
+    ).rejects.toThrow("Runner output exceeded max_output_bytes=256.");
+  });
+
   it("flushes buffered trace and stderr writes before resolving failed runs", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-failure-"));
     const runDir = path.join(tempDir, "run");
@@ -316,7 +444,7 @@ describe("runSupervisedProcess", () => {
     expect(await readFile(invocation.stderr_path, "utf8").catch(() => "")).toBe("");
   });
 
-  it("applies trace redaction and gzip retention policy after successful runs", async () => {
+  it("defers success-only trace removal until the final runner verdict", async () => {
     tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-supervision-retention-"));
     const runDir = path.join(tempDir, "run");
     const scriptPath = path.join(tempDir, "runner.mjs");
@@ -374,18 +502,115 @@ describe("runSupervisedProcess", () => {
     expect(result.stdout_tail).toContain("[REDACTED]");
     expect(result.stdout_tail).not.toContain("SECRET_TOKEN");
     expect(result.stderr_tail).toContain("[REDACTED]");
-    expect(result.trace_artifact_path).toBe(compressedTraceArtifactPath(invocation.trace_path));
-    expect(result.trace_archive_path).toBeNull();
-    expect(result.stderr_artifact_path).toBe(compressedTraceArtifactPath(invocation.stderr_path));
-    expect(result.stderr_archive_path).toBeNull();
-    expect(await readFile(invocation.trace_path, "utf8").catch(() => "")).toBe("");
-    expect(await readFile(invocation.stderr_path, "utf8").catch(() => "")).toBe("");
+    expect(result.trace_artifact_path).toBe(invocation.trace_path);
+    expect(result.trace_archive_path).toBe(compressedTraceArtifactPath(invocation.trace_path));
+    expect(result.stderr_artifact_path).toBe(invocation.stderr_path);
+    expect(result.stderr_archive_path).toBe(compressedTraceArtifactPath(invocation.stderr_path));
+    expect(await readFile(invocation.trace_path, "utf8")).toContain("[REDACTED]");
+    expect(await readFile(invocation.stderr_path, "utf8")).toContain("[REDACTED]");
     const trace = await readTraceArtifactText(invocation.trace_path);
     expect(trace).toContain("[REDACTED]");
     expect(trace).not.toContain("SECRET_TOKEN");
     const stderr = await readTraceArtifactText(invocation.stderr_path);
     expect(stderr).toContain("[REDACTED]");
     expect(stderr).not.toContain("SECRET_TOKEN");
+
+    const [finalTrace, finalStderr] = await Promise.all([
+      applyFinalTraceRetention({
+        file_path: invocation.trace_path,
+        policy: invocation.trace_policy,
+        run_status: "success",
+      }),
+      applyFinalTraceRetention({
+        file_path: invocation.stderr_path,
+        policy: invocation.trace_policy,
+        run_status: "success",
+      }),
+    ]);
+    expect(finalTrace).toEqual({
+      artifact_path: compressedTraceArtifactPath(invocation.trace_path),
+      archive_path: null,
+    });
+    expect(finalStderr).toEqual({
+      artifact_path: compressedTraceArtifactPath(invocation.stderr_path),
+      archive_path: null,
+    });
+    expect(await readFile(invocation.trace_path, "utf8").catch(() => "")).toBe("");
+    expect(await readFile(invocation.stderr_path, "utf8").catch(() => "")).toBe("");
+  });
+
+  it("decodes split UTF-8 and redacts secrets split across provider chunks", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-process-stream-decoding-"));
+    const runDir = path.join(tempDir, "run");
+    const scriptPath = path.join(tempDir, "runner.mjs");
+    await mkdir(runDir, { recursive: true });
+    await writeFile(
+      scriptPath,
+      [
+        "const stdoutPayload = Buffer.from('Привет SECRET_TOKEN\\n', 'utf8');",
+        "const stderrPayload = Buffer.from('Ошибка SECRET_TOKEN\\n', 'utf8');",
+        "const stdoutSecret = stdoutPayload.indexOf(Buffer.from('SECRET_TOKEN'));",
+        "const stderrSecret = stderrPayload.indexOf(Buffer.from('SECRET_TOKEN'));",
+        "process.stdout.write(stdoutPayload.subarray(0, 1));",
+        "process.stderr.write(stderrPayload.subarray(0, stderrSecret + 3));",
+        "setTimeout(() => {",
+        "  process.stdout.write(stdoutPayload.subarray(1, stdoutSecret + 3));",
+        "  process.stderr.write(stderrPayload.subarray(stderrSecret + 3));",
+        "}, 30);",
+        "setTimeout(() => {",
+        "  process.stdout.write(stdoutPayload.subarray(stdoutSecret + 3));",
+        "}, 60);",
+        "setTimeout(() => process.exit(0), 90);",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-stream-decoding",
+      work_order_id: "run-stream-decoding",
+      repository_root: tempDir,
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "execution-receipt.json"),
+      trace_path: path.join(runDir, "agent-trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 64 * 1024,
+        capture_stderr: true,
+        redact_patterns: ["SECRET_TOKEN"],
+      },
+      timeout_policy: {
+        wall_clock_ms: 10_000,
+        idle_ms: 10_000,
+        terminate_grace_ms: 100,
+      },
+      bootstrap_path: null,
+      output_last_message_path: null,
+      argv: [process.execPath, scriptPath],
+      env: {},
+      dry_run: false,
+    } as const;
+    const observedLines: string[] = [];
+
+    const result = await runSupervisedProcess({
+      invocation,
+      stdin_text: "",
+      start_message: "test runner started",
+      observe_stdout_line: (line) => observedLines.push(line),
+    });
+
+    expect(observedLines).toEqual(["Привет SECRET_TOKEN"]);
+    expect(result.stdout_tail).toBe("Привет [REDACTED]\n");
+    expect(result.stderr_tail).toBe("Ошибка [REDACTED]\n");
+    expect(result.stdout_tail).not.toContain("�");
+    expect(result.stderr_tail).not.toContain("SECRET_TOKEN");
+    expect(await readFile(invocation.trace_path, "utf8")).not.toContain("SECRET_TOKEN");
+    expect(await readFile(invocation.stderr_path, "utf8")).toBe("Ошибка [REDACTED]\n");
   });
 
   it("classifies idle timeouts and records termination timestamps", async () => {

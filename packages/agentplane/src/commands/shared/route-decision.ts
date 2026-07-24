@@ -379,6 +379,8 @@ export async function buildTaskRouteDecision(opts: {
   cwd: string;
   includeRemote?: boolean;
   rootOverride?: string | null;
+  runnerRunId?: string;
+  includeRunnerState?: boolean;
   taskId: string;
 }): Promise<TaskRouteDecision> {
   const ctx =
@@ -395,6 +397,8 @@ export async function buildTaskRouteDecision(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     task_id: opts.taskId,
+    run_id: opts.runnerRunId,
+    include_runner_state: opts.includeRunnerState,
   });
   const localDiagnostics: string[] = [];
   const recordLocalDiagnostic = (message: string): void => {

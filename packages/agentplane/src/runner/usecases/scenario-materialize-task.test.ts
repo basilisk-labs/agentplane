@@ -197,6 +197,7 @@ describe("materializeRecipeScenarioTask", () => {
       mode: "dry_run",
       run_id: "runner-blueprint-fixture",
       recipe: materialized.recipe_context,
+      sandbox_override: "read-only",
     });
 
     expect(prepared.bundle.blueprint?.blueprintId).toBe("analysis.light");

@@ -94,6 +94,13 @@ outputs when provenance is missing or structurally inconsistent:
 For in-progress tasks, missing ACR is allowed because the normal close path runs context validation
 before `acr generate`.
 
+Persisted execution receipts are deliberately fail-closed during the v0.7 supervisor migration.
+A path plus SHA-256 stored in the same repository cannot authenticate an observation against a
+detached same-UID process that can rewrite both values. `context verify-task` and the verify step
+inside `context finalize-task` therefore return `compatibility_unverified` until the beta shared
+supervisor passes an authenticated observation directly. The artifact validator remains independently
+testable, but it is not a substitute for the missing trust channel.
+
 ## Release checks
 
 Before a context-bearing release, run:

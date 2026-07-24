@@ -5,6 +5,7 @@ import type { RunnerAdapterCapabilities } from "./capabilities.js";
 import type { RunnerContextBundle, RunnerExecutionContract } from "./context.js";
 import type { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./constants.js";
 import type {
+  RunnerFilesystemEffectContainmentAttestation,
   RunnerResult,
   RunnerResultStatus,
   RunnerTracePolicy,
@@ -75,6 +76,7 @@ export type RunnerInvocationSnapshot = {
   stderr_path: string | null;
   bootstrap_path: string | null;
   output_last_message_path: string | null;
+  filesystem_effect_containment: RunnerFilesystemEffectContainmentAttestation | null;
   dry_run: boolean;
   has_result_path: boolean;
   has_output_last_message_path: boolean;

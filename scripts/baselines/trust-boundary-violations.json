@@ -200,15 +200,6 @@
       "rationale": "RunnerTaskContext serializes TaskData beside duplicate sections projection"
     },
     {
-      "violation_id": "trust.no-implicit-danger-sandbox:packages/agentplane/src/runner/adapters/codex-preparation.ts:fallback:resolveCodexSandbox:danger-full-access:ast:FunctionDeclaration:resolveCodexSandbox:1:StringLiteral:25dbdb69602e:1",
-      "rule_id": "trust.no-implicit-danger-sandbox",
-      "rf_owners": ["RF-03"],
-      "owner_task_ids": ["202607221846-9XC1H0"],
-      "path": "packages/agentplane/src/runner/adapters/codex-preparation.ts",
-      "locator": "fallback:resolveCodexSandbox:danger-full-access:ast:FunctionDeclaration:resolveCodexSandbox:1:StringLiteral:25dbdb69602e:1",
-      "rationale": "danger-full-access is reachable without typed explicit authority"
-    },
-    {
       "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:parser:executableStepFor:next-action-command:ast:module:FunctionDeclaration:b6f901de9c4a:1",
       "rule_id": "trust.no-rendered-command-orchestration",
       "rf_owners": ["RF-06b", "RF-09", "RF-25"],

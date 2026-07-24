@@ -5,11 +5,13 @@ import {
   executeTaskRunnerExecution,
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
+import { RUNNER_SANDBOX_MODES } from "../../runner/types.js";
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import { type TaskRunLogsParsed, parsePositiveInteger } from "./run-parse.js";
 import {
   isTerminalRunnerStatus,
   loadRunnerLogText,
+  reportRunnerStatus,
   renderRunnerInspectPayload,
   renderRunnerStatusPayload,
   renderTaskRunPayload,
@@ -21,6 +23,8 @@ import {
 export type TaskRunParsed = {
   taskId: string;
   dryRun: boolean;
+  sandbox?: string;
+  allowDangerFullAccess: boolean;
   json: boolean;
 };
 
@@ -49,6 +53,20 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
       default: false,
       description: "Prepare runner artifacts and invocation without executing the adapter.",
     },
+    {
+      kind: "string",
+      name: "sandbox",
+      choices: [...RUNNER_SANDBOX_MODES],
+      valueHint: `<${RUNNER_SANDBOX_MODES.join("|")}>`,
+      description: "Override the role-derived sandbox for this run.",
+    },
+    {
+      kind: "boolean",
+      name: "allow-danger-full-access",
+      default: false,
+      description:
+        "Explicitly authorize a requested danger-full-access sandbox and record CLI provenance.",
+    },
     { kind: "boolean", name: "json", default: false, description: "Emit JSON." },
   ],
   examples: [
@@ -68,6 +86,8 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     dryRun: raw.opts["dry-run"] === true,
+    sandbox: typeof raw.opts.sandbox === "string" ? raw.opts.sandbox : undefined,
+    allowDangerFullAccess: raw.opts["allow-danger-full-access"] === true,
     json: raw.opts.json === true,
   }),
 };
@@ -195,6 +215,13 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
   return async (ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
     const commandCtx = await getCtx("task run");
     const output = createCliEmitter();
+    const dangerAuthority = parsed.allowDangerFullAccess
+      ? {
+          danger_full_access_authorized: true as const,
+          provenance: "explicit_operator" as const,
+          source: "task run --allow-danger-full-access",
+        }
+      : null;
     if (parsed.dryRun) {
       const prepared = await prepareTaskRunnerExecution({
         ctx: commandCtx,
@@ -202,6 +229,8 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
         rootOverride: ctx.rootOverride ?? null,
         task_id: parsed.taskId,
         mode: "dry_run",
+        danger_authority: dangerAuthority,
+        sandbox_override: parsed.sandbox,
       });
       const payload = renderTaskRunPayload({
         taskId: parsed.taskId,
@@ -226,6 +255,8 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       task_id: parsed.taskId,
+      danger_authority: dangerAuthority,
+      sandbox_override: parsed.sandbox,
     });
     const payload = renderTaskRunPayload({
       taskId: parsed.taskId,
@@ -237,6 +268,8 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       bootstrapPath: executed.invocation.bootstrap_path ?? "",
       resultPath: executed.invocation.result_path,
       status: executed.result.status,
+      verificationState: executed.result.execution_receipt?.verification_state,
+      receiptPath: executed.result.execution_receipt?.path,
       exitCode: executed.result.exit_code,
       summary: executed.result.summary,
     });
@@ -264,23 +297,7 @@ export function makeRunTaskRunStatusHandler(getCtx: (cmd: string) => Promise<Com
     if (parsed.json) {
       output.json(payload);
     } else {
-      output.report(
-        [
-          { label: "task", value: payload.task_id },
-          { label: "run", value: payload.run_id },
-          { label: "status", value: payload.status },
-          { label: "mode", value: payload.mode },
-          { label: "adapter", value: payload.adapter_id },
-          { label: "updated_at", value: payload.updated_at },
-          { label: "heartbeat_at", value: payload.heartbeat_at },
-          { label: "pid", value: payload.pid },
-          { label: "pid_alive", value: payload.pid_alive },
-          { label: "summary", value: payload.summary },
-          { label: "state", value: payload.paths.state },
-          { label: "trace", value: payload.paths.trace },
-        ],
-        { header: infoMessage(`task runner status: ${parsed.taskId}`) },
-      );
+      reportRunnerStatus(payload, parsed.taskId);
     }
     return 0;
   };

@@ -1,10 +1,11 @@
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { lstat, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { gunzip, gzip } from "node:zlib";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import type { RunnerResultStatus, RunnerTracePolicy } from "./types.js";
+import { readStableRegularFileNoFollow, readStableRegularTextNoFollow } from "./stable-file.js";
 
 const gzipAsync = promisify(gzip);
 const gunzipAsync = promisify(gunzip);
@@ -42,10 +43,11 @@ export async function finalizeTraceArtifact(opts: {
   file_path: string;
   policy: RunnerTracePolicy;
   run_status: RunnerResultStatus;
+  defer_removal?: boolean;
 }): Promise<FinalizedTraceArtifact> {
   let rawContent: Buffer;
   try {
-    rawContent = await readFile(opts.file_path);
+    rawContent = await readStableRegularFileNoFollow(opts.file_path, "runner trace artifact");
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") {
@@ -61,7 +63,10 @@ export async function finalizeTraceArtifact(opts: {
     await atomicWriteFile(archivePath, await gzipAsync(rawContent));
   }
 
-  if (shouldRemoveRawTrace({ retention: opts.policy.retention, run_status: opts.run_status })) {
+  const removeRaw =
+    shouldRemoveRawTrace({ retention: opts.policy.retention, run_status: opts.run_status }) &&
+    !opts.defer_removal;
+  if (removeRaw) {
     await rm(opts.file_path, { force: true });
     return {
       artifact_path: archivePath,
@@ -75,9 +80,47 @@ export async function finalizeTraceArtifact(opts: {
   };
 }
 
+async function regularArtifactExists(filePath: string): Promise<boolean> {
+  try {
+    const stats = await lstat(filePath);
+    if (!stats.isFile() || stats.isSymbolicLink()) {
+      throw new Error(`Refusing non-regular runner trace artifact: ${filePath}`);
+    }
+    return true;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return false;
+    throw error;
+  }
+}
+
+export async function applyFinalTraceRetention(opts: {
+  file_path: string;
+  policy: RunnerTracePolicy;
+  run_status: RunnerResultStatus;
+}): Promise<FinalizedTraceArtifact> {
+  const archivePath = compressedTraceArtifactPath(opts.file_path);
+  const archiveExists =
+    opts.policy.compression === "gzip" && (await regularArtifactExists(archivePath));
+  const removeRaw = shouldRemoveRawTrace({
+    retention: opts.policy.retention,
+    run_status: opts.run_status,
+  });
+  if (removeRaw) {
+    await rm(opts.file_path, { force: true });
+    return {
+      artifact_path: archiveExists ? archivePath : null,
+      archive_path: null,
+    };
+  }
+  return {
+    artifact_path: (await regularArtifactExists(opts.file_path)) ? opts.file_path : null,
+    archive_path: archiveExists ? archivePath : null,
+  };
+}
+
 export async function readTraceArtifactText(filePath: string): Promise<string> {
   try {
-    return await readFile(filePath, "utf8");
+    return await readStableRegularTextNoFollow(filePath, "runner trace artifact");
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code !== "ENOENT") throw err;
@@ -85,7 +128,10 @@ export async function readTraceArtifactText(filePath: string): Promise<string> {
 
   const archivePath = compressedTraceArtifactPath(filePath);
   try {
-    const compressed = await readFile(archivePath);
+    const compressed = await readStableRegularFileNoFollow(
+      archivePath,
+      "compressed runner trace artifact",
+    );
     const decompressed = await gunzipAsync(compressed);
     return decompressed.toString("utf8");
   } catch (err) {

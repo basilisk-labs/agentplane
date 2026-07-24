@@ -183,14 +183,25 @@ Project-local vendor store and derived artifacts:
 - `.agentplane/generated/overlay-bundle.json`
 - `.agentplane/generated/recipe-assets.json`
 - `.agentplane/generated/prompt-graph.json`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/bundle.json`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/bootstrap.md`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/run-state.json`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/events.jsonl`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/result.json`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/agent-trace.jsonl`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/stderr.log`
-- `.agentplane/tasks/<task-id>/runs/<run-id>/codex-last-message.md` when the selected adapter emits a side artifact for the final assistant message
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/bundle.json`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/bootstrap.md`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/run-state.json`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/events.jsonl`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/result.json`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/execution-receipt.json`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/agent-trace.jsonl`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/stderr.log`
+- `<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/codex-semantic-output.schema.json` for every Codex sandbox mode
+
+The Codex adapter derives the final `agent_message` from a bounded, process-local supervisor
+collector before optional trace redaction or persistence. It does not read persisted trace as
+semantic input or expose a separate agent-writable result artifact. The common Git administration
+root keeps canonical artifacts stable across linked-worktree cleanup and protects them from native
+Codex `read-only` and `workspace-write` sandboxes. `danger-full-access` and host-authority custom or
+Hermes runners can address that root, so their filesystem authority remains unverified. Persisted
+task outcomes reference receipts with the checkout-independent
+`agentplane-run://tasks/<task-id>/<run-id>/execution-receipt.json` locator; only supervisor APIs
+resolve that locator to a local filesystem path.
 
 `AGENTPLANE_HOME` can override the global storage root.
 

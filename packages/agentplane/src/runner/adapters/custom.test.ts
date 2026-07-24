@@ -7,34 +7,19 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { describe, expect, it } from "vitest";
 
 import { writePreparedRunnerArtifacts } from "../artifacts.js";
+import { createSupervisorExecutionReceiptLocator } from "../task-run-paths.js";
 import {
   makeRunnerContextBundle,
   setRunnerBundleRunDir,
   writeRunnerExecutable,
 } from "@agentplane/testkit/runner";
 import { createRunnerAdapter } from "./index.js";
+import { CliError } from "../../shared/errors.js";
 
 async function makeGitTempRoot(prefix: string): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), prefix));
   await execFileAsync("git", ["init", "--quiet"], { cwd: root });
   return root;
-}
-
-function currentCodexSandboxPlatform(): "macos" | "linux" | "windows" {
-  switch (process.platform) {
-    case "darwin": {
-      return "macos";
-    }
-    case "linux": {
-      return "linux";
-    }
-    case "win32": {
-      return "windows";
-    }
-    default: {
-      throw new Error(`Unsupported platform for codex sandbox test: ${process.platform}`);
-    }
-  }
 }
 
 const customBundleDefaults = {
@@ -60,6 +45,14 @@ describe("CustomRunnerAdapter", () => {
 
     expect(adapter.id).toBe("hermes");
     expect(capabilities.adapter_id).toBe("hermes");
+    expect(capabilities.filesystem_effect_containment).toMatchObject({
+      level: "advisory",
+      descendant_inheritance: "not_enforced",
+    });
+    expect(capabilities.fields.sandbox).toMatchObject({
+      level: "advisory",
+      channel: "env",
+    });
   });
 
   it("describes custom-runner capabilities as advisory env propagation", () => {
@@ -75,6 +68,11 @@ describe("CustomRunnerAdapter", () => {
 
     expect(capabilities).toMatchObject({
       adapter_id: "custom",
+      filesystem_effect_containment: {
+        level: "advisory",
+        supported_sandboxes: [],
+        descendant_inheritance: "not_enforced",
+      },
       fields: {
         sandbox: {
           level: "advisory",
@@ -88,7 +86,7 @@ describe("CustomRunnerAdapter", () => {
     });
   });
 
-  it("describes sandbox as wrapper-enforced when codex full-auto enforcement is configured", () => {
+  it("describes legacy codex full-auto enforcement as unsupported", () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
     raw.runner.custom = {
@@ -107,15 +105,13 @@ describe("CustomRunnerAdapter", () => {
       adapter_id: "custom",
       fields: {
         sandbox: {
-          level: "wrapper",
-          channel: "argv",
-          supported_values: ["workspace-write"],
+          level: "unsupported",
+          channel: "none",
         },
       },
     });
-    expect(capabilities.fields.sandbox?.note).toContain(
-      "requires writable result and trace artifacts inside run_dir",
-    );
+    expect(capabilities.fields.sandbox?.note).toContain("legacy codex sandbox");
+    expect(capabilities.fields.sandbox?.note).toContain("refused");
   });
 
   it("requires config.runner.custom.command and exports bundle paths via env", async () => {
@@ -129,6 +125,22 @@ describe("CustomRunnerAdapter", () => {
     };
     const adapter = createRunnerAdapter(raw);
     const bundle = makeRunnerContextBundle(customBundleDefaults);
+    bundle.execution.policy_decision = {
+      adapter_id: "custom",
+      requested: {
+        sandbox: "workspace-write",
+      },
+      effective: {},
+      fields: {
+        sandbox: {
+          requested: "workspace-write",
+          status: "advisory",
+          capability_level: "advisory",
+          channel: "env",
+        },
+      },
+      refusal_reason: null,
+    };
 
     const invocation = await adapter.prepare(bundle);
 
@@ -151,6 +163,9 @@ describe("CustomRunnerAdapter", () => {
         "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/result.json",
       AGENTPLANE_RUNNER_ENFORCEMENT_MODE: "none",
       AGENTPLANE_RUNNER_ENFORCEMENT_PLATFORM: "auto",
+      AGENTPLANE_RUNNER_SANDBOX_REQUESTED: "workspace-write",
+      AGENTPLANE_RUNNER_SANDBOX_ENFORCEMENT: "advisory",
+      AGENTPLANE_RUNNER_DANGER_AUTHORIZED: "false",
     });
     expect(invocation.trace_path).toBe(
       "/repo/.agentplane/tasks/202603231410-XYZ789/runs/run-789/agent-trace.jsonl",
@@ -212,7 +227,7 @@ describe("CustomRunnerAdapter", () => {
     });
   });
 
-  it("wraps the custom command with codex sandbox full-auto when workspace-write enforcement is configured", async () => {
+  it("fails closed when legacy codex full-auto enforcement is configured", () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
     raw.runner.custom = {
@@ -238,24 +253,27 @@ describe("CustomRunnerAdapter", () => {
       },
     };
 
-    const invocation = await adapter.prepare(bundle);
+    let error: unknown = null;
+    try {
+      adapter.prepare(bundle);
+    } catch (err) {
+      error = err;
+    }
 
-    expect(invocation.argv).toEqual([
-      "codex",
-      "sandbox",
-      currentCodexSandboxPlatform(),
-      "--full-auto",
-      "custom-runner",
-      "--bundle-from-env",
-    ]);
-    expect(invocation.env).toMatchObject({
-      AGENTPLANE_RUNNER_ENFORCEMENT_MODE: "codex_sandbox_full_auto",
-      AGENTPLANE_RUNNER_ENFORCEMENT_PLATFORM: "auto",
-      AGENTPLANE_RECIPE_SANDBOX: "workspace-write",
+    expect(error).toBeInstanceOf(CliError);
+    expect(error).toMatchObject({
+      code: "E_RUNTIME",
+      exitCode: 8,
+      context: {
+        wrapper_mode: "codex_sandbox_full_auto",
+        declared_value: "workspace-write",
+        supported_values: [],
+      },
     });
+    expect((error as CliError).message).toContain("legacy Codex CLI argv contract is unavailable");
   });
 
-  it("fails closed when codex sandbox wrapper mode receives an unsupported sandbox", () => {
+  it("fails closed for every sandbox value when legacy wrapper mode is configured", () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
     raw.runner.custom = {
@@ -280,10 +298,119 @@ describe("CustomRunnerAdapter", () => {
         sandbox: "read-only",
       },
     };
+    bundle.execution.sandbox_policy = {
+      requested: "read-only",
+      source: "recipe_run_profile",
+      role: "EVALUATOR",
+      authority: {
+        danger_full_access_authorized: false,
+        provenance: null,
+        source: null,
+      },
+    };
 
     expect(() => adapter.prepare(bundle)).toThrow(
-      /cannot support recipe sandbox "read-only" because the shared runner contract requires write access to result\.json and trace artifacts inside run_dir/i,
+      /cannot enforce requested sandbox "read-only" because its legacy Codex CLI argv contract is unavailable/i,
     );
+  });
+
+  it("requires typed authority for custom danger intent and exports it when authorized", async () => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
+    bundle.execution.sandbox_policy = {
+      requested: "danger-full-access",
+      source: "role_default",
+      role: "CODER",
+      authority: {
+        danger_full_access_authorized: false,
+        provenance: null,
+        source: null,
+      },
+    };
+
+    let error: unknown = null;
+    try {
+      adapter.prepare(bundle);
+    } catch (err) {
+      error = err;
+    }
+
+    expect(error).toBeInstanceOf(CliError);
+    expect(error).toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        adapter_id: "custom",
+        declared_value: "danger-full-access",
+        required_authority: "danger_full_access_authorized",
+      },
+    });
+
+    bundle.execution.sandbox_policy.authority = {
+      danger_full_access_authorized: true,
+      provenance: "explicit_operator",
+      source: "task run --allow-danger-full-access",
+    };
+    bundle.execution.policy_decision = {
+      adapter_id: "custom",
+      requested: {
+        sandbox: "danger-full-access",
+      },
+      effective: {},
+      fields: {
+        sandbox: {
+          requested: "danger-full-access",
+          status: "advisory",
+          capability_level: "advisory",
+          channel: "env",
+        },
+      },
+      refusal_reason: null,
+    };
+
+    const invocation = await adapter.prepare(bundle);
+    expect(invocation.argv).toEqual(["custom-runner", "--bundle-from-env"]);
+    expect(invocation.env).toMatchObject({
+      AGENTPLANE_RUNNER_SANDBOX_REQUESTED: "danger-full-access",
+      AGENTPLANE_RUNNER_SANDBOX_ENFORCEMENT: "advisory",
+      AGENTPLANE_RUNNER_DANGER_AUTHORIZED: "true",
+    });
+  });
+
+  it.each([
+    ["null source", null],
+    ["blank source", " "],
+  ])("rejects custom danger runtime authority with %s", async (_label, source) => {
+    const raw = defaultConfig();
+    raw.runner.default_adapter = "custom";
+    raw.runner.custom = {
+      command: ["custom-runner", "--bundle-from-env"],
+    };
+    const adapter = createRunnerAdapter(raw);
+    const bundle = makeRunnerContextBundle(customBundleDefaults);
+    bundle.execution.sandbox_policy = {
+      requested: "danger-full-access",
+      source: "role_default",
+      role: "CODER",
+      authority: {
+        danger_full_access_authorized: true,
+        provenance: "explicit_operator",
+        source,
+      },
+    };
+
+    await expect(Promise.resolve().then(() => adapter.prepare(bundle))).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        adapter_id: "custom",
+        declared_value: "danger-full-access",
+        required_authority: "danger_full_access_authorized",
+      },
+    });
   });
 
   it("fails closed when recipe writes_artifacts_to prefixes are invalid", () => {
@@ -321,7 +448,7 @@ describe("CustomRunnerAdapter", () => {
     );
   });
 
-  it("captures clean-exit stdout without claiming success under limited containment", async () => {
+  it("preserves a clean process exit while containment remains unverified", async () => {
     const raw = defaultConfig();
     raw.runner.default_adapter = "custom";
     raw.runner.custom = {
@@ -354,7 +481,8 @@ describe("CustomRunnerAdapter", () => {
 
     const result = await adapter.execute(invocation);
 
-    expect(result.status).toBe("failed");
+    expect(result.status).toBe("success");
+    expect(result.execution_receipt?.verification_state).toBe("unverified");
     expect(result.exit_code).toBe(0);
     expect(result.summary).toBe("Custom runner execution completed successfully.");
     expect(result.stdout_summary).toBe("Raw execution trace was captured in agent-trace.jsonl.");
@@ -370,9 +498,9 @@ describe("CustomRunnerAdapter", () => {
         metrics?: { stdout_bytes?: number };
       };
     };
-    expect(state.status).toBe("failed");
+    expect(state.status).toBe("success");
     expect(state.prepared_metadata?.bootstrap_sha256).toMatch(/^[a-f0-9]{64}$/);
-    expect(state.result?.status).toBe("failed");
+    expect(state.result?.status).toBe("success");
     expect(state.result?.exit_code).toBe(0);
     expect(state.result?.summary).toBe("Custom runner execution completed successfully.");
     expect(state.result?.stdout_summary).toBe(
@@ -386,7 +514,7 @@ describe("CustomRunnerAdapter", () => {
       artifacts?: { path: string; label?: string }[];
       capabilities_used?: string[];
     };
-    expect(resultManifest.status).toBe("failed");
+    expect(resultManifest.status).toBe("success");
     expect(resultManifest.summary).toBe("Custom runner execution completed successfully.");
     expect(resultManifest.stdout_summary).toBe(
       "Raw execution trace was captured in agent-trace.jsonl.",
@@ -444,6 +572,7 @@ describe("CustomRunnerAdapter", () => {
     const result = await adapter.execute(invocation);
 
     expect(result.status).toBe("failed");
+    expect(result.execution_receipt?.verification_state).toBe("rejected");
     expect(result.exit_code).toBe(1);
     expect(result.summary).toBe(
       "Custom runner execution failed before producing a valid result manifest.",
@@ -626,15 +755,19 @@ describe("CustomRunnerAdapter", () => {
       expect.arrayContaining([expect.objectContaining({ path: "reports/out.txt" })]),
     );
     expect(normalized.verification_hints).toBeUndefined();
+    const receiptLocator = createSupervisorExecutionReceiptLocator({
+      task_id: bundle.task!.task_id,
+      run_id: invocation.run_id,
+    });
     expect(normalized.evidence).toMatchObject({
       provenance: "supervisor_observed",
       changed_paths: [],
       files_changed_count: 0,
-      receipt_path: "runs/run-source/execution-receipt.json",
+      receipt_path: receiptLocator,
     });
     expect(normalized.evidence?.tests_run).toBeUndefined();
     expect(normalized.execution_receipt).toMatchObject({
-      path: "runs/run-source/execution-receipt.json",
+      path: receiptLocator,
       verification_state: "unverified",
       observed_by: "agentplane",
     });
@@ -713,7 +846,8 @@ describe("CustomRunnerAdapter", () => {
 
     const result = await adapter.execute(invocation);
 
-    expect(result.status).toBe("failed");
+    expect(result.status).toBe("success");
+    expect(result.execution_receipt?.verification_state).toBe("unverified");
     expect(result.evidence).toMatchObject({
       provenance: "supervisor_observed",
       changed_paths: ["observed-untracked.txt", "tracked.txt"],

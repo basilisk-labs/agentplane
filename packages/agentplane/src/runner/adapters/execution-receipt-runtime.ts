@@ -4,23 +4,59 @@ import type {
   ExecutionReceiptGitDeltaEntry,
   ExecutionReceiptGitObservation,
   ExecutionReceiptObservedCheck,
+  ExecutionReceiptScopeEvaluation,
 } from "@agentplaneorg/core/schemas";
 
 import { createExecutionReceipt, writeExecutionReceipt } from "../execution-receipt.js";
 import {
   captureGitSnapshot,
   compareGitSnapshots,
-  type GitSnapshot,
   type GitSnapshotDelta,
 } from "../observation/git-snapshot.js";
+import {
+  captureProtectedFilesystemSnapshot,
+  compareProtectedFilesystemSnapshots,
+} from "../observation/protected-filesystem.js";
 import { observeRunnerArtifacts } from "../observation/artifacts.js";
-import type { RunnerInvocation, RunnerResult, RunnerResultArtifact } from "../types.js";
+import type {
+  RunnerContextBundle,
+  RunnerInvocation,
+  RunnerResult,
+  RunnerResultArtifact,
+} from "../types.js";
 import type { SupervisedProcessResult } from "../process-supervision/run.js";
 import type { RunnerRunRepository } from "../run-repository.js";
+import {
+  evaluateRunnerWriteScope,
+  type RunnerProtectedFilesystemObservation,
+} from "../write-scope.js";
+import { createSupervisorExecutionReceiptLocator } from "../task-run-paths.js";
+import type {
+  RunnerExecutionObservationBefore,
+  RunnerReceiptManifestState,
+} from "./execution-receipt-runtime-types.js";
+import { buildExecutionContainmentChecks } from "./execution-receipt-containment.js";
+import {
+  captureRunnerExecutionBeforeImpl,
+  containedRunDirectory,
+  filesystemObservationExcludedRoots,
+  mapProtectedFilesystemObservation,
+} from "./execution-receipt-observation.js";
+
+export type {
+  RunnerExecutionObservationBefore,
+  RunnerReceiptManifestState,
+} from "./execution-receipt-runtime-types.js";
+
+function receiptTaskId(bundle: RunnerContextBundle | null | undefined): string {
+  const taskId = bundle?.task?.task_id ?? bundle?.target.task_id;
+  if (!taskId) {
+    throw new Error("Runner execution receipt requires a task-bound supervisor artifact locator.");
+  }
+  return taskId;
+}
 
 const OBSERVED_PROVENANCE = "supervisor_observed" as const;
-
-export type RunnerReceiptManifestState = "valid" | "missing_allowed" | "failed" | "not_reached";
 
 function observedCheck(opts: {
   id: string;
@@ -89,24 +125,12 @@ function mapGitObservation(delta: GitSnapshotDelta): ExecutionReceiptGitObservat
   };
 }
 
-function prefixedSha256(value: string | undefined): string | undefined {
-  if (!value) return undefined;
-  return value.startsWith("sha256:") ? value : `sha256:${value}`;
-}
-
-async function preparedArtifactDigests(
-  repository: RunnerRunRepository,
+function expectedArtifactDigests(
+  observationBefore: RunnerExecutionObservationBefore,
   invocation: RunnerInvocation,
   sourceManifestSha256?: string | null,
-): Promise<Map<string, string>> {
-  const state = await repository.readState();
-  const expected = new Map<string, string>();
-  const bundleDigest = prefixedSha256(state?.prepared_metadata?.bundle_sha256);
-  const bootstrapDigest = prefixedSha256(state?.prepared_metadata?.bootstrap_sha256);
-  if (bundleDigest) expected.set(path.resolve(invocation.bundle_path), bundleDigest);
-  if (bootstrapDigest && invocation.bootstrap_path) {
-    expected.set(path.resolve(invocation.bootstrap_path), bootstrapDigest);
-  }
+): Map<string, string> {
+  const expected = new Map(observationBefore.prepared_artifact_digests);
   if (sourceManifestSha256) {
     expected.set(path.join(invocation.run_dir, "result.source.json"), sourceManifestSha256);
   }
@@ -143,6 +167,7 @@ function manifestCheck(state: RunnerReceiptManifestState): ExecutionReceiptObser
 
 function processGroupCleanupCheck(
   processResult: SupervisedProcessResult | null,
+  opts: { allow_unsupported_effect_fallback: boolean },
 ): ExecutionReceiptObservedCheck {
   if (!processResult) {
     return observedCheck({
@@ -170,7 +195,7 @@ function processGroupCleanupCheck(
   if (cleanup.cleanup_state === "unsupported") {
     return observedCheck({
       id: "runner.process_group_cleanup",
-      required: true,
+      required: !opts.allow_unsupported_effect_fallback,
       status: "not_run",
       details:
         cleanup.error ??
@@ -187,40 +212,39 @@ function processGroupCleanupCheck(
   });
 }
 
-function processContainmentCheck(
-  processResult: SupervisedProcessResult | null,
-): ExecutionReceiptObservedCheck {
-  if (!processResult) {
+function writeScopeCheck(scope: ExecutionReceiptScopeEvaluation): ExecutionReceiptObservedCheck {
+  if (scope.state === "passed") {
     return observedCheck({
-      id: "runner.process_containment",
-      required: true,
-      status: "failed",
-      details: "The supervisor did not capture process-containment evidence.",
-    });
-  }
-  const containment = processResult.process_tree;
-  if (containment.containment_state === "bounded") {
-    return observedCheck({
-      id: "runner.process_containment",
+      id: "runner.scope.within_authority",
       required: true,
       status: "passed",
-      details: "The supervisor established bounded descendant containment.",
+      details: "Observed writes remained inside writable roots and outside protected paths.",
+    });
+  }
+  if (scope.state === "rejected") {
+    return observedCheck({
+      id: "runner.scope.within_authority",
+      required: true,
+      status: "failed",
+      details: scope.violations
+        .map((violation) => `${violation.kind}:${violation.path}`)
+        .join("; "),
     });
   }
   return observedCheck({
-    id: "runner.process_containment",
+    id: "runner.scope.within_authority",
     required: true,
     status: "not_run",
     details:
-      containment.containment_limitation ??
-      "The current execution mode does not establish bounded descendant containment.",
+      scope.state === "unverified"
+        ? scope.limitations.join("; ")
+        : "The runner bundle did not contain a write-scope policy.",
   });
 }
 
-async function deferredTaskVerificationCheck(
-  repository: RunnerRunRepository,
-): Promise<ExecutionReceiptObservedCheck> {
-  const bundle = await repository.readBundle();
+function deferredTaskVerificationCheck(
+  bundle: RunnerContextBundle | null,
+): ExecutionReceiptObservedCheck {
   const commandCount = bundle?.task?.data.verify.length ?? 0;
   return observedCheck({
     id: "task.verify.deferred",
@@ -233,17 +257,17 @@ async function deferredTaskVerificationCheck(
   });
 }
 
-export async function captureRunnerGitBefore(invocation: RunnerInvocation): Promise<GitSnapshot> {
-  return await captureGitSnapshot({
-    repository_root: invocation.repository_root,
-    excluded_roots: [invocation.run_dir],
-  });
+export async function captureRunnerExecutionBefore(opts: {
+  invocation: RunnerInvocation;
+  repository: RunnerRunRepository;
+}): Promise<RunnerExecutionObservationBefore> {
+  return await captureRunnerExecutionBeforeImpl(opts);
 }
 
 export async function finalizeRunnerExecutionReceipt(opts: {
   invocation: RunnerInvocation;
   repository: RunnerRunRepository;
-  git_before: GitSnapshot;
+  observation_before: RunnerExecutionObservationBefore;
   process_result: SupervisedProcessResult | null;
   base_result: RunnerResult;
   artifacts: RunnerResultArtifact[];
@@ -251,28 +275,79 @@ export async function finalizeRunnerExecutionReceipt(opts: {
   source_manifest_sha256?: string | null;
   capabilities_used: string[];
   collection_errors?: string[];
+  assert_artifact_boundary?: (phase: string) => Promise<void>;
 }): Promise<{ result: RunnerResult; receipt_path: string }> {
+  await opts.assert_artifact_boundary?.("before final execution observation");
   const gitAfter = await captureGitSnapshot({
     repository_root: opts.invocation.repository_root,
-    excluded_roots: [opts.invocation.run_dir],
+    excluded_roots: containedRunDirectory(opts.invocation),
   });
   const gitDelta = await compareGitSnapshots({
     repository_root: opts.invocation.repository_root,
-    before: opts.git_before,
+    before: opts.observation_before.git,
     after: gitAfter,
-    excluded_roots: [opts.invocation.run_dir],
+    excluded_roots: containedRunDirectory(opts.invocation),
   });
   const git = mapGitObservation(gitDelta);
+  await opts.assert_artifact_boundary?.("after Git execution observation");
+  const bundle = opts.observation_before.bundle;
+  const protectedFilesystemDelta =
+    opts.observation_before.protected_filesystem &&
+    opts.observation_before.filesystem_observation_prefixes.length > 0 &&
+    opts.observation_before.filesystem_observation_mode
+      ? compareProtectedFilesystemSnapshots({
+          repository_root: opts.invocation.repository_root,
+          before: opts.observation_before.protected_filesystem,
+          after: await captureProtectedFilesystemSnapshot({
+            repository_root: opts.invocation.repository_root,
+            protected_prefixes: opts.observation_before.filesystem_observation_prefixes,
+            capture_mode: opts.observation_before.filesystem_observation_mode,
+            excluded_roots: filesystemObservationExcludedRoots(opts.invocation),
+          }),
+        })
+      : null;
+  const protectedFilesystem =
+    opts.observation_before.filesystem_observation_prefixes.length === 0 &&
+    opts.observation_before.errors.length === 0
+      ? ({
+          state: "observed",
+          changed_paths: [],
+          errors: [],
+        } satisfies RunnerProtectedFilesystemObservation)
+      : mapProtectedFilesystemObservation(protectedFilesystemDelta, opts.observation_before.errors);
+  const scopeEvaluation = bundle
+    ? evaluateRunnerWriteScope({
+        bundle,
+        git,
+        protected_filesystem: protectedFilesystem,
+      })
+    : {
+        provenance: OBSERVED_PROVENANCE,
+        state: "not_evaluated" as const,
+      };
+  await opts.assert_artifact_boundary?.("before observing runner artifacts");
   const artifactResult = await observeRunnerArtifacts({
     artifacts: opts.artifacts,
     excluded_paths: [opts.invocation.result_path, opts.invocation.receipt_path],
-    expected_sha256_by_path: await preparedArtifactDigests(
-      opts.repository,
+    expected_sha256_by_path: expectedArtifactDigests(
+      opts.observation_before,
       opts.invocation,
       opts.source_manifest_sha256,
     ),
   });
-  const taskVerification = await deferredTaskVerificationCheck(opts.repository);
+  await opts.assert_artifact_boundary?.("after observing runner artifacts");
+  const taskVerification = deferredTaskVerificationCheck(bundle);
+  const containmentChecks = buildExecutionContainmentChecks({
+    invocation: opts.invocation,
+    bundle,
+    process_result: opts.process_result,
+  });
+  const allowUnsupportedEffectFallback = containmentChecks.some(
+    (check) =>
+      check.id === "runner.sandbox.filesystem_effects_enforced" &&
+      check.required &&
+      check.status === "passed",
+  );
   const checks: ExecutionReceiptObservedCheck[] = [
     observedCheck({
       id: "runner.process.observed",
@@ -282,8 +357,10 @@ export async function finalizeRunnerExecutionReceipt(opts: {
         ? "The supervisor captured child-process completion."
         : "The supervisor did not capture child-process completion.",
     }),
-    processGroupCleanupCheck(opts.process_result),
-    processContainmentCheck(opts.process_result),
+    processGroupCleanupCheck(opts.process_result, {
+      allow_unsupported_effect_fallback: allowUnsupportedEffectFallback,
+    }),
+    ...containmentChecks,
     observedCheck({
       id: "runner.git.observed",
       required: true,
@@ -292,6 +369,22 @@ export async function finalizeRunnerExecutionReceipt(opts: {
         git.state === "observed"
           ? "The supervisor captured and compared Git state before and after execution."
           : "The supervisor could not capture a complete Git delta.",
+    }),
+    observedCheck({
+      id: "runner.protected_filesystem.observed",
+      required: opts.observation_before.filesystem_observation_prefixes.length > 0,
+      status:
+        opts.observation_before.filesystem_observation_prefixes.length === 0
+          ? "not_run"
+          : protectedFilesystem.state === "observed"
+            ? "passed"
+            : "not_run",
+      details:
+        opts.observation_before.filesystem_observation_prefixes.length === 0
+          ? "The runner bundle did not require supplemental filesystem observation."
+          : protectedFilesystem.state === "observed"
+            ? "The supervisor captured and compared required filesystem state before and after execution."
+            : protectedFilesystem.errors.join("; "),
     }),
     observedCheck({
       id: "runner.artifacts.integrity",
@@ -303,6 +396,7 @@ export async function finalizeRunnerExecutionReceipt(opts: {
           : artifactResult.errors.join("; "),
     }),
     manifestCheck(opts.manifest_state),
+    writeScopeCheck(scopeEvaluation),
     taskVerification,
   ];
   const receipt = createExecutionReceipt({
@@ -316,27 +410,37 @@ export async function finalizeRunnerExecutionReceipt(opts: {
     git,
     artifacts: artifactResult.observations,
     checks,
+    scope_evaluation: scopeEvaluation,
     collection_errors: [
       ...(opts.collection_errors ?? []),
+      ...opts.observation_before.errors,
       ...(git.state === "unavailable"
         ? gitDelta.errors.map((error) => `${error.operation}: ${error.message}`)
         : []),
+      ...(protectedFilesystem.state === "unavailable" ? protectedFilesystem.errors : []),
     ],
   });
+  await opts.assert_artifact_boundary?.("before writing execution receipt");
   const reference = await writeExecutionReceipt({
     receipt_path: opts.invocation.receipt_path,
-    reference_path: path
-      .relative(opts.invocation.repository_root, opts.invocation.receipt_path)
-      .split(path.sep)
-      .join("/"),
+    reference_path: createSupervisorExecutionReceiptLocator({
+      task_id: receiptTaskId(bundle),
+      run_id: opts.invocation.run_id,
+    }),
     receipt,
   });
+  await opts.assert_artifact_boundary?.("after writing execution receipt");
   const receiptArtifact: RunnerResultArtifact = {
     path: opts.invocation.receipt_path,
     label: "execution-receipt",
   };
   const finalArtifacts = [...opts.artifacts, receiptArtifact];
-  const changedPaths = git.state === "observed" ? git.delta.changed_paths : [];
+  const changedPaths = [
+    ...new Set([
+      ...(git.state === "observed" ? git.delta.changed_paths : []),
+      ...(protectedFilesystem.state === "observed" ? protectedFilesystem.changed_paths : []),
+    ]),
+  ].toSorted((left, right) => left.localeCompare(right));
   const evidencePaths = [
     ...artifactResult.observations.flatMap((artifact) =>
       artifact.state === "present" ? [artifact.path] : [],
@@ -344,11 +448,9 @@ export async function finalizeRunnerExecutionReceipt(opts: {
     opts.invocation.receipt_path,
   ];
   const status =
-    receipt.success_policy.outcome === "observed_success"
-      ? opts.base_result.status
-      : opts.base_result.status === "cancelled"
-        ? "cancelled"
-        : "failed";
+    receipt.success_policy.outcome === "rejected" && opts.base_result.status !== "cancelled"
+      ? "failed"
+      : opts.base_result.status;
   return {
     result: {
       ...opts.base_result,

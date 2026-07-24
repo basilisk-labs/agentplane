@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 
 import {
-  EXECUTION_RECEIPT_V1_VALID_FIXTURE,
+  EXECUTION_RECEIPT_V2_VALID_FIXTURE,
   type ExecutionReceiptGitObservation,
   type ExecutionReceiptObservedCheck,
 } from "@agentplaneorg/core/schemas";
@@ -107,7 +107,7 @@ afterEach(async () => {
 });
 
 function observedGit(): ExecutionReceiptGitObservation {
-  return structuredClone(EXECUTION_RECEIPT_V1_VALID_FIXTURE.git) as ExecutionReceiptGitObservation;
+  return structuredClone(EXECUTION_RECEIPT_V2_VALID_FIXTURE.git) as ExecutionReceiptGitObservation;
 }
 
 function containmentCheck(details: string): ExecutionReceiptObservedCheck {

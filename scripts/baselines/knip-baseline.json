@@ -1950,11 +1950,6 @@
       "file": "packages/agentplane/src/runner/artifacts.ts",
       "exports": [
         {
-          "name": "createRunnerInvocationSnapshot",
-          "line": 26,
-          "col": 17
-        },
-        {
           "name": "createRunnerRunState",
           "line": 76,
           "col": 17
@@ -2146,11 +2141,6 @@
     {
       "file": "packages/agentplane/src/runner/types/policy.ts",
       "types": [
-        {
-          "name": "RunnerPolicyFieldDecision",
-          "line": 5,
-          "col": 13
-        },
         {
           "name": "RunnerPolicyFieldStatus",
           "line": 3,

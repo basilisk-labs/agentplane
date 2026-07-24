@@ -1,12 +1,15 @@
 import { createHash } from "node:crypto";
 
 import {
+  EXECUTION_RECEIPT_SCHEMA_VERSION,
   validateExecutionReceipt,
   type ExecutionReceipt,
+  type ExecutionReceiptV2,
   type ExecutionReceiptArtifactObservation,
   type ExecutionReceiptGitObservation,
   type ExecutionReceiptObservedCheck,
   type ExecutionReceiptProcessObservation,
+  type ExecutionReceiptScopeEvaluation,
 } from "@agentplaneorg/core/schemas";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
@@ -110,8 +113,9 @@ export function createExecutionReceipt(opts: {
   git: ExecutionReceiptGitObservation;
   artifacts: ExecutionReceiptArtifactObservation[];
   checks: ExecutionReceiptObservedCheck[];
+  scope_evaluation?: ExecutionReceiptScopeEvaluation;
   collection_errors?: string[];
-}): ExecutionReceipt {
+}): ExecutionReceiptV2 {
   const collectionErrors = [...new Set(opts.collection_errors)].toSorted();
   if (!opts.process_result) {
     collectionErrors.push("supervisor did not capture a completed child process observation");
@@ -129,15 +133,22 @@ export function createExecutionReceipt(opts: {
           errors: [],
         };
   const process = buildProcessObservation(opts);
+  const scopeEvaluation =
+    opts.scope_evaluation ??
+    ({
+      provenance: OBSERVED_PROVENANCE,
+      state: "not_evaluated",
+    } satisfies ExecutionReceiptScopeEvaluation);
   const successPolicy = evaluateExecutionSuccessPolicy({
     process,
     git: opts.git,
     artifacts: opts.artifacts,
     checks: opts.checks,
     collection,
+    scope_evaluation: scopeEvaluation,
   });
-  return validateExecutionReceipt({
-    schema_version: 1,
+  const receipt = validateExecutionReceipt({
+    schema_version: EXECUTION_RECEIPT_SCHEMA_VERSION,
     kind: "execution_receipt",
     observed_by: "agentplane",
     run_id: opts.run_id,
@@ -147,12 +158,13 @@ export function createExecutionReceipt(opts: {
     artifacts: opts.artifacts,
     checks: opts.checks,
     collection,
-    scope_evaluation: {
-      provenance: OBSERVED_PROVENANCE,
-      state: "not_evaluated",
-    },
+    scope_evaluation: scopeEvaluation,
     success_policy: successPolicy,
   });
+  if (receipt.schema_version !== EXECUTION_RECEIPT_SCHEMA_VERSION) {
+    throw new Error("execution receipt creator emitted an unexpected legacy schema version");
+  }
+  return receipt;
 }
 
 export async function writeExecutionReceipt(opts: {

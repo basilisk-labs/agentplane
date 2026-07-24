@@ -46,6 +46,7 @@ export function readRecipeRunProfile(
 
 export function buildRecipeRunnerEnv(
   recipe: RunnerRecipeContext | undefined,
+  taskId?: string,
 ): Record<string, string> {
   const env: Record<string, string> = {};
   const recipeId = normalizeOptionalString(recipe?.recipe_id);
@@ -57,7 +58,9 @@ export function buildRecipeRunnerEnv(
   if (!profile) return env;
 
   setStringEnv(env, "AGENTPLANE_RECIPE_SANDBOX", profile.sandbox);
-  const normalizedArtifactPrefixes = normalizeRecipeArtifactPrefixes(profile.writes_artifacts_to);
+  const normalizedArtifactPrefixes = normalizeRecipeArtifactPrefixes(profile.writes_artifacts_to, {
+    task_id: taskId,
+  });
   const normalizedProfile = {
     ...profile,
     writes_artifacts_to: normalizedArtifactPrefixes,

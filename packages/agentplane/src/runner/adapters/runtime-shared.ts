@@ -15,7 +15,7 @@ export function buildInvocationEventData(
   return {
     executable: invocation.argv[0] ?? null,
     argv_count: invocation.argv.length,
-    cwd: invocation.run_dir,
+    cwd: invocation.repository_root,
     env_keys: Object.keys(invocation.env).toSorted(),
     trace_policy: invocation.trace_policy,
     timeout_policy: invocation.timeout_policy,
@@ -39,6 +39,7 @@ export function buildRunnerExecutionArtifacts(opts: {
     runnerArtifactsFromSpecs([
       { path: opts.invocation.bundle_path, label: "bundle" },
       { path: opts.invocation.bootstrap_path, label: "bootstrap" },
+      { path: opts.invocation.output_schema_path, label: "semantic-output-schema" },
       { path: opts.trace_artifact_path, label: "raw-trace" },
       { path: opts.trace_archive_path, label: "raw-trace-gzip" },
       { path: opts.stderr_artifact_path, label: "stderr-log" },

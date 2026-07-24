@@ -4,6 +4,7 @@ import path from "node:path";
 
 import {
   EXECUTION_RECEIPT_V1_VALID_FIXTURE,
+  EXECUTION_RECEIPT_V2_VALID_FIXTURE,
   type ExecutionReceipt,
 } from "@agentplaneorg/core/schemas";
 
@@ -17,10 +18,13 @@ export async function attachObservedExecutionReceiptFixture(opts: {
   runId?: string;
   receiptRunId?: string;
   workOrderId?: string;
-}): Promise<{ path: string; text: string }> {
+  legacy?: boolean;
+}): Promise<{ path: string; text: string; receipt: ExecutionReceipt }> {
   const workflowDir = opts.workflowDir ?? ".agentplane/tasks";
   const runId = opts.runId ?? `run-${opts.task.id}`;
-  const receipt = structuredClone(EXECUTION_RECEIPT_V1_VALID_FIXTURE) as ExecutionReceipt;
+  const receipt = structuredClone(
+    opts.legacy ? EXECUTION_RECEIPT_V1_VALID_FIXTURE : EXECUTION_RECEIPT_V2_VALID_FIXTURE,
+  ) as ExecutionReceipt;
   receipt.run_id = opts.receiptRunId ?? runId;
   receipt.work_order_id = opts.workOrderId ?? runId;
   if (receipt.git.state !== "observed") throw new Error("expected observed receipt fixture");
@@ -44,15 +48,16 @@ export async function attachObservedExecutionReceiptFixture(opts: {
   const text = `${JSON.stringify(receipt, null, 2)}\n`;
   await mkdir(path.dirname(absolutePath), { recursive: true });
   await writeFile(absolutePath, text, "utf8");
+  const reference = {
+    path: receiptPath,
+    sha256: `sha256:${createHash("sha256").update(text).digest("hex")}`,
+    verification_state: receipt.success_policy.outcome,
+    observed_by: "agentplane" as const,
+  };
   opts.task.runner = {
     ...(opts.task.runner ?? {}),
     run_id: runId,
-    execution_receipt: {
-      path: receiptPath,
-      sha256: `sha256:${createHash("sha256").update(text).digest("hex")}`,
-      verification_state: "observed_success",
-      observed_by: "agentplane",
-    },
+    execution_receipt: reference,
   };
-  return { path: receiptPath, text };
+  return { path: receiptPath, text, receipt };
 }

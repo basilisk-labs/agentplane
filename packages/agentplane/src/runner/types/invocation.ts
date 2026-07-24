@@ -5,16 +5,40 @@ import type {
 } from "@agentplaneorg/core/config";
 import type { AgentSemanticResult } from "@agentplaneorg/core/schemas";
 
+import type { RunnerContextBundle } from "./context.js";
+
 export type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
 
 export type RunnerTracePolicy = RunnerTraceConfig;
 export type RunnerTimeoutPolicy = RunnerTimeoutConfig;
+
+export type RunnerFilesystemEffectContainmentAttestation = {
+  mechanism: "native_inherited_sandbox";
+  sandbox: "read-only" | "workspace-write";
+  boundary: "workspace";
+  descendant_inheritance: "enforced";
+  lifetime_containment: "not_provided";
+};
+
+type RunnerSupervisorPreparedInput = {
+  bundle: RunnerContextBundle;
+  bundle_bytes: number;
+  bundle_sha256: string;
+  bootstrap_bytes: number;
+  bootstrap_sha256: string;
+  invocation_snapshot_sha256: string;
+};
 
 export type RunnerInvocation = {
   adapter_id: string;
   run_id: string;
   work_order_id: string;
   repository_root: string;
+  /**
+   * Supervisor-owned artifact boundary. Production Codex runs place this
+   * under the worktree Git administrative directory, outside writable roots.
+   */
+  artifact_root?: string;
   run_dir: string;
   bundle_path: string;
   state_path: string;
@@ -27,9 +51,17 @@ export type RunnerInvocation = {
   timeout_policy: RunnerTimeoutPolicy;
   bootstrap_path?: string | null;
   output_last_message_path?: string | null;
+  output_schema_path?: string | null;
+  filesystem_effect_containment?: RunnerFilesystemEffectContainmentAttestation | null;
   argv: string[];
   env: Record<string, string>;
   dry_run: boolean;
+  /**
+   * Process-local supervisor authority. This value is attached only after the
+   * prepared artifacts have been written and is intentionally omitted from
+   * every durable invocation snapshot.
+   */
+  supervisor_prepared_input?: RunnerSupervisorPreparedInput;
 };
 
 export type RunnerExecutionMetrics = {

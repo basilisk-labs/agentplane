@@ -25,6 +25,7 @@ const PUBLIC_EXAMPLE_ROUTES = [
   ["agent-semantic-result-v2.needs-context.valid.json", "agent-semantic-result.schema.json"],
   ["agent-semantic-result-v2.valid.json", "agent-semantic-result.schema.json"],
   ["execution-receipt-v1.valid.json", "execution-receipt.schema.json"],
+  ["execution-receipt-v2.valid.json", "execution-receipt.schema.json"],
 ];
 const PUBLIC_COMPATIBILITY_ONLY_EXAMPLES = ["runner-result-manifest-v1.legacy.json"];
 
@@ -204,6 +205,24 @@ function validateExamples(routes, examplesDir, schemasDir, failures) {
   }
 }
 
+function validateExecutionReceiptRejectsUnknownSandbox(failures) {
+  const schemaPath = path.join(publicSchemasDir, "execution-receipt.schema.json");
+  const examplePath = path.join(publicExamplesDir, "execution-receipt-v2.valid.json");
+  const schema = readJson(schemaPath);
+  const validExample = readJson(examplePath);
+  for (const field of ["requested", "effective"]) {
+    const value = structuredClone(validExample);
+    value.scope_evaluation.sandbox[field] = "host-write";
+    const errors = [];
+    validateSchema(schema, value, "$", errors);
+    if (errors.length === 0) {
+      failures.push(
+        `${path.relative(repoRoot, schemaPath)} accepted unsupported sandbox.${field} in an execution receipt`,
+      );
+    }
+  }
+}
+
 function main() {
   verifyRouteCoverage(specExamplesDir, SPEC_EXAMPLE_ROUTES);
   verifyRouteCoverage(publicExamplesDir, PUBLIC_EXAMPLE_ROUTES, PUBLIC_COMPATIBILITY_ONLY_EXAMPLES);
@@ -211,6 +230,7 @@ function main() {
 
   validateExamples(SPEC_EXAMPLE_ROUTES, specExamplesDir, generatedSchemasDir, failures);
   validateExamples(PUBLIC_EXAMPLE_ROUTES, publicExamplesDir, publicSchemasDir, failures);
+  validateExecutionReceiptRejectsUnknownSandbox(failures);
 
   if (failures.length > 0) {
     throw new Error(`spec example validation failed\n${failures.join("\n")}`);

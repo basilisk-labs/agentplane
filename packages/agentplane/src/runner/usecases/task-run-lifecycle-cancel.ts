@@ -1,10 +1,14 @@
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { evolveRunnerRunState } from "../artifacts.js";
+import { evolveRunnerRunState, readRunnerRunState } from "../artifacts.js";
+import {
+  claimRunnerPreSpawnDecision,
+  publishRunnerCancellationIntent,
+} from "../adapters/execute-supervised.js";
 import { isProcessAlive, waitForProcessExit } from "../process-supervision/signals.js";
 import { waitForRunnerStateStop } from "../process-supervision/state.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
-import type { RunnerProcessSignal } from "../types.js";
+import type { RunnerProcessSignal, RunnerRunState } from "../types.js";
 
 import {
   assertMatchingProcessIdentity,
@@ -15,6 +19,21 @@ import {
   type CancelledTaskRunnerExecution,
 } from "./task-run-lifecycle-shared.js";
 
+async function waitForPreparedRunnerTransition(opts: {
+  state_path: string;
+  timeout_ms: number;
+  poll_ms?: number;
+}): Promise<RunnerRunState | null> {
+  const startedAt = Date.now();
+  const pollMs = opts.poll_ms ?? 50;
+  while (Date.now() - startedAt < opts.timeout_ms) {
+    const state = await readRunnerRunState(opts.state_path);
+    if (state?.status !== "prepared") return state;
+    await new Promise((resolve) => setTimeout(resolve, pollMs));
+  }
+  return await readRunnerRunState(opts.state_path);
+}
+
 export async function cancelTaskRunnerExecution(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -22,7 +41,7 @@ export async function cancelTaskRunnerExecution(opts: {
   task_id: string;
   run_id: string;
 }): Promise<CancelledTaskRunnerExecution> {
-  const loaded = await loadExistingRunnerExecution({
+  let loaded = await loadExistingRunnerExecution({
     ctx: opts.ctx,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
@@ -30,6 +49,52 @@ export async function cancelTaskRunnerExecution(opts: {
     run_id: opts.run_id,
     require_task_doing: false,
   });
+  if (loaded.state.status === "prepared") {
+    const decision = await claimRunnerPreSpawnDecision({
+      invocation: loaded.invocation,
+      decision: "cancel",
+      assert_artifact_boundary: async (phase) => await loaded.repository.assertBoundary(phase),
+    });
+    if (decision.record.decision === "start") {
+      const intent = await publishRunnerCancellationIntent({
+        invocation: loaded.invocation,
+        assert_artifact_boundary: async (phase) => await loaded.repository.assertBoundary(phase),
+      });
+      await loaded.repository.appendEvent({
+        at: intent.record.requested_at,
+        type: "runner_cancel_requested",
+        message: "runner cancellation requested while child-process start was pending",
+        data: {
+          previous_status: loaded.state.status,
+          start_decided_at: decision.record.decided_at,
+          cancellation_intent_won: intent.won,
+        },
+      });
+      const transitionedState = await waitForPreparedRunnerTransition({
+        state_path: loaded.invocation.state_path,
+        timeout_ms: 3000,
+      });
+      if (!transitionedState || transitionedState.status === "prepared") {
+        throw new CliError({
+          exitCode: 8,
+          code: "E_RUNTIME",
+          message:
+            `runner cancellation intent was persisted, but start supervision did not settle for ` +
+            `${opts.task_id}:${opts.run_id}.`,
+          context: {
+            task_id: opts.task_id,
+            run_id: opts.run_id,
+            state_path: loaded.invocation.state_path,
+            cancellation_requested_at: intent.record.requested_at,
+          },
+        });
+      }
+      loaded = {
+        ...loaded,
+        state: transitionedState,
+      };
+    }
+  }
   if (loaded.state.status === "success") {
     throw new CliError({
       exitCode: 2,

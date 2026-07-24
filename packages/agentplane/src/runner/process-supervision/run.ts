@@ -56,7 +56,11 @@ export async function runSupervisedProcess(opts: {
   invocation: RunnerInvocation;
   stdin_text: string;
   start_message: string;
+  observe_stdout_line?: (rawLine: string) => void;
+  assert_artifact_boundary?: (phase: string) => Promise<void>;
+  max_output_bytes?: number;
 }): Promise<SupervisedProcessResult> {
+  await opts.assert_artifact_boundary?.("immediately before spawning child process");
   return await new Promise((resolve, reject) => {
     const [command, ...args] = opts.invocation.argv;
     if (!command) {
@@ -67,7 +71,7 @@ export async function runSupervisedProcess(opts: {
     const child = startProcess({
       command,
       args,
-      cwd: opts.invocation.run_dir,
+      cwd: opts.invocation.repository_root,
       env: { ...process.env, ...opts.invocation.env },
       stdin: "pipe",
       stdout: "pipe",
@@ -99,6 +103,7 @@ export async function runSupervisedProcess(opts: {
       return processGroupCleanupPromise;
     };
     const updateRunningState = async () => {
+      await opts.assert_artifact_boundary?.("before recording process start");
       const initialState = await readRunnerRunState(opts.invocation.state_path);
       if (!initialState) return;
       const supervision = mergeSupervisionState(initialState.supervision, {
@@ -127,6 +132,7 @@ export async function runSupervisedProcess(opts: {
           data: buildInvocationEventData(opts.invocation, pid),
         },
       });
+      await opts.assert_artifact_boundary?.("after recording process start");
     };
 
     const finishWithError = (err: unknown) => {
@@ -148,12 +154,16 @@ export async function runSupervisedProcess(opts: {
       trace_mode: tracePolicy.mode,
       capture_stderr: tracePolicy.capture_stderr,
       max_tail_bytes: tracePolicy.max_tail_bytes,
+      ...(opts.max_output_bytes === undefined ? {} : { max_output_bytes: opts.max_output_bytes }),
       redact_patterns: redactPatterns,
       on_error: finishWithError,
       on_activity: () => {
         heartbeat_at = new Date().toISOString();
         timeoutController.resetIdleTimer();
       },
+      on_stdout_line: opts.observe_stdout_line,
+      assert_artifact_boundary: async () =>
+        await opts.assert_artifact_boundary?.("before writing process trace"),
     });
     const timeoutController = createTimeoutController({
       pid,
@@ -195,6 +205,8 @@ export async function runSupervisedProcess(opts: {
       },
       is_settled: () => settled,
       finish_with_error: finishWithError,
+      assert_artifact_boundary: async () =>
+        await opts.assert_artifact_boundary?.("before writing timeout state"),
     });
 
     void updateRunningState().catch(finishWithError);
@@ -221,6 +233,7 @@ export async function runSupervisedProcess(opts: {
         traceSession.flushPendingLines();
         await traceSession.flushWriters();
         if (settled) return;
+        await opts.assert_artifact_boundary?.("before finalizing process artifacts");
         const normalizedSignal = normalizeSignal(signal);
         const currentState = await readRunnerRunState(opts.invocation.state_path);
         const supervision = currentState?.supervision;
@@ -236,13 +249,16 @@ export async function runSupervisedProcess(opts: {
             file_path: opts.invocation.trace_path,
             policy: tracePolicy,
             run_status: runStatus,
+            defer_removal: true,
           }),
           finalizeTraceArtifact({
             file_path: opts.invocation.stderr_path,
             policy: tracePolicy,
             run_status: runStatus,
+            defer_removal: true,
           }),
         ]);
+        await opts.assert_artifact_boundary?.("after finalizing process artifacts");
         settled = true;
         resolve({
           exit_code: code,

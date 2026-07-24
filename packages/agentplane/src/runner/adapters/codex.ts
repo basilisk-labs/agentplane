@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-
 import type {
   RunnerAdapterCapabilities,
   RunnerContextBundle,
@@ -19,20 +17,33 @@ import type { SupervisedProcessResult } from "../process-supervision/run.js";
 import { exitCodeForSignal } from "../process-supervision/signals.js";
 import { applyRunnerResultManifest, type readRunnerResultManifest } from "../result-manifest.js";
 import { assertAdapterBundle, assertAdapterInvocation } from "./base.js";
-import { buildCodexInvocation, CODEX_RUN_PROFILE_CAPABILITIES } from "./codex-preparation.js";
+import {
+  buildCodexInvocation,
+  CODEX_RUN_PROFILE_CAPABILITIES,
+  codexInvocationHasExactFilesystemEffectSandbox,
+} from "./codex-preparation.js";
 import {
   executeSupervisedRunnerAdapter,
   type SupervisedRunnerArtifactInput,
 } from "./execute-supervised.js";
+import {
+  CODEX_RESULT_TRANSPORT,
+  CODEX_RESULT_TRANSPORT_ENV,
+  createCodexResultEventCollector,
+  materializeCodexResultTransport,
+  renderCodexResultOutputSchemaJson,
+} from "./codex-result-transport.js";
+import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
 
 function byteLength(text: string | null | undefined): number {
   return Buffer.byteLength(text ?? "", "utf8");
 }
 
-async function readOptionalText(filePath?: string | null): Promise<string | null> {
-  if (!filePath?.trim()) return null;
+function readOptionalCodexAgentMessage(
+  collector: ReturnType<typeof createCodexResultEventCollector>,
+): string | null {
   try {
-    return await readFile(filePath, "utf8");
+    return collector.readLastAgentMessage();
   } catch {
     return null;
   }
@@ -49,8 +60,31 @@ function buildCodexArtifacts(
     stderr_archive_path: opts.processResult?.stderr_archive_path,
     source_manifest_path: opts.source_manifest_path,
     invalid_manifest_path: opts.invalid_manifest_path,
-    include_output_last_message: true,
+    include_output_last_message: false,
   });
+}
+
+function usesSupervisorResultTransport(invocation: RunnerInvocation): boolean {
+  return invocation.env[CODEX_RESULT_TRANSPORT_ENV] === CODEX_RESULT_TRANSPORT;
+}
+
+function assertSupervisorResultTransport(invocation: RunnerInvocation): void {
+  if (!usesSupervisorResultTransport(invocation)) {
+    throw new Error("Codex must use the supervisor JSONL semantic-result transport.");
+  }
+  if ("AGENTPLANE_RUNNER_RESULT_PATH" in invocation.env) {
+    throw new Error("Codex must not receive the supervisor-owned canonical result path.");
+  }
+  const schemaFlagIndexes = invocation.argv.flatMap((arg, index) =>
+    arg === "--output-schema" ? [index] : [],
+  );
+  if (
+    !invocation.output_schema_path ||
+    schemaFlagIndexes.length !== 1 ||
+    invocation.argv[schemaFlagIndexes[0]! + 1] !== invocation.output_schema_path
+  ) {
+    throw new Error("Codex must receive exactly one supervised --output-schema argument.");
+  }
 }
 
 function assertCodexBundle(bundle: RunnerContextBundle): void {
@@ -65,6 +99,15 @@ function assertCodexInvocation(invocation: RunnerInvocation): void {
     requireBootstrap: true,
     minArgvLength: 5,
   });
+  assertSupervisorResultTransport(invocation);
+  if (
+    invocation.filesystem_effect_containment &&
+    !codexInvocationHasExactFilesystemEffectSandbox(invocation, "read-only")
+  ) {
+    throw new Error(
+      "Codex filesystem-effect containment attestation does not match the executable argv.",
+    );
+  }
 }
 
 function assertExecuteModeManifest(opts: {
@@ -81,7 +124,8 @@ function assertExecuteModeManifest(opts: {
     exitCode: exitCodeForError("E_RUNTIME"),
     code: "E_RUNTIME",
     message:
-      `Codex exited successfully but did not write a valid runner result manifest to ` +
+      `Codex exited successfully but the supervisor did not materialize a valid ` +
+      `AgentSemanticResult v2 at ` +
       `${JSON.stringify(opts.invocation.result_path)}.`,
     context: {
       adapter_id: "codex",
@@ -104,21 +148,51 @@ export class CodexRunnerAdapter implements RunnerAdapter {
   }
 
   execute(invocation: RunnerInvocation): Promise<RunnerResult> {
+    const executionInvocation = structuredClone(invocation);
+    const resultEventCollector = createCodexResultEventCollector();
     return executeSupervisedRunnerAdapter({
-      invocation,
+      invocation: executionInvocation,
       assertInvocation: assertCodexInvocation,
-      readStdinText: async (input) => await readFile(input.bootstrap_path!, "utf8"),
+      observeStdoutLine: (rawLine) => resultEventCollector.observeStdoutLine(rawLine),
+      readStdinText: async (input) =>
+        await readValidatedPreparedRunnerStdin({
+          invocation: input,
+          require_bootstrap: true,
+          optional_inputs: input.output_schema_path
+            ? [
+                {
+                  path: input.output_schema_path,
+                  label: "runner prepared Codex output schema",
+                  expected_text: renderCodexResultOutputSchemaJson(),
+                },
+              ]
+            : [],
+        }),
+      materializeResult: async ({ invocation: input, processResult }) => {
+        if (
+          processResult.exit_code !== 0 ||
+          processResult.timeout_reason !== null ||
+          processResult.cancel_requested_at
+        ) {
+          return;
+        }
+        await materializeCodexResultTransport({
+          raw_text: resultEventCollector.readLastAgentMessage(),
+          result_path: input.result_path,
+          work_order_id: input.work_order_id,
+        });
+      },
       startMessage: "codex exec started",
       buildArtifacts: buildCodexArtifacts,
       capabilitiesUsed: () => ["codex.exec"],
       assertManifest: assertExecuteModeManifest,
       applyManifest: ({ base, manifest }) => applyRunnerResultManifest({ base, manifest }),
       successEventMessage: (result) => `codex exec finished with status=${result.status}`,
-      failureSummary: "Codex execution failed before producing a valid result manifest.",
+      failureSummary: "Codex execution failed before producing a valid supervised semantic result.",
       failureEventType: "runner_execute_error",
       failureEventMessage: (result) => result.stderr_summary ?? "codex exec failed",
-      buildBaseResult: async ({ processResult, artifacts, output_paths }) => {
-        const lastMessage = await readOptionalText(invocation.output_last_message_path);
+      buildBaseResult: ({ processResult, artifacts, output_paths }) => {
+        const lastMessage = readOptionalCodexAgentMessage(resultEventCollector);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
         const timedOut = processResult.timeout_reason !== null;
@@ -162,7 +236,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
                   ended_at,
                   exit_code: processResult.exit_code ?? 0,
                   stdout_summary: lastMessage?.trim()
-                    ? "Assistant output was captured in codex-last-message.md; raw execution trace is in agent-trace.jsonl."
+                    ? "Structured assistant output was extracted from supervised JSONL and normalized into result.json."
                     : "Raw execution trace was captured in agent-trace.jsonl.",
                   output_paths,
                   metrics,

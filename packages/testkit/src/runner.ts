@@ -87,6 +87,32 @@ export function makeRunnerContextBundle(
       max_tail_bytes: 65_536,
       capture_stderr: true,
     },
+    sandbox_policy: {
+      requested: "workspace-write",
+      source: "role_default",
+      role: (opts.owner ?? "CODER").toUpperCase(),
+      authority: {
+        danger_full_access_authorized: false,
+        provenance: null,
+        source: null,
+      },
+    },
+    write_scope: {
+      writable_roots: ["."],
+      protected_paths: [
+        ".agentplane/agents",
+        ".agentplane/backends",
+        ".agentplane/config.json",
+        ".agentplane/evaluators",
+        ".agentplane/policy",
+        ".agentplane/tasks",
+        ".github/actions",
+        ".github/workflows",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "lefthook.yml",
+      ],
+    },
     artifact_paths: {
       run_dir: runDir,
       bundle_path: path.join(runDir, "bundle.json"),

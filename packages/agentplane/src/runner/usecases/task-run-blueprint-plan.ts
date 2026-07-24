@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveRecipeBlueprintExtensions, type RecipeManifest } from "@agentplaneorg/recipes";
@@ -17,6 +17,7 @@ import {
   type BlueprintContextManifestEntry,
 } from "../../blueprints/index.js";
 import { CliError } from "../../shared/errors.js";
+import { writeNewStableRegularFileNoFollow } from "../stable-file.js";
 import type { RunnerContextBundle, RunnerPromptBlock, RunnerRecipeContext } from "../types.js";
 import type { assembleRunnerTaskContext } from "../context/task-context.js";
 
@@ -154,7 +155,12 @@ export function resolveRunnerBlueprintPlan(opts: {
     });
 }
 
-export async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): Promise<void> {
+export async function writeTaskBlueprintSnapshot(
+  bundle: RunnerContextBundle,
+  opts: {
+    assert_artifact_boundary?: (phase: string) => Promise<void>;
+  } = {},
+): Promise<void> {
   if (bundle.target.kind !== "task" || !bundle.blueprint) return;
   const snapshotPath = bundle.execution.artifact_paths.blueprint_plan_path;
   const executionPlanPath = bundle.execution.artifact_paths.blueprint_execution_plan_path;
@@ -165,9 +171,26 @@ export async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): P
     runId: bundle.execution.run_id,
     generatedAt: bundle.execution.run_id,
   });
-  await writeFile(snapshotPath, `${JSON.stringify(bundle.blueprint, null, 2)}\n`, "utf8");
-  await writeFile(executionPlanPath, `${JSON.stringify(executionPlan, null, 2)}\n`, "utf8");
-  await writeFile(
+  const writeSnapshot = async (
+    filePath: string,
+    contents: string,
+    label: string,
+  ): Promise<void> => {
+    await opts.assert_artifact_boundary?.(`before writing ${label}`);
+    await writeNewStableRegularFileNoFollow(filePath, contents, label);
+    await opts.assert_artifact_boundary?.(`after writing ${label}`);
+  };
+  await writeSnapshot(
+    snapshotPath,
+    `${JSON.stringify(bundle.blueprint, null, 2)}\n`,
+    "runner blueprint plan",
+  );
+  await writeSnapshot(
+    executionPlanPath,
+    `${JSON.stringify(executionPlan, null, 2)}\n`,
+    "runner blueprint execution plan",
+  );
+  await writeSnapshot(
     executionStatePath,
     `${JSON.stringify(
       buildBlueprintExecutionStateArtifact({
@@ -179,11 +202,11 @@ export async function writeTaskBlueprintSnapshot(bundle: RunnerContextBundle): P
       null,
       2,
     )}\n`,
-    "utf8",
+    "runner blueprint execution state",
   );
-  await writeFile(
+  await writeSnapshot(
     bundle.execution.artifact_paths.context_manifest_path,
     `${JSON.stringify(bundle.blueprint.contextManifest, null, 2)}\n`,
-    "utf8",
+    "runner blueprint context manifest",
   );
 }

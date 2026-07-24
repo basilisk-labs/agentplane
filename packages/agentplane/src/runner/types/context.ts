@@ -14,7 +14,11 @@ import type { FrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import type { RunnerAdapterCapabilities } from "./capabilities.js";
 import type { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./constants.js";
 import type { RunnerExecutionPlaybookContract } from "./playbooks.js";
-import type { RunnerPolicyDecision } from "./policy.js";
+import type {
+  RunnerPolicyDecision,
+  RunnerSandboxPolicy,
+  RunnerWriteScopePolicy,
+} from "./policy.js";
 import type { RunnerPromptBlock } from "./prompts.js";
 import type { RunnerTarget } from "./target.js";
 
@@ -80,6 +84,7 @@ export type RunnerRecipeContext = {
 };
 
 export type RunnerArtifactPaths = {
+  artifact_root?: string;
   run_dir: string;
   bundle_path: string;
   blueprint_plan_path: string;
@@ -110,6 +115,8 @@ export type RunnerExecutionContract = {
   adapter_capabilities?: RunnerAdapterCapabilities;
   adapter_capability_registry?: AgentplaneCapabilityRegistry;
   policy_decision?: RunnerPolicyDecision;
+  sandbox_policy?: RunnerSandboxPolicy;
+  write_scope?: RunnerWriteScopePolicy;
   approvals?: {
     require_plan?: boolean;
     require_verify?: boolean;
