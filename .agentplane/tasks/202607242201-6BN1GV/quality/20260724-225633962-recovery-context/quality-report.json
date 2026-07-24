@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607242201-6BN1GV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T22:56:33.962Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Roadmap executable-leaf count is inconsistent with the canonical release ancestry.",
+  "evaluated_sha": "0b9d9e4d5ae9c51184054007d87a3aa28fcc137e",
+  "blueprint_digest": "d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4",
+  "findings": [
+    "The roadmap table contains 60 task rows, including one PLANNER amendment, so it represents 59 implementation/release tasks rather than 58; the original planning task is the second PLANNER record outside the table."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607242201-6BN1GV/README.md",
+    "docs/internal/v0.7-refactor-plan.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The previous review counted the two PLANNER records correctly in release closure but subtracted both from the roadmap table even though only one appears there."
+  ],
+  "residual_risks": [
+    "Recount the table and final-release ancestry after correcting the declared total."
+  ]
+}
