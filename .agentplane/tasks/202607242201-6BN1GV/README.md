@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -58,7 +58,7 @@ quality_review:
     - "R7WS01 now consumes typed effect_in_doubt, applied, and not_applied states with resolution provenance and explicitly forbids generic retry for unresolved effects."
     - "The roadmap now classifies provider_key_forwarded separately from provider exactly-once and permits the latter only under a documented, integration-tested provider deduplication contract."
 commit:
-  hash: "4b9fc053d23a21195260700a97ae720b6cd2a740"
+  hash: "06972b7ad517fd8f321432a4c301aab516225f16"
   message: "🚧 6BN1GV task: pre-merge closure"
 comments:
   -
@@ -67,6 +67,9 @@ comments:
   -
     author: "PLANNER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "PLANNER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "PLANNER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -104,8 +107,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T22:53:58.019Z"
+    author: "PLANNER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:33:34.102Z"
+doc_updated_at: "2026-07-24T22:53:58.020Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
