@@ -12,6 +12,7 @@ export type {
   TaskBackendInspectionResult,
   TaskBackendInspectionPort,
   TaskBackendMutationPort,
+  TaskBackendProjectionObservation,
   TaskBackendProjectionPort,
   TaskBackendProjectionReadMode,
   TaskBackendQueryPort,
