@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-0ZAB1F",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T21:40:45.271Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Exact-SHA review confirms StateFingerprint authority, stale-state rejection, durable lifecycle records, and compatibility requirements at f0a65ee70d7e10818921498c6f5400ff8fe9b536.",
+  "evaluated_sha": "f0a65ee70d7e10818921498c6f5400ff8fe9b536",
+  "blueprint_digest": "583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323",
+  "findings": [
+    "Pre-effect stale or unavailable required truth fails closed before apply; post-effect TTL expiry is retained only as a bounded authority-valid observation, while real capture failure remains post_state_unknown."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-0ZAB1F/README.md",
+    "commit f0a65ee70d7e10818921498c6f5400ff8fe9b536; RF06 271/271; critical CLI 71/71; full fast 3035/3035; ci:contract PASS"
+  ],
+  "missing_tests": [
+    "Dedicated terminal effect_unknown strip-all marker regression remains follow-up coverage; current gate is status-independent and indirectly covered."
+  ],
+  "hidden_assumptions": [
+    "Remote mutations inside the configured projection TTL are outside the cache freshness guarantee."
+  ],
+  "residual_risks": [
+    "Same-user marker/artifact tampering, narrow local TOCTOU, and direct_child_only descendant cleanup remain bounded P2 limits."
+  ]
+}

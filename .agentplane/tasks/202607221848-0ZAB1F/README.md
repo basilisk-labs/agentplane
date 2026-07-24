@@ -1,10 +1,11 @@
 ---
 id: "202607221848-0ZAB1F"
 title: "Introduce StateFingerprint and stale-state rejection"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -30,16 +31,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-24T09:11:41.306Z"
+  state: "ok"
+  updated_at: "2026-07-24T21:39:50.493Z"
   updated_by: "TESTER"
-  note: "Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts."
-  attempts: 1
-commit: null
+  note: "Exact SHA f0a65ee70d7e10818921498c6f5400ff8fe9b536: RF06 271/271, critical CLI 71/71, full fast 3035/3035, typecheck, ESLint, lifecycle invariants, ci:contract, compatibility and offline provider replay passed; independent audit found no P0/P1."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-24T21:40:45.271Z"
+  updated_by: "EVALUATOR"
+  note: "Exact-SHA review confirms StateFingerprint authority, stale-state rejection, durable lifecycle records, and compatibility requirements at f0a65ee70d7e10818921498c6f5400ff8fe9b536."
+  evaluated_sha: "f0a65ee70d7e10818921498c6f5400ff8fe9b536"
+  blueprint_digest: "583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323"
+  evidence_refs:
+    - ".agentplane/tasks/202607221848-0ZAB1F/README.md"
+    - ".agentplane/tasks/202607221848-0ZAB1F/quality/20260724-214045271-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-0ZAB1F/quality/20260724-214045271-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-0ZAB1F/quality/20260724-214045271-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-0ZAB1F/blueprint/resolved-snapshot.json"
+    - "commit f0a65ee70d7e10818921498c6f5400ff8fe9b536; RF06 271/271; critical CLI 71/71; full fast 3035/3035; ci:contract PASS"
+  findings:
+    - "Pre-effect stale or unavailable required truth fails closed before apply; post-effect TTL expiry is retained only as a bounded authority-valid observation, while real capture failure remains post_state_unknown."
+commit:
+  hash: "f0a65ee70d7e10818921498c6f5400ff8fe9b536"
+  message: "🚧 0ZAB1F task: harden StateFingerprint authority and persistence"
 comments:
   -
     author: "CODER"
     body: "Start: implement deterministic state fingerprints and fail-closed stale-state rejection."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -54,8 +77,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts."
+  -
+    type: "verify"
+    at: "2026-07-24T21:39:50.493Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact SHA f0a65ee70d7e10818921498c6f5400ff8fe9b536: RF06 271/271, critical CLI 71/71, full fast 3035/3035, typecheck, ESLint, lifecycle invariants, ci:contract, compatibility and offline provider replay passed; independent audit found no P0/P1."
+  -
+    type: "status"
+    at: "2026-07-24T21:41:13.451Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T09:11:41.679Z"
+doc_updated_at: "2026-07-24T21:41:13.452Z"
 doc_updated_by: "CODER"
 description: "RF-06a: define a reproducible fingerprint for task, Git, backend, policy, blueprint, knowledge, provider, and authority state; reject stale operations before side effects."
 sections:
@@ -103,6 +139,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607221848-0ZAB1F
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-24T21:39:50.493Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact SHA f0a65ee70d7e10818921498c6f5400ff8fe9b536: RF06 271/271, critical CLI 71/71, full fast 3035/3035, typecheck, ESLint, lifecycle invariants, ci:contract, compatibility and offline provider replay passed; independent audit found no P0/P1.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:11:41.679Z, excerpt_hash=sha256:040f098b1cbc5b850bf2786c474bed20118b58607e6e18d496e296777acea920
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-0ZAB1F-introduce-statefingerprint-and-stale-state-rejec/.agentplane/tasks/202607221848-0ZAB1F/blueprint/resolved-snapshot.json
+    - old_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+    - current_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-0ZAB1F
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -173,6 +239,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607221848-0ZAB1F
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-24T21:39:50.493Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact SHA f0a65ee70d7e10818921498c6f5400ff8fe9b536: RF06 271/271, critical CLI 71/71, full fast 3035/3035, typecheck, ESLint, lifecycle invariants, ci:contract, compatibility and offline provider replay passed; independent audit found no P0/P1.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:11:41.679Z, excerpt_hash=sha256:040f098b1cbc5b850bf2786c474bed20118b58607e6e18d496e296777acea920
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-0ZAB1F-introduce-statefingerprint-and-stale-state-rejec/.agentplane/tasks/202607221848-0ZAB1F/blueprint/resolved-snapshot.json
+- old_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+- current_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-0ZAB1F
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

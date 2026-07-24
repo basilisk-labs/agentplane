@@ -2,16 +2,23 @@
   "base": "main",
   "branch": "task/202607221848-0ZAB1F/introduce-statefingerprint-and-stale-state-rejec",
   "created_at": "2026-07-24T09:04:17.490Z",
-  "diffstat_sha256": "sha256:269db482dd7db72d84f3edfc98bd876e367a13389a774f29a513a9715272ce22",
-  "last_verified_at": "2026-07-24T09:11:41.306Z",
-  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:ceddbb3c060917250c47bac50b6f94e0c45bcd63cb68c2baf6a5e382ad9f38ba",
+  "last_verified_at": "2026-07-24T21:39:50.493Z",
+  "last_verified_diffstat_sha256": "sha256:ceddbb3c060917250c47bac50b6f94e0c45bcd63cb68c2baf6a5e382ad9f38ba",
   "pr_number": 4610,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4610",
+  "pre_merge_closure": {
+    "basis_commit": "f0a65ee70d7e10818921498c6f5400ff8fe9b536",
+    "branch": "task/202607221848-0ZAB1F/introduce-statefingerprint-and-stale-state-rejec",
+    "pr_number": 4610,
+    "recorded_at": "2026-07-24T21:41:13.507Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221848-0ZAB1F",
   "updated_at": "2026-07-24T09:06:01.731Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
