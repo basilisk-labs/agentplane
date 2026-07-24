@@ -77,8 +77,8 @@ Created: 2026-07-24T09:04:17.490Z
  .../src/cli/run-cli.core.backend-sync.test.ts      | 169 +++-
  ...n-cli.core.branch-meta.sync-maintenance.test.ts |   4 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
- packages/agentplane/src/commands/backend.test.ts   |  78 ++
- packages/agentplane/src/commands/backend.ts        | 112 ++-
+ packages/agentplane/src/commands/backend.test.ts   | 103 +++
+ packages/agentplane/src/commands/backend.ts        | 114 ++-
  .../src/commands/backend/sync.command.ts           |   4 +
  .../src/commands/shared/backend-sync-options.ts    |  18 +
  packages/agentplane/src/commands/sync.command.ts   |   4 +
@@ -136,7 +136,7 @@ Created: 2026-07-24T09:04:17.490Z
  scripts/baselines/knip-baseline.json               |  24 +-
  .../baselines/v0.7-compatibility-candidate.json    |  68 +-
  .../check-compatibility-contract-baseline.mjs      |  62 +-
- 107 files changed, 16848 insertions(+), 1116 deletions(-)
+ 107 files changed, 16875 insertions(+), 1116 deletions(-)
 ```
 
 </details>
