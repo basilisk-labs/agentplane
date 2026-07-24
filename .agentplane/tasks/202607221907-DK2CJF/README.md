@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
     - "HEAD 19753b1d2 is a clean merge of prior alpha.1 head 8b5f86832 and main 91241314; its added delta exactly matches the independently reviewed FCBKJQ integration-target fix with no merge-resolution changes."
     - "The DK2CJF task tree, qualification.md, frozen RF-04 baselines, replay envelopes, replay evidence, and scripts are unchanged; all five declared gates pass again on the updated head."
 commit:
-  hash: "83a9e5397614a20e5db96433e2a41358986739b4"
-  message: "🧪 DK2CJF task: record final metadata review"
+  hash: "3766ed99cd19f5346380df2ac8f2e0b827ab533f"
+  message: "🧪 DK2CJF task: review updated alpha1 gate"
 comments:
   -
     author: "TESTER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "TESTER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "TESTER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "TESTER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -112,8 +115,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T08:56:50.541Z"
+    author: "TESTER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T07:29:58.915Z"
+doc_updated_at: "2026-07-24T08:56:50.541Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-alpha.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -213,8 +223,8 @@ sections:
       Resolution: Used task-scoped cleanup, added local and remote absence proof, corrected evidence, and reran critical, schema, guard, contract, and offline replay checks.
 extensions:
   implementation_commit:
-    hash: "22ef62f5e95077e4537e33d12b20bd5f11dab9e8"
-    message: "🧪 DK2CJF task: anchor rework gate SHA"
+    hash: "19753b1d253e66687c9106003da31a8bbd5b443f"
+    message: "Merge branch 'main' into task/202607221907-DK2CJF/qualify-the-agentplane-0-7-0-alpha-1-milestone"
 id_source: "generated"
 ---
 ## Summary
