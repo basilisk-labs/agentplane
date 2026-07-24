@@ -20,9 +20,9 @@ Run the executable fan-in gate for 0.7.0-alpha.1, prove every included leaf is D
 - Note:
 
 ```text
-Alpha.1 qualification passed on reviewed SHA 35e4925a7: all ten dependency PRs are merged with
-evaluator and hosted-close evidence; critical, schemas, guards, contract, and immutable RF-04 replay
-gates passed. Decision: qualify without publishing the optional prerelease.
+Independent-review rework resolved on SHA 1bf9c6dc8: stale 4VB97J and 9XC1H0 worktrees plus local
+and remote branches are absent, metric and ratchet ownership statements are corrected, and all five
+milestone gates passed again.
 ```
 - Canonical workflow state lives in the task README.
 
