@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved to add one bounded-supervisor beta.1 leaf and wire the canonical 0.7 DAG without runtime implementation."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-24T22:49:25.461Z"
+  state: "ok"
+  updated_at: "2026-07-24T22:54:08.960Z"
   updated_by: "TESTER"
-  note: "Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded journal, and durable journal migration/install-smoke acceptance was not explicit."
-  attempts: 1
+  note: "Verified review rework: context/CURATOR rework now depends on the bounded journal; the leaf and beta.1 gate explicitly require schema fixtures, migrator idempotency/rollback, and installed-package smoke; routing, doctor, task-state, formatting, and docs-only CI pass."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -95,8 +95,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded journal, and durable journal migration/install-smoke acceptance was not explicit."
+  -
+    type: "verify"
+    at: "2026-07-24T22:54:08.960Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified review rework: context/CURATOR rework now depends on the bounded journal; the leaf and beta.1 gate explicitly require schema fixtures, migrator idempotency/rollback, and installed-package smoke; routing, doctor, task-state, formatting, and docs-only CI pass."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:53:03.630Z"
+doc_updated_at: "2026-07-24T22:54:09.845Z"
 doc_updated_by: "PLANNER"
 description: "Add a beta.1 implementation leaf for a durable supervisor episode journal and hard execution budgets, wire its release-DAG dependencies, and update the canonical AgentPlane 0.7 refactor plan without implementing runtime code."
 sections:
@@ -171,6 +177,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-24T22:54:08.960Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified review rework: context/CURATOR rework now depends on the bounded journal; the leaf and beta.1 gate explicitly require schema fixtures, migrator idempotency/rollback, and installed-package smoke; routing, doctor, task-state, formatting, and docs-only CI pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:53:03.630Z, excerpt_hash=sha256:c98df3f82027850bf3dd37b8781ab20797fe5a06c320b9d9f1e411554d9938b9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242234-S7WDVM-amend-agentplane-0-7-graph-with-bounded-supervis/.agentplane/tasks/202607242234-S7WDVM/blueprint/resolved-snapshot.json
+    - old_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+    - current_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242234-S7WDVM
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "- Revert the planning amendment commit and restore the previous direct-supervisor and beta.1-gate dependency lists. - Remove the unimplemented leaf only through AgentPlane task lifecycle commands; do not delete task records manually. - Re-run routing, doctor, format, and task-state consistency checks after rollback."
   Findings: |-
@@ -185,6 +221,10 @@ sections:
     - Observation: PR #4614 has two valid unresolved P2 review threads covering context-cycle ownership and persisted-format migration evidence.
       Impact: Without rework, beta.1 could qualify an unbounded context rework path or a durable journal without proven migration/install behavior.
       Resolution: Add the journal leaf to context-supervisor ancestry; add schema fixtures, migrator idempotency/rollback and installed-package smoke to the leaf and beta.1 gate, then rerun verification and evaluator review.
+
+    - Observation: Both PR #4614 P2 review threads are addressed and resolved with task metadata, DAG, plan, migration, and gate acceptance evidence.
+      Impact: All multi-episode beta.1 paths are now bounded and the durable persisted format cannot qualify without migration and installed-package proof.
+      Resolution: Accept rework at e7a13424e; rerun semantic evaluator review against the new head before pre-merge closure.
 extensions:
   implementation_commit:
     hash: "54657234618587cde833b436479347c4f886c798"
@@ -273,6 +313,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-24T22:54:08.960Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified review rework: context/CURATOR rework now depends on the bounded journal; the leaf and beta.1 gate explicitly require schema fixtures, migrator idempotency/rollback, and installed-package smoke; routing, doctor, task-state, formatting, and docs-only CI pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:53:03.630Z, excerpt_hash=sha256:c98df3f82027850bf3dd37b8781ab20797fe5a06c320b9d9f1e411554d9938b9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242234-S7WDVM-amend-agentplane-0-7-graph-with-bounded-supervis/.agentplane/tasks/202607242234-S7WDVM/blueprint/resolved-snapshot.json
+- old_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+- current_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242234-S7WDVM
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -292,3 +362,7 @@ DecisionContextRef:
 - Observation: PR #4614 has two valid unresolved P2 review threads covering context-cycle ownership and persisted-format migration evidence.
   Impact: Without rework, beta.1 could qualify an unbounded context rework path or a durable journal without proven migration/install behavior.
   Resolution: Add the journal leaf to context-supervisor ancestry; add schema fixtures, migrator idempotency/rollback and installed-package smoke to the leaf and beta.1 gate, then rerun verification and evaluator review.
+
+- Observation: Both PR #4614 P2 review threads are addressed and resolved with task metadata, DAG, plan, migration, and gate acceptance evidence.
+  Impact: All multi-episode beta.1 paths are now bounded and the durable persisted format cannot qualify without migration and installed-package proof.
+  Resolution: Accept rework at e7a13424e; rerun semantic evaluator review against the new head before pre-merge closure.
