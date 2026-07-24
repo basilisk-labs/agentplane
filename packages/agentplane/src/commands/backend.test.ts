@@ -6,7 +6,7 @@ import {
   backendMigrateCanonicalStateSpec,
   backendSyncSpec,
 } from "./backend/sync.command.js";
-import { cmdBackendSyncParsed } from "./backend.js";
+import { cmdBackendSyncParsed, cmdSyncParsed } from "./backend.js";
 import { syncSpec } from "./sync.command.js";
 
 describe("commands/backend", () => {
@@ -80,6 +80,31 @@ describe("commands/backend", () => {
     ).rejects.toMatchObject({
       code: "E_USAGE",
       context: { reason_code: "sync_identity_transition_conflict" },
+    });
+  });
+
+  it("attributes projection identity usage errors to the sync alias", async () => {
+    await expect(
+      cmdSyncParsed({
+        cwd: process.cwd(),
+        flags: {
+          backendId: null,
+          direction: "push",
+          conflict: "fail",
+          bootstrapProjection: true,
+          adoptProjectionIdentity: true,
+          yes: true,
+          quiet: true,
+        },
+      }),
+    ).rejects.toMatchObject({
+      code: "E_USAGE",
+      message:
+        "sync accepts only one identity transition: --bootstrap-projection or --adopt-projection-identity",
+      context: {
+        command: "sync",
+        reason_code: "sync_identity_transition_conflict",
+      },
     });
   });
 
