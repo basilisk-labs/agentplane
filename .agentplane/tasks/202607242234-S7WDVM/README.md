@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -37,31 +37,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T22:54:46.046Z"
+  updated_at: "2026-07-24T22:56:50.106Z"
   updated_by: "EVALUATOR"
-  note: "The review rework closes both previously identified beta.1 planning gaps: context/CURATOR rework is now journal-gated, and the durable journal cannot qualify without schema migration, rollback, and installed-package evidence."
-  evaluated_sha: "d50c62ca0de91e7119554540ac53c25068e693e5"
+  note: "The current published head keeps the change planning-only, adds one unstarted bounded-supervisor implementation leaf, and gates direct plus context rework and beta.1 qualification on its durable budget, migration, restart, and installed-package contract."
+  evaluated_sha: "e7a13424ea0e363973bfb944cc782d7a32420053"
   blueprint_digest: "c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0"
   evidence_refs:
     - ".agentplane/tasks/202607242234-S7WDVM/README.md"
-    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-225446046-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-225446046-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-225446046-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-225650106-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-225650106-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-225650106-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242234-S7WDVM/blueprint/resolved-snapshot.json"
-    - "commit d50c62ca0"
-    - "commit e7a13424e"
+    - "docs/internal/v0.7-refactor-plan.md"
     - ".agentplane/tasks/202607242236-1BFWEY/README.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/README.md"
     - ".agentplane/tasks/202607221850-8HBF4J/README.md"
     - ".agentplane/tasks/202607221908-MR9EA9/README.md"
-    - "docs/internal/v0.7-refactor-plan.md"
-    - "PR #4614 review threads PRRT_kwDORCLmJM6TryNX and PRRT_kwDORCLmJM6TryNZ: resolved"
-    - "bun run task-state:check: pass, tasks=3137"
-    - "bun run format:check: pass"
-    - "agentplane doctor: OK with historical unrelated warnings only"
+    - "git diff --check origin/main...HEAD: pass"
+    - "PR #4614 head 801b35637, mergeable, review threads resolved"
   findings:
-    - "Task 202607221850-8HBF4J now depends on 202607242236-1BFWEY and verifies bounded CURATOR feedback, shared budget/cursor usage, restart checkpoints, and no replay."
-    - "Task 202607242236-1BFWEY now owns current/legacy/absent schema fixtures, an idempotent migrator, transactional rollback/recovery, and installed-package smoke in addition to direct and context episode budgets."
-    - "Task 202607221908-MR9EA9 now repeats schema/install smoke and direct plus context budget/restart scenarios, preventing leaf-level evidence from being skipped at the milestone gate."
+    - "The leaf remains TODO with pending approval and owns the versioned episode journal, hard multi-dimensional budgets, bounded feedback deltas, deterministic stop records, restart-safe cursors, and direct EXECUTOR plus context/CURATOR scenarios."
+    - "The direct supervisor, context supervisor, and beta.1 qualification tasks all depend on 202607242236-1BFWEY; no legacy LoopSpec or ap loop runtime surface is introduced."
+    - "Review-driven acceptance closes the two material gaps: context/CURATOR rework consumes the shared journal budget, while current/legacy/absent schema fixtures, idempotent migration, transactional rollback/recovery, and installed-package smoke are required before beta.1."
 commit: null
 comments:
   -
