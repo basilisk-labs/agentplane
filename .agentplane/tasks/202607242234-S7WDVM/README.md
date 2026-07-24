@@ -4,7 +4,7 @@ title: "Amend AgentPlane 0.7 graph with bounded supervisor execution"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,32 @@ verification:
   updated_by: "TESTER"
   note: "Verified the 0.7 DAG amendment: the new CODER leaf is atomic and unstarted, direct supervisor and beta.1 gate depend on it without cycles, the canonical plan matches task metadata, and routing, doctor, task-state, formatting, and docs-only pre-push CI pass."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-24T22:44:34.145Z"
+  updated_by: "EVALUATOR"
+  note: "The planning amendment is internally consistent, keeps runtime implementation out of scope, and converts the identified loop-derived safety properties into one atomic beta.1 leaf with enforceable DAG ancestry."
+  evaluated_sha: "54657234618587cde833b436479347c4f886c798"
+  blueprint_digest: "c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0"
+  evidence_refs:
+    - ".agentplane/tasks/202607242234-S7WDVM/README.md"
+    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-224434145-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-224434145-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242234-S7WDVM/quality/20260724-224434145-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242234-S7WDVM/blueprint/resolved-snapshot.json"
+    - "docs/internal/v0.7-refactor-plan.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/README.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/README.md"
+    - ".agentplane/tasks/202607221908-MR9EA9/README.md"
+    - "bun run task-state:check: pass, tasks=3137"
+    - "node .agentplane/policy/check-routing.mjs: pass"
+    - "agentplane doctor: OK with historical unrelated warnings only"
+    - "commit 27e604c20"
+  findings:
+    - "The new leaf has one CODER owner and one verification boundary: durable supervisor journal, budgets, deterministic stops, bounded feedback, and resume semantics inside the typed supervisor."
+    - "Direct supervision and the beta.1 qualification gate both depend on the new leaf, so stable progression cannot bypass it; task-state validation found no cycle or malformed task."
+    - "The plan explicitly rejects importing LoopSpec, ap loop, or project-local programmable loops, avoiding a second orchestration plane."
 commit: null
 comments:
   -
