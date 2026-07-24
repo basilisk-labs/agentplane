@@ -8,10 +8,10 @@
   "pr_number": 4612,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4612",
   "pre_merge_closure": {
-    "basis_commit": "1b38432ccefcc3c163b072774d3e2c59f750c45a",
+    "basis_commit": "41357e206a86d5ee463771f6a8346ed4d2b65c51",
     "branch": "task/202607242201-6BN1GV/amend-the-agentplane-0-7-graph-with-the-effect-i",
     "pr_number": 4612,
-    "recorded_at": "2026-07-24T23:09:18.177Z",
+    "recorded_at": "2026-07-24T23:29:42.538Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
