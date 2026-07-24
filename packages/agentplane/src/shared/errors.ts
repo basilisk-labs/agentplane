@@ -52,6 +52,58 @@ export const DEFAULT_ERROR_EXIT_CODES: Readonly<Record<ErrorCode, number>> = {
   E_INTERNAL: 1,
 };
 
+export const ERROR_CODE_SUMMARIES = {
+  E_USAGE: "Command invocation is incomplete or invalid.",
+  E_DEPRECATED_FLAG: "A deprecated or disabled flag was used.",
+  E_VALIDATION: "Input, schema, or repository invariants failed validation.",
+  E_IO: "A filesystem or other local IO operation failed.",
+  E_COMMIT_ALLOW_EMPTY: "A commit path override did not select any paths.",
+  E_COMMIT_ALLOW_NO_MATCH: "A commit path override matched no eligible paths.",
+  E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED:
+    "A commit attempted to include a protected task artifact without authorization.",
+  E_PHASE_POLICY: "The requested lifecycle transition is blocked by policy.",
+  E_GIT: "A Git operation or workflow guardrail failed.",
+  E_GIT_LOCKED: "Git state is locked by another operation.",
+  E_GIT_PERMISSION: "Git could not access a required path or repository resource.",
+  E_GIT_RACE: "Git state changed while the command was executing.",
+  E_GIT_STAGE_FAILED: "Git could not stage the requested paths.",
+  E_BACKEND: "The configured task backend failed.",
+  E_NETWORK: "An explicitly requested network operation failed.",
+  E_RUNTIME: "The selected runtime or provider failed.",
+  E_HANDOFF: "A task or agent handoff failed.",
+  E_INTERNAL: "An unexpected or unclassified AgentPlane failure occurred.",
+} as const satisfies Readonly<Record<ErrorCode, string>>;
+
+export const JSON_ERROR_CONTRACT = {
+  rootField: "error",
+  error: {
+    requiredFields: ["code", "message"],
+    optionalFields: [
+      "context",
+      "state",
+      "likely_cause",
+      "hint",
+      "remediation",
+      "next_action",
+      "reason_decode",
+    ],
+  },
+  nestedObjects: {
+    remediation: {
+      requiredFields: ["code", "why", "fix", "safe_command", "stop_condition"],
+      optionalFields: [],
+    },
+    next_action: {
+      requiredFields: ["command", "reason"],
+      optionalFields: ["reasonCode"],
+    },
+    reason_decode: {
+      requiredFields: ["code", "category", "summary", "action"],
+      optionalFields: [],
+    },
+  },
+} as const;
+
 type AgentplaneErrorOptions = {
   message: string;
   exitCode?: number;
@@ -186,8 +238,21 @@ export function formatJsonError(err: CliError, guidance?: JsonErrorGuidance): st
               stop_condition: guidance.remediation.stopCondition,
             }
           : undefined,
-        next_action: guidance?.nextAction,
-        reason_decode: guidance?.reasonDecode,
+        next_action: guidance?.nextAction
+          ? {
+              command: guidance.nextAction.command,
+              reason: guidance.nextAction.reason,
+              reasonCode: guidance.nextAction.reasonCode,
+            }
+          : undefined,
+        reason_decode: guidance?.reasonDecode
+          ? {
+              code: guidance.reasonDecode.code,
+              category: guidance.reasonDecode.category,
+              summary: guidance.reasonDecode.summary,
+              action: guidance.reasonDecode.action,
+            }
+          : undefined,
       },
     },
     null,

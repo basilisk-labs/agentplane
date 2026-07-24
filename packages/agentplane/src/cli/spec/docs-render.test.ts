@@ -25,4 +25,23 @@ describe("renderCliDocsMdx", () => {
     expect(mdx).toContain("### task doc show");
     expect(mdx).toContain("### task doc set");
   });
+
+  it("renders the runtime error contract from canonical metadata", () => {
+    const mdx = renderCliDocsMdx([spec(["task", "show"])]);
+
+    expect(mdx).toContain("## Runtime error contract");
+    expect(mdx).toContain("`0` — Success");
+    expect(mdx).toContain("`8` — Runtime");
+    expect(mdx).toContain("`9` — Handoff");
+    expect(mdx).toContain("Required error fields: `code`, `message`.");
+    expect(mdx).toContain(
+      "Optional error fields: `context`, `state`, `likely_cause`, `hint`, `remediation`, `next_action`, `reason_decode`.",
+    );
+    expect(mdx).toContain(
+      "`next_action` required fields: `command`, `reason`; optional fields: `reasonCode`.",
+    );
+    expect(mdx).toContain("`E_RUNTIME` → exit `8`");
+    expect(mdx).toContain("`E_HANDOFF` → exit `9`");
+    expect(mdx).toContain("`E_COMMIT_ALLOW_TASK_ARTIFACT_DENIED` → exit `2`");
+  });
 });

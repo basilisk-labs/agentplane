@@ -12,6 +12,27 @@ export enum ExitCode {
   Handoff = 9,
 }
 
+export const EXIT_CODE_CONTRACT = [
+  { code: 0, name: "Success", meaning: "Command completed successfully." },
+  { code: ExitCode.Internal, name: "Internal", meaning: "Unexpected or unclassified failure." },
+  { code: ExitCode.Usage, name: "Usage", meaning: "Invalid or incomplete command invocation." },
+  {
+    code: ExitCode.Validation,
+    name: "Validation",
+    meaning: "Input, schema, or repository invariant validation failed.",
+  },
+  { code: ExitCode.Io, name: "IO", meaning: "Filesystem or other local IO operation failed." },
+  { code: ExitCode.Git, name: "Git", meaning: "Git operation or workflow guardrail failed." },
+  { code: ExitCode.Backend, name: "Backend", meaning: "Configured task backend failed." },
+  {
+    code: ExitCode.Network,
+    name: "Network",
+    meaning: "Explicitly requested network operation failed.",
+  },
+  { code: ExitCode.Runtime, name: "Runtime", meaning: "Selected runtime or provider failed." },
+  { code: ExitCode.Handoff, name: "Handoff", meaning: "Task or agent handoff failed." },
+] as const;
+
 export const ERROR_TO_EXIT: Readonly<Record<ErrorCode, ExitCode>> = {
   E_USAGE: DEFAULT_ERROR_EXIT_CODES.E_USAGE,
   E_DEPRECATED_FLAG: DEFAULT_ERROR_EXIT_CODES.E_DEPRECATED_FLAG,

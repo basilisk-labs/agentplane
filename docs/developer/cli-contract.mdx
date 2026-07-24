@@ -29,20 +29,22 @@ Scoped global flags (`--json-errors`, `--allow-network`) are recognized only bef
 - `agentplane help --json` emits JSON help output and does not enable JSON error mode.
 - `agentplane task list --json-errors` treats `--json-errors` as a command flag candidate, not global mode.
 
+### 1.2 Node runtime support
+
+The `agentplane` CLI requires Node.js 24 or newer. The separately published library packages retain
+their wider runtime contracts: `@agentplaneorg/core` requires Node.js 20.5.0 or newer, and
+`@agentplaneorg/recipes` requires Node.js 20 or newer.
+
+CI builds and packs both library artifacts on Node.js 24, then installs and exercises every public
+export from those tarballs on both the declared minimum runtime and Node.js 24. Package manifests
+remain the source of truth for the engine ranges.
+
 ## 2) Exit codes
 
-The CLI uses stable exit codes for common failure classes:
-
-| Code | Meaning                                                         |
-| ---: | --------------------------------------------------------------- |
-|    0 | Success                                                         |
-|    2 | Usage error (invalid args, missing required args)               |
-|    3 | Validation error (schema/invariants)                            |
-|    4 | Filesystem / IO error                                           |
-|    5 | Git / workflow guardrail error                                  |
-|    6 | Backend error (local or remote backend)                         |
-|    7 | Network error (only for commands that explicitly allow network) |
-|    1 | Any other error (unexpected/unclassified)                       |
+The CLI uses stable exit codes for success and every classified failure family. The exhaustive
+code list and error-code mapping are generated from runtime metadata in the
+[CLI reference](../user/cli-reference.generated#runtime-error-contract). Do not maintain a second
+handwritten mapping in documentation.
 
 ## 3) `--json-errors` format
 
@@ -64,9 +66,10 @@ When `--json-errors` is provided and a command fails, the CLI prints one JSON ob
 Rules:
 
 - JSON errors are written to stdout; human-readable diagnostics go to stderr only when `--json-errors` is not set.
-- `error.code` is a stable string enum (`E_USAGE`, `E_VALIDATION`, `E_IO`, `E_GIT`, `E_BACKEND`, `E_NETWORK`, `E_INTERNAL`).
+- `error.code` is a stable string enum; the exhaustive enum and exit-code mapping are generated in the [CLI reference](../user/cli-reference.generated#error-codes).
 - `context` is optional and must not include secrets.
-- No additional keys are emitted; the schema is exact.
+- State, remediation, next-action, and reason-decoding fields are optional and omitted when unavailable.
+- Field names, nesting, and casing are exact. The generated [JSON error envelope reference](../user/cli-reference.generated#json-error-envelope) is canonical.
 
 ## 4) `--output json` success envelope (`agent_json_v1`)
 
@@ -139,6 +142,12 @@ This split keeps `agentplane help` fast and reduces accidental startup cost from
 
 - Parser and global flags:
   - `packages/agentplane/src/cli/run-cli.ts`
+- Error codes and JSON error envelope metadata:
+  - `packages/agentplane/src/shared/errors.ts`
+- Exit-code metadata and error mapping:
+  - `packages/agentplane/src/cli/exit-codes.ts`
+- Generated runtime and command reference renderer:
+  - `packages/agentplane/src/cli/spec/docs-render.ts`
 - Help/role guide text:
   - `packages/agentplane/src/cli/command-guide.ts`
 - Startup guide source:
