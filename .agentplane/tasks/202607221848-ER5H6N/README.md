@@ -1,10 +1,10 @@
 ---
 id: "202607221848-ER5H6N"
 title: "Define digest-addressed KnowledgeRef contracts"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,10 +25,10 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-07-24T22:16:26.325Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved as the independent KnowledgeRef contract leaf for alpha.2 under the existing full v0.7 authorization."
 verification:
   state: "pending"
   updated_at: null
@@ -36,11 +36,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Define strict digest-addressed KnowledgeRef contracts, deterministic resolution and stale/missing receipts, then verify bounded runtime excerpts without creating a second context pack."
+events:
+  -
+    type: "status"
+    at: "2026-07-24T22:17:12.985Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Define strict digest-addressed KnowledgeRef contracts, deterministic resolution and stale/missing receipts, then verify bounded runtime excerpts without creating a second context pack."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:48:54.586Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-24T22:17:12.985Z"
+doc_updated_by: "CODER"
 description: "RF-08: standardize reproducible references into the existing context knowledge plane with digest, reason, retrieval provenance, score, requirement, freshness, and bounded excerpts."
 sections:
   Summary: |-
