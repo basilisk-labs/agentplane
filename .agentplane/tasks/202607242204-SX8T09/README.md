@@ -59,6 +59,7 @@ sections:
     - In scope: strict versioned RunnerEffectOperation and RunnerEffectJournal contracts with canonical digests, operation identity, idempotency key, authority reference/digest, precondition StateFingerprint digest, claim generation, expected postconditions and observed evidence.
     - Persist the immutable operation/journal and a downgrade-resistant preparation marker before the first adapter execution; update phases atomically without trusting event-log order as authority.
     - Make run, retry, replay, resume and restart paths recognize the operation key and refuse a second supervisor spawn when the prior effect is started, unknown or post-state-unknown.
+    - Treat two independent supervisor processes racing on the same operation key and claim generation as one concurrency domain: an atomic journal/claim transition elects one winner and only that winner may spawn the adapter.
     - Preserve bounded legacy read compatibility without adding required artifact-path fields that invalidate existing runs.
     - Define enforcement truthfully as supervisor_single_spawn unless an adapter/provider proves that the idempotency key is forwarded.
     - Out of scope: operator verdict capture, effect resolution lease, claim retirement and semantic selection of applied versus not_applied; task 202607242158-QV09NA owns those.
@@ -66,15 +67,16 @@ sections:
     1. Add strict core schemas and canonical digest/idempotency derivation for runner effect operations and journals.
     2. Extend preparation/run-state contracts additively with a modern effect-journal feature marker and bounded legacy parser behavior.
     3. Persist the operation and prepared/started journal phases through contained atomic writes before adapter.execute.
-    4. Reconcile crash, restart, retry, resume and replay against the durable operation key so AgentPlane never spawns the adapter twice for the same operation.
-    5. Add JSON round-trip, anti-downgrade, crash-boundary and duplicate-spawn tests plus lifecycle/guard/type gates.
+    4. Reconcile crash, restart, retry, resume and replay against the durable operation key, and use an atomic operation-key/generation claim transition to elect one winner across independent supervisor processes.
+    5. Add JSON round-trip, anti-downgrade, crash-boundary and synchronized cross-process race tests that prove exactly one adapter spawn, plus lifecycle/guard/type gates.
   Verify Steps: |-
     1. Inspect filesystem state inside an adapter test double at its first instruction. Expected: a strict operation and started journal already exist and bind task, run, adapter, claim generation, authority, fingerprint, postconditions and idempotency.
-    2. Crash before execute, during execute and before post-state observation, then restart, retry, resume and replay. Expected: the same operation identity survives; AgentPlane invokes adapter.execute at most once for that key.
-    3. Tamper with operation, journal, feature marker, authority/fingerprint digest or claim generation. Expected: strict validation rejects the run and no adapter spawn occurs.
-    4. Round-trip modern and legacy run artifacts. Expected: modern fields cannot be stripped or downgraded; supported legacy state remains readable and explicitly marked without inventing pre-effect evidence.
-    5. Exercise an adapter without provider idempotency support and one that forwards the key. Expected: receipts distinguish supervisor_single_spawn from provider_key_forwarded and never claim generic exactly-once.
-    6. Run focused effect-operation/journal suites, bun run lifecycle:invariants, bun run guards:check, bun run test:critical and bun run typecheck.
+    2. Start two independent supervisor processes behind a synchronization barrier for the same operation key and claim generation. Expected: the atomic journal/claim transition elects exactly one winner, the loser observes the durable started/unknown state, and a shared adapter test double records exactly one adapter.execute spawn across both processes.
+    3. Crash before execute, during execute and before post-state observation, then restart, retry, resume and replay. Expected: the same operation identity survives; AgentPlane invokes adapter.execute at most once for that key.
+    4. Tamper with operation, journal, feature marker, authority/fingerprint digest or claim generation. Expected: strict validation rejects the run and no adapter spawn occurs.
+    5. Round-trip modern and legacy run artifacts. Expected: modern fields cannot be stripped or downgraded; supported legacy state remains readable and explicitly marked without inventing pre-effect evidence.
+    6. Exercise an adapter without provider idempotency support and one that forwards the key. Expected: receipts distinguish supervisor_single_spawn from provider_key_forwarded and never claim generic exactly-once.
+    7. Run focused effect-operation/journal suites, bun run lifecycle:invariants, bun run guards:check, bun run test:critical and bun run typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -98,6 +100,7 @@ Define strict versioned runner effect operation and journal contracts, persist o
 - In scope: strict versioned RunnerEffectOperation and RunnerEffectJournal contracts with canonical digests, operation identity, idempotency key, authority reference/digest, precondition StateFingerprint digest, claim generation, expected postconditions and observed evidence.
 - Persist the immutable operation/journal and a downgrade-resistant preparation marker before the first adapter execution; update phases atomically without trusting event-log order as authority.
 - Make run, retry, replay, resume and restart paths recognize the operation key and refuse a second supervisor spawn when the prior effect is started, unknown or post-state-unknown.
+- Treat two independent supervisor processes racing on the same operation key and claim generation as one concurrency domain: an atomic journal/claim transition elects one winner and only that winner may spawn the adapter.
 - Preserve bounded legacy read compatibility without adding required artifact-path fields that invalidate existing runs.
 - Define enforcement truthfully as supervisor_single_spawn unless an adapter/provider proves that the idempotency key is forwarded.
 - Out of scope: operator verdict capture, effect resolution lease, claim retirement and semantic selection of applied versus not_applied; task 202607242158-QV09NA owns those.
@@ -107,17 +110,18 @@ Define strict versioned runner effect operation and journal contracts, persist o
 1. Add strict core schemas and canonical digest/idempotency derivation for runner effect operations and journals.
 2. Extend preparation/run-state contracts additively with a modern effect-journal feature marker and bounded legacy parser behavior.
 3. Persist the operation and prepared/started journal phases through contained atomic writes before adapter.execute.
-4. Reconcile crash, restart, retry, resume and replay against the durable operation key so AgentPlane never spawns the adapter twice for the same operation.
-5. Add JSON round-trip, anti-downgrade, crash-boundary and duplicate-spawn tests plus lifecycle/guard/type gates.
+4. Reconcile crash, restart, retry, resume and replay against the durable operation key, and use an atomic operation-key/generation claim transition to elect one winner across independent supervisor processes.
+5. Add JSON round-trip, anti-downgrade, crash-boundary and synchronized cross-process race tests that prove exactly one adapter spawn, plus lifecycle/guard/type gates.
 
 ## Verify Steps
 
 1. Inspect filesystem state inside an adapter test double at its first instruction. Expected: a strict operation and started journal already exist and bind task, run, adapter, claim generation, authority, fingerprint, postconditions and idempotency.
-2. Crash before execute, during execute and before post-state observation, then restart, retry, resume and replay. Expected: the same operation identity survives; AgentPlane invokes adapter.execute at most once for that key.
-3. Tamper with operation, journal, feature marker, authority/fingerprint digest or claim generation. Expected: strict validation rejects the run and no adapter spawn occurs.
-4. Round-trip modern and legacy run artifacts. Expected: modern fields cannot be stripped or downgraded; supported legacy state remains readable and explicitly marked without inventing pre-effect evidence.
-5. Exercise an adapter without provider idempotency support and one that forwards the key. Expected: receipts distinguish supervisor_single_spawn from provider_key_forwarded and never claim generic exactly-once.
-6. Run focused effect-operation/journal suites, bun run lifecycle:invariants, bun run guards:check, bun run test:critical and bun run typecheck.
+2. Start two independent supervisor processes behind a synchronization barrier for the same operation key and claim generation. Expected: the atomic journal/claim transition elects exactly one winner, the loser observes the durable started/unknown state, and a shared adapter test double records exactly one adapter.execute spawn across both processes.
+3. Crash before execute, during execute and before post-state observation, then restart, retry, resume and replay. Expected: the same operation identity survives; AgentPlane invokes adapter.execute at most once for that key.
+4. Tamper with operation, journal, feature marker, authority/fingerprint digest or claim generation. Expected: strict validation rejects the run and no adapter spawn occurs.
+5. Round-trip modern and legacy run artifacts. Expected: modern fields cannot be stripped or downgraded; supported legacy state remains readable and explicitly marked without inventing pre-effect evidence.
+6. Exercise an adapter without provider idempotency support and one that forwards the key. Expected: receipts distinguish supervisor_single_spawn from provider_key_forwarded and never claim generic exactly-once.
+7. Run focused effect-operation/journal suites, bun run lifecycle:invariants, bun run guards:check, bun run test:critical and bun run typecheck.
 
 ## Verification
 
