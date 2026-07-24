@@ -8,10 +8,10 @@
   "pr_number": 4609,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4609",
   "pre_merge_closure": {
-    "basis_commit": "30f983ffd3415cb1d253a326b15ac69a3bbe5e72",
+    "basis_commit": "33dede6ac818ab2c7cafca175e4e2f044b86419a",
     "branch": "task/202607240736-FCBKJQ/align-integration-quality-review-targets-for-met",
     "pr_number": 4609,
-    "recorded_at": "2026-07-24T08:36:32.073Z",
+    "recorded_at": "2026-07-24T08:37:59.761Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
