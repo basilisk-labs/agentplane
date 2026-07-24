@@ -2,16 +2,23 @@
   "base": "main",
   "branch": "task/202607221846-9XC1H0/enforce-role-scoped-sandboxes-and-actual-write-b",
   "created_at": "2026-07-23T18:45:27.072Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": "2026-07-23T18:50:15.804Z",
-  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:45031e1b27e1a624d709e524cb6adaa64e98e82b039ddc112dd1fe21c1f8576d",
+  "last_verified_at": "2026-07-24T01:13:35.679Z",
+  "last_verified_diffstat_sha256": "sha256:b1aad036191c5fb02b88f4e7ff162caf363d0eef5c1a5b9184f39c50fd10514e",
   "pr_number": 4607,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4607",
+  "pre_merge_closure": {
+    "basis_commit": "f161a6e56e7028c2932835af5e59bac0699f099e",
+    "branch": "task/202607221846-9XC1H0/enforce-role-scoped-sandboxes-and-actual-write-b",
+    "pr_number": 4607,
+    "recorded_at": "2026-07-24T05:55:45.654Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221846-9XC1H0",
   "updated_at": "2026-07-23T18:45:49.697Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
