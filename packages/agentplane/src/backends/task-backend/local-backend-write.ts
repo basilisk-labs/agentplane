@@ -15,6 +15,7 @@ import {
   withTaskReadmeFrontmatterDefaults,
 } from "@agentplaneorg/core/schemas";
 
+import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { isRecord } from "../../shared/guards.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 
@@ -42,6 +43,8 @@ import {
   type TaskData,
   type TaskWriteOptions,
 } from "./shared.js";
+
+const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
 
 export async function generateLocalTaskId(
   context: Pick<LocalBackendContext, "root">,
@@ -72,13 +75,27 @@ export async function writeLocalTask(
   task: TaskData,
   opts?: TaskWriteOptions,
 ): Promise<void> {
+  await writeLocalTaskWithReceipt(context, task, opts);
+}
+
+export type LocalTaskWriteReceipt = {
+  task: TaskData;
+  changed: boolean;
+};
+
+export async function writeLocalTaskWithReceipt(
+  context: LocalBackendContext,
+  task: TaskData,
+  opts?: TaskWriteOptions,
+  beforePublication?: () => Promise<void>,
+): Promise<LocalTaskWriteReceipt> {
   const taskId = task.id.trim();
   if (!taskId) throw new Error(missingTaskIdMessage());
   validateTaskId(taskId);
 
   const readmePath = taskReadmePath(context.root, taskId);
-  await withTaskReadmeTransaction(readmePath, async () => {
-    await writeLocalTaskLocked(context, task, opts, readmePath);
+  return await withTaskReadmeTransaction(readmePath, async () => {
+    return await writeLocalTaskLocked(context, task, opts, readmePath, beforePublication);
   });
 }
 
@@ -87,7 +104,8 @@ async function writeLocalTaskLocked(
   task: TaskData,
   opts: TaskWriteOptions | undefined,
   readmePath: string,
-): Promise<void> {
+  beforePublication?: () => Promise<void>,
+): Promise<LocalTaskWriteReceipt> {
   const taskId = task.id.trim();
   let body = "";
   let existingText: string | null = null;
@@ -95,7 +113,12 @@ async function writeLocalTaskLocked(
   let existingFrontmatter: Record<string, unknown> = {};
 
   try {
-    const text = await readFile(readmePath, "utf8");
+    const text = await readContainedStableTextNoFollow({
+      repository_root: context.root,
+      file_path: readmePath,
+      label: `task README ${taskId}`,
+      max_bytes: TASK_README_MAX_BYTES,
+    });
     existingText = text;
     const parsed = parseTaskReadme(text);
     body = parsed.body;
@@ -221,7 +244,27 @@ async function writeLocalTaskLocked(
     text = renderTaskReadme(payload, body || "");
     text = text.endsWith("\n") ? text : `${text}\n`;
   }
-  await writeTextIfChanged(readmePath, text);
+  const changed = await writeTextIfChanged(readmePath, text, {
+    beforePublication,
+    containedRoot: context.root,
+    label: `task README ${taskId}`,
+  });
+  const written = parseTaskReadme(text);
+  const writtenFrontmatter = validateTaskReadmeFrontmatter(
+    withTaskReadmeFrontmatterDefaults({
+      ...written.frontmatter,
+      id: taskId,
+    }),
+  );
+  return {
+    changed,
+    task: taskRecordToData({
+      id: taskId,
+      frontmatter: writtenFrontmatter as unknown as TaskRecord["frontmatter"],
+      body: written.body,
+      readmePath,
+    }),
+  };
 }
 
 export async function writeLocalTasks(
@@ -249,7 +292,12 @@ export async function normalizeLocalTasks(
       return await withTaskReadmeTransaction(readmePath, async () => {
         let text = "";
         try {
-          text = await readFile(readmePath, "utf8");
+          text = await readContainedStableTextNoFollow({
+            repository_root: context.root,
+            file_path: readmePath,
+            label: `task README ${dirName}`,
+            max_bytes: TASK_README_MAX_BYTES,
+          });
         } catch {
           return { taskId: "", scanned: false, changed: false };
         }
@@ -341,7 +389,10 @@ export async function normalizeLocalTasks(
           next = renderTaskReadme(payload, parsed.body || "");
           next = next.endsWith("\n") ? next : `${next}\n`;
         }
-        const didWrite = await writeTextIfChanged(readmePath, next);
+        const didWrite = await writeTextIfChanged(readmePath, next, {
+          containedRoot: context.root,
+          label: `task README ${taskId}`,
+        });
         return { taskId, scanned: true, changed: didWrite };
       });
     },

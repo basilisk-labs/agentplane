@@ -1,5 +1,11 @@
-import type { CloudBackendSyncCheckpoint } from "./cloud-backend-state.js";
-import { pendingCloudPushIdentityMismatchError } from "./cloud-pending-push.js";
+import {
+  assertValidCloudBackendSyncCheckpoint,
+  type CloudBackendSyncCheckpoint,
+} from "./cloud-backend-state.js";
+import {
+  pendingCloudPushError,
+  pendingCloudPushIdentityMismatchError,
+} from "./cloud-pending-push.js";
 import { BackendError } from "./shared.js";
 
 export type CloudSyncIdentityTransition = "adopt_remote" | "bootstrap_local" | "routine";
@@ -8,6 +14,8 @@ export type CloudSyncIdentityOrigin = "automatic" | "explicit";
 export type CloudSyncIdentityDecision = {
   bindProjectionIdentity: boolean;
   checkpoint: "legacy_unbound" | "mismatch" | "missing" | "same";
+  projectionApply: "none" | "resume" | "start";
+  projectionApplyRequiresAdoption: boolean;
 };
 
 export function resolveCloudSyncProjectionIdentity(opts: {
@@ -18,13 +26,40 @@ export function resolveCloudSyncProjectionIdentity(opts: {
   projectionIdentitySha256: string;
   transition: CloudSyncIdentityTransition;
 }): CloudSyncIdentityDecision {
-  if (opts.checkpoint.kind === "invalid") {
-    throw invalidCloudSyncCheckpointError();
-  }
+  assertValidCloudBackendSyncCheckpoint(opts.checkpoint);
   const checkpoint = classifyCheckpoint(opts.checkpoint, opts.projectionIdentitySha256);
-  if (checkpoint === "same") return { bindProjectionIdentity: true, checkpoint };
-  if (opts.checkpoint.kind === "valid" && opts.checkpoint.state.pending_push) {
-    throw pendingCloudPushIdentityMismatchError(opts.checkpoint.state.pending_push);
+  const pendingPush = opts.checkpoint.kind === "valid" ? opts.checkpoint.state.pending_push : null;
+  if (pendingPush) {
+    if (checkpoint !== "same") throw pendingCloudPushIdentityMismatchError(pendingPush);
+    if (opts.direction === "pull") throw pendingCloudPushError(pendingPush);
+  }
+  const pendingProjectionApply =
+    opts.checkpoint.kind === "valid" ? opts.checkpoint.state.pending_projection_apply : null;
+  if (pendingProjectionApply) {
+    if (
+      opts.direction === "pull" &&
+      opts.conflict === "prefer-remote" &&
+      pendingProjectionApply.target_projection_identity_sha256 === opts.projectionIdentitySha256 &&
+      (!pendingProjectionApply.requires_explicit_adoption ||
+        (opts.origin === "explicit" && opts.transition === "adopt_remote"))
+    ) {
+      return {
+        bindProjectionIdentity: true,
+        checkpoint,
+        projectionApply: "resume",
+        projectionApplyRequiresAdoption: pendingProjectionApply.requires_explicit_adoption,
+      };
+    }
+    throw cloudProjectionApplyIncompleteError();
+  }
+  if (checkpoint === "same") {
+    return {
+      bindProjectionIdentity: true,
+      checkpoint,
+      projectionApply:
+        opts.direction === "pull" && opts.conflict === "prefer-remote" ? "start" : "none",
+      projectionApplyRequiresAdoption: false,
+    };
   }
   if (opts.origin === "automatic") {
     if (opts.direction === "push" && checkpoint === "missing") {
@@ -39,35 +74,47 @@ export function resolveCloudSyncProjectionIdentity(opts: {
       opts.transition === "bootstrap_local" &&
       opts.conflict === "fail"
     ) {
-      return { bindProjectionIdentity: true, checkpoint };
+      return {
+        bindProjectionIdentity: true,
+        checkpoint,
+        projectionApply: "none",
+        projectionApplyRequiresAdoption: false,
+      };
     }
     if (checkpoint === "missing") throw cloudProjectionBootstrapRequiredError();
     throw cloudProjectionIdentityMismatchError();
   }
 
   if (opts.transition === "adopt_remote" && opts.conflict === "prefer-remote") {
-    return { bindProjectionIdentity: true, checkpoint };
+    return {
+      bindProjectionIdentity: true,
+      checkpoint,
+      projectionApply: "start",
+      projectionApplyRequiresAdoption: true,
+    };
   }
   if (opts.transition === "routine" && (opts.conflict === "diff" || opts.conflict === "fail")) {
     return {
-      bindProjectionIdentity: checkpoint !== "mismatch",
+      bindProjectionIdentity: false,
       checkpoint,
+      projectionApply: "none",
+      projectionApplyRequiresAdoption: false,
     };
   }
   throw cloudProjectionAdoptionRequiredError();
 }
 
-function invalidCloudSyncCheckpointError(): BackendError {
+export function cloudProjectionApplyIncompleteError(): BackendError {
   return new BackendError(
     [
-      "Cloud backend sync checkpoint is invalid; refusing network synchronization.",
-      "Why: malformed or structurally invalid state cannot prove which endpoint, project, and provider produced the local projection.",
-      "Fix: inspect the cloud configuration and restore or deliberately replace the invalid checkpoint before syncing.",
-      "Safe command: agentplane backend inspect cloud --yes",
-      "Stop condition: do not push or pull while the checkpoint cannot be validated.",
+      "Cloud projection apply is incomplete; refusing unrelated cache use.",
+      "Why: a prior prefer-remote pull may have partially changed the local cache and must converge against the same target identity.",
+      "Fix: repeat the same prefer-remote pull; include explicit adoption when the marker requires it.",
+      "Safe command: agentplane backend sync cloud --direction pull --conflict=prefer-remote --yes",
+      "Stop condition: do not read, mutate, push, or switch backends until the pull apply completes successfully.",
     ].join("\n"),
     "E_BACKEND",
-    { reasonCode: "cloud_projection_checkpoint_invalid" },
+    { reasonCode: "cloud_projection_apply_incomplete" },
   );
 }
 

@@ -122,7 +122,7 @@ describe("CloudBackend regressions", () => {
     });
   });
 
-  it("preserves pending auto-push markers across read-only pull refreshes", async () => {
+  it("blocks read-only pull refreshes while local push state is pending", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
     await mkdir(stateDir, { recursive: true });
@@ -158,20 +158,23 @@ describe("CloudBackend regressions", () => {
       { root: tempDir, cache, fetchImpl },
     );
 
-    await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
+    await expect(
+      backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true }),
+    ).rejects.toThrow("unpushed local task mutations");
 
     const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as {
       last_checked_at?: string;
       pending_push?: { failed_at?: string; reason?: string };
     };
-    expect(state.last_checked_at).toBe("2026-05-06T00:00:00.000Z");
+    expect(state.last_checked_at).toBe("2026-05-05T00:00:00.000Z");
     expect(state.pending_push).toEqual({
       failed_at: "2026-05-05T01:00:00.000Z",
       reason: "Cloud backend request failed",
     });
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it("clears stale pending auto-push markers when sync state proves the projection is current", async () => {
+  it("does not clear a failed push from generic projection-health evidence", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
     await mkdir(stateDir, { recursive: true });
@@ -217,18 +220,21 @@ describe("CloudBackend regressions", () => {
       { root: tempDir, cache, fetchImpl, autoSyncNetworkAllowed: true },
     );
 
-    await backend.writeTask(makeTask({ id: "202606010651-C1D2E3", title: "Recovered" }));
+    await expect(
+      backend.writeTask(makeTask({ id: "202606010651-C1D2E3", title: "Recovered" })),
+    ).rejects.toThrow("unpushed local task mutations");
 
-    await expect(cache.getTask("202606010651-C1D2E3")).resolves.toMatchObject({
-      title: "Recovered",
-    });
+    await expect(cache.getTask("202606010651-C1D2E3")).resolves.toBeNull();
     const state = JSON.parse(await readFile(path.join(stateDir, "state.json"), "utf8")) as {
       pending_push?: unknown;
     };
-    expect(state.pending_push).toBeNull();
+    expect(state.pending_push).toMatchObject({
+      reason: "Cloud backend request failed: HTTP 502",
+    });
+    expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it("continues stale freshness checks after clearing recovered pending push markers", async () => {
+  it("blocks stale local mutations at a failed push before any recovery network call", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
     await mkdir(stateDir, { recursive: true });
@@ -281,15 +287,11 @@ describe("CloudBackend regressions", () => {
       { root: tempDir, cache, fetchImpl, autoSyncNetworkAllowed: true },
     );
 
-    await backend.writeTask(makeTask({ id: "202606010651-S1T2", title: "Recovered stale" }));
-
-    expect(fetchImpl).toHaveBeenCalledWith(
-      "https://cloud.example/v1/projects/project-1/sync/pull",
-      expect.objectContaining({ method: "POST" }),
-    );
-    await expect(cache.getTask("202606010651-S1T2")).resolves.toMatchObject({
-      title: "Recovered stale",
-    });
+    await expect(
+      backend.writeTask(makeTask({ id: "202606010651-S1T2", title: "Recovered stale" })),
+    ).rejects.toThrow("unpushed local task mutations");
+    expect(fetchImpl).not.toHaveBeenCalled();
+    await expect(cache.getTask("202606010651-S1T2")).resolves.toBeNull();
   });
 
   it("pull adds remote-only tasks and removes local-only tasks under prefer-remote", async () => {
@@ -316,6 +318,7 @@ describe("CloudBackend regressions", () => {
               { id: localTask.id, title: "Updated", status: "TODO" },
             ],
             last_checked_at: "2026-05-06T00:00:00.000Z",
+            projection_complete: true,
           },
         }),
       ),

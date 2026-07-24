@@ -150,6 +150,7 @@ function remoteOnlyFetch(provider: string): typeof fetch {
             },
           ],
           last_checked_at: "2026-05-06T00:00:00.000Z",
+          projection_complete: true,
         },
       }),
     );

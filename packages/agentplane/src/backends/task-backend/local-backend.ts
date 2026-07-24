@@ -1,7 +1,17 @@
 import path from "node:path";
 import { rm } from "node:fs/promises";
-import { taskReadmePath, withTaskReadmeTransaction } from "@agentplaneorg/core/tasks";
+import {
+  parseTaskReadme,
+  taskReadmePath,
+  withTaskReadmeTransaction,
+} from "@agentplaneorg/core/tasks";
 
+import {
+  assertContainedPathChainIdentityUnchanged,
+  captureContainedPathChainIdentity,
+  readContainedStableTextNoFollow,
+  type ContainedPathChainIdentity,
+} from "../../shared/contained-stable-file.js";
 import {
   DEFAULT_DOC_UPDATED_BY,
   type TaskBackend,
@@ -20,8 +30,45 @@ import {
   generateLocalTaskId,
   normalizeLocalTasks,
   writeLocalTask,
+  writeLocalTaskWithReceipt,
   writeLocalTasks,
+  type LocalTaskWriteReceipt,
 } from "./local-backend-write.js";
+import { assertExpectedRevision, storedRevisionFromFrontmatter } from "./local-backend-state.js";
+
+const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
+
+async function captureTaskDeletionPathIfPresent(opts: {
+  tasksRoot: string;
+  readmePath: string;
+  label: string;
+}): Promise<ContainedPathChainIdentity | null> {
+  try {
+    return await captureContainedPathChainIdentity({
+      repository_root: opts.tasksRoot,
+      file_path: opts.readmePath,
+      label: opts.label,
+    });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
+async function assertTaskDeletionPathUnchanged(opts: {
+  expected: ContainedPathChainIdentity | null;
+  tasksRoot: string;
+  readmePath: string;
+  label: string;
+}): Promise<boolean> {
+  if (opts.expected) {
+    await assertContainedPathChainIdentityUnchanged(opts.expected, opts.label);
+    return true;
+  }
+  const observed = await captureTaskDeletionPathIfPresent(opts);
+  if (!observed) return false;
+  throw new Error(`Refusing changed ${opts.label} path: ${opts.readmePath}`);
+}
 
 export class LocalBackend implements TaskBackend {
   id = "local";
@@ -63,7 +110,24 @@ export class LocalBackend implements TaskBackend {
   }
 
   async listTasks(): Promise<TaskData[]> {
-    return (await listLocalTasks(this.backendContext(), "full")) as TaskData[];
+    const result = await this.listTasksWithWarnings();
+    return result.tasks;
+  }
+
+  async listTasksWithWarnings(opts?: {
+    writeIndex?: boolean;
+  }): Promise<{ tasks: TaskData[]; warnings: string[] }> {
+    let requestWarnings: string[] = [];
+    const context = {
+      root: this.root,
+      updatedBy: this.updatedBy,
+      setLastListWarnings: (warnings: string[]) => {
+        requestWarnings = [...warnings];
+        this.lastListWarnings = [...warnings];
+      },
+    };
+    const tasks = (await listLocalTasks(context, "full", opts)) as TaskData[];
+    return { tasks, warnings: requestWarnings };
   }
 
   async listProjectionTasks(opts?: { status?: readonly string[] }): Promise<TaskSummary[]> {
@@ -93,6 +157,14 @@ export class LocalBackend implements TaskBackend {
     await writeLocalTask(this.backendContext(), task, opts);
   }
 
+  async writeTaskWithReceipt(
+    task: TaskData,
+    opts: TaskWriteOptions | undefined,
+    beforePublication: () => Promise<void>,
+  ): Promise<LocalTaskWriteReceipt> {
+    return await writeLocalTaskWithReceipt(this.backendContext(), task, opts, beforePublication);
+  }
+
   async setTaskDoc(
     taskId: string,
     doc: string,
@@ -114,8 +186,53 @@ export class LocalBackend implements TaskBackend {
     await writeLocalTasks(this.backendContext(), tasks, opts);
   }
 
-  async deleteTask(taskId: string): Promise<void> {
-    await withTaskReadmeTransaction(taskReadmePath(this.root, taskId), async () => {
+  async deleteTask(
+    taskId: string,
+    opts?: Pick<TaskWriteOptions, "expectedRevision">,
+  ): Promise<void> {
+    await this.deleteTaskWithPublicationGuard(taskId, opts);
+  }
+
+  async deleteTaskWithPublicationGuard(
+    taskId: string,
+    opts?: Pick<TaskWriteOptions, "expectedRevision">,
+    beforeDeletion?: () => Promise<void>,
+  ): Promise<void> {
+    const readmePath = taskReadmePath(this.root, taskId);
+    await withTaskReadmeTransaction(readmePath, async () => {
+      const label = `task README ${taskId}`;
+      const deletionPath = await captureTaskDeletionPathIfPresent({
+        tasksRoot: this.root,
+        readmePath,
+        label,
+      });
+      let currentRevision = 0;
+      try {
+        const parsed = parseTaskReadme(
+          await readContainedStableTextNoFollow({
+            repository_root: this.root,
+            file_path: readmePath,
+            label,
+            max_bytes: TASK_README_MAX_BYTES,
+          }),
+        );
+        currentRevision = storedRevisionFromFrontmatter(parsed.frontmatter, 1);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
+      }
+      assertExpectedRevision({
+        taskId,
+        expectedRevision: opts?.expectedRevision,
+        currentRevision,
+      });
+      await beforeDeletion?.();
+      const deletionPathIsAnchored = await assertTaskDeletionPathUnchanged({
+        expected: deletionPath,
+        tasksRoot: this.root,
+        readmePath,
+        label,
+      });
+      if (!deletionPathIsAnchored) return;
       await rm(path.join(this.root, taskId), { recursive: true, force: true });
     });
   }

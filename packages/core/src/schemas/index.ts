@@ -98,6 +98,7 @@ export {
   type StateFingerprintComponent,
   type StateFingerprintComponentInput,
   type StateFingerprintComponentName,
+  type StateFingerprintIdentityChange,
   type StateFingerprintInput,
   type StateFingerprintPolicy,
   type StateFingerprintPreconditionDiagnostic,

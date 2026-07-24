@@ -4,11 +4,7 @@ import path from "node:path";
 import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../backends/task-backend.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  type CommandContext,
-} from "../commands/shared/task-backend.js";
+import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { makeReadOnlyExecutionContext } from "../runtime/execution-context.js";
 import { consumeExecutionProfileBudget } from "../runtime/execution-profile/index.js";
 import { readContainedStableTextNoFollow } from "../shared/contained-stable-file.js";
@@ -17,6 +13,7 @@ import { assembleRunnerTaskContext } from "./context/task-context.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "./sandbox-policy.js";
 import { authorityComponent, dangerAuthorityFromBundle } from "./state-fingerprint-authority.js";
 import { observeBackendProjection } from "./state-fingerprint-backend-projection.js";
+import { observeRunnerTaskProjection, runnerTaskProjectionReader } from "./task-observation.js";
 import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
 import { resolveRunnerBlueprintPlan } from "./usecases/task-run-blueprint-plan.js";
 
@@ -34,6 +31,7 @@ export type RunnerStateFingerprintComponentProbes = {
 };
 
 export type RunnerStateFingerprintObservedComponents = {
+  task_revision: number | null;
   task: StateFingerprintComponentInput;
   backend_projection: StateFingerprintComponentInput;
   policy: StateFingerprintComponentInput;
@@ -96,14 +94,27 @@ function taskComponent(task: TaskData | null): StateFingerprintComponentInput {
     return unavailableComponent("task_backend", "task_state_unavailable");
   }
   const semanticTask = structuredClone(task);
+  Reflect.deleteProperty(semanticTask, "revision");
   if (semanticTask.sync) {
     Reflect.deleteProperty(semanticTask.sync, "freshness");
+    semanticTask.sync.external_refs = semanticTask.sync.external_refs.map((externalRef) => {
+      const semanticRef = { ...externalRef };
+      Reflect.deleteProperty(semanticRef, "remote_revision");
+      return semanticRef;
+    });
   }
   return {
     state: "present",
     source: "task_backend",
     value: semanticTask,
   };
+}
+
+function taskRevision(task: TaskData | null): number | null {
+  const revision = task?.revision;
+  return typeof revision === "number" && Number.isInteger(revision) && revision > 0
+    ? revision
+    : null;
 }
 
 function providerComponent(task: TaskData | null): StateFingerprintComponentInput {
@@ -122,6 +133,24 @@ function providerComponent(task: TaskData | null): StateFingerprintComponentInpu
     projected_at: freshness?.projected_at ?? null,
     stale: freshness?.stale ?? false,
     reason: freshness?.reason ?? null,
+    external_revisions: sync.external_refs
+      .flatMap((externalRef) =>
+        externalRef.remote_revision
+          ? [
+              {
+                connector_kind: externalRef.connector_kind ?? null,
+                provider: externalRef.provider,
+                remote_id: externalRef.remote_id,
+                remote_revision: externalRef.remote_revision,
+              },
+            ]
+          : [],
+      )
+      .toSorted((left, right) => {
+        const leftJson = JSON.stringify(left);
+        const rightJson = JSON.stringify(right);
+        return leftJson < rightJson ? -1 : leftJson > rightJson ? 1 : 0;
+      }),
   };
   if (freshness?.stale === true) {
     return unavailableComponent(
@@ -143,6 +172,7 @@ function providerComponent(task: TaskData | null): StateFingerprintComponentInpu
         projected_at: freshness.projected_at ?? null,
         stale: freshness.stale ?? false,
         reason: freshness.reason ?? null,
+        external_revisions: freshnessEvidence.external_revisions,
       },
     };
   }
@@ -281,25 +311,30 @@ async function observeKnowledgeProjection(
   repositoryRoot: string,
 ): Promise<StateFingerprintComponentInput> {
   const manifestPath = path.join(repositoryRoot, ".agentplane", "context", "manifest.lock.json");
+  let manifestText = "";
   try {
-    const text = await readContainedStableTextNoFollow({
+    manifestText = await readContainedStableTextNoFollow({
       repository_root: repositoryRoot,
       file_path: manifestPath,
       label: "knowledge manifest lock",
       max_bytes: KNOWLEDGE_MANIFEST_MAX_BYTES,
     });
-    JSON.parse(text);
+    JSON.parse(manifestText);
     return {
       state: "present",
       source: "context_manifest_lock",
       value: {
         path: ".agentplane/context/manifest.lock.json",
-        sha256: digestText(text),
+        initialized: true,
+        sha256: digestText(manifestText),
       },
     };
   } catch (error) {
     if (error instanceof SyntaxError) {
-      return unavailableComponent("context_manifest_lock", "knowledge_manifest_invalid");
+      return unavailableComponent("context_manifest_lock", "knowledge_manifest_invalid", {
+        path: ".agentplane/context/manifest.lock.json",
+        sha256: digestText(manifestText),
+      });
     }
     if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") {
       return unavailableComponent("context_manifest_lock", "knowledge_manifest_unreadable");
@@ -314,7 +349,15 @@ async function observeKnowledgeProjection(
       return unavailableComponent("context_manifest_lock", "knowledge_manifest_lock_missing");
     } catch (manifestError) {
       if ((manifestError as NodeJS.ErrnoException | null)?.code === "ENOENT") {
-        return missingComponent("context_manifest_lock", "knowledge_workspace_not_initialized");
+        return {
+          state: "present",
+          source: "context_manifest_lock",
+          value: {
+            path: ".agentplane/context/manifest.lock.json",
+            initialized: false,
+            sha256: null,
+          },
+        };
       }
       return unavailableComponent("context_manifest_lock", "knowledge_manifest_unreadable");
     }
@@ -343,10 +386,10 @@ async function resolveLiveState(opts: {
     task = opts.probes?.load_task
       ? await opts.probes.load_task()
       : liveContext
-        ? await loadTaskFromContext({
-            ctx: liveContext,
-            taskId: opts.bundle.task?.task_id ?? opts.bundle.target.task_id ?? "",
-          })
+        ? await observeRunnerTaskProjection(
+            liveContext,
+            opts.bundle.task?.task_id ?? opts.bundle.target.task_id ?? "",
+          )
         : null;
   } catch {
     task = null;
@@ -370,6 +413,8 @@ async function resolveLiveState(opts: {
       cwd: liveContext.resolvedProject.gitRoot,
       rootOverride: liveContext.resolvedProject.gitRoot,
       task_id: task.id,
+      task,
+      dependency_backend: runnerTaskProjectionReader(liveContext),
     });
     const command =
       opts.bundle.target.kind === "recipe_scenario" ? "recipes scenario execute" : "task run";
@@ -446,6 +491,7 @@ export async function observePreparedRunnerStateComponents(opts: {
       ),
   ]);
   return {
+    task_revision: taskRevision(task),
     task: taskComponent(task),
     backend_projection: backend,
     policy,
@@ -522,6 +568,7 @@ export async function observeLiveRunnerStateComponents(opts: {
   ]);
 
   return {
+    task_revision: taskRevision(live.task),
     task: taskComponent(live.task),
     backend_projection: backend,
     policy,

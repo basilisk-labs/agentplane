@@ -52,6 +52,7 @@ type BackendCommandDescriptor<Flags extends { backendId?: string | null; yes: bo
   mismatchReasonCode: string;
   networkAction: string;
   networkReason: (backendId: string) => string;
+  validateBackend?: (backendId: string) => void;
   flags: Flags;
 };
 
@@ -85,6 +86,7 @@ async function resolveBackendCommandContext<
       message: backendNotSupportedMessage(descriptor.unsupportedLabel),
     });
   }
+  descriptor.validateBackend?.(backendId);
   if (backendId !== "local") {
     await ensureNetworkApproved({
       action: descriptor.networkAction,
@@ -104,13 +106,15 @@ export async function cmdBackendSyncParsed(opts: {
 }): Promise<number> {
   try {
     const identityTransition = resolveSyncIdentityTransition(opts.flags);
-    const { backend } = await resolveBackendCommandContext(opts, {
+    const { backend, backendId } = await resolveBackendCommandContext(opts, {
       command: "backend sync",
       operation: "sync",
       unsupportedLabel: "sync()",
       mismatchReasonCode: "sync_backend_mismatch",
       networkAction: "backend_sync",
       networkReason: (backendId) => `backend sync may access the network (backend: ${backendId})`,
+      validateBackend: (backendId) =>
+        assertCloudIdentityTransitionBackend(backendId, identityTransition, "backend sync"),
       flags: opts.flags,
     });
     if (opts.flags.watch) {
@@ -140,6 +144,7 @@ export async function cmdBackendSyncParsed(opts: {
         quiet: opts.flags.quiet,
         confirm: opts.flags.yes,
         identityTransition,
+        includeCloudIdentity: backendId === "cloud",
         intervalMs,
         maxIterations,
       });
@@ -149,8 +154,12 @@ export async function cmdBackendSyncParsed(opts: {
         conflict: opts.flags.conflict,
         quiet: opts.flags.quiet,
         confirm: opts.flags.yes,
-        identityOrigin: "explicit",
-        identityTransition,
+        ...(backendId === "cloud"
+          ? {
+              identityOrigin: "explicit" as const,
+              identityTransition,
+            }
+          : {}),
       });
     }
     return 0;
@@ -166,6 +175,7 @@ async function runBackendSyncWatch(opts: {
   quiet: boolean;
   confirm: boolean;
   identityTransition: "adopt_remote" | "bootstrap_local" | "routine";
+  includeCloudIdentity: boolean;
   intervalMs: number;
   maxIterations: number;
 }): Promise<void> {
@@ -183,8 +193,12 @@ async function runBackendSyncWatch(opts: {
         conflict: opts.conflict,
         quiet: opts.quiet,
         confirm: opts.confirm,
-        identityOrigin: "explicit",
-        identityTransition: opts.identityTransition,
+        ...(opts.includeCloudIdentity
+          ? {
+              identityOrigin: "explicit" as const,
+              identityTransition: opts.identityTransition,
+            }
+          : {}),
       });
       if (opts.maxIterations > 0 && iteration >= opts.maxIterations) {
         break;
@@ -204,13 +218,15 @@ export async function cmdSyncParsed(opts: {
 }): Promise<number> {
   try {
     const identityTransition = resolveSyncIdentityTransition(opts.flags);
-    const { backend } = await resolveBackendCommandContext(opts, {
+    const { backend, backendId } = await resolveBackendCommandContext(opts, {
       command: "sync",
       operation: "sync",
       unsupportedLabel: "sync()",
       mismatchReasonCode: "sync_backend_mismatch",
       networkAction: "backend_sync",
       networkReason: (backendId) => `sync may access the network (backend: ${backendId})`,
+      validateBackend: (backendId) =>
+        assertCloudIdentityTransitionBackend(backendId, identityTransition, "sync"),
       flags: opts.flags,
     });
     await backend.sync!({
@@ -218,14 +234,37 @@ export async function cmdSyncParsed(opts: {
       conflict: opts.flags.conflict,
       quiet: opts.flags.quiet,
       confirm: opts.flags.yes,
-      identityOrigin: "explicit",
-      identityTransition,
+      ...(backendId === "cloud"
+        ? {
+            identityOrigin: "explicit" as const,
+            identityTransition,
+          }
+        : {}),
     });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "sync", root: opts.rootOverride ?? null });
   }
+}
+
+function assertCloudIdentityTransitionBackend(
+  backendId: string,
+  identityTransition: "adopt_remote" | "bootstrap_local" | "routine",
+  command: "backend sync" | "sync",
+): void {
+  if (identityTransition === "routine" || backendId === "cloud") return;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message:
+      "--bootstrap-projection and --adopt-projection-identity are supported only by the cloud backend",
+    context: {
+      backend_id: backendId,
+      command,
+      reason_code: "sync_identity_transition_cloud_only",
+    },
+  });
 }
 
 function resolveSyncIdentityTransition(flags: {
@@ -396,6 +435,12 @@ export async function cmdBackendInspectParsed(opts: {
         `freshness last_checked_at=${result.freshness.lastCheckedAt ?? "never"} stale=${result.freshness.stale} stale_after_seconds=${result.freshness.staleAfterSeconds ?? "unset"}`,
       );
       if (result.freshness.statePath) output.line(`state ${result.freshness.statePath}`);
+      if (result.freshness.checkpoint) {
+        output.line(`checkpoint status=${result.freshness.checkpoint.status}`);
+        if (result.freshness.checkpoint.repair) {
+          output.warn(`checkpoint repair: ${result.freshness.checkpoint.repair}`);
+        }
+      }
     }
     for (const drift of result.configuredFieldNameDrift) {
       output.line(

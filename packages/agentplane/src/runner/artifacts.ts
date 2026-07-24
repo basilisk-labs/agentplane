@@ -108,6 +108,7 @@ export function createRunnerRunState(opts: {
           state_after: null,
           precondition: null,
           effect_applied: null,
+          post_state_reason_code: null,
         }
       : undefined;
   return {

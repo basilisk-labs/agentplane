@@ -431,7 +431,51 @@ describe("runCli", () => {
     }
   });
 
-  it("backend sync forwards flags to the backend", async () => {
+  it("backend sync forwards generic flags without cloud identity fields", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", sync }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "sync",
+        "redmine",
+        "--direction",
+        "push",
+        "--conflict",
+        "prefer-local",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(sync).toHaveBeenCalledWith({
+        direction: "push",
+        conflict: "prefer-local",
+        quiet: false,
+        confirm: true,
+      });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("backend sync forwards an explicit cloud bootstrap transition", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const sync = vi.fn().mockImplementation(() => Promise.resolve());
@@ -746,7 +790,50 @@ describe("runCli", () => {
     }
   });
 
-  it("sync forwards flags to the backend", async () => {
+  it("sync forwards generic flags without cloud identity fields", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", sync }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "sync",
+        "redmine",
+        "--direction",
+        "push",
+        "--conflict",
+        "prefer-local",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(sync).toHaveBeenCalledWith({
+        direction: "push",
+        conflict: "prefer-local",
+        quiet: false,
+        confirm: true,
+      });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("sync forwards an explicit cloud adoption transition", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const sync = vi.fn().mockImplementation(() => Promise.resolve());
@@ -786,6 +873,61 @@ describe("runCli", () => {
         identityOrigin: "explicit",
         identityTransition: "adopt_remote",
       });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it.each([
+    [
+      "backend sync",
+      [
+        "backend",
+        "sync",
+        "redmine",
+        "--direction",
+        "push",
+        "--conflict",
+        "fail",
+        "--bootstrap-projection",
+      ],
+    ],
+    [
+      "sync",
+      [
+        "sync",
+        "redmine",
+        "--direction",
+        "pull",
+        "--conflict",
+        "prefer-remote",
+        "--adopt-projection-identity",
+      ],
+    ],
+  ])("rejects cloud identity flags on a non-cloud %s route", async (_label, args) => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", sync }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([...args, "--yes", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("supported only by the cloud backend");
+      expect(sync).not.toHaveBeenCalled();
     } finally {
       io.restore();
       spy.mockRestore();

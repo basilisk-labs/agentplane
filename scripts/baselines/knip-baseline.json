@@ -126,11 +126,6 @@
           "col": 3
         },
         {
-          "name": "projectBlueprintsConfigPath",
-          "line": 16,
-          "col": 3
-        },
-        {
           "name": "recipeBlueprintExtensionToHint",
           "line": 33,
           "col": 3
@@ -1937,16 +1932,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/runner/artifacts.ts",
-      "exports": [
-        {
-          "name": "createRunnerRunState",
-          "line": 92,
-          "col": 17
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/runner/codex-approval-probe.ts",
       "types": [
         {
@@ -3533,10 +3518,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 182,
+    "exports": 179,
     "types": 368,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 551
+    "total": 548
   }
 }

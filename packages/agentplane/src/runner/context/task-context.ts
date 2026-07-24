@@ -3,7 +3,7 @@ import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/c
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
-import type { TaskEvent } from "../../backends/task-backend.js";
+import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -279,14 +279,16 @@ export async function assembleRunnerTaskContext(opts: {
   cwd: string;
   rootOverride?: string | null;
   task_id: string;
+  task?: TaskData;
+  dependency_backend?: Pick<CommandContext["taskBackend"], "getTask" | "getTasks">;
 }): Promise<RunnerTaskContextEnvelope> {
   try {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const task = await loadTaskFromContext({ ctx, taskId: opts.task_id });
+    const task = opts.task ?? (await loadTaskFromContext({ ctx, taskId: opts.task_id }));
     const dependencyState = toRunnerDependencyState(
-      await resolveTaskDependencyState(task, ctx.taskBackend),
+      await resolveTaskDependencyState(task, opts.dependency_backend ?? ctx.taskBackend),
     );
     const frontmatter = taskDataToFrontmatter(task);
     const baseDoc =

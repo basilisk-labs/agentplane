@@ -114,13 +114,20 @@ export type RunnerPreparedMetadata = {
 export type RunnerStateFingerprintRecord = {
   schema_version: 1;
   kind: "runner_state_fingerprint_record";
-  outcome: "prepared" | "accepted" | "refused";
+  outcome:
+    | "prepared"
+    | "effect_started"
+    | "accepted"
+    | "refused"
+    | "effect_unknown"
+    | "post_state_unknown";
   precondition_fingerprint: StateFingerprint;
   precondition_policy: StateFingerprintPolicy;
   state_before: StateFingerprint | null;
   state_after: StateFingerprint | null;
   precondition: StateFingerprintPreconditionDiagnostic | null;
   effect_applied: boolean | null;
+  post_state_reason_code: "post_state_unavailable" | null;
 };
 
 export type RunnerRunState = {

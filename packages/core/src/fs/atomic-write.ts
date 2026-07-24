@@ -161,8 +161,13 @@ export async function atomicWriteFile(
   filePath: string,
   contents: string | Buffer,
   encoding: BufferEncoding = "utf8",
+  opts?: {
+    beforeAllocation?: () => Promise<void> | void;
+    beforePublication?: () => Promise<void> | void;
+  },
 ): Promise<void> {
   const dir = path.dirname(filePath);
+  await opts?.beforeAllocation?.();
   await mkdir(dir, { recursive: true });
   const { handle, tmpPath } = await openExclusiveTempFile(filePath);
   const expected = Buffer.isBuffer(contents) ? contents : Buffer.from(contents, encoding);
@@ -172,6 +177,7 @@ export async function atomicWriteFile(
     await handle.sync();
     await assertHandleOwnsPath(handle, tmpPath, "before publication");
     await assertExpectedHandleContents(handle, tmpPath, expected, "before publication");
+    await opts?.beforePublication?.();
     await rename(tmpPath, filePath);
     renamed = true;
     await syncDirectory(dir);

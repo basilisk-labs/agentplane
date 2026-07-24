@@ -47,8 +47,8 @@ describe("runner state fingerprint", () => {
       policy: { state: "present", source: "runner_policy_resolution" },
       blueprint: { state: "present", source: "blueprint_resolver" },
       knowledge: {
-        state: "missing",
-        reason_code: "knowledge_workspace_not_initialized",
+        state: "present",
+        source: "context_manifest_lock",
       },
       provider: { state: "missing", reason_code: "provider_not_applicable" },
       authority: { state: "present", source: "runner_authority_resolution" },
@@ -97,7 +97,7 @@ describe("runner state fingerprint", () => {
     expect(error.diagnostic.changed_components.map((entry) => entry.component)).toEqual(["task"]);
   });
 
-  it("rejects a Git HEAD race between initial observation and bundle assembly", async () => {
+  it("rejects a Git HEAD identity advance even when the residual source tree is unchanged", async () => {
     const taskData = task();
     const runnerBundle = bundle(taskData);
     runnerBundle.repository.head_commit = "b".repeat(40);
@@ -115,6 +115,7 @@ describe("runner state fingerprint", () => {
       probes: probes({ task: taskData, bundle: runnerBundle, git: currentSnapshot }),
     });
 
+    expect(current.components.git).toEqual(prepared.components.git);
     const error = capturePreconditionError(() =>
       assertStateFingerprintPrecondition({
         expected: prepared,
@@ -124,6 +125,34 @@ describe("runner state fingerprint", () => {
     );
     expect(error.reason_code).toBe("state_fingerprint_stale");
     expect(error.diagnostic.changed_components.map((entry) => entry.component)).toEqual(["git"]);
+  });
+
+  it("rejects a task revision-only advance while preserving the semantic task digest", async () => {
+    const preparedTask = task({ revision: 3 });
+    const changedTask = task({ revision: 4 });
+    const runnerBundle = bundle(preparedTask);
+    const prepared = await capturePreparedRunnerStateFingerprint({
+      ctx: context(preparedTask),
+      bundle: runnerBundle,
+      git: gitSnapshot(),
+      probes: probes({ task: preparedTask, bundle: runnerBundle }),
+    });
+    const current = await captureRunnerStateFingerprint({
+      ctx: context(changedTask),
+      bundle: runnerBundle,
+      probes: probes({ task: changedTask, bundle: runnerBundle }),
+    });
+
+    expect(current.components.task).toEqual(prepared.components.task);
+    const error = capturePreconditionError(() =>
+      assertStateFingerprintPrecondition({
+        expected: prepared,
+        current,
+        policy: RUNNER_STATE_FINGERPRINT_POLICY,
+      }),
+    );
+    expect(error.reason_code).toBe("state_fingerprint_stale");
+    expect(error.diagnostic.changed_components.map((entry) => entry.component)).toEqual(["task"]);
   });
 
   it("records provider unavailability as bounded policy input", async () => {

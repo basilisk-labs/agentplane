@@ -1,5 +1,8 @@
 import { BackendError, type TaskBackendInspectionResult } from "./shared.js";
-import { readCloudBackendState } from "./cloud-backend-state.js";
+import {
+  readContainedCloudBackendSyncCheckpoint,
+  type CloudBackendSyncCheckpoint,
+} from "./cloud-backend-state.js";
 import { isStale, type CloudConfigOverride } from "./cloud-backend-utils.js";
 import type { CloudSyncStateSnapshot } from "./cloud-backend-sync.js";
 
@@ -9,6 +12,7 @@ export type CloudBackendConfigSnapshot = {
   projectId: string;
   provider: string | null;
   projectionIdentitySha256: string;
+  repositoryRoot: string;
   statePath: string;
   staleAfterSeconds: number | null;
   configOverrides: CloudConfigOverride[];
@@ -50,7 +54,8 @@ export async function inspectCloudBackendConfiguration(opts: {
   requestCloudSyncState: (projectId: string) => Promise<CloudSyncStateSnapshot>;
 }): Promise<TaskBackendInspectionResult> {
   const missing = missingCloudConfigKeys(opts.config);
-  const state = await readCloudBackendState(opts.config.statePath);
+  const checkpoint = await inspectCheckpoint(opts.config);
+  const state = checkpoint.kind === "valid" ? checkpoint.state : null;
   const syncState =
     missing.length === 0
       ? await opts.requestCloudSyncState(opts.config.projectId).catch(() => null)
@@ -70,13 +75,46 @@ export async function inspectCloudBackendConfiguration(opts: {
       syncState: syncState?.diagnostics ?? null,
     },
     freshness: {
-      lastCheckedAt: state.last_checked_at,
+      lastCheckedAt: state?.last_checked_at ?? null,
       staleAfterSeconds: opts.config.staleAfterSeconds,
       stale:
-        state.projection_identity_sha256 !== opts.config.projectionIdentitySha256 ||
+        state?.projection_identity_sha256 !== opts.config.projectionIdentitySha256 ||
         isStale(state.last_checked_at, opts.config.staleAfterSeconds),
       statePath: opts.config.statePath,
-      pendingPush: state.pending_push,
+      checkpoint: checkpointInspection(checkpoint),
+      pendingPush: state?.pending_push ?? null,
     },
+  };
+}
+
+type InspectedCheckpoint = CloudBackendSyncCheckpoint | { kind: "unsafe"; reason: string };
+
+async function inspectCheckpoint(config: CloudBackendConfigSnapshot): Promise<InspectedCheckpoint> {
+  try {
+    return await readContainedCloudBackendSyncCheckpoint({
+      repositoryRoot: config.repositoryRoot,
+      statePath: config.statePath,
+    });
+  } catch (error) {
+    return {
+      kind: "unsafe",
+      reason: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+function checkpointInspection(
+  checkpoint: InspectedCheckpoint,
+): NonNullable<TaskBackendInspectionResult["freshness"]>["checkpoint"] {
+  if (checkpoint.kind === "valid" || checkpoint.kind === "missing") {
+    return { status: checkpoint.kind, repair: null };
+  }
+  const status = checkpoint.kind === "invalid" ? checkpoint.reason : "unsafe";
+  return {
+    status,
+    repair:
+      status === "unsafe"
+        ? "Restore the configured state path as a regular repository-contained file before syncing."
+        : "Restore state.json from a trusted checkpoint, or remove it only as part of an explicit projection bootstrap or remote adoption.",
   };
 }

@@ -28,7 +28,7 @@ export function assertExpectedRevision(opts: {
 }): void {
   if (opts.expectedRevision === undefined) return;
   const expected = Math.trunc(opts.expectedRevision);
-  if (expected <= 0 || expected === opts.currentRevision) return;
+  if (expected === opts.currentRevision) return;
   throw new BackendError(
     `Task revision changed concurrently: ${opts.taskId} ` +
       `(expected revision ${expected}, current revision ${opts.currentRevision})`,

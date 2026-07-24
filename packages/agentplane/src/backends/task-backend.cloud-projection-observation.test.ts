@@ -110,6 +110,7 @@ describe("CloudBackend projection observation", () => {
           data: {
             tasks: [],
             last_checked_at: checkedAt,
+            projection_complete: true,
           },
         }),
       );
@@ -128,7 +129,13 @@ describe("CloudBackend projection observation", () => {
       },
     );
 
-    await cloud.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
+    await cloud.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: true,
+      identityTransition: "adopt_remote",
+    });
 
     const state = JSON.parse(
       await readFile(path.join(root, ".agentplane", "backends", "cloud", "state.json"), "utf8"),

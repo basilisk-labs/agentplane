@@ -6,7 +6,7 @@ import { isRecord } from "../../shared/guards.js";
 import type { RunnerRunDirectoryBoundary } from "../run-directory-boundary.js";
 import type { RunnerLifecycleStatus } from "../types.js";
 
-export type TaskRunnerActiveClaimOperation = "execute" | "resume" | "retry";
+export type TaskRunnerActiveClaimOperation = "execute" | "resume" | "retry" | "effect_in_doubt";
 
 export type TaskRunnerActiveClaimOwnerIdentity = {
   owner_pid: number;
@@ -80,7 +80,8 @@ export function parseTaskRunnerActiveClaim(raw: string, claimPath: string): Task
     parsed.run_id.length === 0 ||
     (parsed.operation !== "execute" &&
       parsed.operation !== "resume" &&
-      parsed.operation !== "retry") ||
+      parsed.operation !== "retry" &&
+      parsed.operation !== "effect_in_doubt") ||
     typeof parsed.claimed_at !== "string" ||
     !Number.isFinite(Date.parse(parsed.claimed_at)) ||
     typeof parsed.owner_pid !== "number" ||

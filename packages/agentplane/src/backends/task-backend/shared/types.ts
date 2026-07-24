@@ -112,6 +112,16 @@ export type TaskBackendProjectionObservation = {
   } | null;
 };
 
+export type TaskBackendProjectionTransition<T> = {
+  before: T;
+  after: T;
+};
+
+export type TaskBackendProjectionTransitionHooks<T> = {
+  capture: (projection: TaskBackendProjectionObservation) => Promise<T>;
+  assertBefore: (captured: T) => Promise<void> | void;
+};
+
 export type TaskBackendCapabilities = {
   canonical_source: "local" | "remote";
   projection: "canonical" | "cache";
@@ -197,6 +207,10 @@ export type TaskBackendInspectionResult = {
     staleAfterSeconds: number | null;
     stale: boolean;
     statePath?: string | null;
+    checkpoint?: {
+      status: "invalid_json" | "invalid_shape" | "missing" | "unsafe" | "valid";
+      repair: string | null;
+    };
     pendingPush?: {
       failed_at: string;
       reason: string;
@@ -225,6 +239,11 @@ export type TaskBackendProjectionPort = {
 export type TaskBackendMutationPort = {
   assertLocalMutationReady?(): Promise<void>;
   writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void>;
+  writeTaskWithProjectionTransition?<T>(
+    task: TaskData,
+    opts: TaskWriteOptions | undefined,
+    hooks: TaskBackendProjectionTransitionHooks<T>,
+  ): Promise<TaskBackendProjectionTransition<T>>;
   writeTasks?(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void>;
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
 };

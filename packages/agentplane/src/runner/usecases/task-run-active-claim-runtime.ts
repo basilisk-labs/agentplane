@@ -2,6 +2,7 @@ import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
+import { assertSafeRunnerRunId } from "../task-run-paths.js";
 import type { RunnerContextBundle } from "../types.js";
 
 import {
@@ -15,12 +16,14 @@ import {
 import {
   inspectTaskRunnerActiveClaimOwner,
   inspectTaskRunnerClaimedRunAuthority,
+  isRunnerEffectInDoubt,
   type TaskRunnerClaimedRunAuthority,
 } from "./task-run-active-claim-authority.js";
 import {
   acquireTaskRunnerActiveClaimRecoveryLease,
   releaseTaskRunnerActiveClaimRecoveryLease,
 } from "./task-run-active-claim-recovery-lease.js";
+import { assertNoOrphanedRunnerEffectInDoubt } from "./task-run-orphaned-effect-guard.js";
 
 export type TaskRunnerActiveClaimCleanupDiagnostic = {
   status: "cleanup_failed";
@@ -111,6 +114,45 @@ export function attachSuppressedActiveClaimCleanup(
     enumerable: false,
     writable: false,
     value: [diagnostic],
+  });
+}
+
+export async function assertTaskRunnerActiveClaimCurrent(opts: {
+  git_root: string;
+  workflow_dir: string;
+  expected: TaskRunnerActiveClaim;
+}): Promise<void> {
+  const observed = await readTaskRunnerActiveClaim({
+    git_root: opts.git_root,
+    workflow_dir: opts.workflow_dir,
+    task_id: opts.expected.task_id,
+    run_id: opts.expected.run_id,
+  });
+  if (
+    observed?.claim_id === opts.expected.claim_id &&
+    observed.generation === opts.expected.generation &&
+    observed.run_id === opts.expected.run_id &&
+    observed.owner_pid === opts.expected.owner_pid &&
+    observed.owner_command === opts.expected.owner_command &&
+    observed.owner_started_at === opts.expected.owner_started_at
+  ) {
+    return;
+  }
+  throw new CliError({
+    exitCode: 8,
+    code: "E_RUNTIME",
+    message:
+      `Runner active claim ownership violation for ` +
+      `${opts.expected.task_id}:${opts.expected.run_id}: ` +
+      `the shared claim no longer matches the acquired lease`,
+    context: {
+      task_id: opts.expected.task_id,
+      run_id: opts.expected.run_id,
+      claim_id: opts.expected.claim_id,
+      generation: opts.expected.generation,
+      observed_claim_id: observed?.claim_id ?? null,
+      observed_generation: observed?.generation ?? null,
+    },
   });
 }
 
@@ -217,6 +259,13 @@ export async function reconcileTerminalTaskRunnerActiveClaim(opts: {
         task_id: opts.task_id,
         run_id: opts.claim.run_id,
       });
+      if (isRunnerEffectInDoubt(record.state)) {
+        throw terminalClaimRecoveryError({
+          task_id: opts.task_id,
+          claim: opts.claim,
+          reason: "runner_effect_in_doubt",
+        });
+      }
       if (record.state.status === "prepared" || record.state.status === "running") {
         throw terminalClaimRecoveryError({
           task_id: opts.task_id,
@@ -281,14 +330,27 @@ export async function reconcileTerminalTaskRunnerActiveClaim(opts: {
 export async function reconcileStaleTerminalTaskRunnerActiveClaim(opts: {
   ctx: CommandContext;
   task_id: string;
+  prospective_run_id?: string;
 }): Promise<"absent" | "nonterminal" | "recovered" | "retained"> {
+  const prospectiveRunId =
+    opts.prospective_run_id === undefined
+      ? undefined
+      : assertSafeRunnerRunId(opts.prospective_run_id);
   const claim = await readTaskRunnerActiveClaim({
     git_root: opts.ctx.resolvedProject.gitRoot,
     workflow_dir: opts.ctx.config.paths.workflow_dir,
     task_id: opts.task_id,
     run_id: "active-claim-reconciliation-probe",
   });
-  if (!claim) return "absent";
+  if (!claim) {
+    await assertNoOrphanedRunnerEffectInDoubt({
+      git_root: opts.ctx.resolvedProject.gitRoot,
+      workflow_dir: opts.ctx.config.paths.workflow_dir,
+      task_id: opts.task_id,
+      ignore_run_id: prospectiveRunId,
+    });
+    return "absent";
+  }
   const repository = await RunnerRunRepository.openTaskRunIfPresent({
     git_root: opts.ctx.resolvedProject.gitRoot,
     workflow_dir: opts.ctx.config.paths.workflow_dir,
@@ -297,6 +359,7 @@ export async function reconcileStaleTerminalTaskRunnerActiveClaim(opts: {
     storage: "supervisor",
   });
   const state = await repository?.readState();
+  if (state && isRunnerEffectInDoubt(state)) return "retained";
   if (!state || state.status === "prepared" || state.status === "running") {
     return "nonterminal";
   }
@@ -345,6 +408,9 @@ export async function reconcileTaskRunnerActiveClaim(opts: {
     run_id: "active-claim-reconcile-probe",
   });
   if (!claim) {
+    await assertNoOrphanedRunnerEffectInDoubt({
+      ...lookup,
+    });
     return {
       status: "no_active_claim",
       task_id: opts.task_id,

@@ -4,7 +4,7 @@ title: "Introduce StateFingerprint and stale-state rejection"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-24T09:11:41.306Z"
+  updated_by: "TESTER"
+  note: "Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts."
+  attempts: 1
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement deterministic state fingerprints and fail-closed stale-state rejection."
+  -
+    type: "verify"
+    at: "2026-07-24T09:11:41.306Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts."
 doc_version: 3
-doc_updated_at: "2026-07-24T09:04:17.392Z"
+doc_updated_at: "2026-07-24T09:11:41.679Z"
 doc_updated_by: "CODER"
 description: "RF-06a: define a reproducible fingerprint for task, Git, backend, policy, blueprint, knowledge, provider, and authority state; reject stale operations before side effects."
 sections:
@@ -73,12 +79,45 @@ sections:
     4. Run focused lifecycle tests, `bun run lifecycle:invariants`, and `bun run typecheck`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-24T09:11:41.306Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:04:17.392Z, excerpt_hash=sha256:040f098b1cbc5b850bf2786c474bed20118b58607e6e18d496e296777acea920
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-0ZAB1F-introduce-statefingerprint-and-stale-state-rejec/.agentplane/tasks/202607221848-0ZAB1F/blueprint/resolved-snapshot.json
+    - old_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+    - current_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-0ZAB1F
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221848-0ZAB1F
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: HEAD changes only lifecycle metadata and the resolved blueprint snapshot; no StateFingerprint production code or tests exist.
+      Impact: The approved Verify Steps cannot be executed and the task cannot pass verification.
+      Resolution: Return control to CODER to implement StateFingerprint, stale-state rejection, uncertainty handling, and focused coverage before re-verification.
 id_source: "generated"
 ---
 ## Summary
@@ -110,6 +149,36 @@ RF-06a: define a reproducible fingerprint for task, Git, backend, policy, bluepr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-24T09:11:41.306Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:04:17.392Z, excerpt_hash=sha256:040f098b1cbc5b850bf2786c474bed20118b58607e6e18d496e296777acea920
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-0ZAB1F-introduce-statefingerprint-and-stale-state-rejec/.agentplane/tasks/202607221848-0ZAB1F/blueprint/resolved-snapshot.json
+- old_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+- current_digest: 583f771d32107c02fb8a19a4f1d903741f7900de256fe7d005a0fe1837a28323
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-0ZAB1F
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221848-0ZAB1F
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -119,3 +188,7 @@ RF-06a: define a reproducible fingerprint for task, Git, backend, policy, bluepr
 - Re-run focused contract, migration, and type checks.
 
 ## Findings
+
+- Observation: HEAD changes only lifecycle metadata and the resolved blueprint snapshot; no StateFingerprint production code or tests exist.
+  Impact: The approved Verify Steps cannot be executed and the task cannot pass verification.
+  Resolution: Return control to CODER to implement StateFingerprint, stale-state rejection, uncertainty handling, and focused coverage before re-verification.

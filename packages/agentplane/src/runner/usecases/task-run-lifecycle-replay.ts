@@ -7,7 +7,6 @@ import type { RunnerDangerFullAccessAuthority, RunnerLifecycleStatus } from "../
 import { RUNNER_DANGER_FULL_ACCESS_SANDBOX } from "../types.js";
 
 import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
-import { reconcileStaleTerminalTaskRunnerActiveClaim } from "./task-run-active-claim-runtime.js";
 import { executeTaskRunnerExecution, type ExecutedTaskRunnerExecution } from "./task-run.js";
 import {
   assertCurrentTaskDoing,
@@ -225,10 +224,6 @@ async function executeFreshReplay(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     }));
-  await reconcileStaleTerminalTaskRunnerActiveClaim({
-    ctx,
-    task_id: opts.task_id,
-  });
   const task = await ctx.taskBackend.getTask(opts.task_id);
   assertCurrentTaskDoing(opts.task_id, task);
   const source = selectFreshReplaySource({

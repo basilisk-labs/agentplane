@@ -1,4 +1,4 @@
-import { readdir, readFile, stat } from "node:fs/promises";
+import { lstat, readdir } from "node:fs/promises";
 import path from "node:path";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import { parseTaskReadme, taskReadmePath } from "@agentplaneorg/core/tasks";
@@ -7,7 +7,9 @@ import {
   withTaskReadmeFrontmatterDefaults,
 } from "@agentplaneorg/core/schemas";
 
+import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { isRecord } from "../../shared/guards.js";
+import type { StableFileIdentity } from "../../shared/stable-file.js";
 import {
   buildTaskIndexEntry,
   loadTaskIndex,
@@ -31,6 +33,23 @@ import {
   type TaskSummary,
 } from "./shared.js";
 import { type LocalBackendContext } from "./local-backend-state.js";
+
+const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
+
+async function readLocalTaskReadme(
+  context: Pick<LocalBackendContext, "root">,
+  readmePath: string,
+  label: string,
+  expectedIdentity?: StableFileIdentity,
+): Promise<string> {
+  return await readContainedStableTextNoFollow({
+    repository_root: context.root,
+    file_path: readmePath,
+    label,
+    max_bytes: TASK_README_MAX_BYTES,
+    expected_identity: expectedIdentity,
+  });
+}
 
 function resolveTaskFrontmatterId(
   frontmatter: Record<string, unknown>,
@@ -63,7 +82,7 @@ function taskDataFromParsedReadme(opts: {
 
 async function readRequiredTask(context: LocalBackendContext, taskId: string): Promise<TaskData> {
   const readmePath = taskReadmePath(context.root, taskId);
-  const text = await readFile(readmePath, "utf8");
+  const text = await readLocalTaskReadme(context, readmePath, `task README ${taskId}`);
   const parsed = parseTaskReadme(text);
   return taskDataFromParsedReadme({
     taskId,
@@ -97,6 +116,10 @@ type ReadmeStatEntry = {
   readmePath: string;
   mtimeMs: number;
   size: number;
+  identity: {
+    dev: bigint;
+    ino: bigint;
+  };
 };
 
 function buildReadmeFingerprint(entries: ReadmeStatEntry[]): TaskIndexReadmeFingerprint {
@@ -158,7 +181,7 @@ export async function listLocalTasks(
   const warnings: string[] = [];
   const entries = await readdir(context.root, { withFileTypes: true }).catch(() => []);
   const dirs = entries
-    .filter((entry) => entry.isDirectory())
+    .filter((entry) => entry.isDirectory() && entry.name !== ".cache")
     .map((entry) => entry.name)
     .toSorted();
 
@@ -167,13 +190,17 @@ export async function listLocalTasks(
   for (const dirName of dirs) {
     const readmePath = path.join(context.root, dirName, "README.md");
     try {
-      const stats = await stat(readmePath);
-      if (stats.isFile()) {
+      const stats = await lstat(readmePath);
+      if (!stats.isSymbolicLink() && stats.isFile()) {
         readmeStats.push({
           dirName,
           readmePath,
           mtimeMs: stats.mtimeMs,
           size: stats.size,
+          identity: {
+            dev: BigInt(stats.dev),
+            ino: BigInt(stats.ino),
+          },
         });
       } else if (!(await isIgnorableMissingReadmeTaskDir(context.root, dirName))) {
         hasMissingReadmes = true;
@@ -241,7 +268,12 @@ export async function listLocalTasks(
 
     let text = "";
     try {
-      text = await readFile(readmePath, "utf8");
+      text = await readLocalTaskReadme(
+        context,
+        readmePath,
+        `task README ${dirName}`,
+        stats.identity,
+      );
     } catch {
       warnings.push(`skip:${dirName}: unreadable_readme`);
       return null;
@@ -345,7 +377,7 @@ export async function getLocalTask(
   const readmePath = taskReadmePath(context.root, taskId);
   let text = "";
   try {
-    text = await readFile(readmePath, "utf8");
+    text = await readLocalTaskReadme(context, readmePath, `task README ${taskId}`);
   } catch (err) {
     const code = (err as { code?: string } | null)?.code;
     if (code === "ENOENT") return null;

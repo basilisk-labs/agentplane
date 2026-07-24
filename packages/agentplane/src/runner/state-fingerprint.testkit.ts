@@ -199,9 +199,13 @@ export function probes(opts: {
       }),
     observe_knowledge: () =>
       Promise.resolve({
-        state: "missing",
+        state: "present",
         source: "context_manifest_lock",
-        reason_code: "knowledge_workspace_not_initialized",
+        value: {
+          path: ".agentplane/context/manifest.lock.json",
+          initialized: false,
+          sha256: null,
+        },
       }),
     observe_authority: () =>
       Promise.resolve({

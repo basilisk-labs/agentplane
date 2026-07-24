@@ -5,11 +5,11 @@ import {
   assertStateFingerprintPrecondition,
   buildStateFingerprint,
   executePreparedOperation,
+  StateFingerprintPreconditionError,
   validateStateFingerprintPolicy,
   type StateFingerprintComponentName,
   type StateFingerprintInput,
   type StateFingerprintPolicy,
-  type StateFingerprintPreconditionError,
 } from "./state-fingerprint.js";
 
 const REQUIRED_COMPONENTS = [
@@ -30,9 +30,22 @@ const POLICY: StateFingerprintPolicy = {
   },
 };
 
+function capturePreconditionError(run: () => void): StateFingerprintPreconditionError {
+  try {
+    run();
+  } catch (error) {
+    if (error instanceof StateFingerprintPreconditionError) return error;
+    throw error;
+  }
+  throw new Error("Expected state fingerprint precondition to fail.");
+}
+
 function input(): StateFingerprintInput {
   return {
     task_id: "T-1",
+    task_revision: 3,
+    git_head: "a".repeat(40),
+    worktree: "/repo",
     components: {
       task: { state: "present", source: "task_backend", value: { id: "T-1", revision: 3 } },
       git: {
@@ -128,6 +141,50 @@ describe("StateFingerprint", () => {
       expect(apply).not.toHaveBeenCalled();
     },
   );
+
+  it.each([
+    {
+      label: "task revision",
+      component: "task" as const,
+      mutate: (value: StateFingerprintInput) => {
+        value.task_revision = 4;
+      },
+    },
+    {
+      label: "Git HEAD",
+      component: "git" as const,
+      mutate: (value: StateFingerprintInput) => {
+        value.git_head = "b".repeat(40);
+      },
+    },
+    {
+      label: "worktree",
+      component: "git" as const,
+      mutate: (value: StateFingerprintInput) => {
+        value.worktree = "/repo-worktree";
+      },
+    },
+  ])("rejects a $label identity-only advance as stale", ({ component, mutate }) => {
+    const expected = buildStateFingerprint(input());
+    const changedInput = input();
+    mutate(changedInput);
+    const current = buildStateFingerprint(changedInput);
+
+    expect(current.components).toEqual(expected.components);
+    const error = capturePreconditionError(() =>
+      assertStateFingerprintPrecondition({
+        expected,
+        current,
+        policy: POLICY,
+      }),
+    );
+    expect(error.reason_code).toBe("state_fingerprint_stale");
+    expect(error.diagnostic.changed_components).toContainEqual(
+      expect.objectContaining({ component }),
+    );
+    expect(error.diagnostic.identity_changes).toHaveLength(1);
+    expect(error.diagnostic.identity_changes[0]?.field).toEqual(expect.any(String));
+  });
 
   it("records bounded provider uncertainty and lets policy decide execution", () => {
     const fingerprint = buildStateFingerprint(input());

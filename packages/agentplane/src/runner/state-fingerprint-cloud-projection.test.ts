@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -10,6 +10,7 @@ import {
   capturePreparedRunnerStateFingerprint,
   resolveRunnerStateFingerprintPolicy,
 } from "./state-fingerprint.js";
+import { createRunnerRunState } from "./artifacts.js";
 import {
   bundle,
   context,
@@ -18,7 +19,14 @@ import {
   probes,
   task,
 } from "./state-fingerprint.testkit.js";
-import { executeStateBoundRunnerInvocation } from "./usecases/task-run-state-fingerprint.js";
+import {
+  executeStateBoundRunnerInvocation,
+  RunnerStateFingerprintCliError,
+} from "./usecases/task-run-state-fingerprint.js";
+import {
+  persistRunnerOutcomeToTask,
+  type RunnerBackendProjectionTransitionAttestation,
+} from "./task-state.js";
 
 type CloudIdentity = {
   endpoint: string;
@@ -43,11 +51,23 @@ function successfulApply() {
   );
 }
 
-function createCloudBackend(root: string, identity: CloudIdentity) {
-  const fetchImpl = vi.fn<typeof fetch>(() =>
-    Promise.reject(new Error("Projection observation must not access the network.")),
-  );
+function createCloudBackend(
+  root: string,
+  identity: CloudIdentity,
+  opts?: {
+    autoSyncNetworkAllowed?: boolean;
+    autoSyncPushOnWrite?: boolean;
+    fetchImpl?: typeof fetch;
+  },
+) {
+  const cache = new LocalBackend({ dir: path.join(root, ".agentplane", "tasks") });
+  const fetchImpl =
+    opts?.fetchImpl ??
+    vi.fn<typeof fetch>(() =>
+      Promise.reject(new Error("Projection observation must not access the network.")),
+    );
   return {
+    cache,
     fetchImpl,
     backend: new CloudBackend(
       {
@@ -56,12 +76,14 @@ function createCloudBackend(root: string, identity: CloudIdentity) {
         project_id: identity.projectId,
         provider: identity.provider ?? undefined,
         stale_after_seconds: 300,
+        autosync_enabled: opts?.autoSyncPushOnWrite === true,
+        autosync_push_on_write: opts?.autoSyncPushOnWrite === true,
       },
       {
         root,
-        cache: new LocalBackend({ dir: path.join(root, ".agentplane", "tasks") }),
+        cache,
         fetchImpl,
-        autoSyncNetworkAllowed: false,
+        autoSyncNetworkAllowed: opts?.autoSyncNetworkAllowed === true,
       },
     ),
   };
@@ -72,6 +94,9 @@ async function cloudProjectionCase(opts: {
   identity?: CloudIdentity;
   checkpoint_identity_sha256?: string | null;
   pending_push?: { failed_at: string; reason: string } | null;
+  autoSyncNetworkAllowed?: boolean;
+  autoSyncPushOnWrite?: boolean;
+  fetchImpl?: typeof fetch;
 }) {
   const identity = opts.identity ?? DEFAULT_IDENTITY;
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cloud-fingerprint-"));
@@ -91,6 +116,8 @@ async function cloudProjectionCase(opts: {
           project_id: identity.projectId,
           provider: identity.provider,
           stale_after_seconds: 300,
+          autosync_enabled: opts.autoSyncPushOnWrite === true,
+          autosync_push_on_write: opts.autoSyncPushOnWrite === true,
         },
       })}\n`,
       "utf8",
@@ -109,7 +136,8 @@ async function cloudProjectionCase(opts: {
       "utf8",
     ),
   ]);
-  const taskData = task({
+  const requestedTask = task({
+    id: "202607240001-ABCD",
     sync: {
       version: 1,
       external_refs: [{ provider: "github", remote_id: "123" }],
@@ -121,6 +149,10 @@ async function cloudProjectionCase(opts: {
       conflicts: [],
     },
   });
+  const cloud = createCloudBackend(root, identity, opts);
+  await cloud.cache.writeTask(requestedTask);
+  const taskData = await cloud.cache.getTask(requestedTask.id);
+  if (!taskData) throw new Error("Expected persisted cloud-cache task fixture.");
   const runnerBundle = bundle(taskData);
   runnerBundle.repository = {
     ...runnerBundle.repository,
@@ -128,8 +160,7 @@ async function cloudProjectionCase(opts: {
     backend_id: "cloud",
     backend_config_path: configPath,
   };
-  runnerBundle.execution.approvals.require_network = true;
-  const cloud = createCloudBackend(root, identity);
+  runnerBundle.execution.approvals.require_network = opts.autoSyncNetworkAllowed !== true;
   const ctx = context(taskData);
   ctx.resolvedProject = {
     gitRoot: root,
@@ -141,9 +172,10 @@ async function cloudProjectionCase(opts: {
   if (!ctx.config.agents?.approvals) {
     throw new Error("Expected agent approvals configuration.");
   }
-  ctx.config.agents.approvals.require_network = true;
+  ctx.config.agents.approvals.require_network = opts.autoSyncNetworkAllowed !== true;
   const stateProbes = probes({ task: taskData, bundle: runnerBundle });
   delete stateProbes.observe_backend_projection;
+  stateProbes.load_task = () => cloud.cache.getTask(taskData.id);
   stateProbes.load_context = () => Promise.resolve(ctx);
   return {
     root,
@@ -152,8 +184,90 @@ async function cloudProjectionCase(opts: {
     runnerBundle,
     ctx,
     stateProbes,
+    cache: cloud.cache,
     fetchImpl: cloud.fetchImpl,
   };
+}
+
+function acknowledgedPushFetch(lastCheckedAt: string) {
+  return vi.fn<typeof fetch>((_input, init) => {
+    if (typeof init?.body !== "string") throw new TypeError("Expected cloud push body.");
+    const body = JSON.parse(init.body) as {
+      projection?: {
+        request_id?: string;
+        projection_sha256?: string;
+        task_count?: number;
+        project_id?: string;
+        provider?: string | null;
+      };
+    };
+    return Promise.resolve(
+      Response.json({
+        data: {
+          last_checked_at: lastCheckedAt,
+          projection_ack: {
+            status: "persisted",
+            request_id: body.projection?.request_id,
+            projection_sha256: body.projection?.projection_sha256,
+            task_count: body.projection?.task_count,
+            project_id: body.projection?.project_id,
+            provider: body.projection?.provider,
+          },
+        },
+      }),
+    );
+  });
+}
+
+async function executeCloudReplayAdvance(opts: {
+  fixture: Awaited<ReturnType<typeof cloudProjectionCase>>;
+  apply: ReturnType<typeof successfulApply>;
+}) {
+  const prepared = await capturePreparedRunnerStateFingerprint({
+    ctx: opts.fixture.ctx,
+    bundle: opts.fixture.runnerBundle,
+    git: gitSnapshot(),
+    probes: opts.fixture.stateProbes,
+  });
+  const preconditionPolicy = resolveRunnerStateFingerprintPolicy(opts.fixture.ctx);
+  const preparedBundle = structuredClone(opts.fixture.runnerBundle);
+  preparedBundle.state_fingerprint = prepared;
+  preparedBundle.state_fingerprint_policy = preconditionPolicy;
+  const state = createRunnerRunState({ bundle: preparedBundle });
+  return await executeStateBoundRunnerInvocation({
+    ctx: opts.fixture.ctx,
+    task_id: opts.fixture.taskData.id,
+    bundle: opts.fixture.runnerBundle,
+    invocation: invocation(),
+    precondition_fingerprint: prepared,
+    precondition_policy: preconditionPolicy,
+    probes: opts.fixture.stateProbes,
+    advance_precondition: async ({ expected_backend_projection }) => {
+      let transition: RunnerBackendProjectionTransitionAttestation | undefined;
+      const expectedTask = await persistRunnerOutcomeToTask({
+        ctx: opts.fixture.ctx,
+        task_id: opts.fixture.taskData.id,
+        bundle: opts.fixture.runnerBundle,
+        state,
+        ordering_authority: "current_active_claim",
+        expected_task_revision: opts.fixture.taskData.revision,
+        backend_projection_transition: {
+          expected_before: expected_backend_projection,
+          on_attested: (attested) => {
+            transition = attested;
+          },
+        },
+      });
+      if (!expectedTask || !transition) {
+        throw new Error("Cloud replay anchor did not return its attested transition.");
+      }
+      return {
+        expected_task: expectedTask,
+        backend_projection_transition: transition,
+      };
+    },
+    apply: opts.apply,
+  });
 }
 
 describe("runner cloud projection fingerprint", () => {
@@ -249,6 +363,107 @@ describe("runner cloud projection fingerprint", () => {
       });
       expect(apply).toHaveBeenCalledTimes(1);
       expect(fixture.fetchImpl).not.toHaveBeenCalled();
+    } finally {
+      await rm(fixture.root, { recursive: true, force: true });
+    }
+  });
+
+  it("accepts a cloud replay anchor only after the exact projection is acknowledged", async () => {
+    const acknowledgedAt = new Date(Date.now() + 1000).toISOString();
+    const fetchImpl = acknowledgedPushFetch(acknowledgedAt);
+    const fixture = await cloudProjectionCase({
+      last_checked_at: new Date().toISOString(),
+      autoSyncNetworkAllowed: true,
+      autoSyncPushOnWrite: true,
+      fetchImpl,
+    });
+    try {
+      const apply = successfulApply();
+      const executed = await executeCloudReplayAdvance({ fixture, apply });
+
+      expect(executed.precondition).toMatchObject({
+        status: "fresh",
+        reason_code: "state_fingerprint_fresh",
+      });
+      expect(executed.precondition_fingerprint.components.backend_projection.state).toBe("present");
+      expect(executed.precondition_fingerprint.task_revision).toBe(
+        (fixture.taskData.revision ?? 0) + 1,
+      );
+      expect(apply).toHaveBeenCalledTimes(1);
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      const state = JSON.parse(
+        await readFile(
+          path.join(fixture.root, ".agentplane", "backends", "cloud", "state.json"),
+          "utf8",
+        ),
+      ) as {
+        last_checked_at?: string | null;
+        pending_push?: unknown;
+      };
+      expect(state).toMatchObject({
+        last_checked_at: acknowledgedAt,
+        pending_push: null,
+      });
+    } finally {
+      await rm(fixture.root, { recursive: true, force: true });
+    }
+  });
+
+  it("refuses a cloud replay anchor left pending and exposes a recoverable push contract", async () => {
+    const fixture = await cloudProjectionCase({
+      last_checked_at: new Date().toISOString(),
+      autoSyncNetworkAllowed: false,
+      autoSyncPushOnWrite: false,
+    });
+    try {
+      const apply = successfulApply();
+      let rejection: unknown;
+      try {
+        await executeCloudReplayAdvance({ fixture, apply });
+      } catch (error) {
+        rejection = error;
+      }
+
+      expect(rejection).toBeInstanceOf(RunnerStateFingerprintCliError);
+      expect(rejection).toMatchObject({
+        context: {
+          reason_code: "state_fingerprint_required_component_unavailable",
+          backend_projection_reason_code: "backend_projection_pending_push",
+          safe_command: "agentplane backend sync cloud --direction push --yes",
+          fingerprint: {
+            unavailable_required_components: ["backend_projection"],
+          },
+        },
+        state_fingerprint: {
+          outcome: "refused",
+          effect_applied: false,
+          precondition_fingerprint: {
+            components: {
+              backend_projection: {
+                state: "unavailable",
+                reason_code: "backend_projection_pending_push",
+              },
+            },
+          },
+        },
+      });
+      expect(apply).not.toHaveBeenCalled();
+      expect(fixture.fetchImpl).not.toHaveBeenCalled();
+      const state = JSON.parse(
+        await readFile(
+          path.join(fixture.root, ".agentplane", "backends", "cloud", "state.json"),
+          "utf8",
+        ),
+      ) as {
+        pending_push?: {
+          kind?: string;
+          reason?: string;
+        } | null;
+      };
+      expect(state.pending_push).toMatchObject({
+        kind: "local_dirty",
+        reason: expect.stringContaining("write_task") as unknown,
+      });
     } finally {
       await rm(fixture.root, { recursive: true, force: true });
     }

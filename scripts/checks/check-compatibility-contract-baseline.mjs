@@ -314,8 +314,16 @@ function validateReviewedCandidate({
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
     "202607221846-9XC1H0",
+    "202607221848-0ZAB1F",
   ];
-  const expectedSourceTasks = [...cliSourceTasks, "202607221848-ABG7SD"];
+  const expectedSourceTasks = [
+    "202607221846-4VB97J",
+    "202607221846-YGWMA2",
+    "202607230554-YFYT83",
+    "202607221846-9XC1H0",
+    "202607221848-ABG7SD",
+    "202607221848-0ZAB1F",
+  ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
     "compatibility source task inventory drift",
@@ -530,6 +538,20 @@ function validateReviewedCandidate({
   ];
   const expectedAddedOptions = [
     {
+      command: "backend sync",
+      name: "adopt-projection-identity",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "backend sync",
+      name: "bootstrap-projection",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "cleanup merged",
       name: "task-id",
       kind: "string",
@@ -542,6 +564,20 @@ function validateReviewedCandidate({
       kind: "string",
       valueHint: "<human_supplied|evaluator_supplied>",
       choices: ["human_supplied", "evaluator_supplied"],
+    },
+    {
+      command: "sync",
+      name: "adopt-projection-identity",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "sync",
+      name: "bootstrap-projection",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
     },
     {
       command: "task run",
@@ -587,6 +623,18 @@ function validateReviewedCandidate({
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
       kind: "option",
+      command: "backend sync",
+      name: "adopt-projection-identity",
+      source_task: "202607221848-0ZAB1F",
+    },
+    {
+      kind: "option",
+      command: "backend sync",
+      name: "bootstrap-projection",
+      source_task: "202607221848-0ZAB1F",
+    },
+    {
+      kind: "option",
       command: "cleanup merged",
       name: "task-id",
       source_task: "202607230554-YFYT83",
@@ -596,6 +644,18 @@ function validateReviewedCandidate({
       command: "evaluator run",
       name: "provenance",
       source_task: "202607221846-YGWMA2",
+    },
+    {
+      kind: "option",
+      command: "sync",
+      name: "adopt-projection-identity",
+      source_task: "202607221848-0ZAB1F",
+    },
+    {
+      kind: "option",
+      command: "sync",
+      name: "bootstrap-projection",
+      source_task: "202607221848-0ZAB1F",
     },
     {
       kind: "option",
