@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-24T01:13:35.679Z"
+  updated_at: "2026-07-24T06:04:05.458Z"
   updated_by: "TESTER"
-  note: "PASS at 727af2f45: role-scoped sandbox defaults, explicit danger authority, observed write-boundary rejection, truthful adapter downgrades, supervisor receipts, replay/cancel hardening, and durable path locators verified. Checks passed: bun run ci:contract; bun run typecheck; bun run test:critical (71 tests); runner suite (39 files, 260 tests); bun run guards:check; git diff --check."
+  note: "PASS at f161a6e56: RF-03 sandbox/write-boundary behavior and reworked lifecycle authority are verified. Checks passed: bun run typecheck; bun run ci:contract; bun run test:critical (71/71); bun run test:fast (425 files, 2659/2659); independent semantic suite (9 files, 50/50); active-claim reconciliation (4/4); git diff --check."
   attempts: 0
 quality_review:
   state: "pass"
@@ -112,8 +112,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-24T06:04:05.458Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS at f161a6e56: RF-03 sandbox/write-boundary behavior and reworked lifecycle authority are verified. Checks passed: bun run typecheck; bun run ci:contract; bun run test:critical (71/71); bun run test:fast (425 files, 2659/2659); independent semantic suite (9 files, 50/50); active-claim reconciliation (4/4); git diff --check."
 doc_version: 3
-doc_updated_at: "2026-07-24T05:56:26.266Z"
+doc_updated_at: "2026-07-24T06:04:05.774Z"
 doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
@@ -198,6 +204,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-24T06:04:05.458Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS at f161a6e56: RF-03 sandbox/write-boundary behavior and reworked lifecycle authority are verified. Checks passed: bun run typecheck; bun run ci:contract; bun run test:critical (71/71); bun run test:fast (425 files, 2659/2659); independent semantic suite (9 files, 50/50); active-claim reconciliation (4/4); git diff --check.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T05:56:26.266Z, excerpt_hash=sha256:fdd02d6de6b9d9ca7a9e3b4e00efd56e99a70ecc294cc0c2791776222c993eee
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-9XC1H0-enforce-role-scoped-sandboxes-and-actual-write-b/.agentplane/tasks/202607221846-9XC1H0/blueprint/resolved-snapshot.json
+    - old_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+    - current_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-9XC1H0
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+    - diagnostic_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
@@ -211,6 +247,10 @@ sections:
     - Observation: RF-03 implementation and negative security regressions satisfy all five Verify Steps.
       Impact: Executor/context/evaluator runs no longer gain implicit danger authority or claim unobserved write safety.
       Resolution: Verified commit 727af2f45 with full contract, critical, runner, type, guard, compatibility, architecture, clone, Knip, and coverage gates.
+
+    - Observation: The prior verification digest predated concurrency, recovery, compatibility, monotonic-clock, and logs-follow rework.
+      Impact: Without a fresh verifier record, hosted PR validation could not attest the current implementation even though mechanical and semantic checks passed.
+      Resolution: Recorded verification against implementation commit f161a6e56 with full-suite, contract, critical, focused concurrency, and independent semantic evidence.
 extensions:
   implementation_commit:
     hash: "f161a6e56e7028c2932835af5e59bac0699f099e"
@@ -307,6 +347,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-24T06:04:05.458Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS at f161a6e56: RF-03 sandbox/write-boundary behavior and reworked lifecycle authority are verified. Checks passed: bun run typecheck; bun run ci:contract; bun run test:critical (71/71); bun run test:fast (425 files, 2659/2659); independent semantic suite (9 files, 50/50); active-claim reconciliation (4/4); git diff --check.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T05:56:26.266Z, excerpt_hash=sha256:fdd02d6de6b9d9ca7a9e3b4e00efd56e99a70ecc294cc0c2791776222c993eee
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-9XC1H0-enforce-role-scoped-sandboxes-and-actual-write-b/.agentplane/tasks/202607221846-9XC1H0/blueprint/resolved-snapshot.json
+- old_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+- current_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-9XC1H0
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+- diagnostic_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -324,3 +394,7 @@ DecisionContextRef:
 - Observation: RF-03 implementation and negative security regressions satisfy all five Verify Steps.
   Impact: Executor/context/evaluator runs no longer gain implicit danger authority or claim unobserved write safety.
   Resolution: Verified commit 727af2f45 with full contract, critical, runner, type, guard, compatibility, architecture, clone, Knip, and coverage gates.
+
+- Observation: The prior verification digest predated concurrency, recovery, compatibility, monotonic-clock, and logs-follow rework.
+  Impact: Without a fresh verifier record, hosted PR validation could not attest the current implementation even though mechanical and semantic checks passed.
+  Resolution: Recorded verification against implementation commit f161a6e56 with full-suite, contract, critical, focused concurrency, and independent semantic evidence.

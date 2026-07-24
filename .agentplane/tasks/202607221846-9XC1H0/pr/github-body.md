@@ -19,10 +19,10 @@ RF-03: default executor/context runs to workspace-write and evaluator runs to re
 - Note:
 
 ```text
-PASS at 727af2f45: role-scoped sandbox defaults, explicit danger authority, observed write-boundary
-rejection, truthful adapter downgrades, supervisor receipts, replay/cancel hardening, and durable
-path locators verified. Checks passed: bun run ci:contract; bun run typecheck; bun run test:critical
-(71 tests); runner suite (39 files, 260 tests); bun run guards:check; git diff --check.
+PASS at f161a6e56: RF-03 sandbox/write-boundary behavior and reworked lifecycle authority are
+verified. Checks passed: bun run typecheck; bun run ci:contract; bun run test:critical (71/71); bun
+run test:fast (425 files, 2659/2659); independent semantic suite (9 files, 50/50); active-claim
+reconciliation (4/4); git diff --check.
 ```
 - Canonical workflow state lives in the task README.
 
