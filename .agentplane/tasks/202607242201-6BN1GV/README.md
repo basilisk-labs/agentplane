@@ -1,10 +1,11 @@
 ---
 id: "202607242201-6BN1GV"
 title: "Amend the AgentPlane 0.7 graph with the effect-in-doubt safety gate"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 18
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -31,36 +32,41 @@ plan_approval:
   note: "Approved bounded graph amendment after splitting journal and resolution at separate verification boundaries."
 verification:
   state: "ok"
-  updated_at: "2026-07-24T22:12:36.988Z"
+  updated_at: "2026-07-24T22:26:39.227Z"
   updated_by: "PLANNER"
-  note: "PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint --verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0 errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI."
+  note: "REWORK PASS at 0b9d9e4d5: SX8T09 now requires an atomic cross-process single-winner race with exactly one adapter spawn; R7WS01 consumes typed effect_in_doubt/applied/not_applied states and resolution provenance while forbidding generic retry; the roadmap separates provider_key_forwarded from provider exactly-once and gates the latter on a documented, integration-tested provider deduplication contract. Checks passed: task lint, task-state (3138), routing, format and doctor (0 errors; 3 recorded pre-existing warnings)."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T22:23:25.323Z"
+  updated_at: "2026-07-24T22:32:26.724Z"
   updated_by: "EVALUATOR"
-  note: "The graph adds the right safety leaves, but its contracts still underspecify cross-process single-spawn verification, typed runner consumption of effect resolution, and the boundary between provider-key forwarding and provider exactly-once."
-  evaluated_sha: "56e4640e8e72ea1eefc4b691830ce6c9b9e63f6d"
+  note: "All three prior findings are resolved: cross-process single-spawn acceptance is explicit, typed effect resolution forbids generic retry, and provider exactly-once claims require a documented and verified provider deduplication contract."
+  evaluated_sha: "0b9d9e4d5ae9c51184054007d87a3aa28fcc137e"
   blueprint_digest: "d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4"
   evidence_refs:
     - ".agentplane/tasks/202607242201-6BN1GV/README.md"
-    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-222325323-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-222325323-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-222325323-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-223226724-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-223226724-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-223226724-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json"
     - ".agentplane/tasks/202607242204-SX8T09/README.md"
     - ".agentplane/tasks/202607221850-R7WS01/README.md"
     - "docs/internal/v0.7-refactor-plan.md"
   findings:
-    - "SX8T09 does not explicitly verify concurrent starts by two supervisor processes for the same operation key and generation, an atomic single winner, and exactly one adapter spawn."
-    - "R7WS01 does not explicitly consume typed effect_in_doubt, applied, and not_applied states with resolution provenance, and it does not explicitly forbid generic retry."
-    - "The roadmap does not clearly distinguish provider_key_forwarded from provider exactly-once; provider exactly-once is supportable only with a documented and verified provider deduplication contract."
-commit: null
+    - "SX8T09 now requires a synchronized race between two independent supervisor processes for the same operation key and generation, an atomic single winner, and exactly one adapter spawn."
+    - "R7WS01 now consumes typed effect_in_doubt, applied, and not_applied states with resolution provenance and explicitly forbids generic retry for unresolved effects."
+    - "The roadmap now classifies provider_key_forwarded separately from provider exactly-once and permits the latter only under a documented, integration-tested provider deduplication contract."
+commit:
+  hash: "0b9d9e4d5ae9c51184054007d87a3aa28fcc137e"
+  message: "🚧 6BN1GV task: clarify effect safety contracts"
 comments:
   -
     author: "PLANNER"
     body: "Start: Persist the reviewed effect journal and operator-resolution safety leaves in the executable v0.7 release graph, update the canonical roadmap, and verify full release ancestry."
+  -
+    author: "PLANNER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -75,8 +81,21 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint --verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0 errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI."
+  -
+    type: "verify"
+    at: "2026-07-24T22:26:39.227Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "REWORK PASS at 0b9d9e4d5: SX8T09 now requires an atomic cross-process single-winner race with exactly one adapter spawn; R7WS01 consumes typed effect_in_doubt/applied/not_applied states and resolution provenance while forbidding generic retry; the roadmap separates provider_key_forwarded from provider exactly-once and gates the latter on a documented, integration-tested provider deduplication contract. Checks passed: task lint, task-state (3138), routing, format and doctor (0 errors; 3 recorded pre-existing warnings)."
+  -
+    type: "status"
+    at: "2026-07-24T22:32:55.250Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:12:37.474Z"
+doc_updated_at: "2026-07-24T22:32:55.251Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
@@ -124,6 +143,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607242201-6BN1GV
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-24T22:26:39.227Z — VERIFY — ok
+
+    By: PLANNER
+
+    Note: REWORK PASS at 0b9d9e4d5: SX8T09 now requires an atomic cross-process single-winner race with exactly one adapter spawn; R7WS01 consumes typed effect_in_doubt/applied/not_applied states and resolution provenance while forbidding generic retry; the roadmap separates provider_key_forwarded from provider exactly-once and gates the latter on a documented, integration-tested provider deduplication contract. Checks passed: task lint, task-state (3138), routing, format and doctor (0 errors; 3 recorded pre-existing warnings).
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:12:37.474Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+    - old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -202,6 +251,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607242201-6BN1GV
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-24T22:26:39.227Z — VERIFY — ok
+
+By: PLANNER
+
+Note: REWORK PASS at 0b9d9e4d5: SX8T09 now requires an atomic cross-process single-winner race with exactly one adapter spawn; R7WS01 consumes typed effect_in_doubt/applied/not_applied states and resolution provenance while forbidding generic retry; the roadmap separates provider_key_forwarded from provider exactly-once and gates the latter on a documented, integration-tested provider deduplication contract. Checks passed: task lint, task-state (3138), routing, format and doctor (0 errors; 3 recorded pre-existing warnings).
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:12:37.474Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+- old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
