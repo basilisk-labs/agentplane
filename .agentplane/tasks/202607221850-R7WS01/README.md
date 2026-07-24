@@ -4,7 +4,7 @@ title: "Return typed runner lifecycle results"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on:
@@ -12,6 +12,7 @@ depends_on:
   - "202607221848-VC4VVS"
   - "202607221850-9C9WBP"
   - "202607221850-DRWR0V"
+  - "202607242158-QV09NA"
 tags:
   - "milestone-beta1"
   - "refactor"

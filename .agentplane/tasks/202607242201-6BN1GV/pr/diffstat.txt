@@ -1,0 +1,6 @@
+ .agentplane/tasks/202607221850-R7WS01/README.md |   3 +-
+ .agentplane/tasks/202607221908-9M2FBQ/README.md |   3 +-
+ .agentplane/tasks/202607242158-QV09NA/README.md | 145 ++++++++++++++++++++++++
+ .agentplane/tasks/202607242204-SX8T09/README.md | 136 ++++++++++++++++++++++
+ docs/internal/v0.7-refactor-plan.md             |  20 +++-
+ 5 files changed, 303 insertions(+), 4 deletions(-)
