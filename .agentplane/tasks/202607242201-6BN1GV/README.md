@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -32,9 +32,9 @@ plan_approval:
   note: "Approved bounded graph amendment after splitting journal and resolution at separate verification boundaries."
 verification:
   state: "ok"
-  updated_at: "2026-07-24T23:00:25.203Z"
+  updated_at: "2026-07-24T23:20:32.902Z"
   updated_by: "TESTER"
-  note: "Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment, therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed; doctor reported 0 errors and 3 pre-existing warnings."
+  note: "Rebase verification at 14f388668: merged bounded-supervisor graph and effect-safety graph contain 61 unique roadmap rows, 60 non-PLANNER implementation/release leaves, and a 62-task final-release closure with all roadmap rows plus the original PLANNER; no unknown dependency or cycle. task-state: 3140 tasks; routing, task lint, format, and doctor passed with 0 errors and 3 historical warnings."
   attempts: 0
 quality_review:
   state: "pass"
@@ -129,8 +129,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-24T23:20:32.902Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rebase verification at 14f388668: merged bounded-supervisor graph and effect-safety graph contain 61 unique roadmap rows, 60 non-PLANNER implementation/release leaves, and a 62-task final-release closure with all roadmap rows plus the original PLANNER; no unknown dependency or cycle. task-state: 3140 tasks; routing, task lint, format, and doctor passed with 0 errors and 3 historical warnings."
 doc_version: 3
-doc_updated_at: "2026-07-24T23:09:18.115Z"
+doc_updated_at: "2026-07-24T23:20:33.711Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
@@ -244,6 +250,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-24T23:20:32.902Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rebase verification at 14f388668: merged bounded-supervisor graph and effect-safety graph contain 61 unique roadmap rows, 60 non-PLANNER implementation/release leaves, and a 62-task final-release closure with all roadmap rows plus the original PLANNER; no unknown dependency or cycle. task-state: 3140 tasks; routing, task lint, format, and doctor passed with 0 errors and 3 historical warnings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T23:09:18.115Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+    - old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607242201-6BN1GV --remote --explain
+    - diagnostic_command: agentplane task next-action 202607242201-6BN1GV --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only this planning-task PR before either SX8T09 or QV09NA implementation begins.
@@ -265,6 +301,10 @@ sections:
     - Observation: The declared count now matches the canonical roadmap table and release ancestry.
       Impact: Removes the release-closure accounting mismatch without changing task dependencies or implementation scope.
       Resolution: Changed only the executable-leaf total from 58 to 59 and reran all declared verification steps.
+
+    - Observation: The rebased graph preserves both safety leaves, the bounded episode-journal leaf, their downstream gates, and accurate table/closure accounting.
+      Impact: PR #4612 can be re-evaluated on current main without overwriting the concurrently merged supervisor planning work.
+      Resolution: Rebased onto main, combined both plan constraints and dependency rows, recalculated ownership and final ancestry, and reran all declared checks.
 extensions:
   implementation_commit:
     hash: "926a09a31ecb9de1c73bc6da2714ba9590f0c6c8"
@@ -390,6 +430,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-24T23:20:32.902Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rebase verification at 14f388668: merged bounded-supervisor graph and effect-safety graph contain 61 unique roadmap rows, 60 non-PLANNER implementation/release leaves, and a 62-task final-release closure with all roadmap rows plus the original PLANNER; no unknown dependency or cycle. task-state: 3140 tasks; routing, task lint, format, and doctor passed with 0 errors and 3 historical warnings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T23:09:18.115Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+- old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607242201-6BN1GV --remote --explain
+- diagnostic_command: agentplane task next-action 202607242201-6BN1GV --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -415,3 +485,7 @@ DecisionContextRef:
 - Observation: The declared count now matches the canonical roadmap table and release ancestry.
   Impact: Removes the release-closure accounting mismatch without changing task dependencies or implementation scope.
   Resolution: Changed only the executable-leaf total from 58 to 59 and reran all declared verification steps.
+
+- Observation: The rebased graph preserves both safety leaves, the bounded episode-journal leaf, their downstream gates, and accurate table/closure accounting.
+  Impact: PR #4612 can be re-evaluated on current main without overwriting the concurrently merged supervisor planning work.
+  Resolution: Rebased onto main, combined both plan constraints and dependency rows, recalculated ownership and final ancestry, and reran all declared checks.
