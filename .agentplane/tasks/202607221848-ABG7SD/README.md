@@ -1,10 +1,11 @@
 ---
 id: "202607221848-ABG7SD"
 title: "Align CLI error, exit-code, and Node support contracts"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -32,16 +33,40 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-24T10:06:16.421Z"
+  updated_by: "TESTER"
+  note: "Implementation rework verified at 8bf0104e: runtime-derived CLI/error docs, exact installed-tarball envelopes, mandatory core/recipes Node matrix, focused 9/9, docs check, typecheck, critical, ci:contract and RF04 offline replay 50/70/27/170 pass; independent semantic review PASS. Hosted Node 20 cells remain a PR integration gate."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-24T10:07:09.959Z"
+  updated_by: "EVALUATOR"
+  note: "Runtime CLI/error documentation, installed-tarball behavior, compatibility provenance, and Node support gates align at DCO head 8bf0104e."
+  evaluated_sha: "8bf0104e2379a265002107bd24096f686e87d280"
+  blueprint_digest: "dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5"
+  evidence_refs:
+    - ".agentplane/tasks/202607221848-ABG7SD/README.md"
+    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-100709959-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-100709959-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-ABG7SD/quality/20260724-100709959-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-ABG7SD/blueprint/resolved-snapshot.json"
+    - ".github/workflows/ci.yml"
+    - "scripts/release/check-local-tarball-install-smoke.mjs"
+    - "commit:8bf0104e2379a265002107bd24096f686e87d280"
+  findings:
+    - "Independent semantic review found no code blocker: exact JSON projections prevent field leakage; the 4-cell core/recipes Node matrix is a direct mandatory PR verification dependency; RF04 offline replay remains 50/70/27/170."
+commit:
+  hash: "8bf0104e2379a265002107bd24096f686e87d280"
+  message: "🧩 ABG7SD cli: align runtime contracts"
 comments:
   -
     author: "CODER"
     body: "Start: align generated CLI error, exit-code, installed-tarball, and Node support contracts."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -50,8 +75,27 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: align generated CLI error, exit-code, installed-tarball, and Node support contracts."
+  -
+    type: "verify"
+    at: "2026-07-24T09:13:52.072Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts."
+  -
+    type: "verify"
+    at: "2026-07-24T10:06:16.421Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation rework verified at 8bf0104e: runtime-derived CLI/error docs, exact installed-tarball envelopes, mandatory core/recipes Node matrix, focused 9/9, docs check, typecheck, critical, ci:contract and RF04 offline replay 50/70/27/170 pass; independent semantic review PASS. Hosted Node 20 cells remain a PR integration gate."
+  -
+    type: "status"
+    at: "2026-07-24T10:07:51.065Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T09:04:19.991Z"
+doc_updated_at: "2026-07-24T10:07:51.066Z"
 doc_updated_by: "CODER"
 description: "Correct the verified drift between documented and runtime exit/error shapes, structured remediation fields, package engine ranges, and the CI support matrix before 0.7 compatibility is frozen."
 sections:
@@ -75,12 +119,75 @@ sections:
     4. Run `bun run docs:cli:check`, `bun run test:critical`, `bun run typecheck`, and `bun run ci:contract`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-24T09:13:52.072Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:04:19.991Z, excerpt_hash=sha256:d7b0d6bc97e263826e6a452e3c2bea485bca5677a941b298dcf1a6f7a42c0c4d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ABG7SD-align-cli-error-exit-code-and-node-support-contr/.agentplane/tasks/202607221848-ABG7SD/blueprint/resolved-snapshot.json
+    - old_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+    - current_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-ABG7SD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221848-ABG7SD
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-24T10:06:16.421Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation rework verified at 8bf0104e: runtime-derived CLI/error docs, exact installed-tarball envelopes, mandatory core/recipes Node matrix, focused 9/9, docs check, typecheck, critical, ci:contract and RF04 offline replay 50/70/27/170 pass; independent semantic review PASS. Hosted Node 20 cells remain a PR integration gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:13:52.511Z, excerpt_hash=sha256:d7b0d6bc97e263826e6a452e3c2bea485bca5677a941b298dcf1a6f7a42c0c4d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ABG7SD-align-cli-error-exit-code-and-node-support-contr/.agentplane/tasks/202607221848-ABG7SD/blueprint/resolved-snapshot.json
+    - old_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+    - current_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-ABG7SD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: HEAD changes only lifecycle metadata and the resolved blueprint snapshot; no CLI error/exit-code contract, generated reference, Node support alignment, or tests exist.
+      Impact: The approved Verify Steps cannot be executed and the task cannot pass verification.
+      Resolution: Return control to CODER to implement the runtime-derived CLI contract, installed-tarball coverage, Node support alignment, and declared checks before re-verification.
 id_source: "generated"
 ---
 ## Summary
@@ -112,6 +219,66 @@ Correct the verified drift between documented and runtime exit/error shapes, str
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-24T09:13:52.072Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Implementation is not present yet; the branch contains only generated task, PR, and blueprint artifacts.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:04:19.991Z, excerpt_hash=sha256:d7b0d6bc97e263826e6a452e3c2bea485bca5677a941b298dcf1a6f7a42c0c4d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ABG7SD-align-cli-error-exit-code-and-node-support-contr/.agentplane/tasks/202607221848-ABG7SD/blueprint/resolved-snapshot.json
+- old_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+- current_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-ABG7SD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221848-ABG7SD
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-24T10:06:16.421Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation rework verified at 8bf0104e: runtime-derived CLI/error docs, exact installed-tarball envelopes, mandatory core/recipes Node matrix, focused 9/9, docs check, typecheck, critical, ci:contract and RF04 offline replay 50/70/27/170 pass; independent semantic review PASS. Hosted Node 20 cells remain a PR integration gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T09:13:52.511Z, excerpt_hash=sha256:d7b0d6bc97e263826e6a452e3c2bea485bca5677a941b298dcf1a6f7a42c0c4d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ABG7SD-align-cli-error-exit-code-and-node-support-contr/.agentplane/tasks/202607221848-ABG7SD/blueprint/resolved-snapshot.json
+- old_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+- current_digest: dfad433ba50ff6e3a4d8424a251f191246002efb1b357c5a99e3caf407fe5bf5
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-ABG7SD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -121,3 +288,7 @@ Correct the verified drift between documented and runtime exit/error shapes, str
 - Re-run focused contract, migration, and type checks.
 
 ## Findings
+
+- Observation: HEAD changes only lifecycle metadata and the resolved blueprint snapshot; no CLI error/exit-code contract, generated reference, Node support alignment, or tests exist.
+  Impact: The approved Verify Steps cannot be executed and the task cannot pass verification.
+  Resolution: Return control to CODER to implement the runtime-derived CLI contract, installed-tarball coverage, Node support alignment, and declared checks before re-verification.

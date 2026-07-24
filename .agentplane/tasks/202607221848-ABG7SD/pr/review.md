@@ -6,14 +6,14 @@ Created: 2026-07-24T09:04:20.081Z
 
 - Task: `202607221848-ABG7SD`
 - Title: Align CLI error, exit-code, and Node support contracts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221848-ABG7SD/align-cli-error-exit-code-and-node-support-contr`
 - Canonical task record: `.agentplane/tasks/202607221848-ABG7SD/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Implementation rework verified at 8bf0104e: runtime-derived CLI/error docs, exact installed-tarball envelopes, mandatory core/recipes Node matrix, focused 9/9, docs check, typecheck, critical, ci:contract and RF04 offline replay 50/70/27/170 pass; independent semantic review PASS. Hosted Node 20 cells remain a PR integration gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,23 @@ Created: 2026-07-24T09:04:20.081Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .github/workflows/ci.yml                           |  57 +++++
+ docs/developer/cli-contract.mdx                    |  37 +--
+ docs/user/cli-reference.generated.mdx              |  51 +++-
+ packages/agentplane/src/cli/cli-contract.test.ts   |  66 ++++-
+ packages/agentplane/src/cli/exit-codes.ts          |  21 ++
+ .../src/cli/run-cli.core.docs-cli.test.ts          |   3 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   6 +-
+ .../agentplane/src/cli/spec/docs-render.test.ts    |  19 ++
+ packages/agentplane/src/cli/spec/docs-render.ts    |  57 ++++-
+ .../release/workflow-node-version-contract.test.ts | 120 ++++++++-
+ packages/agentplane/src/shared/errors.test.ts      |  58 +++++
+ packages/agentplane/src/shared/errors.ts           |  69 +++++-
+ .../baselines/v0.7-compatibility-candidate.json    |  28 ++-
+ .../check-compatibility-contract-baseline.mjs      |  42 +++-
+ .../release/check-local-tarball-install-smoke.mjs  | 267 ++++++++++++++++++++-
+ scripts/release/check-package-node-runtime.mjs     | 164 +++++++++++++
+ 16 files changed, 1024 insertions(+), 41 deletions(-)
 ```
 
 </details>
