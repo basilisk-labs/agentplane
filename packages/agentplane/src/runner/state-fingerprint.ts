@@ -5,7 +5,10 @@ import {
   type StateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
 
-import type { CommandContext } from "../commands/shared/task-backend.js";
+import {
+  getTaskBackendCapabilities,
+  type CommandContext,
+} from "../commands/shared/task-backend.js";
 import { captureGitSnapshot, type GitSnapshot } from "./observation/git-snapshot.js";
 import {
   observeLiveRunnerStateComponents,
@@ -20,8 +23,19 @@ export const RUNNER_STATE_FINGERPRINT_POLICY = {
   provider: {
     required: false,
     unavailable: "allow_if_unchanged",
+    reject_reason_codes: ["provider_projection_stale"],
   },
 } as const satisfies StateFingerprintPolicy;
+
+export function resolveRunnerStateFingerprintPolicy(ctx: CommandContext): StateFingerprintPolicy {
+  return {
+    ...RUNNER_STATE_FINGERPRINT_POLICY,
+    provider: {
+      ...RUNNER_STATE_FINGERPRINT_POLICY.provider,
+      required: getTaskBackendCapabilities(ctx).canonical_source === "remote",
+    },
+  };
+}
 
 export type RunnerStateFingerprintProbes = RunnerStateFingerprintComponentProbes & {
   capture_git?: () => Promise<GitSnapshot>;

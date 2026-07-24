@@ -28,7 +28,7 @@ import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "../sa
 import {
   capturePreparedRunnerStateFingerprint,
   captureRunnerPreparationGitSnapshot,
-  RUNNER_STATE_FINGERPRINT_POLICY,
+  resolveRunnerStateFingerprintPolicy,
 } from "../state-fingerprint.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import {
@@ -321,8 +321,9 @@ export async function prepareTaskRunnerExecution(opts: {
     bundle,
     git: preparationGitSnapshot,
   });
+  const precondition_policy = resolveRunnerStateFingerprintPolicy(command);
   bundle.state_fingerprint = precondition_fingerprint;
-  bundle.state_fingerprint_policy = RUNNER_STATE_FINGERPRINT_POLICY;
+  bundle.state_fingerprint_policy = precondition_policy;
   const repository = RunnerRunRepository.fromBundle(bundle);
   await repository.createFreshDirectory({
     run_id: bundle.execution.run_id,
@@ -364,7 +365,7 @@ export async function prepareTaskRunnerExecution(opts: {
     invocation,
     state,
     precondition_fingerprint,
-    precondition_policy: RUNNER_STATE_FINGERPRINT_POLICY,
+    precondition_policy,
   };
 }
 

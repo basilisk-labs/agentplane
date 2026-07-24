@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -22,6 +22,16 @@ import {
   task,
 } from "./state-fingerprint.testkit.js";
 import { executeStateBoundRunnerInvocation } from "./usecases/task-run-state-fingerprint.js";
+
+function contextAtRoot(taskData: TaskData, root: string) {
+  const ctx = context(taskData);
+  ctx.resolvedProject = {
+    gitRoot: root,
+    agentplaneDir: path.join(root, ".agentplane"),
+  };
+  ctx.backendConfigPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
+  return ctx;
+}
 
 describe("runner state fingerprint production projections", () => {
   it("assigns provider sync freshness exclusively to the provider component", async () => {
@@ -168,6 +178,66 @@ describe("runner state fingerprint production projections", () => {
         fingerprint: {
           changed_components: [{ component: "provider" }],
         },
+      },
+    });
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it("rejects explicitly stale provider evidence even when it is unchanged", async () => {
+    const taskData = task({
+      sync: {
+        version: 1,
+        external_refs: [{ provider: "github", remote_id: "123" }],
+        field_policies: {},
+        freshness: {
+          provider_revision: "provider-1",
+          stale: true,
+          reason: "refresh required",
+        },
+        conflicts: [],
+      },
+    });
+    const runnerBundle = bundle(taskData);
+    const ctx = context(taskData);
+    const stateProbes = probes({ task: taskData, bundle: runnerBundle });
+    const prepared = await capturePreparedRunnerStateFingerprint({
+      ctx,
+      bundle: runnerBundle,
+      git: gitSnapshot(),
+      probes: stateProbes,
+    });
+    const apply = vi.fn(() =>
+      Promise.resolve({
+        status: "success" as const,
+        exit_code: 0,
+        started_at: "2026-07-24T00:00:00.000Z",
+        ended_at: "2026-07-24T00:00:01.000Z",
+      }),
+    );
+
+    await expect(
+      executeStateBoundRunnerInvocation({
+        ctx,
+        task_id: taskData.id,
+        bundle: runnerBundle,
+        invocation: invocation(),
+        precondition_fingerprint: prepared,
+        precondition_policy: RUNNER_STATE_FINGERPRINT_POLICY,
+        probes: stateProbes,
+        apply,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        reason_code: "state_fingerprint_provider_unavailable",
+        fingerprint: {
+          status: "blocked",
+          provider_state: "unavailable",
+        },
+      },
+      state_fingerprint: {
+        outcome: "refused",
+        effect_applied: false,
       },
     });
     expect(apply).not.toHaveBeenCalled();
@@ -412,15 +482,16 @@ describe("runner state fingerprint production projections", () => {
       const changedProbes = probes({ task: taskData, bundle: changedBundle });
       delete changedProbes.observe_policy;
       delete changedProbes.observe_blueprint;
+      const ctx = contextAtRoot(taskData, root);
 
       const prepared = await capturePreparedRunnerStateFingerprint({
-        ctx: context(taskData),
+        ctx,
         bundle: preparedBundle,
         git: gitSnapshot(),
         probes: preparedProbes,
       });
       const current = await capturePreparedRunnerStateFingerprint({
-        ctx: context(taskData),
+        ctx,
         bundle: changedBundle,
         git: gitSnapshot(),
         probes: changedProbes,
@@ -484,10 +555,11 @@ describe("runner state fingerprint production projections", () => {
       const taskData = task();
       const runnerBundle = bundle(taskData);
       runnerBundle.repository.git_root = root;
+      const ctx = contextAtRoot(taskData, root);
       const preparedProbes = probes({ task: taskData, bundle: runnerBundle });
       delete preparedProbes.observe_knowledge;
       const prepared = await capturePreparedRunnerStateFingerprint({
-        ctx: context(taskData),
+        ctx,
         bundle: runnerBundle,
         git: gitSnapshot(),
         probes: preparedProbes,
@@ -496,7 +568,7 @@ describe("runner state fingerprint production projections", () => {
       const currentProbes = probes({ task: taskData, bundle: runnerBundle });
       delete currentProbes.observe_knowledge;
       const current = await capturePreparedRunnerStateFingerprint({
-        ctx: context(taskData),
+        ctx,
         bundle: runnerBundle,
         git: gitSnapshot(),
         probes: currentProbes,
@@ -565,6 +637,169 @@ describe("runner state fingerprint production projections", () => {
     }
   });
 
+  it("refuses a selected policy module symlink that escapes the repository", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-repo-"));
+    const outside = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-outside-"));
+    try {
+      const outsidePolicy = path.join(outside, "policy.md");
+      await writeFile(outsidePolicy, "External policy bytes must not be observed.\n", "utf8");
+      await symlink(outsidePolicy, path.join(root, "policy.md"));
+      const taskData = task();
+      const runnerBundle = bundle(taskData);
+      runnerBundle.repository.git_root = root;
+      runnerBundle.blueprint!.policyModules = ["policy.md"];
+      const ctx = contextAtRoot(taskData, root);
+      const stateProbes = probes({ task: taskData, bundle: runnerBundle });
+      delete stateProbes.observe_policy;
+
+      const fingerprint = await capturePreparedRunnerStateFingerprint({
+        ctx,
+        bundle: runnerBundle,
+        git: gitSnapshot(),
+        probes: stateProbes,
+      });
+
+      expect(fingerprint.components.policy).toMatchObject({
+        state: "unavailable",
+        reason_code: "policy_module_observation_unavailable",
+      });
+      await writeFile(outsidePolicy, "Changed external policy bytes.\n", "utf8");
+      const repeated = await capturePreparedRunnerStateFingerprint({
+        ctx,
+        bundle: runnerBundle,
+        git: gitSnapshot(),
+        probes: stateProbes,
+      });
+      expect(repeated.components.policy).toEqual(fingerprint.components.policy);
+      const error = capturePreconditionError(() =>
+        assertStateFingerprintPrecondition({
+          expected: fingerprint,
+          current: fingerprint,
+          policy: RUNNER_STATE_FINGERPRINT_POLICY,
+        }),
+      );
+      expect(error.reason_code).toBe("state_fingerprint_required_component_unavailable");
+      expect(error.diagnostic.unavailable_required_components).toContain("policy");
+    } finally {
+      await Promise.all([
+        rm(root, { recursive: true, force: true }),
+        rm(outside, { recursive: true, force: true }),
+      ]);
+    }
+  });
+
+  it("refuses a backend configuration symlink that escapes the repository", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-repo-"));
+    const outside = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-outside-"));
+    try {
+      const outsideConfig = path.join(outside, "backend.json");
+      const configPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
+      await Promise.all([
+        writeFile(outsideConfig, '{"schema_version":1,"id":"external"}\n', "utf8"),
+        mkdir(path.dirname(configPath), { recursive: true }),
+      ]);
+      await symlink(outsideConfig, configPath);
+      const taskData = task();
+      const runnerBundle = bundle(taskData);
+      runnerBundle.repository.git_root = root;
+      const ctx = context(taskData);
+      ctx.resolvedProject = {
+        gitRoot: root,
+        agentplaneDir: path.join(root, ".agentplane"),
+      };
+      ctx.backendConfigPath = configPath;
+      const stateProbes = probes({ task: taskData, bundle: runnerBundle });
+      delete stateProbes.observe_backend_projection;
+
+      const fingerprint = await capturePreparedRunnerStateFingerprint({
+        ctx,
+        bundle: runnerBundle,
+        git: gitSnapshot(),
+        probes: stateProbes,
+      });
+
+      expect(fingerprint.components.backend_projection).toMatchObject({
+        state: "unavailable",
+        reason_code: "backend_config_unreadable",
+      });
+      await writeFile(outsideConfig, '{"schema_version":1,"id":"changed-external"}\n', "utf8");
+      const repeated = await capturePreparedRunnerStateFingerprint({
+        ctx,
+        bundle: runnerBundle,
+        git: gitSnapshot(),
+        probes: stateProbes,
+      });
+      expect(repeated.components.backend_projection).toEqual(
+        fingerprint.components.backend_projection,
+      );
+      const error = capturePreconditionError(() =>
+        assertStateFingerprintPrecondition({
+          expected: fingerprint,
+          current: fingerprint,
+          policy: RUNNER_STATE_FINGERPRINT_POLICY,
+        }),
+      );
+      expect(error.reason_code).toBe("state_fingerprint_required_component_unavailable");
+      expect(error.diagnostic.unavailable_required_components).toContain("backend_projection");
+    } finally {
+      await Promise.all([
+        rm(root, { recursive: true, force: true }),
+        rm(outside, { recursive: true, force: true }),
+      ]);
+    }
+  });
+
+  it("refuses a knowledge manifest symlink that escapes the repository", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-repo-"));
+    const outside = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-outside-"));
+    try {
+      const outsideContext = path.join(outside, "context");
+      const outsideManifest = path.join(outsideContext, "manifest.lock.json");
+      const manifestPath = path.join(root, ".agentplane", "context", "manifest.lock.json");
+      await Promise.all([
+        mkdir(outsideContext, { recursive: true }),
+        mkdir(path.join(root, ".agentplane"), { recursive: true }),
+      ]);
+      await writeFile(outsideManifest, '{"schema_version":1,"revision":"external"}\n', "utf8");
+      await symlink(outsideContext, path.dirname(manifestPath));
+      const taskData = task();
+      const runnerBundle = bundle(taskData);
+      runnerBundle.repository.git_root = root;
+      const ctx = contextAtRoot(taskData, root);
+      const stateProbes = probes({ task: taskData, bundle: runnerBundle });
+      delete stateProbes.observe_knowledge;
+
+      const fingerprint = await capturePreparedRunnerStateFingerprint({
+        ctx,
+        bundle: runnerBundle,
+        git: gitSnapshot(),
+        probes: stateProbes,
+      });
+
+      expect(fingerprint.components.knowledge).toMatchObject({
+        state: "unavailable",
+        reason_code: "knowledge_manifest_unreadable",
+      });
+      await writeFile(
+        outsideManifest,
+        '{"schema_version":1,"revision":"changed-external"}\n',
+        "utf8",
+      );
+      const repeated = await capturePreparedRunnerStateFingerprint({
+        ctx,
+        bundle: runnerBundle,
+        git: gitSnapshot(),
+        probes: stateProbes,
+      });
+      expect(repeated.components.knowledge).toEqual(fingerprint.components.knowledge);
+    } finally {
+      await Promise.all([
+        rm(root, { recursive: true, force: true }),
+        rm(outside, { recursive: true, force: true }),
+      ]);
+    }
+  });
+
   it("fails closed when a selected policy module is missing", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-"));
     try {
@@ -572,10 +807,11 @@ describe("runner state fingerprint production projections", () => {
       const runnerBundle = bundle(taskData);
       runnerBundle.repository.git_root = root;
       runnerBundle.blueprint!.policyModules = ["missing-policy.md"];
+      const ctx = contextAtRoot(taskData, root);
       const stateProbes = probes({ task: taskData, bundle: runnerBundle });
       delete stateProbes.observe_policy;
       const fingerprint = await capturePreparedRunnerStateFingerprint({
-        ctx: context(taskData),
+        ctx,
         bundle: runnerBundle,
         git: gitSnapshot(),
         probes: stateProbes,

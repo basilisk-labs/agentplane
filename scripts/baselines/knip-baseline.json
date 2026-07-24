@@ -1383,11 +1383,6 @@
           "name": "backendWritesTaskReadmes",
           "line": 141,
           "col": 17
-        },
-        {
-          "name": "getTaskBackendCapabilities",
-          "line": 116,
-          "col": 17
         }
       ],
       "types": [

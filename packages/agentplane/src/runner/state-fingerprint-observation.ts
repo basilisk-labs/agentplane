@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
@@ -12,12 +11,17 @@ import {
 } from "../commands/shared/task-backend.js";
 import { makeReadOnlyExecutionContext } from "../runtime/execution-context.js";
 import { consumeExecutionProfileBudget } from "../runtime/execution-profile/index.js";
+import { readContainedStableTextNoFollow } from "../shared/contained-stable-file.js";
 import { collectRunnerBasePrompts } from "./context/base-prompts.js";
 import { assembleRunnerTaskContext } from "./context/task-context.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "./sandbox-policy.js";
 import { authorityComponent, dangerAuthorityFromBundle } from "./state-fingerprint-authority.js";
 import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
 import { resolveRunnerBlueprintPlan } from "./usecases/task-run-blueprint-plan.js";
+
+const BACKEND_CONFIG_MAX_BYTES = 1024 * 1024;
+const POLICY_MODULE_MAX_BYTES = 1024 * 1024;
+const KNOWLEDGE_MANIFEST_MAX_BYTES = 16 * 1024 * 1024;
 
 export type RunnerStateFingerprintComponentProbes = {
   load_context?: () => Promise<CommandContext>;
@@ -47,6 +51,20 @@ type LiveResolution = {
   protected_path_groups: Record<string, readonly string[]> | null;
   approvals: RunnerContextBundle["execution"]["approvals"] | null;
 };
+
+function authoritativePreparedRepositoryRoot(opts: {
+  ctx: CommandContext;
+  bundle: RunnerContextBundle;
+}): string {
+  const contextRoot = path.resolve(opts.ctx.resolvedProject.gitRoot);
+  const bundleRoot = path.resolve(opts.bundle.repository.git_root);
+  if (contextRoot !== bundleRoot) {
+    throw new Error(
+      `Runner bundle repository root does not match the live command context: ${bundleRoot}`,
+    );
+  }
+  return contextRoot;
+}
 
 function digestText(text: string): string {
   return `sha256:${createHash("sha256").update(text, "utf8").digest("hex")}`;
@@ -112,11 +130,9 @@ function providerComponent(task: TaskData | null): StateFingerprintComponentInpu
       freshnessEvidence,
     );
   }
-  if (
-    freshness?.provider_revision ||
-    freshness?.projection_sha256 ||
-    freshness?.source_revision !== undefined
-  ) {
+  // A local projection digest or source revision cannot establish current
+  // remote truth. Only the provider-issued revision makes this component present.
+  if (freshness?.provider_revision) {
     return {
       state: "present",
       source: "task_sync_projection",
@@ -177,7 +193,14 @@ async function observeBackendConfig(
   try {
     return {
       state: "present",
-      sha256: digestText(await readFile(ctx.backendConfigPath, "utf8")),
+      sha256: digestText(
+        await readContainedStableTextNoFollow({
+          repository_root: ctx.resolvedProject.gitRoot,
+          file_path: ctx.backendConfigPath,
+          label: "task backend configuration",
+          max_bytes: BACKEND_CONFIG_MAX_BYTES,
+        }),
+      ),
     };
   } catch (error) {
     if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
@@ -245,7 +268,14 @@ async function observePolicyModules(
           path: modulePath,
           state: "present" as const,
           resolution: "repository" as const,
-          sha256: digestText(await readFile(absolutePath, "utf8")),
+          sha256: digestText(
+            await readContainedStableTextNoFollow({
+              repository_root: repositoryRoot,
+              file_path: absolutePath,
+              label: "runner policy module",
+              max_bytes: POLICY_MODULE_MAX_BYTES,
+            }),
+          ),
         };
       } catch (error) {
         if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
@@ -314,7 +344,12 @@ async function observeKnowledgeProjection(
 ): Promise<StateFingerprintComponentInput> {
   const manifestPath = path.join(repositoryRoot, ".agentplane", "context", "manifest.lock.json");
   try {
-    const text = await readFile(manifestPath, "utf8");
+    const text = await readContainedStableTextNoFollow({
+      repository_root: repositoryRoot,
+      file_path: manifestPath,
+      label: "knowledge manifest lock",
+      max_bytes: KNOWLEDGE_MANIFEST_MAX_BYTES,
+    });
     JSON.parse(text);
     return {
       state: "present",
@@ -332,10 +367,12 @@ async function observeKnowledgeProjection(
       return unavailableComponent("context_manifest_lock", "knowledge_manifest_unreadable");
     }
     try {
-      await readFile(
-        path.join(repositoryRoot, ".agentplane", "context", "agentplane.context.yaml"),
-        "utf8",
-      );
+      await readContainedStableTextNoFollow({
+        repository_root: repositoryRoot,
+        file_path: path.join(repositoryRoot, ".agentplane", "context", "agentplane.context.yaml"),
+        label: "knowledge manifest",
+        max_bytes: KNOWLEDGE_MANIFEST_MAX_BYTES,
+      });
       return unavailableComponent("context_manifest_lock", "knowledge_manifest_lock_missing");
     } catch (manifestError) {
       if ((manifestError as NodeJS.ErrnoException | null)?.code === "ENOENT") {
@@ -449,16 +486,16 @@ export async function observePreparedRunnerStateComponents(opts: {
   probes?: RunnerStateFingerprintComponentProbes;
 }): Promise<RunnerStateFingerprintObservedComponents> {
   const task = opts.bundle.task?.data ?? null;
+  const repositoryRoot = authoritativePreparedRepositoryRoot(opts);
   const [backend, policy, knowledge, blueprint, authority] = await Promise.all([
     opts.probes?.observe_backend_projection?.() ?? observeBackendProjection(opts.ctx),
     opts.probes?.observe_policy?.() ??
       policyComponent({
-        repository_root: opts.bundle.repository.git_root,
+        repository_root: repositoryRoot,
         prompts: opts.bundle.base_prompts,
         policy_modules: opts.bundle.blueprint?.policyModules ?? [],
       }),
-    opts.probes?.observe_knowledge?.() ??
-      observeKnowledgeProjection(opts.bundle.repository.git_root),
+    opts.probes?.observe_knowledge?.() ?? observeKnowledgeProjection(repositoryRoot),
     opts.probes?.observe_blueprint?.() ??
       Promise.resolve(blueprintComponent(opts.bundle.blueprint)),
     opts.probes?.observe_authority?.() ??
