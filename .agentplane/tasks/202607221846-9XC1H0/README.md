@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -60,8 +60,8 @@ quality_review:
     - "The fixture and asserted files remain siblings in the same temporary directory; there is no user-controlled input, traversal, cwd dependency, or generated code."
     - "Independent review passed and process-supervision tests pass 12/12; format, typecheck, and diff checks are green."
 commit:
-  hash: "fa9aa390914f148ea7edd3c7f6ce0d03c6242a32"
-  message: "✅ 9XC1H0 task: record CodeQL quality review"
+  hash: "057be8021e42a0af3b34ac7a1a9f3983a964e8cd"
+  message: "✅ 9XC1H0 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -138,8 +141,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T06:18:57.437Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T06:10:28.448Z"
+doc_updated_at: "2026-07-24T06:18:57.438Z"
 doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
