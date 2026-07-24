@@ -12,8 +12,8 @@ Created: 2026-07-24T06:55:06.388Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Alpha.1 qualification passed on reviewed SHA 35e4925a7: all ten dependency PRs are merged with evaluator and hosted-close evidence; critical, schemas, guards, contract, and immutable RF-04 replay gates passed. Decision: qualify without publishing the optional prerelease.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-07-24T06:55:06.388Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T06:55:06.388Z
+- Updated: 2026-07-24T06:56:34.483Z
 - Branch: task/202607221907-DK2CJF/qualify-the-agentplane-0-7-0-alpha-1-milestone
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
