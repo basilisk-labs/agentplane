@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "202607242234-S7WDVM",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T22:54:46.046Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The review rework closes both previously identified beta.1 planning gaps: context/CURATOR rework is now journal-gated, and the durable journal cannot qualify without schema migration, rollback, and installed-package evidence.",
+  "evaluated_sha": "d50c62ca0de91e7119554540ac53c25068e693e5",
+  "blueprint_digest": "c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0",
+  "findings": [
+    "Task 202607221850-8HBF4J now depends on 202607242236-1BFWEY and verifies bounded CURATOR feedback, shared budget/cursor usage, restart checkpoints, and no replay.",
+    "Task 202607242236-1BFWEY now owns current/legacy/absent schema fixtures, an idempotent migrator, transactional rollback/recovery, and installed-package smoke in addition to direct and context episode budgets.",
+    "Task 202607221908-MR9EA9 now repeats schema/install smoke and direct plus context budget/restart scenarios, preventing leaf-level evidence from being skipped at the milestone gate."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607242234-S7WDVM/README.md",
+    "commit d50c62ca0",
+    "commit e7a13424e",
+    ".agentplane/tasks/202607242236-1BFWEY/README.md",
+    ".agentplane/tasks/202607221850-8HBF4J/README.md",
+    ".agentplane/tasks/202607221908-MR9EA9/README.md",
+    "docs/internal/v0.7-refactor-plan.md",
+    "PR #4614 review threads PRRT_kwDORCLmJM6TryNX and PRRT_kwDORCLmJM6TryNZ: resolved",
+    "bun run task-state:check: pass, tasks=3137",
+    "bun run format:check: pass",
+    "agentplane doctor: OK with historical unrelated warnings only"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Open PR #4612 still overlaps the refactor-plan leaf count and must preserve this beta.1 leaf when rebased; the planning task records this explicitly."
+  ]
+}
