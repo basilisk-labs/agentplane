@@ -15,13 +15,12 @@ Add a beta.1 implementation leaf for a durable supervisor episode journal and ha
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified the 0.7 DAG amendment: the new CODER leaf is atomic and unstarted, direct supervisor and
-beta.1 gate depend on it without cycles, the canonical plan matches task metadata, and routing,
-doctor, task-state, formatting, and docs-only pre-push CI pass.
+Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded
+journal, and durable journal migration/install-smoke acceptance was not explicit.
 ```
 - Canonical workflow state lives in the task README.
 

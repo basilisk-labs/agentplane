@@ -4,7 +4,7 @@ title: "Supervise context assimilation post-processing"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -12,6 +12,7 @@ depends_on:
   - "202607221849-8YYZ9X"
   - "202607221850-DRWR0V"
   - "202607221850-WM9X1G"
+  - "202607242236-1BFWEY"
 tags:
   - "context"
   - "curator"
@@ -45,7 +46,7 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-07-22T18:50:17.052Z"
+doc_updated_at: "2026-07-24T22:50:15.403Z"
 doc_updated_by: "PLANNER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -62,12 +63,7 @@ sections:
     3. Reduce CURATOR input/output to semantic responsibilities and the typed result contract.
     4. Return mechanical failures as operation failures and semantic failures as a new CURATOR work order.
     5. Add complete, crash/retry, validation-failure, evaluator-rework, and stale-result scenarios.
-  Verify Steps: |-
-    1. Inspect the generated CURATOR work order. Expected: no list of mechanical completion commands; semantic responsibilities, evidence, output schema, and stop rules remain.
-    2. Run a successful assimilation fixture. Expected: every mechanical phase is CLI-observed, journaled, and finalized without CURATOR lifecycle calls.
-    3. Fail each mechanical gate in turn. Expected: retry resumes that operation without new reasoning or duplicate apply.
-    4. Return evaluator semantic rework. Expected: a separate bounded CURATOR work order is produced.
-    5. Run focused context/supervisor tests, workflow coverage, lifecycle invariants, and typecheck.
+  Verify Steps: "1. Inspect the generated CURATOR work order. Expected: no list of mechanical completion commands; semantic responsibilities, evidence, output schema, budget reference, and stop rules remain. 2. Run a successful assimilation fixture. Expected: every mechanical phase is CLI-observed, journaled, bounded by 202607242236-1BFWEY, and finalized without CURATOR lifecycle calls. 3. Fail each mechanical gate in turn and restart after each durable phase. Expected: retry resumes that operation without new reasoning, duplicate apply, replayed CURATOR work, or lost budget usage. 4. Return evaluator semantic rework repeatedly. Expected: each separate CURATOR work order receives only bounded feedback, shares the durable episode budget/cursor, and terminates at the episode/token/no-progress limit. 5. Run focused context/supervisor tests, workflow coverage, lifecycle invariants, guards, and typecheck."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -99,11 +95,7 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
 
 ## Verify Steps
 
-1. Inspect the generated CURATOR work order. Expected: no list of mechanical completion commands; semantic responsibilities, evidence, output schema, and stop rules remain.
-2. Run a successful assimilation fixture. Expected: every mechanical phase is CLI-observed, journaled, and finalized without CURATOR lifecycle calls.
-3. Fail each mechanical gate in turn. Expected: retry resumes that operation without new reasoning or duplicate apply.
-4. Return evaluator semantic rework. Expected: a separate bounded CURATOR work order is produced.
-5. Run focused context/supervisor tests, workflow coverage, lifecycle invariants, and typecheck.
+1. Inspect the generated CURATOR work order. Expected: no list of mechanical completion commands; semantic responsibilities, evidence, output schema, budget reference, and stop rules remain. 2. Run a successful assimilation fixture. Expected: every mechanical phase is CLI-observed, journaled, bounded by 202607242236-1BFWEY, and finalized without CURATOR lifecycle calls. 3. Fail each mechanical gate in turn and restart after each durable phase. Expected: retry resumes that operation without new reasoning, duplicate apply, replayed CURATOR work, or lost budget usage. 4. Return evaluator semantic rework repeatedly. Expected: each separate CURATOR work order receives only bounded feedback, shares the durable episode budget/cursor, and terminates at the episode/token/no-progress limit. 5. Run focused context/supervisor tests, workflow coverage, lifecycle invariants, guards, and typecheck.
 
 ## Verification
 

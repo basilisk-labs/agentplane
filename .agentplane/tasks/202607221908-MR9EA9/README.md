@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-beta.1 milestone"
 status: "TODO"
 priority: "high"
 owner: "TESTER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -29,6 +29,8 @@ verify:
   - "bun run coverage:workflow-suite"
   - "bun run lifecycle:invariants"
   - "bun run test:critical"
+  - "bun run schemas:check"
+  - "bun run package:install-smoke"
 plan_approval:
   state: "pending"
   updated_at: null
@@ -44,7 +46,7 @@ commit: null
 comments: []
 events: []
 doc_version: 3
-doc_updated_at: "2026-07-22T19:08:04.403Z"
+doc_updated_at: "2026-07-24T22:50:18.565Z"
 doc_updated_by: "PLANNER"
 description: "Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -61,11 +63,7 @@ sections:
     3. Compare safety, compatibility, success/rework, and orchestration metrics to the frozen baseline.
     4. Record blockers and require rework before qualification.
     5. Decide whether an optional 0.7.0-beta.1 prerelease materially helps external integration testing; qualification may complete without publication.
-  Verify Steps: |-
-    1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-beta.1 is an ancestor and has merged verification/evaluator/hosted-close evidence.
-    2. Run `bun run test:critical`, `bun run coverage:workflow-suite`, `bun run lifecycle:invariants`, `bun run ci:contract`. Expected: all milestone checks pass on one reviewed SHA.
-    3. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements.
-    4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.
+  Verify Steps: "1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-beta.1, including 202607242236-1BFWEY, is an ancestor and has merged verification/evaluator/hosted-close evidence. 2. Run bun run test:critical, bun run coverage:workflow-suite, bun run lifecycle:invariants, bun run ci:contract, bun run schemas:check, and bun run package:install-smoke. Expected: all milestone checks and the installed-package journal/migration smoke pass on one reviewed SHA. 3. Run direct EXECUTOR and context/CURATOR rework fixtures through their configured episode/token/no-progress limits and restart checkpoints. Expected: both are bounded, resumable, and cannot replay completed agent or effect operations. 4. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements. 5. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -97,10 +95,7 @@ Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DO
 
 ## Verify Steps
 
-1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-beta.1 is an ancestor and has merged verification/evaluator/hosted-close evidence.
-2. Run `bun run test:critical`, `bun run coverage:workflow-suite`, `bun run lifecycle:invariants`, `bun run ci:contract`. Expected: all milestone checks pass on one reviewed SHA.
-3. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements.
-4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.
+1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-beta.1, including 202607242236-1BFWEY, is an ancestor and has merged verification/evaluator/hosted-close evidence. 2. Run bun run test:critical, bun run coverage:workflow-suite, bun run lifecycle:invariants, bun run ci:contract, bun run schemas:check, and bun run package:install-smoke. Expected: all milestone checks and the installed-package journal/migration smoke pass on one reviewed SHA. 3. Run direct EXECUTOR and context/CURATOR rework fixtures through their configured episode/token/no-progress limits and restart checkpoints. Expected: both are bounded, resumable, and cannot replay completed agent or effect operations. 4. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements. 5. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.
 
 ## Verification
 
