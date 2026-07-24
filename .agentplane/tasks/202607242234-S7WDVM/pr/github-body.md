@@ -15,14 +15,20 @@ Add a beta.1 implementation leaf for a durable supervisor episode journal and ha
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified the 0.7 DAG amendment: the new CODER leaf is atomic and unstarted, direct supervisor and
+beta.1 gate depend on it without cycles, the canonical plan matches task metadata, and routing,
+doctor, task-state, formatting, and docs-only pre-push CI pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T22:35:38.268Z
+- Updated: 2026-07-24T22:41:27.950Z
 - Branch: task/202607242234-S7WDVM/amend-agentplane-0-7-graph-with-bounded-supervis
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
