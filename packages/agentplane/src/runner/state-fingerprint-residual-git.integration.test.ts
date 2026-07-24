@@ -23,6 +23,7 @@ import {
   capturePreparedRunnerStateFingerprint,
   captureRunnerPreparationGitSnapshot,
   captureRunnerStateFingerprint,
+  type RunnerStateFingerprintProbes,
 } from "./state-fingerprint.js";
 import {
   configureCustomRunner,
@@ -137,23 +138,30 @@ function successfulResult() {
   });
 }
 
+type ResidualFingerprintComponent =
+  | "task"
+  | "git"
+  | "backend_projection"
+  | "policy"
+  | "blueprint"
+  | "knowledge"
+  | "provider"
+  | "authority";
+
 async function expectExactlyChanged(opts: {
   ctx: CommandContext;
   prepared: PreparedTaskRunnerExecution;
-  component:
-    | "task"
-    | "git"
-    | "backend_projection"
-    | "policy"
-    | "blueprint"
-    | "knowledge"
-    | "provider"
-    | "authority";
-  probes?: {
-    load_context?: () => Promise<CommandContext>;
-  };
+  component: ResidualFingerprintComponent;
+  additional_components?: ResidualFingerprintComponent[];
+  expected_components?: ResidualFingerprintComponent[];
+  probes?: RunnerStateFingerprintProbes;
 }): Promise<void> {
   const apply = vi.fn(successfulResult);
+  const probes = { ...opts.probes };
+  if (opts.prepared.bundle.recipe && !probes.resolve_recipe_context) {
+    const recipe = structuredClone(opts.prepared.bundle.recipe);
+    probes.resolve_recipe_context = () => Promise.resolve(recipe);
+  }
   let observed: unknown;
   try {
     await executeStateBoundRunnerInvocation({
@@ -163,7 +171,7 @@ async function expectExactlyChanged(opts: {
       invocation: opts.prepared.invocation,
       precondition_fingerprint: opts.prepared.precondition_fingerprint,
       precondition_policy: opts.prepared.precondition_policy,
-      probes: opts.probes,
+      probes,
       apply,
     });
   } catch (error) {
@@ -175,7 +183,7 @@ async function expectExactlyChanged(opts: {
   }
   expect(
     observed.state_fingerprint.precondition.changed_components.map((entry) => entry.component),
-  ).toEqual([opts.component]);
+  ).toEqual(opts.expected_components ?? [opts.component, ...(opts.additional_components ?? [])]);
   expect(observed.state_fingerprint.effect_applied).toBe(false);
   expect(apply).not.toHaveBeenCalled();
 }
@@ -211,6 +219,25 @@ describe("runner residual Git fingerprint", () => {
       ctx: fixture.ctx,
       prepared: fixture.prepared,
       component: "policy",
+    });
+  });
+
+  it("assigns an unselected executable policy helper mutation exactly to git", async () => {
+    const helperPath = ".agentplane/policy/check-routing.mjs";
+    const fixture = await prepareLocalCase("Residual policy helper", async ({ root }) => {
+      await mkdir(path.join(root, ".agentplane", "policy"), { recursive: true });
+      await writeFile(path.join(root, helperPath), "export const routingRevision = 1;\n", "utf8");
+    });
+    await writeFile(
+      path.join(fixture.root, helperPath),
+      "export const routingRevision = 2;\n",
+      "utf8",
+    );
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "git",
     });
   });
 
@@ -256,7 +283,7 @@ describe("runner residual Git fingerprint", () => {
     });
   });
 
-  it("assigns a resolved project blueprint mutation exactly to blueprint", async () => {
+  it("assigns a resolved project blueprint mutation to git and blueprint", async () => {
     const blueprintId = "docs.residual-blueprint";
     let blueprintPath = "";
     const fixture = await prepareLocalCase(
@@ -279,6 +306,7 @@ describe("runner residual Git fingerprint", () => {
       ctx: fixture.ctx,
       prepared: fixture.prepared,
       component: "blueprint",
+      expected_components: ["git", "blueprint"],
     });
   });
 
@@ -292,10 +320,129 @@ describe("runner residual Git fingerprint", () => {
       ctx: fixture.ctx,
       prepared: fixture.prepared,
       component: "authority",
+      expected_components: ["git", "authority"],
     });
   });
 
-  it("assigns a switch to an existing policy module exactly to policy", async () => {
+  it("keeps unprojected workflow execution controls in the residual git component", async () => {
+    const fixture = await prepareLocalCase("Residual workflow execution controls");
+    const config = structuredClone(fixture.ctx.config);
+    config.commit_automation = config.commit_automation === "manual" ? "finish_only" : "manual";
+    config.close_commit.direct_dirty_policy =
+      config.close_commit.direct_dirty_policy === "strict" ? "allow_other_task_readmes" : "strict";
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "git",
+    });
+  });
+
+  it("assigns a runner execution configuration mutation exactly to authority", async () => {
+    const fixture = await prepareLocalCase("Residual runner authority");
+    const config = structuredClone(fixture.ctx.config);
+    if (!config.runner.custom) throw new Error("Custom runner config is missing.");
+    config.runner.custom.command = ["replacement-runner"];
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "authority",
+      expected_components: ["git", "authority"],
+    });
+  });
+
+  it("assigns a workflow route mutation exactly to blueprint and authority", async () => {
+    const fixture = await prepareLocalCase("Residual workflow authority");
+    const config = structuredClone(fixture.ctx.config);
+    config.workflow_mode = config.workflow_mode === "branch_pr" ? "direct" : "branch_pr";
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "blueprint",
+      expected_components: ["git", "blueprint", "authority"],
+    });
+  });
+
+  it("assigns a close-tail prefix mutation exactly to authority", async () => {
+    const fixture = await prepareLocalCase("Residual close-tail authority");
+    const config = structuredClone(fixture.ctx.config);
+    config.branch.task_close_prefix = "replacement-close-tail";
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "authority",
+      expected_components: ["git", "authority"],
+    });
+  });
+
+  it("assigns a force-approval mutation exactly to authority", async () => {
+    const fixture = await prepareLocalCase("Residual force approval authority");
+    const config = structuredClone(fixture.ctx.config);
+    config.agents.approvals.require_force = !config.agents.approvals.require_force;
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "authority",
+      expected_components: ["git", "authority"],
+    });
+  });
+
+  it("assigns a task outcome projection mutation exactly to authority", async () => {
+    const fixture = await prepareLocalCase("Residual task outcome authority");
+    const config = structuredClone(fixture.ctx.config);
+    config.tasks.doc.sections = [...config.tasks.doc.sections, "Operator Notes"];
+    config.tasks.doc.required_sections = [...config.tasks.doc.required_sections, "Operator Notes"];
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "authority",
+      expected_components: ["git", "authority"],
+    });
+  });
+
+  it("assigns lifecycle policy mutations exactly to policy", async () => {
+    const fixture = await prepareLocalCase("Residual lifecycle policy");
+    const config = structuredClone(fixture.ctx.config);
+    config.tasks.verify.required_tags = [...config.tasks.verify.required_tags, "operator"];
+    config.tasks.comments.start.min_chars += 1;
+    config.closure_commit_requires_approval = !config.closure_commit_requires_approval;
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "policy",
+      expected_components: ["git", "policy"],
+    });
+  });
+
+  it("assigns evaluator skepticism mutation exactly to policy", async () => {
+    const fixture = await prepareLocalCase("Residual evaluator policy");
+    const config = structuredClone(fixture.ctx.config);
+    config.evaluator.skepticism_level =
+      config.evaluator.skepticism_level === "paranoid" ? "standard" : "paranoid";
+    await writeConfig(fixture.root, config);
+
+    await expectExactlyChanged({
+      ctx: fixture.ctx,
+      prepared: fixture.prepared,
+      component: "policy",
+      expected_components: ["git", "policy"],
+    });
+  });
+
+  it("catches a same-content policy-module selection switch in residual git", async () => {
     const blueprintId = "docs.residual-policy";
     const policyA = ".agentplane/policy/residual-a.md";
     const policyB = ".agentplane/policy/residual-b.md";
@@ -330,6 +477,7 @@ describe("runner residual Git fingerprint", () => {
       ctx: fixture.ctx,
       prepared: fixture.prepared,
       component: "policy",
+      expected_components: ["git"],
     });
   });
 

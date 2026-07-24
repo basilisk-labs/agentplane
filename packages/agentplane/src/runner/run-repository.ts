@@ -11,6 +11,7 @@ import {
   writePreparedRunnerArtifacts,
   writeRunnerRunState,
 } from "./artifacts.js";
+import { readRunnerPreparationRecord, writeRunnerPreparationRecord } from "./preparation-record.js";
 import {
   RUNNER_BLUEPRINT_EXECUTION_PLAN_FILENAME,
   RUNNER_BLUEPRINT_EXECUTION_STATE_FILENAME,
@@ -44,6 +45,7 @@ import {
   parseRunnerEventsText,
   RUNNER_ARTIFACT_PATH_KEYS,
 } from "./run-repository-contract.js";
+import type { RunnerRecordProfile } from "./run-record-profile.js";
 import { readStableRegularTextNoFollow } from "./stable-file.js";
 
 export type RunnerRunStorage = "task" | "supervisor";
@@ -260,6 +262,11 @@ export class RunnerRunRepository {
         (key) => this.paths[key],
       ),
     });
+    await writeRunnerPreparationRecord({
+      run_dir: this.paths.run_dir,
+      run_id: runId,
+    });
+    await this.assertBoundary("after publishing runner preparation provenance");
     this.freshDirectoryOwned = true;
   }
 
@@ -308,7 +315,9 @@ export class RunnerRunRepository {
 
   async readState(): Promise<RunnerRunState | null> {
     await this.assertBoundary("before reading state");
-    const state = await readRunnerRunState(this.paths.state_path);
+    const state = await readRunnerRunState(this.paths.state_path, {
+      profile: this.storage === "task" ? "legacy_task_pre_trace" : "strict",
+    });
     await this.assertBoundary("after reading state");
     return state;
   }
@@ -333,24 +342,38 @@ export class RunnerRunRepository {
       });
     }
     assertRunnerBundleMatchesTask(record.bundle, opts.task_id, opts.run_id);
-    const compatibility = {
-      allow_legacy_missing_receipt_path: this.storage === "task",
-    };
-    assertRunnerBundleArtifactPaths(
-      record.bundle,
-      this.paths,
-      opts.task_id,
-      opts.run_id,
-      compatibility,
-    );
+    const preparationRecord = await this.readPreparationRecord(opts.run_id);
+    let profile: RunnerRecordProfile = "strict";
+    if (preparationRecord) {
+      profile = "strict_modern_fingerprinted";
+    } else if (
+      this.storage === "task" &&
+      record.state.state_fingerprint === undefined &&
+      record.bundle.state_fingerprint === undefined &&
+      record.bundle.state_fingerprint_policy === undefined
+    ) {
+      profile = "legacy_task_pre_trace";
+    }
+    const contract = { profile };
+    assertRunnerBundleArtifactPaths(record.bundle, this.paths, opts.task_id, opts.run_id, contract);
     assertRunnerStateMatchesBundle(
       record.state,
       record.bundle,
       this.paths,
       opts.task_id,
       opts.run_id,
-      compatibility,
+      contract,
     );
+    return record;
+  }
+
+  async readPreparationRecord(runId: string) {
+    await this.assertBoundary("before reading runner preparation provenance");
+    const record = await readRunnerPreparationRecord({
+      run_dir: this.paths.run_dir,
+      run_id: runId,
+    });
+    await this.assertBoundary("after reading runner preparation provenance");
     return record;
   }
 

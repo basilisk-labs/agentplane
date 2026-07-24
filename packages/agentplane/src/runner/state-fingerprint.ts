@@ -258,18 +258,6 @@ function runnerSemanticProjectionPaths(opts: {
   const repositoryRoot = opts.ctx.resolvedProject.gitRoot;
   const paths = new Set<string>();
 
-  // Keep semantic source domains stable across resolver selection changes.
-  // Their effective values are owned by policy, blueprint, and authority
-  // components instead of the residual source-tree component.
-  for (const semanticDomain of [
-    ".agentplane/WORKFLOW.md",
-    ".agentplane/blueprints",
-    ".agentplane/policy",
-    ".agentplane/workflows/last-known-good.md",
-  ]) {
-    addRepositoryPath(paths, repositoryRoot, semanticDomain);
-  }
-
   addRepositoryPath(
     paths,
     repositoryRoot,

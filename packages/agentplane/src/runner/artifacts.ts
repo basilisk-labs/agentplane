@@ -4,6 +4,7 @@ import path from "node:path";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import { renderCodexResultOutputSchemaJson } from "./adapters/codex-result-transport.js";
+import { parseRunnerRunState, type RunnerRunStateParseOptions } from "./run-state-validation.js";
 import {
   appendStableRegularFileNoFollow,
   readStableRegularTextNoFollow,
@@ -248,11 +249,14 @@ export async function appendRunnerEvent(opts: {
   );
 }
 
-export async function readRunnerRunState(state_path: string): Promise<RunnerRunState | null> {
+export async function readRunnerRunState(
+  state_path: string,
+  options: RunnerRunStateParseOptions = {},
+): Promise<RunnerRunState | null> {
   for (let attempt = 0; attempt < 4; attempt += 1) {
     try {
       const raw = await readStableRegularTextNoFollow(state_path, "runner state file");
-      return JSON.parse(raw) as RunnerRunState;
+      return parseRunnerRunState(raw, state_path, options);
     } catch (err) {
       const code = (err as { code?: string } | null)?.code;
       if (code === "ENOENT") return null;

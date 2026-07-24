@@ -167,7 +167,7 @@ function auditLegacyClaimConflicts(
       {
         field: claim.field,
         agent_reported: claim.value,
-        observed,
+        observed: observed ?? null,
         resolution: "observed_wins" as const,
       },
     ];

@@ -351,7 +351,7 @@ describe("runner state fingerprint production projections", () => {
     },
   );
 
-  it("keeps owner-profile derivation out of policy, blueprint, and authority projections", async () => {
+  it("assigns owner-profile derivation to task and policy", async () => {
     const preparedTask = task({ owner: "CODER" });
     const changedTask = task({ owner: "TESTER" });
     const preparedBundle = bundle(preparedTask);
@@ -419,7 +419,10 @@ describe("runner state fingerprint production projections", () => {
         policy: RUNNER_STATE_FINGERPRINT_POLICY,
       }),
     );
-    expect(error.diagnostic.changed_components.map((entry) => entry.component)).toEqual(["task"]);
+    expect(error.diagnostic.changed_components.map((entry) => entry.component)).toEqual([
+      "task",
+      "policy",
+    ]);
   });
 
   it("assigns execution-profile approvals exclusively to authority", async () => {

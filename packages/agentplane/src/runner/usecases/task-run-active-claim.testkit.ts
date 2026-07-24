@@ -5,11 +5,16 @@ import { setTimeout as delay } from "node:timers/promises";
 import { expect } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
 import { waitForCondition, writeConfig } from "@agentplane/testkit";
 import { writeRunnerExecutable } from "@agentplane/testkit/runner";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  claimRunnerChildSpawn,
+  claimRunnerPreSpawnDecision,
+} from "../adapters/execution-control.js";
 import { evolveRunnerRunState, writeRunnerRunState } from "../artifacts.js";
 import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 import type { RunnerInvocation, RunnerRunState } from "../types.js";
@@ -84,8 +89,30 @@ export async function createFailedSource(opts: { root: string; task_id: string; 
 export async function writeTerminalSuccess(
   prepared: PreparedTaskRunnerExecution,
   summary: string,
+  opts: {
+    publish_spawn_claim?: boolean;
+  } = {},
 ): Promise<RunnerRunState> {
+  const publishSpawnClaim = opts.publish_spawn_claim ?? true;
+  if (publishSpawnClaim) {
+    const decision = await claimRunnerPreSpawnDecision({
+      invocation: prepared.invocation,
+      decision: "start",
+    });
+    const ownerId = decision.record.owner_lease?.owner_id;
+    if (!ownerId) throw new Error("Prepared start decision did not record an owner lease.");
+    await claimRunnerChildSpawn({
+      invocation: prepared.invocation,
+      start_owner_id: ownerId,
+    });
+  }
   const completedAt = new Date().toISOString();
+  const preparedFingerprint = prepared.state.state_fingerprint;
+  const preconditionFingerprint = prepared.precondition_fingerprint;
+  const preconditionPolicy = prepared.precondition_policy;
+  if (!preparedFingerprint || !preconditionFingerprint || !preconditionPolicy) {
+    throw new Error("Prepared terminal-success fixture is missing fingerprint authority.");
+  }
   const state = evolveRunnerRunState({
     state: prepared.state,
     status: "success",
@@ -96,6 +123,39 @@ export async function writeTerminalSuccess(
       started_at: completedAt,
       ended_at: completedAt,
       summary,
+    },
+    ...(publishSpawnClaim
+      ? {
+          supervision: {
+            process_tree: {
+              scope: "direct_child_only",
+              group_id: null,
+              cleanup_state: "not_needed",
+              terminate_sent_at: null,
+              kill_sent_at: null,
+              completed_at: completedAt,
+              residual_alive: false,
+              error: null,
+              containment_state: "limited",
+              containment_limitation: "direct-child cleanup does not bound descendants",
+            },
+          },
+        }
+      : {}),
+    state_fingerprint: {
+      ...preparedFingerprint,
+      outcome: "accepted",
+      precondition_fingerprint: preconditionFingerprint,
+      precondition_policy: preconditionPolicy,
+      state_before: preconditionFingerprint,
+      state_after: preconditionFingerprint,
+      precondition: evaluateStateFingerprintPrecondition({
+        expected: preconditionFingerprint,
+        current: preconditionFingerprint,
+        policy: preconditionPolicy,
+      }),
+      effect_applied: true,
+      post_state_reason_code: null,
     },
   });
   await writeRunnerRunState({

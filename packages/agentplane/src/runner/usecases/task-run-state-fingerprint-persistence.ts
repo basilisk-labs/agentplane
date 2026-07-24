@@ -1,4 +1,5 @@
 import type { CommandContext } from "../../commands/shared/task-backend.js";
+import { clampRunnerResultEndedAt } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
@@ -19,7 +20,10 @@ export async function persistRunnerStateFingerprintRefusal(opts: {
   prepared_state: RunnerRunState;
   error: RunnerStateFingerprintCliError;
 }): Promise<void> {
-  const refusedAt = new Date().toISOString();
+  const refusedAt = clampRunnerResultEndedAt(
+    opts.prepared_state.created_at,
+    new Date().toISOString(),
+  );
   const result: RunnerResult = {
     status: "failed",
     exit_code: opts.error.exitCode ?? 8,
@@ -115,7 +119,7 @@ export async function persistRunnerStateFingerprintEffectUnknown(opts: {
     storage: "supervisor",
   });
   const current = (await repository.readState()) ?? opts.prepared_state;
-  const failedAt = new Date().toISOString();
+  const failedAt = clampRunnerResultEndedAt(current.created_at, new Date().toISOString());
   const message = opts.error instanceof Error ? opts.error.message : String(opts.error);
   const result: RunnerResult =
     current.result ??

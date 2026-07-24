@@ -6,6 +6,8 @@ import { isRecord } from "../../shared/guards.js";
 import type { RunnerRunDirectoryBoundary } from "../run-directory-boundary.js";
 import type { RunnerLifecycleStatus } from "../types.js";
 
+import type { TaskRunnerSupervisorHistoryAnchor } from "./task-run-supervisor-history-anchor.js";
+
 export type TaskRunnerActiveClaimOperation = "execute" | "resume" | "retry" | "effect_in_doubt";
 
 export type TaskRunnerActiveClaimOwnerIdentity = {
@@ -42,6 +44,15 @@ export type TaskRunnerActiveClaimDirectory = {
   task_dir: string;
   claim_path: string;
   boundary: RunnerRunDirectoryBoundary;
+};
+
+export type TaskRunnerActiveClaimLease = {
+  claim: TaskRunnerActiveClaim;
+  claim_path: string;
+  identity: TaskRunnerActiveClaimFileIdentity;
+  directory: TaskRunnerActiveClaimDirectory;
+  history_anchor: TaskRunnerSupervisorHistoryAnchor;
+  release_started: boolean;
 };
 
 export type ObservedTaskRunnerActiveClaim = {

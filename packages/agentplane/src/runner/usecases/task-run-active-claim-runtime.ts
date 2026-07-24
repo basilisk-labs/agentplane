@@ -1,3 +1,6 @@
+import { lstat } from "node:fs/promises";
+import { isDeepStrictEqual } from "node:util";
+
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { RunnerRunRepository } from "../run-repository.js";
@@ -11,6 +14,7 @@ import {
   readTaskRunnerActiveClaim,
   recoverTaskRunnerActiveClaim,
   type TaskRunnerActiveClaim,
+  type TaskRunnerActiveClaimLease,
   type TaskRunnerActiveClaimOwnerIdentity,
 } from "./task-run-active-claim.js";
 import {
@@ -23,7 +27,13 @@ import {
   acquireTaskRunnerActiveClaimRecoveryLease,
   releaseTaskRunnerActiveClaimRecoveryLease,
 } from "./task-run-active-claim-recovery-lease.js";
+import {
+  sameTaskRunnerActiveClaimFileIdentity,
+  taskRunnerActiveClaimFileIdentity,
+  type TaskRunnerActiveClaimFileIdentity,
+} from "./task-run-active-claim-record.js";
 import { assertNoOrphanedRunnerEffectInDoubt } from "./task-run-orphaned-effect-guard.js";
+import { assertTaskRunnerSupervisorHistoryAnchorStable } from "./task-run-supervisor-history-anchor.js";
 
 export type TaskRunnerActiveClaimCleanupDiagnostic = {
   status: "cleanup_failed";
@@ -121,21 +131,37 @@ export async function assertTaskRunnerActiveClaimCurrent(opts: {
   git_root: string;
   workflow_dir: string;
   expected: TaskRunnerActiveClaim;
+  expected_file?: {
+    path: string;
+    identity: TaskRunnerActiveClaimFileIdentity;
+  };
 }): Promise<void> {
+  const readIdentity = async (): Promise<TaskRunnerActiveClaimFileIdentity | null> => {
+    if (!opts.expected_file) return null;
+    try {
+      return taskRunnerActiveClaimFileIdentity(
+        await lstat(opts.expected_file.path, { bigint: true }),
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+      throw error;
+    }
+  };
+  const identityBefore = await readIdentity();
   const observed = await readTaskRunnerActiveClaim({
     git_root: opts.git_root,
     workflow_dir: opts.workflow_dir,
     task_id: opts.expected.task_id,
     run_id: opts.expected.run_id,
   });
-  if (
-    observed?.claim_id === opts.expected.claim_id &&
-    observed.generation === opts.expected.generation &&
-    observed.run_id === opts.expected.run_id &&
-    observed.owner_pid === opts.expected.owner_pid &&
-    observed.owner_command === opts.expected.owner_command &&
-    observed.owner_started_at === opts.expected.owner_started_at
-  ) {
+  const identityAfter = await readIdentity();
+  const identityMatches =
+    !opts.expected_file ||
+    (identityBefore !== null &&
+      identityAfter !== null &&
+      sameTaskRunnerActiveClaimFileIdentity(identityBefore, opts.expected_file.identity) &&
+      sameTaskRunnerActiveClaimFileIdentity(identityAfter, opts.expected_file.identity));
+  if (observed !== null && isDeepStrictEqual(observed, opts.expected) && identityMatches) {
     return;
   }
   throw new CliError({
@@ -153,6 +179,54 @@ export async function assertTaskRunnerActiveClaimCurrent(opts: {
       observed_claim_id: observed?.claim_id ?? null,
       observed_generation: observed?.generation ?? null,
     },
+  });
+}
+
+export async function assertTaskRunnerActiveClaimHistorySafe(opts: {
+  ctx: CommandContext;
+  lease: TaskRunnerActiveClaimLease;
+  allow_claimed_run?: boolean;
+}): Promise<void> {
+  const allowedNewRunId = opts.allow_claimed_run ? opts.lease.claim.run_id : undefined;
+  await assertTaskRunnerSupervisorHistoryAnchorStable({
+    anchor: opts.lease.history_anchor,
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    workflow_dir: opts.ctx.config.paths.workflow_dir,
+    ...(allowedNewRunId ? { allowed_new_run_id: allowedNewRunId } : {}),
+  });
+  await opts.lease.directory.boundary.assertStable(
+    "before checking active-claim supervisor history",
+  );
+  const ownership = {
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    workflow_dir: opts.ctx.config.paths.workflow_dir,
+    expected: opts.lease.claim,
+    expected_file: {
+      path: opts.lease.claim_path,
+      identity: opts.lease.identity,
+    },
+  };
+  await assertTaskRunnerActiveClaimCurrent(ownership);
+  await assertNoOrphanedRunnerEffectInDoubt({
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    workflow_dir: opts.ctx.config.paths.workflow_dir,
+    task_id: opts.lease.claim.task_id,
+    expected_active_claim: {
+      run_id: opts.lease.claim.run_id,
+      generation: opts.lease.claim.generation,
+    },
+    expected_history_anchor: opts.lease.history_anchor,
+    ...(allowedNewRunId ? { allowed_new_run_id: allowedNewRunId } : {}),
+  });
+  await assertTaskRunnerActiveClaimCurrent(ownership);
+  await opts.lease.directory.boundary.assertStable(
+    "after checking active-claim supervisor history",
+  );
+  await assertTaskRunnerSupervisorHistoryAnchorStable({
+    anchor: opts.lease.history_anchor,
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    workflow_dir: opts.ctx.config.paths.workflow_dir,
+    ...(allowedNewRunId ? { allowed_new_run_id: allowedNewRunId } : {}),
   });
 }
 
@@ -332,10 +406,9 @@ export async function reconcileStaleTerminalTaskRunnerActiveClaim(opts: {
   task_id: string;
   prospective_run_id?: string;
 }): Promise<"absent" | "nonterminal" | "recovered" | "retained"> {
-  const prospectiveRunId =
-    opts.prospective_run_id === undefined
-      ? undefined
-      : assertSafeRunnerRunId(opts.prospective_run_id);
+  if (opts.prospective_run_id !== undefined) {
+    assertSafeRunnerRunId(opts.prospective_run_id);
+  }
   const claim = await readTaskRunnerActiveClaim({
     git_root: opts.ctx.resolvedProject.gitRoot,
     workflow_dir: opts.ctx.config.paths.workflow_dir,
@@ -347,7 +420,6 @@ export async function reconcileStaleTerminalTaskRunnerActiveClaim(opts: {
       git_root: opts.ctx.resolvedProject.gitRoot,
       workflow_dir: opts.ctx.config.paths.workflow_dir,
       task_id: opts.task_id,
-      ignore_run_id: prospectiveRunId,
     });
     return "absent";
   }

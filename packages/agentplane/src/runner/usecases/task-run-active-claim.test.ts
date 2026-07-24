@@ -15,6 +15,7 @@ import {
   claimRunnerPreSpawnDecision,
 } from "../adapters/execution-control.js";
 import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
+import { writeRunnerPreparationRecord } from "../preparation-record.js";
 import * as processSignals from "../process-supervision/signals.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
@@ -26,7 +27,10 @@ import {
   recoverTaskRunnerActiveClaim,
   releaseTaskRunnerActiveClaim,
 } from "./task-run-active-claim.js";
-import { inspectTaskRunnerOwnerIdentity } from "./task-run-active-claim-authority.js";
+import {
+  inspectTaskRunnerOwnerIdentity,
+  isRunnerManagedScopeCleanupConfirmed,
+} from "./task-run-active-claim-authority.js";
 import { resumeTaskRunnerExecution } from "./task-run-lifecycle.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 import { reconcileTerminalTaskRunnerActiveClaim } from "./task-run-active-claim-runtime.js";
@@ -49,6 +53,23 @@ afterEach(() => {
 });
 
 describe("task-run active claim hardening", () => {
+  it("does not confirm cleanup with causally reversed signal timestamps", () => {
+    expect(
+      isRunnerManagedScopeCleanupConfirmed({
+        scope: "posix_process_group",
+        group_id: 4242,
+        cleanup_state: "force_killed",
+        terminate_sent_at: "2026-07-24T00:00:02.000Z",
+        kill_sent_at: "2026-07-24T00:00:01.000Z",
+        completed_at: "2026-07-24T00:00:03.000Z",
+        residual_alive: false,
+        error: null,
+        containment_state: "limited",
+        containment_limitation: "process group may not include detached descendants",
+      }),
+    ).toBe(false);
+  });
+
   it("keeps a live owner fail-closed when ps cannot provide a complete identity", async () => {
     vi.spyOn(processSignals, "readObservedProcessIdentity").mockResolvedValue({
       pid: process.pid,
@@ -91,12 +112,16 @@ describe("task-run active claim hardening", () => {
     ).resolves.toBeNull();
   });
 
-  it("recovers an incomplete pre-provider run without reusing its immutable directory", async () => {
+  it("retires a stale lock for an incomplete run without reusing its immutable directory", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "TASK-INCOMPLETE-CLAIM";
     const stale = staleClaim({ task_id: taskId, run_id: "run-incomplete" });
     const { paths } = await writeActiveClaim(root, stale);
     await mkdir(paths.run_dir, { recursive: true });
+    await writeRunnerPreparationRecord({
+      run_dir: paths.run_dir,
+      run_id: stale.run_id,
+    });
     const sentinelPath = path.join(paths.run_dir, "pre-provider-sentinel");
     await writeFile(sentinelPath, "immutable\n", "utf8");
 
@@ -849,7 +874,7 @@ describe("task-run active claim hardening", () => {
             process_tree: {
               scope: "posix_process_group",
               group_id: 4242,
-              cleanup_state: "terminated",
+              cleanup_state: "failed",
               terminate_sent_at: at,
               kill_sent_at: null,
               completed_at: at,
