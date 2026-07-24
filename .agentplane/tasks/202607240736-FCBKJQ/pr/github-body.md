@@ -23,12 +23,21 @@ Reuse the evaluator metadata-only review target contract in integration preparat
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T07:37:26.385Z
+- Updated: 2026-07-24T07:37:41.475Z
 - Branch: task/202607240736-FCBKJQ/align-integration-quality-review-targets-for-met
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/evaluator/evaluator.command.ts    |  79 +---------
+ .../commands/pr/integrate/internal/prepare.test.ts |  72 +++++++---
+ .../src/commands/pr/integrate/internal/prepare.ts  |  47 ++----
+ .../commands/shared/quality-review-target.test.ts  | 134 +++++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   | 102 +++++++++++++
+ .../route-decision-blockers.quality-review.test.ts | 160 +++++++++++++++++++++
+ .../src/commands/shared/route-decision-blockers.ts |  39 ++++-
+ .../shared/route-decision-next-action.test.ts      |  36 +++++
+ .../commands/shared/route-decision-next-action.ts  |  14 ++
+ 9 files changed, 545 insertions(+), 138 deletions(-)
 ```
 
 </details>

@@ -156,6 +156,42 @@ describe("DONE branch_pr route cleanup boundary", () => {
     });
   });
 
+  it("requires a fresh semantic review before enqueueing a DONE open PR", () => {
+    const openPr = {
+      ...report("MERGED"),
+      pr: {
+        provider: "github" as const,
+        state: "OPEN" as const,
+        source: "lookup" as const,
+        prNumber: 101,
+        prUrl: "https://github.com/example/repo/pull/101",
+        base: "main",
+        headSha: "head",
+        mergeCommit: null,
+      },
+    } satisfies PrFlowStatusReport;
+
+    expect(
+      deriveNextAction({
+        task,
+        resume,
+        workflowMode: "branch_pr",
+        prFlow: openPr,
+        cleanupProbe: { state: "not_requested" },
+        blockers: [
+          {
+            code: "quality_review_stale",
+            summary: "the recorded review does not cover the current work unit",
+          },
+        ],
+        batchOwnership: { role: "none" },
+      }),
+    ).toMatchObject({
+      code: "quality_review_required",
+      command: null,
+    });
+  });
+
   it("keeps a live CLOSED PR on inspect/reopen instead of cleanup", () => {
     expect(nextAction(report("CLOSED"), { state: "candidate", count: 1 })).toMatchObject({
       code: "inspect_pr",

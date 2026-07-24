@@ -146,6 +146,20 @@ export function deriveNextAction(opts: {
         requiresApproval: false,
       };
     }
+    if (
+      opts.blockers.some(
+        (blocker) =>
+          blocker.code === "quality_review_missing" || blocker.code === "quality_review_stale",
+      )
+    ) {
+      return {
+        code: "quality_review_required",
+        command: null,
+        summary:
+          "semantic quality review is required; run an EVALUATOR episode or explicitly record a human-supplied review",
+        requiresApproval: false,
+      };
+    }
     if (opts.blockers.some((blocker) => blocker.code === "pre_merge_closure_stale")) {
       const commit = opts.prFlow?.branch.headSha ?? opts.resume.head_sha ?? "HEAD";
       return {
