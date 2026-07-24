@@ -1,11 +1,16 @@
 import path from "node:path";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
-import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
+import {
+  observeContainedCloudBackendState,
+  readCloudBackendState,
+  writeCloudBackendState,
+} from "./cloud-backend-state.js";
 import {
   BackendError,
   type TaskBackend,
   type TaskBackendInspectionResult,
+  type TaskBackendProjectionObservation,
   type TaskData,
   type TaskSummary,
   type TaskWriteOptions,
@@ -55,6 +60,7 @@ export class CloudBackend implements TaskBackend {
   private fetchImpl: typeof fetch;
   private readonly configOverrides: CloudConfigOverride[];
   private readonly dotEnv: Pick<DotEnvLoadResult, "root" | "path" | "loaded">;
+  private readonly repositoryRoot: string;
   private readonly autoSyncNetworkAllowed: boolean;
   private readonly autoSyncEnabled: boolean;
   private readonly autoSyncPullOnRead: boolean;
@@ -99,11 +105,12 @@ export class CloudBackend implements TaskBackend {
       AGENTPLANE_CLOUD_PROVIDER: this.provider ?? "",
     });
     this.cache = opts.cache;
+    this.repositoryRoot = path.resolve(opts.root);
     const statePath = firstNonEmptyString(
       settings.state_path,
       ".agentplane/backends/cloud/state.json",
     );
-    this.statePath = path.resolve(opts.root, statePath);
+    this.statePath = path.resolve(this.repositoryRoot, statePath);
     this.dotEnv = opts.dotEnv ?? {
       root: opts.root,
       path: path.join(opts.root, ".env"),
@@ -149,6 +156,28 @@ export class CloudBackend implements TaskBackend {
   }
   getLastListWarnings(): string[] {
     return this.cache.getLastListWarnings();
+  }
+  async observeProjection(): Promise<TaskBackendProjectionObservation> {
+    const state = await observeContainedCloudBackendState({
+      repositoryRoot: this.repositoryRoot,
+      statePath: this.statePath,
+    });
+    return {
+      projection_revision: null,
+      projection_freshness: {
+        last_checked_at: state.last_checked_at,
+        stale_after_seconds: this.staleAfterSeconds,
+        pending_push: state.pending_push
+          ? {
+              failed_at: state.pending_push.failed_at,
+            }
+          : null,
+      },
+      remote_projection: {
+        provider: this.provider,
+        project_id: this.projectId || null,
+      },
+    };
   }
   async getTask(taskId: string): Promise<TaskData | null> {
     await this.maybeAutoPull({ mode: "read", reason: "get_task" });

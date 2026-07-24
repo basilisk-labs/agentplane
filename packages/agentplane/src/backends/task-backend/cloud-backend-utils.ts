@@ -204,12 +204,16 @@ export function splitTasksByPayloadBytes(tasks: TaskData[], maxBytes: number): T
   return chunks;
 }
 
-export function isStale(lastCheckedAt: string | null, staleAfterSeconds: number | null): boolean {
+export function isStale(
+  lastCheckedAt: string | null,
+  staleAfterSeconds: number | null,
+  nowMs = Date.now(),
+): boolean {
   if (!staleAfterSeconds) return false;
   if (!lastCheckedAt) return true;
   const checkedAt = Date.parse(lastCheckedAt);
   if (!Number.isFinite(checkedAt)) return true;
-  return Date.now() - checkedAt > staleAfterSeconds * 1000;
+  return nowMs - checkedAt > staleAfterSeconds * 1000;
 }
 
 export function createTimeoutSignal(timeoutMs: number): AbortSignal {

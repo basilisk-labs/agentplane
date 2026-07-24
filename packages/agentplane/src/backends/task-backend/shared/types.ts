@@ -95,6 +95,21 @@ export type TaskWriteOptions = {
 
 export type TaskBackendProjectionReadMode = "native" | "fallback";
 
+export type TaskBackendProjectionObservation = {
+  projection_revision: string | null;
+  projection_freshness: {
+    last_checked_at: string | null;
+    stale_after_seconds: number | null;
+    pending_push: {
+      failed_at: string;
+    } | null;
+  };
+  remote_projection: {
+    provider: string | null;
+    project_id: string | null;
+  } | null;
+};
+
 export type TaskBackendCapabilities = {
   canonical_source: "local" | "remote";
   projection: "canonical" | "cache";
@@ -201,6 +216,8 @@ export type TaskBackendQueryPort = {
 export type TaskBackendProjectionPort = {
   listProjectionTasks?(opts?: { status?: readonly string[] }): Promise<TaskSummary[]>;
   getLastListWarnings?(): string[];
+  /** Observe local projection state without network access or mutation. */
+  observeProjection?(): Promise<TaskBackendProjectionObservation>;
 };
 
 export type TaskBackendMutationPort = {
