@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -39,23 +39,25 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T23:08:32.126Z"
+  updated_at: "2026-07-24T23:28:58.304Z"
   updated_by: "EVALUATOR"
-  note: "Independent recheck at 505970995 confirms the corrected roadmap count and complete acyclic release ancestry."
-  evaluated_sha: "926a09a31ecb9de1c73bc6da2714ba9590f0c6c8"
+  note: "Independent recheck at 75f839f85 confirms the rebased effect-safety and bounded-supervisor graph is complete, acyclic, and accurately counted."
+  evaluated_sha: "722d4d626859383dfd1126096e52cfed99c8d03c"
   blueprint_digest: "d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4"
   evidence_refs:
     - ".agentplane/tasks/202607242201-6BN1GV/README.md"
-    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-230832126-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-230832126-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-230832126-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-232858304-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-232858304-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242201-6BN1GV/quality/20260724-232858304-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json"
     - "docs/internal/v0.7-refactor-plan.md"
     - ".agentplane/tasks/202607242204-SX8T09/README.md"
     - ".agentplane/tasks/202607242158-QV09NA/README.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/README.md"
   findings:
-    - "The roadmap has 60 unique rows with exactly one PLANNER amendment, so it contains 59 implementation/release rows; final XV67TD ancestry has all 60 rows plus the original out-of-table PLANNER, for 61 records total."
-    - "SX8T09 and QV09NA remain in final release ancestry with the approved RF-06b/RF-13/effect-resolution dependencies; 9M2FBQ and R7WS01 remain gated on QV09NA."
+    - "The roadmap has 61 unique rows: 60 non-PLANNER implementation/release rows and one PLANNER safety amendment; final XV67TD ancestry contains all 61 rows plus the original SD1W93 PLANNER, for 62 records."
+    - "SX8T09/QV09NA effect safety and 1BFWEY bounded-supervisor journal dependencies are both preserved through their alpha.2 and beta.1 gates; no cycle, unknown dependency, or missing roadmap row exists."
+    - "Effect uncertainty and bounded supervisor constraints coexist, while agentplane-loops, LoopSpec, and ap loop remain explicit non-goals for the 0.7 implementation."
 commit:
   hash: "1b38432ccefcc3c163b072774d3e2c59f750c45a"
   message: "🚧 6BN1GV task: Record corrected graph quality pass"
