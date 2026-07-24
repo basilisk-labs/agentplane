@@ -13,7 +13,7 @@ Created: 2026-07-23T18:45:27.072Z
 ## Verification
 
 - State: ok
-- Note: PASS at e79d03abc: CodeQL alerts #38/#39 are fixed without production changes by removing path interpolation from generated .mjs fixtures. process-supervision tests pass 12/12; format, typecheck, and git diff checks pass; prior full RF-03 verification at f161a6e56 remains applicable to unchanged production code.
+- Note: Linux CI repair at 1728201ae: immutable process start time, separate running-state publication time, and offline RF-04 fixture maintenance isolation. Local test:fast 425/425 files and 2659/2659 tests; test:critical 71/71; ci:contract, typecheck, format, replay evidence, and hotspot contracts passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -51,6 +51,7 @@ Created: 2026-07-23T18:45:27.072Z
  .../src/backends/task-backend/shared/normalize.ts  |    3 +
  .../src/cli/run-cli.core.task-run.test.ts          |  452 +++-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   51 +-
+ ...tical.agent-efficiency-replay-hardening.test.ts |   35 +
  .../src/cli/run-cli/command-catalog/task.ts        |    7 +
  .../src/cli/run-cli/command-loaders/task.ts        |    4 +
  .../src/commands/context/issue-gates.unit.test.ts  |   10 +-
@@ -120,7 +121,7 @@ Created: 2026-07-23T18:45:27.072Z
  .../src/runner/process-supervision/clock.ts        |   71 +
  .../process-supervision/process-tree.test.ts       |  157 ++
  .../src/runner/process-supervision/process-tree.ts |  232 ++-
- .../src/runner/process-supervision/run.ts          |  398 +++-
+ .../src/runner/process-supervision/run.ts          |  399 +++-
  .../src/runner/process-supervision/signals.test.ts |   29 +
  .../src/runner/process-supervision/signals.ts      |    8 +-
  .../src/runner/process-supervision/state.ts        |    9 +-
@@ -233,7 +234,7 @@ Created: 2026-07-23T18:45:27.072Z
  scripts/checks/check-spec-examples.mjs             |   20 +
  scripts/generate/sync-schemas.mjs                  |    7 +
  website/static/llms-full.txt                       |   20 +-
- 204 files changed, 27863 insertions(+), 3737 deletions(-)
+ 205 files changed, 27898 insertions(+), 3738 deletions(-)
 ```
 
 </details>
