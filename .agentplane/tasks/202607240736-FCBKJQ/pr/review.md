@@ -13,7 +13,7 @@ Created: 2026-07-24T07:37:26.385Z
 ## Verification
 
 - State: ok
-- Note: Verified: shared review-target resolver, integration gate, DONE route, and stale-review rejection pass the complete declared contract.
+- Note: Focused 67/67 tests, critical CLI 71/71, ci:contract, lint, typecheck, formatting, and architecture checks passed on f5b90e983.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,16 +29,17 @@ Created: 2026-07-24T07:37:26.385Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/evaluator/evaluator.command.ts    |  79 +---------
- .../commands/pr/integrate/internal/prepare.test.ts |  72 +++++++---
- .../src/commands/pr/integrate/internal/prepare.ts  |  47 ++----
- .../commands/shared/quality-review-target.test.ts  | 134 +++++++++++++++++
- .../src/commands/shared/quality-review-target.ts   | 102 +++++++++++++
- .../route-decision-blockers.quality-review.test.ts | 160 +++++++++++++++++++++
- .../src/commands/shared/route-decision-blockers.ts |  39 ++++-
- .../shared/route-decision-next-action.test.ts      |  36 +++++
+ .../evaluator/evaluator-run.command.test.ts        | 118 ++++++++++++
+ .../src/commands/evaluator/evaluator.command.ts    |  81 +-------
+ .../commands/pr/integrate/internal/prepare.test.ts | 120 ++++++++++--
+ .../src/commands/pr/integrate/internal/prepare.ts  |  51 ++----
+ .../commands/shared/quality-review-target.test.ts  | 203 +++++++++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   | 111 +++++++++++
+ .../route-decision-blockers.quality-review.test.ts | 194 ++++++++++++++++++++
+ .../src/commands/shared/route-decision-blockers.ts |  37 +++-
+ .../shared/route-decision-next-action.test.ts      |  36 ++++
  .../commands/shared/route-decision-next-action.ts  |  14 ++
- 9 files changed, 545 insertions(+), 138 deletions(-)
+ 10 files changed, 823 insertions(+), 142 deletions(-)
 ```
 
 </details>
