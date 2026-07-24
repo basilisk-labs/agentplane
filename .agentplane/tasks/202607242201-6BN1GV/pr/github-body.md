@@ -20,12 +20,10 @@ Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 ex
 - Note:
 
 ```text
-REWORK PASS at 0b9d9e4d5: SX8T09 now requires an atomic cross-process single-winner race with
-exactly one adapter spawn; R7WS01 consumes typed effect_in_doubt/applied/not_applied states and
-resolution provenance while forbidding generic retry; the roadmap separates provider_key_forwarded
-from provider exactly-once and gates the latter on a documented, integration-tested provider
-deduplication contract. Checks passed: task lint, task-state (3138), routing, format and doctor (0
-errors; 3 recorded pre-existing warnings).
+Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment,
+therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in
+final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed;
+doctor reported 0 errors and 3 pre-existing warnings.
 ```
 - Canonical workflow state lives in the task README.
 

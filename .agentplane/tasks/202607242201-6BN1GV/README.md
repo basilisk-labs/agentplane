@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -32,9 +32,9 @@ plan_approval:
   note: "Approved bounded graph amendment after splitting journal and resolution at separate verification boundaries."
 verification:
   state: "ok"
-  updated_at: "2026-07-24T22:26:39.227Z"
-  updated_by: "PLANNER"
-  note: "REWORK PASS at 0b9d9e4d5: SX8T09 now requires an atomic cross-process single-winner race with exactly one adapter spawn; R7WS01 consumes typed effect_in_doubt/applied/not_applied states and resolution provenance while forbidding generic retry; the roadmap separates provider_key_forwarded from provider exactly-once and gates the latter on a documented, integration-tested provider deduplication contract. Checks passed: task lint, task-state (3138), routing, format and doctor (0 errors; 3 recorded pre-existing warnings)."
+  updated_at: "2026-07-24T23:00:25.203Z"
+  updated_by: "TESTER"
+  note: "Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment, therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed; doctor reported 0 errors and 3 pre-existing warnings."
   attempts: 0
 quality_review:
   state: "rework"
@@ -110,8 +110,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-24T23:00:25.203Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment, therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed; doctor reported 0 errors and 3 pre-existing warnings."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:53:58.020Z"
+doc_updated_at: "2026-07-24T23:00:25.566Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
@@ -195,6 +201,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-24T23:00:25.203Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment, therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed; doctor reported 0 errors and 3 pre-existing warnings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:53:58.020Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+    - old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only this planning-task PR before either SX8T09 or QV09NA implementation begins.
@@ -212,6 +248,10 @@ sections:
     - Observation: RF-06 effect uncertainty needed separate journal and resolution verification boundaries.
       Impact: The alpha.2 gate and downstream runner lifecycle now fail closed until both safety contracts are complete.
       Resolution: Persist two atomic CODER leaves and one reviewed graph amendment with exact dependency fan-in.
+
+    - Observation: The declared count now matches the canonical roadmap table and release ancestry.
+      Impact: Removes the release-closure accounting mismatch without changing task dependencies or implementation scope.
+      Resolution: Changed only the executable-leaf total from 58 to 59 and reran all declared verification steps.
 extensions:
   implementation_commit:
     hash: "0b9d9e4d5ae9c51184054007d87a3aa28fcc137e"
@@ -307,6 +347,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-24T23:00:25.203Z — VERIFY — ok
+
+By: TESTER
+
+Note: Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment, therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed; doctor reported 0 errors and 3 pre-existing warnings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:53:58.020Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+- old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -328,3 +398,7 @@ DecisionContextRef:
 - Observation: RF-06 effect uncertainty needed separate journal and resolution verification boundaries.
   Impact: The alpha.2 gate and downstream runner lifecycle now fail closed until both safety contracts are complete.
   Resolution: Persist two atomic CODER leaves and one reviewed graph amendment with exact dependency fan-in.
+
+- Observation: The declared count now matches the canonical roadmap table and release ancestry.
+  Impact: Removes the release-closure accounting mismatch without changing task dependencies or implementation scope.
+  Resolution: Changed only the executable-leaf total from 58 to 59 and reran all declared verification steps.
