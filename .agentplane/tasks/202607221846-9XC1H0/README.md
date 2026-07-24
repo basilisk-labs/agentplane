@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -60,8 +60,8 @@ quality_review:
     - "The fixture and asserted files remain siblings in the same temporary directory; there is no user-controlled input, traversal, cwd dependency, or generated code."
     - "Independent review passed and process-supervision tests pass 12/12; format, typecheck, and diff checks are green."
 commit:
-  hash: "07d20cb0ec3d7948cb9d10222de88eeccd5d722e"
-  message: "✅ 9XC1H0 task: refresh verification evidence"
+  hash: "fa9aa390914f148ea7edd3c7f6ce0d03c6242a32"
+  message: "✅ 9XC1H0 task: record CodeQL quality review"
 comments:
   -
     author: "CODER"
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -128,8 +131,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at e79d03abc: CodeQL alerts #38/#39 are fixed without production changes by removing path interpolation from generated .mjs fixtures. process-supervision tests pass 12/12; format, typecheck, and git diff checks pass; prior full RF-03 verification at f161a6e56 remains applicable to unchanged production code."
+  -
+    type: "status"
+    at: "2026-07-24T06:10:28.448Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T06:09:28.485Z"
+doc_updated_at: "2026-07-24T06:10:28.448Z"
 doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
@@ -297,8 +307,8 @@ sections:
       Resolution: Replaced dynamic code construction with static sibling file URLs based on import.meta.url; targeted tests and independent security review pass.
 extensions:
   implementation_commit:
-    hash: "f161a6e56e7028c2932835af5e59bac0699f099e"
-    message: "🔒 9XC1H0 task: harden runner lifecycle authority"
+    hash: "e79d03abc931372a4e3a75b09275dd02457fa053"
+    message: "🛡️ 9XC1H0 task: avoid generated test code"
 id_source: "generated"
 ---
 ## Summary
