@@ -16,8 +16,13 @@ Reuse the evaluator metadata-only review target contract in integration preparat
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: shared review-target resolver, integration gate, DONE route, and stale-review rejection
+pass the complete declared contract.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
