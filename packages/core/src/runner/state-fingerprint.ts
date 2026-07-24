@@ -51,6 +51,9 @@ export const STATE_FINGERPRINT_ZOD_SCHEMA = z
     kind: z.literal(STATE_FINGERPRINT_KIND),
     observed_by: z.literal(STATE_FINGERPRINT_OBSERVER),
     task_id: NON_EMPTY_STRING,
+    task_revision: z.number().int().positive().nullable(),
+    git_head: NON_EMPTY_STRING.nullable(),
+    worktree: NON_EMPTY_STRING,
     components: z
       .object({
         task: STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
@@ -85,6 +88,9 @@ export type StateFingerprintComponentInput =
 
 export type StateFingerprintInput = {
   task_id: string;
+  task_revision: number | null;
+  git_head: string | null;
+  worktree: string;
   components: Record<StateFingerprintComponentName, StateFingerprintComponentInput>;
 };
 
@@ -111,6 +117,12 @@ export type StateFingerprintChange = {
   current_digest: string;
 };
 
+export type StateFingerprintIdentityChange = {
+  field: "task_id" | "task_revision" | "git_head" | "worktree";
+  expected: string | number | null;
+  current: string | number | null;
+};
+
 export type StateFingerprintPreconditionDiagnostic = {
   status: "fresh" | "fresh_with_bounded_uncertainty" | "stale" | "blocked";
   reason_code:
@@ -122,6 +134,7 @@ export type StateFingerprintPreconditionDiagnostic = {
   expected_digest: string;
   current_digest: string;
   changed_components: StateFingerprintChange[];
+  identity_changes: StateFingerprintIdentityChange[];
   unavailable_required_components: StateFingerprintComponentName[];
   provider_state: StateFingerprintComponent["state"];
 };
@@ -229,6 +242,9 @@ function fingerprintDigest(
 export function buildStateFingerprint(input: StateFingerprintInput): StateFingerprint {
   const taskId = input.task_id.trim();
   if (!taskId) throw new Error("State fingerprint task_id must be non-empty.");
+  const worktree = input.worktree.trim();
+  if (!worktree) throw new Error("State fingerprint worktree must be non-empty.");
+  const gitHead = input.git_head?.trim() ?? null;
   const components = Object.fromEntries(
     STATE_FINGERPRINT_COMPONENT_NAMES.map((name) => [name, buildComponent(input.components[name])]),
   ) as StateFingerprint["components"];
@@ -237,6 +253,9 @@ export function buildStateFingerprint(input: StateFingerprintInput): StateFinger
     kind: STATE_FINGERPRINT_KIND,
     observed_by: STATE_FINGERPRINT_OBSERVER,
     task_id: taskId,
+    task_revision: input.task_revision,
+    git_head: gitHead === "" ? null : gitHead,
+    worktree,
     components,
   };
   return validateStateFingerprint({
@@ -283,17 +302,47 @@ export function evaluateStateFingerprintPrecondition(opts: {
         ]
       : [];
   });
-  if (
-    expected.task_id !== current.task_id &&
-    !changed_components.some((entry) => entry.component === "task")
-  ) {
-    changed_components.unshift({
-      component: "task",
-      expected_state: expected.components.task.state,
-      current_state: current.components.task.state,
-      expected_digest: expected.components.task.digest,
-      current_digest: current.components.task.digest,
+  const identity_changes: StateFingerprintIdentityChange[] = [
+    ...(expected.task_id === current.task_id
+      ? []
+      : [{ field: "task_id" as const, expected: expected.task_id, current: current.task_id }]),
+    ...(expected.task_revision === current.task_revision
+      ? []
+      : [
+          {
+            field: "task_revision" as const,
+            expected: expected.task_revision,
+            current: current.task_revision,
+          },
+        ]),
+    ...(expected.git_head === current.git_head
+      ? []
+      : [{ field: "git_head" as const, expected: expected.git_head, current: current.git_head }]),
+    ...(expected.worktree === current.worktree
+      ? []
+      : [{ field: "worktree" as const, expected: expected.worktree, current: current.worktree }]),
+  ];
+  const recordIdentityOnlyComponent = (component: "task" | "git"): void => {
+    if (changed_components.some((entry) => entry.component === component)) return;
+    changed_components.push({
+      component,
+      expected_state: expected.components[component].state,
+      current_state: current.components[component].state,
+      expected_digest: expected.components[component].digest,
+      current_digest: current.components[component].digest,
     });
+  };
+  if (changed_components.length === 0) {
+    if (
+      identity_changes.some((entry) => entry.field === "task_id" || entry.field === "task_revision")
+    ) {
+      recordIdentityOnlyComponent("task");
+    }
+    if (
+      identity_changes.some((entry) => entry.field === "git_head" || entry.field === "worktree")
+    ) {
+      recordIdentityOnlyComponent("git");
+    }
   }
   const unavailable_required_components = normalizeRequiredComponents(
     policy.required_components,
@@ -302,6 +351,7 @@ export function evaluateStateFingerprintPrecondition(opts: {
     expected_digest: expected.digest,
     current_digest: current.digest,
     changed_components,
+    identity_changes,
     unavailable_required_components,
     provider_state: current.components.provider.state,
   };
@@ -309,7 +359,11 @@ export function evaluateStateFingerprintPrecondition(opts: {
   const rejectedProviderReasonCodes = policy.provider.reject_reason_codes
     ? new Set(policy.provider.reject_reason_codes)
     : null;
-  if (changed_components.length > 0 || expected.digest !== current.digest) {
+  if (
+    changed_components.length > 0 ||
+    identity_changes.length > 0 ||
+    expected.digest !== current.digest
+  ) {
     return {
       ...base,
       status: "stale",

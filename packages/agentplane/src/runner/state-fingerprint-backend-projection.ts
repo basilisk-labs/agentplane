@@ -9,6 +9,7 @@ import type { CommandContext } from "../commands/shared/task-backend.js";
 import { readContainedStableTextNoFollow } from "../shared/contained-stable-file.js";
 
 const BACKEND_CONFIG_MAX_BYTES = 1024 * 1024;
+const BACKEND_STATE_MAX_BYTES = 1024 * 1024;
 const PROJECTION_CLOCK_SKEW_TOLERANCE_MS = 60_000;
 const SHA256_DIGEST_PATTERN = /^sha256:[0-9a-f]{64}$/u;
 
@@ -37,10 +38,18 @@ function unavailableComponent(
 }
 
 function relativeConfigPath(ctx: CommandContext): string {
-  return path
-    .relative(ctx.resolvedProject.gitRoot, ctx.backendConfigPath)
-    .split(path.sep)
-    .join("/");
+  return relativeRepositoryPath(ctx, ctx.backendConfigPath);
+}
+
+function relativeRepositoryPath(ctx: CommandContext, filePath: string): string {
+  return path.relative(ctx.resolvedProject.gitRoot, filePath).split(path.sep).join("/");
+}
+
+function runtimeBackendStatePath(ctx: CommandContext): string | null {
+  const backend = ctx.taskBackend as CommandContext["taskBackend"] & { statePath?: unknown };
+  return typeof backend.statePath === "string" && backend.statePath.trim().length > 0
+    ? path.resolve(backend.statePath)
+    : null;
 }
 
 async function observeBackendConfig(
@@ -72,6 +81,51 @@ async function observeBackendConfig(
     return {
       state: "unavailable",
       reason_code: "backend_config_unreadable",
+    };
+  }
+}
+
+async function observeBackendState(
+  ctx: CommandContext,
+): Promise<
+  | { state: "present"; path: string; sha256: string }
+  | { state: "missing"; path: string | null; reason_code: string }
+  | { state: "unavailable"; path: string; reason_code: "backend_state_unreadable" }
+> {
+  const statePath = runtimeBackendStatePath(ctx);
+  if (!statePath) {
+    return {
+      state: "missing",
+      path: null,
+      reason_code: "backend_state_not_applicable",
+    };
+  }
+  const relativePath = relativeRepositoryPath(ctx, statePath);
+  try {
+    return {
+      state: "present",
+      path: relativePath,
+      sha256: digestText(
+        await readContainedStableTextNoFollow({
+          repository_root: ctx.resolvedProject.gitRoot,
+          file_path: statePath,
+          label: "task backend projection state",
+          max_bytes: BACKEND_STATE_MAX_BYTES,
+        }),
+      ),
+    };
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
+      return {
+        state: "missing",
+        path: relativePath,
+        reason_code: "backend_state_missing",
+      };
+    }
+    return {
+      state: "unavailable",
+      path: relativePath,
+      reason_code: "backend_state_unreadable",
     };
   }
 }
@@ -168,18 +222,30 @@ function resolveBackendProjectionFreshness(observation: TaskBackendProjectionObs
 
 export async function observeBackendProjection(
   ctx: CommandContext,
+  opts?: { projection?: TaskBackendProjectionObservation },
 ): Promise<StateFingerprintComponentInput> {
-  const config = await observeBackendConfig(ctx);
+  const [config, backendState] = await Promise.all([
+    observeBackendConfig(ctx),
+    observeBackendState(ctx),
+  ]);
   if (config.state === "unavailable") {
     return unavailableComponent(config.reason_code);
   }
+  if (backendState.state === "unavailable") {
+    return unavailableComponent(backendState.reason_code, {
+      backend_state_path: backendState.path,
+    });
+  }
   let projection: TaskBackendProjectionObservation | null = null;
   if (ctx.taskBackend.capabilities.canonical_source === "remote") {
-    if (!ctx.taskBackend.observeProjection) {
+    if (!opts?.projection && !ctx.taskBackend.observeProjection) {
       return unavailableComponent("backend_projection_freshness_unavailable");
     }
     try {
-      projection = await ctx.taskBackend.observeProjection();
+      projection = opts?.projection ?? (await ctx.taskBackend.observeProjection?.()) ?? null;
+      if (!projection) {
+        return unavailableComponent("backend_projection_freshness_unavailable");
+      }
       const freshness = resolveBackendProjectionFreshness(projection);
       if (freshness.state === "unavailable") {
         return unavailableComponent(freshness.reason_code, freshness.evidence);
@@ -196,6 +262,8 @@ export async function observeBackendProjection(
       backend_id: ctx.backendId,
       backend_config_path: relativeConfigPath(ctx),
       backend_config: config,
+      backend_state_path: backendState.path,
+      backend_state: backendState,
       capabilities: ctx.taskBackend.capabilities ?? null,
       projection_revision: projection?.projection_revision ?? null,
       projection_freshness: projection?.projection_freshness ?? null,

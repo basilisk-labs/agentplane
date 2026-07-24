@@ -1,7 +1,7 @@
 import { isProcessAlive, readObservedProcessIdentity } from "../process-supervision/signals.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { readRunnerChildSpawnClaim } from "../adapters/execution-control.js";
-import type { RunnerProcessTreeObservation } from "../types.js";
+import type { RunnerProcessTreeObservation, RunnerRunState } from "../types.js";
 
 import type { TaskRunnerActiveClaim } from "./task-run-active-claim.js";
 
@@ -9,6 +9,7 @@ export type TaskRunnerActiveClaimOwnerStatus = "active" | "stale" | "unverified"
 
 export type TaskRunnerClaimedRunAuthority =
   | "absent"
+  | "effect_in_doubt"
   | "terminal"
   | "terminal_cleanup_unverified"
   | "incomplete_pre_provider"
@@ -24,6 +25,14 @@ export type TaskRunnerActiveClaimAuthorityPaths = {
   workflow_dir: string;
   task_id: string;
 };
+
+export function isRunnerEffectInDoubt(state: Pick<RunnerRunState, "state_fingerprint">): boolean {
+  return (
+    state.state_fingerprint?.outcome === "effect_started" ||
+    state.state_fingerprint?.outcome === "effect_unknown" ||
+    state.state_fingerprint?.outcome === "post_state_unknown"
+  );
+}
 
 function isManagedScopeCleanupConfirmed(
   processTree: RunnerProcessTreeObservation | undefined,
@@ -82,6 +91,7 @@ export async function inspectTaskRunnerClaimedRunAuthority(
   if (!repository) return "absent";
   const state = await repository.readState();
   if (!state) return "incomplete_pre_provider";
+  if (isRunnerEffectInDoubt(state)) return "effect_in_doubt";
   if (state.status === "prepared") {
     await repository.assertBoundary("before reading runner child spawn claim authority");
     const spawnClaim = await readRunnerChildSpawnClaim({

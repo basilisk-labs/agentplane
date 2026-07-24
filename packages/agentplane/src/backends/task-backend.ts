@@ -20,6 +20,8 @@ export {
   type TaskBackendProjectionObservation,
   type TaskBackendProjectionPort,
   type TaskBackendProjectionReadMode,
+  type TaskBackendProjectionTransition,
+  type TaskBackendProjectionTransitionHooks,
   type TaskBackendQueryPort,
   type TaskBackendSyncPort,
   type TaskBackendVisibleField,

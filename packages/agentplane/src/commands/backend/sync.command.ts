@@ -17,6 +17,7 @@ import {
   type BackendMigrateCanonicalStateParsed,
   type BackendSyncParsed,
 } from "../backend.js";
+import { SYNC_IDENTITY_TRANSITION_OPTIONS } from "../shared/backend-sync-options.js";
 
 export const backendSpec: CommandSpec<GroupCommandParsed> = {
   id: ["backend"],
@@ -72,20 +73,7 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
       description:
         "Watch mode: stop after N iterations (0 means run until interrupted). Useful for tests.",
     },
-    {
-      kind: "boolean",
-      name: "bootstrap-projection",
-      default: false,
-      description:
-        "Explicitly bind a missing cloud checkpoint by pushing the confirmed local cache (requires push + conflict=fail).",
-    },
-    {
-      kind: "boolean",
-      name: "adopt-projection-identity",
-      default: false,
-      description:
-        "Explicitly adopt the active cloud identity and remote projection (requires pull + conflict=prefer-remote).",
-    },
+    ...SYNC_IDENTITY_TRANSITION_OPTIONS,
     { kind: "boolean", name: "yes", default: false, description: "Auto-approve network access." },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],

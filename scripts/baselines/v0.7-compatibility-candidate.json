@@ -6,7 +6,8 @@
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
     "202607221846-9XC1H0",
-    "202607221848-ABG7SD"
+    "202607221848-ABG7SD",
+    "202607221848-0ZAB1F"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -15,9 +16,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "57b789caa3dcaf39a6e0d0fa8afd7dbd2bd3aa75304ebe80617f59aa2b49eb40",
+    "surface_sha256": "4eadd265e96921a3d4354558c54811749758127596781041a48f4d8b665807d8",
     "section_digests": {
-      "cli_topology": "ba9b2aa5ec996c1cab5ccc64ecc0796a2381157442d44f73b6472a5406c75cda",
+      "cli_topology": "afcc9c0ce680834c9d9f058822a2bc46f1cc9e035784878e21462896f06fe8c1",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -139,16 +140,17 @@
         "202607221846-4VB97J",
         "202607221846-YGWMA2",
         "202607230554-YFYT83",
-        "202607221846-9XC1H0"
+        "202607221846-9XC1H0",
+        "202607221848-0ZAB1F"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "ba9b2aa5ec996c1cab5ccc64ecc0796a2381157442d44f73b6472a5406c75cda",
+      "to_sha256": "afcc9c0ce680834c9d9f058822a2bc46f1cc9e035784878e21462896f06fe8c1",
       "classification": "additive",
-      "summary": "Adds safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, and typed task-run sandbox authority; no command or option is removed or mutated.",
+      "summary": "Adds safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, and explicit cloud projection bootstrap/adoption controls on both sync routes; no command or option is removed or mutated.",
       "evidence": {
         "command_count": { "from": 243, "to": 245 },
         "positional_count": { "from": 165, "to": 166 },
-        "option_count": { "from": 767, "to": 774 },
+        "option_count": { "from": 767, "to": 778 },
         "added_commands": ["task run reconcile", "workflow migrate"],
         "removed_commands": [],
         "added_command_descriptors": [
@@ -197,6 +199,20 @@
         "mutated_command_shells": [],
         "added_options": [
           {
+            "command": "backend sync",
+            "name": "adopt-projection-identity",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "backend sync",
+            "name": "bootstrap-projection",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
             "command": "cleanup merged",
             "name": "task-id",
             "kind": "string",
@@ -209,6 +225,20 @@
             "kind": "string",
             "valueHint": "<human_supplied|evaluator_supplied>",
             "choices": ["human_supplied", "evaluator_supplied"]
+          },
+          {
+            "command": "sync",
+            "name": "adopt-projection-identity",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "sync",
+            "name": "bootstrap-projection",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
           },
           {
             "command": "task run",
@@ -260,6 +290,18 @@
           },
           {
             "kind": "option",
+            "command": "backend sync",
+            "name": "adopt-projection-identity",
+            "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "kind": "option",
+            "command": "backend sync",
+            "name": "bootstrap-projection",
+            "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "kind": "option",
             "command": "cleanup merged",
             "name": "task-id",
             "source_task": "202607230554-YFYT83"
@@ -269,6 +311,18 @@
             "command": "evaluator run",
             "name": "provenance",
             "source_task": "202607221846-YGWMA2"
+          },
+          {
+            "kind": "option",
+            "command": "sync",
+            "name": "adopt-projection-identity",
+            "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "kind": "option",
+            "command": "sync",
+            "name": "bootstrap-projection",
+            "source_task": "202607221848-0ZAB1F"
           },
           {
             "kind": "option",

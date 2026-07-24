@@ -42,6 +42,7 @@ import {
 } from "./task-run-active-claim.js";
 import { inspectTaskRunnerClaimedRunAuthority } from "./task-run-active-claim-authority.js";
 import {
+  assertTaskRunnerActiveClaimCurrent,
   attachSuppressedActiveClaimCleanup,
   reconcileStaleTerminalTaskRunnerActiveClaim,
   reconcileTerminalTaskRunnerActiveClaim,
@@ -62,6 +63,13 @@ import {
   RunnerStateFingerprintCliError,
 } from "./task-run-state-fingerprint.js";
 import {
+  persistReplayAnchorBeforeExecution,
+  type TaskRunnerReplayProvenance,
+} from "./task-run-replay-anchor.js";
+import {
+  persistRunnerStateFingerprintEffectStarted,
+  persistRunnerStateFingerprintEffectUnknown,
+  persistRunnerStateFingerprintPostStateUnknown,
   persistRunnerStateFingerprintRefusal,
   persistRunnerStateFingerprintSuccess,
 } from "./task-run-state-fingerprint-persistence.js";
@@ -98,13 +106,7 @@ export type ExecutedTaskRunnerExecution = Omit<
   precondition: StateFingerprintPreconditionDiagnostic;
   active_claim_cleanup?: TaskRunnerActiveClaimCleanupDiagnostic;
 };
-
-export type TaskRunnerReplayProvenance = {
-  action: "resume" | "retry";
-  source_run_id: string;
-  source_status: RunnerRunState["status"];
-};
-
+export type { TaskRunnerReplayProvenance } from "./task-run-replay-anchor.js";
 function collectFrameworkExplainBehaviorInputs(
   prompts: RunnerContextBundle["base_prompts"],
 ): ExplainBehaviorInput[] {
@@ -120,45 +122,6 @@ function collectFrameworkExplainBehaviorInputs(
         ]
       : [],
   );
-}
-
-async function persistReplayAnchorBeforeExecution(opts: {
-  ctx: CommandContext;
-  task_id: string;
-  bundle: RunnerContextBundle;
-  state: RunnerRunState;
-  provenance: TaskRunnerReplayProvenance;
-}): Promise<void> {
-  const repository = await RunnerRunRepository.openExistingTaskRun({
-    git_root: opts.bundle.repository.git_root,
-    workflow_dir: opts.bundle.repository.workflow_dir,
-    task_id: opts.task_id,
-    run_id: opts.bundle.execution.run_id,
-    storage: "supervisor",
-  });
-  const recordedAt = new Date().toISOString();
-  const eventType =
-    opts.provenance.action === "resume" ? "runner_resume_created" : "runner_retry_created";
-  await repository.appendEvent({
-    at: recordedAt,
-    type: eventType,
-    message:
-      `runner ${opts.provenance.action} created fresh from current task/config; ` +
-      `source_run_id=${opts.provenance.source_run_id}`,
-    data: {
-      source_run_id: opts.provenance.source_run_id,
-      source_status: opts.provenance.source_status,
-      source_trust: "external_task_anchor_only",
-      source_artifacts_reused: false,
-    },
-  });
-  await persistRunnerOutcomeToTask({
-    ctx: opts.ctx,
-    task_id: opts.task_id,
-    bundle: opts.bundle,
-    state: opts.state,
-    ordering_authority: "current_active_claim",
-  });
 }
 
 export async function prepareTaskRunnerExecution(opts: {
@@ -386,11 +349,12 @@ export async function executeTaskRunnerExecution(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const runId = opts.run_id ?? createRunnerRunId();
   await reconcileStaleTerminalTaskRunnerActiveClaim({
     ctx,
     task_id: opts.task_id,
+    prospective_run_id: runId,
   });
-  const runId = opts.run_id ?? createRunnerRunId();
   const activeClaim = await acquireTaskRunnerActiveClaim({
     git_root: ctx.resolvedProject.gitRoot,
     workflow_dir: ctx.config.paths.workflow_dir,
@@ -444,6 +408,8 @@ export async function executeTaskRunnerExecution(opts: {
             bundle: err.bundle,
             state: err.state,
             provenance: opts.replay_provenance,
+            expected_backend_projection:
+              err.bundle.state_fingerprint?.components.backend_projection,
           });
         } else {
           await persistRunnerOutcomeToTask({
@@ -461,6 +427,7 @@ export async function executeTaskRunnerExecution(opts: {
     cleanupBundle = prepared.bundle;
     releaseActiveClaim = false;
     const adapter = createRunnerAdapter(ctx.config);
+    const replayProvenance = opts.replay_provenance;
     let guardedExecution;
     try {
       guardedExecution = await executeStateBoundRunnerInvocation({
@@ -470,18 +437,48 @@ export async function executeTaskRunnerExecution(opts: {
         invocation: prepared.invocation,
         precondition_fingerprint: prepared.precondition_fingerprint,
         precondition_policy: prepared.precondition_policy,
-        apply: async (invocation) => {
-          if (opts.replay_provenance) {
-            await persistReplayAnchorBeforeExecution({
-              ctx,
-              task_id: opts.task_id,
-              bundle: prepared.bundle,
-              state: prepared.state,
-              provenance: opts.replay_provenance,
-            });
-          }
-          return await adapter.execute(invocation);
+        ...(replayProvenance
+          ? {
+              advance_precondition: async ({ expected_backend_projection }) => {
+                return await persistReplayAnchorBeforeExecution({
+                  ctx,
+                  task_id: opts.task_id,
+                  bundle: prepared.bundle,
+                  state: prepared.state,
+                  provenance: replayProvenance,
+                  expected_backend_projection,
+                });
+              },
+            }
+          : {}),
+        before_apply: async (stateFingerprint) => {
+          await persistRunnerStateFingerprintEffectStarted({
+            ctx,
+            task_id: opts.task_id,
+            invocation: prepared.invocation,
+            state_fingerprint: stateFingerprint,
+          });
         },
+        on_apply_error: async ({ error, state_fingerprint: stateFingerprint }) => {
+          await persistRunnerStateFingerprintEffectUnknown({
+            ctx,
+            task_id: opts.task_id,
+            invocation: prepared.invocation,
+            prepared_state: prepared.state,
+            error,
+            state_fingerprint: stateFingerprint,
+          });
+        },
+        on_post_state_error: async ({ result, state_fingerprint: stateFingerprint }) => {
+          await persistRunnerStateFingerprintPostStateUnknown({
+            ctx,
+            task_id: opts.task_id,
+            invocation: prepared.invocation,
+            result,
+            state_fingerprint: stateFingerprint,
+          });
+        },
+        apply: async (invocation) => await adapter.execute(invocation),
       });
     } catch (error) {
       if (!(error instanceof RunnerStateFingerprintCliError)) throw error;
@@ -566,7 +563,15 @@ export async function executeTaskRunnerExecution(opts: {
           },
           activeClaim.claim,
         );
-        releaseActiveClaim = authority === "absent" || authority === "incomplete_pre_provider";
+        if (authority === "effect_in_doubt") {
+          await assertTaskRunnerActiveClaimCurrent({
+            git_root: ctx.resolvedProject.gitRoot,
+            workflow_dir: ctx.config.paths.workflow_dir,
+            expected: activeClaim.claim,
+          });
+        } else {
+          releaseActiveClaim = authority === "absent" || authority === "incomplete_pre_provider";
+        }
       } catch (inspectionError) {
         const diagnostic = await recordActiveClaimCleanupFailure({
           bundle: cleanupBundle,

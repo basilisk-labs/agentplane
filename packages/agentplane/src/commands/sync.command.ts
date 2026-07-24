@@ -1,6 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../cli/spec/spec.js";
 import { COMMAND_SNIPPETS } from "../cli/command-snippets.js";
 import type { CommandContext } from "./shared/task-backend.js";
+import { SYNC_IDENTITY_TRANSITION_OPTIONS } from "./shared/backend-sync-options.js";
 import { cmdSyncParsed, type SyncParsed } from "./backend.js";
 
 export const syncSpec: CommandSpec<SyncParsed> = {
@@ -34,20 +35,7 @@ export const syncSpec: CommandSpec<SyncParsed> = {
       default: "diff",
       description: "Conflict handling policy (default: diff).",
     },
-    {
-      kind: "boolean",
-      name: "bootstrap-projection",
-      default: false,
-      description:
-        "Explicitly bind a missing cloud checkpoint by pushing the confirmed local cache (requires push + conflict=fail).",
-    },
-    {
-      kind: "boolean",
-      name: "adopt-projection-identity",
-      default: false,
-      description:
-        "Explicitly adopt the active cloud identity and remote projection (requires pull + conflict=prefer-remote).",
-    },
+    ...SYNC_IDENTITY_TRANSITION_OPTIONS,
     { kind: "boolean", name: "yes", default: false, description: "Auto-approve network access." },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],

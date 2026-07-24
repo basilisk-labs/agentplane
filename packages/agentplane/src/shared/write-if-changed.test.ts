@@ -1,4 +1,15 @@
-import { mkdtemp, readFile, stat, utimes } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rename,
+  rm,
+  stat,
+  symlink,
+  utimes,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -44,5 +55,35 @@ describe("shared/write-if-changed", () => {
     expect(await writeJsonStableIfChanged(filePath, obj2)).toBe(false);
     const after = await stat(filePath);
     expect(after.mtimeMs).toBe(before.mtimeMs);
+  });
+
+  it("rejects a contained parent symlink swap before atomic publication", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-write-if-changed-"));
+    const outside = await mkdtemp(path.join(os.tmpdir(), "agentplane-write-if-changed-outside-"));
+    const taskDirectory = path.join(root, "tasks", "task-1");
+    const displacedDirectory = path.join(root, "tasks", "task-1-displaced");
+    const filePath = path.join(taskDirectory, "README.md");
+    const outsideFilePath = path.join(outside, "README.md");
+    await mkdir(taskDirectory, { recursive: true });
+    await writeFile(outsideFilePath, "outside sentinel\n", "utf8");
+
+    try {
+      await expect(
+        writeTextIfChanged(filePath, "new contents\n", {
+          containedRoot: root,
+          label: "task README",
+          afterObservation: async () => {
+            await rename(taskDirectory, displacedDirectory);
+            await symlink(outside, taskDirectory, "dir");
+          },
+        }),
+      ).rejects.toThrow("Refusing symlinked task README path");
+
+      await expect(readFile(outsideFilePath, "utf8")).resolves.toBe("outside sentinel\n");
+      await expect(readdir(outside)).resolves.toEqual(["README.md"]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+      await rm(outside, { recursive: true, force: true });
+    }
   });
 });

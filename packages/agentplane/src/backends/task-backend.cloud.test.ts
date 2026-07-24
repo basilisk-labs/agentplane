@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -25,6 +25,39 @@ function requestUrl(url: unknown): string {
 
 function expectAbortSignal(input: unknown): asserts input is AbortSignal {
   expect(input).toBeInstanceOf(AbortSignal);
+}
+
+function acknowledgedPushResponse(
+  init: RequestInit | undefined,
+  opts?: { lastCheckedAt?: string; status?: "persisted" | "unchanged" },
+): Response {
+  const body = parseRequestBody<{
+    batch?: { id?: string; finalize?: boolean };
+    projection?: {
+      request_id?: string;
+      projection_sha256?: string;
+      task_count?: number;
+      project_id?: string;
+      provider?: string | null;
+    };
+  }>(init?.body);
+  return Response.json({
+    data: {
+      ...(opts?.lastCheckedAt ? { last_checked_at: opts.lastCheckedAt } : {}),
+      ...(body.batch
+        ? { batch: { id: body.batch.id, finalized: body.batch.finalize === true } }
+        : {}),
+      projection_ack: {
+        status: opts?.status ?? "persisted",
+        request_id: body.projection?.request_id,
+        projection_sha256: body.projection?.projection_sha256,
+        task_count: body.projection?.task_count,
+        project_id: body.projection?.project_id,
+        provider: body.projection?.provider,
+        ...(body.batch ? { batch_id: body.batch.id } : {}),
+      },
+    },
+  });
 }
 
 function makeTask(overrides: Partial<TaskData> & { id: string }): TaskData {
@@ -119,9 +152,62 @@ describe("CloudBackend", () => {
     );
 
     await expect(backend.assertLocalMutationReady()).rejects.toThrow(
-      "Safe command: agentplane backend sync cloud --direction pull --yes",
+      "Cloud backend sync checkpoint is invalid",
     );
     expect(fetchImpl).not.toHaveBeenCalled();
+
+    await expect(backend.inspectConfiguration()).resolves.toMatchObject({
+      freshness: {
+        checkpoint: {
+          status: "invalid_json",
+          repair: expect.stringContaining("trusted checkpoint") as unknown,
+        },
+        lastCheckedAt: null,
+        stale: true,
+      },
+    });
+  });
+
+  it("reports an unsafe checkpoint path without following a repository-escaping symlink", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    const outside = await mkTempDir();
+    await mkdir(stateDir, { recursive: true });
+    await writeFile(
+      path.join(outside, "state.json"),
+      JSON.stringify({
+        last_checked_at: "2099-01-01T00:00:00.000Z",
+        projection_identity_sha256: `sha256:${"a".repeat(64)}`,
+      }),
+      "utf8",
+    );
+    await symlink(path.join(outside, "state.json"), path.join(stateDir, "state.json"));
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+      },
+      {
+        root: tempDir,
+        cache: new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") }),
+        fetchImpl: vi.fn<typeof fetch>(() => Promise.resolve(Response.json({}))),
+      },
+    );
+
+    try {
+      await expect(backend.inspectConfiguration()).resolves.toMatchObject({
+        freshness: {
+          checkpoint: {
+            status: "unsafe",
+            repair: expect.stringContaining("repository-contained") as unknown,
+          },
+          lastCheckedAt: null,
+          stale: true,
+        },
+      });
+    } finally {
+      await rm(outside, { recursive: true, force: true });
+    }
   });
 
   it("rejects local mutations before cache writes when the cloud projection is stale", async () => {
@@ -188,7 +274,7 @@ describe("CloudBackend", () => {
         const now = new Date().toISOString();
         return Promise.resolve(
           Response.json({
-            data: { last_checked_at: now, tasks: [] },
+            data: { last_checked_at: now, tasks: [], projection_complete: true },
           }),
         );
       }
@@ -226,8 +312,12 @@ describe("CloudBackend", () => {
       depends_on: ["202605051806-A1B2"],
     });
     await cache.writeTask(task);
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(Response.json({ last_checked_at: "2026-05-06T00:00:00.000Z" })),
+    const fetchImpl = vi.fn<typeof fetch>((_input, init) =>
+      Promise.resolve(
+        acknowledgedPushResponse(init, {
+          lastCheckedAt: "2026-05-06T00:00:00.000Z",
+        }),
+      ),
     );
     const backend = new CloudBackend(
       {
@@ -248,6 +338,17 @@ describe("CloudBackend", () => {
     expect(init?.method).toBe("POST");
     expectAbortSignal(init?.signal);
     expect(init?.body).toContain('"depends_on":["202605051806-A1B2"]');
+    expect(
+      parseRequestBody<{
+        projection?: Record<string, unknown>;
+      }>(init?.body).projection,
+    ).toMatchObject({
+      request_id: expect.stringMatching(/^push_/u) as unknown,
+      projection_sha256: expect.stringMatching(/^sha256:[a-f0-9]{64}$/u) as unknown,
+      task_count: 1,
+      project_id: "project-1",
+      provider: "github-projects",
+    });
     const stateText = await readFile(
       path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
       "utf8",
@@ -276,8 +377,8 @@ describe("CloudBackend", () => {
       )}\n`,
       "utf8",
     );
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(Response.json({ data: { no_projection_changes: true } })),
+    const fetchImpl = vi.fn<typeof fetch>((_input, init) =>
+      Promise.resolve(acknowledgedPushResponse(init, { status: "unchanged" })),
     );
     const backend = new CloudBackend(
       {
@@ -360,16 +461,9 @@ describe("CloudBackend", () => {
       );
     }
     const fetchImpl = vi.fn<typeof fetch>((_url, init) => {
-      const body = parseRequestBody<{
-        batch?: { finalize?: boolean };
-      }>(init?.body);
       return Promise.resolve(
-        Response.json({
-          data: {
-            last_checked_at: "2026-05-06T00:00:00.000Z",
-            batch: { finalized: body.batch?.finalize === true },
-            no_projection_changes: body.batch?.finalize !== true,
-          },
+        acknowledgedPushResponse(init, {
+          lastCheckedAt: "2026-05-06T00:00:00.000Z",
         }),
       );
     });
@@ -389,10 +483,12 @@ describe("CloudBackend", () => {
       url: requestUrl(url),
       body: parseRequestBody<{
         batch?: {
+          id: string;
           total_batches: number;
           chunk_index: number;
           finalize: boolean;
         };
+        projection?: Record<string, unknown>;
         tasks?: unknown[];
       }>(init?.body),
     }));
@@ -410,6 +506,8 @@ describe("CloudBackend", () => {
       chunk_index: 1,
       finalize: true,
     });
+    expect(calls[0]?.body.batch?.id).toBe(calls[1]?.body.batch?.id);
+    expect(calls[0]?.body.projection).toEqual(calls[1]?.body.projection);
     expect(calls[0]?.body.tasks).toHaveLength(1);
     expect(calls[1]?.body.tasks).toHaveLength(1);
   });
@@ -434,12 +532,8 @@ describe("CloudBackend", () => {
         return Promise.reject(new TypeError("fetch failed"));
       }
       return Promise.resolve(
-        Response.json({
-          data: {
-            last_checked_at: "2026-05-06T00:00:00.000Z",
-            batch: { finalized: body.batch?.finalize === true },
-            no_projection_changes: body.batch?.finalize !== true,
-          },
+        acknowledgedPushResponse(init, {
+          lastCheckedAt: "2026-05-06T00:00:00.000Z",
         }),
       );
     });
@@ -489,12 +583,8 @@ describe("CloudBackend", () => {
         return Promise.resolve(Response.json({ error: "temporary" }, { status: 503 }));
       }
       return Promise.resolve(
-        Response.json({
-          data: {
-            last_checked_at: "2026-05-06T00:00:00.000Z",
-            batch: { finalized: body.batch?.finalize === true },
-            no_projection_changes: body.batch?.finalize !== true,
-          },
+        acknowledgedPushResponse(init, {
+          lastCheckedAt: "2026-05-06T00:00:00.000Z",
         }),
       );
     });
@@ -595,6 +685,7 @@ describe("CloudBackend", () => {
             },
           ],
           last_checked_at: "2026-05-06T00:00:00.000Z",
+          projection_complete: true,
         }),
       ),
     );
@@ -636,6 +727,20 @@ describe("CloudBackend", () => {
       description: "Existing task",
     });
     await cache.writeTask(task);
+    const statePath = path.join(tempDir, ".agentplane", "backends", "cloud", "state.json");
+    await mkdir(path.dirname(statePath), { recursive: true });
+    await writeFile(
+      statePath,
+      `${JSON.stringify({
+        last_checked_at: null,
+        projection_identity_sha256: cloudProjectionIdentitySha256({
+          endpoint: "https://cloud.example",
+          projectId: "project-1",
+          provider: null,
+        }),
+      })}\n`,
+      "utf8",
+    );
     const fetchImpl = vi.fn<typeof fetch>(() =>
       Promise.resolve(
         Response.json({
@@ -678,7 +783,7 @@ describe("CloudBackend", () => {
           data: {
             tasks: [
               { id: task.id, title: "Remote title", status: "DONE" },
-              { id: "202605051806-REMOTE", title: "Remote only", status: "TODO" },
+              { id: "202605051806-R3M0T3", title: "Remote only", status: "TODO" },
             ],
             last_checked_at: "2026-05-06T00:00:00.000Z",
           },
@@ -697,7 +802,7 @@ describe("CloudBackend", () => {
         "cloud pull diff changed=1 remote_only=1 imported=0 removed=0 conflicts=0 remote_create_policy=diff",
       );
       expect(io.stdout).toContain(`changed ${task.id}: title,status`);
-      expect(io.stdout).toContain("remote-only 202605051806-REMOTE");
+      expect(io.stdout).toContain("remote-only 202605051806-R3M0T3");
       await expect(cache.getTask(task.id)).resolves.toMatchObject({
         title: "Local title",
         status: "TODO",
@@ -719,6 +824,20 @@ describe("CloudBackend", () => {
       description: "Existing task",
     });
     await cache.writeTask(task);
+    const statePath = path.join(tempDir, ".agentplane", "backends", "cloud", "state.json");
+    await mkdir(path.dirname(statePath), { recursive: true });
+    await writeFile(
+      statePath,
+      `${JSON.stringify({
+        last_checked_at: null,
+        projection_identity_sha256: cloudProjectionIdentitySha256({
+          endpoint: "https://cloud.example",
+          projectId: "project-1",
+          provider: null,
+        }),
+      })}\n`,
+      "utf8",
+    );
     const fetchImpl = vi.fn<typeof fetch>((input) => {
       const url = input instanceof Request ? input.url : input.toString();
       if (url.endsWith("/sync/state")) {
@@ -727,7 +846,7 @@ describe("CloudBackend", () => {
       return Promise.resolve(
         Response.json({
           data: {
-            tasks: [task],
+            no_projection_changes: true,
             last_checked_at: "2000-01-01T00:00:00.000Z",
           },
         }),
@@ -740,15 +859,12 @@ describe("CloudBackend", () => {
 
     await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
 
-    const stateText = await readFile(
-      path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"),
-      "utf8",
-    );
+    const stateText = await readFile(statePath, "utf8");
     const state = JSON.parse(stateText) as { last_checked_at: string };
     expect(state.last_checked_at).toBe("2000-01-01T00:00:00.000Z");
   });
 
-  it("does not advance freshness after a no-op pull when the service omits a timestamp", async () => {
+  it("preserves a bound identity without inventing freshness when a no-op pull omits a timestamp", async () => {
     const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
     const task: TaskData = makeTask({
       id: "202605051806-C1D2",
@@ -756,6 +872,20 @@ describe("CloudBackend", () => {
       description: "Existing task",
     });
     await cache.writeTask(task);
+    const statePath = path.join(tempDir, ".agentplane", "backends", "cloud", "state.json");
+    await mkdir(path.dirname(statePath), { recursive: true });
+    await writeFile(
+      statePath,
+      `${JSON.stringify({
+        last_checked_at: null,
+        projection_identity_sha256: cloudProjectionIdentitySha256({
+          endpoint: "https://cloud.example",
+          projectId: "project-1",
+          provider: null,
+        }),
+      })}\n`,
+      "utf8",
+    );
     const fetchImpl = vi.fn<typeof fetch>((input) => {
       const url = input instanceof Request ? input.url : input.toString();
       if (url.endsWith("/sync/state")) {
@@ -764,7 +894,7 @@ describe("CloudBackend", () => {
       return Promise.resolve(
         Response.json({
           data: {
-            tasks: [task],
+            no_projection_changes: true,
           },
         }),
       );
@@ -776,271 +906,17 @@ describe("CloudBackend", () => {
 
     await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
 
-    await expect(
-      readFile(path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"), "utf8"),
-    ).rejects.toMatchObject({ code: "ENOENT" });
-  });
-
-  it("conflict=fail refuses to write open service conflicts", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const task: TaskData = makeTask({
-      id: "202605051806-C1D2",
-      title: "Local title",
-      description: "Existing task",
-    });
-    await cache.writeTask(task);
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(
-        Response.json({
-          data: {
-            tasks: [{ id: task.id, title: "Remote title", status: "DONE" }],
-            conflicts: [{ task_id: task.id, field: "status", state: "open" }],
-            safe_command: "agentplane backend sync cloud --direction pull --conflict=diff",
-          },
-        }),
-      ),
-    );
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await expect(
-      backend.sync({ direction: "pull", conflict: "fail", quiet: true, confirm: true }),
-    ).rejects.toThrow("open conflicts");
-    await expect(cache.getTask(task.id)).resolves.toMatchObject({ title: "Local title" });
-  });
-
-  it("conflict=fail refuses open conflicts reported by sync state before pull", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const task: TaskData = makeTask({
-      id: "202605051806-C1D2",
-      title: "Local title",
-      description: "Existing task",
-    });
-    await cache.writeTask(task);
-    const fetchImpl = vi.fn<typeof fetch>(() => {
-      return Promise.resolve(
-        Response.json({
-          data: {
-            openConflicts: [{ task_id: task.id, field: "status", state: "open" }],
-            safe_command: "agentplane backend sync cloud --direction pull --conflict=diff",
-          },
-        }),
-      );
-    });
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await expect(
-      backend.sync({ direction: "pull", conflict: "fail", quiet: true, confirm: true }),
-    ).rejects.toThrow("open conflicts");
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-    expect(fetchImpl.mock.calls[0]?.[0]).toBe(
-      "https://cloud.example/v1/projects/project-1/sync/state",
-    );
-    await expect(cache.getTask(task.id)).resolves.toMatchObject({ title: "Local title" });
-  });
-
-  it("conflict=fail refuses numeric open conflict counts reported by sync state", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const fetchImpl = vi.fn<typeof fetch>(() => {
-      return Promise.resolve(
-        Response.json({
-          data: {
-            openConflicts: 2,
-            safe_command: "agentplane backend sync cloud --direction pull --conflict=diff",
-          },
-        }),
-      );
-    });
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await expect(
-      backend.sync({ direction: "pull", conflict: "fail", quiet: true, confirm: true }),
-    ).rejects.toThrow("open conflicts");
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-  });
-
-  it("falls back to pull conflict data when sync state is unavailable", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const task: TaskData = makeTask({
-      id: "202605051806-C1D2",
-      title: "Local title",
-      description: "Existing task",
-    });
-    await cache.writeTask(task);
-    const fetchImpl = vi.fn<typeof fetch>((input) => {
-      const url = input instanceof Request ? input.url : input.toString();
-      if (url.endsWith("/sync/state")) {
-        return Promise.resolve(Response.json({ error: "not found" }, { status: 404 }));
-      }
-      return Promise.resolve(
-        Response.json({
-          data: {
-            tasks: [{ id: task.id, title: "Remote title", status: "DONE" }],
-            last_checked_at: "2026-05-06T00:00:00.000Z",
-          },
-        }),
-      );
-    });
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await backend.sync({
-      direction: "pull",
-      conflict: "prefer-remote",
-      quiet: true,
-      confirm: true,
-      identityTransition: "adopt_remote",
-    });
-
-    expect(fetchImpl).toHaveBeenCalledTimes(2);
-    expect(fetchImpl.mock.calls[0]?.[0]).toBe(
-      "https://cloud.example/v1/projects/project-1/sync/state",
-    );
-    expect(fetchImpl.mock.calls[1]?.[0]).toBe(
-      "https://cloud.example/v1/projects/project-1/sync/pull",
-    );
-    await expect(cache.getTask(task.id)).resolves.toMatchObject({
-      title: "Remote title",
-      status: "DONE",
-    });
-  });
-
-  it("falls back to pull conflict data when sync state body parsing fails", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const task: TaskData = makeTask({
-      id: "202605051806-C1D2",
-      title: "Local title",
-      description: "Existing task",
-    });
-    await cache.writeTask(task);
-    const fetchImpl = vi.fn<typeof fetch>((input) => {
-      const url = input instanceof Request ? input.url : input.toString();
-      if (url.endsWith("/sync/state")) {
-        return Promise.resolve(new Response("{", { status: 200 }));
-      }
-      return Promise.resolve(
-        Response.json({
-          data: {
-            tasks: [{ id: task.id, title: "Remote title", status: "DONE" }],
-            last_checked_at: "2026-05-06T00:00:00.000Z",
-          },
-        }),
-      );
-    });
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await backend.sync({
-      direction: "pull",
-      conflict: "prefer-remote",
-      quiet: true,
-      confirm: true,
-      identityTransition: "adopt_remote",
-    });
-
-    expect(fetchImpl).toHaveBeenCalledTimes(2);
-    await expect(cache.getTask(task.id)).resolves.toMatchObject({
-      title: "Remote title",
-      status: "DONE",
-    });
-  });
-
-  it("service remediation payload is included in HTTP errors", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(
-        Response.json(
-          {
-            error: {
-              code: "cloud_direction_not_supported",
-              why: "publish_only projects cannot pull remote edits",
-              fix: "switch the project to bidirectional access",
-              safe_command: "agentplane backend inspect cloud --yes",
-              when_to_stop: "stop until the service project access level changes",
-            },
-          },
-          { status: 409 },
-        ),
-      ),
-    );
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await expect(
-      backend.sync({ direction: "pull", conflict: "fail", quiet: true, confirm: true }),
-    ).rejects.toThrow("cloud_direction_not_supported");
-  });
-
-  it("stale projection blocks local task mutation and prints pull command", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const statePath = path.join(tempDir, ".agentplane", "backends", "cloud", "state.json");
-    await mkdir(path.dirname(statePath), { recursive: true });
-    await writeFile(statePath, '{ "last_checked_at": "2000-01-01T00:00:00.000Z" }', "utf8");
-    const backend = new CloudBackend(
-      {
+    const state = JSON.parse(await readFile(statePath, "utf8")) as {
+      last_checked_at: string | null;
+      projection_identity_sha256: string | null;
+    };
+    expect(state.last_checked_at).toBeNull();
+    expect(state.projection_identity_sha256).toBe(
+      cloudProjectionIdentitySha256({
         endpoint: "https://cloud.example",
-        token: "token",
-        project_id: "project-1",
-        stale_after_seconds: 1,
-      },
-      { root: tempDir, cache },
-    );
-
-    await expect(
-      backend.writeTask(makeTask({ id: "202605051806-C1D2", description: "Existing task" })),
-    ).rejects.toThrow("agentplane backend sync cloud --direction pull --yes");
-  });
-
-  it("does not advance cloud state when pull cache write fails", async () => {
-    const cache = new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") });
-    const task: TaskData = makeTask({
-      id: "202605051806-C1D2",
-      title: "Local title",
-      description: "Existing task",
-    });
-    await cache.writeTask(task);
-    const writeTasks = vi
-      .spyOn(cache, "writeTasks")
-      .mockRejectedValueOnce(new Error("write failed"));
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(
-        Response.json({
-          tasks: [{ id: task.id, title: "Remote title" }],
-          last_checked_at: "2026-05-06T00:00:00.000Z",
-        }),
-      ),
-    );
-    const backend = new CloudBackend(
-      { endpoint: "https://cloud.example", token: "token", project_id: "project-1" },
-      { root: tempDir, cache, fetchImpl },
-    );
-
-    await expect(
-      backend.sync({
-        direction: "pull",
-        conflict: "prefer-remote",
-        quiet: true,
-        confirm: true,
-        identityTransition: "adopt_remote",
+        projectId: "project-1",
+        provider: null,
       }),
-    ).rejects.toThrow("write failed");
-    expect(writeTasks).toHaveBeenCalledTimes(1);
-    await expect(
-      readFile(path.join(tempDir, ".agentplane", "backends", "cloud", "state.json"), "utf8"),
-    ).rejects.toMatchObject({ code: "ENOENT" });
+    );
   });
 });

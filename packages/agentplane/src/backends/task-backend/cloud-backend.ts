@@ -2,20 +2,25 @@ import path from "node:path";
 
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import {
-  observeContainedCloudBackendState,
+  cloudBackendStateFromSyncCheckpoint,
   readContainedCloudBackendSyncCheckpoint,
-  readCloudBackendState,
-  writeCloudBackendState,
+  type CloudBackendSyncCheckpoint,
 } from "./cloud-backend-state.js";
 import {
   BackendError,
   type TaskBackend,
   type TaskBackendInspectionResult,
   type TaskBackendProjectionObservation,
+  type TaskBackendProjectionTransition,
+  type TaskBackendProjectionTransitionHooks,
   type TaskData,
   type TaskSummary,
   type TaskWriteOptions,
 } from "./shared.js";
+import {
+  observeCloudProjection,
+  runCloudProjectionTransition,
+} from "./cloud-projection-transition.js";
 import type { LocalBackend } from "./local-backend.js";
 import { cloudPendingPushReason, pendingCloudPushError } from "./cloud-pending-push.js";
 import { ensureCloudProjectionFreshForLocalMutation } from "./cloud-mutation-readiness.js";
@@ -43,15 +48,15 @@ import {
   type CloudConfigOverride,
 } from "./cloud-backend-utils.js";
 import { cloudProjectionIdentitySha256 } from "./cloud-projection-identity.js";
+import * as coord from "./cloud-backend-coordination.js";
 import {
+  cloudProjectionApplyIncompleteError,
   resolveCloudSyncProjectionIdentity,
   type CloudSyncIdentityOrigin,
   type CloudSyncIdentityTransition,
 } from "./cloud-sync-identity.js";
 import { firstNonEmptyString } from "./shared/strings.js";
-
 export type { CloudBackendSettings } from "./cloud-backend-settings.js";
-
 export class CloudBackend implements TaskBackend {
   id = "cloud";
   capabilities: TaskBackend["capabilities"] = cloudBackendCapabilities;
@@ -85,11 +90,10 @@ export class CloudBackend implements TaskBackend {
       autoSyncNetworkAllowed?: boolean;
     },
   ) {
-    const endpoint = firstNonEmptyString(
+    this.endpoint = firstNonEmptyString(
       process.env.AGENTPLANE_CLOUD_ENDPOINT,
       settings.endpoint,
     ).replaceAll(/\/+$/gu, "");
-    this.endpoint = endpoint;
     this.token = firstNonEmptyString(process.env.AGENTPLANE_CLOUD_TOKEN, settings.token);
     this.projectId = firstNonEmptyString(
       process.env.AGENTPLANE_CLOUD_PROJECT_ID,
@@ -132,7 +136,6 @@ export class CloudBackend implements TaskBackend {
     this.staleAfterSeconds = normalizePositiveInteger(settings.stale_after_seconds) ?? 300;
     if (!opts.fetchImpl) configureCloudFetchAddressSelection();
     this.fetchImpl = opts.fetchImpl ?? fetch;
-
     this.autoSyncNetworkAllowed = opts.autoSyncNetworkAllowed === true;
     this.autoSyncEnabled = settings.autosync_enabled ?? this.autoSyncNetworkAllowed;
     this.autoSyncPullOnRead = settings.autosync_pull_on_read ?? true;
@@ -160,54 +163,48 @@ export class CloudBackend implements TaskBackend {
     return await this.cache.generateTaskId(opts);
   }
   async listTasks(): Promise<TaskData[]> {
-    await this.maybeAutoPull({ mode: "read", reason: "list_tasks" });
-    return await this.cache.listTasks();
+    return await this.withProjectionOperation("list-tasks", async () => {
+      await this.maybeAutoPullUnlocked({ mode: "read", reason: "list_tasks" });
+      return await this.cache.listTasks();
+    });
   }
   async listProjectionTasks(): Promise<TaskSummary[]> {
-    await this.maybeAutoPull({ mode: "read", reason: "list_projection" });
-    return await this.cache.listProjectionTasks();
+    return await this.withProjectionOperation("list-projection-tasks", async () => {
+      await this.maybeAutoPullUnlocked({ mode: "read", reason: "list_projection" });
+      return await this.cache.listProjectionTasks();
+    });
   }
   getLastListWarnings(): string[] {
     return this.cache.getLastListWarnings();
   }
   async observeProjection(): Promise<TaskBackendProjectionObservation> {
-    const state = await observeContainedCloudBackendState({
-      repositoryRoot: this.repositoryRoot,
-      statePath: this.statePath,
-    });
-    return {
-      projection_revision: null,
-      projection_freshness: {
-        last_checked_at: state.last_checked_at,
-        stale_after_seconds: this.staleAfterSeconds,
-        pending_push: state.pending_push
-          ? {
-              failed_at: state.pending_push.failed_at,
-            }
-          : null,
-      },
-      remote_projection: {
-        provider: this.provider,
-        project_id: this.projectId || null,
-        identity_sha256: this.projectionIdentitySha256,
-        checkpoint_identity_sha256: state.projection_identity_sha256,
-      },
-    };
+    return await this.withProjectionOperation(
+      "observe-projection",
+      this.observeProjectionUnlocked.bind(this),
+    );
   }
   async getTask(taskId: string): Promise<TaskData | null> {
-    await this.maybeAutoPull({ mode: "read", reason: "get_task" });
-    return await this.cache.getTask(taskId);
+    return await this.withProjectionOperation("get-task", async () => {
+      await this.maybeAutoPullUnlocked({ mode: "read", reason: "get_task" });
+      return await this.cache.getTask(taskId);
+    });
   }
   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
-    await this.maybeAutoPull({ mode: "read", reason: "get_tasks" });
-    return await this.cache.getTasks(taskIds);
+    return await this.withProjectionOperation("get-tasks", async () => {
+      await this.maybeAutoPullUnlocked({ mode: "read", reason: "get_tasks" });
+      return await this.cache.getTasks(taskIds);
+    });
   }
   async getTaskDoc(taskId: string): Promise<string> {
-    await this.maybeAutoPull({ mode: "read", reason: "get_task_doc" });
-    return await this.cache.getTaskDoc(taskId);
+    return await this.withProjectionOperation("get-task-doc", async () => {
+      await this.maybeAutoPullUnlocked({ mode: "read", reason: "get_task_doc" });
+      return await this.cache.getTaskDoc(taskId);
+    });
   }
   async assertLocalMutationReady(): Promise<void> {
-    await this.ensureProjectionFreshForLocalMutation({ reason: "assert_local_mutation_ready" });
+    await this.withProjectionOperation("assert-local-mutation-ready", async () => {
+      await this.ensureProjectionFreshForLocalMutation({ reason: "assert_local_mutation_ready" });
+    });
   }
   async setTaskDoc(
     taskId: string,
@@ -215,31 +212,70 @@ export class CloudBackend implements TaskBackend {
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    await this.ensureProjectionFreshForLocalMutation({ reason: "set_task_doc" });
-    await this.cache.setTaskDoc(taskId, doc, updatedBy, opts);
-    await this.maybeAutoPush();
+    await this.withProjectionOperation("set-task-doc", async () => {
+      await this.ensureProjectionFreshForLocalMutation({ reason: "set_task_doc" });
+      await this.markLocalProjectionDirty("set_task_doc");
+      await this.cache.setTaskDoc(taskId, doc, updatedBy, opts);
+      await this.maybeAutoPushUnlocked();
+    });
   }
   async touchTaskDocMetadata(
     taskId: string,
     updatedBy?: string,
     opts?: TaskWriteOptions,
   ): Promise<void> {
-    await this.ensureProjectionFreshForLocalMutation({ reason: "touch_task_doc_metadata" });
-    await this.cache.touchTaskDocMetadata(taskId, updatedBy, opts);
-    await this.maybeAutoPush();
+    await this.withProjectionOperation("touch-task-doc-metadata", async () => {
+      await this.ensureProjectionFreshForLocalMutation({ reason: "touch_task_doc_metadata" });
+      await this.markLocalProjectionDirty("touch_task_doc_metadata");
+      await this.cache.touchTaskDocMetadata(taskId, updatedBy, opts);
+      await this.maybeAutoPushUnlocked();
+    });
   }
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
-    await this.ensureProjectionFreshForLocalMutation({ reason: "write_task" });
-    await this.cache.writeTask(task, opts);
-    await this.maybeAutoPush();
+    await this.withProjectionOperation("write-task", async () => {
+      await this.writeTaskUnlocked(task, opts);
+    });
+  }
+  async writeTaskWithProjectionTransition<T>(
+    task: TaskData,
+    opts: TaskWriteOptions | undefined,
+    hooks: TaskBackendProjectionTransitionHooks<T>,
+  ): Promise<TaskBackendProjectionTransition<T>> {
+    return await this.withProjectionOperation("write-task-with-projection-transition", async () => {
+      return await runCloudProjectionTransition({
+        hooks,
+        observe: this.observeProjectionUnlocked.bind(this),
+        assertFresh: async () => {
+          await this.ensureProjectionFreshForLocalMutation({ reason: "write_task" });
+        },
+        writeAndPush: async () => {
+          await this.markLocalProjectionDirty("write_task");
+          await this.cache.writeTask(task, opts);
+          await this.maybeAutoPushUnlocked();
+        },
+      });
+    });
   }
   async writeTasks(tasks: TaskData[], opts?: TaskWriteOptions): Promise<void> {
-    await this.ensureProjectionFreshForLocalMutation({ reason: "write_tasks" });
-    await this.cache.writeTasks(tasks, opts);
-    await this.maybeAutoPush();
+    await this.withProjectionOperation("write-tasks", async () => {
+      await this.ensureProjectionFreshForLocalMutation({ reason: "write_tasks" });
+      await this.markLocalProjectionDirty("write_tasks");
+      await this.cache.writeTasks(tasks, opts);
+      await this.maybeAutoPushUnlocked();
+    });
   }
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
-    return await this.cache.normalizeTasks();
+    return await this.withProjectionOperation("normalize-tasks", async () => {
+      await this.ensureProjectionFreshForLocalMutation({ reason: "normalize_tasks" });
+      const createdDirtyMarker = await this.markLocalProjectionDirty("normalize_tasks");
+      const result = await this.cache.normalizeTasks();
+      if (result.changed > 0) {
+        await this.maybeAutoPushUnlocked();
+      } else if (createdDirtyMarker) {
+        await this.clearPendingPush();
+      }
+      return result;
+    });
   }
   async refreshProjection(opts: {
     allowNetwork: boolean;
@@ -261,35 +297,38 @@ export class CloudBackend implements TaskBackend {
       identityTransition: "routine",
     });
   }
-
   async refreshProjectionBeforeTaskStart(): Promise<void> {
-    await refreshCloudProjectionBeforeTaskStart({
-      autoSyncEnabled: this.autoSyncEnabled,
-      autoSyncPullOnStartReady: this.autoSyncPullOnStartReady,
-      autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
-      missingConfigKeys: () => missingCloudConfigKeys(this.configSnapshot()),
-      projectId: this.projectId,
-      projectionIdentitySha256: this.projectionIdentitySha256,
-      statePath: this.statePath,
-      requestCloudSyncState: this.requestCloudSyncState.bind(this),
-      assertSyncIdentityReady: async () => {
-        await this.resolveSyncIdentity({
-          direction: "pull",
-          conflict: "prefer-remote",
-          identityOrigin: "automatic",
-          identityTransition: "routine",
-        });
-      },
-      sync: async (syncOpts) => {
-        await this.sync({
-          ...syncOpts,
-          identityOrigin: "automatic",
-          identityTransition: "routine",
-        });
-      },
+    await this.withProjectionOperation("task-start-refresh", async () => {
+      await refreshCloudProjectionBeforeTaskStart({
+        autoSyncEnabled: this.autoSyncEnabled,
+        autoSyncPullOnStartReady: this.autoSyncPullOnStartReady,
+        autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
+        missingConfigKeys: () => missingCloudConfigKeys(this.configSnapshot()),
+        projectId: this.projectId,
+        projectionIdentitySha256: this.projectionIdentitySha256,
+        readState: this.readState.bind(this),
+        commitState: async (update) => {
+          await coord.commitCloudBackendStateUpdate(this.stateCoordination(), update);
+        },
+        requestCloudSyncState: this.requestCloudSyncState.bind(this),
+        assertSyncIdentityReady: async () => {
+          await this.resolveSyncIdentity({
+            direction: "pull",
+            conflict: "prefer-remote",
+            identityOrigin: "automatic",
+            identityTransition: "routine",
+          });
+        },
+        sync: async (syncOpts) => {
+          await this.syncUnlocked({
+            ...syncOpts,
+            identityOrigin: "automatic",
+            identityTransition: "routine",
+          });
+        },
+      });
     });
   }
-
   async sync(opts: {
     direction: "push" | "pull";
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
@@ -300,22 +339,46 @@ export class CloudBackend implements TaskBackend {
     timeoutMs?: number;
     syncStateTimeoutMs?: number;
   }): Promise<void> {
+    await this.withProjectionOperation(`sync-${opts.direction}`, async () => {
+      await this.syncUnlocked(opts);
+    });
+  }
+  private async syncUnlocked(opts: {
+    direction: "push" | "pull";
+    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+    quiet: boolean;
+    confirm: boolean;
+    identityOrigin?: CloudSyncIdentityOrigin;
+    identityTransition?: CloudSyncIdentityTransition;
+    timeoutMs?: number;
+    syncStateTimeoutMs?: number;
+  }): Promise<void> {
     assertCloudBackendConfigured(this.configSnapshot());
-    const identityDecision = await this.resolveSyncIdentity({
-      direction: opts.direction,
-      conflict: opts.conflict,
-      identityOrigin: opts.identityOrigin ?? "explicit",
-      identityTransition: opts.identityTransition ?? "routine",
+    const initialCheckpoint = await this.readSyncCheckpoint();
+    const identityDecision = await this.resolveSyncIdentity(
+      {
+        direction: opts.direction,
+        conflict: opts.conflict,
+        identityOrigin: opts.identityOrigin ?? "explicit",
+        identityTransition: opts.identityTransition ?? "routine",
+      },
+      initialCheckpoint,
+    );
+    const checkpointGuard = coord.createCloudSyncCheckpointGuard({
+      initialCheckpoint,
+      repositoryRoot: this.repositoryRoot,
+      statePath: this.statePath,
     });
     await performCloudBackendSync(
       {
         provider: this.provider,
         projectId: this.projectId,
         projectionIdentitySha256: this.projectionIdentitySha256,
-        statePath: this.statePath,
+        repositoryRoot: this.repositoryRoot,
         cache: this.cache,
         request: this.request.bind(this),
         readState: this.readState.bind(this),
+        ...checkpointGuard,
         assertNoPendingPushForPull: this.assertNoPendingPushForPull.bind(this),
         requestCloudSyncState: this.requestCloudSyncState.bind(this),
       },
@@ -327,10 +390,11 @@ export class CloudBackend implements TaskBackend {
         syncStateTimeoutMs: opts.syncStateTimeoutMs,
         remoteCreatePolicy: this.remoteCreatePolicy,
         bindProjectionIdentity: identityDecision.bindProjectionIdentity,
+        projectionApply: identityDecision.projectionApply,
+        projectionApplyRequiresAdoption: identityDecision.projectionApplyRequiresAdoption,
       },
     );
   }
-
   private async requestCloudSyncState(
     projectId: string,
     opts?: { timeoutMs?: number },
@@ -343,14 +407,12 @@ export class CloudBackend implements TaskBackend {
       timeoutMs: opts?.timeoutMs,
     });
   }
-
   async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
     return await inspectCloudBackendConfiguration({
       config: this.configSnapshot(),
       requestCloudSyncState: this.requestCloudSyncState.bind(this),
     });
   }
-
   private async request<T>(pathname: string, init: RequestInit, opts?: { timeoutMs?: number }) {
     return await requestCloudBackendJson<T>({
       endpoint: this.endpoint,
@@ -361,62 +423,78 @@ export class CloudBackend implements TaskBackend {
       timeoutMs: opts?.timeoutMs,
     });
   }
-
   private async readState() {
-    return await readCloudBackendState(this.statePath);
+    return cloudBackendStateFromSyncCheckpoint(await this.readSyncCheckpoint());
   }
-
-  private async resolveSyncIdentity(opts: {
-    direction: "push" | "pull";
-    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
-    identityOrigin: CloudSyncIdentityOrigin;
-    identityTransition: CloudSyncIdentityTransition;
-  }) {
+  private async observeProjectionUnlocked(): Promise<TaskBackendProjectionObservation> {
+    return await observeCloudProjection({
+      readState: this.readState.bind(this),
+      staleAfterSeconds: this.staleAfterSeconds,
+      provider: this.provider,
+      projectId: this.projectId,
+      projectionIdentitySha256: this.projectionIdentitySha256,
+    });
+  }
+  private async readSyncCheckpoint() {
+    return await readContainedCloudBackendSyncCheckpoint({
+      repositoryRoot: this.repositoryRoot,
+      statePath: this.statePath,
+    });
+  }
+  private async resolveSyncIdentity(
+    opts: {
+      direction: "push" | "pull";
+      conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+      identityOrigin: CloudSyncIdentityOrigin;
+      identityTransition: CloudSyncIdentityTransition;
+    },
+    checkpoint?: CloudBackendSyncCheckpoint,
+  ) {
     return resolveCloudSyncProjectionIdentity({
       ...opts,
-      checkpoint: await readContainedCloudBackendSyncCheckpoint({
-        repositoryRoot: this.repositoryRoot,
-        statePath: this.statePath,
-      }),
+      checkpoint: checkpoint ?? (await this.readSyncCheckpoint()),
       projectionIdentitySha256: this.projectionIdentitySha256,
       origin: opts.identityOrigin,
       transition: opts.identityTransition,
     });
   }
-
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
     await ensureCloudProjectionFreshForLocalMutation(
       {
         autoSyncEnabled: this.autoSyncEnabled,
-        autoSyncNetworkAllowed: this.autoSyncNetworkAllowed,
         autoSyncPullOnWrite: this.autoSyncPullOnWrite,
-        projectId: this.projectId,
         projectionIdentitySha256: this.projectionIdentitySha256,
         staleAfterSeconds: this.staleAfterSeconds,
-        missingConfigKeys: () => missingCloudConfigKeys(this.configSnapshot()),
         readState: this.readState.bind(this),
-        clearPendingPush: this.clearPendingPush.bind(this),
-        maybeAutoPull: this.maybeAutoPull.bind(this),
-        requestCloudSyncState: this.requestCloudSyncState.bind(this),
+        maybeAutoPull: this.maybeAutoPullUnlocked.bind(this),
       },
       opts,
     );
   }
-
-  private async maybeAutoPull(opts: { mode: "read" | "write"; reason: string }): Promise<void> {
+  private async writeTaskUnlocked(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
+    await this.ensureProjectionFreshForLocalMutation({ reason: "write_task" });
+    await this.markLocalProjectionDirty("write_task");
+    await this.cache.writeTask(task, opts);
+    await this.maybeAutoPushUnlocked();
+  }
+  private async maybeAutoPullUnlocked(opts: {
+    mode: "read" | "write";
+    reason: string;
+  }): Promise<void> {
+    const state = await this.readState();
+    if (state.pending_projection_apply) throw cloudProjectionApplyIncompleteError();
     if (!this.autoSyncEnabled) return;
     if (opts.mode === "read" && !this.autoSyncPullOnRead) return;
     if (opts.mode === "write" && !this.autoSyncPullOnWrite) return;
     if (!this.autoSyncNetworkAllowed) return;
     if (missingCloudConfigKeys(this.configSnapshot()).length > 0) return;
-    const state = await this.readState();
     if (
       state.projection_identity_sha256 === this.projectionIdentitySha256 &&
       !isStale(state.last_checked_at, this.staleAfterSeconds)
     ) {
       return;
     }
-    await this.sync({
+    await this.syncUnlocked({
       direction: "pull",
       conflict: "fail",
       quiet: true,
@@ -427,13 +505,12 @@ export class CloudBackend implements TaskBackend {
       syncStateTimeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
     });
   }
-
-  private async maybeAutoPush(): Promise<void> {
+  private async maybeAutoPushUnlocked(): Promise<void> {
     if (!this.autoSyncEnabled || !this.autoSyncPushOnWrite) return;
     if (!this.autoSyncNetworkAllowed) return;
     if (missingCloudConfigKeys(this.configSnapshot()).length > 0) return;
     try {
-      await this.sync({
+      await this.syncUnlocked({
         direction: "push",
         conflict: "fail",
         quiet: true,
@@ -446,38 +523,48 @@ export class CloudBackend implements TaskBackend {
       throw error;
     }
   }
-
   private async assertNoPendingPushForPull(): Promise<void> {
     const state = await this.readState();
     if (state.pending_push) {
       throw pendingCloudPushError(state.pending_push);
     }
   }
-
   private async markPendingPush(error: unknown): Promise<void> {
-    const state = await this.readState();
-    await writeCloudBackendState(this.statePath, {
-      last_checked_at: state.last_checked_at,
-      last_start_ready_pull_at: state.last_start_ready_pull_at,
-      pending_push: {
-        failed_at: new Date().toISOString(),
-        reason: cloudPendingPushReason(error),
-      },
-      projection_identity_sha256: state.projection_identity_sha256,
+    await coord.commitCloudBackendStateUpdate(this.stateCoordination(), (state) => {
+      if (state.pending_push?.kind === "push_failed") return null;
+      return {
+        ...state,
+        pending_push: {
+          failed_at: new Date().toISOString(),
+          kind: "push_failed",
+          reason: cloudPendingPushReason(error),
+        },
+      };
     });
   }
-
+  private async markLocalProjectionDirty(reason: string): Promise<boolean> {
+    return await coord.commitCloudBackendStateUpdate(this.stateCoordination(), (state) => {
+      if (state.pending_projection_apply) throw cloudProjectionApplyIncompleteError();
+      if (state.pending_push) return null;
+      return {
+        ...state,
+        pending_push: {
+          failed_at: new Date().toISOString(),
+          kind: "local_dirty",
+          reason: `Local cloud cache mutation is not pushed: ${reason}`,
+        },
+      };
+    });
+  }
   private async clearPendingPush(): Promise<void> {
-    const state = await this.readState();
-    if (!state.pending_push) return;
-    await writeCloudBackendState(this.statePath, {
-      last_checked_at: state.last_checked_at,
-      last_start_ready_pull_at: state.last_start_ready_pull_at,
-      pending_push: null,
-      projection_identity_sha256: state.projection_identity_sha256,
+    await coord.commitCloudBackendStateUpdate(this.stateCoordination(), (state) => {
+      if (!state.pending_push) return null;
+      return { ...state, pending_push: null };
     });
   }
-
+  private stateCoordination() {
+    return { repositoryRoot: this.repositoryRoot, statePath: this.statePath };
+  }
   private configSnapshot() {
     return {
       endpoint: this.endpoint,
@@ -485,10 +572,22 @@ export class CloudBackend implements TaskBackend {
       projectId: this.projectId,
       provider: this.provider,
       projectionIdentitySha256: this.projectionIdentitySha256,
+      repositoryRoot: this.repositoryRoot,
       statePath: this.statePath,
       staleAfterSeconds: this.staleAfterSeconds,
       configOverrides: this.configOverrides,
       dotEnv: this.dotEnv,
     };
+  }
+  private async withProjectionOperation<T>(operation: string, run: () => Promise<T>): Promise<T> {
+    return await coord.withProjectionLock(
+      {
+        cacheRoot: this.cache.root,
+        operation,
+        repositoryRoot: this.repositoryRoot,
+        statePath: this.statePath,
+      },
+      run,
+    );
   }
 }

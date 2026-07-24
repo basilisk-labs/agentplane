@@ -68,8 +68,8 @@ describe("CloudBackend sync identity preflight", () => {
         projection_identity_sha256: identity,
       }),
     );
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(Response.json({ data: { no_projection_changes: true } })),
+    const fetchImpl = vi.fn<typeof fetch>((_input, init) =>
+      Promise.resolve(acknowledgedPushResponse(init)),
     );
     const { backend } = makeBackend(fetchImpl);
 
@@ -190,17 +190,89 @@ describe("CloudBackend sync identity preflight", () => {
     });
   });
 
-  it("binds a clean legacy checkpoint after a zero-diff pull", async () => {
-    await writeState(cloudState({ projection_identity_sha256: null }));
+  it("rejects partial adoption snapshots without deleting local tasks or binding identity", async () => {
+    const before = await writeState(
+      cloudState({
+        projection_identity_sha256: OLD_IDENTITY,
+      }),
+    );
+    const retained = makeTask("202607240800-A0CA11");
+    await new LocalBackend({
+      dir: path.join(tempDir, ".agentplane", "tasks"),
+    }).writeTask(retained);
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      if (requestUrl(input).endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { open_conflicts: 0 } }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [],
+            last_checked_at: "2026-07-24T08:00:00.000Z",
+          },
+        }),
+      );
+    });
+    const { backend, cache } = makeBackend(fetchImpl);
+
+    await expect(
+      backend.sync({
+        direction: "pull",
+        conflict: "prefer-remote",
+        quiet: true,
+        confirm: true,
+        identityTransition: "adopt_remote",
+      }),
+    ).rejects.toThrow("requires a complete task projection");
+
+    await expect(cache.getTask(retained.id)).resolves.toMatchObject({ id: retained.id });
+    await expect(readFile(statePath(), "utf8")).resolves.toBe(before);
+  });
+
+  it("does not inherit freshness from the old identity when adoption omits a timestamp", async () => {
+    await writeState(
+      cloudState({
+        last_checked_at: "2099-01-01T00:00:00.000Z",
+        projection_identity_sha256: OLD_IDENTITY,
+      }),
+    );
+    const fetchImpl = vi.fn<typeof fetch>((input) => {
+      if (requestUrl(input).endsWith("/sync/state")) {
+        return Promise.resolve(Response.json({ data: { open_conflicts: 0 } }));
+      }
+      return Promise.resolve(
+        Response.json({
+          data: {
+            tasks: [],
+            projection_complete: true,
+          },
+        }),
+      );
+    });
+    const { backend } = makeBackend(fetchImpl);
+
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: true,
+      identityTransition: "adopt_remote",
+    });
+
+    await expect(readState()).resolves.toMatchObject({
+      last_checked_at: null,
+      projection_identity_sha256: CURRENT_IDENTITY,
+    });
+  });
+
+  it("keeps a clean legacy checkpoint unbound after a routine zero-diff pull", async () => {
+    const before = await writeState(cloudState({ projection_identity_sha256: null }));
     const fetchImpl = noChangePullFetch();
     const { backend } = makeBackend(fetchImpl);
 
     await backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: true });
 
-    await expect(readState()).resolves.toMatchObject({
-      last_checked_at: "2026-07-24T08:00:00.000Z",
-      projection_identity_sha256: CURRENT_IDENTITY,
-    });
+    await expect(readFile(statePath(), "utf8")).resolves.toBe(before);
   });
 
   it("does not bind a legacy checkpoint when the pull diff is non-zero", async () => {
@@ -212,7 +284,7 @@ describe("CloudBackend sync identity preflight", () => {
       return Promise.resolve(
         Response.json({
           data: {
-            tasks: [makeTask("202607240800-REMOTE")],
+            tasks: [makeTask("202607240800-R3M0T3")],
             last_checked_at: "2026-07-24T08:00:00.000Z",
           },
         }),
@@ -264,8 +336,8 @@ describe("CloudBackend sync identity preflight", () => {
   );
 
   it("binds identity after an initial successful push without a freshness timestamp", async () => {
-    const fetchImpl = vi.fn<typeof fetch>(() =>
-      Promise.resolve(Response.json({ data: { no_projection_changes: true } })),
+    const fetchImpl = vi.fn<typeof fetch>((_input, init) =>
+      Promise.resolve(acknowledgedPushResponse(init)),
     );
     const { backend, cache } = makeBackend(fetchImpl);
     await cache.writeTask(makeTask("202607240800-SYNC"));
@@ -282,9 +354,125 @@ describe("CloudBackend sync identity preflight", () => {
     await expect(readState()).resolves.toEqual({
       last_checked_at: null,
       last_start_ready_pull_at: null,
+      pending_projection_apply: null,
       pending_push: null,
       projection_identity_sha256: CURRENT_IDENTITY,
     });
+  });
+
+  it.each([
+    ["empty object", {}],
+    ["array", []],
+    ["invalid timestamp", { data: { last_checked_at: "not-a-timestamp" } }],
+  ])(
+    "keeps local dirty state when a push returns an ambiguous %s acknowledgement",
+    async (_label, response) => {
+      const before = await writeState(
+        cloudState({
+          pending_push: {
+            failed_at: "2026-07-24T08:30:00.000Z",
+            kind: "local_dirty",
+            reason: "Local cloud cache mutation is not pushed: write_task",
+          },
+        }),
+      );
+      const fetchImpl = vi.fn<typeof fetch>(() => Promise.resolve(Response.json(response)));
+      const { backend, cache } = makeBackend(fetchImpl);
+      await cache.writeTask(makeTask("202607240830-ACK1"));
+
+      await expect(
+        backend.sync({ direction: "push", conflict: "fail", quiet: true, confirm: true }),
+      ).rejects.toThrow(/not a JSON object|did not acknowledge the submitted projection/u);
+
+      expect(fetchImpl).toHaveBeenCalledTimes(1);
+      await expect(readFile(statePath(), "utf8")).resolves.toBe(before);
+    },
+  );
+
+  it("keeps local dirty state when a structured push receipt belongs to another request", async () => {
+    const before = await writeState(
+      cloudState({
+        pending_push: {
+          failed_at: "2026-07-24T08:30:00.000Z",
+          kind: "local_dirty",
+          reason: "Local cloud cache mutation is not pushed: write_task",
+        },
+      }),
+    );
+    const fetchImpl = vi.fn<typeof fetch>((_input, init) => {
+      if (typeof init?.body !== "string") throw new TypeError("Expected cloud push body");
+      const body = JSON.parse(init.body) as {
+        projection?: {
+          projection_sha256?: string;
+          task_count?: number;
+          project_id?: string;
+          provider?: string | null;
+        };
+      };
+      return Promise.resolve(
+        Response.json({
+          data: {
+            projection_ack: {
+              status: "persisted",
+              request_id: "push_another-request",
+              projection_sha256: body.projection?.projection_sha256,
+              task_count: body.projection?.task_count,
+              project_id: body.projection?.project_id,
+              provider: body.projection?.provider,
+            },
+          },
+        }),
+      );
+    });
+    const { backend, cache } = makeBackend(fetchImpl);
+    await cache.writeTask(makeTask("202607240830-ACK2"));
+
+    await expect(
+      backend.sync({ direction: "push", conflict: "fail", quiet: true, confirm: true }),
+    ).rejects.toThrow("did not acknowledge the submitted projection");
+
+    await expect(readFile(statePath(), "utf8")).resolves.toBe(before);
+  });
+
+  it("rejects conflicting top-level and data push acknowledgements", async () => {
+    const before = await writeState(
+      cloudState({
+        pending_push: {
+          failed_at: "2026-07-24T08:30:00.000Z",
+          kind: "local_dirty",
+          reason: "Local cloud cache mutation is not pushed: write_task",
+        },
+      }),
+    );
+    const fetchImpl = vi.fn<typeof fetch>((_input, init) => {
+      if (typeof init?.body !== "string") throw new TypeError("Expected cloud push body");
+      const body = JSON.parse(init.body) as {
+        projection: Record<string, unknown>;
+      };
+      const acknowledgement = {
+        status: "persisted",
+        ...body.projection,
+      };
+      return Promise.resolve(
+        Response.json({
+          projection_ack: {
+            ...acknowledgement,
+            request_id: "push_conflicting-envelope",
+          },
+          data: { projection_ack: acknowledgement },
+        }),
+      );
+    });
+    const { backend, cache } = makeBackend(fetchImpl);
+    await cache.writeTask(makeTask("202607240830-ACK3"));
+
+    await expect(
+      backend.sync({ direction: "push", conflict: "fail", quiet: true, confirm: true }),
+    ).rejects.toMatchObject({
+      reasonCode: "cloud_push_ack_invalid",
+    });
+
+    await expect(readFile(statePath(), "utf8")).resolves.toBe(before);
   });
 
   function statePath(): string {
@@ -338,6 +526,7 @@ function cloudState(overrides: Partial<CloudBackendState>): CloudBackendState {
   return {
     last_checked_at: "2026-07-24T07:00:00.000Z",
     last_start_ready_pull_at: null,
+    pending_projection_apply: null,
     pending_push: null,
     projection_identity_sha256: CURRENT_IDENTITY,
     ...overrides,
@@ -354,9 +543,35 @@ function noChangePullFetch(): ReturnType<typeof vi.fn<typeof fetch>> {
         data: {
           tasks: [],
           last_checked_at: "2026-07-24T08:00:00.000Z",
+          projection_complete: true,
         },
       }),
     );
+  });
+}
+
+function acknowledgedPushResponse(init: RequestInit | undefined): Response {
+  if (typeof init?.body !== "string") throw new TypeError("Expected cloud push body");
+  const body = JSON.parse(init.body) as {
+    projection?: {
+      request_id?: string;
+      projection_sha256?: string;
+      task_count?: number;
+      project_id?: string;
+      provider?: string | null;
+    };
+  };
+  return Response.json({
+    data: {
+      projection_ack: {
+        status: "unchanged",
+        request_id: body.projection?.request_id,
+        projection_sha256: body.projection?.projection_sha256,
+        task_count: body.projection?.task_count,
+        project_id: body.projection?.project_id,
+        provider: body.projection?.provider,
+      },
+    },
   });
 }
 

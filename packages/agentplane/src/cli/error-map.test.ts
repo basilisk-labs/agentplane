@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { mapBackendError, mapCoreError, writeError } from "./error-map.js";
 import { ExitCode } from "./exit-codes.js";
+import { getReasonCodeMeta } from "./reason-codes.js";
 import {
   BackendCliError,
   CliError,
@@ -103,6 +104,15 @@ describe("core error mapping", () => {
     expect(mapped.context?.reason_code).toBe("cloud_projection_checkpoint_invalid");
     expect(payload.error?.context?.reason_code).toBe("cloud_projection_checkpoint_invalid");
     expect(payload.error?.reason_decode?.code).toBe("cloud_projection_checkpoint_invalid");
+  });
+
+  it("decodes cloud cache snapshot drift into actionable metadata", () => {
+    expect(getReasonCodeMeta("cloud_cache_projection_changed")).toEqual({
+      code: "cloud_cache_projection_changed",
+      category: "backend",
+      summary: "local task cache changed while cloud synchronization was in progress",
+      action: "review the local edit and retry synchronization from a fresh snapshot",
+    });
   });
 
   it("maps backend network errors to NetworkError", () => {

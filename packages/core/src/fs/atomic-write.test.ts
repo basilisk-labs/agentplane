@@ -91,6 +91,25 @@ describe("atomicWriteFile", () => {
     expect(contents).toBe("old\n");
   });
 
+  it("preserves the current file when the final publication guard rejects", async () => {
+    const dir = await makeTempDir();
+    const target = path.join(dir, "guarded.json");
+    await writeFile(target, "old\n", "utf8");
+    let guardCalled = false;
+
+    await expect(
+      atomicWriteFile(target, "new\n", "utf8", {
+        beforePublication: () => {
+          guardCalled = true;
+          throw new Error("checkpoint changed");
+        },
+      }),
+    ).rejects.toThrow("checkpoint changed");
+
+    expect(guardCalled).toBe(true);
+    await expect(readFile(target, "utf8")).resolves.toBe("old\n");
+  });
+
   it("uses the last published value when a later writer replaces the target", async () => {
     const dir = await makeTempDir();
     const target = path.join(dir, "concurrent.txt");

@@ -98,6 +98,7 @@ describe("CloudBackend task-start refresh", () => {
             data: {
               last_checked_at: "2026-05-19T10:00:00.000Z",
               tasks: [remoteTask],
+              projection_complete: true,
             },
           }),
         );

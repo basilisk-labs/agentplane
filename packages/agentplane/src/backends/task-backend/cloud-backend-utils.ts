@@ -1,4 +1,5 @@
 import * as net from "node:net";
+import { isDeepStrictEqual } from "node:util";
 
 import { BackendError, type TaskData } from "./shared.js";
 import { isRecord } from "../../shared/guards.js";
@@ -10,8 +11,13 @@ export type CloudSyncResponse = {
   tasks?: unknown;
   last_checked_at?: unknown;
   conflicts?: unknown;
+  openConflicts?: unknown;
+  open_conflicts?: unknown;
   no_projection_changes?: unknown;
   no_changes?: unknown;
+  projection_ack?: unknown;
+  projection_complete?: unknown;
+  complete_snapshot?: unknown;
 };
 
 export const CLOUD_PUSH_DIRECT_BODY_LIMIT_BYTES = 750_000;
@@ -21,8 +27,13 @@ export const CLOUD_REQUEST_TIMEOUT_MS = 30_000;
 export const CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS = 5000;
 export const CLOUD_PULL_REQUEST_TIMEOUT_MS = 120_000;
 export const CLOUD_PUSH_BATCH_REQUEST_TIMEOUT_MS = 60_000;
+export const CLOUD_PROJECTION_CLOCK_SKEW_TOLERANCE_MS = 60_000;
 const CLOUD_NETWORK_FAMILY_ATTEMPT_TIMEOUT_MS = 1000;
 const CLOUD_RETRIABLE_HTTP_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
+
+export function compareCodeUnits(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
 
 type NetworkFamilyAttemptTimeoutApi = {
   getDefaultAutoSelectFamilyAttemptTimeout?: () => number;
@@ -83,29 +94,166 @@ export function normalizeCloudPullResponse(
   data: Record<string, unknown>,
 ): {
   tasks: unknown[] | null;
-  conflicts: unknown;
   lastCheckedAt: string | null;
   noProjectionChanges: boolean;
+  projectionComplete: boolean;
 } {
+  const responseTasks = readOptionalTaskEnvelope(response.tasks, "response.tasks");
+  const dataTasks = readOptionalTaskEnvelope(data.tasks, "response.data.tasks");
+  if (responseTasks && dataTasks && !isDeepStrictEqual(responseTasks, dataTasks)) {
+    throw cloudPullProjectionEnvelopeError(
+      "response.tasks and response.data.tasks differ, so a completeness marker cannot safely authorize deletions or identity adoption",
+    );
+  }
+  const responseComplete = readStrictOptionalScalar(
+    response,
+    ["projection_complete", "complete_snapshot"],
+    "response completeness marker",
+    readBooleanScalar,
+  );
+  const dataComplete = readStrictOptionalScalar(
+    data,
+    ["projection_complete", "complete_snapshot"],
+    "response.data completeness marker",
+    readBooleanScalar,
+  );
+  const completeness = assertMatchingOptionalScalars(
+    responseComplete,
+    dataComplete,
+    "top-level and response.data completeness markers differ",
+  );
+  const responseNoChanges = readStrictOptionalScalar(
+    response,
+    ["no_projection_changes", "no_changes"],
+    "response no-change marker",
+    readBooleanScalar,
+  );
+  const dataNoChanges = readStrictOptionalScalar(
+    data,
+    ["no_projection_changes", "no_changes"],
+    "response.data no-change marker",
+    readBooleanScalar,
+  );
+  const noProjectionChanges =
+    assertMatchingOptionalScalars(
+      responseNoChanges,
+      dataNoChanges,
+      "top-level and response.data no-change markers differ",
+    ) ?? false;
+  const tasks = responseTasks ?? dataTasks;
+  if (noProjectionChanges && tasks !== null) {
+    throw cloudPullProjectionEnvelopeError(
+      "no_projection_changes=true cannot be combined with a task projection",
+    );
+  }
+  if (noProjectionChanges && completeness !== null) {
+    throw cloudPullProjectionEnvelopeError(
+      "no_projection_changes=true cannot be combined with a completeness marker",
+    );
+  }
   return {
-    tasks: Array.isArray(response.tasks)
-      ? response.tasks
-      : Array.isArray(data.tasks)
-        ? data.tasks
-        : null,
-    conflicts: response.conflicts ?? data.conflicts,
-    lastCheckedAt:
-      typeof response.last_checked_at === "string"
-        ? response.last_checked_at
-        : typeof data.last_checked_at === "string"
-          ? data.last_checked_at
-          : null,
-    noProjectionChanges:
-      response.no_projection_changes === true ||
-      response.no_changes === true ||
-      data.no_projection_changes === true ||
-      data.no_changes === true,
+    tasks,
+    lastCheckedAt: readCloudLastCheckedAt(response, data),
+    noProjectionChanges,
+    projectionComplete:
+      responseTasks && dataTasks
+        ? responseComplete === true && dataComplete === true
+        : responseTasks
+          ? responseComplete === true
+          : dataTasks
+            ? dataComplete === true
+            : false,
   };
+}
+
+export function readCloudLastCheckedAt(
+  response: CloudSyncResponse,
+  data: Record<string, unknown>,
+): string | null {
+  const responseLastCheckedAt = readStrictOptionalScalar(
+    response,
+    ["last_checked_at"],
+    "response freshness timestamp",
+    readTimestampScalar,
+  );
+  const dataLastCheckedAt = readStrictOptionalScalar(
+    data,
+    ["last_checked_at"],
+    "response.data freshness timestamp",
+    readTimestampScalar,
+  );
+  return assertMatchingOptionalScalars(
+    responseLastCheckedAt,
+    dataLastCheckedAt,
+    "top-level and response.data freshness timestamps differ",
+  );
+}
+
+function readOptionalTaskEnvelope(input: unknown, label: string): unknown[] | null {
+  if (input === undefined) return null;
+  if (Array.isArray(input)) return input.map((item: unknown): unknown => item);
+  throw cloudPullProjectionEnvelopeError(`${label} is present but is not an array`);
+}
+
+function cloudPullProjectionEnvelopeError(reason: string): BackendError {
+  return new BackendError(
+    [
+      "Cloud pull response contains conflicting task projections or scalar envelopes.",
+      `Why: ${reason}.`,
+      "Fix: return one canonical value for each task array, marker, and freshness timestamp.",
+      "Safe command: agentplane backend inspect cloud --yes",
+      "Stop condition: do not apply or bind either ambiguous projection.",
+    ].join("\n"),
+    "E_BACKEND",
+    { reasonCode: "cloud_pull_projection_conflict" },
+  );
+}
+
+function readStrictOptionalScalar<T>(
+  source: object,
+  aliases: readonly string[],
+  label: string,
+  parse: (value: unknown) => T | null,
+): T | null {
+  let selected: { alias: string; value: T } | null = null;
+  for (const alias of aliases) {
+    const input = (source as Record<string, unknown>)[alias];
+    if (input === undefined) continue;
+    const value = parse(input);
+    if (value === null) {
+      throw cloudPullProjectionEnvelopeError(`${label} ${alias} has an invalid scalar value`);
+    }
+    if (selected && !isDeepStrictEqual(selected.value, value)) {
+      throw cloudPullProjectionEnvelopeError(
+        `${label} aliases ${selected.alias} and ${alias} differ`,
+      );
+    }
+    selected = { alias, value };
+  }
+  return selected?.value ?? null;
+}
+
+function assertMatchingOptionalScalars<T>(
+  responseValue: T | null,
+  dataValue: T | null,
+  conflictReason: string,
+): T | null {
+  if (
+    responseValue !== null &&
+    dataValue !== null &&
+    !isDeepStrictEqual(responseValue, dataValue)
+  ) {
+    throw cloudPullProjectionEnvelopeError(conflictReason);
+  }
+  return responseValue ?? dataValue;
+}
+
+function readBooleanScalar(input: unknown): boolean | null {
+  return typeof input === "boolean" ? input : null;
+}
+
+function readTimestampScalar(input: unknown): string | null {
+  return typeof input === "string" && Number.isFinite(Date.parse(input)) ? input : null;
 }
 
 export function readSafeCommand(
@@ -213,6 +361,7 @@ export function isStale(
   if (!lastCheckedAt) return true;
   const checkedAt = Date.parse(lastCheckedAt);
   if (!Number.isFinite(checkedAt)) return true;
+  if (checkedAt - nowMs > CLOUD_PROJECTION_CLOCK_SKEW_TOLERANCE_MS) return true;
   return nowMs - checkedAt > staleAfterSeconds * 1000;
 }
 

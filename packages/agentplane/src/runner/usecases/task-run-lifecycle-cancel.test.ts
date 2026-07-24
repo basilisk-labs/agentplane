@@ -44,7 +44,6 @@ import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-r
 
 installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;
-
 afterEach(() => {
   process.env.PATH = originalPath;
   vi.restoreAllMocks();
@@ -57,7 +56,6 @@ describe("task-run lifecycle cancellation", () => {
       command: null,
       started_at: null,
     });
-
     await expect(
       inspectStartOwnerLease({
         owner_id: "live-owner",
@@ -96,7 +94,6 @@ describe("task-run lifecycle cancellation", () => {
       await releaseChildIdentityPromise;
       return await originalReadIdentity(pid);
     });
-
     const executionPromise = executeTaskRunnerExecution({
       ctx,
       cwd: root,
@@ -221,7 +218,14 @@ describe("task-run lifecycle cancellation", () => {
     expect(executed.result.status).toBe("cancelled");
     expect(finalState?.status).toBe("cancelled");
     expect(finalState?.supervision?.cancel_signal).toBeTruthy();
-    expect(await readFile(runnerPaths.events_path, "utf8")).toContain("runner_cancel_signal_sent");
+    expect(finalState?.state_fingerprint).toMatchObject({
+      outcome: "accepted",
+      effect_applied: true,
+    });
+    const events = await readFile(runnerPaths.events_path, "utf8");
+    expect(events).toContain("runner_cancel_signal_sent");
+    expect(events).toContain("runner_terminal_projection_deferred");
+    expect(events).toContain('"state_fingerprint_outcome":"effect_started"');
   });
 
   it("keeps cancel_signal and exit_signal semantics distinct during TERM cancellation", async () => {

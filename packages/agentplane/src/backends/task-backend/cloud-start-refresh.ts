@@ -1,5 +1,5 @@
 import { BackendError } from "./shared.js";
-import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
+import type { CloudBackendState } from "./cloud-backend-state.js";
 import { CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS, cloudConflictMessage } from "./cloud-backend-utils.js";
 import {
   pendingCloudPushError,
@@ -18,7 +18,8 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
   missingConfigKeys: () => string[];
   projectId: string;
   projectionIdentitySha256: string;
-  statePath: string;
+  readState: () => Promise<CloudBackendState>;
+  commitState: (update: (state: CloudBackendState) => CloudBackendState) => Promise<void>;
   requestCloudSyncState: (
     projectId: string,
     opts?: { timeoutMs?: number },
@@ -36,18 +37,19 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
   if (!opts.autoSyncEnabled || !opts.autoSyncPullOnStartReady) return;
   if (opts.missingConfigKeys().length > 0) return;
 
-  const state = await readCloudBackendState(opts.statePath);
-  if (
-    state.projection_identity_sha256 === opts.projectionIdentitySha256 &&
-    sameLocalDate(state.last_start_ready_pull_at, new Date())
-  ) {
-    return;
-  }
+  const state = await opts.readState();
   if (state.pending_push) {
     if (state.projection_identity_sha256 !== opts.projectionIdentitySha256) {
       throw pendingCloudPushIdentityMismatchError(state.pending_push);
     }
     throw pendingCloudPushError(state.pending_push);
+  }
+  if (
+    !state.pending_projection_apply &&
+    state.projection_identity_sha256 === opts.projectionIdentitySha256 &&
+    sameLocalDate(state.last_start_ready_pull_at, new Date())
+  ) {
+    return;
   }
   if (!opts.autoSyncNetworkAllowed) {
     throw new BackendError(
@@ -86,13 +88,10 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
     timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
     syncStateTimeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
   });
-  const refreshed = await readCloudBackendState(opts.statePath);
-  await writeCloudBackendState(opts.statePath, {
-    last_checked_at: refreshed.last_checked_at,
+  await opts.commitState((refreshed) => ({
+    ...refreshed,
     last_start_ready_pull_at: new Date().toISOString(),
-    pending_push: refreshed.pending_push,
-    projection_identity_sha256: refreshed.projection_identity_sha256,
-  });
+  }));
 }
 
 function sameLocalDate(value: string | null, now: Date): boolean {

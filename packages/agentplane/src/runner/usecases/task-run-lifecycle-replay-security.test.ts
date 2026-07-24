@@ -1,4 +1,4 @@
-import { mkdir, readFile, readdir, rename, symlink, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, symlink, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
@@ -191,7 +191,14 @@ describe("task-run fresh replay security", () => {
       taskId,
       runId: `run-${action}-untrusted-source`,
     });
-    await rename(source.invocation.run_dir, `${source.invocation.run_dir}.detached`);
+    const detachedSourceDir = path.join(
+      root,
+      "detached-run-artifacts",
+      action,
+      source.invocation.run_id,
+    );
+    await mkdir(path.dirname(detachedSourceDir), { recursive: true });
+    await rename(source.invocation.run_dir, detachedSourceDir);
 
     const fromMissing = await runFreshReplay(action, {
       ctx,
@@ -215,8 +222,19 @@ describe("task-run fresh replay security", () => {
       target: structuredClone(source.bundle.target),
       adapterId: source.invocation.adapter_id,
     });
-    await mkdir(source.invocation.run_dir, { recursive: true });
     const victimPath = path.join(root, `source-${action}-victim.txt`);
+    const detachedBundlePath = path.join(
+      detachedSourceDir,
+      path.basename(source.invocation.bundle_path),
+    );
+    const detachedStatePath = path.join(
+      detachedSourceDir,
+      path.basename(source.invocation.state_path),
+    );
+    const detachedEventsPath = path.join(
+      detachedSourceDir,
+      path.basename(source.invocation.events_path),
+    );
     const tamperedBundle = `${JSON.stringify({
       execution: {
         artifact_paths: {
@@ -225,9 +243,9 @@ describe("task-run fresh replay security", () => {
       },
     })}\n`;
     await writeFile(victimPath, "sentinel\n", "utf8");
-    await writeFile(source.invocation.bundle_path, tamperedBundle, "utf8");
-    await writeFile(source.invocation.state_path, "not-json\n", "utf8");
-    await writeFile(source.invocation.events_path, "source-tampered\n", "utf8");
+    await writeFile(detachedBundlePath, tamperedBundle, "utf8");
+    await writeFile(detachedStatePath, "not-json\n", "utf8");
+    await writeFile(detachedEventsPath, "source-tampered\n", "utf8");
 
     const fromTampered = await runFreshReplay(action, {
       ctx,
@@ -241,8 +259,8 @@ describe("task-run fresh replay security", () => {
     expect(JSON.stringify(fromTampered.bundle.route_decision)).not.toContain(
       source.invocation.run_id,
     );
-    expect(await readFile(source.invocation.bundle_path, "utf8")).toBe(tamperedBundle);
-    expect(await readFile(source.invocation.events_path, "utf8")).toBe("source-tampered\n");
+    expect(await readFile(detachedBundlePath, "utf8")).toBe(tamperedBundle);
+    expect(await readFile(detachedEventsPath, "utf8")).toBe("source-tampered\n");
     expect(await readFile(victimPath, "utf8")).toBe("sentinel\n");
   });
 
@@ -307,7 +325,14 @@ describe("task-run fresh replay security", () => {
       taskId,
       runId: "run-same-id-source",
     });
-    await rename(source.invocation.run_dir, `${source.invocation.run_dir}.detached`);
+    const detachedSourceDir = path.join(
+      root,
+      "detached-run-artifacts",
+      "same-id",
+      source.invocation.run_id,
+    );
+    await mkdir(path.dirname(detachedSourceDir), { recursive: true });
+    await rename(source.invocation.run_dir, detachedSourceDir);
 
     for (const action of REPLAY_ACTIONS) {
       await expect(
@@ -496,6 +521,7 @@ describe("task-run fresh replay security", () => {
       });
       expect(await readFile(victimSentinel, "utf8")).toBe("sentinel\n");
       expect(await readdir(victimDir)).toEqual(["sentinel.txt"]);
+      await unlink(symlinkDestinationDir);
 
       const existingDestination = `run-${action}-existing-destination`;
       const existingDestinationDir = path.join(runsDir, existingDestination);
@@ -516,6 +542,10 @@ describe("task-run fresh replay security", () => {
       });
       expect(await readFile(existingSentinel, "utf8")).toBe("sentinel\n");
       expect(await readdir(existingDestinationDir)).toEqual(["sentinel.txt"]);
+      await rename(
+        existingDestinationDir,
+        path.join(root, `${action}-existing-destination-detached`),
+      );
 
       await expect(
         runFreshReplay(action, {

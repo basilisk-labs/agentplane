@@ -33,12 +33,23 @@ function contextAtRoot(taskData: TaskData, root: string) {
   return ctx;
 }
 
+function successfulApply() {
+  return vi.fn(() =>
+    Promise.resolve({
+      status: "success" as const,
+      exit_code: 0,
+      started_at: "2026-07-24T00:00:00.000Z",
+      ended_at: "2026-07-24T00:00:01.000Z",
+    }),
+  );
+}
+
 describe("runner state fingerprint production projections", () => {
   it("assigns provider sync freshness exclusively to the provider component", async () => {
     const preparedTask = task({
       sync: {
         version: 1,
-        external_refs: [{ provider: "github", remote_id: "123" }],
+        external_refs: [{ provider: "github", remote_id: "123", remote_revision: "provider-1" }],
         field_policies: {},
         freshness: {
           projected_at: "2026-07-24T00:00:00.000Z",
@@ -52,6 +63,7 @@ describe("runner state fingerprint production projections", () => {
     const changedTask = structuredClone(preparedTask);
     changedTask.sync = {
       ...changedTask.sync!,
+      external_refs: [{ provider: "github", remote_id: "123", remote_revision: "provider-2" }],
       freshness: {
         projected_at: "2026-07-24T00:01:00.000Z",
         projection_sha256: "projection-2",
@@ -113,6 +125,37 @@ describe("runner state fingerprint production projections", () => {
       },
     });
     expect(apply).not.toHaveBeenCalled();
+  });
+
+  it("canonicalizes provider revision refs independently of Unicode input order", async () => {
+    const firstTask = task({
+      sync: {
+        version: 1,
+        external_refs: [
+          { provider: "github", remote_id: "β", remote_revision: "2" },
+          { provider: "github", remote_id: "a", remote_revision: "1" },
+        ],
+        field_policies: {},
+        freshness: { provider_revision: "provider-1" },
+        conflicts: [],
+      },
+    });
+    const secondTask = structuredClone(firstTask);
+    secondTask.sync!.external_refs.reverse();
+    const runnerBundle = bundle(firstTask);
+    const first = await capturePreparedRunnerStateFingerprint({
+      ctx: context(firstTask),
+      bundle: runnerBundle,
+      git: gitSnapshot(),
+      probes: probes({ task: firstTask, bundle: runnerBundle }),
+    });
+    const second = await captureRunnerStateFingerprint({
+      ctx: context(secondTask),
+      bundle: runnerBundle,
+      probes: probes({ task: secondTask, bundle: runnerBundle }),
+    });
+
+    expect(second.components.provider).toEqual(first.components.provider);
   });
 
   it("rejects changed provider evidence while freshness remains unavailable", async () => {
@@ -792,6 +835,31 @@ describe("runner state fingerprint production projections", () => {
         probes: stateProbes,
       });
       expect(repeated.components.knowledge).toEqual(fingerprint.components.knowledge);
+      const apply = successfulApply();
+      await expect(
+        executeStateBoundRunnerInvocation({
+          ctx,
+          task_id: taskData.id,
+          bundle: runnerBundle,
+          invocation: invocation(),
+          precondition_fingerprint: fingerprint,
+          precondition_policy: RUNNER_STATE_FINGERPRINT_POLICY,
+          probes: stateProbes,
+          apply,
+        }),
+      ).rejects.toMatchObject({
+        context: {
+          reason_code: "state_fingerprint_required_component_unavailable",
+          fingerprint: {
+            unavailable_required_components: ["knowledge"],
+          },
+        },
+        state_fingerprint: {
+          outcome: "refused",
+          effect_applied: false,
+        },
+      });
+      expect(apply).not.toHaveBeenCalled();
     } finally {
       await Promise.all([
         rm(root, { recursive: true, force: true }),
@@ -799,6 +867,79 @@ describe("runner state fingerprint production projections", () => {
       ]);
     }
   });
+
+  it.each([
+    {
+      label: "missing lock for an initialized workspace",
+      expectedReason: "knowledge_manifest_lock_missing",
+      writeFixture: async (root: string) => {
+        const manifestPath = path.join(root, ".agentplane", "context", "agentplane.context.yaml");
+        await mkdir(path.dirname(manifestPath), { recursive: true });
+        await writeFile(manifestPath, "version: 1\n", "utf8");
+      },
+    },
+    {
+      label: "invalid manifest lock",
+      expectedReason: "knowledge_manifest_invalid",
+      writeFixture: async (root: string) => {
+        const lockPath = path.join(root, ".agentplane", "context", "manifest.lock.json");
+        await mkdir(path.dirname(lockPath), { recursive: true });
+        await writeFile(lockPath, "{", "utf8");
+      },
+    },
+  ])(
+    "fails closed for $label before the adapter effect",
+    async ({ expectedReason, writeFixture }) => {
+      const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-"));
+      try {
+        await writeFixture(root);
+        const taskData = task();
+        const runnerBundle = bundle(taskData);
+        runnerBundle.repository.git_root = root;
+        const ctx = contextAtRoot(taskData, root);
+        const stateProbes = probes({ task: taskData, bundle: runnerBundle });
+        delete stateProbes.observe_knowledge;
+        const fingerprint = await capturePreparedRunnerStateFingerprint({
+          ctx,
+          bundle: runnerBundle,
+          git: gitSnapshot(),
+          probes: stateProbes,
+        });
+        const apply = successfulApply();
+
+        expect(fingerprint.components.knowledge).toMatchObject({
+          state: "unavailable",
+          reason_code: expectedReason,
+        });
+        await expect(
+          executeStateBoundRunnerInvocation({
+            ctx,
+            task_id: taskData.id,
+            bundle: runnerBundle,
+            invocation: invocation(),
+            precondition_fingerprint: fingerprint,
+            precondition_policy: RUNNER_STATE_FINGERPRINT_POLICY,
+            probes: stateProbes,
+            apply,
+          }),
+        ).rejects.toMatchObject({
+          context: {
+            reason_code: "state_fingerprint_required_component_unavailable",
+            fingerprint: {
+              unavailable_required_components: ["knowledge"],
+            },
+          },
+          state_fingerprint: {
+            outcome: "refused",
+            effect_applied: false,
+          },
+        });
+        expect(apply).not.toHaveBeenCalled();
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    },
+  );
 
   it("fails closed when a selected policy module is missing", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-state-fingerprint-"));

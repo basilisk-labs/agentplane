@@ -11,6 +11,8 @@ import type { RunnerRunState } from "../types.js";
 
 import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
 import { reconcileTerminalTaskRunnerActiveClaim } from "./task-run-active-claim-runtime.js";
+import { isRunnerEffectInDoubt } from "./task-run-active-claim-authority.js";
+import { ensureEffectInDoubtActiveClaim } from "./task-run-effect-in-doubt-claim.js";
 import {
   loadExistingRunnerExecution,
   readRunningPid,
@@ -154,15 +156,55 @@ async function reconcileTerminalProjection(opts: {
   task_id: string;
   state: RunnerRunState;
 }): Promise<void> {
-  const active =
-    opts.loaded.repository.storage === "supervisor"
-      ? await readTaskRunnerActiveClaim({
-          git_root: opts.loaded.bundle.repository.git_root,
-          workflow_dir: opts.loaded.bundle.repository.workflow_dir,
-          task_id: opts.task_id,
+  const effectInDoubt = isRunnerEffectInDoubt(opts.state);
+  const activeClaim = effectInDoubt
+    ? await ensureEffectInDoubtActiveClaim({
+        loaded: opts.loaded,
+        task_id: opts.task_id,
+      })
+    : {
+        claim:
+          opts.loaded.repository.storage === "supervisor"
+            ? await readTaskRunnerActiveClaim({
+                git_root: opts.loaded.bundle.repository.git_root,
+                workflow_dir: opts.loaded.bundle.repository.workflow_dir,
+                task_id: opts.task_id,
+                run_id: opts.loaded.invocation.run_id,
+              })
+            : null,
+        restored: false,
+      };
+  const active = activeClaim.claim;
+  if (effectInDoubt) {
+    if (activeClaim.restored) {
+      await opts.loaded.repository.appendEvent({
+        at: new Date().toISOString(),
+        type: "runner_effect_in_doubt_claim_restored",
+        message: "missing supervisor claim restored to block duplicate runner effects",
+        data: {
           run_id: opts.loaded.invocation.run_id,
-        })
-      : null;
+          active_run_id: active?.run_id ?? null,
+          active_generation: active?.generation ?? null,
+          active_operation: active?.operation ?? null,
+          state_fingerprint_outcome: opts.state.state_fingerprint?.outcome ?? null,
+        },
+      });
+    }
+    await opts.loaded.repository.appendEvent({
+      at: new Date().toISOString(),
+      type: "runner_terminal_projection_deferred",
+      message: "terminal projection deferred while the runner effect remains in doubt",
+      data: {
+        run_id: opts.loaded.invocation.run_id,
+        active_run_id: active?.run_id ?? null,
+        active_generation: active?.generation ?? null,
+        active_operation: active?.operation ?? null,
+        active_claim_restored: activeClaim.restored,
+        state_fingerprint_outcome: opts.state.state_fingerprint?.outcome ?? null,
+      },
+    });
+    return;
+  }
   if (active && active.run_id !== opts.loaded.invocation.run_id) {
     await opts.loaded.repository.appendEvent({
       at: new Date().toISOString(),

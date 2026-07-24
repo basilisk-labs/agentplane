@@ -94,6 +94,18 @@ Bidirectional pull support accepts both `response.tasks` and `response.data.task
 `safe_command`, `when_to_stop`) when a service-side direction or conflict policy rejects the
 request.
 
+Authoritative pull application is fail-closed. A `prefer-remote` pull, initial identity adoption,
+or interrupted adoption resume requires a task array plus `projection_complete: true` at the
+response or `data` level. Without that explicit full-snapshot marker, the CLI does not interpret
+missing task ids as deletions and does not bind the cache to the remote identity.
+
+Push requests carry a `projection` object with `request_id`, `projection_sha256`, `task_count`,
+`project_id`, and `provider`. The service must return a matching `data.projection_ack` with
+`status: "persisted"` or `status: "unchanged"` and the same fields. Batched pushes must also echo
+the exact `batch_id`, while `data.batch` must report the same `id` and `finalized: true`. An HTTP 2xx
+response, timestamp, generic no-op marker, or uncorrelated batch marker does not clear local dirty
+state.
+
 ### C004: Add backend connect command
 
 Scope:

@@ -70,6 +70,7 @@ function context(opts: {
   revisionGuarded?: boolean;
 }): CommandContext {
   const config = defaultConfig();
+  const getTask = opts.getTask ?? (() => Promise.resolve(structuredClone(opts.current)));
   return {
     resolvedProject: { gitRoot: "/repo" },
     config,
@@ -81,8 +82,11 @@ function context(opts: {
         ...cloudBackendCapabilities,
         supports_revision_guarded_writes: opts.revisionGuarded ?? true,
       },
-      getTask: opts.getTask ?? (() => Promise.resolve(structuredClone(opts.current))),
+      getTask,
       writeTask: opts.writeTask,
+      cache: {
+        getTask,
+      },
     },
     git: {},
     memo: {},
@@ -162,6 +166,30 @@ describe("runner task outcome projection", () => {
     ).rejects.toMatchObject({
       code: "E_RUNTIME",
       context: { reason: "runner_projection_revision_guard_unsupported" },
+    });
+    expect(writeTask).not.toHaveBeenCalled();
+  });
+
+  it("rejects a replay projection when the prepared task revision has drifted", async () => {
+    const current = task(8);
+    const writeTask = vi.fn(() => Promise.resolve());
+    const ctx = context({ current, writeTask });
+
+    await expect(
+      persistRunnerOutcomeToTask({
+        ctx,
+        task_id: TASK_ID,
+        state: state("run-stale-replay-anchor", "2026-07-24T06:00:00.000Z"),
+        ordering_authority: "current_active_claim",
+        expected_task_revision: 7,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "task_revision_conflict",
+        expected_revision: 7,
+        current_revision: 8,
+      },
     });
     expect(writeTask).not.toHaveBeenCalled();
   });

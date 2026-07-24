@@ -14,6 +14,13 @@ type ContainedRealpaths = {
   file_path: string;
 };
 
+export type ContainedPathChainIdentity = {
+  repository_root: string;
+  file_path: string;
+  target_exists: boolean;
+  identities: PathIdentity[];
+};
+
 function unsafeObservation(message: string): NodeJS.ErrnoException {
   const error = new Error(message) as NodeJS.ErrnoException;
   error.code = "ELOOP";
@@ -37,7 +44,8 @@ async function capturePathChain(
   repositoryRoot: string,
   target: string,
   label: string,
-): Promise<PathIdentity[]> {
+  allowMissingTarget = false,
+): Promise<{ identities: PathIdentity[]; targetExists: boolean }> {
   const parts = relativeDescendant(repositoryRoot, target, label).split(path.sep);
   const rootStats = await lstat(repositoryRoot, { bigint: true });
   if (rootStats.isSymbolicLink() || !rootStats.isDirectory()) {
@@ -55,7 +63,19 @@ async function capturePathChain(
   let current = repositoryRoot;
   for (const [index, part] of parts.entries()) {
     current = path.join(current, part);
-    const stats = await lstat(current, { bigint: true });
+    let stats;
+    try {
+      stats = await lstat(current, { bigint: true });
+    } catch (error) {
+      if (
+        allowMissingTarget &&
+        index === parts.length - 1 &&
+        (error as NodeJS.ErrnoException | null)?.code === "ENOENT"
+      ) {
+        return { identities, targetExists: false };
+      }
+      throw error;
+    }
     if (stats.isSymbolicLink()) {
       throw unsafeObservation(`Refusing symlinked ${label} path: ${current}`);
     }
@@ -73,7 +93,7 @@ async function capturePathChain(
       mtime_ns: BigInt(stats.mtimeNs),
     });
   }
-  return identities;
+  return { identities, targetExists: true };
 }
 
 async function resolveContainedRealpaths(
@@ -103,6 +123,21 @@ function samePathChain(left: readonly PathIdentity[], right: readonly PathIdenti
   );
 }
 
+function samePathChainIdentity(
+  left: readonly PathIdentity[],
+  right: readonly PathIdentity[],
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      (entry, index) =>
+        entry.path === right[index]?.path &&
+        entry.dev === right[index]?.dev &&
+        entry.ino === right[index]?.ino,
+    )
+  );
+}
+
 function convertDisappearedPath(error: unknown, filePath: string, label: string): never {
   if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
     throw unsafeObservation(`Refusing changed ${label} path: ${filePath}`);
@@ -110,11 +145,53 @@ function convertDisappearedPath(error: unknown, filePath: string, label: string)
   throw error;
 }
 
+export async function captureContainedPathChainIdentity(opts: {
+  repository_root: string;
+  file_path: string;
+  label: string;
+}): Promise<ContainedPathChainIdentity> {
+  const repositoryRootInput = path.resolve(opts.repository_root);
+  const filePathInput = path.resolve(opts.file_path);
+  const relativePath = relativeDescendant(repositoryRootInput, filePathInput, opts.label);
+  const repositoryRoot = await realpath(repositoryRootInput);
+  const filePath = path.join(repositoryRoot, relativePath);
+  const captured = await capturePathChain(repositoryRoot, filePath, opts.label, true);
+  return {
+    repository_root: repositoryRoot,
+    file_path: filePath,
+    target_exists: captured.targetExists,
+    identities: captured.identities,
+  };
+}
+
+export async function assertContainedPathChainIdentityUnchanged(
+  expected: ContainedPathChainIdentity,
+  label: string,
+): Promise<void> {
+  try {
+    const observed = await capturePathChain(
+      expected.repository_root,
+      expected.file_path,
+      label,
+      true,
+    );
+    if (
+      observed.targetExists !== expected.target_exists ||
+      !samePathChainIdentity(expected.identities, observed.identities)
+    ) {
+      throw unsafeObservation(`Refusing changed ${label} path: ${expected.file_path}`);
+    }
+  } catch (error) {
+    convertDisappearedPath(error, expected.file_path, label);
+  }
+}
+
 export async function readContainedStableTextNoFollow(opts: {
   repository_root: string;
   file_path: string;
   label: string;
   max_bytes: number;
+  expected_identity?: StableFileIdentity;
   /** @internal Deterministic race injection for security regression tests. */
   after_containment_check?: () => Promise<void>;
 }): Promise<string> {
@@ -123,10 +200,18 @@ export async function readContainedStableTextNoFollow(opts: {
   const relativePath = relativeDescendant(repositoryRootInput, filePathInput, opts.label);
   const repositoryRoot = await realpath(repositoryRootInput);
   const filePath = path.join(repositoryRoot, relativePath);
-  const beforeChain = await capturePathChain(repositoryRoot, filePath, opts.label);
+  const beforeCapture = await capturePathChain(repositoryRoot, filePath, opts.label);
+  const beforeChain = beforeCapture.identities;
   const expectedIdentity = beforeChain.at(-1);
   if (!expectedIdentity) {
     throw unsafeObservation(`Refusing invalid ${opts.label} path: ${filePath}`);
+  }
+  if (
+    opts.expected_identity &&
+    (opts.expected_identity.dev !== expectedIdentity.dev ||
+      opts.expected_identity.ino !== expectedIdentity.ino)
+  ) {
+    throw unsafeObservation(`${opts.label} path changed before it could be read: ${filePath}`);
   }
 
   try {
@@ -136,7 +221,8 @@ export async function readContainedStableTextNoFollow(opts: {
       max_bytes: opts.max_bytes,
       expected_identity: expectedIdentity,
     });
-    const afterChain = await capturePathChain(repositoryRoot, filePath, opts.label);
+    const afterCapture = await capturePathChain(repositoryRoot, filePath, opts.label);
+    const afterChain = afterCapture.identities;
     const afterRealpaths = await resolveContainedRealpaths(repositoryRoot, filePath, opts.label);
     if (
       beforeRealpaths.repository_root !== afterRealpaths.repository_root ||
