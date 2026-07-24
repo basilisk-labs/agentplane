@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
     - "Per-task hard-link claims, generation-scoped recovery, TaskData revision CAS, immutable pre-spawn decisions, cooperative cancellation, monotonic supervision timestamps, and legacy run fallback close the prior evaluator findings."
     - "Independent semantic audit found no P0/P1 blocker; focused verification passed 9 files and 50 tests, while the repository contract and full fast suite are green."
 commit:
-  hash: "f161a6e56e7028c2932835af5e59bac0699f099e"
-  message: "🔒 9XC1H0 task: harden runner lifecycle authority"
+  hash: "9ba290cb4e04c80cd485c0ed8fd552ce7b35d594"
+  message: "🔒 9XC1H0 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -102,8 +105,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T05:56:26.265Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T05:55:45.593Z"
+doc_updated_at: "2026-07-24T05:56:26.266Z"
 doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
@@ -201,6 +211,10 @@ sections:
     - Observation: RF-03 implementation and negative security regressions satisfy all five Verify Steps.
       Impact: Executor/context/evaluator runs no longer gain implicit danger authority or claim unobserved write safety.
       Resolution: Verified commit 727af2f45 with full contract, critical, runner, type, guard, compatibility, architecture, clone, Knip, and coverage gates.
+extensions:
+  implementation_commit:
+    hash: "f161a6e56e7028c2932835af5e59bac0699f099e"
+    message: "🔒 9XC1H0 task: harden runner lifecycle authority"
 id_source: "generated"
 ---
 ## Summary

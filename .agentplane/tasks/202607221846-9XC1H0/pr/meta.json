@@ -8,10 +8,10 @@
   "pr_number": 4607,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4607",
   "pre_merge_closure": {
-    "basis_commit": "f161a6e56e7028c2932835af5e59bac0699f099e",
+    "basis_commit": "9ba290cb4e04c80cd485c0ed8fd552ce7b35d594",
     "branch": "task/202607221846-9XC1H0/enforce-role-scoped-sandboxes-and-actual-write-b",
     "pr_number": 4607,
-    "recorded_at": "2026-07-24T05:55:45.654Z",
+    "recorded_at": "2026-07-24T05:56:26.317Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
