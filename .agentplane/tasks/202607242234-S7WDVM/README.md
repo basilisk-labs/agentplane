@@ -1,10 +1,11 @@
 ---
 id: "202607242234-S7WDVM"
 title: "Amend AgentPlane 0.7 graph with bounded supervisor execution"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -59,11 +60,16 @@ quality_review:
     - "The new leaf has one CODER owner and one verification boundary: durable supervisor journal, budgets, deterministic stops, bounded feedback, and resume semantics inside the typed supervisor."
     - "Direct supervision and the beta.1 qualification gate both depend on the new leaf, so stable progression cannot bypass it; task-state validation found no cycle or malformed task."
     - "The plan explicitly rejects importing LoopSpec, ap loop, or project-local programmable loops, avoiding a second orchestration plane."
-commit: null
+commit:
+  hash: "22b8864aa45ebc8ddbfccb065b20c287d30bbfa5"
+  message: "🧐 S7WDVM task: record semantic quality review"
 comments:
   -
     author: "PLANNER"
     body: "Start: Amend the approved AgentPlane 0.7 release DAG with one bounded supervisor execution leaf, dependency wiring, and canonical plan text only; no runtime implementation or legacy loop surface changes."
+  -
+    author: "PLANNER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -78,8 +84,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the 0.7 DAG amendment: the new CODER leaf is atomic and unstarted, direct supervisor and beta.1 gate depend on it without cycles, the canonical plan matches task metadata, and routing, doctor, task-state, formatting, and docs-only pre-push CI pass."
+  -
+    type: "status"
+    at: "2026-07-24T22:46:02.515Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:42:49.799Z"
+doc_updated_at: "2026-07-24T22:46:02.517Z"
 doc_updated_by: "PLANNER"
 description: "Add a beta.1 implementation leaf for a durable supervisor episode journal and hard execution budgets, wire its release-DAG dependencies, and update the canonical AgentPlane 0.7 refactor plan without implementing runtime code."
 sections:
@@ -134,6 +147,10 @@ sections:
     - Observation: The task graph now enforces bounded supervisor episodes before direct supervision and beta.1 qualification; PR #4612 must preserve the leaf when rebased.
       Impact: The refactor agent can discover the leaf through AgentPlane task routing without importing the legacy loop controller.
       Resolution: Accept the planning amendment; leave implementation task 202607242236-1BFWEY TODO for normal ORCHESTRATOR approval and CODER execution.
+extensions:
+  implementation_commit:
+    hash: "54657234618587cde833b436479347c4f886c798"
+    message: "🗺️ S7WDVM task: add bounded supervisor execution leaf"
 id_source: "generated"
 ---
 ## Summary
