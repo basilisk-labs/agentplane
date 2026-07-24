@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607240736-FCBKJQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T08:25:15.428Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Batch quality-review target is inconsistent across evaluator, route, and integrate",
+  "evaluated_sha": "bd2fcd6ff9e3d79aa7639dea6677f2224686a8d8",
+  "blueprint_digest": "d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae",
+  "findings": [
+    "Evaluator resolves only the primary task while route and integrate resolve primary plus included task IDs, so an included-task metadata unit can make a freshly recorded review immediately stale."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607240736-FCBKJQ/README.md",
+    "packages/agentplane/src/commands/evaluator/evaluator.command.ts",
+    "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts",
+    "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The evaluator and integration surfaces were assumed to receive the same task set without an explicit shared call-site contract."
+  ],
+  "residual_risks": [
+    "Batch ownership is still derived from task extension in prepare and PR metadata in route; drift between those durable surfaces should fail closed or be checked in a follow-up."
+  ]
+}
