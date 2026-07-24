@@ -9,6 +9,6 @@
     "resolveJsonModule": true
   },
   "include": ["src/**/*.ts", "src/**/*.json"],
-  "exclude": ["src/**/*.test.ts"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.testkit.ts"],
   "references": [{ "path": "../core" }, { "path": "../recipes" }]
 }

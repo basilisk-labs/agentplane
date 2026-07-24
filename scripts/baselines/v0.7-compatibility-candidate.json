@@ -14,9 +14,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "8b69ad6c096cd4b873785454cc1d1570a980529b47599e40a3561fc8dacb5951",
+    "surface_sha256": "174782f185b73b4356df5e8e33ce722af7fb33b3e023d6460e1d498db3751dbd",
     "section_digests": {
-      "cli_topology": "61e9b7ce283f2e6381c68c95783a5e0b63180288d06de34d6e91a0b349a91f11",
+      "cli_topology": "ba9b2aa5ec996c1cab5ccc64ecc0796a2381157442d44f73b6472a5406c75cda",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -141,16 +141,37 @@
         "202607221846-9XC1H0"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "61e9b7ce283f2e6381c68c95783a5e0b63180288d06de34d6e91a0b349a91f11",
+      "to_sha256": "ba9b2aa5ec996c1cab5ccc64ecc0796a2381157442d44f73b6472a5406c75cda",
       "classification": "additive",
-      "summary": "Adds workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, and typed task-run sandbox authority; no command or option is removed or mutated.",
+      "summary": "Adds safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, and typed task-run sandbox authority; no command or option is removed or mutated.",
       "evidence": {
-        "command_count": { "from": 243, "to": 244 },
-        "positional_count": { "from": 165, "to": 165 },
-        "option_count": { "from": 767, "to": 773 },
-        "added_commands": ["workflow migrate"],
+        "command_count": { "from": 243, "to": 245 },
+        "positional_count": { "from": 165, "to": 166 },
+        "option_count": { "from": 767, "to": 774 },
+        "added_commands": ["task run reconcile", "workflow migrate"],
         "removed_commands": [],
         "added_command_descriptors": [
+          {
+            "id": ["task", "run", "reconcile"],
+            "visibility": "internal",
+            "group": "Task",
+            "args": [
+              {
+                "name": "task-id",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
           {
             "id": ["workflow", "migrate"],
             "visibility": "user",
@@ -203,6 +224,13 @@
             "choices": ["read-only", "workspace-write", "danger-full-access"]
           },
           {
+            "command": "task run reconcile",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
             "command": "workflow migrate",
             "name": "dry-run",
             "kind": "boolean",
@@ -219,6 +247,11 @@
         "removed_options": [],
         "mutated_options": [],
         "addition_sources": [
+          {
+            "kind": "command",
+            "command": "task run reconcile",
+            "source_task": "202607221846-9XC1H0"
+          },
           {
             "kind": "command",
             "command": "workflow migrate",
@@ -246,6 +279,12 @@
             "kind": "option",
             "command": "task run",
             "name": "sandbox",
+            "source_task": "202607221846-9XC1H0"
+          },
+          {
+            "kind": "option",
+            "command": "task run reconcile",
+            "name": "json",
             "source_task": "202607221846-9XC1H0"
           },
           {

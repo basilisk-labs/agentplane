@@ -94,7 +94,38 @@ The framework layer is the reusable control plane that recipes and runner-specif
    framework explain/protocol payloads in the bundle. The supervisor-owned root is stable across
    linked worktrees and protected from native Codex `read-only` and `workspace-write` sandboxes.
    `danger-full-access` and host-authority custom or Hermes runners can address that root, so their
-   filesystem authority remains unverified.
+   filesystem authority remains unverified. Reads through public runner usecases retain a narrow
+   compatibility path for historical 0.6.24 task-local run artifacts; new run creation never uses
+   that legacy location. Cancelling a prepared legacy run may update its existing state and events,
+   but a running legacy run is never signaled or synthesized as terminal because its supervisor
+   does not participate in the cooperative cancellation protocol. Unsafe, invalid, or incomplete
+   supervisor paths fail closed instead of falling back.
+   Per-task execution claims serialize provider authority inside one repository instance. A stale
+   claim is recovered only under a generation-scoped exclusive recovery lease and only when the
+   claimed run is absent, terminal, or incomplete before provider spawn. Active or unverified
+   owners, ambiguous non-terminal runs, and existing or invalid recovery leases remain fail-closed;
+   a recovery lease is never stolen based on age or apparent owner death. Terminal supervisor state
+   is projected to TaskData before the claim is retired; non-local projections use the backend's
+   revision guard. A terminal claim remains non-recoverable when process cleanup is failed, unknown,
+   or reports a live residual; supervisor-owner death alone cannot bypass that process boundary.
+   Confirmed cleanup retires authority for the declared managed scope even when descendant
+   containment remains limited; this avoids wedging every current POSIX and Windows run while
+   keeping failed, unknown, and residual cleanup fail-closed. Direct-child cleanup therefore records
+   process-group and descendant-lifetime checks as `not_run`, not failed. Limited process lifetime
+   keeps workspace-write and host-authority success policies unverified with an explicit residual
+   risk. Only an exact inherited native read-only boundary with no writable scope may establish
+   overall observed success through filesystem-effect containment, without upgrading the separate
+   process-lifetime claim. The currently claimed run is authoritative across runs even if the wall
+   clock moves backwards, while same-run lifecycle rank prevents a terminal state from regressing
+   to `running` or `prepared`. Without current-claim authority, `created_at` keeps delayed historical
+   projection from replacing a newer run.
+   Atomic TaskData and runner control-file publications fsync file contents and, where the operating
+   system and filesystem support it, the parent directory. Unsupported directory fsync is
+   best-effort, so the contract does not claim universal power-loss durability. Pure Node does not
+   expose `openat`/`linkat`: path ancestry and inode changes are checked before and after operations,
+   but a hostile same-user swap inside the syscall-sized check/use gap remains a platform
+   limitation. Cross-clone execution coordination is likewise outside the repository-local claim
+   contract.
 8. Agent Change Record support derives `.agentplane/tasks/<task-id>/acr.json` from the same task,
    policy, verification, finish, and Git evidence instead of adding a parallel task source of truth.
 

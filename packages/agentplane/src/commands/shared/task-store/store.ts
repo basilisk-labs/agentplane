@@ -1,4 +1,5 @@
 import type { TaskData } from "../../../backends/task-backend.js";
+import { withTaskReadmeTransaction } from "@agentplaneorg/core/tasks";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 import { backendUsesLocalTaskStore } from "../task-backend.js";
@@ -9,6 +10,7 @@ import {
 } from "./intents.js";
 import {
   didReadmeChangeOnDisk,
+  ensureUnchangedOnDisk,
   isConcurrentReadmeChangeError,
   normalizeTaskRevision,
   readTaskReadmeCached,
@@ -127,10 +129,17 @@ export class TaskStore implements TaskStoreContract {
       }
 
       try {
-        if (next === entry.task || JSON.stringify(next) === JSON.stringify(entry.task)) {
-          return { changed: false, task: entry.task };
-        }
-        return await this.writeNextTask(taskId, entry, next);
+        return await withTaskReadmeTransaction(entry.readmePath, async () => {
+          if (next === entry.task || JSON.stringify(next) === JSON.stringify(entry.task)) {
+            await ensureUnchangedOnDisk({
+              readmePath: entry.readmePath,
+              expectedMtimeMs: entry.mtimeMs,
+              expectedRawText: entry.rawText,
+            });
+            return { changed: false, task: entry.task };
+          }
+          return await this.writeNextTask(taskId, entry, next);
+        });
       } catch (err) {
         if (attempt === 0 && isConcurrentReadmeChangeError(err)) {
           this.cache.delete(taskId);

@@ -117,6 +117,73 @@ runners can address it, so their filesystem authority remains unverified. Inspec
 `agentplane task run status`, `agentplane task run inspect`, and `agentplane task run logs`; their
 internal filesystem location is not a public mutation surface.
 
+`status` and `inspect` expose active-claim ownership plus `projection_pending` and
+`reconcile_required`. `reconcile_required=true` means the selected terminal supervisor run still
+owns the task's active claim. `projection_pending=true` additionally means TaskData does not yet
+contain that exact run ID, status, and update timestamp. `logs` prints the same retained-claim
+condition as a warning. Treat these fields as degraded lifecycle state that must reconcile before a
+new provider run can start. `status` and `inspect` remain read-only diagnostics, so automation must
+test these JSON booleans rather than interpret a successful inspection exit as reconciliation.
+
+A terminal run retains its active claim when cleanup of the declared process scope reports a live
+residual, fails, or cannot establish an observation. A later invocation does not auto-retire that
+claim merely because the supervisor owner exited. Confirmed cleanup of the declared scope can retire
+the claim even when `containment_state=limited`; the claim serializes provider authority but does
+not prove that detached descendants outside that scope are absent. Failed, unknown, or residual
+cleanup stays fail-closed and blocks the next provider run.
+
+`direct_child_only` with `residual_alive=false` confirms only the immediate child. Its
+`runner.process_group_cleanup` and `runner.process_containment` checks are `not_run`, not failed,
+because no process-group or bounded descendant-lifetime claim was established. Under
+`workspace-write` or a custom host-authority runner, `success_policy` remains `unverified` and names
+the residual descendant-lifetime risk while the mechanical run result may still be `success`. An
+exact native inherited `read-only` sandbox with no writable scope may instead establish overall
+`observed_success` through the passed filesystem-effect boundary; the receipt still records limited
+process-lifetime containment separately.
+
+Use `agentplane task run reconcile <task-id>` only after `status` or `inspect` reports a stale
+reconcilable owner. The command starts no provider and sends no process signal. It refuses active,
+unverified, running, spawn-authorized, cleanup-unverified, or residual claims rather than forcing
+their retirement.
+
+New run directories are created only in supervisor storage. Public inspection commands expose
+`storage=supervisor|legacy_task`; an explicit run ID falls back to a historical 0.6.24 task-local
+`.agentplane/tasks/<task-id>/runs/<run-id>/` artifact only when that supervisor run is safely absent.
+Implicit latest selection uses legacy storage only when supervisor storage has no entries. Invalid,
+unsafe, or incomplete supervisor storage is reported as an error and never hidden by the fallback.
+A current supervisor-owned running run is cancelled cooperatively: the lifecycle command publishes
+an immutable intent in that run directory, and only the supervisor that owns the child-process
+handle may send TERM or KILL. The lifecycle command never signals a persisted PID. Historical
+0.6.24 task-local supervisors do not poll this intent protocol, so a live or unverifiable running
+legacy run fails immediately with `legacy_running_cancellation_unsupported` and receives no signal.
+The refusal also applies when its persisted child appears absent: AgentPlane neither signals the PID
+nor synthesizes a terminal state for any running legacy artifact.
+
+For supervisor storage, a running orphan is terminalized only when the child is confirmed gone, a
+matching active claim has a stale owner, and an exclusive generation-scoped recovery lease is held.
+Without that authority the lifecycle remains fail-closed and no persisted PID is signaled. If a
+start owner dies before child-spawn authorization, cancellation can similarly recover a prepared run
+only after the owner lease expires and under its matching stale active claim and recovery lease. If
+immutable spawn authorization already exists but no running state was recorded, AgentPlane keeps the
+run and its active claim fail-closed with `spawn_authorized_but_unconfirmed`. This bounded crash
+window is not auto-recovered because a provider child may already exist.
+
+Stale active claims are automatically recoverable only for an absent run, a terminal run after
+TaskData reconciliation, or an incomplete pre-provider run. An existing recovery lease blocks other
+recovery attempts even when its owner appears stale or unverified, and an invalid lease fails with
+`E_RUNTIME`; AgentPlane does not age out or steal recovery authority.
+
+Task outcome projection preserves each run's immutable creation time. A delayed terminal update for
+an older run is retained in history instead of replacing a newer current run. The current active
+claim remains authoritative if the wall clock moves backwards, and same-run lifecycle progress
+outranks timestamps. Non-local task backends must support revision-guarded writes; a revision
+conflict leaves the terminal active claim in place so a later invocation can reconcile the
+supervisor state before another provider run.
+
+Atomic task and runner control-file writes fsync their contents. AgentPlane also fsyncs the parent
+directory where the operating system and filesystem support it. On platforms that reject directory
+fsync, this step is best-effort and does not provide a universal power-loss guarantee.
+
 The workflow field `observability.runs_dir` is informational and reserved. AgentPlane enforces the
 Git-common-dir runner layout; changing this field does not override production artifact storage.
 

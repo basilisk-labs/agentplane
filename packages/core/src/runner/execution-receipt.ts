@@ -117,29 +117,79 @@ const EXECUTION_RECEIPT_PROCESS_TREE_ZOD_SCHEMA = z
           message: "direct_child_only supervision cannot claim bounded containment",
         });
       }
+      if (observation.group_id !== null) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["group_id"],
+          message: "direct_child_only cleanup cannot claim a process-group id",
+        });
+      }
+      if (observation.cleanup_state === "unsupported") {
+        if (
+          observation.terminate_sent_at !== null ||
+          observation.kill_sent_at !== null ||
+          observation.residual_alive !== null
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "unsupported direct-child cleanup cannot claim cleanup observations",
+          });
+        }
+        if (observation.error === null) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["error"],
+            message: "unsupported direct-child cleanup requires an explanation",
+          });
+        }
+        return;
+      }
+      switch (observation.cleanup_state) {
+        case "not_needed": {
+          if (observation.terminate_sent_at !== null || observation.kill_sent_at !== null) {
+            ctx.addIssue({
+              code: "custom",
+              message: "not_needed direct-child cleanup cannot include signal timestamps",
+            });
+          }
+          break;
+        }
+        case "terminated": {
+          if (observation.terminate_sent_at === null || observation.kill_sent_at !== null) {
+            ctx.addIssue({
+              code: "custom",
+              message: "terminated direct-child cleanup requires only terminate_sent_at",
+            });
+          }
+          break;
+        }
+        case "force_killed": {
+          if (observation.terminate_sent_at === null || observation.kill_sent_at === null) {
+            ctx.addIssue({
+              code: "custom",
+              message: "force_killed direct-child cleanup requires both signal timestamps",
+            });
+          }
+          break;
+        }
+        case "failed": {
+          if (observation.error === null) {
+            ctx.addIssue({
+              code: "custom",
+              path: ["error"],
+              message: "failed direct-child cleanup requires an error",
+            });
+          }
+          break;
+        }
+      }
       if (
-        observation.group_id !== null ||
-        observation.terminate_sent_at !== null ||
-        observation.kill_sent_at !== null ||
-        observation.residual_alive !== null
+        observation.cleanup_state !== "failed" &&
+        (observation.residual_alive !== false || observation.error !== null)
       ) {
         ctx.addIssue({
           code: "custom",
-          message: "direct_child_only cleanup cannot claim process-group observations",
-        });
-      }
-      if (observation.cleanup_state !== "unsupported" && observation.cleanup_state !== "failed") {
-        ctx.addIssue({
-          code: "custom",
-          path: ["cleanup_state"],
-          message: "direct_child_only cleanup must be unsupported or failed",
-        });
-      }
-      if (observation.error === null) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["error"],
-          message: "direct_child_only cleanup requires an explanation",
+          message: "successful direct-child cleanup requires no direct-child residual or error",
         });
       }
       return;
@@ -623,9 +673,14 @@ export const EXECUTION_RECEIPT_ZOD_SCHEMA = z
         ) &&
         receipt.process.process_tree.residual_alive === false) ||
       (receipt.process.process_tree.scope === "direct_child_only" &&
-        receipt.process.process_tree.cleanup_state === "unsupported" &&
         receipt.process.process_tree.group_id === null &&
-        receipt.process.process_tree.residual_alive === null &&
+        ((receipt.process.process_tree.cleanup_state === "unsupported" &&
+          receipt.process.process_tree.residual_alive === null) ||
+          (["not_needed", "terminated", "force_killed"].includes(
+            receipt.process.process_tree.cleanup_state,
+          ) &&
+            receipt.process.process_tree.residual_alive === false &&
+            receipt.process.process_tree.error === null)) &&
         processGroupCleanupCheck?.required === false &&
         processGroupCleanupCheck.status === "not_run");
     const sandboxFilesystemEffectsContained =

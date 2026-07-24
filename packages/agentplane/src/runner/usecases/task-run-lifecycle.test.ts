@@ -12,14 +12,19 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
-import { writeRunnerExecutable } from "@agentplane/testkit/runner";
+import { makeRunnerContextBundle, writeRunnerExecutable } from "@agentplane/testkit/runner";
 
 import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { CustomRunnerAdapter } from "../adapters/custom.js";
-import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
-import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
+import {
+  evolveRunnerRunState,
+  readRunnerRunState,
+  writePreparedRunnerArtifacts,
+  writeRunnerRunState,
+} from "../artifacts.js";
+import { resolveSupervisorTaskRunnerPaths, resolveTaskRunnerPaths } from "../task-run-paths.js";
 import type { RunnerContextBundle, RunnerDangerFullAccessAuthority } from "../types.js";
 
 import {
@@ -250,6 +255,51 @@ describe("task-run lifecycle usecases", () => {
     expect(task?.verification?.state).toBe("pending");
     expect(task?.doc).toContain("RUNNER — cancelled");
     expect(task?.doc).toContain("VerificationHint: runner was cancelled");
+  });
+
+  it("cancels a historical prepared run after the configured default adapter changes", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
+    const taskId = await createDoingTask(root, "Cancel historical task-local run");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const runId = "run-cancel-task-local";
+    const bundle = makeRunnerContextBundle({
+      adapterId: "codex",
+      taskId,
+      runId,
+      gitRoot: root,
+      workflowDir: ".agentplane/tasks",
+      status: "DOING",
+      mode: "execute",
+    });
+    const legacyPaths = resolveTaskRunnerPaths({
+      git_root: root,
+      workflow_dir: ".agentplane/tasks",
+      task_id: taskId,
+      run_id: runId,
+    });
+    delete (bundle.execution.artifact_paths as Partial<typeof bundle.execution.artifact_paths>)
+      .receipt_path;
+    delete bundle.execution.sandbox_policy;
+    delete bundle.execution.write_scope;
+    await writePreparedRunnerArtifacts({
+      bundle,
+      bootstrap_markdown: "# historical task-local bootstrap\n",
+      created_at: "2026-07-24T09:00:00.000Z",
+    });
+
+    const cancelled = await cancelTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: runId,
+    });
+
+    expect(cancelled.previous_status).toBe("prepared");
+    expect(cancelled.state.status).toBe("cancelled");
+    expect(cancelled.repository.paths.run_dir).toBe(legacyPaths.run_dir);
+    expect(await readFile(legacyPaths.events_path, "utf8")).toContain("runner_cancelled");
   });
 
   it("refuses runner preparation when project-local blueprint trust is invalid", async () => {

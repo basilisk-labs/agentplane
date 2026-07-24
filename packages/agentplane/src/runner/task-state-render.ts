@@ -7,6 +7,10 @@ import type {
 } from "../backends/task-backend.js";
 
 import { createSupervisorExecutionReceiptLocator } from "./task-run-paths.js";
+import {
+  encodeTaskRunnerManagedText,
+  renderAgentSemanticResult,
+} from "./task-state-render-semantic.js";
 import type { RunnerRunState, RunnerTarget } from "./types.js";
 
 const RUNNER_OUTCOME_BEGIN = "<!-- BEGIN RUNNER OUTCOME -->";
@@ -153,6 +157,7 @@ export function stripRunnerHistory(
     status: outcome.status,
     adapter_id: outcome.adapter_id,
     mode: outcome.mode,
+    ...(outcome.created_at ? { created_at: outcome.created_at } : {}),
     updated_at: outcome.updated_at,
     ...(outcome.started_at ? { started_at: outcome.started_at } : {}),
     ...(outcome.ended_at ? { ended_at: outcome.ended_at } : {}),
@@ -264,95 +269,6 @@ function renderRunnerEvidence(
   return lines;
 }
 
-function compactRunnerText(value: string): string {
-  return value.replaceAll(/\s+/gu, " ").trim();
-}
-
-function encodeRunnerManagedText(value: string): string {
-  return compactRunnerText(value).replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-}
-
-function renderAgentSemanticResult(result: RunnerRunState["result"] | null | undefined): string[] {
-  const report = result?.semantic_result;
-  if (!report) return [];
-  const semantic = report.value;
-  const lines: string[] = [];
-  if (semantic.status) {
-    lines.push(`AgentSemanticStatus[${report.provenance}]: ${semantic.status}`);
-  }
-  if (semantic.summary) {
-    lines.push(`AgentSummary[${report.provenance}]: ${encodeRunnerManagedText(semantic.summary)}`);
-  }
-  if (semantic.findings?.length) {
-    lines.push(
-      `AgentFindings[${report.provenance}]: ${semantic.findings
-        .map((finding) => encodeRunnerManagedText(finding))
-        .join(" | ")}`,
-    );
-  }
-  if ("uncertainty" in semantic && semantic.uncertainty.length > 0) {
-    lines.push(
-      `AgentUncertainty[${report.provenance}]: ${semantic.uncertainty
-        .map((uncertainty) => encodeRunnerManagedText(uncertainty))
-        .join(" | ")}`,
-    );
-  }
-  if (semantic.blocker) {
-    lines.push(
-      `AgentBlocker[${report.provenance}]: ${encodeRunnerManagedText(semantic.blocker.summary)}${
-        semantic.blocker.recommended_action
-          ? `; recommended_action=${encodeRunnerManagedText(semantic.blocker.recommended_action)}`
-          : ""
-      }`,
-    );
-  }
-  if ("knowledge_request" in semantic && semantic.knowledge_request) {
-    lines.push(
-      `AgentKnowledgeRequest[${report.provenance}]: ${encodeRunnerManagedText(
-        semantic.knowledge_request.query,
-      )}; reason=${encodeRunnerManagedText(semantic.knowledge_request.reason)}`,
-    );
-  }
-  if ("claimed_checks" in semantic && semantic.claimed_checks?.length) {
-    lines.push(
-      `ClaimedChecks[${report.provenance}]: ${semantic.claimed_checks
-        .map(
-          (check) =>
-            `${encodeRunnerManagedText(check.check)}=${check.claimed_status}${
-              check.details ? ` (${encodeRunnerManagedText(check.details)})` : ""
-            }`,
-        )
-        .join(" | ")}`,
-    );
-  }
-  if (result?.agent_reported_claims?.length) {
-    lines.push(
-      `LegacyClaims[agent_reported]: ${result.agent_reported_claims
-        .map((claim) => encodeRunnerManagedText(claim.field))
-        .join(", ")}`,
-    );
-  }
-  if (result?.claim_conflicts?.length) {
-    lines.push(
-      `ClaimConflicts: ${result.claim_conflicts
-        .map((conflict) => encodeRunnerManagedText(conflict.field))
-        .join(", ")} (observed_wins over agent_reported)`,
-    );
-  }
-  if (result?.manifest_warnings?.length) {
-    lines.push(
-      `ManifestWarnings: ${result.manifest_warnings
-        .map((warning) =>
-          warning.code === "legacy_agent_observed_claim"
-            ? `${warning.code}:${encodeRunnerManagedText(warning.field)}`
-            : warning.code,
-        )
-        .join(", ")}`,
-    );
-  }
-  return lines;
-}
-
 function renderRunnerOutcomeEntry(opts: {
   task_id: string;
   entry: TaskRunnerHistoryEntry;
@@ -384,6 +300,7 @@ function renderRunnerOutcomeEntry(opts: {
     "",
     `Target: ${formatRunnerTarget(opts.entry.target)}`,
     "",
+    ...(opts.entry.created_at ? [`CreatedAt: ${opts.entry.created_at}`, ""] : []),
     `UpdatedAt: ${opts.entry.updated_at}`,
     "",
     `RunArtifacts: ${runArtifactsLocatorForTask(opts.task_id, opts.entry.run_id)}`,
@@ -397,7 +314,7 @@ function renderRunnerOutcomeEntry(opts: {
     lines.push("", `EndedAt: ${opts.entry.ended_at}`);
   }
   if (summary) {
-    lines.push("", `Summary: ${encodeRunnerManagedText(summary)}`);
+    lines.push("", `Summary: ${encodeTaskRunnerManagedText(summary)}`);
   }
   const projectedArtifacts =
     opts.projection?.result?.artifacts?.filter((artifact) =>
@@ -474,6 +391,7 @@ function buildTaskRunnerHistoryEntry(
     status: state.status,
     adapter_id: state.adapter_id,
     mode: state.mode,
+    created_at: state.created_at,
     updated_at: state.updated_at,
     exit_code: state.result?.exit_code ?? null,
     target: { ...state.target },
@@ -506,11 +424,16 @@ function buildTaskRunnerHistoryEntry(
 function mergeTaskRunnerHistory(opts: {
   task_id: string;
   latest: TaskRunnerHistoryEntry;
+  additional?: readonly TaskRunnerHistoryEntry[];
   previous?: NonNullable<TaskData["runner"]> | null;
 }): TaskRunnerHistoryEntry[] {
   const merged: TaskRunnerHistoryEntry[] = [];
   const seen = new Set<string>();
-  for (const entry of [opts.latest, ...runnerHistoryFromTask(opts.previous, opts.task_id)]) {
+  for (const entry of [
+    opts.latest,
+    ...(opts.additional ?? []),
+    ...runnerHistoryFromTask(opts.previous, opts.task_id),
+  ]) {
     if (seen.has(entry.run_id)) continue;
     seen.add(entry.run_id);
     merged.push(stripRunnerHistory(entry));
@@ -519,15 +442,52 @@ function mergeTaskRunnerHistory(opts: {
   return merged;
 }
 
+function shouldKeepPreviousRunnerLatest(
+  projected: TaskRunnerHistoryEntry,
+  previous: TaskRunnerHistoryEntry | null,
+  hasCurrentActiveClaimAuthority: boolean,
+): boolean {
+  if (!previous) return false;
+  if (projected.run_id === previous.run_id) {
+    const lifecycleRank = (status: TaskRunnerHistoryEntry["status"]): number => {
+      if (status === "prepared") return 0;
+      if (status === "running") return 1;
+      return 2;
+    };
+    const projectedRank = lifecycleRank(projected.status);
+    const previousRank = lifecycleRank(previous.status);
+    if (projectedRank !== previousRank) return projectedRank < previousRank;
+    if (projected.status !== previous.status) return true;
+    const projectedUpdated = Date.parse(projected.updated_at);
+    const previousUpdated = Date.parse(previous.updated_at);
+    if (!Number.isFinite(projectedUpdated)) return true;
+    if (!Number.isFinite(previousUpdated)) return false;
+    return projectedUpdated < previousUpdated;
+  }
+  if (hasCurrentActiveClaimAuthority) return false;
+  // Cross-run projections without the current active claim are historical
+  // reconciliation only. Wall-clock timestamps cannot prove causal order.
+  return true;
+}
+
 export function buildTaskRunnerOutcome(opts: {
   task_id: string;
   projection: RunnerOutcomeProjection;
   previous?: NonNullable<TaskData["runner"]> | null;
+  ordering_authority?: "current_active_claim";
 }): NonNullable<TaskData["runner"]> {
-  const latest = buildTaskRunnerHistoryEntry(opts.projection, opts.task_id);
+  const projected = buildTaskRunnerHistoryEntry(opts.projection, opts.task_id);
+  const previous = opts.previous ? stripRunnerHistory(opts.previous, opts.task_id) : null;
+  const keepPreviousLatest = shouldKeepPreviousRunnerLatest(
+    projected,
+    previous,
+    opts.ordering_authority === "current_active_claim",
+  );
+  const latest = keepPreviousLatest && previous ? previous : projected;
   const history = mergeTaskRunnerHistory({
     task_id: opts.task_id,
     latest,
+    ...(keepPreviousLatest ? { additional: [projected] } : {}),
     previous: opts.previous,
   });
   return history.length > 1 ? { ...latest, history } : latest;
@@ -546,7 +506,7 @@ export function renderRunnerOutcomeHistory(opts: {
     renderRunnerOutcomeEntry({
       task_id: opts.task_id,
       entry: latest,
-      projection: opts.projection,
+      ...(latest?.run_id === opts.projection.state.run_id ? { projection: opts.projection } : {}),
     }),
     ...previous.map((entry) => renderRunnerOutcomeEntry({ task_id: opts.task_id, entry })),
   ]

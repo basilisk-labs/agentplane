@@ -25,6 +25,10 @@ export const RUNNER_ARTIFACT_PATH_KEYS = [
   "stderr_path",
 ] as const satisfies readonly (keyof RunnerArtifactPaths)[];
 
+type RunnerRecordCompatibility = {
+  allow_legacy_missing_receipt_path?: boolean;
+};
+
 export function parseRunnerEventsText(text: string): RunnerEvent[] {
   return text
     .split(/\r?\n/u)
@@ -72,10 +76,18 @@ export function assertRunnerBundleArtifactPaths(
   expectedPaths: RunnerArtifactPaths,
   taskId: string,
   runId: string,
+  compatibility: RunnerRecordCompatibility = {},
 ): void {
   for (const key of RUNNER_ARTIFACT_PATH_KEYS) {
     const declaredPath = bundle.execution.artifact_paths[key];
     const expectedPath = expectedPaths[key];
+    if (
+      compatibility.allow_legacy_missing_receipt_path === true &&
+      key === "receipt_path" &&
+      declaredPath === undefined
+    ) {
+      continue;
+    }
     if (declaredPath !== expectedPath) {
       throw new CliError({
         exitCode: 4,
@@ -101,6 +113,7 @@ export function assertRunnerStateMatchesBundle(
   expectedPaths: RunnerArtifactPaths,
   taskId: string,
   runId: string,
+  compatibility: RunnerRecordCompatibility = {},
 ): void {
   const expected = {
     schema_version: bundle.schema_version,
@@ -119,6 +132,13 @@ export function assertRunnerStateMatchesBundle(
   };
   for (const [field, expectedValue] of Object.entries(expected)) {
     const observedValue = state[field as keyof typeof expected];
+    if (
+      compatibility.allow_legacy_missing_receipt_path === true &&
+      field === "receipt_path" &&
+      observedValue === undefined
+    ) {
+      continue;
+    }
     if (!isDeepStrictEqual(observedValue, expectedValue)) {
       throw new CliError({
         exitCode: 4,

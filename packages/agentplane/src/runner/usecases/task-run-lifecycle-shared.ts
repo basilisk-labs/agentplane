@@ -7,22 +7,9 @@ import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
-import { createRunnerAdapter } from "../adapters/index.js";
-import { runnerAdapterCancelledResult } from "../adapters/shared.js";
-import { evolveRunnerRunState } from "../artifacts.js";
-import { isProcessAlive, readObservedProcessIdentity } from "../process-supervision/signals.js";
-import {
-  assertRunnerBundleArtifactPaths,
-  assertRunnerBundleMatchesTask,
-  assertRunnerStateMatchesBundle,
-  RunnerRunRepository,
-} from "../run-repository.js";
-import type {
-  RunnerInvocation,
-  RunnerLifecycleStatus,
-  RunnerProcessSignal,
-  RunnerRunState,
-} from "../types.js";
+import { openExistingRunnerRunWithLegacyFallback } from "../run-repository-compat.js";
+import type { RunnerRunRepository } from "../run-repository.js";
+import type { RunnerInvocation, RunnerLifecycleStatus, RunnerRunState } from "../types.js";
 
 import { assertRunnerTaskExecutable } from "./task-run-authority.js";
 import type { ExecutedTaskRunnerExecution, PreparedTaskRunnerExecution } from "./task-run.js";
@@ -85,122 +72,6 @@ export function readRunningPid(state: RunnerRunState): number | null {
   return typeof state.supervision?.pid === "number" ? state.supervision.pid : null;
 }
 
-function normalizeCommandFingerprint(command: string | null | undefined): string | null {
-  const firstToken = command?.trim().split(/\s+/u)[0] ?? "";
-  return firstToken ? path.basename(firstToken) : null;
-}
-
-function commandMatchesFingerprint(
-  expected: string | null | undefined,
-  observedCommand: string | null | undefined,
-): boolean {
-  const expectedFingerprint = normalizeCommandFingerprint(expected);
-  if (!expectedFingerprint || !observedCommand) return false;
-  return observedCommand.includes(expectedFingerprint);
-}
-
-function startedAtMatches(expected: string | null | undefined, observed: string | null): boolean {
-  const expectedMs = expected ? Date.parse(expected) : Number.NaN;
-  const observedMs = observed ? Date.parse(observed) : Number.NaN;
-  if (Number.isNaN(expectedMs) || Number.isNaN(observedMs)) return false;
-  return Math.abs(expectedMs - observedMs) <= 5000;
-}
-
-export async function assertMatchingProcessIdentity(opts: {
-  task_id: string;
-  run_id: string;
-  state: RunnerRunState;
-  pid: number;
-}): Promise<void> {
-  const observed = await readObservedProcessIdentity(opts.pid);
-  if (!observed) {
-    if (!isProcessAlive(opts.pid)) return;
-    throw new CliError({
-      exitCode: 8,
-      code: "E_RUNTIME",
-      message:
-        `runner cancel refused because process identity could not be confirmed for ` +
-        `${opts.task_id}:${opts.run_id} pid=${opts.pid}.`,
-      context: {
-        task_id: opts.task_id,
-        run_id: opts.run_id,
-        pid: opts.pid,
-        expected_command: opts.state.supervision?.command ?? null,
-        expected_started_at: opts.state.supervision?.started_at ?? null,
-      },
-    });
-  }
-  const commandMatches = commandMatchesFingerprint(
-    opts.state.supervision?.command,
-    observed.command,
-  );
-  const startMatches = startedAtMatches(opts.state.supervision?.started_at, observed.started_at);
-  if (commandMatches && startMatches) return;
-  throw new CliError({
-    exitCode: 8,
-    code: "E_RUNTIME",
-    message:
-      `runner cancel refused because the live process no longer matches persisted supervision ` +
-      `metadata for ${opts.task_id}:${opts.run_id} pid=${opts.pid}.`,
-    context: {
-      task_id: opts.task_id,
-      run_id: opts.run_id,
-      pid: opts.pid,
-      expected_command: opts.state.supervision?.command ?? null,
-      observed_command: observed.command,
-      expected_started_at: opts.state.supervision?.started_at ?? null,
-      observed_started_at: observed.started_at,
-    },
-  });
-}
-
-export function signalProcess(pid: number, signal: RunnerProcessSignal): boolean {
-  try {
-    process.kill(pid, signal);
-    return true;
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException | null)?.code;
-    if (code === "ESRCH") return false;
-    throw err;
-  }
-}
-
-export function buildSyntheticCancelledState(opts: {
-  state: RunnerRunState;
-  signal: RunnerProcessSignal;
-  updated_at: string;
-}): RunnerRunState {
-  const priorSupervision = opts.state.supervision;
-  const started_at =
-    opts.state.result?.started_at ??
-    priorSupervision?.started_at ??
-    opts.state.updated_at ??
-    opts.updated_at;
-  const result = runnerAdapterCancelledResult({
-    reason:
-      `Runner cancellation state synthesized after requested ${opts.signal}; ` +
-      "observed process exit metadata was unavailable.",
-    started_at,
-    ended_at: opts.updated_at,
-    output_paths: [opts.state.bundle_path, opts.state.bootstrap_path].filter(
-      (value): value is string => typeof value === "string" && value.trim().length > 0,
-    ),
-  });
-  return evolveRunnerRunState({
-    state: opts.state,
-    status: "cancelled",
-    result,
-    updated_at: opts.updated_at,
-    supervision: {
-      ...priorSupervision,
-      heartbeat_at: opts.updated_at,
-      cancel_requested_at: priorSupervision?.cancel_requested_at ?? opts.updated_at,
-      cancel_signal: priorSupervision?.cancel_signal ?? opts.signal,
-      exit_signal: priorSupervision?.exit_signal ?? null,
-    },
-  });
-}
-
 async function loadExistingRunnerRun(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -220,12 +91,11 @@ async function loadExistingRunnerRun(opts: {
 
   let repository: RunnerRunRepository;
   try {
-    repository = await RunnerRunRepository.openExistingTaskRun({
+    repository = await openExistingRunnerRunWithLegacyFallback({
       git_root: executionContext.repo.git_root,
       workflow_dir: executionContext.repo.workflow_dir,
       task_id: opts.task_id,
       run_id: opts.run_id,
-      storage: "supervisor",
     });
   } catch (err) {
     if ((err as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw err;
@@ -235,21 +105,16 @@ async function loadExistingRunnerRun(opts: {
       message: `Runner artifacts not found for ${opts.task_id}:${opts.run_id}`,
     });
   }
-  const record = await repository.readRecord();
-  if (!record) {
-    throw new CliError({
-      exitCode: 4,
-      code: "E_IO",
-      message: `Runner artifacts not found for ${opts.task_id}:${opts.run_id}`,
-    });
-  }
-  assertRunnerBundleMatchesTask(record.bundle, opts.task_id, opts.run_id);
-  assertRunnerBundleArtifactPaths(record.bundle, repository.paths, opts.task_id, opts.run_id);
+  const record = await repository.readRequiredRecord({
+    task_id: opts.task_id,
+    run_id: opts.run_id,
+  });
+  const bundle = repository.adaptBundleForLifecycle(record.bundle);
   let declaredRepositoryRoot: string;
   let expectedRepositoryRoot: string;
   try {
     [declaredRepositoryRoot, expectedRepositoryRoot] = await Promise.all([
-      realpath(path.resolve(record.bundle.repository.git_root)),
+      realpath(path.resolve(bundle.repository.git_root)),
       realpath(path.resolve(executionContext.repo.git_root)),
     ]);
   } catch (err) {
@@ -277,29 +142,42 @@ async function loadExistingRunnerRun(opts: {
       },
     });
   }
-  assertRunnerStateMatchesBundle(
-    record.state,
-    record.bundle,
-    repository.paths,
-    opts.task_id,
-    opts.run_id,
-  );
-  assertRunnerTaskExecutable(record.bundle);
+  assertRunnerTaskExecutable(bundle);
 
   return {
     ctx: executionContext.command,
-    bundle: record.bundle,
+    bundle,
     state: record.state,
     repository,
   };
 }
 
-async function prepareLoadedRunnerExecution(
-  loaded: LoadedRunnerRun,
-): Promise<LoadedRunnerExecution> {
-  const invocation: RunnerInvocation = await createRunnerAdapter(loaded.ctx.config).prepare(
-    loaded.bundle,
-  );
+function prepareLoadedRunnerExecution(loaded: LoadedRunnerRun): LoadedRunnerExecution {
+  const snapshot = loaded.state.prepared_metadata?.invocation;
+  const invocation: RunnerInvocation = {
+    adapter_id: loaded.bundle.execution.adapter_id,
+    run_id: loaded.bundle.execution.run_id,
+    work_order_id: snapshot?.work_order_id ?? loaded.bundle.execution.run_id,
+    repository_root: loaded.bundle.repository.git_root,
+    artifact_root: loaded.repository.paths.artifact_root ?? loaded.bundle.repository.git_root,
+    run_dir: loaded.repository.paths.run_dir,
+    bundle_path: loaded.repository.paths.bundle_path,
+    state_path: loaded.repository.paths.state_path,
+    events_path: loaded.repository.paths.events_path,
+    result_path: loaded.repository.paths.result_path,
+    receipt_path: loaded.repository.paths.receipt_path,
+    trace_path: loaded.repository.paths.trace_path,
+    stderr_path: loaded.repository.paths.stderr_path,
+    trace_policy: loaded.state.trace_policy,
+    timeout_policy: loaded.state.timeout_policy,
+    bootstrap_path: loaded.repository.paths.bootstrap_path,
+    output_last_message_path: snapshot?.output_last_message_path ?? null,
+    output_schema_path: null,
+    filesystem_effect_containment: snapshot?.filesystem_effect_containment ?? null,
+    argv: [...(snapshot?.argv ?? [])],
+    env: {},
+    dry_run: loaded.state.mode === "dry_run",
+  };
   return {
     ...loaded,
     invocation,
@@ -314,5 +192,5 @@ export async function loadExistingRunnerExecution(opts: {
   run_id: string;
   require_task_doing?: boolean;
 }): Promise<LoadedRunnerExecution> {
-  return await prepareLoadedRunnerExecution(await loadExistingRunnerRun(opts));
+  return prepareLoadedRunnerExecution(await loadExistingRunnerRun(opts));
 }

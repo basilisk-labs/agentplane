@@ -128,6 +128,7 @@ export type TaskRunnerHistoryEntry = {
   status: TaskRunnerOutcomeStatus;
   adapter_id: string;
   mode: "execute" | "dry_run";
+  created_at?: string;
   updated_at: string;
   started_at?: string;
   ended_at?: string;

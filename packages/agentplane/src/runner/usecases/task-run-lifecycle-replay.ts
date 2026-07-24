@@ -1,12 +1,13 @@
 import type { TaskData, TaskRunnerHistoryEntry } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { RunnerRunRepository } from "../run-repository.js";
 import { hasExplicitRunnerDangerFullAccessAuthority } from "../sandbox-policy.js";
 import { assertSafeRunnerRunId, createRunnerRunId } from "../task-run-paths.js";
 import type { RunnerDangerFullAccessAuthority, RunnerLifecycleStatus } from "../types.js";
 import { RUNNER_DANGER_FULL_ACCESS_SANDBOX } from "../types.js";
 
+import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
+import { reconcileStaleTerminalTaskRunnerActiveClaim } from "./task-run-active-claim-runtime.js";
 import { executeTaskRunnerExecution, type ExecutedTaskRunnerExecution } from "./task-run.js";
 import {
   assertCurrentTaskDoing,
@@ -105,18 +106,29 @@ function selectFreshReplaySource(opts: {
   return source;
 }
 
-function assertNoCompetingActiveReplayRun(opts: {
+async function assertNoCompetingActiveReplayRun(opts: {
   action: RunnerReplayAction;
   task_id: string;
   source_run_id: string;
+  destination_run_id: string;
   task: TaskData;
-}): void {
+  ctx: CommandContext;
+}): Promise<void> {
   const current = opts.task.runner;
   if (
     !current ||
     current.run_id === opts.source_run_id ||
     (current.status !== "prepared" && current.status !== "running")
   ) {
+    return;
+  }
+  const activeClaim = await readTaskRunnerActiveClaim({
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    workflow_dir: opts.ctx.config.paths.workflow_dir,
+    task_id: opts.task_id,
+    run_id: opts.destination_run_id,
+  });
+  if (activeClaim?.run_id === current.run_id) {
     return;
   }
   throw new CliError({
@@ -213,6 +225,10 @@ async function executeFreshReplay(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     }));
+  await reconcileStaleTerminalTaskRunnerActiveClaim({
+    ctx,
+    task_id: opts.task_id,
+  });
   const task = await ctx.taskBackend.getTask(opts.task_id);
   assertCurrentTaskDoing(opts.task_id, task);
   const source = selectFreshReplaySource({
@@ -221,18 +237,20 @@ async function executeFreshReplay(opts: {
     run_id: opts.run_id,
     task,
   });
-  assertNoCompetingActiveReplayRun({
-    action: opts.action,
-    task_id: opts.task_id,
-    source_run_id: source.run_id,
-    task,
-  });
   assertFreshReplayDangerAuthority(opts);
   const destinationRunId = resolveFreshReplayRunId({
     action: opts.action,
     task_id: opts.task_id,
     source_run_id: source.run_id,
     new_run_id: opts.new_run_id,
+  });
+  await assertNoCompetingActiveReplayRun({
+    action: opts.action,
+    task_id: opts.task_id,
+    source_run_id: source.run_id,
+    destination_run_id: destinationRunId,
+    task,
+    ctx,
   });
 
   const executed = await executeTaskRunnerExecution({
@@ -244,27 +262,10 @@ async function executeFreshReplay(opts: {
     danger_authority: opts.danger_authority,
     include_route_runner_state: false,
     sandbox_override: opts.danger_authority ? RUNNER_DANGER_FULL_ACCESS_SANDBOX : undefined,
-  });
-  const repository = await RunnerRunRepository.openExistingTaskRun({
-    git_root: executed.bundle.repository.git_root,
-    workflow_dir: executed.bundle.repository.workflow_dir,
-    task_id: opts.task_id,
-    run_id: destinationRunId,
-    storage: "supervisor",
-  });
-  const requestedAt = new Date().toISOString();
-  const eventType = opts.action === "resume" ? "runner_resume_created" : "runner_retry_created";
-  await repository.appendEvent({
-    at: requestedAt,
-    type: eventType,
-    message:
-      `runner ${opts.action} created fresh from current task/config; ` +
-      `source_run_id=${source.run_id}`,
-    data: {
+    replay_provenance: {
+      action: opts.action,
       source_run_id: source.run_id,
       source_status: source.status,
-      source_trust: "external_task_anchor_only",
-      source_artifacts_reused: false,
     },
   });
   return {

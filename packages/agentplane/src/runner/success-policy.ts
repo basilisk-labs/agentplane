@@ -36,8 +36,10 @@ export function evaluateExecutionSuccessPolicy(opts: {
   }
   if (opts.process.process_tree.containment_state !== "bounded" && !filesystemEffectsEnforced) {
     unverifiedReasons.push(
-      opts.process.process_tree.containment_limitation ??
-        "bounded descendant containment was not established",
+      `residual descendant-lifetime risk: ${
+        opts.process.process_tree.containment_limitation ??
+        "bounded descendant containment was not established"
+      }`,
     );
   }
   if (opts.git.state !== "observed") {

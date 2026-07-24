@@ -1,5 +1,7 @@
 import { constants, type BigIntStats } from "node:fs";
 import { lstat, open } from "node:fs/promises";
+import path from "node:path";
+import { syncDirectory } from "@agentplaneorg/core/fs";
 
 const NO_FOLLOW = constants.O_NOFOLLOW ?? 0;
 const NON_BLOCKING = constants.O_NONBLOCK ?? 0;
@@ -151,6 +153,7 @@ export async function appendStableRegularFileNoFollow(
       throw new Error(`${label} changed before it could be appended: ${filePath}`);
     }
     await handle.writeFile(contents);
+    await handle.sync();
     const after = await handle.stat({ bigint: true });
     assertRegular(after, filePath, label);
     const pathAfter = await lstatRegular(filePath, label);
@@ -160,6 +163,7 @@ export async function appendStableRegularFileNoFollow(
     ) {
       throw new Error(`${label} path changed while it was being appended: ${filePath}`);
     }
+    if (!pathStat) await syncDirectory(path.dirname(filePath));
   } finally {
     await handle.close();
   }
@@ -188,6 +192,7 @@ export async function writeNewStableRegularFileNoFollow(
     const before = await handle.stat({ bigint: true });
     assertRegular(before, filePath, label);
     await handle.writeFile(contents);
+    await handle.sync();
     const after = await handle.stat({ bigint: true });
     assertRegular(after, filePath, label);
     const pathAfter = await lstatRegular(filePath, label);
@@ -197,6 +202,7 @@ export async function writeNewStableRegularFileNoFollow(
     ) {
       throw new Error(`${label} path changed while it was being written: ${filePath}`);
     }
+    await syncDirectory(path.dirname(filePath));
   } finally {
     await handle.close();
   }

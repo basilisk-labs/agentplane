@@ -167,6 +167,26 @@ function cleanLimitedProcessResult(): SupervisedProcessResult {
   };
 }
 
+function cleanDirectChildProcessResult(): SupervisedProcessResult {
+  const result = cleanLimitedProcessResult();
+  return {
+    ...result,
+    process_tree: {
+      scope: "direct_child_only",
+      group_id: null,
+      cleanup_state: "not_needed",
+      terminate_sent_at: null,
+      kill_sent_at: null,
+      completed_at: result.ended_at,
+      residual_alive: false,
+      error: null,
+      containment_state: "limited",
+      containment_limitation:
+        "Direct-child supervision on Windows does not provide bounded descendant containment.",
+    },
+  };
+}
+
 describe("execution receipt protected filesystem observation", () => {
   it("skips supplemental scanning for an exact native read-only boundary", async () => {
     const root = await createRepository();
@@ -450,6 +470,115 @@ describe("execution receipt protected filesystem observation", () => {
     expect(receipt.success_policy.outcome).toBe("unverified");
     expect(finalized.result.status).toBe("success");
     expect(finalized.result.execution_receipt?.verification_state).toBe("unverified");
+  });
+
+  it("records confirmed direct-child cleanup as unverified instead of rejected", async () => {
+    const root = await createRepository();
+    const prepared = await prepareObservation(root);
+
+    const finalized = await finalizeRunnerExecutionReceipt({
+      ...prepared,
+      observation_before: prepared.observationBefore,
+      process_result: cleanDirectChildProcessResult(),
+      base_result: {
+        status: "success",
+        exit_code: 0,
+        started_at: "2026-07-23T10:00:00.000Z",
+        ended_at: "2026-07-23T10:00:01.000Z",
+        summary: "direct-child mechanical success",
+      },
+      artifacts: [],
+      manifest_state: "missing_allowed",
+      capabilities_used: [],
+    });
+    const receipt = validateExecutionReceipt(
+      JSON.parse(await readFile(prepared.invocation.receipt_path, "utf8")),
+    );
+
+    expect(receipt.checks).toContainEqual(
+      expect.objectContaining({
+        id: "runner.process_group_cleanup",
+        required: true,
+        status: "not_run",
+      }),
+    );
+    expect(receipt.success_policy.outcome).toBe("unverified");
+    expect(
+      receipt.success_policy.reasons.some((reason) =>
+        reason.includes("residual descendant-lifetime risk"),
+      ),
+    ).toBe(true);
+    expect(receipt.success_policy.reasons).toEqual(
+      expect.arrayContaining([
+        "required observed check was not run: runner.process_group_cleanup",
+        "required observed check was not run: runner.process_containment",
+      ]),
+    );
+    expect(finalized.result.status).toBe("success");
+    expect(finalized.result.execution_receipt?.verification_state).toBe("unverified");
+  });
+
+  it("uses a native read-only effect boundary without claiming process-lifetime containment", async () => {
+    const root = await createRepository();
+    const prepared = await prepareObservation(
+      root,
+      {
+        mutation_scope: "none",
+        writable_roots: [],
+        protected_paths: [".agentplane/policy"],
+      },
+      true,
+    );
+
+    const finalized = await finalizeRunnerExecutionReceipt({
+      ...prepared,
+      observation_before: prepared.observationBefore,
+      process_result: cleanDirectChildProcessResult(),
+      base_result: {
+        status: "success",
+        exit_code: 0,
+        started_at: "2026-07-23T10:00:00.000Z",
+        ended_at: "2026-07-23T10:00:01.000Z",
+        summary: "read-only direct-child mechanical success",
+      },
+      artifacts: [],
+      manifest_state: "missing_allowed",
+      capabilities_used: [],
+    });
+    const receipt = validateExecutionReceipt(
+      JSON.parse(await readFile(prepared.invocation.receipt_path, "utf8")),
+    );
+
+    expect(receipt.checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: "runner.process_group_cleanup",
+          required: false,
+          status: "not_run",
+        }),
+        expect.objectContaining({
+          id: "runner.process_containment",
+          required: false,
+          status: "not_run",
+        }),
+        expect.objectContaining({
+          id: "runner.sandbox.filesystem_effects_enforced",
+          required: true,
+          status: "passed",
+        }),
+      ]),
+    );
+    expect(
+      receipt.checks
+        .find((check) => check.id === "runner.process_containment")
+        ?.details.includes("bounded descendant containment"),
+    ).toBe(true);
+    expect(receipt.process.process_tree).toMatchObject({
+      scope: "direct_child_only",
+      containment_state: "limited",
+    });
+    expect(receipt.success_policy.outcome).toBe("observed_success");
+    expect(finalized.result.status).toBe("success");
   });
 
   it("uses the pre-spawn policy and digests when the agent tampers with run artifacts", async () => {

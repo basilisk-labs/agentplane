@@ -1,6 +1,7 @@
 import { runProcess } from "@agentplaneorg/core/process";
 
 import type { RunnerProcessSignal } from "../types.js";
+import { monotonicNowMs } from "./clock.js";
 
 export type ObservedProcessIdentity = {
   pid: number;
@@ -40,6 +41,7 @@ export async function readObservedProcessIdentity(
     const { stdout } = await runProcess({
       command: "ps",
       args: ["-o", "lstart=,command=", "-p", String(pid)],
+      env: { ...process.env, LANG: "C", LC_ALL: "C" },
       encoding: "utf8",
     });
     const line = String(stdout)
@@ -74,10 +76,12 @@ export async function waitForProcessExit(opts: {
   pid: number;
   timeout_ms: number;
   poll_ms?: number;
+  monotonic_now_ms?: () => number;
 }): Promise<boolean> {
-  const started = Date.now();
+  const readMonotonicNowMs = opts.monotonic_now_ms ?? monotonicNowMs;
+  const started = readMonotonicNowMs();
   const poll_ms = opts.poll_ms ?? 100;
-  while (Date.now() - started < opts.timeout_ms) {
+  while (readMonotonicNowMs() - started < opts.timeout_ms) {
     if (!isProcessAlive(opts.pid)) return true;
     await new Promise((resolve) => setTimeout(resolve, poll_ms));
   }

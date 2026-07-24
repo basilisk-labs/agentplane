@@ -268,6 +268,9 @@ function normalizeTaskRunnerHistoryEntry(value: unknown): TaskRunnerHistoryEntry
       value.exit_code === null || typeof value.exit_code === "number" ? value.exit_code : null,
     target,
   };
+  if (typeof value.created_at === "string" && value.created_at.trim()) {
+    outcome.created_at = value.created_at.trim();
+  }
   if (typeof value.started_at === "string" && value.started_at.trim()) {
     outcome.started_at = value.started_at.trim();
   }

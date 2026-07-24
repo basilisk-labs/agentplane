@@ -89,6 +89,10 @@ export const loadTaskRunInspectSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) =>
     m.makeRunTaskRunInspectHandler(deps.getCtx),
   );
+export const loadTaskRunReconcileSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run.command.js").then((m) =>
+    m.makeRunTaskRunReconcileHandler(deps.getCtx),
+  );
 export const loadTaskRunLogsSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) =>
     m.makeRunTaskRunLogsHandler(deps.getCtx),

@@ -6,19 +6,25 @@ import {
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
 import { RUNNER_SANDBOX_MODES } from "../../runner/types.js";
-import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
+import {
+  loadTaskRunnerDiagnosticInspection,
+  loadTaskRunnerInspection,
+} from "../../runner/usecases/task-run-inspect.js";
+import { reconcileTaskRunnerActiveClaim } from "../../runner/usecases/task-run-active-claim-runtime.js";
 import { type TaskRunLogsParsed, parsePositiveInteger } from "./run-parse.js";
 import {
-  isTerminalRunnerStatus,
   loadRunnerLogText,
   reportRunnerStatus,
-  renderRunnerInspectPayload,
+  renderRunnerDiagnosticInspectPayload,
+  renderRunnerDiagnosticStatusPayload,
   renderRunnerStatusPayload,
+  runnerReconciliationWarning,
   renderTaskRunPayload,
   reportExecutedTaskRun,
   reportPreparedTaskRun,
   tailText,
 } from "./run-render.js";
+import { followRunnerLogs } from "./run-logs-follow.js";
 
 export type TaskRunParsed = {
   taskId: string;
@@ -39,6 +45,11 @@ export type TaskRunInspectParsed = {
   runId?: string;
   json: boolean;
   events: number;
+};
+
+export type TaskRunReconcileParsed = {
+  taskId: string;
+  json: boolean;
 };
 
 export const taskRunSpec: CommandSpec<TaskRunParsed> = {
@@ -154,6 +165,28 @@ export const taskRunInspectSpec: CommandSpec<TaskRunInspectParsed> = {
   }),
 };
 
+export const taskRunReconcileSpec: CommandSpec<TaskRunReconcileParsed> = {
+  id: ["task", "run", "reconcile"],
+  group: "Task",
+  summary: "Safely reconcile stale task runner authority without starting a provider.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [{ kind: "boolean", name: "json", default: false, description: "Emit JSON." }],
+  examples: [
+    {
+      cmd: "agentplane task run reconcile 202602030608-F1Q8AB --json",
+      why: "Project or retire a provably stale claim without starting another agent run.",
+    },
+  ],
+  notes: [
+    "The command never starts a runner adapter and never sends a process termination signal.",
+    "Active, unverified, running, spawn-authorized, and cleanup-unverified claims fail closed.",
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    json: raw.opts.json === true,
+  }),
+};
+
 export const taskRunLogsSpec: CommandSpec<TaskRunLogsParsed> = {
   id: ["task", "run", "logs"],
   group: "Task",
@@ -206,10 +239,6 @@ export const taskRunLogsSpec: CommandSpec<TaskRunLogsParsed> = {
     tail: parsePositiveInteger(raw.opts.tail, 80, "--tail"),
   }),
 };
-
-async function sleep(ms: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskRunParsed): Promise<number> => {
@@ -272,27 +301,28 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       receiptPath: executed.result.execution_receipt?.path,
       exitCode: executed.result.exit_code,
       summary: executed.result.summary,
+      activeClaimCleanup: executed.active_claim_cleanup,
     });
     if (parsed.json) {
       output.json(payload);
     } else {
       reportExecutedTaskRun(payload, parsed.taskId);
     }
-    return executed.result.status === "success" ? 0 : 1;
+    return executed.result.status === "success" && !executed.active_claim_cleanup ? 0 : 1;
   };
 }
 
 export function makeRunTaskRunStatusHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskRunStatusParsed): Promise<number> => {
     const commandCtx = await getCtx("task run status");
-    const inspection = await loadTaskRunnerInspection({
+    const inspection = await loadTaskRunnerDiagnosticInspection({
       ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       task_id: parsed.taskId,
       run_id: parsed.runId,
     });
-    const payload = renderRunnerStatusPayload(inspection);
+    const payload = await renderRunnerDiagnosticStatusPayload(inspection);
     const output = createCliEmitter();
     if (parsed.json) {
       output.json(payload);
@@ -306,14 +336,14 @@ export function makeRunTaskRunStatusHandler(getCtx: (cmd: string) => Promise<Com
 export function makeRunTaskRunInspectHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskRunInspectParsed): Promise<number> => {
     const commandCtx = await getCtx("task run inspect");
-    const inspection = await loadTaskRunnerInspection({
+    const inspection = await loadTaskRunnerDiagnosticInspection({
       ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       task_id: parsed.taskId,
       run_id: parsed.runId,
     });
-    const payload = renderRunnerInspectPayload(inspection, parsed.events);
+    const payload = await renderRunnerDiagnosticInspectPayload(inspection, parsed.events);
     const output = createCliEmitter();
     if (parsed.json) {
       output.json(payload);
@@ -322,15 +352,26 @@ export function makeRunTaskRunInspectHandler(getCtx: (cmd: string) => Promise<Co
         [
           { label: "task", value: payload.task_id },
           { label: "run", value: payload.run_id },
+          { label: "storage", value: payload.storage },
           { label: "status", value: payload.status },
+          { label: "active_claim_present", value: payload.active_claim_present },
+          { label: "active_claim_retained", value: payload.active_claim_retained },
+          { label: "active_claim_run", value: payload.active_claim?.run_id ?? null },
+          { label: "projection_pending", value: payload.projection_pending },
+          { label: "reconcile_required", value: payload.reconcile_required },
           { label: "adapter", value: payload.adapter_id },
-          { label: "run_dir", value: payload.paths.run_dir },
-          { label: "bundle", value: payload.paths.bundle },
-          { label: "bootstrap", value: payload.paths.bootstrap },
-          { label: "result", value: payload.paths.result },
-          { label: "events", value: payload.paths.events },
-          { label: "trace", value: payload.paths.trace },
-          { label: "stderr", value: payload.paths.stderr },
+          { label: "claimed_run_authority", value: payload.claimed_run_authority },
+          { label: "recovery_lease", value: payload.recovery_lease?.status ?? null },
+          { label: "recovery_lease_owner", value: payload.recovery_lease?.owner_status ?? null },
+          { label: "execution_blocked", value: payload.execution_blocked },
+          { label: "next_safe_action", value: payload.next_safe_action },
+          { label: "run_dir", value: payload.paths?.run_dir ?? null },
+          { label: "bundle", value: payload.paths?.bundle ?? null },
+          { label: "bootstrap", value: payload.paths?.bootstrap ?? null },
+          { label: "result", value: payload.paths?.result ?? null },
+          { label: "events", value: payload.paths?.events ?? null },
+          { label: "trace", value: payload.paths?.trace ?? null },
+          { label: "stderr", value: payload.paths?.stderr ?? null },
         ],
         { header: infoMessage(`task runner inspect: ${parsed.taskId}`) },
       );
@@ -343,10 +384,35 @@ export function makeRunTaskRunInspectHandler(getCtx: (cmd: string) => Promise<Co
   };
 }
 
+export function makeRunTaskRunReconcileHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (_ctx: CommandCtx, parsed: TaskRunReconcileParsed): Promise<number> => {
+    const commandCtx = await getCtx("task run reconcile");
+    const result = await reconcileTaskRunnerActiveClaim({
+      ctx: commandCtx,
+      task_id: parsed.taskId,
+    });
+    const output = createCliEmitter();
+    if (parsed.json) {
+      output.json(result);
+    } else {
+      output.report(
+        [
+          { label: "task", value: result.task_id },
+          { label: "status", value: result.status },
+          { label: "run", value: result.run_id },
+          { label: "claimed_run_authority", value: result.claimed_run_authority },
+        ],
+        { header: infoMessage(`task runner reconcile: ${parsed.taskId}`) },
+      );
+    }
+    return 0;
+  };
+}
+
 export function makeRunTaskRunLogsHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskRunLogsParsed): Promise<number> => {
     const commandCtx = await getCtx("task run logs");
-    let inspection = await loadTaskRunnerInspection({
+    const inspection = await loadTaskRunnerInspection({
       ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
@@ -354,45 +420,28 @@ export function makeRunTaskRunLogsHandler(getCtx: (cmd: string) => Promise<Comma
       run_id: parsed.runId,
     });
     const output = createCliEmitter();
-    let text = await loadRunnerLogText(inspection, parsed.stream);
-    let emittedChars = text.length;
+    const statusPayload = await renderRunnerStatusPayload(inspection);
+    const reconciliationWarning = runnerReconciliationWarning(statusPayload);
+    if (reconciliationWarning) output.warn(reconciliationWarning, "stderr");
+    const text = await loadRunnerLogText(inspection, parsed.stream);
+    const emittedChars = text.length;
     const initial = tailText(text, parsed.tail);
     if (initial) output.lines(initial.split("\n"));
     if (!parsed.follow) return 0;
 
-    if (inspection.state.status !== "running") {
-      if (!isTerminalRunnerStatus(inspection.state.status)) {
-        output.warn(
-          `task runner run ${inspection.run_id} is ${inspection.state.status}; nothing to follow until it is running.`,
-          "stderr",
-        );
-        return 0;
-      }
-      return inspection.state.status === "success" ? 0 : 1;
-    }
-
-    while (inspection.state.status === "running") {
-      await sleep(1000);
-      inspection = await loadTaskRunnerInspection({
-        ctx: commandCtx,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride ?? null,
-        task_id: parsed.taskId,
-        run_id: inspection.run_id,
-      });
-      text = await loadRunnerLogText(inspection, parsed.stream);
-      const nextChars = text.length;
-      if (nextChars > emittedChars) {
-        const chunk = text.slice(emittedChars);
-        output.lines(
-          chunk
-            .replaceAll("\r\n", "\n")
-            .split("\n")
-            .filter((line) => line.length > 0),
-        );
-        emittedChars = nextChars;
-      }
-    }
-    return inspection.state.status === "success" ? 0 : 1;
+    return await followRunnerLogs({
+      initial_inspection: inspection,
+      stream: parsed.stream,
+      emitted_chars: emittedChars,
+      output,
+      reload: async (runId) =>
+        await loadTaskRunnerInspection({
+          ctx: commandCtx,
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride ?? null,
+          task_id: parsed.taskId,
+          run_id: runId,
+        }),
+    });
   };
 }

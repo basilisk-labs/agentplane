@@ -167,7 +167,7 @@ function manifestCheck(state: RunnerReceiptManifestState): ExecutionReceiptObser
 
 function processGroupCleanupCheck(
   processResult: SupervisedProcessResult | null,
-  opts: { allow_unsupported_effect_fallback: boolean },
+  opts: { allow_effect_boundary_fallback: boolean },
 ): ExecutionReceiptObservedCheck {
   if (!processResult) {
     return observedCheck({
@@ -195,11 +195,28 @@ function processGroupCleanupCheck(
   if (cleanup.cleanup_state === "unsupported") {
     return observedCheck({
       id: "runner.process_group_cleanup",
-      required: !opts.allow_unsupported_effect_fallback,
+      required: !opts.allow_effect_boundary_fallback,
       status: "not_run",
       details:
         cleanup.error ??
         "The current platform does not support supervisor-owned process-group cleanup.",
+    });
+  }
+  if (
+    cleanup.scope === "direct_child_only" &&
+    (cleanup.cleanup_state === "not_needed" ||
+      cleanup.cleanup_state === "terminated" ||
+      cleanup.cleanup_state === "force_killed") &&
+    cleanup.residual_alive === false &&
+    cleanup.error === null
+  ) {
+    return observedCheck({
+      id: "runner.process_group_cleanup",
+      required: !opts.allow_effect_boundary_fallback,
+      status: "not_run",
+      details:
+        `The supervisor confirmed ${cleanup.cleanup_state} cleanup for the direct child, ` +
+        "but direct-child supervision does not establish process-group or detached-descendant cleanup.",
     });
   }
   return observedCheck({
@@ -342,7 +359,7 @@ export async function finalizeRunnerExecutionReceipt(opts: {
     bundle,
     process_result: opts.process_result,
   });
-  const allowUnsupportedEffectFallback = containmentChecks.some(
+  const allowEffectBoundaryFallback = containmentChecks.some(
     (check) =>
       check.id === "runner.sandbox.filesystem_effects_enforced" &&
       check.required &&
@@ -358,7 +375,7 @@ export async function finalizeRunnerExecutionReceipt(opts: {
         : "The supervisor did not capture child-process completion.",
     }),
     processGroupCleanupCheck(opts.process_result, {
-      allow_unsupported_effect_fallback: allowUnsupportedEffectFallback,
+      allow_effect_boundary_fallback: allowEffectBoundaryFallback,
     }),
     ...containmentChecks,
     observedCheck({

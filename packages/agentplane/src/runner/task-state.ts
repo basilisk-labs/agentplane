@@ -34,11 +34,49 @@ function resolveRunnerUpdatedBy(task: Pick<TaskData, "owner" | "doc_updated_by">
   return "agentplane";
 }
 
+function requireRunnerProjectionRevision(opts: { ctx: CommandContext; task: TaskData }): number {
+  if (!opts.ctx.taskBackend.capabilities.supports_revision_guarded_writes) {
+    throw new CliError({
+      exitCode: 8,
+      code: "E_RUNTIME",
+      message:
+        `Runner outcome projection requires revision-guarded task writes for ` +
+        `${JSON.stringify(opts.task.id)}.`,
+      context: {
+        reason: "runner_projection_revision_guard_unsupported",
+        task_id: opts.task.id,
+        backend_id: opts.ctx.backendId,
+      },
+    });
+  }
+  if (
+    typeof opts.task.revision !== "number" ||
+    !Number.isInteger(opts.task.revision) ||
+    opts.task.revision <= 0
+  ) {
+    throw new CliError({
+      exitCode: 8,
+      code: "E_RUNTIME",
+      message:
+        `Runner outcome projection cannot establish the current task revision for ` +
+        `${JSON.stringify(opts.task.id)}.`,
+      context: {
+        reason: "runner_projection_revision_missing",
+        task_id: opts.task.id,
+        backend_id: opts.ctx.backendId,
+        observed_revision: opts.task.revision ?? null,
+      },
+    });
+  }
+  return opts.task.revision;
+}
+
 export async function persistRunnerOutcomeToTask(opts: {
   ctx: CommandContext;
   task_id: string;
   state: RunnerRunState;
   bundle?: RunnerContextBundle;
+  ordering_authority?: "current_active_claim";
 }): Promise<void> {
   if (opts.bundle?.execution.mode === "dry_run" || opts.state.mode === "dry_run") return;
 
@@ -63,6 +101,7 @@ export async function persistRunnerOutcomeToTask(opts: {
         task_id: opts.task_id,
         projection,
         previous: current.runner ?? null,
+        ordering_authority: opts.ordering_authority,
       });
       const docVersion = normalizeTaskDocVersion(current.doc_version);
       const observationSection = taskObservationSectionName(docVersion);
@@ -98,6 +137,10 @@ export async function persistRunnerOutcomeToTask(opts: {
   }
 
   const task = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.task_id });
+  const expectedRevision = requireRunnerProjectionRevision({
+    ctx: opts.ctx,
+    task,
+  });
   const projection: RunnerOutcomeProjection = {
     state: opts.state,
     result: opts.state.result ?? null,
@@ -106,6 +149,7 @@ export async function persistRunnerOutcomeToTask(opts: {
     task_id: opts.task_id,
     projection,
     previous: task.runner ?? null,
+    ordering_authority: opts.ordering_authority,
   });
   const writableSections = resolveWritableDocSections({
     allowedSections: opts.ctx.config.tasks.doc.sections,
@@ -128,11 +172,14 @@ export async function persistRunnerOutcomeToTask(opts: {
     setMarkdownSection(baseDoc, observationSection, nextObservation),
     writableSections,
   );
-  await backend.writeTask({
-    ...task,
-    runner: outcome,
-    doc: nextDoc,
-    doc_updated_at: opts.state.updated_at,
-    doc_updated_by: resolveRunnerUpdatedBy(task),
-  });
+  await backend.writeTask(
+    {
+      ...task,
+      runner: outcome,
+      doc: nextDoc,
+      doc_updated_at: outcome.updated_at,
+      doc_updated_by: resolveRunnerUpdatedBy(task),
+    },
+    { expectedRevision },
+  );
 }

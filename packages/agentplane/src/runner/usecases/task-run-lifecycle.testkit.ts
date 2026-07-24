@@ -1,6 +1,11 @@
 import { createHash } from "node:crypto";
 
+import { captureStdIO, runCliSilent } from "@agentplane/testkit";
+import { expect } from "vitest";
+
+import { runCli } from "../../cli/run-cli.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
+import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import type { RunnerDangerFullAccessAuthority } from "../types.js";
 
 import { runnerReplayDangerAuthoritySource } from "./task-run-lifecycle-shared.js";
@@ -22,6 +27,78 @@ export function replayDangerAuthority(action: "resume" | "retry"): RunnerDangerF
 
 export function sha256(text: string): string {
   return createHash("sha256").update(text, "utf8").digest("hex");
+}
+
+export async function createDoingRunnerTask(opts: {
+  root: string;
+  title: string;
+  plan_text: string;
+}): Promise<string> {
+  let taskId = "";
+  {
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        opts.title,
+        "--description",
+        opts.title,
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        opts.root,
+      ]);
+      expect(code).toBe(0);
+      taskId = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+  }
+  await runCliSilent([
+    "task",
+    "plan",
+    "set",
+    taskId,
+    "--text",
+    opts.plan_text,
+    "--updated-by",
+    "ORCHESTRATOR",
+    "--root",
+    opts.root,
+  ]);
+  await runCliSilent([
+    "task",
+    "plan",
+    "approve",
+    taskId,
+    "--by",
+    "ORCHESTRATOR",
+    "--root",
+    opts.root,
+  ]);
+  const commandCtx = await loadCommandContext({
+    cwd: opts.root,
+    rootOverride: opts.root,
+  });
+  const task = await commandCtx.taskBackend.getTask(taskId);
+  expect(task).toBeTruthy();
+  await commandCtx.taskBackend.writeTask({
+    ...task,
+    id: taskId,
+    title: opts.title,
+    description: opts.title,
+    priority: task?.priority ?? "med",
+    owner: task?.owner ?? "CODER",
+    depends_on: task?.depends_on ?? [],
+    tags: task?.tags ?? ["docs"],
+    verify: task?.verify ?? [],
+    status: "DOING",
+  });
+  return taskId;
 }
 
 export async function recordFailedExternalRunnerAnchor(opts: {

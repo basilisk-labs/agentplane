@@ -8,6 +8,7 @@ import {
   renderTaskReadme,
   taskDocToSectionMap,
   taskReadmePath,
+  withTaskReadmeTransaction,
 } from "@agentplaneorg/core/tasks";
 import {
   validateTaskReadmeFrontmatter,
@@ -76,12 +77,26 @@ export async function writeLocalTask(
   validateTaskId(taskId);
 
   const readmePath = taskReadmePath(context.root, taskId);
+  await withTaskReadmeTransaction(readmePath, async () => {
+    await writeLocalTaskLocked(context, task, opts, readmePath);
+  });
+}
+
+async function writeLocalTaskLocked(
+  context: LocalBackendContext,
+  task: TaskData,
+  opts: TaskWriteOptions | undefined,
+  readmePath: string,
+): Promise<void> {
+  const taskId = task.id.trim();
   let body = "";
+  let existingText: string | null = null;
   let existingDoc = "";
   let existingFrontmatter: Record<string, unknown> = {};
 
   try {
     const text = await readFile(readmePath, "utf8");
+    existingText = text;
     const parsed = parseTaskReadme(text);
     body = parsed.body;
     existingDoc = extractTaskDoc(parsed.body);
@@ -91,29 +106,25 @@ export async function writeLocalTask(
     if (code !== "ENOENT") throw err;
   }
 
+  const currentRevision =
+    Object.keys(existingFrontmatter).length > 0
+      ? storedRevisionFromFrontmatter(existingFrontmatter, 1)
+      : 0;
   assertExpectedRevision({
     taskId,
     expectedRevision: opts?.expectedRevision,
-    currentRevision:
-      Object.keys(existingFrontmatter).length > 0
-        ? storedRevisionFromFrontmatter(existingFrontmatter, 1)
-        : 0,
+    currentRevision,
   });
 
   const payload: Record<string, unknown> = { ...task };
   delete payload.doc;
-  if (
-    !Number.isInteger(payload.revision) ||
-    typeof payload.revision !== "number" ||
-    payload.revision <= 0
-  ) {
-    payload.revision =
-      Number.isInteger(existingFrontmatter.revision) &&
-      typeof existingFrontmatter.revision === "number" &&
-      existingFrontmatter.revision > 0
-        ? existingFrontmatter.revision
-        : 1;
-  }
+  const requestedRevision =
+    Number.isInteger(payload.revision) &&
+    typeof payload.revision === "number" &&
+    payload.revision > 0
+      ? payload.revision
+      : null;
+  payload.revision = currentRevision > 0 ? currentRevision : (requestedRevision ?? 1);
 
   for (const [key, value] of Object.entries(payload)) {
     if (value === undefined) delete payload[key];
@@ -203,8 +214,14 @@ export async function writeLocalTask(
 
   validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(payload));
   await mkdir(path.dirname(readmePath), { recursive: true });
-  const text = renderTaskReadme(payload, body || "");
-  await writeTextIfChanged(readmePath, text.endsWith("\n") ? text : `${text}\n`);
+  let text = renderTaskReadme(payload, body || "");
+  text = text.endsWith("\n") ? text : `${text}\n`;
+  if (existingText !== null && text !== existingText) {
+    payload.revision = currentRevision + 1;
+    text = renderTaskReadme(payload, body || "");
+    text = text.endsWith("\n") ? text : `${text}\n`;
+  }
+  await writeTextIfChanged(readmePath, text);
 }
 
 export async function writeLocalTasks(
@@ -229,103 +246,104 @@ export async function normalizeLocalTasks(
     8,
     async (dirName): Promise<{ taskId: string; scanned: boolean; changed: boolean }> => {
       const readmePath = path.join(context.root, dirName, "README.md");
+      return await withTaskReadmeTransaction(readmePath, async () => {
+        let text = "";
+        try {
+          text = await readFile(readmePath, "utf8");
+        } catch {
+          return { taskId: "", scanned: false, changed: false };
+        }
 
-      let text = "";
-      try {
-        text = await readFile(readmePath, "utf8");
-      } catch {
-        return { taskId: "", scanned: false, changed: false };
-      }
+        let parsed;
+        try {
+          parsed = parseTaskReadme(text);
+        } catch {
+          return { taskId: "", scanned: false, changed: false };
+        }
 
-      let parsed;
-      try {
-        parsed = parseTaskReadme(text);
-      } catch {
-        return { taskId: "", scanned: false, changed: false };
-      }
+        const frontmatter = parsed.frontmatter;
+        if (!isRecord(frontmatter) || Object.keys(frontmatter).length === 0) {
+          return { taskId: "", scanned: false, changed: false };
+        }
+        const fallbackTaskId = (
+          typeof frontmatter.id === "string" ? frontmatter.id : dirName
+        ).trim();
+        let validatedFrontmatter;
+        try {
+          validatedFrontmatter = validateTaskReadmeFrontmatter(
+            withTaskReadmeFrontmatterDefaults({
+              ...frontmatter,
+              id: fallbackTaskId,
+            }),
+          );
+        } catch {
+          return { taskId: "", scanned: false, changed: false };
+        }
 
-      const frontmatter = parsed.frontmatter;
-      if (!isRecord(frontmatter) || Object.keys(frontmatter).length === 0) {
-        return { taskId: "", scanned: false, changed: false };
-      }
-      const fallbackTaskId = (typeof frontmatter.id === "string" ? frontmatter.id : dirName).trim();
-      let validatedFrontmatter;
-      try {
-        validatedFrontmatter = validateTaskReadmeFrontmatter(
-          withTaskReadmeFrontmatterDefaults({
-            ...frontmatter,
-            id: fallbackTaskId,
-          }),
-        );
-      } catch {
-        return { taskId: "", scanned: false, changed: false };
-      }
+        const taskId = fallbackTaskId;
+        if (taskId) validateTaskId(taskId);
 
-      const taskId = fallbackTaskId;
-      if (taskId) validateTaskId(taskId);
+        const task = taskRecordToData({
+          id: taskId,
+          frontmatter: validatedFrontmatter as unknown as TaskRecord["frontmatter"],
+          body: parsed.body,
+          readmePath,
+        });
 
-      const task = taskRecordToData({
-        id: taskId,
-        frontmatter: validatedFrontmatter as unknown as TaskRecord["frontmatter"],
-        body: parsed.body,
-        readmePath,
-      });
-
-      const payload: Record<string, unknown> = { ...task };
-      delete payload.doc;
-      if (
-        !Number.isInteger(payload.revision) ||
-        typeof payload.revision !== "number" ||
-        payload.revision <= 0
-      ) {
-        payload.revision =
+        const payload: Record<string, unknown> = { ...task };
+        delete payload.doc;
+        const currentRevision =
           Number.isInteger(frontmatter.revision) &&
           typeof frontmatter.revision === "number" &&
           frontmatter.revision > 0
             ? frontmatter.revision
             : 1;
-      }
-      for (const [key, value] of Object.entries(payload)) {
-        if (value === undefined) delete payload[key];
-      }
-      for (const key of ["doc_version", "doc_updated_at", "doc_updated_by"]) {
-        if (payload[key] === undefined && frontmatter[key] !== undefined) {
-          payload[key] = frontmatter[key];
+        payload.revision = currentRevision;
+        for (const [key, value] of Object.entries(payload)) {
+          if (value === undefined) delete payload[key];
         }
-      }
-      if (payload.plan_approval === undefined && frontmatter.plan_approval !== undefined) {
-        payload.plan_approval = frontmatter.plan_approval;
-      }
-      if (payload.plan_approval === undefined) payload.plan_approval = defaultPlanApproval();
-      if (payload.verification === undefined && frontmatter.verification !== undefined) {
-        payload.verification = frontmatter.verification;
-      }
-      if (payload.verification === undefined) payload.verification = defaultVerificationResult();
+        for (const key of ["doc_version", "doc_updated_at", "doc_updated_by"]) {
+          if (payload[key] === undefined && frontmatter[key] !== undefined) {
+            payload[key] = frontmatter[key];
+          }
+        }
+        if (payload.plan_approval === undefined && frontmatter.plan_approval !== undefined) {
+          payload.plan_approval = frontmatter.plan_approval;
+        }
+        if (payload.plan_approval === undefined) payload.plan_approval = defaultPlanApproval();
+        if (payload.verification === undefined && frontmatter.verification !== undefined) {
+          payload.verification = frontmatter.verification;
+        }
+        if (payload.verification === undefined) payload.verification = defaultVerificationResult();
 
-      payload.doc_version = normalizeDocVersion(
-        payload.doc_version,
-        normalizeDocVersion(frontmatter.doc_version),
-      );
-      if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
-        payload.doc_updated_at = nowIso();
-      }
-      if (payload.doc_updated_by === undefined || payload.doc_updated_by === "") {
-        payload.doc_updated_by = resolveDocUpdatedByFromTask(
-          task,
-          context.updatedBy || DEFAULT_DOC_UPDATED_BY,
+        payload.doc_version = normalizeDocVersion(
+          payload.doc_version,
+          normalizeDocVersion(frontmatter.doc_version),
         );
-      }
-      if (!payload.sections && task.doc) {
-        payload.sections = taskDocToSectionMap(task.doc);
-      }
+        if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
+          payload.doc_updated_at = nowIso();
+        }
+        if (payload.doc_updated_by === undefined || payload.doc_updated_by === "") {
+          payload.doc_updated_by = resolveDocUpdatedByFromTask(
+            task,
+            context.updatedBy || DEFAULT_DOC_UPDATED_BY,
+          );
+        }
+        if (!payload.sections && task.doc) {
+          payload.sections = taskDocToSectionMap(task.doc);
+        }
 
-      validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(payload));
-      const next = renderTaskReadme(payload, parsed.body || "");
-      const didWrite = await writeTextIfChanged(
-        readmePath,
-        next.endsWith("\n") ? next : `${next}\n`,
-      );
-      return { taskId, scanned: true, changed: didWrite };
+        validateTaskReadmeFrontmatter(withTaskReadmeFrontmatterDefaults(payload));
+        let next = renderTaskReadme(payload, parsed.body || "");
+        next = next.endsWith("\n") ? next : `${next}\n`;
+        if (next !== text) {
+          payload.revision = currentRevision + 1;
+          next = renderTaskReadme(payload, parsed.body || "");
+          next = next.endsWith("\n") ? next : `${next}\n`;
+        }
+        const didWrite = await writeTextIfChanged(readmePath, next);
+        return { taskId, scanned: true, changed: didWrite };
+      });
     },
   );
 

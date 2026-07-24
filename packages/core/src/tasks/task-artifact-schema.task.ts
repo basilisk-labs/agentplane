@@ -170,6 +170,7 @@ const RUNNER_HISTORY_ENTRY_SCHEMA = z
     status: z.enum(RUNNER_OUTCOME_STATUS_VALUES),
     adapter_id: NON_EMPTY_STRING,
     mode: z.enum(RUNNER_MODE_VALUES),
+    created_at: ISO_UTC_TIMESTAMP.optional(),
     updated_at: ISO_UTC_TIMESTAMP,
     started_at: ISO_UTC_TIMESTAMP.optional(),
     ended_at: ISO_UTC_TIMESTAMP.optional(),

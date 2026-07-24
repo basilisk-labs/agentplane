@@ -90,10 +90,13 @@ describe("task runner execution receipt projection", () => {
     );
 
     const secondState = stateWithReceipt("run-receipt-2");
+    secondState.created_at = "2026-07-23T10:00:01.000Z";
+    secondState.updated_at = "2026-07-23T10:00:01.000Z";
     const second = buildTaskRunnerOutcome({
       task_id: TASK_ID,
       projection: { state: secondState, result: secondState.result ?? null },
       previous: first,
+      ordering_authority: "current_active_claim",
     });
 
     expect(second.history?.[1]?.execution_receipt).toEqual(first.execution_receipt);
@@ -115,5 +118,184 @@ describe("task runner execution receipt projection", () => {
     expect(rendered).not.toContain(".git/agentplane/runner/tasks");
     expect(rendered).toContain(`ExecutionReceiptSha256: ${RECEIPT_SHA}`);
     expect(rendered).toContain("ExecutionReceiptVerification: observed_success");
+  });
+
+  it("keeps a newer run latest when an older terminal projection arrives late", () => {
+    const olderState = stateWithReceipt("2026-07-23T10-00-00-000Z");
+    olderState.created_at = "2026-07-23T10:00:00.000Z";
+    olderState.updated_at = "2026-07-23T10:00:05.000Z";
+    const newerState = stateWithReceipt("2026-07-23T10-00-02-000Z");
+    newerState.created_at = "2026-07-23T10:00:02.000Z";
+    newerState.updated_at = "2026-07-23T10:00:03.000Z";
+    const newer = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: newerState, result: newerState.result ?? null },
+    });
+
+    const reconciled = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: olderState, result: olderState.result ?? null },
+      previous: newer,
+    });
+
+    expect(reconciled.run_id).toBe(newerState.run_id);
+    expect(reconciled.updated_at).toBe(newerState.updated_at);
+    expect(reconciled.history?.map((entry) => entry.run_id)).toEqual([
+      newerState.run_id,
+      olderState.run_id,
+    ]);
+    const rendered = renderRunnerOutcomeHistory({
+      task_id: TASK_ID,
+      outcome: reconciled,
+      projection: { state: olderState, result: olderState.result ?? null },
+    });
+    expect(rendered.indexOf(`RunId: ${newerState.run_id}`)).toBeLessThan(
+      rendered.indexOf(`RunId: ${olderState.run_id}`),
+    );
+  });
+
+  it("uses active-claim authority instead of lexical run ids for equal creation times", () => {
+    const olderState = stateWithReceipt("z-older-run");
+    const older = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: olderState, result: olderState.result ?? null },
+    });
+    const newerState = stateWithReceipt("a-newer-run");
+    const newer = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: newerState, result: newerState.result ?? null },
+      previous: older,
+      ordering_authority: "current_active_claim",
+    });
+
+    expect(newer.run_id).toBe(newerState.run_id);
+    const delayedOlder = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: olderState, result: olderState.result ?? null },
+      previous: newer,
+    });
+    expect(delayedOlder.run_id).toBe(newerState.run_id);
+    expect(delayedOlder.history?.map((entry) => entry.run_id)).toEqual([
+      newerState.run_id,
+      olderState.run_id,
+    ]);
+  });
+
+  it("uses current active-claim authority when a newer run has an earlier wall-clock time", () => {
+    const previousState = stateWithReceipt("previous-run");
+    previousState.created_at = "2026-07-23T10:00:00.000Z";
+    const previous = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: previousState, result: previousState.result ?? null },
+    });
+    const currentState = stateWithReceipt("current-run-after-clock-step");
+    currentState.created_at = "2026-07-23T09:59:59.000Z";
+    currentState.updated_at = "2026-07-23T09:59:59.000Z";
+
+    const current = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: currentState, result: currentState.result ?? null },
+      previous,
+      ordering_authority: "current_active_claim",
+    });
+
+    expect(current.run_id).toBe(currentState.run_id);
+    expect(current.history?.map((entry) => entry.run_id)).toEqual([
+      currentState.run_id,
+      previousState.run_id,
+    ]);
+  });
+
+  it("keeps the current run latest when a prior run reconciles after a clock rollback", () => {
+    const priorState = stateWithReceipt("prior-terminal-run");
+    priorState.created_at = "2026-07-23T10:00:00.000Z";
+    priorState.updated_at = "2026-07-23T10:00:01.000Z";
+    const prior = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: priorState, result: priorState.result ?? null },
+    });
+    const currentState = stateWithReceipt("current-run-after-clock-rollback");
+    currentState.status = "prepared";
+    currentState.result = null;
+    currentState.created_at = "2026-07-23T09:59:00.000Z";
+    currentState.updated_at = "2026-07-23T09:59:00.000Z";
+    const current = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: currentState, result: null },
+      previous: prior,
+      ordering_authority: "current_active_claim",
+    });
+
+    const delayedPrior = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: priorState, result: priorState.result ?? null },
+      previous: current,
+    });
+
+    expect(delayedPrior.run_id).toBe(currentState.run_id);
+    expect(delayedPrior.status).toBe("prepared");
+    expect(delayedPrior.history?.map((entry) => entry.run_id)).toEqual([
+      currentState.run_id,
+      priorState.run_id,
+    ]);
+  });
+
+  it("allows an initial projection without active-claim authority", () => {
+    const initialState = stateWithReceipt("initial-historical-run");
+
+    const initial = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: initialState, result: initialState.result ?? null },
+    });
+
+    expect(initial.run_id).toBe(initialState.run_id);
+    expect(initial.status).toBe("success");
+    expect(initial.history).toBeUndefined();
+  });
+
+  it("lets a current active claim supersede a legacy outcome without created_at", () => {
+    const legacyState = stateWithReceipt("legacy-run");
+    const legacy = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: legacyState, result: legacyState.result ?? null },
+    });
+    delete legacy.created_at;
+    const currentState = stateWithReceipt("current-run");
+    currentState.created_at = "2026-07-23T09:59:59.000Z";
+    const current = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: currentState, result: currentState.result ?? null },
+      previous: legacy,
+      ordering_authority: "current_active_claim",
+    });
+
+    expect(current.run_id).toBe(currentState.run_id);
+    expect(current.history?.map((entry) => entry.run_id)).toEqual([
+      currentState.run_id,
+      legacyState.run_id,
+    ]);
+  });
+
+  it("advances the same run by lifecycle state when the wall clock moves backwards", () => {
+    const preparedState = stateWithReceipt("clock-regression-run");
+    preparedState.status = "prepared";
+    preparedState.result = null;
+    preparedState.updated_at = "2026-07-23T10:00:00.000Z";
+    const prepared = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: preparedState, result: null },
+    });
+    const terminalState = stateWithReceipt("clock-regression-run");
+    terminalState.updated_at = "2026-07-23T09:59:59.000Z";
+
+    const terminal = buildTaskRunnerOutcome({
+      task_id: TASK_ID,
+      projection: { state: terminalState, result: terminalState.result ?? null },
+      previous: prepared,
+    });
+
+    expect(terminal.run_id).toBe(terminalState.run_id);
+    expect(terminal.status).toBe("success");
+    expect(terminal.updated_at).toBe(terminalState.updated_at);
   });
 });

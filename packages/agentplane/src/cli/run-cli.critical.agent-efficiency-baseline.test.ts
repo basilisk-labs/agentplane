@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       const efficiency = await runNode([EFFICIENCY_CHECK]);
 
       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
-      expect(compatibility.stdout).toContain("244commands/165args/773options");
+      expect(compatibility.stdout).toContain("245commands/166args/774options");
       expect(compatibility.stdout).toContain(
         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
       );
@@ -168,9 +168,9 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607221846-9XC1H0",
         ],
         candidate: {
-          surface_sha256: "8b69ad6c096cd4b873785454cc1d1570a980529b47599e40a3561fc8dacb5951",
+          surface_sha256: "174782f185b73b4356df5e8e33ce722af7fb33b3e023d6460e1d498db3751dbd",
           section_digests: {
-            cli_topology: "61e9b7ce283f2e6381c68c95783a5e0b63180288d06de34d6e91a0b349a91f11",
+            cli_topology: "ba9b2aa5ec996c1cab5ccc64ecc0796a2381157442d44f73b6472a5406c75cda",
           },
         },
         contract_artifacts: {

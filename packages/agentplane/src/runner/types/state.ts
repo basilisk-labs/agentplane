@@ -40,10 +40,18 @@ export type RunnerProcessTreeObservation = {
   containment_limitation: string | null;
 };
 
+type RunnerObservedProcessIdentity = {
+  pid: number;
+  command: string;
+  started_at: string;
+  observed_at: string;
+};
+
 export type RunnerSupervisionState = {
   pid?: number | null;
   command?: string | null;
   started_at?: string | null;
+  process_identity?: RunnerObservedProcessIdentity | null;
   heartbeat_at?: string | null;
   cancel_requested_at?: string | null;
   cancel_signal?: RunnerProcessSignal | null;

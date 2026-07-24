@@ -149,7 +149,12 @@ export {
   type ParsedTaskReadme,
 } from "./tasks/task-readme.js";
 
-export { readTaskReadme, updateTaskReadmeAtomic } from "./tasks/task-readme-io.js";
+export {
+  readTaskReadme,
+  updateTaskReadmeAtomic,
+  withTaskReadmeTransaction,
+  type TaskReadmeTransactionOptions,
+} from "./tasks/task-readme-io.js";
 
 export {
   buildDefaultTaskDoc,
@@ -187,7 +192,7 @@ export {
   taskDocToSectionMap,
 } from "./tasks/task-doc.js";
 
-export { atomicWriteFile } from "./fs/atomic-write.js";
+export { atomicWriteFile, syncDirectory } from "./fs/atomic-write.js";
 
 export { generateTaskId, timestampIdPrefix, TASK_ID_ALPHABET } from "./tasks/task-id.js";
 

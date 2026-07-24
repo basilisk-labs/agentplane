@@ -1,12 +1,6 @@
-import {
-  appendRunnerEvent,
-  evolveRunnerRunState,
-  readRunnerRunState,
-  writeRunnerRunState,
-} from "../artifacts.js";
+import { appendRunnerEvent } from "../artifacts.js";
 import type { RunnerSupervisionState, RunnerTimeoutReason } from "../types.js";
-import { isProcessAlive } from "./signals.js";
-import { mergeSupervisionState } from "./state.js";
+import { createSupervisionClock } from "./clock.js";
 
 type TimeoutRefState = {
   heartbeat_at: string;
@@ -30,40 +24,52 @@ export function createTimeoutController(opts: {
   is_settled: () => boolean;
   finish_with_error: (err: unknown) => void;
   assert_artifact_boundary?: () => Promise<void>;
+  write_supervision_patch: (patch: Partial<RunnerSupervisionState>) => Promise<void>;
+  reserve_termination?: (cause: "timeout") => boolean;
+  commit_termination?: (cause: "timeout") => boolean;
+  release_termination?: (cause: "timeout") => void;
+  track_effect?: (effect: Promise<void>) => void;
+  now_iso?: () => string;
 }) {
   let idleTimer: NodeJS.Timeout | null = null;
   let wallTimer: NodeJS.Timeout | null = null;
   let killTimer: NodeJS.Timeout | null = null;
+  const nowIso = opts.now_iso ?? createSupervisionClock().nowIso;
 
-  const patchRunningSupervision = async (patch: Partial<RunnerSupervisionState>) => {
-    await opts.assert_artifact_boundary?.();
-    const currentState = await readRunnerRunState(opts.state_path);
-    if (!currentState) return;
-    await writeRunnerRunState({
-      state_path: opts.state_path,
-      state: evolveRunnerRunState({
-        state: currentState,
-        status: currentState.status,
-        updated_at: new Date().toISOString(),
-        supervision: mergeSupervisionState(currentState.supervision, patch),
-      }),
-    });
-    await opts.assert_artifact_boundary?.();
-  };
+  const patchRunningSupervision = async (patch: Partial<RunnerSupervisionState>) =>
+    await opts.write_supervision_patch(patch);
 
   const requestTimeout = (reason: RunnerTimeoutReason) => {
     if (opts.is_settled() || opts.mutable.timeoutReason) return;
+    if (!opts.signal_pid) return;
+    if (opts.reserve_termination && !opts.reserve_termination("timeout")) return;
+    const requestedAt = nowIso();
+    try {
+      process.kill(opts.signal_pid, "SIGTERM");
+    } catch (err) {
+      opts.release_termination?.("timeout");
+      if ((err as NodeJS.ErrnoException | null)?.code !== "ESRCH") {
+        opts.finish_with_error(err);
+      }
+      return;
+    }
+    if (opts.commit_termination && !opts.commit_termination("timeout")) {
+      opts.release_termination?.("timeout");
+      return;
+    }
     opts.mutable.timeoutReason = reason;
-    opts.mutable.timeoutRequestedAt = new Date().toISOString();
-    opts.mutable.terminateSentAt = opts.mutable.timeoutRequestedAt;
+    opts.mutable.timeoutRequestedAt = requestedAt;
+    opts.mutable.terminateSentAt = requestedAt;
     const timeoutRequestedAt = opts.mutable.timeoutRequestedAt;
-    void patchRunningSupervision({
+    const patchEffect = patchRunningSupervision({
       timeout_reason: reason,
       timeout_requested_at: opts.mutable.timeoutRequestedAt,
       terminate_sent_at: opts.mutable.terminateSentAt,
       heartbeat_at: opts.mutable.timeoutRequestedAt,
-    }).catch(opts.finish_with_error);
-    void (async () => {
+    });
+    opts.track_effect?.(patchEffect);
+    void patchEffect.catch(opts.finish_with_error);
+    const eventEffect = (async () => {
       await opts.assert_artifact_boundary?.();
       await appendRunnerEvent({
         events_path: opts.events_path,
@@ -79,56 +85,52 @@ export function createTimeoutController(opts: {
         },
       });
       await opts.assert_artifact_boundary?.();
-    })().catch(opts.finish_with_error);
-    if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
-      try {
-        process.kill(opts.signal_pid, "SIGTERM");
-      } catch (err) {
-        const code = (err as NodeJS.ErrnoException | null)?.code;
-        if (code !== "ESRCH") {
-          opts.finish_with_error(err);
-          return;
-        }
-      }
-    }
+    })();
+    opts.track_effect?.(eventEffect);
+    void eventEffect.catch(opts.finish_with_error);
     const graceMs = opts.timeout_policy.terminate_grace_ms;
     if (graceMs <= 0) {
-      if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
-        opts.mutable.killSentAt = new Date().toISOString();
-        void patchRunningSupervision({
-          timeout_reason: reason,
-          timeout_requested_at: opts.mutable.timeoutRequestedAt,
-          terminate_sent_at: opts.mutable.terminateSentAt,
-          kill_sent_at: opts.mutable.killSentAt,
-          force_killed: true,
-          heartbeat_at: opts.mutable.killSentAt,
-        }).catch(opts.finish_with_error);
-        try {
-          process.kill(opts.signal_pid, "SIGKILL");
-        } catch (err) {
-          const code = (err as NodeJS.ErrnoException | null)?.code;
-          if (code !== "ESRCH") {
-            opts.finish_with_error(err);
-          }
-        }
+      try {
+        process.kill(opts.signal_pid, "SIGKILL");
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException | null)?.code !== "ESRCH") opts.finish_with_error(err);
+        return;
       }
+      opts.mutable.killSentAt = nowIso();
+      const killPatchEffect = patchRunningSupervision({
+        timeout_reason: reason,
+        timeout_requested_at: opts.mutable.timeoutRequestedAt,
+        terminate_sent_at: opts.mutable.terminateSentAt,
+        kill_sent_at: opts.mutable.killSentAt,
+        force_killed: true,
+        heartbeat_at: opts.mutable.killSentAt,
+      });
+      opts.track_effect?.(killPatchEffect);
+      void killPatchEffect.catch(opts.finish_with_error);
       return;
     }
     killTimer = setTimeout(() => {
       if (opts.is_settled() || !opts.mutable.timeoutReason) return;
-      if (!opts.signal_pid || !isProcessAlive(opts.signal_pid)) return;
-      opts.mutable.killSentAt = new Date().toISOString();
-      const killSentAt = opts.mutable.killSentAt;
+      try {
+        process.kill(opts.signal_pid!, "SIGKILL");
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException | null)?.code !== "ESRCH") opts.finish_with_error(err);
+        return;
+      }
+      const killSentAt = nowIso();
+      opts.mutable.killSentAt = killSentAt;
       const timeoutReason = opts.mutable.timeoutReason;
-      void patchRunningSupervision({
+      const killPatchEffect = patchRunningSupervision({
         timeout_reason: opts.mutable.timeoutReason,
         timeout_requested_at: opts.mutable.timeoutRequestedAt,
         terminate_sent_at: opts.mutable.terminateSentAt,
         kill_sent_at: opts.mutable.killSentAt,
         force_killed: true,
         heartbeat_at: opts.mutable.killSentAt,
-      }).catch(opts.finish_with_error);
-      void (async () => {
+      });
+      opts.track_effect?.(killPatchEffect);
+      void killPatchEffect.catch(opts.finish_with_error);
+      const killEventEffect = (async () => {
         await opts.assert_artifact_boundary?.();
         await appendRunnerEvent({
           events_path: opts.events_path,
@@ -144,17 +146,9 @@ export function createTimeoutController(opts: {
           },
         });
         await opts.assert_artifact_boundary?.();
-      })().catch(opts.finish_with_error);
-      if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
-        try {
-          process.kill(opts.signal_pid, "SIGKILL");
-        } catch (err) {
-          const code = (err as NodeJS.ErrnoException | null)?.code;
-          if (code !== "ESRCH") {
-            opts.finish_with_error(err);
-          }
-        }
-      }
+      })();
+      opts.track_effect?.(killEventEffect);
+      void killEventEffect.catch(opts.finish_with_error);
     }, graceMs);
   };
 

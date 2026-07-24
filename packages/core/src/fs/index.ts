@@ -1,1 +1,1 @@
-export { atomicWriteFile } from "./atomic-write.js";
+export { atomicWriteFile, syncDirectory } from "./atomic-write.js";

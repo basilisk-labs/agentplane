@@ -1,11 +1,12 @@
-import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 import { setMarkdownSection } from "./task-doc.js";
-import { updateTaskReadmeAtomic } from "./task-readme-io.js";
+import { updateTaskReadmeAtomic, withTaskReadmeTransaction } from "./task-readme-io.js";
+import { parseTaskReadme } from "./task-readme.js";
 
 const BASE = `---
 id: "202601010101-ABCDE"
@@ -63,5 +64,38 @@ describe("updateTaskReadmeAtomic", () => {
     const next = await readFile(readmePath, "utf8");
     expect(next).toContain("Updated summary");
     expect(next).toContain("Updated notes");
+    expect(parseTaskReadme(next).frontmatter.revision).toBe(3);
+  });
+
+  it("retains a crashed-owner lock fail-closed instead of risking split-brain recovery", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-lock-"));
+    const taskDir = path.join(root, "202601010101-ABCDE");
+    const readmePath = path.join(taskDir, "README.md");
+    const lockPath = path.join(root, ".202601010101-ABCDE.README.md.lock");
+    await writeFile(
+      lockPath,
+      `${JSON.stringify({
+        schema_version: 1,
+        generation: "crashed-owner",
+        process_instance_id: "crashed-owner",
+        owner_pid: 2_147_483_647,
+        owner_command: "missing",
+        owner_started_at: "2026-01-01T00:00:00.000Z",
+        acquired_at: "2026-01-01T00:00:00.000Z",
+      })}\n`,
+      "utf8",
+    );
+
+    try {
+      await expect(
+        withTaskReadmeTransaction(readmePath, () => null, {
+          timeoutMs: 20,
+          retryMs: 1,
+        }),
+      ).rejects.toThrow(/owner_status=(?:stale|unverified); stale locks are retained fail-closed/u);
+      expect(await readFile(lockPath, "utf8")).toContain('"generation":"crashed-owner"');
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   });
 });
