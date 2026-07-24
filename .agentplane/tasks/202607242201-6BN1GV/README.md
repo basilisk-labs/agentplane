@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -57,8 +57,8 @@ quality_review:
     - "The roadmap has 60 unique rows with exactly one PLANNER amendment, so it contains 59 implementation/release rows; final XV67TD ancestry has all 60 rows plus the original out-of-table PLANNER, for 61 records total."
     - "SX8T09 and QV09NA remain in final release ancestry with the approved RF-06b/RF-13/effect-resolution dependencies; 9M2FBQ and R7WS01 remain gated on QV09NA."
 commit:
-  hash: "06972b7ad517fd8f321432a4c301aab516225f16"
-  message: "🚧 6BN1GV task: pre-merge closure"
+  hash: "1b38432ccefcc3c163b072774d3e2c59f750c45a"
+  message: "🚧 6BN1GV task: Record corrected graph quality pass"
 comments:
   -
     author: "PLANNER"
@@ -66,6 +66,9 @@ comments:
   -
     author: "PLANNER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "PLANNER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "PLANNER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -119,8 +122,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment, therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed; doctor reported 0 errors and 3 pre-existing warnings."
+  -
+    type: "status"
+    at: "2026-07-24T23:09:18.114Z"
+    author: "PLANNER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T23:00:25.566Z"
+doc_updated_at: "2026-07-24T23:09:18.115Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
@@ -257,8 +267,8 @@ sections:
       Resolution: Changed only the executable-leaf total from 58 to 59 and reran all declared verification steps.
 extensions:
   implementation_commit:
-    hash: "0b9d9e4d5ae9c51184054007d87a3aa28fcc137e"
-    message: "🚧 6BN1GV task: clarify effect safety contracts"
+    hash: "926a09a31ecb9de1c73bc6da2714ba9590f0c6c8"
+    message: "🚧 6BN1GV task: Correct release graph task count"
 id_source: "generated"
 ---
 ## Summary
