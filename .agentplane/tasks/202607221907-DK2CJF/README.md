@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -47,26 +47,23 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T07:25:05.602Z"
+  updated_at: "2026-07-24T07:29:16.786Z"
   updated_by: "EVALUATOR"
-  note: "Alpha.1 qualification rework is complete: cleanup closure, metric accuracy, ratchet ownership, and all mandatory gates are independently verified on the current evidence head."
+  note: "Final PR publication and pre-merge closure commits are metadata-only and preserve the independently verified alpha.1 qualification without runtime or gate-contract drift."
   evaluated_sha: "22ef62f5e95077e4537e33d12b20bd5f11dab9e8"
   blueprint_digest: "0fe4326b44ea9f820fe00a84df1e3a808b5380c0f167f1d0eb7c4331b2021d7c"
   evidence_refs:
     - ".agentplane/tasks/202607221907-DK2CJF/README.md"
-    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072505602-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072505602-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072505602-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072916786-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072916786-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072916786-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221907-DK2CJF/blueprint/resolved-snapshot.json"
+    - "git diff --name-status 22ef62f5e95077e4537e33d12b20bd5f11dab9e8..0779eec63962ee4b33670526feb7e027445bf133"
     - ".agentplane/tasks/202607221907-DK2CJF/qualification.md"
-    - "scripts/baselines/agent-efficiency-pre-v0.7-main.json"
-    - "scripts/baselines/trust-boundary-violations.json"
-    - "git worktree, local branch, tracking ref, and ls-remote cleanup proof"
+    - ".agentplane/tasks/202607221907-DK2CJF/pr/meta.json"
   findings:
-    - "Both formerly registered dependency worktrees and their local, tracking, and remote branches are absent through the task-scoped cleanup route."
-    - "The corrected baseline statement matches computed data: 10 scenarios, 10 observed scalar cells, 17 metric kinds, and six observed metric kinds."
-    - "The corrected ratchet ownership matches the baseline: RF-21 owns ten, RF-06b/RF-09/RF-25 own four, and RF-05a/RF-05b own five."
-    - "Independent reruns passed test:critical 71/71, schemas:check, guards:check, and ci:contract; the immutable RF-04 replay counts remain exact."
+    - "The diff from passed SHA 22ef62f5e to current published head 0779eec63 is limited to task lifecycle, PR metadata, and evaluator artifacts."
+    - "Qualification evidence, compatibility and efficiency baselines, runtime, tests, schemas, policy, and package contracts are byte-identical across the metadata-only tail."
 commit:
   hash: "0bba13813d37e731053454402da6a96251ee9890"
   message: "🧪 DK2CJF task: record independent qualification pass"
