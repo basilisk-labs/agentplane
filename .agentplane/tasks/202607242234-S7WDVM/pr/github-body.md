@@ -15,12 +15,13 @@ Add a beta.1 implementation leaf for a durable supervisor episode journal and ha
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded
-journal, and durable journal migration/install-smoke acceptance was not explicit.
+Verified review rework: context/CURATOR rework now depends on the bounded journal; the leaf and
+beta.1 gate explicitly require schema fixtures, migrator idempotency/rollback, and installed-package
+smoke; routing, doctor, task-state, formatting, and docs-only CI pass.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,10 +34,11 @@ journal, and durable journal migration/install-smoke acceptance was not explicit
 
 ```text
  .agentplane/tasks/202607221850-0SFMS7/README.md |   3 +-
- .agentplane/tasks/202607221908-MR9EA9/README.md |   3 +-
- .agentplane/tasks/202607242236-1BFWEY/README.md | 103 ++++++++++++++++++++++++
- docs/internal/v0.7-refactor-plan.md             |  20 ++++-
- 4 files changed, 125 insertions(+), 4 deletions(-)
+ .agentplane/tasks/202607221850-8HBF4J/README.md |  18 ++---
+ .agentplane/tasks/202607221908-MR9EA9/README.md |  18 ++---
+ .agentplane/tasks/202607242236-1BFWEY/README.md | 102 ++++++++++++++++++++++++
+ docs/internal/v0.7-refactor-plan.md             |  28 ++++++-
+ 5 files changed, 141 insertions(+), 28 deletions(-)
 ```
 
 </details>
