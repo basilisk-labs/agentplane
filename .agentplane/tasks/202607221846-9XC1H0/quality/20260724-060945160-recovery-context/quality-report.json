@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221846-9XC1H0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T06:09:45.160Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "RF-03 remains PASS at e79d03abc; the only post-review change removes two CodeQL code-construction findings from test fixtures without altering production behavior.",
+  "evaluated_sha": "e79d03abc931372a4e3a75b09275dd02457fa053",
+  "blueprint_digest": "ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea",
+  "findings": [
+    "Both js/bad-code-sanitization sources were eliminated by replacing interpolated absolute paths with static sibling URLs derived from import.meta.url.",
+    "The fixture and asserted files remain siblings in the same temporary directory; there is no user-controlled input, traversal, cwd dependency, or generated code.",
+    "Independent review passed and process-supervision tests pass 12/12; format, typecheck, and diff checks are green."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221846-9XC1H0/README.md",
+    "packages/agentplane/src/runner/process-supervision.test.ts",
+    "GitHub CodeQL alerts 38 and 39",
+    "process-supervision.test.ts: 12/12; bun run format:check; bun run typecheck; git diff --check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The test fixtures remain ordinary .mjs files adjacent to spawned.txt and runner.pid in the same generated temp directory."
+  ],
+  "residual_risks": [
+    "A future fixture relocation or symlink would change relative-URL semantics, but the existing read assertions would fail immediately."
+  ]
+}
