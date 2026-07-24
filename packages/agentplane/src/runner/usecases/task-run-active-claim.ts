@@ -8,7 +8,6 @@ import {
   captureRunnerArtifactDirectoryBoundary,
   ensureStableRunnerArtifactDirectoryChain,
 } from "../run-directory-boundary.js";
-import { readObservedProcessIdentity } from "../process-supervision/signals.js";
 import {
   readStableRegularTextNoFollow,
   writeNewStableRegularFileNoFollow,
@@ -38,27 +37,26 @@ import {
   type TaskRunnerActiveClaim,
   type TaskRunnerActiveClaimDirectory,
   type TaskRunnerActiveClaimFileIdentity,
+  type TaskRunnerActiveClaimLease,
   type TaskRunnerActiveClaimOperation,
   type TaskRunnerActiveClaimOwnerIdentity,
   type TaskRunnerActiveClaimPathOptions,
 } from "./task-run-active-claim-record.js";
+import { currentTaskRunnerActiveClaimOwner } from "./task-run-active-claim-owner.js";
+import {
+  assertTaskRunnerSupervisorHistoryAnchorStable,
+  captureTaskRunnerSupervisorHistoryAnchor,
+} from "./task-run-supervisor-history-anchor.js";
 
 const ACTIVE_RUN_CLAIM_FILENAME = "active-run-claim.json";
 const ACTIVE_RUN_CLAIM_MAX_BYTES = 16 * 1024;
 
 export type {
   TaskRunnerActiveClaim,
+  TaskRunnerActiveClaimLease,
   TaskRunnerActiveClaimOperation,
   TaskRunnerActiveClaimOwnerIdentity,
 } from "./task-run-active-claim-record.js";
-
-export type TaskRunnerActiveClaimLease = {
-  claim: TaskRunnerActiveClaim;
-  claim_path: string;
-  identity: TaskRunnerActiveClaimFileIdentity;
-  directory: TaskRunnerActiveClaimDirectory;
-  release_started: boolean;
-};
 
 export type TaskRunnerActiveClaimRecoveryResult =
   | { status: "absent" }
@@ -310,15 +308,6 @@ function competingClaimError(
   });
 }
 
-async function currentOwnerIdentity(): Promise<TaskRunnerActiveClaimOwnerIdentity> {
-  const observed = await readObservedProcessIdentity(process.pid).catch(() => null);
-  return {
-    owner_pid: process.pid,
-    owner_command: observed?.command ?? null,
-    owner_started_at: observed?.started_at ?? null,
-  };
-}
-
 export async function acquireTaskRunnerActiveClaim(
   opts: TaskRunnerActiveClaimPathOptions & {
     operation: TaskRunnerActiveClaimOperation;
@@ -328,6 +317,11 @@ export async function acquireTaskRunnerActiveClaim(
   },
 ): Promise<TaskRunnerActiveClaimLease> {
   const directory = await resolveClaimDirectory(opts);
+  const historyAnchor = await captureTaskRunnerSupervisorHistoryAnchor({
+    git_root: opts.git_root,
+    workflow_dir: opts.workflow_dir,
+    task_id: opts.task_id,
+  });
   const generation = randomUUID();
   const claim: TaskRunnerActiveClaim = {
     schema_version: 1,
@@ -337,7 +331,7 @@ export async function acquireTaskRunnerActiveClaim(
     run_id: opts.run_id,
     operation: opts.operation,
     claimed_at: new Date().toISOString(),
-    ...(await currentOwnerIdentity()),
+    ...(await currentTaskRunnerActiveClaimOwner()),
     ...(opts.source_run_id ? { source_run_id: opts.source_run_id } : {}),
     ...(opts.source_status ? { source_status: opts.source_status } : {}),
   };
@@ -356,6 +350,11 @@ export async function acquireTaskRunnerActiveClaim(
   let acquired = false;
   try {
     for (;;) {
+      await assertTaskRunnerSupervisorHistoryAnchorStable({
+        anchor: historyAnchor,
+        git_root: opts.git_root,
+        workflow_dir: opts.workflow_dir,
+      });
       await directory.boundary.assertStable("before publishing runner active claim");
       try {
         await link(candidatePath, directory.claim_path);
@@ -372,11 +371,17 @@ export async function acquireTaskRunnerActiveClaim(
             detail: "the newly published generation could not be observed",
           });
         }
+        await assertTaskRunnerSupervisorHistoryAnchorStable({
+          anchor: historyAnchor,
+          git_root: opts.git_root,
+          workflow_dir: opts.workflow_dir,
+        });
         return {
           claim,
           claim_path: directory.claim_path,
           identity: observed.identity,
           directory,
+          history_anchor: historyAnchor,
           release_started: false,
         };
       } catch (error) {

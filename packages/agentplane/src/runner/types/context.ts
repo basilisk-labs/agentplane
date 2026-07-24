@@ -122,6 +122,7 @@ export type RunnerExecutionContract = {
     require_plan?: boolean;
     require_verify?: boolean;
     require_network?: boolean;
+    require_force?: boolean;
   };
 };
 

@@ -10,6 +10,7 @@ const DEFAULT_APPROVALS: NonNullable<RunnerContextBundle["execution"]["approvals
   require_plan: false,
   require_verify: false,
   require_network: false,
+  require_force: false,
 };
 
 const EMPTY_TASK_CONTEXT_PROJECTIONS = {
@@ -69,6 +70,27 @@ export function bundle(taskData = task()): RunnerContextBundle {
         content: "Policy",
       },
     ],
+    framework_explain: {
+      harness: {
+        task: {
+          doc_sections: ["Summary"],
+          required_doc_sections: ["Summary"],
+          verify_required_tags: ["code"],
+          verify_steps_required_tags: [],
+          verify_steps_required_primary: ["code"],
+          verification_required_primary: ["code"],
+          spike_tag: "spike",
+          enforce_verify_steps_on_plan_approve: true,
+          enforce_verify_steps_on_start_without_plan: true,
+          comments: {
+            start: { prefix: "Start:", min_chars: 40 },
+            blocked: { prefix: "Blocked:", min_chars: 40 },
+            verified: { prefix: "Verified:", min_chars: 60 },
+          },
+          closure_commit_requires_approval: false,
+        },
+      },
+    } as NonNullable<RunnerContextBundle["framework_explain"]>,
     repository: {
       git_root: "/repo",
       workflow_dir: ".agentplane/tasks",
@@ -98,6 +120,7 @@ export function bundle(taskData = task()): RunnerContextBundle {
       rejectedRecipeExtensions: [],
       stopReasons: [],
     },
+    route_decision: {},
     execution: {
       adapter_id: "codex",
       mode: "execute",
@@ -131,6 +154,7 @@ export function bundle(taskData = task()): RunnerContextBundle {
         require_plan: false,
         require_verify: false,
         require_network: false,
+        require_force: false,
       },
     },
   };

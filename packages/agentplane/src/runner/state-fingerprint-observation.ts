@@ -4,6 +4,8 @@ import path from "node:path";
 import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../backends/task-backend.js";
+import { buildTaskRouteDecision } from "../commands/shared/route-decision.js";
+import type { TaskRouteDecision } from "../commands/shared/route-decision-types.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { makeReadOnlyExecutionContext } from "../runtime/execution-context.js";
 import { consumeExecutionProfileBudget } from "../runtime/execution-profile/index.js";
@@ -11,13 +13,19 @@ import { readContainedStableTextNoFollow } from "../shared/contained-stable-file
 import { collectRunnerBasePrompts } from "./context/base-prompts.js";
 import { assembleRunnerTaskContext } from "./context/task-context.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "./sandbox-policy.js";
-import { authorityComponent, dangerAuthorityFromBundle } from "./state-fingerprint-authority.js";
+import {
+  authorityComponent,
+  dangerAuthorityFromBundle,
+  liveRunnerExecutionConfigProjection,
+  preparedRunnerExecutionConfigProjection,
+} from "./state-fingerprint-authority.js";
 import { observeBackendProjection } from "./state-fingerprint-backend-projection.js";
+import { observeRunnerPolicyComponent } from "./state-fingerprint-policy.js";
 import { observeRunnerTaskProjection, runnerTaskProjectionReader } from "./task-observation.js";
-import type { RunnerContextBundle, RunnerPromptBlock } from "./types.js";
+import type { RunnerContextBundle, RunnerPromptBlock, RunnerRecipeContext } from "./types.js";
+import { assembleRunnerRecipeContext } from "./context/recipe-context.js";
 import { resolveRunnerBlueprintPlan } from "./usecases/task-run-blueprint-plan.js";
 
-const POLICY_MODULE_MAX_BYTES = 1024 * 1024;
 const KNOWLEDGE_MANIFEST_MAX_BYTES = 16 * 1024 * 1024;
 
 export type RunnerStateFingerprintComponentProbes = {
@@ -28,6 +36,8 @@ export type RunnerStateFingerprintComponentProbes = {
   observe_blueprint?: () => Promise<StateFingerprintComponentInput>;
   observe_knowledge?: () => Promise<StateFingerprintComponentInput>;
   observe_authority?: () => Promise<StateFingerprintComponentInput>;
+  resolve_route_decision?: () => Promise<TaskRouteDecision>;
+  resolve_recipe_context?: () => Promise<RunnerRecipeContext | null>;
 };
 
 export type RunnerStateFingerprintObservedComponents = {
@@ -46,6 +56,9 @@ type LiveResolution = {
   task: TaskData | null;
   base_prompts: RunnerPromptBlock[] | null;
   blueprint: RunnerContextBundle["blueprint"] | null;
+  route_decision: RunnerContextBundle["route_decision"] | null;
+  recipe: RunnerRecipeContext | null;
+  harness_task: NonNullable<RunnerContextBundle["framework_explain"]>["harness"]["task"] | null;
   protected_path_groups: Record<string, readonly string[]> | null;
   approvals: RunnerContextBundle["execution"]["approvals"] | null;
 };
@@ -87,6 +100,10 @@ function missingComponent(source: string, reason_code: string): StateFingerprint
     source,
     reason_code,
   };
+}
+
+function serializeTaskRouteDecision(routeDecision: TaskRouteDecision): Record<string, unknown> {
+  return { ...structuredClone(routeDecision) };
 }
 
 function taskComponent(task: TaskData | null): StateFingerprintComponentInput {
@@ -206,107 +223,6 @@ function blueprintComponent(
   };
 }
 
-type PolicyModuleObservation =
-  | { path: string; state: "present"; resolution: "repository"; sha256: string }
-  | { path: string; state: "missing"; reason_code: "policy_module_missing" }
-  | { path: string; state: "unavailable"; reason_code: "policy_module_unreadable" };
-
-async function observePolicyModules(
-  repositoryRoot: string,
-  modulePaths: readonly string[],
-): Promise<PolicyModuleObservation[]> {
-  return await Promise.all(
-    [...new Set(modulePaths)].toSorted().map(async (modulePath) => {
-      const absolutePath = path.resolve(repositoryRoot, modulePath);
-      const relativePath = path.relative(repositoryRoot, absolutePath);
-      if (
-        relativePath === "" ||
-        relativePath === ".." ||
-        relativePath.startsWith(`..${path.sep}`) ||
-        path.isAbsolute(relativePath)
-      ) {
-        return {
-          path: modulePath,
-          state: "unavailable" as const,
-          reason_code: "policy_module_unreadable" as const,
-        };
-      }
-      try {
-        return {
-          path: modulePath,
-          state: "present" as const,
-          resolution: "repository" as const,
-          sha256: digestText(
-            await readContainedStableTextNoFollow({
-              repository_root: repositoryRoot,
-              file_path: absolutePath,
-              label: "runner policy module",
-              max_bytes: POLICY_MODULE_MAX_BYTES,
-            }),
-          ),
-        };
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
-          return {
-            path: modulePath,
-            state: "missing" as const,
-            reason_code: "policy_module_missing" as const,
-          };
-        }
-        return {
-          path: modulePath,
-          state: "unavailable" as const,
-          reason_code: "policy_module_unreadable" as const,
-        };
-      }
-    }),
-  );
-}
-
-function policyPrompts(prompts: readonly RunnerPromptBlock[]): RunnerPromptBlock[] {
-  return prompts
-    .filter((prompt) => ["system", "policy"].includes(prompt.role))
-    .map((prompt) => {
-      const projection = structuredClone(prompt);
-      if (projection.id !== "base.execution_profile") return projection;
-      try {
-        const runtime: unknown = JSON.parse(projection.content);
-        if (typeof runtime === "object" && runtime !== null && !Array.isArray(runtime)) {
-          Reflect.deleteProperty(runtime, "approvals");
-          projection.content = `${JSON.stringify(runtime, null, 2)}\n`;
-        }
-      } catch {
-        // The internally generated prompt is validated upstream; retain raw bytes if it is not JSON.
-      }
-      return projection;
-    });
-}
-
-async function policyComponent(opts: {
-  repository_root: string;
-  prompts: readonly RunnerPromptBlock[];
-  policy_modules: readonly string[];
-}): Promise<StateFingerprintComponentInput> {
-  const modules = await observePolicyModules(opts.repository_root, opts.policy_modules);
-  if (modules.some((entry) => entry.state === "missing")) {
-    return unavailableComponent("runner_policy_resolution", "policy_module_missing");
-  }
-  if (modules.some((entry) => entry.state === "unavailable")) {
-    return unavailableComponent(
-      "runner_policy_resolution",
-      "policy_module_observation_unavailable",
-    );
-  }
-  return {
-    state: "present",
-    source: "runner_policy_resolution",
-    value: {
-      prompts: policyPrompts(opts.prompts),
-      policy_modules: modules,
-    },
-  };
-}
-
 async function observeKnowledgeProjection(
   repositoryRoot: string,
 ): Promise<StateFingerprintComponentInput> {
@@ -401,6 +317,9 @@ async function resolveLiveState(opts: {
       task,
       base_prompts: null,
       blueprint: null,
+      route_decision: null,
+      recipe: null,
+      harness_task: null,
       protected_path_groups: null,
       approvals: null,
     };
@@ -408,6 +327,16 @@ async function resolveLiveState(opts: {
 
   try {
     const executionContext = await makeReadOnlyExecutionContext(liveContext);
+    const recipeEnvelope = opts.bundle.recipe
+      ? opts.probes?.resolve_recipe_context
+        ? { recipe: await opts.probes.resolve_recipe_context() }
+        : await assembleRunnerRecipeContext({
+            project: liveContext.resolvedProject,
+            recipe_id: opts.bundle.recipe.recipe_id,
+            scenario_id: opts.bundle.recipe.scenario_id,
+          })
+      : null;
+    const recipe = recipeEnvelope?.recipe ?? undefined;
     const taskEnvelope = await assembleRunnerTaskContext({
       ctx: liveContext,
       cwd: liveContext.resolvedProject.gitRoot,
@@ -428,7 +357,7 @@ async function resolveLiveState(opts: {
       agents_dir: executionContext.harness.workflow.paths.agents_dir,
       task: taskEnvelope.task,
       command,
-      recipe: opts.bundle.recipe,
+      recipe,
       harness: executionContext.harness,
       execution_profile: executionProfile,
     });
@@ -436,19 +365,32 @@ async function resolveLiveState(opts: {
       taskEnvelope,
       config: executionContext.config,
       projectRoot: executionContext.repo.git_root,
-      recipe: opts.bundle.recipe,
+      recipe,
       basePrompts,
     });
+    const routeDecision =
+      (await opts.probes?.resolve_route_decision?.()) ??
+      (await buildTaskRouteDecision({
+        ctx: liveContext,
+        cwd: liveContext.resolvedProject.gitRoot,
+        rootOverride: liveContext.resolvedProject.gitRoot,
+        includeRunnerState: false,
+        taskId: task.id,
+      }));
     return {
       ctx: liveContext,
       task,
       base_prompts: basePrompts,
       blueprint,
+      route_decision: serializeTaskRouteDecision(routeDecision),
+      recipe: recipe ?? null,
+      harness_task: executionContext.frameworkExplain.harness.task,
       protected_path_groups: executionContext.harness.policy.protected_paths,
       approvals: {
         require_plan: executionContext.approvals.require_plan,
         require_verify: executionContext.approvals.require_verify,
         require_network: executionContext.approvals.require_network,
+        require_force: executionContext.approvals.require_force,
       },
     };
   } catch {
@@ -457,6 +399,9 @@ async function resolveLiveState(opts: {
       task,
       base_prompts: null,
       blueprint: null,
+      route_decision: null,
+      recipe: null,
+      harness_task: null,
       protected_path_groups: null,
       approvals: null,
     };
@@ -473,10 +418,13 @@ export async function observePreparedRunnerStateComponents(opts: {
   const [backend, policy, knowledge, blueprint, authority] = await Promise.all([
     opts.probes?.observe_backend_projection?.() ?? observeBackendProjection(opts.ctx),
     opts.probes?.observe_policy?.() ??
-      policyComponent({
+      observeRunnerPolicyComponent({
         repository_root: repositoryRoot,
         prompts: opts.bundle.base_prompts,
         policy_modules: opts.bundle.blueprint?.policyModules ?? [],
+        evaluator_skepticism_level: opts.ctx.config.evaluator.skepticism_level,
+        harness_task: opts.bundle.framework_explain?.harness.task,
+        recipe: opts.bundle.recipe,
       }),
     opts.probes?.observe_knowledge?.() ?? observeKnowledgeProjection(repositoryRoot),
     opts.probes?.observe_blueprint?.() ??
@@ -487,6 +435,10 @@ export async function observePreparedRunnerStateComponents(opts: {
           sandbox_policy: opts.bundle.execution.sandbox_policy,
           write_scope: opts.bundle.execution.write_scope,
           approvals: opts.bundle.execution.approvals,
+          runner_execution_config: preparedRunnerExecutionConfigProjection(
+            opts.bundle,
+            opts.ctx.config,
+          ),
         }),
       ),
   ]);
@@ -541,11 +493,14 @@ export async function observeLiveRunnerStateComponents(opts: {
             unavailableComponent("task_backend_runtime", "backend_projection_unavailable"),
           )),
     opts.probes?.observe_policy?.() ??
-      (live.base_prompts && live.blueprint
-        ? policyComponent({
+      (live.ctx && live.base_prompts && live.blueprint
+        ? observeRunnerPolicyComponent({
             repository_root: repositoryRoot,
             prompts: live.base_prompts,
             policy_modules: policyModules,
+            evaluator_skepticism_level: live.ctx.config.evaluator.skepticism_level,
+            harness_task: live.harness_task,
+            recipe: live.recipe,
           })
         : Promise.resolve(
             unavailableComponent("runner_policy_resolution", "policy_resolution_unavailable"),
@@ -563,6 +518,13 @@ export async function observeLiveRunnerStateComponents(opts: {
           sandbox_policy: sandbox,
           write_scope: writeScope,
           approvals: live.approvals,
+          runner_execution_config: live.ctx
+            ? liveRunnerExecutionConfigProjection(
+                opts.bundle,
+                live.ctx.config,
+                live.route_decision ?? undefined,
+              )
+            : null,
         }),
       ),
   ]);

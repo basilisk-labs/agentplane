@@ -1,6 +1,8 @@
 import type { TaskData, TaskRunnerHistoryEntry } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { RunnerRunDirectoryBoundaryError } from "../run-directory-boundary.js";
+import { RunnerRunRepository } from "../run-repository.js";
 import { hasExplicitRunnerDangerFullAccessAuthority } from "../sandbox-policy.js";
 import { assertSafeRunnerRunId, createRunnerRunId } from "../task-run-paths.js";
 import type { RunnerDangerFullAccessAuthority, RunnerLifecycleStatus } from "../types.js";
@@ -208,6 +210,25 @@ function resolveFreshReplayRunId(opts: {
   });
 }
 
+async function assertFreshReplayDestinationAvailable(opts: {
+  ctx: CommandContext;
+  task_id: string;
+  run_id: string;
+}): Promise<void> {
+  const existing = await RunnerRunRepository.openTaskRunIfPresent({
+    git_root: opts.ctx.resolvedProject.gitRoot,
+    workflow_dir: opts.ctx.config.paths.workflow_dir,
+    task_id: opts.task_id,
+    run_id: opts.run_id,
+    storage: "supervisor",
+  });
+  if (existing) {
+    throw new RunnerRunDirectoryBoundaryError(
+      `Refusing to overwrite an existing runner run directory: ${existing.paths.run_dir}`,
+    );
+  }
+}
+
 async function executeFreshReplay(opts: {
   action: RunnerReplayAction;
   ctx?: CommandContext;
@@ -238,6 +259,11 @@ async function executeFreshReplay(opts: {
     task_id: opts.task_id,
     source_run_id: source.run_id,
     new_run_id: opts.new_run_id,
+  });
+  await assertFreshReplayDestinationAvailable({
+    ctx,
+    task_id: opts.task_id,
+    run_id: destinationRunId,
   });
   await assertNoCompetingActiveReplayRun({
     action: opts.action,

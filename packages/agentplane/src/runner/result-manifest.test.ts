@@ -393,6 +393,40 @@ describe("runner result manifest", () => {
     );
   });
 
+  it("keeps an unobserved legacy conflict durable across JSON serialization", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-unobserved-"));
+    const resultPath = await writeJsonManifest(tempDir, {
+      schema_version: 1,
+      status: "blocked",
+      exit_code: 1,
+      artifacts: [{ path: "reports/out.txt", label: "agent-output" }],
+    });
+    const manifest = await readRunnerResultManifest(resultPath);
+    const applied = applyRunnerResultManifest({
+      base: observedRunnerResult({ artifacts: undefined }),
+      manifest,
+    });
+
+    expect(applied.claim_conflicts).toEqual(
+      expect.arrayContaining([
+        {
+          field: "artifacts",
+          agent_reported: [{ path: "reports/out.txt", label: "agent-output" }],
+          observed: null,
+          resolution: "observed_wins",
+        },
+      ]),
+    );
+    const serialized = JSON.stringify(applied);
+    const roundTripped = JSON.parse(serialized) as RunnerResult;
+    expect(roundTripped.claim_conflicts?.find((entry) => entry.field === "artifacts")).toEqual({
+      field: "artifacts",
+      agent_reported: [{ path: "reports/out.txt", label: "agent-output" }],
+      observed: null,
+      resolution: "observed_wins",
+    });
+  });
+
   it("does not expose an observed status when salvaging invalid legacy blocker guidance", () => {
     const salvaged = salvageBlockedRunnerResultManifest(
       JSON.stringify({

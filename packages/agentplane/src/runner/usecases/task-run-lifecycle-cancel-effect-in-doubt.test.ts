@@ -1,6 +1,7 @@
-import { mkdir, readFile, unlink } from "node:fs/promises";
+import { mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
 import { installRunCliIntegrationHarness, mkGitRepoRoot } from "@agentplane/testkit";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -13,6 +14,11 @@ import {
   readTaskRunnerActiveClaim,
   releaseTaskRunnerActiveClaim,
 } from "./task-run-active-claim.js";
+import {
+  staleClaim,
+  writeActiveClaim,
+  writeTerminalSuccess,
+} from "./task-run-active-claim.testkit.js";
 import { reconcileTaskRunnerActiveClaim } from "./task-run-active-claim-runtime.js";
 import { cancelTaskRunnerExecution } from "./task-run-lifecycle.js";
 import {
@@ -30,6 +36,54 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
+async function writeOrphanedEffectStarted(opts: {
+  ctx: Awaited<ReturnType<typeof loadCommandContext>>;
+  root: string;
+  task_id: string;
+  run_id: string;
+}): Promise<void> {
+  const prepared = await prepareTaskRunnerExecution({
+    ctx: opts.ctx,
+    cwd: opts.root,
+    rootOverride: opts.root,
+    task_id: opts.task_id,
+    mode: "execute",
+    run_id: opts.run_id,
+  });
+  const orphanedAt = new Date(Date.parse(prepared.state.created_at) + 1).toISOString();
+  await writeRunnerRunState({
+    state_path: prepared.invocation.state_path,
+    state: evolveRunnerRunState({
+      state: prepared.state,
+      status: "failed",
+      updated_at: orphanedAt,
+      result: {
+        status: "failed",
+        exit_code: 8,
+        started_at: prepared.state.created_at,
+        ended_at: orphanedAt,
+        summary: "owner disappeared after the effect journal",
+      },
+      state_fingerprint: {
+        schema_version: 1,
+        kind: "runner_state_fingerprint_record",
+        outcome: "effect_started",
+        precondition_fingerprint: prepared.precondition_fingerprint,
+        precondition_policy: prepared.precondition_policy,
+        state_before: prepared.precondition_fingerprint,
+        state_after: null,
+        precondition: evaluateStateFingerprintPrecondition({
+          expected: prepared.precondition_fingerprint,
+          current: prepared.precondition_fingerprint,
+          policy: prepared.precondition_policy,
+        }),
+        effect_applied: null,
+        post_state_reason_code: null,
+      },
+    }),
+  });
+}
+
 describe("task-run cancellation effect-in-doubt guard", () => {
   it("refuses to treat another run's claim as the effect-in-doubt guard", async () => {
     const root = await mkGitRepoRoot();
@@ -45,7 +99,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
       mode: "execute",
       run_id: runId,
     });
-    const terminalAt = "2026-07-24T10:00:00.000Z";
+    const terminalAt = new Date(Date.parse(prepared.state.created_at) + 1).toISOString();
     await writeRunnerRunState({
       state_path: prepared.invocation.state_path,
       state: evolveRunnerRunState({
@@ -67,7 +121,11 @@ describe("task-run cancellation effect-in-doubt guard", () => {
           precondition_policy: prepared.precondition_policy,
           state_before: prepared.precondition_fingerprint,
           state_after: null,
-          precondition: null,
+          precondition: evaluateStateFingerprintPrecondition({
+            expected: prepared.precondition_fingerprint,
+            current: prepared.precondition_fingerprint,
+            policy: prepared.precondition_policy,
+          }),
           effect_applied: null,
           post_state_reason_code: null,
         },
@@ -121,6 +179,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
     const incompleteRunId = "run-missing-state";
     const incompletePaths = await resolveTestRunnerPaths(root, taskId, incompleteRunId);
     await mkdir(incompletePaths.run_dir, { recursive: true });
+    await writeFile(path.join(incompletePaths.run_dir, "unversioned-artifact"), "unknown\n");
     const adapterExecute = vi.spyOn(CustomRunnerAdapter.prototype, "execute");
 
     await expect(
@@ -142,57 +201,76 @@ describe("task-run cancellation effect-in-doubt guard", () => {
     expect(adapterExecute).not.toHaveBeenCalled();
   });
 
+  it("allows a crash-empty run directory with no state or spawn authority", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
+    const taskId = await createDoingTask(root, "Allow crash-empty supervisor history");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const incompleteRunId = "run-empty-before-preparation-record";
+    const incompletePaths = await resolveTestRunnerPaths(root, taskId, incompleteRunId);
+    await mkdir(incompletePaths.run_dir, { recursive: true });
+    const adapterExecute = vi.spyOn(CustomRunnerAdapter.prototype, "execute");
+
+    await expect(
+      executeTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        run_id: "run-after-empty-state",
+      }),
+    ).resolves.toMatchObject({
+      state: { status: "success" },
+    });
+    expect(adapterExecute).toHaveBeenCalledTimes(1);
+    await expect(readdir(incompletePaths.run_dir)).resolves.toEqual([]);
+  });
+
+  it("allows a versioned pre-provider run whose state disappeared before child spawn", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
+    const taskId = await createDoingTask(root, "Allow versioned pre-provider history");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const historical = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-versioned-before-spawn",
+    });
+    await unlink(historical.invocation.state_path);
+    const adapterExecute = vi.spyOn(CustomRunnerAdapter.prototype, "execute");
+
+    await expect(
+      executeTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        run_id: "run-after-versioned-pre-provider-state",
+      }),
+    ).resolves.toMatchObject({
+      state: { status: "success" },
+    });
+    expect(adapterExecute).toHaveBeenCalledTimes(1);
+    await expect(
+      readFile(path.join(historical.invocation.run_dir, ".runner-preparation-record.json"), "utf8"),
+    ).resolves.toContain(`"run_id":"${historical.invocation.run_id}"`);
+  });
+
   it("blocks an orphaned non-latest effect before acquiring a new claim", async () => {
     const root = await mkGitRepoRoot();
     await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
     const taskId = await createDoingTask(root, "Block historical orphaned effect");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const orphanedRunId = "run-older-orphaned-effect";
-    await acquireTaskRunnerActiveClaim({
-      git_root: root,
-      workflow_dir: ".agentplane/tasks",
-      task_id: taskId,
-      run_id: orphanedRunId,
-      operation: "execute",
-    });
-    const orphaned = await prepareTaskRunnerExecution({
+    await writeOrphanedEffectStarted({
       ctx,
-      cwd: root,
-      rootOverride: root,
+      root,
       task_id: taskId,
-      mode: "execute",
       run_id: orphanedRunId,
     });
-    const orphanedAt = "2026-07-24T10:00:00.000Z";
-    await writeRunnerRunState({
-      state_path: orphaned.invocation.state_path,
-      state: evolveRunnerRunState({
-        state: orphaned.state,
-        status: "failed",
-        updated_at: orphanedAt,
-        result: {
-          status: "failed",
-          exit_code: 8,
-          started_at: orphaned.state.created_at,
-          ended_at: orphanedAt,
-          summary: "owner disappeared after the effect journal",
-        },
-        state_fingerprint: {
-          schema_version: 1,
-          kind: "runner_state_fingerprint_record",
-          outcome: "effect_started",
-          precondition_fingerprint: orphaned.precondition_fingerprint,
-          precondition_policy: orphaned.precondition_policy,
-          state_before: orphaned.precondition_fingerprint,
-          state_after: null,
-          precondition: null,
-          effect_applied: null,
-          post_state_reason_code: null,
-        },
-      }),
-    });
-    const orphanedPaths = await resolveTestRunnerPaths(root, taskId, orphanedRunId);
-    await unlink(path.join(orphanedPaths.task_dir, "active-run-claim.json"));
 
     const newer = await prepareTaskRunnerExecution({
       ctx,
@@ -202,7 +280,7 @@ describe("task-run cancellation effect-in-doubt guard", () => {
       mode: "execute",
       run_id: "run-newer-safe-terminal",
     });
-    const newerAt = "2026-07-24T10:01:00.000Z";
+    const newerAt = new Date(Date.parse(newer.state.created_at) + 2).toISOString();
     await writeRunnerRunState({
       state_path: newer.invocation.state_path,
       state: evolveRunnerRunState({
@@ -268,6 +346,114 @@ describe("task-run cancellation effect-in-doubt guard", () => {
     ).resolves.toBeNull();
   });
 
+  it("blocks an older orphaned effect after retiring a newer stale terminal claim", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
+    const taskId = await createDoingTask(root, "Block orphan hidden by terminal claim");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const orphanedRunId = "run-older-hidden-orphaned-effect";
+    await writeOrphanedEffectStarted({
+      ctx,
+      root,
+      task_id: taskId,
+      run_id: orphanedRunId,
+    });
+
+    const terminal = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-newer-stale-terminal-claim",
+    });
+    await writeTerminalSuccess(terminal, "newer safe terminal run");
+    await writeActiveClaim(
+      root,
+      staleClaim({ task_id: taskId, run_id: terminal.invocation.run_id }),
+    );
+    const adapterExecute = vi.spyOn(CustomRunnerAdapter.prototype, "execute");
+
+    await expect(
+      executeTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        run_id: "run-after-hidden-orphaned-effect",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        reason: "runner_orphaned_effect_in_doubt",
+        task_id: taskId,
+        orphaned_run_ids: [orphanedRunId],
+      },
+    });
+    expect(adapterExecute).not.toHaveBeenCalled();
+    await expect(
+      readTaskRunnerActiveClaim({
+        git_root: root,
+        workflow_dir: ".agentplane/tasks",
+        task_id: taskId,
+        run_id: "run-after-hidden-orphaned-effect",
+      }),
+    ).resolves.toBeNull();
+  });
+
+  it("blocks an older orphan after recovering a stale prepared claim in acquire", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "exit 0"]);
+    const taskId = await createDoingTask(root, "Block orphan hidden by prepared claim");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const orphanedRunId = "run-older-orphan-hidden-by-prepared";
+    await writeOrphanedEffectStarted({
+      ctx,
+      root,
+      task_id: taskId,
+      run_id: orphanedRunId,
+    });
+    const preparedClaimRun = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-newer-stale-prepared-claim",
+    });
+    await writeActiveClaim(
+      root,
+      staleClaim({ task_id: taskId, run_id: preparedClaimRun.invocation.run_id }),
+    );
+    const adapterExecute = vi.spyOn(CustomRunnerAdapter.prototype, "execute");
+
+    await expect(
+      executeTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        run_id: "run-after-prepared-hidden-orphan",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        reason: "runner_orphaned_effect_in_doubt",
+        task_id: taskId,
+        orphaned_run_ids: [orphanedRunId],
+      },
+    });
+    expect(adapterExecute).not.toHaveBeenCalled();
+    await expect(
+      readTaskRunnerActiveClaim({
+        git_root: root,
+        workflow_dir: ".agentplane/tasks",
+        task_id: taskId,
+        run_id: "run-after-prepared-hidden-orphan",
+      }),
+    ).resolves.toBeNull();
+  });
+
   it.each(["effect_unknown", "post_state_unknown"] as const)(
     "restores a durable blocker when cancel observes %s without its active claim",
     async (outcome) => {
@@ -313,7 +499,11 @@ describe("task-run cancellation effect-in-doubt guard", () => {
             precondition_policy: prepared.precondition_policy,
             state_before: prepared.precondition_fingerprint,
             state_after: null,
-            precondition: null,
+            precondition: evaluateStateFingerprintPrecondition({
+              expected: prepared.precondition_fingerprint,
+              current: prepared.precondition_fingerprint,
+              policy: prepared.precondition_policy,
+            }),
             effect_applied: outcome === "post_state_unknown" ? true : null,
             post_state_reason_code:
               outcome === "post_state_unknown" ? "post_state_unavailable" : null,

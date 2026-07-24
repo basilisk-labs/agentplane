@@ -14,7 +14,6 @@ import {
 } from "../../runtime/explain/index.js";
 import { buildFrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
-
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
@@ -42,6 +41,7 @@ import {
 } from "./task-run-active-claim.js";
 import { inspectTaskRunnerClaimedRunAuthority } from "./task-run-active-claim-authority.js";
 import {
+  assertTaskRunnerActiveClaimHistorySafe,
   assertTaskRunnerActiveClaimCurrent,
   attachSuppressedActiveClaimCleanup,
   reconcileStaleTerminalTaskRunnerActiveClaim,
@@ -85,7 +85,6 @@ import {
   type RunnerRunState,
   type RunnerTarget,
 } from "../types.js";
-
 export type PreparedTaskRunnerExecution = {
   bundle: RunnerContextBundle;
   invocation: RunnerInvocation;
@@ -93,7 +92,6 @@ export type PreparedTaskRunnerExecution = {
   precondition_fingerprint?: StateFingerprint;
   precondition_policy?: StateFingerprintPolicy;
 };
-
 export type ExecutedTaskRunnerExecution = Omit<
   PreparedTaskRunnerExecution,
   "precondition_fingerprint" | "precondition_policy"
@@ -184,7 +182,7 @@ export async function prepareTaskRunnerExecution(opts: {
     ctx: executionContext.command,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
-    includeRunnerState: opts.include_route_runner_state,
+    includeRunnerState: opts.include_route_runner_state ?? false,
     taskId: opts.task_id,
   });
   const framework_explain = appendFrameworkExplainBehaviorInputs(
@@ -243,11 +241,7 @@ export async function prepareTaskRunnerExecution(opts: {
       evaluator_skepticism_level: executionContext.config.evaluator.skepticism_level,
       sandbox_policy,
       write_scope,
-      approvals: {
-        require_plan: executionContext.approvals.require_plan,
-        require_verify: executionContext.approvals.require_verify,
-        require_network: executionContext.approvals.require_network,
-      },
+      approvals: structuredClone(executionContext.approvals),
     },
   };
   bundle.playbook = buildRunnerExecutionPlaybookContract(bundle);
@@ -381,6 +375,7 @@ export async function executeTaskRunnerExecution(opts: {
   let hasPrimaryError = false;
   let releaseActiveClaim = true;
   try {
+    await assertTaskRunnerActiveClaimHistorySafe({ ctx, lease: activeClaim });
     let prepared: PreparedTaskRunnerExecution;
     try {
       prepared = await prepareTaskRunnerExecution({
@@ -452,6 +447,11 @@ export async function executeTaskRunnerExecution(opts: {
             }
           : {}),
         before_apply: async (stateFingerprint) => {
+          await assertTaskRunnerActiveClaimHistorySafe({
+            ctx,
+            lease: activeClaim,
+            allow_claimed_run: true,
+          });
           await persistRunnerStateFingerprintEffectStarted({
             ctx,
             task_id: opts.task_id,

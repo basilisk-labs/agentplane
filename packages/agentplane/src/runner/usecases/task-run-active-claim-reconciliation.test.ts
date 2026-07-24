@@ -8,6 +8,10 @@ import { captureStdIO, installRunCliIntegrationHarness } from "@agentplane/testk
 
 import { runCli } from "../../cli/run-cli.js";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import {
+  claimRunnerChildSpawn,
+  claimRunnerPreSpawnDecision,
+} from "../adapters/execution-control.js";
 import { evolveRunnerRunState, writeRunnerRunState } from "../artifacts.js";
 import { readObservedProcessIdentity } from "../process-supervision/signals.js";
 
@@ -176,6 +180,109 @@ describe("task-run active claim reconciliation", () => {
       context: { recovery_lease_path: leasePath },
     });
     await expect(readFile(leasePath, "utf8")).resolves.toBe("{not-json\n");
+  });
+
+  it("refuses to reconcile a terminal spawn whose effect journal stayed prepared", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner({
+      root,
+      script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
+    });
+    const taskId = await createDoingTask(root, "Terminal claim requires effect journal");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const prepared = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-terminal-prepared-claim",
+    });
+    const decision = await claimRunnerPreSpawnDecision({
+      invocation: prepared.invocation,
+      decision: "start",
+    });
+    const ownerId = decision.record.owner_lease?.owner_id;
+    if (!ownerId) throw new Error("Prepared start decision did not record an owner lease.");
+    await claimRunnerChildSpawn({
+      invocation: prepared.invocation,
+      start_owner_id: ownerId,
+    });
+    const at = new Date().toISOString();
+    await writeRunnerRunState({
+      state_path: prepared.invocation.state_path,
+      state: evolveRunnerRunState({
+        state: prepared.state,
+        status: "failed",
+        updated_at: at,
+        result: {
+          status: "failed",
+          exit_code: 1,
+          started_at: prepared.state.created_at,
+          ended_at: at,
+          stderr_summary: "effect journal did not advance",
+        },
+        supervision: {
+          process_tree: {
+            scope: "direct_child_only",
+            group_id: null,
+            cleanup_state: "not_needed",
+            terminate_sent_at: null,
+            kill_sent_at: null,
+            completed_at: at,
+            residual_alive: false,
+            error: null,
+            containment_state: "limited",
+            containment_limitation: "direct-child cleanup does not bound descendants",
+          },
+        },
+      }),
+    });
+    await writeActiveClaim(
+      root,
+      staleClaim({ task_id: taskId, run_id: prepared.invocation.run_id }),
+    );
+
+    await expect(reconcileTaskRunnerActiveClaim({ ctx, task_id: taskId })).rejects.toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        owner_status: "stale",
+        claimed_run_authority: "effect_in_doubt",
+      },
+    });
+  });
+
+  it("refuses accepted terminal evidence without durable child-spawn authority", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner({
+      root,
+      script_lines: ["#!/bin/sh", "cat >/dev/null", "exit 0"],
+    });
+    const taskId = await createDoingTask(root, "Accepted terminal claim requires spawn authority");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const prepared = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-accepted-without-spawn-claim",
+    });
+    await writeTerminalSuccess(prepared, "accepted without spawn claim", {
+      publish_spawn_claim: false,
+    });
+    await writeActiveClaim(
+      root,
+      staleClaim({ task_id: taskId, run_id: prepared.invocation.run_id }),
+    );
+
+    await expect(reconcileTaskRunnerActiveClaim({ ctx, task_id: taskId })).rejects.toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        owner_status: "stale",
+        claimed_run_authority: "effect_in_doubt",
+      },
+    });
   });
 
   it("prefers task-level claim truth over a newer dry-run while preserving explicit selection", async () => {

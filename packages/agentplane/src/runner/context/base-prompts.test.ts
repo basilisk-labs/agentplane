@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, stat, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -190,15 +190,15 @@ describe("collectRunnerBasePrompts", () => {
     expect(prompts[0]?.content).toContain("This prompt is not part of default agent guidance.");
   });
 
-  it("invalidates cached repo-local prompt files when their content changes", async () => {
+  it("reloads repo-local prompts when size and mtime are unchanged", async () => {
     const root = await makeTempRepo();
     const agentsDir = path.join(root, ".agentplane", "agents");
+    const policyPath = path.join(root, "AGENTS.md");
+    const profilePath = path.join(agentsDir, "CODER.json");
     await mkdir(agentsDir, { recursive: true });
-    await writeFile(path.join(root, "AGENTS.md"), "# Repo Policy\n\nInitial policy.\n");
-    await writeFile(
-      path.join(agentsDir, "CODER.json"),
-      JSON.stringify({ id: "CODER", role: "Initial profile" }, null, 2),
-    );
+    await writeFile(policyPath, "# Repo Policy\n\nInitial policy.\n");
+    await writeFile(profilePath, JSON.stringify({ id: "CODER", role: "Initial profile" }, null, 2));
+    const [policyStat, profileStat] = await Promise.all([stat(policyPath), stat(profilePath)]);
 
     const initial = await collectRunnerBasePrompts({
       git_root: root,
@@ -211,24 +211,22 @@ describe("collectRunnerBasePrompts", () => {
       "Initial profile",
     );
 
-    await writeFile(
-      path.join(root, "AGENTS.md"),
-      "# Repo Policy\n\nUpdated policy with a different byte length.\n",
-    );
-    await writeFile(
-      path.join(agentsDir, "CODER.json"),
-      JSON.stringify({ id: "CODER", role: "Updated profile with extra bytes" }, null, 2),
-    );
+    await writeFile(policyPath, "# Repo Policy\n\nChanged policy.\n");
+    await writeFile(profilePath, JSON.stringify({ id: "CODER", role: "Changed profile" }, null, 2));
+    await Promise.all([
+      utimes(policyPath, policyStat.atime, policyStat.mtime),
+      utimes(profilePath, profileStat.atime, profileStat.mtime),
+    ]);
 
     const updated = await collectRunnerBasePrompts({
       git_root: root,
       owner_id: "CODER",
     });
     expect(updated.find((prompt) => prompt.id === "base.policy_gateway")?.content).toContain(
-      "Updated policy",
+      "Changed policy",
     );
     expect(updated.find((prompt) => prompt.id === "base.owner_profile")?.content).toContain(
-      "Updated profile",
+      "Changed profile",
     );
   });
 

@@ -4,6 +4,7 @@ import { readRunnerChildSpawnClaim } from "../adapters/execution-control.js";
 import type { RunnerProcessTreeObservation, RunnerRunState } from "../types.js";
 
 import type { TaskRunnerActiveClaim } from "./task-run-active-claim.js";
+import { inspectTaskRunnerMissingStateAuthority } from "./task-run-missing-state-authority.js";
 
 export type TaskRunnerActiveClaimOwnerStatus = "active" | "stale" | "unverified";
 
@@ -13,6 +14,7 @@ export type TaskRunnerClaimedRunAuthority =
   | "terminal"
   | "terminal_cleanup_unverified"
   | "incomplete_pre_provider"
+  | "missing_state_unverified"
   | "prepared"
   | "spawn_authorized_but_unconfirmed"
   | "running_child_active"
@@ -34,18 +36,49 @@ export function isRunnerEffectInDoubt(state: Pick<RunnerRunState, "state_fingerp
   );
 }
 
-function isManagedScopeCleanupConfirmed(
+function isTimestamp(value: string | null): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
+function isTimestampAtOrBefore(left: string | null, right: string): boolean {
+  return (
+    isTimestamp(left) && Number.isFinite(Date.parse(right)) && Date.parse(left) <= Date.parse(right)
+  );
+}
+
+export function isRunnerManagedScopeCleanupConfirmed(
   processTree: RunnerProcessTreeObservation | undefined,
 ): boolean {
+  const scopeIdentityConfirmed =
+    processTree?.scope === "posix_process_group"
+      ? typeof processTree.group_id === "number" && processTree.group_id > 0
+      : processTree?.scope === "direct_child_only" && processTree.group_id === null;
+  const containmentConfirmed =
+    processTree?.scope === "direct_child_only"
+      ? processTree.containment_state === "limited" &&
+        typeof processTree.containment_limitation === "string" &&
+        processTree.containment_limitation.length > 0
+      : (processTree?.containment_state === "bounded" &&
+          processTree.containment_limitation === null) ||
+        (processTree?.containment_state === "limited" &&
+          typeof processTree.containment_limitation === "string" &&
+          processTree.containment_limitation.length > 0);
+  const cleanupEvidenceConfirmed =
+    processTree?.cleanup_state === "not_needed"
+      ? processTree.terminate_sent_at === null && processTree.kill_sent_at === null
+      : processTree?.cleanup_state === "terminated"
+        ? isTimestampAtOrBefore(processTree.terminate_sent_at, processTree.completed_at) &&
+          processTree.kill_sent_at === null
+        : processTree?.cleanup_state === "force_killed"
+          ? isTimestampAtOrBefore(processTree.terminate_sent_at, processTree.kill_sent_at ?? "") &&
+            isTimestampAtOrBefore(processTree.kill_sent_at, processTree.completed_at)
+          : false;
   return (
     processTree?.residual_alive === false &&
     processTree.error === null &&
-    (processTree.cleanup_state === "not_needed" ||
-      processTree.cleanup_state === "terminated" ||
-      processTree.cleanup_state === "force_killed") &&
-    (processTree.scope === "posix_process_group"
-      ? typeof processTree.group_id === "number" && processTree.group_id > 0
-      : processTree.group_id === null)
+    cleanupEvidenceConfirmed &&
+    scopeIdentityConfirmed &&
+    containmentConfirmed
   );
 }
 
@@ -89,8 +122,18 @@ export async function inspectTaskRunnerClaimedRunAuthority(
     storage: "supervisor",
   });
   if (!repository) return "absent";
-  const state = await repository.readState();
-  if (!state) return "incomplete_pre_provider";
+  let state = await repository.readState();
+  if (!state) {
+    return await inspectTaskRunnerMissingStateAuthority({
+      repository,
+      run_id: claim.run_id,
+    });
+  }
+  const record = await repository.readRequiredRecord({
+    task_id: paths.task_id,
+    run_id: claim.run_id,
+  });
+  state = record.state;
   if (isRunnerEffectInDoubt(state)) return "effect_in_doubt";
   if (state.status === "prepared") {
     await repository.assertBoundary("before reading runner child spawn claim authority");
@@ -112,9 +155,18 @@ export async function inspectTaskRunnerClaimedRunAuthority(
       run_id: claim.run_id,
     });
     await repository.assertBoundary("after reading terminal runner child spawn claim authority");
-    if (!spawnClaim) return "terminal";
-    const cleanupConfirmed = isManagedScopeCleanupConfirmed(processTree);
-    return cleanupConfirmed ? "terminal" : "terminal_cleanup_unverified";
+    if (!spawnClaim) {
+      const acceptedProviderOutcomeWithoutSpawn =
+        state.state_fingerprint?.outcome === "accepted" &&
+        (state.status === "success" || state.status === "blocked");
+      return acceptedProviderOutcomeWithoutSpawn ? "effect_in_doubt" : "terminal";
+    }
+    const cleanupConfirmed = isRunnerManagedScopeCleanupConfirmed(processTree);
+    if (!cleanupConfirmed) return "terminal_cleanup_unverified";
+    const fingerprintOutcome = state.state_fingerprint?.outcome;
+    return fingerprintOutcome === undefined || fingerprintOutcome === "accepted"
+      ? "terminal"
+      : "effect_in_doubt";
   }
   const expected = state.supervision?.process_identity;
   const pid = state.supervision?.pid;

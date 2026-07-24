@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
@@ -14,8 +14,9 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { runCli } from "../../cli/run-cli.js";
-import { loadCommandContext } from "../../commands/shared/task-backend.js";
-import type { RunnerRecipeContext, RunnerTarget } from "../types.js";
+import { hashRecipeTree } from "../../commands/recipes/impl/project-recipe-state.js";
+import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+import { assembleRunnerRecipeContext } from "../context/recipe-context.js";
 import { initializeRunnerPolicyFixture } from "./task-run-lifecycle.testkit.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
 
@@ -101,27 +102,112 @@ async function configureCustomRunner(root: string, scriptLines: string[]): Promi
   process.env.PATH = `${path.join(root, "bin")}${path.delimiter}${process.env.PATH ?? ""}`;
 }
 
-function recipeExecution(taskId: string): {
-  recipe: RunnerRecipeContext;
-  target: RunnerTarget;
-} {
-  return {
-    recipe: {
-      recipe_id: "write-scope-fixture",
-      scenario_id: "REPORT_ONLY",
-      run_profile: {
-        mode: "analysis",
-        sandbox: "workspace-write",
-        writes_artifacts_to: ["reports/"],
+async function installWriteScopeRecipe(root: string): Promise<void> {
+  const recipeDir = path.join(root, ".agentplane", "recipes", "packages", "write-scope-fixture");
+  const scenarioDir = path.join(recipeDir, "scenarios");
+  await mkdir(scenarioDir, { recursive: true });
+  await writeFile(
+    path.join(recipeDir, "manifest.json"),
+    `${JSON.stringify(
+      {
+        schema_version: "1",
+        id: "write-scope-fixture",
+        version: "1.0.0",
+        name: "Write scope fixture",
+        summary: "Exercise recipe-scoped report writes.",
+        description: "Exercise recipe-scoped report writes.",
+        agents: [],
+        skills: [],
+        tools: [],
+        scenarios: [
+          {
+            id: "REPORT_ONLY",
+            name: "Report only",
+            summary: "Write only the declared report.",
+            use_when: ["A report must be written without implementation changes."],
+            required_inputs: [],
+            outputs: [],
+            permissions: [],
+            artifacts: ["reports/"],
+            agents_involved: [],
+            skills_used: [],
+            tools_used: [],
+            run_profile: {
+              mode: "analysis",
+              sandbox: "workspace-write",
+              writes_artifacts_to: ["reports/"],
+            },
+            file: "scenarios/report-only.json",
+          },
+        ],
       },
-      scenario: {
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  await writeFile(
+    path.join(scenarioDir, "report-only.json"),
+    `${JSON.stringify(
+      {
+        schema_version: "1",
         id: "REPORT_ONLY",
         summary: "Write only the declared report.",
         goal: "Produce a report without changing implementation paths.",
+        task_template: {
+          title: "Recipe report task",
+          description: "Produce a report without changing implementation paths.",
+          owner: "CODER",
+        },
+        inputs: [],
+        outputs: [],
+        steps: [],
       },
-    },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  const recipeSha256 = await hashRecipeTree(recipeDir);
+  const recipesDir = path.dirname(path.dirname(recipeDir));
+  await writeFile(
+    path.join(recipesDir, "registry.json"),
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        updated_at: "2026-07-24T00:00:00.000Z",
+        recipes: [
+          {
+            id: "write-scope-fixture",
+            version: "1.0.0",
+            path: "packages/write-scope-fixture",
+            active: true,
+            materialization: "copy",
+            source_ref: "write-scope-fixture@1.0.0",
+            source_sha256: recipeSha256,
+            vendored_sha256: recipeSha256,
+            installed_at: "2026-07-24T00:00:00.000Z",
+            tags: ["reports"],
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+}
+
+async function recipeExecution(ctx: CommandContext, taskId: string) {
+  const envelope = await assembleRunnerRecipeContext({
+    project: ctx.resolvedProject,
+    recipe_id: "write-scope-fixture",
+    scenario_id: "REPORT_ONLY",
+  });
+  return {
+    recipe: envelope.recipe,
     target: {
-      kind: "recipe_scenario",
+      kind: "recipe_scenario" as const,
       recipe_id: "write-scope-fixture",
       scenario_id: "REPORT_ONLY",
       task_id: taskId,
@@ -134,8 +220,9 @@ describe("recipe task-run actual write scope integration", () => {
     const root = await mkGitRepoRoot();
     await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
     const taskId = await createDoingCodeTask(root, "Prepare recipe report scope");
+    await installWriteScopeRecipe(root);
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const { recipe, target } = recipeExecution(taskId);
+    const { recipe, target } = await recipeExecution(ctx, taskId);
 
     const prepared = await prepareTaskRunnerExecution({
       ctx,
@@ -198,8 +285,9 @@ describe("recipe task-run actual write scope integration", () => {
       "exit 0",
     ]);
     const taskId = await createDoingCodeTask(root, "Reject recipe scope escape");
+    await installWriteScopeRecipe(root);
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const { recipe, target } = recipeExecution(taskId);
+    const { recipe, target } = await recipeExecution(ctx, taskId);
 
     const executed = await executeTaskRunnerExecution({
       ctx,

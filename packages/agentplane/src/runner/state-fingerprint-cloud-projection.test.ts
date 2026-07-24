@@ -368,6 +368,72 @@ describe("runner cloud projection fingerprint", () => {
     }
   });
 
+  it("accepts a successful cloud effect when projection TTL expires during post-state capture", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime("2026-07-24T00:05:00.000Z");
+    const fixture = await cloudProjectionCase({
+      last_checked_at: "2026-07-24T00:00:00.000Z",
+    });
+    try {
+      const prepared = await capturePreparedRunnerStateFingerprint({
+        ctx: fixture.ctx,
+        bundle: fixture.runnerBundle,
+        git: gitSnapshot(),
+        probes: fixture.stateProbes,
+      });
+      const apply = vi.fn(() => {
+        vi.setSystemTime("2026-07-24T00:05:00.001Z");
+        return Promise.resolve({
+          status: "success" as const,
+          exit_code: 0,
+          started_at: "2026-07-24T00:05:00.000Z",
+          ended_at: "2026-07-24T00:05:00.001Z",
+        });
+      });
+
+      expect(prepared.components.backend_projection.state).toBe("present");
+      await expect(
+        executeStateBoundRunnerInvocation({
+          ctx: fixture.ctx,
+          task_id: fixture.taskData.id,
+          bundle: fixture.runnerBundle,
+          invocation: invocation(),
+          precondition_fingerprint: prepared,
+          precondition_policy: resolveRunnerStateFingerprintPolicy(fixture.ctx),
+          probes: fixture.stateProbes,
+          apply,
+        }),
+      ).resolves.toMatchObject({
+        precondition: { status: "fresh", reason_code: "state_fingerprint_fresh" },
+        state_after: {
+          components: {
+            backend_projection: {
+              state: "unavailable",
+              reason_code: "backend_projection_stale",
+            },
+          },
+        },
+        state_fingerprint: {
+          outcome: "accepted",
+          effect_applied: true,
+          post_state_reason_code: null,
+          state_after: {
+            components: {
+              backend_projection: {
+                state: "unavailable",
+                reason_code: "backend_projection_stale",
+              },
+            },
+          },
+        },
+      });
+      expect(apply).toHaveBeenCalledTimes(1);
+      expect(fixture.fetchImpl).not.toHaveBeenCalled();
+    } finally {
+      await rm(fixture.root, { recursive: true, force: true });
+    }
+  });
+
   it("accepts a cloud replay anchor only after the exact projection is acknowledged", async () => {
     const acknowledgedAt = new Date(Date.now() + 1000).toISOString();
     const fetchImpl = acknowledgedPushFetch(acknowledgedAt);

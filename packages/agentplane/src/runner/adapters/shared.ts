@@ -14,6 +14,14 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+export function clampRunnerResultEndedAt(startedAt: string, endedAt: string): string {
+  const startedMs = Date.parse(startedAt);
+  const endedMs = Date.parse(endedAt);
+  return Number.isFinite(startedMs) && Number.isFinite(endedMs) && endedMs < startedMs
+    ? startedAt
+    : endedAt;
+}
+
 export type RunnerAdapter = {
   id: RunnerAdapterId;
   describeCapabilities(bundle: RunnerContextBundle): RunnerAdapterCapabilities;
@@ -32,7 +40,7 @@ export function runnerAdapterSuccessResult(opts: {
   timeout_reason?: RunnerTimeoutReason | null;
 }): RunnerResult {
   const started_at = opts.started_at ?? nowIso();
-  const ended_at = opts.ended_at ?? nowIso();
+  const ended_at = clampRunnerResultEndedAt(started_at, opts.ended_at ?? nowIso());
   return {
     status: "success",
     exit_code: opts.exit_code ?? 0,
@@ -58,7 +66,7 @@ export function runnerAdapterFailureResult(opts: {
   timeout_reason?: RunnerTimeoutReason | null;
 }): RunnerResult {
   const started_at = opts.started_at ?? nowIso();
-  const ended_at = opts.ended_at ?? nowIso();
+  const ended_at = clampRunnerResultEndedAt(started_at, opts.ended_at ?? nowIso());
   const message =
     opts.stderr_summary ?? (opts.err instanceof Error ? opts.err.message : String(opts.err));
   return {
@@ -86,7 +94,7 @@ export function runnerAdapterCancelledResult(opts: {
   timeout_reason?: RunnerTimeoutReason | null;
 }): RunnerResult {
   const started_at = opts.started_at ?? nowIso();
-  const ended_at = opts.ended_at ?? nowIso();
+  const ended_at = clampRunnerResultEndedAt(started_at, opts.ended_at ?? nowIso());
   return {
     status: "cancelled",
     exit_code: opts.exit_code ?? null,

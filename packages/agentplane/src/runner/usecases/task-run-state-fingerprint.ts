@@ -435,6 +435,8 @@ export async function executeStateBoundRunnerInvocation(opts: {
   }
   let stateAfter: StateFingerprint;
   try {
+    // Post-state is bounded observed evidence, not a second mutation gate:
+    // capture validates its shape and stability, while freshness gates only the pre-effect state.
     stateAfter = await captureStableState();
   } catch (cause) {
     const postStateUnknown: RunnerStateFingerprintRecord = {

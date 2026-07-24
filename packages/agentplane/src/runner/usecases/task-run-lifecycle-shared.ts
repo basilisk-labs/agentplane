@@ -153,6 +153,28 @@ async function loadExistingRunnerRun(opts: {
 }
 
 function prepareLoadedRunnerExecution(loaded: LoadedRunnerRun): LoadedRunnerExecution {
+  if (
+    loaded.repository.storage === "task" &&
+    (!loaded.state.trace_path ||
+      !loaded.state.stderr_path ||
+      !loaded.state.trace_policy ||
+      !loaded.state.timeout_policy)
+  ) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message:
+        `Historical task-local runner control is unavailable for ` +
+        `${loaded.state.target.task_id ?? loaded.state.run_id}:${loaded.state.run_id}; ` +
+        `the record predates the trace and timeout authority contract.`,
+      context: {
+        task_id: loaded.state.target.task_id ?? null,
+        run_id: loaded.state.run_id,
+        storage: "task",
+        reason: "legacy_task_run_control_unsupported",
+      },
+    });
+  }
   const snapshot = loaded.state.prepared_metadata?.invocation;
   const invocation: RunnerInvocation = {
     adapter_id: loaded.bundle.execution.adapter_id,
