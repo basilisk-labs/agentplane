@@ -19,10 +19,10 @@ RF-03: default executor/context runs to workspace-write and evaluator runs to re
 - Note:
 
 ```text
-PASS at f161a6e56: RF-03 sandbox/write-boundary behavior and reworked lifecycle authority are
-verified. Checks passed: bun run typecheck; bun run ci:contract; bun run test:critical (71/71); bun
-run test:fast (425 files, 2659/2659); independent semantic suite (9 files, 50/50); active-claim
-reconciliation (4/4); git diff --check.
+PASS at e79d03abc: CodeQL alerts #38/#39 are fixed without production changes by removing path
+interpolation from generated .mjs fixtures. process-supervision tests pass 12/12; format, typecheck,
+and git diff checks pass; prior full RF-03 verification at f161a6e56 remains applicable to unchanged
+production code.
 ```
 - Canonical workflow state lives in the task README.
 
