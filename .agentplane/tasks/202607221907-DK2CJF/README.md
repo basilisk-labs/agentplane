@@ -1,10 +1,11 @@
 ---
 id: "202607221907-DK2CJF"
 title: "Qualify the AgentPlane 0.7.0-alpha.1 milestone"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -66,11 +67,16 @@ quality_review:
     - "The corrected baseline statement matches computed data: 10 scenarios, 10 observed scalar cells, 17 metric kinds, and six observed metric kinds."
     - "The corrected ratchet ownership matches the baseline: RF-21 owns ten, RF-06b/RF-09/RF-25 own four, and RF-05a/RF-05b own five."
     - "Independent reruns passed test:critical 71/71, schemas:check, guards:check, and ci:contract; the immutable RF-04 replay counts remain exact."
-commit: null
+commit:
+  hash: "0bba13813d37e731053454402da6a96251ee9890"
+  message: "🧪 DK2CJF task: record independent qualification pass"
 comments:
   -
     author: "TESTER"
     body: "Start: Qualify the alpha.1 dependency fan-in and rerun every declared deterministic milestone gate on one reviewed SHA."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -91,8 +97,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent-review rework resolved on SHA 1bf9c6dc8: stale 4VB97J and 9XC1H0 worktrees plus local and remote branches are absent, metric and ratchet ownership statements are corrected, and all five milestone gates passed again."
+  -
+    type: "status"
+    at: "2026-07-24T07:25:43.746Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T07:14:48.386Z"
+doc_updated_at: "2026-07-24T07:25:43.747Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-alpha.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -190,6 +203,10 @@ sections:
     - Observation: The first review correctly rejected qualification while two dependency worktrees remained registered.
       Impact: Cleanup closure is now explicit and alpha.1 no longer advances on merge evidence alone.
       Resolution: Used task-scoped cleanup, added local and remote absence proof, corrected evidence, and reran critical, schema, guard, contract, and offline replay checks.
+extensions:
+  implementation_commit:
+    hash: "22ef62f5e95077e4537e33d12b20bd5f11dab9e8"
+    message: "🧪 DK2CJF task: anchor rework gate SHA"
 id_source: "generated"
 ---
 ## Summary
