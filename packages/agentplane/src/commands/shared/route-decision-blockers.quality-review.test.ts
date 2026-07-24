@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
+import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { CommandContext } from "./task-backend.js";
 
 const mocks = vi.hoisted(() => ({
@@ -119,7 +120,7 @@ const ctx = {
   },
 } as unknown as CommandContext;
 
-async function blockersFor(targetSha: string) {
+async function blockersFor(targetSha: string | null, batchOwnership?: RouteBatchOwnership) {
   mocks.readFile.mockResolvedValue("{}");
   mocks.parsePrMeta.mockReturnValue({});
   mocks.assessPreMergeClosureFreshness.mockResolvedValue({
@@ -134,7 +135,7 @@ async function blockersFor(targetSha: string) {
     resume,
     workflowMode: "branch_pr",
     prFlow: openPrFlow(),
-    batchOwnership: { role: "none" },
+    batchOwnership: batchOwnership ?? { role: "none" },
     cleanupProbe: { state: "not_requested" },
     taskWorktreeCleanliness: {
       state: "clean",
@@ -155,6 +156,39 @@ describe("DONE route quality-review target", () => {
   it("blocks enqueue when the shared resolver selects a newer work unit", async () => {
     await expect(blockersFor(headSha)).resolves.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
+    );
+  });
+
+  it("fails closed when the shared resolver finds no current-task target", async () => {
+    await expect(blockersFor(null)).resolves.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
+    );
+  });
+
+  it("uses the same task-set resolver contract for primary batches", async () => {
+    const batchOwnership: RouteBatchOwnership = {
+      role: "primary",
+      primaryTaskId: "T-1",
+      includedTaskIds: ["T-2"],
+      allTaskIds: ["T-1", "T-2"],
+      branch: "task/T-1/metadata-gate",
+      taskStates: [],
+      nextOwnerAction: {
+        code: "continue_primary_batch",
+        command: null,
+        summary: "continue primary batch",
+        requiresApproval: false,
+      },
+    };
+
+    await expect(blockersFor(headSha, batchOwnership)).resolves.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "quality_review_stale" })]),
+    );
+    expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        taskIds: ["T-1", "T-2"],
+      }),
     );
   });
 });

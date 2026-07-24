@@ -611,6 +611,54 @@ describe("pr/integrate/internal/prepare", () => {
     await expect(promise).rejects.toThrow(/expected_sha=new-metadata/u);
   });
 
+  it("fails closed when no current-task review target can be resolved", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.requiresPullRequestMergePath.mockResolvedValue(true);
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.loadTaskFromContext.mockResolvedValue({
+      id: "T-1",
+      verify: [],
+      quality_review: qualityReview("reviewed-head"),
+    });
+    mocks.resolveQualityReviewTargetSha.mockResolvedValueOnce(null);
+
+    const promise = prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false });
+    await expect(promise).rejects.toMatchObject<CliError>({
+      code: "E_VALIDATION",
+    });
+    await expect(promise).rejects.toThrow(/expected_sha=deadbeef/u);
+  });
+
+  it("resolves primary batch freshness across included task artifacts", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.requiresPullRequestMergePath.mockResolvedValue(true);
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.loadTaskFromContext.mockResolvedValue({
+      id: "T-1",
+      verify: [],
+      quality_review: qualityReview(),
+      extensions: {
+        branch_pr_batch: {
+          role: "primary",
+          primary_task_id: "T-1",
+          included_task_ids: ["T-3", "T-2"],
+        },
+      },
+    });
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({ branchHeadSha: "deadbeef" });
+    expect(mocks.resolveQualityReviewTargetSha).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        taskIds: ["T-1", "T-2", "T-3"],
+      }),
+    );
+  });
+
   it("excludes only the configured task registry path from diffstat", async () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
