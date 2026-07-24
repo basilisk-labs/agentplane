@@ -4,7 +4,7 @@ title: "Align integration quality review targets for metadata-only tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-24T08:04:49.304Z"
+  updated_at: "2026-07-24T08:32:21.851Z"
   updated_by: "TESTER"
-  note: "Verified: shared review-target resolver, integration gate, DONE route, and stale-review rejection pass the complete declared contract."
+  note: "Focused 67/67 tests, critical CLI 71/71, ci:contract, lint, typecheck, formatting, and architecture checks passed on f5b90e983."
   attempts: 0
 quality_review:
   state: "rework"
@@ -75,8 +75,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: shared review-target resolver, integration gate, DONE route, and stale-review rejection pass the complete declared contract."
+  -
+    type: "verify"
+    at: "2026-07-24T08:32:21.851Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused 67/67 tests, critical CLI 71/71, ci:contract, lint, typecheck, formatting, and architecture checks passed on f5b90e983."
 doc_version: 3
-doc_updated_at: "2026-07-24T08:04:49.608Z"
+doc_updated_at: "2026-07-24T08:32:22.299Z"
 doc_updated_by: "CODER"
 description: "Reuse the evaluator metadata-only review target contract in integration preparation so the route oracle and integration queue agree, while preserving rejection after semantic or new independently reviewable task-local changes."
 sections:
@@ -133,12 +139,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-24T08:32:21.851Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused 67/67 tests, critical CLI 71/71, ci:contract, lint, typecheck, formatting, and architecture checks passed on f5b90e983.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T08:04:49.608Z, excerpt_hash=sha256:c94986d169560bb562da6d8cfb60bf47c669da41171a21014a8399361bf4d6ec
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607240736-FCBKJQ-align-integration-quality-review-targets-for-met/.agentplane/tasks/202607240736-FCBKJQ/blueprint/resolved-snapshot.json
+    - old_digest: d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae
+    - current_digest: d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607240736-FCBKJQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the shared resolver and integration call-site commit, restore the previous evaluator-local resolver, and rerun the focused quality-review target tests plus `bun run test:critical` to confirm the old behavior is restored without partial API drift."
   Findings: |-
     - Observation: Focused 58/58 tests, critical CLI 71/71 tests, ci:contract, format check, lint, and typecheck passed on the published implementation tree.
       Impact: Evaluator, route oracle, and integration queue now agree for metadata-only reviewed work while semantic or independently reviewable metadata advances remain blocked.
       Resolution: Accept implementation for independent semantic evaluation and pre-merge closure.
+
+    - Observation: Evaluator, route, and integrate now resolve the same primary-plus-included task set; unresolved targets fail closed at integration.
+      Impact: A metadata-only batch review can no longer be accepted stale or enter an evaluator loop.
+      Resolution: Added canonical batch task-set wiring and real-Git regressions for included metadata and derived artifact tails.
 id_source: "generated"
 ---
 ## Summary
@@ -203,6 +243,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-24T08:32:21.851Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused 67/67 tests, critical CLI 71/71, ci:contract, lint, typecheck, formatting, and architecture checks passed on f5b90e983.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T08:04:49.608Z, excerpt_hash=sha256:c94986d169560bb562da6d8cfb60bf47c669da41171a21014a8399361bf4d6ec
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607240736-FCBKJQ-align-integration-quality-review-targets-for-met/.agentplane/tasks/202607240736-FCBKJQ/blueprint/resolved-snapshot.json
+- old_digest: d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae
+- current_digest: d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607240736-FCBKJQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -214,3 +284,7 @@ Revert the shared resolver and integration call-site commit, restore the previou
 - Observation: Focused 58/58 tests, critical CLI 71/71 tests, ci:contract, format check, lint, and typecheck passed on the published implementation tree.
   Impact: Evaluator, route oracle, and integration queue now agree for metadata-only reviewed work while semantic or independently reviewable metadata advances remain blocked.
   Resolution: Accept implementation for independent semantic evaluation and pre-merge closure.
+
+- Observation: Evaluator, route, and integrate now resolve the same primary-plus-included task set; unresolved targets fail closed at integration.
+  Impact: A metadata-only batch review can no longer be accepted stale or enter an evaluator loop.
+  Resolution: Added canonical batch task-set wiring and real-Git regressions for included metadata and derived artifact tails.
