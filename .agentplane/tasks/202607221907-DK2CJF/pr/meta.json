@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "pr_number": 4608,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4608",
+  "pre_merge_closure": {
+    "basis_commit": "0bba13813d37e731053454402da6a96251ee9890",
+    "branch": "task/202607221907-DK2CJF/qualify-the-agentplane-0-7-0-alpha-1-milestone",
+    "pr_number": 4608,
+    "recorded_at": "2026-07-24T07:25:43.797Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221907-DK2CJF",
