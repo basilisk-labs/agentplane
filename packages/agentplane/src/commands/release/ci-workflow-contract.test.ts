@@ -121,7 +121,7 @@ describe("Core CI workflow contract", () => {
     const workflow = await readFile(CI_WORKFLOW_PATH, "utf8");
 
     expect(workflow).toContain(
-      "(\n              needs.plan.outputs.core == 'true' &&\n              (\n                needs.verify-routed.result == 'success' ||\n                (\n                  needs.verify-contract.result == 'success' &&\n                  needs.verify-static.result == 'success' &&\n                  needs.verify-unit.result == 'success' &&\n                  needs.verify-cli-critical.result == 'success' &&\n                  needs.verify-workflow.result == 'success' &&\n                  needs.verify-coverage.result == 'success' &&\n                  needs.test-windows.result == 'success'\n                )\n              )\n            ) ||\n            needs.plan.outputs.core != 'true'",
+      "(\n              needs.plan.outputs.core == 'true' &&\n              needs.verify-package-node-runtime.result == 'success' &&\n              (\n                needs.verify-routed.result == 'success' ||\n                (\n                  needs.verify-contract.result == 'success' &&\n                  needs.verify-static.result == 'success' &&\n                  needs.verify-unit.result == 'success' &&\n                  needs.verify-cli-critical.result == 'success' &&\n                  needs.verify-workflow.result == 'success' &&\n                  needs.verify-coverage.result == 'success' &&\n                  needs.test-windows.result == 'success'\n                )\n              )\n            ) ||\n            needs.plan.outputs.core != 'true'",
     );
   });
 });
