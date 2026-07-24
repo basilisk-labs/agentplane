@@ -22,7 +22,7 @@ RF-06a: define a reproducible fingerprint for task, Git, backend, policy, bluepr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T09:04:17.490Z
+- Updated: 2026-07-24T09:06:01.731Z
 - Branch: task/202607221848-0ZAB1F/introduce-statefingerprint-and-stale-state-rejec
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
