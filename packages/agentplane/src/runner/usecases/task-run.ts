@@ -1,4 +1,8 @@
-import { exitCodeForError } from "../../cli/exit-codes.js";
+import {
+  type StateFingerprint,
+  type StateFingerprintPolicy,
+  type StateFingerprintPreconditionDiagnostic,
+} from "@agentplaneorg/core/schemas";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { buildTaskRouteDecision } from "../../commands/shared/route-decision.js";
 import { CliError } from "../../shared/errors.js";
@@ -19,10 +23,15 @@ import { collectRunnerBasePrompts } from "../context/base-prompts.js";
 import { assembleRunnerTaskContext } from "../context/task-context.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
-import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import { createRunnerRunId, resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "../sandbox-policy.js";
+import {
+  buildPreparedRunnerStateFingerprint,
+  captureRunnerPreparationGitSnapshot,
+  RUNNER_STATE_FINGERPRINT_POLICY,
+} from "../state-fingerprint.js";
+import { persistRunnerOutcomeToTask } from "../task-state.js";
 import {
   assertRunnerCheckoutAuthority,
   assertRunnerPolicyCompatibility,
@@ -48,6 +57,8 @@ import {
   resolveRunnerBlueprintPlan,
   writeTaskBlueprintSnapshot,
 } from "./task-run-blueprint-plan.js";
+import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
+import { executeStateBoundRunnerInvocation } from "./task-run-state-fingerprint.js";
 import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
@@ -65,10 +76,20 @@ export type PreparedTaskRunnerExecution = {
   bundle: RunnerContextBundle;
   invocation: RunnerInvocation;
   state: RunnerRunState;
+  precondition_fingerprint?: StateFingerprint;
+  precondition_policy?: StateFingerprintPolicy;
 };
 
-export type ExecutedTaskRunnerExecution = PreparedTaskRunnerExecution & {
+export type ExecutedTaskRunnerExecution = Omit<
+  PreparedTaskRunnerExecution,
+  "precondition_fingerprint" | "precondition_policy"
+> & {
+  precondition_fingerprint: StateFingerprint;
+  precondition_policy: StateFingerprintPolicy;
   result: RunnerResult;
+  state_before: StateFingerprint;
+  state_after: StateFingerprint;
+  precondition: StateFingerprintPreconditionDiagnostic;
   active_claim_cleanup?: TaskRunnerActiveClaimCleanupDiagnostic;
 };
 
@@ -77,22 +98,6 @@ export type TaskRunnerReplayProvenance = {
   source_run_id: string;
   source_status: RunnerRunState["status"];
 };
-
-class RunnerPreparationCliError extends CliError {
-  readonly bundle: RunnerContextBundle;
-  readonly state: RunnerRunState;
-
-  constructor(opts: { cause: CliError; bundle: RunnerContextBundle; state: RunnerRunState }) {
-    super({
-      exitCode: opts.cause.exitCode,
-      code: opts.cause.code,
-      message: opts.cause.message,
-      context: opts.cause.context,
-    });
-    this.bundle = opts.bundle;
-    this.state = opts.state;
-  }
-}
 
 function collectFrameworkExplainBehaviorInputs(
   prompts: RunnerContextBundle["base_prompts"],
@@ -109,48 +114,6 @@ function collectFrameworkExplainBehaviorInputs(
         ]
       : [],
   );
-}
-
-async function writeRunnerRefusalArtifacts(opts: {
-  bundle: RunnerContextBundle;
-  error: CliError;
-  repository: RunnerRunRepository;
-}): Promise<RunnerRunState> {
-  const prepared = await opts.repository.writePrepared({
-    bundle: opts.bundle,
-    bootstrap_markdown: renderTaskRunnerBootstrap(opts.bundle),
-  });
-  const result: RunnerResult = {
-    status: "failed",
-    exit_code: opts.error.exitCode ?? exitCodeForError("E_RUNTIME"),
-    started_at: prepared.created_at,
-    ended_at: prepared.created_at,
-    summary: opts.error.message,
-    stderr_summary: opts.error.message,
-  };
-  const refused = evolveRunnerRunState({
-    state: prepared,
-    status: "failed",
-    result,
-    updated_at: prepared.created_at,
-  });
-  await opts.repository.writeState(refused);
-  await opts.repository.appendEvent({
-    at: prepared.created_at,
-    type: "runner_refused",
-    message: `runner refused before adapter prepare: ${opts.error.message}`,
-    data: opts.error.context
-      ? {
-          code: opts.error.code,
-          exit_code: opts.error.exitCode,
-          ...opts.error.context,
-        }
-      : {
-          code: opts.error.code,
-          exit_code: opts.error.exitCode,
-        },
-  });
-  return refused;
 }
 
 async function persistReplayAnchorBeforeExecution(opts: {
@@ -209,6 +172,9 @@ export async function prepareTaskRunnerExecution(opts: {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const preparationGitSnapshot = await captureRunnerPreparationGitSnapshot({
+    ctx: command,
+  });
   const executionContext = await makeReadOnlyExecutionContext(command);
   const target = opts.target ?? { kind: "task", task_id: opts.task_id };
   void executionContext.policy.evaluate({
@@ -344,6 +310,12 @@ export async function prepareTaskRunnerExecution(opts: {
     authoritative_checkout_path: route_decision.executionPacket.authoritativeCheckoutPath,
     mutation_path_hint: route_decision.executionPacket.mutationPathHint,
   });
+  const precondition_fingerprint = buildPreparedRunnerStateFingerprint({
+    ctx: command,
+    bundle,
+    git: preparationGitSnapshot,
+  });
+  bundle.state_fingerprint = precondition_fingerprint;
   const repository = RunnerRunRepository.fromBundle(bundle);
   await repository.createFreshDirectory({
     run_id: bundle.execution.run_id,
@@ -380,7 +352,13 @@ export async function prepareTaskRunnerExecution(opts: {
     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
     invocation,
   });
-  return { bundle, invocation, state };
+  return {
+    bundle,
+    invocation,
+    state,
+    precondition_fingerprint,
+    precondition_policy: RUNNER_STATE_FINGERPRINT_POLICY,
+  };
 }
 
 export async function executeTaskRunnerExecution(opts: {
@@ -474,17 +452,30 @@ export async function executeTaskRunnerExecution(opts: {
     }
     cleanupBundle = prepared.bundle;
     releaseActiveClaim = false;
-    if (opts.replay_provenance) {
-      await persistReplayAnchorBeforeExecution({
-        ctx,
-        task_id: opts.task_id,
-        bundle: prepared.bundle,
-        state: prepared.state,
-        provenance: opts.replay_provenance,
-      });
-    }
     const adapter = createRunnerAdapter(ctx.config);
-    const result = await adapter.execute(prepared.invocation);
+    const guardedExecution = await executeStateBoundRunnerInvocation({
+      ctx,
+      task_id: opts.task_id,
+      bundle: prepared.bundle,
+      invocation: prepared.invocation,
+      precondition_fingerprint: prepared.precondition_fingerprint,
+      precondition_policy: prepared.precondition_policy,
+      apply: async (invocation) => {
+        if (opts.replay_provenance) {
+          await persistReplayAnchorBeforeExecution({
+            ctx,
+            task_id: opts.task_id,
+            bundle: prepared.bundle,
+            state: prepared.state,
+            provenance: opts.replay_provenance,
+          });
+        }
+        return await adapter.execute(invocation);
+      },
+    });
+    const preconditionFingerprint = guardedExecution.precondition_fingerprint;
+    const preconditionPolicy = guardedExecution.precondition_policy;
+    const result = guardedExecution.result;
     const runRepository = await RunnerRunRepository.openExistingTaskRun({
       git_root: ctx.resolvedProject.gitRoot,
       workflow_dir: ctx.config.paths.workflow_dir,
@@ -523,8 +514,13 @@ export async function executeTaskRunnerExecution(opts: {
     releaseActiveClaim = cleanupConfirmed;
     completed = {
       ...prepared,
+      precondition_fingerprint: preconditionFingerprint,
+      precondition_policy: preconditionPolicy,
       state,
       result,
+      state_before: guardedExecution.state_before,
+      state_after: guardedExecution.state_after,
+      precondition: guardedExecution.precondition,
     };
     if (!cleanupConfirmed) {
       completed.active_claim_cleanup = await recordActiveClaimCleanupFailure({

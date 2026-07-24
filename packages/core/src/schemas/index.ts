@@ -77,6 +77,32 @@ export {
 } from "../runner/execution-receipt.js";
 
 export {
+  STATE_FINGERPRINT_COMPONENT_NAMES,
+  STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
+  STATE_FINGERPRINT_KIND,
+  STATE_FINGERPRINT_OBSERVER,
+  STATE_FINGERPRINT_SCHEMA_VERSION,
+  STATE_FINGERPRINT_ZOD_SCHEMA,
+  StateFingerprintPreconditionError,
+  assertStateFingerprintPrecondition,
+  buildStateFingerprint,
+  evaluateStateFingerprintPrecondition,
+  executePreparedOperation,
+  validateStateFingerprint,
+  type PreparedOperation,
+  type StateBoundOperationResult,
+  type StateFingerprint,
+  type StateFingerprintChange,
+  type StateFingerprintComponent,
+  type StateFingerprintComponentInput,
+  type StateFingerprintComponentName,
+  type StateFingerprintInput,
+  type StateFingerprintPolicy,
+  type StateFingerprintPreconditionDiagnostic,
+  type StateFingerprintPreconditionFailureReason,
+} from "../runner/state-fingerprint.js";
+
+export {
   ACR_VERSION,
   computeAcrRecordDigest,
   listAgentPlaneRunnerHandoffJsonSchemaErrors,
