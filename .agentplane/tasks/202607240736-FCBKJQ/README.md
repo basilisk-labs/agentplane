@@ -1,10 +1,11 @@
 ---
 id: "202607240736-FCBKJQ"
 title: "Align integration quality review targets for metadata-only tasks"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -59,11 +60,16 @@ quality_review:
   findings:
     - "No blocking findings remain: evaluator and prepare use the same normalized primary-plus-included task set, route resolves the equivalent PR batch set, and integration fails closed when no target can be resolved."
     - "Real-Git regressions prove included-task metadata becomes the review target while included quality and PR artifact tails preserve the reviewed SHA."
-commit: null
+commit:
+  hash: "30f983ffd3415cb1d253a326b15ac69a3bbe5e72"
+  message: "🧪 FCBKJQ task: record final quality pass"
 comments:
   -
     author: "CODER"
     body: "Start: unify metadata-only quality-review target resolution across evaluator and integration without weakening stale-review safety."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -84,8 +90,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused 67/67 tests, critical CLI 71/71, ci:contract, lint, typecheck, formatting, and architecture checks passed on f5b90e983."
+  -
+    type: "status"
+    at: "2026-07-24T08:36:32.019Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T08:32:22.299Z"
+doc_updated_at: "2026-07-24T08:36:32.019Z"
 doc_updated_by: "CODER"
 description: "Reuse the evaluator metadata-only review target contract in integration preparation so the route oracle and integration queue agree, while preserving rejection after semantic or new independently reviewable task-local changes."
 sections:
@@ -182,6 +195,10 @@ sections:
     - Observation: Evaluator, route, and integrate now resolve the same primary-plus-included task set; unresolved targets fail closed at integration.
       Impact: A metadata-only batch review can no longer be accepted stale or enter an evaluator loop.
       Resolution: Added canonical batch task-set wiring and real-Git regressions for included metadata and derived artifact tails.
+extensions:
+  implementation_commit:
+    hash: "f5b90e98344d4ad2d9dadb89905f620ee7c3a892"
+    message: "🚧 FCBKJQ task: align evaluator batch review target"
 id_source: "generated"
 ---
 ## Summary

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:acb279132d9c34f3af7ad3027973d30baf4b396ed7c8b06be4b30940d5754e4c",
   "pr_number": 4609,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4609",
+  "pre_merge_closure": {
+    "basis_commit": "30f983ffd3415cb1d253a326b15ac69a3bbe5e72",
+    "branch": "task/202607240736-FCBKJQ/align-integration-quality-review-targets-for-met",
+    "pr_number": 4609,
+    "recorded_at": "2026-07-24T08:36:32.073Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607240736-FCBKJQ",
