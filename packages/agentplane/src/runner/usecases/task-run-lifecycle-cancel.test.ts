@@ -116,7 +116,7 @@ describe("task-run lifecycle cancellation", () => {
           ),
         predicate: Boolean,
       });
-      await new Promise((resolve) => setTimeout(resolve, 50));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       const stateBeforeBarrier = await readRunnerRunState(runnerPaths.state_path);
       expect(stateBeforeBarrier?.status).toBe("prepared");
       releaseChildIdentity();

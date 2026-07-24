@@ -590,6 +590,27 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       cwd: subject,
     });
     execFileSync("/usr/bin/git", ["config", "core.hooksPath", "/dev/null"], { cwd: subject });
+    // Keep host Git maintenance outside the mocked episode boundary without changing the
+    // immutable RF-04 capture harness or weakening its .git mutation detector.
+    const fixtureRoot = path.join(subject, ".rf04-fixture");
+    mkdirSync(fixtureRoot, { recursive: true });
+    const sterileGitEnvironment = {
+      ...process.env,
+      GIT_CONFIG_GLOBAL: "/dev/null",
+      GIT_CONFIG_NOSYSTEM: "1",
+    };
+    execFileSync("/usr/bin/git", ["init", "--quiet"], {
+      cwd: fixtureRoot,
+      env: sterileGitEnvironment,
+    });
+    execFileSync("/usr/bin/git", ["config", "maintenance.auto", "false"], {
+      cwd: fixtureRoot,
+      env: sterileGitEnvironment,
+    });
+    execFileSync("/usr/bin/git", ["config", "gc.auto", "0"], {
+      cwd: fixtureRoot,
+      env: sterileGitEnvironment,
+    });
     const registryBytes = readFileSync(
       path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
       "utf8",
@@ -687,6 +708,20 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     expect(roleTaskReadme).toContain('owner: "CODER"');
     expect(roleTaskReadme).toContain('author: "CODER"');
     expect(observedPrompt).toContain("act as CURRENT_AGENT for scenario adapter_failure");
+    expect(
+      execFileSync("/usr/bin/git", ["config", "--get", "maintenance.auto"], {
+        cwd: observedFixtureRoot,
+        encoding: "utf8",
+        env: sterileGitEnvironment,
+      }).trim(),
+    ).toBe("false");
+    expect(
+      execFileSync("/usr/bin/git", ["config", "--get", "gc.auto"], {
+        cwd: observedFixtureRoot,
+        encoding: "utf8",
+        env: sterileGitEnvironment,
+      }).trim(),
+    ).toBe("0");
     const envelope = JSON.parse(readFileSync(outputPath, "utf8")) as {
       anchor: Record<string, unknown>;
       resolved_outcomes: Record<
