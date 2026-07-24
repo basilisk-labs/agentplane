@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -61,8 +61,8 @@ quality_review:
     - "No blocking findings remain: evaluator and prepare use the same normalized primary-plus-included task set, route resolves the equivalent PR batch set, and integration fails closed when no target can be resolved."
     - "Real-Git regressions prove included-task metadata becomes the review target while included quality and PR artifact tails preserve the reviewed SHA."
 commit:
-  hash: "30f983ffd3415cb1d253a326b15ac69a3bbe5e72"
-  message: "🧪 FCBKJQ task: record final quality pass"
+  hash: "33dede6ac818ab2c7cafca175e4e2f044b86419a"
+  message: "🧩 FCBKJQ task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -70,6 +70,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -97,8 +100,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T08:37:59.711Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T08:36:32.019Z"
+doc_updated_at: "2026-07-24T08:37:59.712Z"
 doc_updated_by: "CODER"
 description: "Reuse the evaluator metadata-only review target contract in integration preparation so the route oracle and integration queue agree, while preserving rejection after semantic or new independently reviewable task-local changes."
 sections:
