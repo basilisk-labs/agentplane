@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221907-DK2CJF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T07:25:05.602Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Alpha.1 qualification rework is complete: cleanup closure, metric accuracy, ratchet ownership, and all mandatory gates are independently verified on the current evidence head.",
+  "evaluated_sha": "22ef62f5e95077e4537e33d12b20bd5f11dab9e8",
+  "blueprint_digest": "0fe4326b44ea9f820fe00a84df1e3a808b5380c0f167f1d0eb7c4331b2021d7c",
+  "findings": [
+    "Both formerly registered dependency worktrees and their local, tracking, and remote branches are absent through the task-scoped cleanup route.",
+    "The corrected baseline statement matches computed data: 10 scenarios, 10 observed scalar cells, 17 metric kinds, and six observed metric kinds.",
+    "The corrected ratchet ownership matches the baseline: RF-21 owns ten, RF-06b/RF-09/RF-25 own four, and RF-05a/RF-05b own five.",
+    "Independent reruns passed test:critical 71/71, schemas:check, guards:check, and ci:contract; the immutable RF-04 replay counts remain exact."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221907-DK2CJF/README.md",
+    ".agentplane/tasks/202607221907-DK2CJF/qualification.md",
+    "scripts/baselines/agent-efficiency-pre-v0.7-main.json",
+    "scripts/baselines/trust-boundary-violations.json",
+    "git worktree, local branch, tracking ref, and ls-remote cleanup proof"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Evidence-only commits after the reviewed gate SHA do not change runtime behavior; they remain covered by formatting and independent contract reruns."
+  ],
+  "residual_risks": [
+    "The frozen replay still records pre-0.7 golden mismatches and cannot establish later-wave efficiency improvement.",
+    "Alpha.1 publication remains intentionally skipped because prerelease publication is optional and the external typed work-order surface is not yet ready."
+  ]
+}

@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.1 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -44,26 +44,28 @@ verification:
   note: "Independent-review rework resolved on SHA 1bf9c6dc8: stale 4VB97J and 9XC1H0 worktrees plus local and remote branches are absent, metric and ratchet ownership statements are corrected, and all five milestone gates passed again."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T07:10:47.250Z"
+  updated_at: "2026-07-24T07:25:05.602Z"
   updated_by: "EVALUATOR"
-  note: "Alpha.1 evidence is mechanically sound, but qualification cannot pass until two merged dependency worktrees are cleaned and two metric statements are corrected."
-  evaluated_sha: "3cdd91f240cfff4936c4094e45b9cd044e3680d8"
+  note: "Alpha.1 qualification rework is complete: cleanup closure, metric accuracy, ratchet ownership, and all mandatory gates are independently verified on the current evidence head."
+  evaluated_sha: "22ef62f5e95077e4537e33d12b20bd5f11dab9e8"
   blueprint_digest: "0fe4326b44ea9f820fe00a84df1e3a808b5380c0f167f1d0eb7c4331b2021d7c"
   evidence_refs:
     - ".agentplane/tasks/202607221907-DK2CJF/README.md"
-    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-071047250-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-071047250-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-071047250-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072505602-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072505602-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221907-DK2CJF/quality/20260724-072505602-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221907-DK2CJF/blueprint/resolved-snapshot.json"
     - ".agentplane/tasks/202607221907-DK2CJF/qualification.md"
-    - "docs/internal/v0.7-refactor-plan.md"
-    - "git worktree list --porcelain and task-scoped cleanup proof"
+    - "scripts/baselines/agent-efficiency-pre-v0.7-main.json"
+    - "scripts/baselines/trust-boundary-violations.json"
+    - "git worktree, local branch, tracking ref, and ls-remote cleanup proof"
   findings:
-    - "P1: the wave gate requires clean worktree cleanup, while 4VB97J and 9XC1H0 remained registered at the reviewed SHA."
-    - "P2: the structural baseline has ten observed scalar cells, not ten measured cost metrics; seventeen metric kinds exist and six are observed."
-    - "P2: the nineteen ratchet violations belong to RF-21, RF-06b/RF-09/RF-25, and RF-05a/RF-05b, not RF-24/RF-27."
+    - "Both formerly registered dependency worktrees and their local, tracking, and remote branches are absent through the task-scoped cleanup route."
+    - "The corrected baseline statement matches computed data: 10 scenarios, 10 observed scalar cells, 17 metric kinds, and six observed metric kinds."
+    - "The corrected ratchet ownership matches the baseline: RF-21 owns ten, RF-06b/RF-09/RF-25 own four, and RF-05a/RF-05b own five."
+    - "Independent reruns passed test:critical 71/71, schemas:check, guards:check, and ci:contract; the immutable RF-04 replay counts remain exact."
 commit: null
 comments:
   -
