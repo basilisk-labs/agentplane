@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221907-DK2CJF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T07:29:16.786Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Final PR publication and pre-merge closure commits are metadata-only and preserve the independently verified alpha.1 qualification without runtime or gate-contract drift.",
+  "evaluated_sha": "22ef62f5e95077e4537e33d12b20bd5f11dab9e8",
+  "blueprint_digest": "0fe4326b44ea9f820fe00a84df1e3a808b5380c0f167f1d0eb7c4331b2021d7c",
+  "findings": [
+    "The diff from passed SHA 22ef62f5e to current published head 0779eec63 is limited to task lifecycle, PR metadata, and evaluator artifacts.",
+    "Qualification evidence, compatibility and efficiency baselines, runtime, tests, schemas, policy, and package contracts are byte-identical across the metadata-only tail."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221907-DK2CJF/README.md",
+    "git diff --name-status 22ef62f5e95077e4537e33d12b20bd5f11dab9e8..0779eec63962ee4b33670526feb7e027445bf133",
+    ".agentplane/tasks/202607221907-DK2CJF/qualification.md",
+    ".agentplane/tasks/202607221907-DK2CJF/pr/meta.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Metadata-only closure commits are reviewed for semantic preservation rather than rerunning provider episodes."
+  ],
+  "residual_risks": [
+    "The frozen pre-0.7 replay limitations remain unchanged and explicitly documented."
+  ]
+}
