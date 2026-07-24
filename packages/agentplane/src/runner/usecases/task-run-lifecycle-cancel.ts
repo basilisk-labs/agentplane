@@ -1,37 +1,193 @@
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { evolveRunnerRunState, readRunnerRunState } from "../artifacts.js";
 import {
   claimRunnerPreSpawnDecision,
+  finalizeRunnerPreSpawnCancellation,
   publishRunnerCancellationIntent,
-} from "../adapters/execute-supervised.js";
-import { isProcessAlive, waitForProcessExit } from "../process-supervision/signals.js";
+} from "../adapters/execution-control.js";
 import { waitForRunnerStateStop } from "../process-supervision/state.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
-import type { RunnerProcessSignal, RunnerRunState } from "../types.js";
+import type { RunnerRunState } from "../types.js";
 
+import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
+import { reconcileTerminalTaskRunnerActiveClaim } from "./task-run-active-claim-runtime.js";
 import {
-  assertMatchingProcessIdentity,
-  buildSyntheticCancelledState,
   loadExistingRunnerExecution,
   readRunningPid,
-  signalProcess,
   type CancelledTaskRunnerExecution,
+  type LoadedRunnerExecution,
 } from "./task-run-lifecycle-shared.js";
+import {
+  inspectStartOwnerLease,
+  waitForPreparedRunnerTransition,
+} from "./task-run-cancel-prepared.js";
+import { recoverOrphanedPreparedCancellation } from "./task-run-cancel-prepared-recovery.js";
+import { finalizeOrphanedRunningCancellation } from "./task-run-cancel-orphaned.js";
 
-async function waitForPreparedRunnerTransition(opts: {
-  state_path: string;
-  timeout_ms: number;
-  poll_ms?: number;
-}): Promise<RunnerRunState | null> {
-  const startedAt = Date.now();
-  const pollMs = opts.poll_ms ?? 50;
-  while (Date.now() - startedAt < opts.timeout_ms) {
-    const state = await readRunnerRunState(opts.state_path);
-    if (state?.status !== "prepared") return state;
-    await new Promise((resolve) => setTimeout(resolve, pollMs));
+function isTerminalRunnerState(state: RunnerRunState): boolean {
+  return state.status !== "prepared" && state.status !== "running";
+}
+
+function terminalCancellationError(state: RunnerRunState): CliError {
+  return new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message:
+      `runner cancel only applies to prepared or running runs ` +
+      `(current=${JSON.stringify(state.status)})`,
+    context: {
+      reason: "runner_terminal_state_immutable",
+      current_status: state.status,
+    },
+  });
+}
+
+function cancelledExecutionResult(opts: {
+  loaded: LoadedRunnerExecution;
+  state: RunnerRunState;
+  previous_status: RunnerRunState["status"];
+  changed: boolean;
+}): CancelledTaskRunnerExecution {
+  return {
+    ...opts.loaded,
+    state: opts.state,
+    previous_status: opts.previous_status,
+    changed: opts.changed,
+  };
+}
+
+async function appendCancellationRefusal(opts: {
+  loaded: LoadedRunnerExecution;
+  error: CliError;
+  pid: number | null;
+}): Promise<void> {
+  await opts.loaded.repository.appendEvent({
+    at: new Date().toISOString(),
+    type: "runner_cancel_refused",
+    message: opts.error.message,
+    data: opts.error.context ?? {
+      task_id: opts.loaded.bundle.task?.task_id ?? null,
+      run_id: opts.loaded.invocation.run_id,
+      pid: opts.pid,
+    },
+  });
+}
+
+async function recoverTerminalActiveClaim(opts: {
+  loaded: LoadedRunnerExecution;
+  expected_owner?: {
+    owner_pid: number;
+    owner_command: string | null;
+    owner_started_at: string | null;
+  };
+  require_recovery: boolean;
+}): Promise<void> {
+  if (opts.loaded.repository.storage !== "supervisor") return;
+  const lookup = {
+    git_root: opts.loaded.bundle.repository.git_root,
+    workflow_dir: opts.loaded.bundle.repository.workflow_dir,
+    task_id: opts.loaded.bundle.task?.task_id ?? "",
+    run_id: opts.loaded.invocation.run_id,
+  };
+  const active = await readTaskRunnerActiveClaim(lookup);
+  if (!active) return;
+  if (active.run_id !== lookup.run_id) {
+    const error = new CliError({
+      exitCode: 8,
+      code: "E_RUNTIME",
+      message:
+        `Runner terminal state was projected, but the task active claim references another run ` +
+        `recovery authority for run_id=${JSON.stringify(lookup.run_id)}.`,
+      context: {
+        reason: "active_claim_recovery_run_mismatch",
+        task_id: lookup.task_id,
+        run_id: lookup.run_id,
+        active_run_id: active.run_id,
+        active_generation: active.generation,
+      },
+    });
+    await opts.loaded.repository.appendEvent({
+      at: new Date().toISOString(),
+      type: "runner_active_claim_recovery_refused",
+      message: error.message,
+      data: error.context,
+    });
+    if (opts.require_recovery) throw error;
+    return;
   }
-  return await readRunnerRunState(opts.state_path);
+  const recovery = await reconcileTerminalTaskRunnerActiveClaim({
+    ctx: opts.loaded.ctx,
+    task_id: lookup.task_id,
+    claim: active,
+    expected_owner: opts.expected_owner,
+    require_recovery: opts.require_recovery,
+  });
+  if (recovery === "recovered") {
+    await opts.loaded.repository.appendEvent({
+      at: new Date().toISOString(),
+      type: "runner_active_claim_recovered",
+      message: "stale supervisor active claim retired after terminal projection",
+      data: {
+        run_id: opts.loaded.invocation.run_id,
+        recovery,
+      },
+    });
+  }
+}
+
+async function readRequiredCurrentState(loaded: LoadedRunnerExecution): Promise<RunnerRunState> {
+  const current = await loaded.repository.readState();
+  if (current) return current;
+  throw new CliError({
+    exitCode: 4,
+    code: "E_IO",
+    message: `Runner state disappeared for run_id=${JSON.stringify(loaded.invocation.run_id)}.`,
+    context: {
+      run_id: loaded.invocation.run_id,
+      state_path: loaded.invocation.state_path,
+    },
+  });
+}
+
+async function reconcileTerminalProjection(opts: {
+  loaded: LoadedRunnerExecution;
+  task_id: string;
+  state: RunnerRunState;
+}): Promise<void> {
+  const active =
+    opts.loaded.repository.storage === "supervisor"
+      ? await readTaskRunnerActiveClaim({
+          git_root: opts.loaded.bundle.repository.git_root,
+          workflow_dir: opts.loaded.bundle.repository.workflow_dir,
+          task_id: opts.task_id,
+          run_id: opts.loaded.invocation.run_id,
+        })
+      : null;
+  if (active && active.run_id !== opts.loaded.invocation.run_id) {
+    await opts.loaded.repository.appendEvent({
+      at: new Date().toISOString(),
+      type: "runner_terminal_projection_deferred",
+      message: "terminal projection deferred because another run owns the task active claim",
+      data: {
+        run_id: opts.loaded.invocation.run_id,
+        active_run_id: active.run_id,
+        active_generation: active.generation,
+      },
+    });
+    return;
+  }
+  await persistRunnerOutcomeToTask({
+    ctx: opts.loaded.ctx,
+    task_id: opts.task_id,
+    bundle: opts.loaded.bundle,
+    state: opts.state,
+  });
+  if (active) {
+    await recoverTerminalActiveClaim({
+      loaded: opts.loaded,
+      require_recovery: false,
+    });
+  }
 }
 
 export async function cancelTaskRunnerExecution(opts: {
@@ -49,17 +205,29 @@ export async function cancelTaskRunnerExecution(opts: {
     run_id: opts.run_id,
     require_task_doing: false,
   });
+  const previousStatus = loaded.state.status;
+
   if (loaded.state.status === "prepared") {
     const decision = await claimRunnerPreSpawnDecision({
       invocation: loaded.invocation,
       decision: "cancel",
       assert_artifact_boundary: async (phase) => await loaded.repository.assertBoundary(phase),
     });
-    if (decision.record.decision === "start") {
+    let cancellationRequestedAt = decision.record.decided_at;
+    if (decision.record.decision === "cancel") {
+      loaded = {
+        ...loaded,
+        state: await finalizeRunnerPreSpawnCancellation({
+          repository: loaded.repository,
+          decision: decision.record,
+        }),
+      };
+    } else {
       const intent = await publishRunnerCancellationIntent({
         invocation: loaded.invocation,
         assert_artifact_boundary: async (phase) => await loaded.repository.assertBoundary(phase),
       });
+      cancellationRequestedAt = intent.record.requested_at;
       await loaded.repository.appendEvent({
         at: intent.record.requested_at,
         type: "runner_cancel_requested",
@@ -68,188 +236,263 @@ export async function cancelTaskRunnerExecution(opts: {
           previous_status: loaded.state.status,
           start_decided_at: decision.record.decided_at,
           cancellation_intent_won: intent.won,
+          start_owner_id: decision.record.owner_lease?.owner_id ?? null,
+          start_owner_heartbeat_at: decision.record.owner_lease?.heartbeat_at ?? null,
+          start_owner_lease_expires_at: decision.record.owner_lease?.lease_expires_at ?? null,
         },
       });
+    }
+    if (loaded.state.status === "prepared") {
       const transitionedState = await waitForPreparedRunnerTransition({
         state_path: loaded.invocation.state_path,
         timeout_ms: 3000,
       });
       if (!transitionedState || transitionedState.status === "prepared") {
-        throw new CliError({
-          exitCode: 8,
-          code: "E_RUNTIME",
-          message:
-            `runner cancellation intent was persisted, but start supervision did not settle for ` +
-            `${opts.task_id}:${opts.run_id}.`,
-          context: {
-            task_id: opts.task_id,
-            run_id: opts.run_id,
-            state_path: loaded.invocation.state_path,
-            cancellation_requested_at: intent.record.requested_at,
-          },
+        const recoveredState = await recoverOrphanedPreparedCancellation({
+          loaded,
+          task_id: opts.task_id,
+          decision: decision.record,
         });
+        if (recoveredState?.status === "cancelled") {
+          return cancelledExecutionResult({
+            loaded,
+            state: recoveredState,
+            previous_status: previousStatus,
+            changed: true,
+          });
+        }
+        if (recoveredState && recoveredState.status !== "prepared") {
+          loaded = { ...loaded, state: recoveredState };
+        } else {
+          const ownerLeaseStatus = await inspectStartOwnerLease(decision.record.owner_lease);
+          throw new CliError({
+            exitCode: 8,
+            code: "E_RUNTIME",
+            message:
+              `runner cancellation authority was persisted, but start supervision did not settle for ` +
+              `${opts.task_id}:${opts.run_id}.`,
+            context: {
+              task_id: opts.task_id,
+              run_id: opts.run_id,
+              state_path: loaded.invocation.state_path,
+              cancellation_requested_at: cancellationRequestedAt,
+              start_owner_lease_status: ownerLeaseStatus,
+              start_owner_lease: decision.record.owner_lease ?? null,
+            },
+          });
+        }
+      } else {
+        loaded = {
+          ...loaded,
+          state: transitionedState,
+        };
       }
-      loaded = {
-        ...loaded,
-        state: transitionedState,
-      };
     }
   }
+
   if (loaded.state.status === "success") {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: `runner cancel requires a non-success run (current=${JSON.stringify(loaded.state.status)})`,
+    await reconcileTerminalProjection({
+      loaded,
+      task_id: opts.task_id,
+      state: loaded.state,
     });
+    throw terminalCancellationError(loaded.state);
   }
   if (loaded.state.status === "cancelled") {
-    return { ...loaded, previous_status: loaded.state.status, changed: false };
+    await reconcileTerminalProjection({
+      loaded,
+      task_id: opts.task_id,
+      state: loaded.state,
+    });
+    return cancelledExecutionResult({
+      loaded,
+      state: loaded.state,
+      previous_status: previousStatus,
+      changed: previousStatus !== "cancelled",
+    });
   }
+
   if (loaded.state.status === "running") {
-    const pid = readRunningPid(loaded.state);
-    if (!pid) {
-      throw new CliError({
-        exitCode: 4,
-        code: "E_IO",
-        message: `runner cancel requires supervision metadata for running run ${opts.task_id}:${opts.run_id}`,
+    const originalRunningState = loaded.state;
+    const pid = readRunningPid(originalRunningState);
+    if (loaded.repository.storage === "task") {
+      const error = new CliError({
+        exitCode: 8,
+        code: "E_RUNTIME",
+        message:
+          `runner cancel cannot safely control historical task-local running run ` +
+          `${opts.task_id}:${opts.run_id}; its supervisor does not support cooperative intent.`,
+        context: {
+          reason: "legacy_running_cancellation_unsupported",
+          task_id: opts.task_id,
+          run_id: opts.run_id,
+          pid,
+          storage: "task",
+        },
       });
+      await appendCancellationRefusal({ loaded, error, pid });
+      throw error;
     }
-    try {
-      await assertMatchingProcessIdentity({
-        task_id: opts.task_id,
-        run_id: opts.run_id,
-        state: loaded.state,
-        pid,
-      });
-    } catch (err) {
-      if (err instanceof CliError) {
-        const refusedAt = new Date().toISOString();
-        await loaded.repository.appendEvent({
-          at: refusedAt,
-          type: "runner_cancel_refused",
-          message: err.message,
-          data: err.context ?? {
-            task_id: opts.task_id,
-            run_id: opts.run_id,
-            pid,
-          },
+    const orphaned = await finalizeOrphanedRunningCancellation({
+      loaded,
+      task_id: opts.task_id,
+    });
+    if (orphaned) {
+      if (orphaned.status === "cancelled") {
+        return cancelledExecutionResult({
+          loaded,
+          state: orphaned,
+          previous_status: previousStatus,
+          changed: true,
         });
       }
-      throw err;
+      await reconcileTerminalProjection({
+        loaded,
+        task_id: opts.task_id,
+        state: orphaned,
+      });
+      throw terminalCancellationError(orphaned);
     }
-    const requested_at = new Date().toISOString();
-    const requestedState = evolveRunnerRunState({
-      state: loaded.state,
-      status: "running",
-      updated_at: requested_at,
-      supervision: {
-        ...loaded.state.supervision,
-        cancel_requested_at: requested_at,
-        cancel_signal: "SIGTERM",
-        heartbeat_at: requested_at,
-      },
+
+    const currentBeforeIntent = await readRequiredCurrentState(loaded);
+    if (isTerminalRunnerState(currentBeforeIntent)) {
+      if (currentBeforeIntent.status === "cancelled") {
+        return cancelledExecutionResult({
+          loaded,
+          state: currentBeforeIntent,
+          previous_status: previousStatus,
+          changed: false,
+        });
+      }
+      await reconcileTerminalProjection({
+        loaded,
+        task_id: opts.task_id,
+        state: currentBeforeIntent,
+      });
+      throw terminalCancellationError(currentBeforeIntent);
+    }
+    const intent = await publishRunnerCancellationIntent({
+      invocation: loaded.invocation,
+      signal: "SIGTERM",
+      assert_artifact_boundary: async (phase) => await loaded.repository.assertBoundary(phase),
     });
-    await loaded.repository.writeState(requestedState);
     await loaded.repository.appendEvent({
-      at: requested_at,
+      at: intent.record.requested_at,
       type: "runner_cancel_requested",
-      message: `runner cancel requested via SIGTERM for pid=${pid}`,
+      message: "runner cancellation intent persisted for the owning supervisor",
       data: {
-        previous_status: loaded.state.status,
+        previous_status: previousStatus,
         pid,
         signal: "SIGTERM",
+        storage: loaded.repository.storage,
+        cancellation_intent_won: intent.won,
+        expected_process_identity: null,
       },
     });
-    const exitedAfterTerm = signalProcess(pid, "SIGTERM")
-      ? await waitForProcessExit({ pid, timeout_ms: 1500 })
-      : true;
-    let finalSignal: RunnerProcessSignal = "SIGTERM";
-    if (!exitedAfterTerm && isProcessAlive(pid)) {
-      const killRequestedAt = new Date().toISOString();
-      const killRequestedState = evolveRunnerRunState({
-        state: requestedState,
-        status: "running",
-        updated_at: killRequestedAt,
-        supervision: {
-          ...requestedState.supervision,
-          cancel_requested_at: requested_at,
-          cancel_signal: "SIGKILL",
-          force_killed: true,
-          heartbeat_at: killRequestedAt,
-        },
-      });
-      await loaded.repository.writeState(killRequestedState);
-      await loaded.repository.appendEvent({
-        at: killRequestedAt,
-        type: "runner_force_kill_requested",
-        message: `runner cancel escalated to SIGKILL for pid=${pid}`,
-        data: {
-          previous_status: loaded.state.status,
-          pid,
-          signal: "SIGKILL",
-        },
-      });
-      signalProcess(pid, "SIGKILL");
-      await waitForProcessExit({ pid, timeout_ms: 1500 });
-      finalSignal = "SIGKILL";
-    }
+
     const settledState = await waitForRunnerStateStop({
       state_path: loaded.invocation.state_path,
-      timeout_ms: 3000,
+      timeout_ms: Math.max(3000, originalRunningState.timeout_policy.terminate_grace_ms + 3000),
     });
-    const nextState =
-      settledState ??
-      buildSyntheticCancelledState({
-        state: (await loaded.repository.readState()) ?? requestedState,
-        signal: finalSignal,
-        updated_at: new Date().toISOString(),
-      });
     if (!settledState) {
-      await loaded.repository.writeState(nextState);
-      await loaded.repository.appendEvent({
-        at: nextState.updated_at,
-        type: "runner_cancelled",
-        message: `runner process exited after ${finalSignal}; state synthesized as cancelled`,
-        data: {
-          previous_status: loaded.state.status,
+      const recovered = await finalizeOrphanedRunningCancellation({
+        loaded,
+        task_id: opts.task_id,
+      });
+      if (recovered?.status === "cancelled") {
+        return cancelledExecutionResult({
+          loaded,
+          state: recovered,
+          previous_status: previousStatus,
+          changed: true,
+        });
+      }
+      if (recovered && isTerminalRunnerState(recovered)) {
+        throw terminalCancellationError(recovered);
+      }
+      const current = await loaded.repository.readState();
+      const error = new CliError({
+        exitCode: 8,
+        code: "E_RUNTIME",
+        message:
+          `runner cancellation could not be verified because terminal finalization did not settle ` +
+          `for ${opts.task_id}:${opts.run_id}; no terminal state was synthesized.`,
+        context: {
+          task_id: opts.task_id,
+          run_id: opts.run_id,
           pid,
-          signal: finalSignal,
+          current_status: current?.status ?? null,
+          storage: loaded.repository.storage,
         },
       });
+      await appendCancellationRefusal({ loaded, error, pid });
+      throw error;
     }
-    await persistRunnerOutcomeToTask({
-      ctx: loaded.ctx,
+    if (settledState.status !== "cancelled") {
+      await reconcileTerminalProjection({
+        loaded,
+        task_id: opts.task_id,
+        state: settledState,
+      });
+      throw terminalCancellationError(settledState);
+    }
+    await reconcileTerminalProjection({
+      loaded,
       task_id: opts.task_id,
-      bundle: loaded.bundle,
-      state: nextState,
+      state: settledState,
     });
-    return {
-      ...loaded,
-      state: nextState,
-      previous_status: loaded.state.status,
-      changed: nextState.status === "cancelled",
-    };
+    return cancelledExecutionResult({
+      loaded,
+      state: settledState,
+      previous_status: previousStatus,
+      changed: settledState.status === "cancelled",
+    });
   }
-  const updated_at = new Date().toISOString();
-  const nextState = evolveRunnerRunState({
-    state: loaded.state,
-    status: "cancelled",
-    updated_at,
+
+  const current = await readRequiredCurrentState(loaded);
+  if (current.status !== "cancelled" && isTerminalRunnerState(current)) {
+    await reconcileTerminalProjection({
+      loaded,
+      task_id: opts.task_id,
+      state: current,
+    });
+    throw terminalCancellationError(current);
+  }
+  if (current.status === "cancelled") {
+    await reconcileTerminalProjection({
+      loaded,
+      task_id: opts.task_id,
+      state: current,
+    });
+    return cancelledExecutionResult({
+      loaded,
+      state: current,
+      previous_status: previousStatus,
+      changed: false,
+    });
+  }
+  if (current.status === "running") {
+    throw new CliError({
+      exitCode: 8,
+      code: "E_RUNTIME",
+      message:
+        `runner state changed to running while cancellation was being prepared for ` +
+        `${opts.task_id}:${opts.run_id}; retry cancellation against the live supervision state.`,
+    });
+  }
+  if (current.status === "prepared") {
+    throw new CliError({
+      exitCode: 8,
+      code: "E_RUNTIME",
+      message:
+        `runner cancellation left prepared state without a verified terminal owner for ` +
+        `${opts.task_id}:${opts.run_id}.`,
+    });
+  }
+  return cancelledExecutionResult({
+    loaded,
+    state: current,
+    previous_status: previousStatus,
+    changed: false,
   });
-  await loaded.repository.writeState(nextState);
-  await loaded.repository.appendEvent({
-    at: updated_at,
-    type: "runner_cancelled",
-    message: `runner marked cancelled from status=${loaded.state.status}`,
-    data: {
-      previous_status: loaded.state.status,
-    },
-  });
-  await persistRunnerOutcomeToTask({
-    ctx: loaded.ctx,
-    task_id: opts.task_id,
-    bundle: loaded.bundle,
-    state: nextState,
-  });
-  return { ...loaded, state: nextState, previous_status: loaded.state.status, changed: true };
 }

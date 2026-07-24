@@ -1,5 +1,4 @@
-import type { BigIntStats } from "node:fs";
-import { lstat, mkdir, readdir, realpath } from "node:fs/promises";
+import { mkdir, readdir } from "node:fs/promises";
 import path from "node:path";
 
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
@@ -33,6 +32,8 @@ import type {
 } from "./types.js";
 import {
   captureRunnerArtifactDirectoryBoundary,
+  captureRunnerArtifactDirectoryBoundaryIfPresent,
+  ensureStableRunnerArtifactDirectoryChain,
   RunnerRunDirectoryBoundaryError,
   type RunnerRunDirectoryBoundary,
 } from "./run-directory-boundary.js";
@@ -45,63 +46,9 @@ import {
 } from "./run-repository-contract.js";
 import { readStableRegularTextNoFollow } from "./stable-file.js";
 
-export {
-  assertRunnerBundleArtifactPaths,
-  assertRunnerBundleMatchesTask,
-  assertRunnerStateMatchesBundle,
-  parseRunnerEventsText,
-} from "./run-repository-contract.js";
+export type RunnerRunStorage = "task" | "supervisor";
 
-function pathIsInsideOrSame(root: string, candidate: string): boolean {
-  const relative = path.relative(root, candidate);
-  return (
-    relative === "" ||
-    (relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative))
-  );
-}
-
-async function ensureStableDirectoryChain(
-  repositoryRoot: string,
-  targetDir: string,
-): Promise<void> {
-  const resolvedRoot = path.resolve(repositoryRoot);
-  const resolvedTarget = path.resolve(targetDir);
-  if (!pathIsInsideOrSame(resolvedRoot, resolvedTarget) || resolvedRoot === resolvedTarget) {
-    throw new RunnerRunDirectoryBoundaryError(
-      `Runner artifact parent must stay below repository_root: ${resolvedTarget}`,
-    );
-  }
-  const physicalRoot = await realpath(resolvedRoot);
-  let current = resolvedRoot;
-  const relativeSegments = path.relative(resolvedRoot, resolvedTarget).split(path.sep);
-  for (const segment of relativeSegments) {
-    if (!segment || segment === "." || segment === "..") {
-      throw new RunnerRunDirectoryBoundaryError(
-        `Runner artifact parent contains an unsafe path segment: ${resolvedTarget}`,
-      );
-    }
-    current = path.join(current, segment);
-    let stats: BigIntStats;
-    try {
-      stats = await lstat(current, { bigint: true });
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
-      await mkdir(current, { recursive: false, mode: 0o700 });
-      stats = await lstat(current, { bigint: true });
-    }
-    if (!stats.isDirectory() || stats.isSymbolicLink()) {
-      throw new RunnerRunDirectoryBoundaryError(
-        `Runner artifact parent must be a non-symlink directory: ${current}`,
-      );
-    }
-    const physicalCurrent = await realpath(current);
-    if (!pathIsInsideOrSame(physicalRoot, physicalCurrent)) {
-      throw new RunnerRunDirectoryBoundaryError(
-        `Runner artifact parent resolves outside repository_root: ${current}`,
-      );
-    }
-  }
-}
+export { parseRunnerEventsText } from "./run-repository-contract.js";
 
 function parseTimestamp(value: string | null | undefined): number {
   const parsed = typeof value === "string" ? Date.parse(value) : Number.NaN;
@@ -148,6 +95,7 @@ export class RunnerRunRepository {
     readonly paths: RunnerArtifactPaths,
     private boundary?: RunnerRunDirectoryBoundary,
     private readonly artifactRoot: string = paths.artifact_root ?? "",
+    readonly storage: RunnerRunStorage | "detached" = "detached",
   ) {}
 
   static forTaskRun(opts: {
@@ -162,7 +110,7 @@ export class RunnerRunRepository {
       task_id: opts.task_id,
       run_id: opts.run_id,
     });
-    return new RunnerRunRepository(paths, undefined, paths.artifact_root);
+    return new RunnerRunRepository(paths, undefined, paths.artifact_root, "task");
   }
 
   static async openExistingTaskRun(opts: {
@@ -170,7 +118,7 @@ export class RunnerRunRepository {
     workflow_dir: string;
     task_id: string;
     run_id: string;
-    storage?: "task" | "supervisor";
+    storage?: RunnerRunStorage;
   }): Promise<RunnerRunRepository> {
     const storage = opts.storage ?? "supervisor";
     const paths =
@@ -184,7 +132,29 @@ export class RunnerRunRepository {
         (key) => paths[key],
       ),
     });
-    return new RunnerRunRepository(paths, boundary, paths.artifact_root);
+    return new RunnerRunRepository(paths, boundary, paths.artifact_root, storage);
+  }
+
+  static async openTaskRunIfPresent(opts: {
+    git_root: string;
+    workflow_dir: string;
+    task_id: string;
+    run_id: string;
+    storage?: RunnerRunStorage;
+  }): Promise<RunnerRunRepository | null> {
+    const storage = opts.storage ?? "supervisor";
+    const paths =
+      storage === "supervisor"
+        ? await resolveSupervisorTaskRunnerPaths(opts)
+        : resolveTaskRunnerPaths(opts);
+    const boundary = await captureRunnerArtifactDirectoryBoundaryIfPresent({
+      run_dir: paths.run_dir,
+      artifact_root: paths.artifact_root,
+      artifact_paths: RUNNER_ARTIFACT_PATH_KEYS.filter((key) => key !== "run_dir").map(
+        (key) => paths[key],
+      ),
+    });
+    return boundary ? new RunnerRunRepository(paths, boundary, paths.artifact_root, storage) : null;
   }
 
   static fromBundle(bundle: RunnerContextBundle): RunnerRunRepository {
@@ -192,6 +162,7 @@ export class RunnerRunRepository {
       bundle.execution.artifact_paths,
       undefined,
       bundle.execution.artifact_paths.artifact_root ?? bundle.repository.git_root,
+      "detached",
     );
   }
 
@@ -225,7 +196,24 @@ export class RunnerRunRepository {
       },
       boundary,
       invocation.artifact_root ?? invocation.repository_root,
+      "detached",
     );
+  }
+
+  adaptBundleForLifecycle(bundle: RunnerContextBundle): RunnerContextBundle {
+    if (this.storage !== "task" || bundle.execution.artifact_paths.receipt_path !== undefined) {
+      return bundle;
+    }
+    return {
+      ...bundle,
+      execution: {
+        ...bundle.execution,
+        artifact_paths: {
+          ...bundle.execution.artifact_paths,
+          receipt_path: this.paths.receipt_path,
+        },
+      },
+    };
   }
 
   async assertBoundary(phase: string): Promise<void> {
@@ -253,7 +241,10 @@ export class RunnerRunRepository {
         `Runner artifact_root is unavailable for run_dir: ${this.paths.run_dir}`,
       );
     }
-    await ensureStableDirectoryChain(this.artifactRoot, path.dirname(this.paths.run_dir));
+    await ensureStableRunnerArtifactDirectoryChain(
+      this.artifactRoot,
+      path.dirname(this.paths.run_dir),
+    );
     try {
       await mkdir(this.paths.run_dir, { recursive: false, mode: 0o700 });
     } catch (error) {
@@ -342,13 +333,23 @@ export class RunnerRunRepository {
       });
     }
     assertRunnerBundleMatchesTask(record.bundle, opts.task_id, opts.run_id);
-    assertRunnerBundleArtifactPaths(record.bundle, this.paths, opts.task_id, opts.run_id);
+    const compatibility = {
+      allow_legacy_missing_receipt_path: this.storage === "task",
+    };
+    assertRunnerBundleArtifactPaths(
+      record.bundle,
+      this.paths,
+      opts.task_id,
+      opts.run_id,
+      compatibility,
+    );
     assertRunnerStateMatchesBundle(
       record.state,
       record.bundle,
       this.paths,
       opts.task_id,
       opts.run_id,
+      compatibility,
     );
     return record;
   }
@@ -441,7 +442,7 @@ export async function openLatestRunnerRun(opts: {
   git_root: string;
   workflow_dir: string;
   task_id: string;
-  storage?: "task" | "supervisor";
+  storage?: RunnerRunStorage;
 }): Promise<{ run_id: string; repository: RunnerRunRepository }> {
   const storage = opts.storage ?? "supervisor";
   const probePaths =
@@ -449,20 +450,55 @@ export async function openLatestRunnerRun(opts: {
       ? await resolveSupervisorTaskRunnerPaths({ ...opts, run_id: "latest-probe" })
       : resolveTaskRunnerPaths({ ...opts, run_id: "latest-probe" });
   const runsDir = probePaths.runs_dir;
-  let entries: string[] = [];
-  try {
-    const runEntries = await readdir(runsDir, { withFileTypes: true });
-    entries = runEntries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException | null)?.code;
-    if (code === "ENOENT") {
-      throw new CliError({
-        exitCode: 4,
-        code: "E_IO",
-        message: `No runner runs found for task ${opts.task_id}`,
-      });
-    }
-    throw err;
+  const runsBoundary = await captureRunnerArtifactDirectoryBoundaryIfPresent({
+    run_dir: runsDir,
+    artifact_root: probePaths.artifact_root,
+    artifact_paths: [],
+  });
+  if (!runsBoundary) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `No runner runs found for task ${opts.task_id}`,
+      context: {
+        task_id: opts.task_id,
+        storage,
+        reason: "runner_runs_not_found",
+      },
+    });
+  }
+  await runsBoundary.assertStable("before listing runner runs");
+  const runEntries = await readdir(runsDir, { withFileTypes: true });
+  await runsBoundary.assertStable("after listing runner runs");
+  const invalidEntries = runEntries
+    .filter((entry) => !entry.isDirectory())
+    .map((entry) => entry.name)
+    .toSorted();
+  if (storage === "supervisor" && invalidEntries.length > 0) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `Runner runs directory contains invalid entries for task ${opts.task_id}`,
+      context: {
+        task_id: opts.task_id,
+        storage,
+        reason: "runner_runs_invalid_entries",
+        invalid_entries: invalidEntries,
+      },
+    });
+  }
+  const entries = runEntries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  if (entries.length === 0) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `No runner runs found for task ${opts.task_id}`,
+      context: {
+        task_id: opts.task_id,
+        storage,
+        reason: "runner_runs_not_found",
+      },
+    });
   }
 
   const candidates = await Promise.all(
@@ -484,6 +520,23 @@ export async function openLatestRunnerRun(opts: {
       };
     }),
   );
+  const incompleteRunIds = candidates
+    .map((entry, index) => (entry === null ? entries[index] : null))
+    .filter((runId): runId is string => runId !== null);
+  if (storage === "supervisor" && incompleteRunIds.length > 0) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `Runner runs are incomplete for task ${opts.task_id}`,
+      context: {
+        task_id: opts.task_id,
+        storage,
+        reason: "runner_runs_incomplete",
+        incomplete_run_ids: incompleteRunIds.toSorted(),
+      },
+    });
+  }
+  await runsBoundary.assertStable("after reading runner run states");
 
   const latest = candidates
     .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
@@ -498,6 +551,11 @@ export async function openLatestRunnerRun(opts: {
       exitCode: 4,
       code: "E_IO",
       message: `No runner runs found for task ${opts.task_id}`,
+      context: {
+        task_id: opts.task_id,
+        storage,
+        reason: "runner_runs_not_found",
+      },
     });
   }
   return {

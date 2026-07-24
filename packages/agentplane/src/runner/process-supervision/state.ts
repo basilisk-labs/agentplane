@@ -1,5 +1,6 @@
 import { readRunnerRunState } from "../artifacts.js";
 import type { RunnerInvocation, RunnerRunState, RunnerSupervisionState } from "../types.js";
+import { monotonicNowMs } from "./clock.js";
 
 export function renderInvocationCommand(invocation: RunnerInvocation): string | null {
   const commandLine = invocation.argv
@@ -47,10 +48,12 @@ export async function waitForRunnerStateStop(opts: {
   state_path: string;
   timeout_ms: number;
   poll_ms?: number;
+  monotonic_now_ms?: () => number;
 }): Promise<RunnerRunState | null> {
-  const started = Date.now();
+  const readMonotonicNowMs = opts.monotonic_now_ms ?? monotonicNowMs;
+  const started = readMonotonicNowMs();
   const poll_ms = opts.poll_ms ?? 100;
-  while (Date.now() - started < opts.timeout_ms) {
+  while (readMonotonicNowMs() - started < opts.timeout_ms) {
     const state = await readRunnerRunState(opts.state_path);
     if (state && state.status !== "running") return state;
     await new Promise((resolve) => setTimeout(resolve, poll_ms));

@@ -161,13 +161,13 @@ describe("release CI contract", () => {
     );
   });
 
-  it("keeps repo-only CLI helper exclusions out of the publishable agentplane build", async () => {
+  it("keeps test modules and test helpers out of the publishable agentplane build", async () => {
     const agentplaneTsconfigText = await readRootText("packages/agentplane/tsconfig.json");
     const agentplaneTsconfig = JSON.parse(agentplaneTsconfigText) as {
       exclude?: string[];
     };
 
-    expect(agentplaneTsconfig.exclude).toEqual(["src/**/*.test.ts"]);
+    expect(agentplaneTsconfig.exclude).toEqual(["src/**/*.test.ts", "src/**/*.testkit.ts"]);
   });
 
   it("checks the generated bootstrap doc against the actual runtime-source source path", async () => {

@@ -73,6 +73,7 @@ async function runnerVisibilityPacket(opts: {
       latest: {
         run_id: inspection.run_id,
         selection: inspection.selection,
+        storage: inspection.storage,
         status: inspection.state.status,
         mode: inspection.state.mode,
         adapter_id: inspection.state.adapter_id,

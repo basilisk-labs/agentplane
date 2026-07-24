@@ -7,12 +7,12 @@
       "exports": [
         {
           "name": "normalizeDependsOn",
-          "line": 47,
+          "line": 48,
           "col": 3
         },
         {
           "name": "normalizeTaskRunnerOutcome",
-          "line": 43,
+          "line": 44,
           "col": 3
         }
       ]
@@ -871,12 +871,12 @@
       "types": [
         {
           "name": "CloseTailStatus",
-          "line": 51,
+          "line": 57,
           "col": 13
         },
         {
           "name": "RemotePrStatus",
-          "line": 38,
+          "line": 44,
           "col": 13
         }
       ]
@@ -1403,7 +1403,7 @@
       "exports": [
         {
           "name": "readTaskPrBranch",
-          "line": 126,
+          "line": 153,
           "col": 23
         }
       ]
@@ -1468,11 +1468,6 @@
     {
       "file": "packages/agentplane/src/commands/shared/task-store/readme.ts",
       "exports": [
-        {
-          "name": "ensureUnchangedOnDisk",
-          "line": 90,
-          "col": 23
-        },
         {
           "name": "readStoredTaskRevision",
           "line": 27,
@@ -1951,7 +1946,7 @@
       "exports": [
         {
           "name": "createRunnerRunState",
-          "line": 76,
+          "line": 92,
           "col": 17
         }
       ]
@@ -2053,7 +2048,7 @@
       "types": [
         {
           "name": "TraceSession",
-          "line": 6,
+          "line": 8,
           "col": 13
         }
       ]
@@ -2063,7 +2058,7 @@
       "exports": [
         {
           "name": "RUNNER_RESULT_MANIFEST_SCHEMA_VERSION",
-          "line": 13,
+          "line": 12,
           "col": 14
         }
       ]
@@ -2073,8 +2068,8 @@
       "exports": [
         {
           "name": "parseRunnerEventsText",
-          "line": 34,
-          "col": 17
+          "line": 52,
+          "col": 3
         }
       ]
     },
@@ -2083,12 +2078,12 @@
       "exports": [
         {
           "name": "normalizeRunnerOutcomeSection",
-          "line": 24,
+          "line": 27,
           "col": 17
         },
         {
           "name": "stripRunnerHistory",
-          "line": 86,
+          "line": 133,
           "col": 17
         }
       ]
@@ -2108,7 +2103,7 @@
       "types": [
         {
           "name": "RunnerTimeoutPolicy",
-          "line": 98,
+          "line": 104,
           "col": 13
         }
       ]
@@ -2143,7 +2138,7 @@
       "types": [
         {
           "name": "RunnerPolicyFieldStatus",
-          "line": 3,
+          "line": 43,
           "col": 13
         }
       ]
@@ -2780,7 +2775,7 @@
         },
         {
           "name": "ValidatedPromptModuleMutation",
-          "line": 70,
+          "line": 71,
           "col": 8
         }
       ]
@@ -3002,22 +2997,22 @@
       "types": [
         {
           "name": "BlueprintDecisionEvidenceRequirement",
-          "line": 227,
+          "line": 241,
           "col": 13
         },
         {
           "name": "BlueprintDecisionStopRule",
-          "line": 233,
+          "line": 247,
           "col": 13
         },
         {
           "name": "BlueprintRejectedRoute",
-          "line": 216,
+          "line": 230,
           "col": 13
         },
         {
           "name": "BlueprintSelectedRoute",
-          "line": 221,
+          "line": 235,
           "col": 13
         },
         {
@@ -3037,17 +3032,17 @@
         },
         {
           "name": "EvaluatorFinding",
-          "line": 197,
+          "line": 211,
           "col": 13
         },
         {
           "name": "EvaluatorFindingSeverity",
-          "line": 195,
+          "line": 209,
           "col": 13
         },
         {
           "name": "EvaluatorVerdict",
-          "line": 194,
+          "line": 208,
           "col": 13
         },
         {
@@ -3346,7 +3341,7 @@
       "exports": [
         {
           "name": "readWorkflowDocument",
-          "line": 35,
+          "line": 56,
           "col": 23
         }
       ]
@@ -3356,32 +3351,32 @@
       "types": [
         {
           "name": "WorkflowApprovals",
-          "line": 3,
+          "line": 4,
           "col": 13
         },
         {
           "name": "WorkflowMode",
-          "line": 1,
+          "line": 3,
           "col": 13
         },
         {
           "name": "WorkflowRetryPolicy",
-          "line": 9,
+          "line": 5,
           "col": 13
         },
         {
           "name": "WorkflowSectionName",
-          "line": 31,
+          "line": 9,
           "col": 13
         },
         {
           "name": "WorkflowSeverity",
-          "line": 44,
+          "line": 22,
           "col": 13
         },
         {
           "name": "WorkflowTimeouts",
-          "line": 15,
+          "line": 6,
           "col": 13
         }
       ]
@@ -3448,24 +3443,24 @@
       "exports": [
         {
           "name": "configRawToWorkflowFrontMatter",
-          "line": 109,
+          "line": 105,
           "col": 17
         },
         {
           "name": "readWorkflowMarkdown",
-          "line": 44,
+          "line": 45,
           "col": 23
         },
         {
           "name": "workflowFrontMatterToConfigRaw",
-          "line": 57,
+          "line": 54,
           "col": 17
         }
       ],
       "types": [
         {
           "name": "WorkflowMarkdown",
-          "line": 10,
+          "line": 11,
           "col": 13
         }
       ]
@@ -3543,10 +3538,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 185,
-    "types": 369,
+    "exports": 182,
+    "types": 368,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 555
+    "total": 551
   }
 }

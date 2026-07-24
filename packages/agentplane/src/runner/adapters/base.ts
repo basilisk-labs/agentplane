@@ -1,8 +1,43 @@
 import type { SupervisedProcessResult } from "../process-supervision/run.js";
 import type { RunnerRunRepository } from "../run-repository.js";
-import type { RunnerContextBundle, RunnerInvocation, RunnerResult } from "../types.js";
+import type {
+  RunnerContextBundle,
+  RunnerInvocation,
+  RunnerResult,
+  RunnerRunState,
+} from "../types.js";
 import { evolveRunnerRunState } from "../artifacts.js";
 import { buildInvocationEventData } from "./runtime-shared.js";
+
+function isTerminalRunnerState(state: RunnerRunState): boolean {
+  return state.status !== "prepared" && state.status !== "running";
+}
+
+async function commitRunnerTerminalState(opts: {
+  repository: RunnerRunRepository;
+  expected_statuses: readonly ("prepared" | "running")[];
+  evolve: (state: RunnerRunState) => RunnerRunState;
+}): Promise<RunnerRunState | null> {
+  const current = await opts.repository.readState();
+  if (!current || isTerminalRunnerState(current)) return current;
+  const expectedStatuses: readonly RunnerRunState["status"][] = opts.expected_statuses;
+  if (!expectedStatuses.includes(current.status)) {
+    throw new Error(
+      `Runner terminal writer expected state in ${opts.expected_statuses.join(",")}, ` +
+        `observed ${current.status}.`,
+    );
+  }
+  const next = opts.evolve(current);
+  await opts.repository.writeState(next);
+  const observed = await opts.repository.readState();
+  if (!observed || !isTerminalRunnerState(observed)) {
+    throw new Error(
+      `Runner terminal writer could not verify terminal state after ` +
+        `${opts.expected_statuses.join(",")}.`,
+    );
+  }
+  return observed;
+}
 
 export function assertAdapterBundle(opts: {
   adapterId: string;
@@ -65,45 +100,49 @@ export async function writeRunnerExecutionState(opts: {
   result: RunnerResult;
   processResult: SupervisedProcessResult;
   command: string;
-}): Promise<void> {
-  const stateAfter = await opts.repository.readState();
-  if (!stateAfter) return;
-  await opts.repository.writeState(
-    evolveRunnerRunState({
-      state: stateAfter,
-      status: opts.result.status,
-      result: opts.result,
-      supervision: {
-        ...stateAfter.supervision,
-        pid: opts.processResult.pid,
-        command: opts.command,
-        started_at: opts.processResult.started_at,
-        heartbeat_at: opts.processResult.heartbeat_at,
-        exit_signal: opts.processResult.exit_signal,
-        timeout_reason: opts.processResult.timeout_reason,
-        timeout_requested_at: opts.processResult.timeout_requested_at,
-        terminate_sent_at: opts.processResult.terminate_sent_at,
-        kill_sent_at: opts.processResult.kill_sent_at,
-        force_killed: opts.processResult.force_killed,
-        process_tree: opts.processResult.process_tree,
-      },
-    }),
-  );
+}): Promise<RunnerRunState | null> {
+  return await commitRunnerTerminalState({
+    repository: opts.repository,
+    expected_statuses: ["prepared", "running"],
+    evolve: (state) =>
+      evolveRunnerRunState({
+        state,
+        status: opts.result.status,
+        result: opts.result,
+        supervision: {
+          ...state.supervision,
+          pid: opts.processResult.pid,
+          command: opts.command,
+          started_at: opts.processResult.started_at,
+          heartbeat_at: opts.processResult.heartbeat_at,
+          cancel_requested_at: opts.processResult.cancel_requested_at,
+          cancel_signal: opts.processResult.cancel_signal,
+          exit_signal: opts.processResult.exit_signal,
+          timeout_reason: opts.processResult.timeout_reason,
+          timeout_requested_at: opts.processResult.timeout_requested_at,
+          terminate_sent_at: opts.processResult.terminate_sent_at,
+          kill_sent_at: opts.processResult.kill_sent_at,
+          force_killed: opts.processResult.force_killed,
+          process_tree: opts.processResult.process_tree,
+        },
+      }),
+  });
 }
 
 export async function writeRunnerResultState(opts: {
   repository: RunnerRunRepository;
   result: RunnerResult;
-}): Promise<void> {
-  const stateAfter = await opts.repository.readState();
-  if (!stateAfter) return;
-  await opts.repository.writeState(
-    evolveRunnerRunState({
-      state: stateAfter,
-      status: opts.result.status,
-      result: opts.result,
-    }),
-  );
+}): Promise<RunnerRunState | null> {
+  return await commitRunnerTerminalState({
+    repository: opts.repository,
+    expected_statuses: ["prepared", "running"],
+    evolve: (state) =>
+      evolveRunnerRunState({
+        state,
+        status: opts.result.status,
+        result: opts.result,
+      }),
+  });
 }
 
 export async function appendRunnerExecutionEvent(opts: {

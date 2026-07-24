@@ -1,5 +1,5 @@
 import { type BigIntStats } from "node:fs";
-import { lstat, realpath } from "node:fs/promises";
+import { lstat, mkdir, realpath } from "node:fs/promises";
 import path from "node:path";
 
 import type { RunnerInvocation } from "./types.js";
@@ -53,6 +53,86 @@ export type RunnerRunDirectoryBoundary = {
   run_dir: string;
   assertStable: (phase: string) => Promise<void>;
 };
+
+export async function ensureStableRunnerArtifactDirectoryChain(
+  artifactRoot: string,
+  targetDir: string,
+): Promise<void> {
+  const resolvedRoot = path.resolve(artifactRoot);
+  const resolvedTarget = path.resolve(targetDir);
+  if (!isInside(resolvedRoot, resolvedTarget)) {
+    throw new RunnerRunDirectoryBoundaryError(
+      `Runner artifact parent must stay below repository_root: ${resolvedTarget}`,
+    );
+  }
+  const physicalRoot = await realpath(resolvedRoot);
+  let current = resolvedRoot;
+  for (const segment of path.relative(resolvedRoot, resolvedTarget).split(path.sep)) {
+    if (!segment || segment === "." || segment === "..") {
+      throw new RunnerRunDirectoryBoundaryError(
+        `Runner artifact parent contains an unsafe path segment: ${resolvedTarget}`,
+      );
+    }
+    current = path.join(current, segment);
+    let stats: BigIntStats;
+    try {
+      stats = await lstat(current, { bigint: true });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
+      await mkdir(current, { recursive: false, mode: 0o700 });
+      stats = await lstat(current, { bigint: true });
+    }
+    if (!stats.isDirectory() || stats.isSymbolicLink()) {
+      throw new RunnerRunDirectoryBoundaryError(
+        `Runner artifact parent must be a non-symlink directory: ${current}`,
+      );
+    }
+    const physicalCurrent = await realpath(current);
+    if (physicalCurrent !== physicalRoot && !isInside(physicalRoot, physicalCurrent)) {
+      throw new RunnerRunDirectoryBoundaryError(
+        `Runner artifact parent resolves outside repository_root: ${current}`,
+      );
+    }
+  }
+}
+
+export async function captureRunnerArtifactDirectoryBoundaryIfPresent(opts: {
+  run_dir: string;
+  artifact_root: string;
+  artifact_paths: readonly string[];
+}): Promise<RunnerRunDirectoryBoundary | null> {
+  const runDir = path.resolve(opts.run_dir);
+  const artifactRoot = path.resolve(opts.artifact_root);
+  if (!isInside(artifactRoot, runDir)) {
+    throw new RunnerRunDirectoryBoundaryError(
+      `Runner run_dir must stay below artifact_root: ${runDir}`,
+    );
+  }
+  const physicalArtifactRoot = await realpath(artifactRoot);
+  let current = artifactRoot;
+  for (const segment of path.relative(artifactRoot, runDir).split(path.sep)) {
+    current = path.join(current, segment);
+    let stats: BigIntStats;
+    try {
+      stats = await lstat(current, { bigint: true });
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+      throw error;
+    }
+    if (!stats.isDirectory() || stats.isSymbolicLink()) {
+      throw new RunnerRunDirectoryBoundaryError(
+        `Runner artifact directory chain must contain only non-symlink directories: ${current}`,
+      );
+    }
+    const physicalCurrent = await realpath(current);
+    if (!isInside(physicalArtifactRoot, physicalCurrent)) {
+      throw new RunnerRunDirectoryBoundaryError(
+        `Runner artifact directory resolves outside artifact_root: ${current}`,
+      );
+    }
+  }
+  return await captureRunnerArtifactDirectoryBoundary(opts);
+}
 
 function invocationArtifactPaths(invocation: RunnerInvocation): string[] {
   return [

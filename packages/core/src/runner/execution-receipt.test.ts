@@ -277,6 +277,123 @@ describe("execution receipt contract", () => {
     expect(validateExecutionReceipt(candidate).success_policy.outcome).toBe("observed_success");
   });
 
+  it("accepts confirmed direct-child cleanup without claiming descendant containment", () => {
+    const candidate = {
+      ...EXECUTION_RECEIPT_V2_VALID_FIXTURE,
+      process: {
+        ...EXECUTION_RECEIPT_V2_VALID_FIXTURE.process,
+        process_tree: {
+          scope: "direct_child_only",
+          group_id: null,
+          cleanup_state: "terminated",
+          terminate_sent_at: EXECUTION_RECEIPT_V2_VALID_FIXTURE.process.ended_at,
+          kill_sent_at: null,
+          completed_at: EXECUTION_RECEIPT_V2_VALID_FIXTURE.process.ended_at,
+          residual_alive: false,
+          error: null,
+          containment_state: "limited",
+          containment_limitation:
+            "Direct-child supervision does not provide bounded descendant containment.",
+        },
+      },
+      checks: [
+        ...EXECUTION_RECEIPT_V2_VALID_FIXTURE.checks.map((check) =>
+          check.id === "runner.process_containment"
+            ? {
+                ...check,
+                required: true,
+                status: "not_run",
+                details:
+                  "The direct child was cleaned up, but descendant lifetime remains unbounded.",
+              }
+            : check,
+        ),
+        {
+          provenance: EXECUTION_RECEIPT_PROVENANCE,
+          id: "runner.process_group_cleanup",
+          required: true,
+          status: "not_run",
+          details:
+            "Direct-child cleanup does not establish process-group or detached-descendant cleanup.",
+        },
+      ],
+      success_policy: {
+        provenance: EXECUTION_RECEIPT_PROVENANCE,
+        outcome: "unverified",
+        reasons: [
+          "residual descendant-lifetime risk: direct-child cleanup does not prove descendant containment",
+          "required observed check was not run: runner.process_group_cleanup",
+          "required observed check was not run: runner.process_containment",
+        ],
+      },
+    };
+
+    expect(validateExecutionReceipt(candidate).success_policy.outcome).toBe("unverified");
+  });
+
+  it("accepts confirmed direct-child cleanup with an exact read-only effect boundary", () => {
+    const candidate = {
+      ...EXECUTION_RECEIPT_V2_VALID_FIXTURE,
+      process: {
+        ...EXECUTION_RECEIPT_V2_VALID_FIXTURE.process,
+        process_tree: {
+          scope: "direct_child_only",
+          group_id: null,
+          cleanup_state: "terminated",
+          terminate_sent_at: EXECUTION_RECEIPT_V2_VALID_FIXTURE.process.ended_at,
+          kill_sent_at: null,
+          completed_at: EXECUTION_RECEIPT_V2_VALID_FIXTURE.process.ended_at,
+          residual_alive: false,
+          error: null,
+          containment_state: "limited",
+          containment_limitation:
+            "Direct-child supervision does not provide bounded descendant containment.",
+        },
+      },
+      scope_evaluation: {
+        ...EXECUTION_RECEIPT_V2_VALID_FIXTURE.scope_evaluation,
+        sandbox: {
+          ...EXECUTION_RECEIPT_V2_VALID_FIXTURE.scope_evaluation.sandbox,
+          requested: "read-only",
+          effective: "read-only",
+          role: "EVALUATOR",
+        },
+        mutation_scope: "none",
+        writable_roots: [],
+      },
+      checks: [
+        ...EXECUTION_RECEIPT_V2_VALID_FIXTURE.checks.map((check) =>
+          check.id === "runner.process_containment"
+            ? {
+                ...check,
+                required: false,
+                status: "not_run",
+                details:
+                  "Descendant lifetime is not bounded; filesystem effects are checked separately.",
+              }
+            : check,
+        ),
+        {
+          provenance: EXECUTION_RECEIPT_PROVENANCE,
+          id: "runner.process_group_cleanup",
+          required: false,
+          status: "not_run",
+          details:
+            "The direct child was cleaned up; the native read-only boundary contains filesystem effects.",
+        },
+        {
+          provenance: EXECUTION_RECEIPT_PROVENANCE,
+          id: "runner.sandbox.filesystem_effects_enforced",
+          required: true,
+          status: "passed",
+          details: "The native read-only sandbox prevents descendant filesystem writes.",
+        },
+      ],
+    };
+
+    expect(validateExecutionReceipt(candidate).success_policy.outcome).toBe("observed_success");
+  });
+
   it.each([
     ["workspace-write sandbox", EXECUTION_RECEIPT_V2_VALID_FIXTURE.scope_evaluation.sandbox],
     [

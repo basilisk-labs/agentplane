@@ -69,7 +69,12 @@ export {
   type TaskStatus,
 } from "./task-status.js";
 
-export { readTaskReadme, updateTaskReadmeAtomic } from "./task-readme-io.js";
+export {
+  readTaskReadme,
+  updateTaskReadmeAtomic,
+  withTaskReadmeTransaction,
+  type TaskReadmeTransactionOptions,
+} from "./task-readme-io.js";
 
 export {
   parseTaskReadme,

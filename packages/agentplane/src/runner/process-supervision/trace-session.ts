@@ -4,6 +4,7 @@ import { redactTraceText } from "../trace-artifacts.js";
 import { createRunnerTraceEvent, serializeRunnerTraceEvent } from "../trace.js";
 import { appendTail, splitCompletedLines } from "./streams.js";
 import { BufferedFileWriter } from "./buffered-file-writer.js";
+import { createSupervisionClock } from "./clock.js";
 
 export type TraceSession = ReturnType<typeof createTraceSession>;
 const MAX_PENDING_STREAM_LINE_CHARACTERS = 32 * 1024 * 1024;
@@ -38,6 +39,7 @@ export function createTraceSession(opts: {
   on_activity: () => void;
   on_stdout_line?: (rawLine: string) => void;
   assert_artifact_boundary?: () => Promise<void>;
+  now_iso?: () => string;
 }) {
   let stdout_tail = "";
   let stderr_tail = "";
@@ -53,6 +55,7 @@ export function createTraceSession(opts: {
   }
   const stdoutDecoder = new StringDecoder("utf8");
   const stderrDecoder = new StringDecoder("utf8");
+  const nowIso = opts.now_iso ?? createSupervisionClock().nowIso;
 
   const traceWriter = new BufferedFileWriter({
     file_path: opts.trace_path,
@@ -78,7 +81,7 @@ export function createTraceSession(opts: {
       "trace",
       serializeRunnerTraceEvent(
         createRunnerTraceEvent({
-          ts: new Date().toISOString(),
+          ts: nowIso(),
           seq: trace_seq,
           stream,
           adapter_id: opts.adapter_id,

@@ -502,6 +502,20 @@ function validateReviewedCandidate({
   );
   const expectedAddedCommandDescriptors = [
     {
+      id: ["task", "run", "reconcile"],
+      visibility: "internal",
+      group: "Task",
+      args: [
+        {
+          name: "task-id",
+          required: true,
+          variadic: false,
+          valueHint: "<task-id>",
+        },
+      ],
+      options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
+    },
+    {
       id: ["workflow", "migrate"],
       visibility: "user",
       group: "Workflow",
@@ -542,6 +556,13 @@ function validateReviewedCandidate({
       choices: ["read-only", "workspace-write", "danger-full-access"],
     },
     {
+      command: "task run reconcile",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "workflow migrate",
       name: "dry-run",
       kind: "boolean",
@@ -556,6 +577,11 @@ function validateReviewedCandidate({
     },
   ];
   const expectedAdditionSources = [
+    {
+      kind: "command",
+      command: "task run reconcile",
+      source_task: "202607221846-9XC1H0",
+    },
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
       kind: "option",
@@ -579,6 +605,12 @@ function validateReviewedCandidate({
       kind: "option",
       command: "task run",
       name: "sandbox",
+      source_task: "202607221846-9XC1H0",
+    },
+    {
+      kind: "option",
+      command: "task run reconcile",
+      name: "json",
       source_task: "202607221846-9XC1H0",
     },
     {
@@ -622,7 +654,10 @@ function validateReviewedCandidate({
       }),
     "CLI candidate evidence drift",
   );
-  assert(hashJson(addedCommands) === hashJson(["workflow migrate"]), "unexpected CLI addition");
+  assert(
+    hashJson(addedCommands) === hashJson(["task run reconcile", "workflow migrate"]),
+    "unexpected CLI addition",
+  );
   assert(
     hashJson(cliTopologyDelta.added_command_descriptors) ===
       hashJson(expectedAddedCommandDescriptors),

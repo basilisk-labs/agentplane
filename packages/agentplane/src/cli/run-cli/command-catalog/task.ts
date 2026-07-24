@@ -49,6 +49,7 @@ import { taskResumeContextSpec } from "../../../commands/task/resume-context.com
 import {
   taskRunInspectSpec,
   taskRunLogsSpec,
+  taskRunReconcileSpec,
   taskRunSpec,
   taskRunStatusSpec,
 } from "../../../commands/task/run.command.js";
@@ -97,6 +98,7 @@ import {
   loadTaskBriefSpec,
   loadTaskRunInspectSpec,
   loadTaskRunLogsSpec,
+  loadTaskRunReconcileSpec,
   loadTaskRunSpec,
   loadTaskRunStatusSpec,
   loadTaskCompleteSpec,
@@ -187,6 +189,11 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskRunInspectSpec, {
     load: loadTaskRunInspectSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskRunReconcileSpec, {
+    load: loadTaskRunReconcileSpec,
     surface: "internal",
     helpGroup: "Maintenance",
   }),

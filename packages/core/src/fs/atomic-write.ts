@@ -101,12 +101,17 @@ async function assertExpectedHandleContents(
   handle: FileHandle,
   filePath: string,
   expected: Buffer,
+  phase: string,
 ): Promise<void> {
   const observed = await hashStableFileHandle(handle, filePath);
   const expectedSha256 = createHash("sha256").update(expected).digest("hex");
   if (observed.bytes !== BigInt(expected.byteLength) || observed.sha256 !== expectedSha256) {
-    throw new Error(`Atomic-write temp file contents changed before publication: ${filePath}`);
+    throw new Error(`Atomic-write file contents changed ${phase}: ${filePath}`);
   }
+}
+
+async function assertPublishedPathIsRegular(filePath: string): Promise<void> {
+  assertRegularFile(await lstat(filePath, { bigint: true }), filePath);
 }
 
 async function openExclusiveTempFile(filePath: string) {
@@ -127,6 +132,31 @@ async function openExclusiveTempFile(filePath: string) {
   throw new Error(`Unable to allocate an exclusive atomic-write temp file for ${filePath}`);
 }
 
+export async function syncDirectory(directoryPath: string): Promise<boolean> {
+  let handle: FileHandle | null = null;
+  try {
+    handle = await open(directoryPath, constants.O_RDONLY);
+    await handle.sync();
+    return true;
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException | null)?.code;
+    if (
+      code === "EACCES" ||
+      code === "EISDIR" ||
+      code === "EINVAL" ||
+      code === "ENOTSUP" ||
+      code === "EPERM"
+    ) {
+      return false;
+    }
+    throw error;
+  } finally {
+    await handle?.close().catch(() => {
+      // The directory handle is already best-effort at this point.
+    });
+  }
+}
+
 export async function atomicWriteFile(
   filePath: string,
   contents: string | Buffer,
@@ -141,11 +171,15 @@ export async function atomicWriteFile(
     await handle.writeFile(expected);
     await handle.sync();
     await assertHandleOwnsPath(handle, tmpPath, "before publication");
-    await assertExpectedHandleContents(handle, tmpPath, expected);
+    await assertExpectedHandleContents(handle, tmpPath, expected, "before publication");
     await rename(tmpPath, filePath);
     renamed = true;
-    await assertHandleOwnsPath(handle, filePath, "after publication");
-    await assertExpectedHandleContents(handle, filePath, expected);
+    await syncDirectory(dir);
+    // The rename is this writer's publication point. A later atomic writer may
+    // legitimately replace the target before this writer finishes verification,
+    // so target/handle identity is no longer an invariant after publication.
+    await assertExpectedHandleContents(handle, filePath, expected, "after publication");
+    await assertPublishedPathIsRegular(filePath);
   } finally {
     try {
       await handle.close();

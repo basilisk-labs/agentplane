@@ -81,9 +81,11 @@ function buildProcessObservation(opts: {
       ? "timed_out"
       : processResult.cancel_requested_at
         ? "cancelled"
-        : processResult.exit_signal !== null && processResult.exit_code === null
-          ? "signaled"
-          : "exited",
+        : processResult.exit_code === null && processResult.exit_signal === null
+          ? "supervisor_error"
+          : processResult.exit_signal !== null && processResult.exit_code === null
+            ? "signaled"
+            : "exited",
     started_at: processResult.started_at,
     ended_at: processResult.ended_at,
     exit_code: processResult.exit_code,

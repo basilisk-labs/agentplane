@@ -261,6 +261,7 @@ describe("task-backend helpers", () => {
     const runnerBase = {
       adapter_id: "custom",
       mode: "execute",
+      created_at: "2026-01-29T23:59:59.000Z",
       updated_at: "2026-01-30T00:00:00.000Z",
       exit_code: 0,
       target: { kind: "task", task_id: "202601300000-RECEIPT" },
@@ -300,7 +301,9 @@ describe("task-backend helpers", () => {
     const data = taskRecordToData(record);
 
     expect(data.runner?.evidence?.provenance).toBe("supervisor_observed");
+    expect(data.runner?.created_at).toBe(runnerBase.created_at);
     expect(data.runner?.execution_receipt).toEqual(receipt);
+    expect(data.runner?.history?.[0]?.created_at).toBe(runnerBase.created_at);
     expect(data.runner?.history?.[0]?.execution_receipt).toEqual(historyReceipt);
   });
 

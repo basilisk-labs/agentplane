@@ -28,6 +28,18 @@ import {
   assertRunnerPolicyCompatibility,
   assertRunnerTaskExecutable,
 } from "./task-run-authority.js";
+import {
+  acquireTaskRunnerActiveClaim,
+  releaseTaskRunnerActiveClaim,
+} from "./task-run-active-claim.js";
+import { inspectTaskRunnerClaimedRunAuthority } from "./task-run-active-claim-authority.js";
+import {
+  attachSuppressedActiveClaimCleanup,
+  reconcileStaleTerminalTaskRunnerActiveClaim,
+  reconcileTerminalTaskRunnerActiveClaim,
+  recordActiveClaimCleanupFailure,
+  type TaskRunnerActiveClaimCleanupDiagnostic,
+} from "./task-run-active-claim-runtime.js";
 import { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { assertRunnerBlueprintPolicyModuleBudget } from "./task-run-blueprint-plan.js";
@@ -57,6 +69,13 @@ export type PreparedTaskRunnerExecution = {
 
 export type ExecutedTaskRunnerExecution = PreparedTaskRunnerExecution & {
   result: RunnerResult;
+  active_claim_cleanup?: TaskRunnerActiveClaimCleanupDiagnostic;
+};
+
+export type TaskRunnerReplayProvenance = {
+  action: "resume" | "retry";
+  source_run_id: string;
+  source_status: RunnerRunState["status"];
 };
 
 class RunnerPreparationCliError extends CliError {
@@ -132,6 +151,45 @@ async function writeRunnerRefusalArtifacts(opts: {
         },
   });
   return refused;
+}
+
+async function persistReplayAnchorBeforeExecution(opts: {
+  ctx: CommandContext;
+  task_id: string;
+  bundle: RunnerContextBundle;
+  state: RunnerRunState;
+  provenance: TaskRunnerReplayProvenance;
+}): Promise<void> {
+  const repository = await RunnerRunRepository.openExistingTaskRun({
+    git_root: opts.bundle.repository.git_root,
+    workflow_dir: opts.bundle.repository.workflow_dir,
+    task_id: opts.task_id,
+    run_id: opts.bundle.execution.run_id,
+    storage: "supervisor",
+  });
+  const recordedAt = new Date().toISOString();
+  const eventType =
+    opts.provenance.action === "resume" ? "runner_resume_created" : "runner_retry_created";
+  await repository.appendEvent({
+    at: recordedAt,
+    type: eventType,
+    message:
+      `runner ${opts.provenance.action} created fresh from current task/config; ` +
+      `source_run_id=${opts.provenance.source_run_id}`,
+    data: {
+      source_run_id: opts.provenance.source_run_id,
+      source_status: opts.provenance.source_status,
+      source_trust: "external_task_anchor_only",
+      source_artifacts_reused: false,
+    },
+  });
+  await persistRunnerOutcomeToTask({
+    ctx: opts.ctx,
+    task_id: opts.task_id,
+    bundle: opts.bundle,
+    state: opts.state,
+    ordering_authority: "current_active_claim",
+  });
 }
 
 export async function prepareTaskRunnerExecution(opts: {
@@ -337,54 +395,198 @@ export async function executeTaskRunnerExecution(opts: {
   execution_role?: string;
   include_route_runner_state?: boolean;
   sandbox_override?: string;
+  replay_provenance?: TaskRunnerReplayProvenance;
 }): Promise<ExecutedTaskRunnerExecution> {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  let prepared: PreparedTaskRunnerExecution;
-  try {
-    prepared = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      task_id: opts.task_id,
-      mode: "execute",
-      run_id: opts.run_id,
-      recipe: opts.recipe,
-      target: opts.target,
-      danger_authority: opts.danger_authority,
-      execution_role: opts.execution_role,
-      include_route_runner_state: opts.include_route_runner_state,
-      sandbox_override: opts.sandbox_override,
-    });
-  } catch (err) {
-    if (err instanceof RunnerPreparationCliError) {
-      await persistRunnerOutcomeToTask({
-        ctx,
-        task_id: opts.task_id,
-        bundle: err.bundle,
-        state: err.state,
-      });
-    }
-    throw err;
-  }
-  const adapter = createRunnerAdapter(ctx.config);
-  const result = await adapter.execute(prepared.invocation);
-  const state = evolveRunnerRunState({
-    state: prepared.state,
-    status: result.status,
-    result,
-    updated_at: result.ended_at,
-  });
-  await persistRunnerOutcomeToTask({
+  await reconcileStaleTerminalTaskRunnerActiveClaim({
     ctx,
     task_id: opts.task_id,
-    bundle: prepared.bundle,
-    state,
   });
-  return {
-    ...prepared,
-    state,
-    result,
-  };
+  const runId = opts.run_id ?? createRunnerRunId();
+  const activeClaim = await acquireTaskRunnerActiveClaim({
+    git_root: ctx.resolvedProject.gitRoot,
+    workflow_dir: ctx.config.paths.workflow_dir,
+    task_id: opts.task_id,
+    run_id: runId,
+    operation: opts.replay_provenance?.action ?? "execute",
+    ...(opts.replay_provenance
+      ? {
+          source_run_id: opts.replay_provenance.source_run_id,
+          source_status: opts.replay_provenance.source_status,
+        }
+      : {}),
+    reconcile_terminal_claim: async (claim) => {
+      await reconcileTerminalTaskRunnerActiveClaim({
+        ctx,
+        task_id: opts.task_id,
+        claim,
+      });
+    },
+  });
+  let cleanupBundle: RunnerContextBundle | null = null;
+  let completed: ExecutedTaskRunnerExecution | undefined;
+  let primaryError: unknown;
+  let hasPrimaryError = false;
+  let releaseActiveClaim = true;
+  try {
+    let prepared: PreparedTaskRunnerExecution;
+    try {
+      prepared = await prepareTaskRunnerExecution({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+        task_id: opts.task_id,
+        mode: "execute",
+        run_id: runId,
+        recipe: opts.recipe,
+        target: opts.target,
+        danger_authority: opts.danger_authority,
+        execution_role: opts.execution_role,
+        include_route_runner_state: opts.include_route_runner_state,
+        sandbox_override: opts.sandbox_override,
+      });
+    } catch (err) {
+      if (err instanceof RunnerPreparationCliError) {
+        cleanupBundle = err.bundle;
+        releaseActiveClaim = false;
+        if (opts.replay_provenance) {
+          await persistReplayAnchorBeforeExecution({
+            ctx,
+            task_id: opts.task_id,
+            bundle: err.bundle,
+            state: err.state,
+            provenance: opts.replay_provenance,
+          });
+        } else {
+          await persistRunnerOutcomeToTask({
+            ctx,
+            task_id: opts.task_id,
+            bundle: err.bundle,
+            state: err.state,
+            ordering_authority: "current_active_claim",
+          });
+        }
+        releaseActiveClaim = true;
+      }
+      throw err;
+    }
+    cleanupBundle = prepared.bundle;
+    releaseActiveClaim = false;
+    if (opts.replay_provenance) {
+      await persistReplayAnchorBeforeExecution({
+        ctx,
+        task_id: opts.task_id,
+        bundle: prepared.bundle,
+        state: prepared.state,
+        provenance: opts.replay_provenance,
+      });
+    }
+    const adapter = createRunnerAdapter(ctx.config);
+    const result = await adapter.execute(prepared.invocation);
+    const runRepository = await RunnerRunRepository.openExistingTaskRun({
+      git_root: ctx.resolvedProject.gitRoot,
+      workflow_dir: ctx.config.paths.workflow_dir,
+      task_id: opts.task_id,
+      run_id: prepared.invocation.run_id,
+      storage: "supervisor",
+    });
+    const observedTerminal = await runRepository.readState();
+    const state =
+      observedTerminal &&
+      observedTerminal.status !== "prepared" &&
+      observedTerminal.status !== "running"
+        ? observedTerminal
+        : evolveRunnerRunState({
+            state: prepared.state,
+            status: result.status,
+            result,
+            updated_at: result.ended_at,
+          });
+    await persistRunnerOutcomeToTask({
+      ctx,
+      task_id: opts.task_id,
+      bundle: prepared.bundle,
+      state,
+      ordering_authority: "current_active_claim",
+    });
+    const claimedRunAuthority = await inspectTaskRunnerClaimedRunAuthority(
+      {
+        git_root: ctx.resolvedProject.gitRoot,
+        workflow_dir: ctx.config.paths.workflow_dir,
+        task_id: opts.task_id,
+      },
+      activeClaim.claim,
+    );
+    const cleanupConfirmed = claimedRunAuthority === "terminal";
+    releaseActiveClaim = cleanupConfirmed;
+    completed = {
+      ...prepared,
+      state,
+      result,
+    };
+    if (!cleanupConfirmed) {
+      completed.active_claim_cleanup = await recordActiveClaimCleanupFailure({
+        bundle: prepared.bundle,
+        error: new CliError({
+          exitCode: 8,
+          code: "E_RUNTIME",
+          message:
+            `Runner retained the task active claim because supervised process cleanup ` +
+            `was not confirmed for ${opts.task_id}:${prepared.invocation.run_id}.`,
+          context: {
+            reason:
+              state.supervision?.process_tree?.residual_alive === true
+                ? "runner_residual_process_alive"
+                : "runner_process_cleanup_unverified",
+            task_id: opts.task_id,
+            run_id: prepared.invocation.run_id,
+            claimed_run_authority: claimedRunAuthority,
+            process_tree: state.supervision?.process_tree ?? null,
+          },
+        }),
+      });
+    }
+    return completed;
+  } catch (error) {
+    primaryError = error;
+    hasPrimaryError = true;
+    throw error;
+  } finally {
+    if (!releaseActiveClaim && hasPrimaryError) {
+      try {
+        const authority = await inspectTaskRunnerClaimedRunAuthority(
+          {
+            git_root: ctx.resolvedProject.gitRoot,
+            workflow_dir: ctx.config.paths.workflow_dir,
+            task_id: opts.task_id,
+          },
+          activeClaim.claim,
+        );
+        releaseActiveClaim = authority === "absent" || authority === "incomplete_pre_provider";
+      } catch (inspectionError) {
+        const diagnostic = await recordActiveClaimCleanupFailure({
+          bundle: cleanupBundle,
+          error: inspectionError,
+        });
+        attachSuppressedActiveClaimCleanup(primaryError, diagnostic);
+      }
+    }
+    if (releaseActiveClaim) {
+      try {
+        await releaseTaskRunnerActiveClaim(activeClaim);
+      } catch (cleanupError) {
+        const diagnostic = await recordActiveClaimCleanupFailure({
+          bundle: cleanupBundle,
+          error: cleanupError,
+        });
+        if (hasPrimaryError) {
+          attachSuppressedActiveClaimCleanup(primaryError, diagnostic);
+        } else if (completed) {
+          completed.active_claim_cleanup = diagnostic;
+        }
+      }
+    }
+  }
 }
