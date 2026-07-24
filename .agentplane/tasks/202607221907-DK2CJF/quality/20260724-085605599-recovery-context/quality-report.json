@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221907-DK2CJF",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T08:56:05.599Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The alpha.1 qualification remains valid after the exact reviewed FCBKJQ main sync.",
+  "evaluated_sha": "19753b1d253e66687c9106003da31a8bbd5b443f",
+  "blueprint_digest": "0fe4326b44ea9f820fe00a84df1e3a808b5380c0f167f1d0eb7c4331b2021d7c",
+  "findings": [
+    "HEAD 19753b1d2 is a clean merge of prior alpha.1 head 8b5f86832 and main 91241314; its added delta exactly matches the independently reviewed FCBKJQ integration-target fix with no merge-resolution changes.",
+    "The DK2CJF task tree, qualification.md, frozen RF-04 baselines, replay envelopes, replay evidence, and scripts are unchanged; all five declared gates pass again on the updated head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221907-DK2CJF/README.md",
+    ".agentplane/tasks/202607221907-DK2CJF/qualification.md",
+    ".agentplane/tasks/202607240736-FCBKJQ/quality/20260724-083545091-recovery-context/quality-report.json",
+    "ci:contract; guards:check; schemas:check; critical 71/71; RF-04 replay 50/70/27/170",
+    "merge parents 8b5f86832 and 91241314; DK2CJF tree 79c6bc788cc0caee8e5d697c5f85a4ffd737a3ef"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The semantic correctness of FCBKJQ is inherited from its independent PASS review and green hosted checks; this review proves exact conflict-free assimilation and qualification invariance."
+  ],
+  "residual_risks": [
+    "The pre-merge closure must be refreshed on the new reviewed head before integration."
+  ]
+}
