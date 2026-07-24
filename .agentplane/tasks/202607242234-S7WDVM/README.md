@@ -2,10 +2,10 @@
 id: "202607242234-S7WDVM"
 title: "Amend AgentPlane 0.7 graph with bounded supervisor execution"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -29,11 +29,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved to add one bounded-supervisor beta.1 leaf and wire the canonical 0.7 DAG without runtime implementation."
 verification:
-  state: "ok"
-  updated_at: "2026-07-24T22:42:49.173Z"
+  state: "needs_rework"
+  updated_at: "2026-07-24T22:49:25.461Z"
   updated_by: "TESTER"
-  note: "Verified the 0.7 DAG amendment: the new CODER leaf is atomic and unstarted, direct supervisor and beta.1 gate depend on it without cycles, the canonical plan matches task metadata, and routing, doctor, task-state, formatting, and docs-only pre-push CI pass."
-  attempts: 0
+  note: "Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded journal, and durable journal migration/install-smoke acceptance was not explicit."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -60,9 +60,7 @@ quality_review:
     - "The new leaf has one CODER owner and one verification boundary: durable supervisor journal, budgets, deterministic stops, bounded feedback, and resume semantics inside the typed supervisor."
     - "Direct supervision and the beta.1 qualification gate both depend on the new leaf, so stable progression cannot bypass it; task-state validation found no cycle or malformed task."
     - "The plan explicitly rejects importing LoopSpec, ap loop, or project-local programmable loops, avoiding a second orchestration plane."
-commit:
-  hash: "22b8864aa45ebc8ddbfccb065b20c287d30bbfa5"
-  message: "🧐 S7WDVM task: record semantic quality review"
+commit: null
 comments:
   -
     author: "PLANNER"
@@ -91,8 +89,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-24T22:49:25.461Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded journal, and durable journal migration/install-smoke acceptance was not explicit."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:46:02.517Z"
+doc_updated_at: "2026-07-24T22:49:26.015Z"
 doc_updated_by: "PLANNER"
 description: "Add a beta.1 implementation leaf for a durable supervisor episode journal and hard execution budgets, wire its release-DAG dependencies, and update the canonical AgentPlane 0.7 refactor plan without implementing runtime code."
 sections:
@@ -137,6 +141,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-24T22:49:25.461Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded journal, and durable journal migration/install-smoke acceptance was not explicit.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:46:02.517Z, excerpt_hash=sha256:a7e6eb88241bf4c488a595f6329fdd26b18377f19dcf3b53edc64743493e25aa
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242234-S7WDVM-amend-agentplane-0-7-graph-with-bounded-supervis/.agentplane/tasks/202607242234-S7WDVM/blueprint/resolved-snapshot.json
+    - old_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+    - current_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242234-S7WDVM
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607242234-S7WDVM --remote --explain
+    - diagnostic_command: agentplane task next-action 202607242234-S7WDVM --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "- Revert the planning amendment commit and restore the previous direct-supervisor and beta.1-gate dependency lists. - Remove the unimplemented leaf only through AgentPlane task lifecycle commands; do not delete task records manually. - Re-run routing, doctor, format, and task-state consistency checks after rollback."
   Findings: |-
@@ -147,6 +181,10 @@ sections:
     - Observation: The task graph now enforces bounded supervisor episodes before direct supervision and beta.1 qualification; PR #4612 must preserve the leaf when rebased.
       Impact: The refactor agent can discover the leaf through AgentPlane task routing without importing the legacy loop controller.
       Resolution: Accept the planning amendment; leave implementation task 202607242236-1BFWEY TODO for normal ORCHESTRATOR approval and CODER execution.
+
+    - Observation: PR #4614 has two valid unresolved P2 review threads covering context-cycle ownership and persisted-format migration evidence.
+      Impact: Without rework, beta.1 could qualify an unbounded context rework path or a durable journal without proven migration/install behavior.
+      Resolution: Add the journal leaf to context-supervisor ancestry; add schema fixtures, migrator idempotency/rollback and installed-package smoke to the leaf and beta.1 gate, then rerun verification and evaluator review.
 extensions:
   implementation_commit:
     hash: "54657234618587cde833b436479347c4f886c798"
@@ -205,6 +243,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-24T22:49:25.461Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted review found two planning gaps: context/CURATOR rework was not dependent on the bounded journal, and durable journal migration/install-smoke acceptance was not explicit.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:46:02.517Z, excerpt_hash=sha256:a7e6eb88241bf4c488a595f6329fdd26b18377f19dcf3b53edc64743493e25aa
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242234-S7WDVM-amend-agentplane-0-7-graph-with-bounded-supervis/.agentplane/tasks/202607242234-S7WDVM/blueprint/resolved-snapshot.json
+- old_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+- current_digest: c3e74d0f0f259288f793430a56d0f44e79880f0de53c450e056bee1e7c52fee0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242234-S7WDVM
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607242234-S7WDVM --remote --explain
+- diagnostic_command: agentplane task next-action 202607242234-S7WDVM --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -220,3 +288,7 @@ DecisionContextRef:
 - Observation: The task graph now enforces bounded supervisor episodes before direct supervision and beta.1 qualification; PR #4612 must preserve the leaf when rebased.
   Impact: The refactor agent can discover the leaf through AgentPlane task routing without importing the legacy loop controller.
   Resolution: Accept the planning amendment; leave implementation task 202607242236-1BFWEY TODO for normal ORCHESTRATOR approval and CODER execution.
+
+- Observation: PR #4614 has two valid unresolved P2 review threads covering context-cycle ownership and persisted-format migration evidence.
+  Impact: Without rework, beta.1 could qualify an unbounded context rework path or a durable journal without proven migration/install behavior.
+  Resolution: Add the journal leaf to context-supervisor ancestry; add schema fixtures, migrator idempotency/rollback and installed-package smoke to the leaf and beta.1 gate, then rerun verification and evaluator review.

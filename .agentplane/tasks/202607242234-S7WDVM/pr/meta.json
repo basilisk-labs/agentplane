@@ -3,22 +3,15 @@
   "branch": "task/202607242234-S7WDVM/amend-agentplane-0-7-graph-with-bounded-supervis",
   "created_at": "2026-07-24T22:35:38.268Z",
   "diffstat_sha256": "sha256:23dcd1e7e22116cb0f0367e0f1cde0aec9932b52ce4871dec4a4eb09e108aa49",
-  "last_verified_at": "2026-07-24T22:42:49.173Z",
+  "last_verified_at": "2026-07-24T22:49:25.461Z",
   "last_verified_diffstat_sha256": "sha256:23dcd1e7e22116cb0f0367e0f1cde0aec9932b52ce4871dec4a4eb09e108aa49",
   "pr_number": 4614,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4614",
-  "pre_merge_closure": {
-    "basis_commit": "22b8864aa45ebc8ddbfccb065b20c287d30bbfa5",
-    "branch": "task/202607242234-S7WDVM/amend-agentplane-0-7-graph-with-bounded-supervis",
-    "pr_number": 4614,
-    "recorded_at": "2026-07-24T22:46:02.602Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607242234-S7WDVM",
   "updated_at": "2026-07-24T22:41:27.950Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }
