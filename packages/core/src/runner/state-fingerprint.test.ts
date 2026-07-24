@@ -26,6 +26,7 @@ const POLICY: StateFingerprintPolicy = {
   provider: {
     required: false,
     unavailable: "allow_if_unchanged",
+    reject_reason_codes: ["provider_projection_stale"],
   },
 };
 
@@ -158,6 +159,28 @@ describe("StateFingerprint", () => {
     );
   });
 
+  it("accepts a legacy policy without reason-specific provider rejection", () => {
+    const fingerprint = buildStateFingerprint(input());
+    const legacyPolicy = validateStateFingerprintPolicy({
+      required_components: REQUIRED_COMPONENTS,
+      provider: {
+        required: false,
+        unavailable: "allow_if_unchanged",
+      },
+    });
+
+    expect(
+      assertStateFingerprintPrecondition({
+        expected: fingerprint,
+        current: fingerprint,
+        policy: legacyPolicy,
+      }),
+    ).toMatchObject({
+      status: "fresh_with_bounded_uncertainty",
+      reason_code: "state_fingerprint_provider_uncertainty_allowed",
+    });
+  });
+
   it("includes unavailable-component evidence in stale-state comparison", async () => {
     const expectedInput = input();
     expectedInput.components.provider = {
@@ -191,6 +214,37 @@ describe("StateFingerprint", () => {
       reason_code: "state_fingerprint_stale",
       diagnostic: {
         changed_components: [expect.objectContaining({ component: "provider" })],
+      },
+    });
+    expect(apply).not.toHaveBeenCalled();
+  });
+
+  it("rejects unchanged provider evidence when the unavailable reason is fail-closed", async () => {
+    const staleInput = input();
+    staleInput.components.provider = {
+      state: "unavailable",
+      source: "provider_observation",
+      reason_code: "provider_projection_stale",
+      evidence: { provider_revision: "provider-1", stale: true },
+    };
+    const fingerprint = buildStateFingerprint(staleInput);
+    const apply = vi.fn(() => Promise.resolve("applied"));
+
+    await expect(
+      executePreparedOperation({
+        prepared: {
+          operation: { id: "op-provider-explicitly-stale" },
+          precondition_fingerprint: fingerprint,
+          precondition_policy: POLICY,
+        },
+        capture_state: () => Promise.resolve(fingerprint),
+        apply,
+      }),
+    ).rejects.toMatchObject({
+      reason_code: "state_fingerprint_provider_unavailable",
+      diagnostic: {
+        status: "blocked",
+        provider_state: "unavailable",
       },
     });
     expect(apply).not.toHaveBeenCalled();

@@ -1,10 +1,10 @@
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import { resolveProject, type ResolvedProject } from "@agentplaneorg/core/project";
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { loadConfig } from "@agentplaneorg/core/config";
 
+import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import { isRecord } from "../../shared/guards.js";
 
 import { LocalBackend } from "./local-backend.js";
@@ -40,9 +40,21 @@ type TaskBackendLoader = (
   ctx: TaskBackendLoaderContext,
 ) => TaskBackendLoaderResult | Promise<TaskBackendLoaderResult>;
 
-async function loadBackendConfig(configPath: string): Promise<BackendConfig | null> {
+const BACKEND_CONFIG_MAX_BYTES = 1024 * 1024;
+
+async function loadBackendConfig(
+  repositoryRoot: string,
+  configPath: string,
+): Promise<BackendConfig | null> {
   try {
-    const raw = JSON.parse(await readFile(configPath, "utf8")) as unknown;
+    const raw = JSON.parse(
+      await readContainedStableTextNoFollow({
+        repository_root: repositoryRoot,
+        file_path: configPath,
+        label: "task backend configuration",
+        max_bytes: BACKEND_CONFIG_MAX_BYTES,
+      }),
+    ) as unknown;
     return isRecord(raw) ? (raw as BackendConfig) : null;
   } catch (err) {
     const code = (err as { code?: string } | null)?.code;
@@ -138,7 +150,7 @@ async function instantiateTaskBackend(opts: {
   backendConfigPath: string;
 }> {
   const backendConfigPath = path.join(opts.resolved.gitRoot, opts.config.tasks_backend.config_path);
-  const backendConfig = await loadBackendConfig(backendConfigPath);
+  const backendConfig = await loadBackendConfig(opts.resolved.gitRoot, backendConfigPath);
   const normalized = normalizeBackendConfig(backendConfig);
   const backendId = normalized.id;
   const settings = normalized.settings;

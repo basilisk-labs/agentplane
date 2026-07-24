@@ -1,8 +1,9 @@
 import { execFile } from "node:child_process";
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
+import { defaultConfig } from "@agentplaneorg/core/config";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -61,6 +62,7 @@ describe("loadTaskBackend", () => {
   });
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     restoreStdIO?.();
     restoreStdIO = null;
     process.env = originalEnv;
@@ -76,6 +78,69 @@ describe("loadTaskBackend", () => {
     expect(result.backend.capabilities.projection_read_mode).toBe("native");
     expect(result.backend.capabilities.supports_task_revisions).toBe(true);
     expect(result.backend.capabilities.supports_revision_guarded_writes).toBe(true);
+  });
+
+  it("rejects an escaping backend-config symlink before backend creation or network access", async () => {
+    const outside = await mkTempDir();
+    try {
+      const backendPath = path.join(tempDir, ".agentplane", "backends", "local", "backend.json");
+      const outsideConfig = path.join(outside, "backend.json");
+      await Promise.all([
+        mkdir(path.dirname(backendPath), { recursive: true }),
+        writeFile(
+          outsideConfig,
+          JSON.stringify({
+            id: "cloud",
+            settings: {
+              endpoint: "https://attacker.example",
+              project_id: "outside-project",
+            },
+          }),
+          "utf8",
+        ),
+      ]);
+      await symlink(outsideConfig, backendPath);
+      const createSpy = vi.spyOn(CloudBackend, "create");
+      const fetchSpy = vi.spyOn(globalThis, "fetch");
+
+      await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
+        /Refusing symlinked task backend configuration path/u,
+      );
+      expect(createSpy).not.toHaveBeenCalled();
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      await rm(outside, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects backend-config path traversal before backend creation or network access", async () => {
+    const outside = await mkTempDir();
+    try {
+      const outsideConfig = path.join(outside, "backend.json");
+      await writeFile(
+        outsideConfig,
+        JSON.stringify({
+          id: "cloud",
+          settings: {
+            endpoint: "https://attacker.example",
+            project_id: "outside-project",
+          },
+        }),
+        "utf8",
+      );
+      const config = defaultConfig();
+      config.tasks_backend.config_path = path.relative(tempDir, outsideConfig);
+      const createSpy = vi.spyOn(CloudBackend, "create");
+      const fetchSpy = vi.spyOn(globalThis, "fetch");
+
+      await expect(loadTaskBackend({ cwd: tempDir, config })).rejects.toThrow(
+        /outside the repository/u,
+      );
+      expect(createSpy).not.toHaveBeenCalled();
+      expect(fetchSpy).not.toHaveBeenCalled();
+    } finally {
+      await rm(outside, { recursive: true, force: true });
+    }
   });
 
   it("rejects direct redmine backend configs with a cloud migration message", async () => {

@@ -95,6 +95,7 @@ export const STATE_FINGERPRINT_POLICY_ZOD_SCHEMA = z
       .object({
         required: z.boolean(),
         unavailable: z.enum(["reject", "allow_if_unchanged"]),
+        reject_reason_codes: z.array(NON_EMPTY_STRING).readonly().optional(),
       })
       .strict(),
   })
@@ -304,6 +305,10 @@ export function evaluateStateFingerprintPrecondition(opts: {
     unavailable_required_components,
     provider_state: current.components.provider.state,
   };
+  const provider = current.components.provider;
+  const rejectedProviderReasonCodes = policy.provider.reject_reason_codes
+    ? new Set(policy.provider.reject_reason_codes)
+    : null;
   if (changed_components.length > 0 || expected.digest !== current.digest) {
     return {
       ...base,
@@ -318,14 +323,25 @@ export function evaluateStateFingerprintPrecondition(opts: {
       reason_code: "state_fingerprint_required_component_unavailable",
     };
   }
-  if (current.components.provider.state === "missing" && policy.provider.required) {
+  if (
+    provider.state !== "present" &&
+    provider.reason_code !== null &&
+    rejectedProviderReasonCodes?.has(provider.reason_code) === true
+  ) {
     return {
       ...base,
       status: "blocked",
       reason_code: "state_fingerprint_provider_unavailable",
     };
   }
-  if (current.components.provider.state === "unavailable") {
+  if (provider.state === "missing" && policy.provider.required) {
+    return {
+      ...base,
+      status: "blocked",
+      reason_code: "state_fingerprint_provider_unavailable",
+    };
+  }
+  if (provider.state === "unavailable") {
     if (policy.provider.required || policy.provider.unavailable === "reject") {
       return {
         ...base,
