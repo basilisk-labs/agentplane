@@ -23,6 +23,7 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
     projectId: string,
     opts?: { timeoutMs?: number },
   ) => Promise<CloudTaskStartSyncState>;
+  assertSyncIdentityReady: () => Promise<void>;
   sync: (syncOpts: {
     direction: "pull";
     conflict: "prefer-remote";
@@ -61,6 +62,7 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
     );
   }
 
+  await opts.assertSyncIdentityReady();
   const syncState = await opts.requestCloudSyncState(opts.projectId, {
     timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
   });

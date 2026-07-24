@@ -75,6 +75,36 @@ describe("core error mapping", () => {
     expect(mapped.exitCode).toBe(ExitCode.Backend);
   });
 
+  it("preserves backend reason codes in structured CLI errors", () => {
+    const mapped = mapBackendError(
+      new BackendError("checkpoint invalid", "E_BACKEND", {
+        reasonCode: "cloud_projection_checkpoint_invalid",
+      }),
+      { command: "backend sync" },
+    );
+    let stdout = "";
+    const spy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      stdout += String(chunk);
+      return true;
+    });
+
+    try {
+      writeError(mapped, true);
+    } finally {
+      spy.mockRestore();
+    }
+
+    const payload = JSON.parse(stdout) as {
+      error?: {
+        context?: { reason_code?: string };
+        reason_decode?: { code?: string };
+      };
+    };
+    expect(mapped.context?.reason_code).toBe("cloud_projection_checkpoint_invalid");
+    expect(payload.error?.context?.reason_code).toBe("cloud_projection_checkpoint_invalid");
+    expect(payload.error?.reason_decode?.code).toBe("cloud_projection_checkpoint_invalid");
+  });
+
   it("maps backend network errors to NetworkError", () => {
     const mapped = mapBackendError(new BackendError("offline", "E_NETWORK"), { cmd: "x" });
     expect(mapped).toBeInstanceOf(CliError);

@@ -35,6 +35,7 @@ describe("CloudBackend remote_create_policy", () => {
         conflict: "prefer-remote",
         quiet: true,
         confirm: true,
+        identityTransition: "adopt_remote",
       }),
     ).rejects.toThrow("remote_create_policy=diff");
     await expect(cache.getTask("202605051806-RMT1")).resolves.toBeNull();
@@ -60,6 +61,7 @@ describe("CloudBackend remote_create_policy", () => {
       conflict: "prefer-remote",
       quiet: true,
       confirm: true,
+      identityTransition: "adopt_remote",
     });
 
     await expect(cache.getTask("202605051806-RMT1")).resolves.toBeNull();
@@ -87,6 +89,7 @@ describe("CloudBackend remote_create_policy", () => {
       conflict: "prefer-remote",
       quiet: true,
       confirm: true,
+      identityTransition: "adopt_remote",
     });
 
     const imported = await cache.getTask("202605051806-RMT1");

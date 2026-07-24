@@ -5,6 +5,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 import { CloudBackend, LocalBackend, type TaskData } from "./task-backend.js";
+import { cloudProjectionIdentitySha256 } from "./task-backend/cloud-projection-identity.js";
+
+function cloudProjectionIdentity(provider: string | null): string {
+  return cloudProjectionIdentitySha256({
+    endpoint: "https://cloud.example",
+    projectId: "project-1",
+    provider,
+  });
+}
 
 function requestUrl(url: unknown): string {
   if (typeof url === "string") return url;
@@ -63,6 +72,7 @@ describe("CloudBackend regressions", () => {
         {
           last_checked_at: new Date().toISOString(),
           pending_push: null,
+          projection_identity_sha256: cloudProjectionIdentity("github-projects"),
         },
         null,
         2,
@@ -126,6 +136,7 @@ describe("CloudBackend regressions", () => {
             failed_at: "2026-05-05T01:00:00.000Z",
             reason: "Cloud backend request failed",
           },
+          projection_identity_sha256: cloudProjectionIdentity(null),
         },
         null,
         2,
@@ -173,6 +184,7 @@ describe("CloudBackend regressions", () => {
             failed_at: "2026-06-01T06:50:00.000Z",
             reason: "Cloud backend request failed: HTTP 502",
           },
+          projection_identity_sha256: cloudProjectionIdentity(null),
         },
         null,
         2,
@@ -229,6 +241,7 @@ describe("CloudBackend regressions", () => {
             failed_at: "2026-06-01T06:50:00.000Z",
             reason: "Cloud backend request failed: HTTP 502",
           },
+          projection_identity_sha256: cloudProjectionIdentity(null),
         },
         null,
         2,
@@ -322,6 +335,7 @@ describe("CloudBackend regressions", () => {
       conflict: "prefer-remote",
       quiet: true,
       confirm: true,
+      identityTransition: "adopt_remote",
     });
 
     await expect(cache.getTask("202605051806-D3E4")).resolves.toBeNull();
@@ -340,7 +354,14 @@ describe("CloudBackend regressions", () => {
     await mkdir(stateDir, { recursive: true });
     await writeFile(
       path.join(stateDir, "state.json"),
-      `${JSON.stringify({ last_checked_at: new Date().toISOString() }, null, 2)}\n`,
+      `${JSON.stringify(
+        {
+          last_checked_at: new Date().toISOString(),
+          projection_identity_sha256: cloudProjectionIdentity("github-projects"),
+        },
+        null,
+        2,
+      )}\n`,
       "utf8",
     );
     const fetchImpl = vi.fn<typeof fetch>(() =>

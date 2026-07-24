@@ -17,6 +17,8 @@ export type BackendSyncParsed = {
   watch: boolean;
   intervalMs: number;
   maxIterations: number;
+  bootstrapProjection?: boolean;
+  adoptProjectionIdentity?: boolean;
   yes: boolean;
   quiet: boolean;
 };
@@ -25,6 +27,8 @@ export type SyncParsed = {
   backendId: string | null;
   direction: "push" | "pull";
   conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+  bootstrapProjection?: boolean;
+  adoptProjectionIdentity?: boolean;
   yes: boolean;
   quiet: boolean;
 };
@@ -99,6 +103,7 @@ export async function cmdBackendSyncParsed(opts: {
   flags: BackendSyncParsed;
 }): Promise<number> {
   try {
+    const identityTransition = resolveSyncIdentityTransition(opts.flags);
     const { backend } = await resolveBackendCommandContext(opts, {
       command: "backend sync",
       operation: "sync",
@@ -134,6 +139,7 @@ export async function cmdBackendSyncParsed(opts: {
         conflict: opts.flags.conflict,
         quiet: opts.flags.quiet,
         confirm: opts.flags.yes,
+        identityTransition,
         intervalMs,
         maxIterations,
       });
@@ -143,6 +149,8 @@ export async function cmdBackendSyncParsed(opts: {
         conflict: opts.flags.conflict,
         quiet: opts.flags.quiet,
         confirm: opts.flags.yes,
+        identityOrigin: "explicit",
+        identityTransition,
       });
     }
     return 0;
@@ -157,6 +165,7 @@ async function runBackendSyncWatch(opts: {
   conflict: BackendSyncParsed["conflict"];
   quiet: boolean;
   confirm: boolean;
+  identityTransition: "adopt_remote" | "bootstrap_local" | "routine";
   intervalMs: number;
   maxIterations: number;
 }): Promise<void> {
@@ -174,6 +183,8 @@ async function runBackendSyncWatch(opts: {
         conflict: opts.conflict,
         quiet: opts.quiet,
         confirm: opts.confirm,
+        identityOrigin: "explicit",
+        identityTransition: opts.identityTransition,
       });
       if (opts.maxIterations > 0 && iteration >= opts.maxIterations) {
         break;
@@ -192,6 +203,7 @@ export async function cmdSyncParsed(opts: {
   flags: SyncParsed;
 }): Promise<number> {
   try {
+    const identityTransition = resolveSyncIdentityTransition(opts.flags);
     const { backend } = await resolveBackendCommandContext(opts, {
       command: "sync",
       operation: "sync",
@@ -206,12 +218,63 @@ export async function cmdSyncParsed(opts: {
       conflict: opts.flags.conflict,
       quiet: opts.flags.quiet,
       confirm: opts.flags.yes,
+      identityOrigin: "explicit",
+      identityTransition,
     });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "sync", root: opts.rootOverride ?? null });
   }
+}
+
+function resolveSyncIdentityTransition(flags: {
+  direction: "push" | "pull";
+  conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+  bootstrapProjection?: boolean;
+  adoptProjectionIdentity?: boolean;
+}): "adopt_remote" | "bootstrap_local" | "routine" {
+  if (flags.bootstrapProjection && flags.adoptProjectionIdentity) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        "backend sync accepts only one identity transition: --bootstrap-projection or --adopt-projection-identity",
+      context: {
+        command: "backend sync",
+        reason_code: "sync_identity_transition_conflict",
+      },
+    });
+  }
+  if (flags.bootstrapProjection) {
+    if (flags.direction !== "push" || flags.conflict !== "fail") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--bootstrap-projection requires --direction push --conflict=fail",
+        context: {
+          command: "backend sync",
+          reason_code: "sync_bootstrap_projection_invalid",
+        },
+      });
+    }
+    return "bootstrap_local";
+  }
+  if (flags.adoptProjectionIdentity) {
+    if (flags.direction !== "pull" || flags.conflict !== "prefer-remote") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--adopt-projection-identity requires --direction pull --conflict=prefer-remote",
+        context: {
+          command: "backend sync",
+          reason_code: "sync_adopt_projection_invalid",
+        },
+      });
+    }
+    return "adopt_remote";
+  }
+  return "routine";
 }
 
 export async function cmdBackendMigrateCanonicalStateParsed(opts: {

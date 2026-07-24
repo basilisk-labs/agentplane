@@ -18,6 +18,11 @@ export type CloudBackendState = {
   projection_identity_sha256: string | null;
 };
 
+export type CloudBackendSyncCheckpoint =
+  | { kind: "missing" }
+  | { kind: "invalid"; reason: "invalid_json" | "invalid_shape" }
+  | { kind: "valid"; state: CloudBackendState };
+
 function emptyCloudBackendState(): CloudBackendState {
   return {
     last_checked_at: null,
@@ -82,6 +87,37 @@ export async function observeContainedCloudBackendState(opts: {
   return emptyCloudBackendState();
 }
 
+export async function readContainedCloudBackendSyncCheckpoint(opts: {
+  repositoryRoot: string;
+  statePath: string;
+}): Promise<CloudBackendSyncCheckpoint> {
+  let text: string;
+  try {
+    text = await readContainedStableTextNoFollow({
+      repository_root: opts.repositoryRoot,
+      file_path: opts.statePath,
+      label: "cloud backend projection state",
+      max_bytes: CLOUD_BACKEND_STATE_MAX_BYTES,
+    });
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return { kind: "missing" };
+    throw err;
+  }
+
+  let raw: unknown;
+  try {
+    raw = JSON.parse(text) as unknown;
+  } catch (err) {
+    if (err instanceof SyntaxError) return { kind: "invalid", reason: "invalid_json" };
+    throw err;
+  }
+  if (!isValidCloudBackendStateShape(raw)) {
+    return { kind: "invalid", reason: "invalid_shape" };
+  }
+  return { kind: "valid", state: parseCloudBackendState(raw) };
+}
+
 export async function writeCloudBackendState(
   statePath: string,
   state: CloudBackendState,
@@ -97,4 +133,34 @@ function readPendingPush(input: unknown): CloudBackendPendingPush | null {
     failed_at: pending.failed_at,
     reason: pending.reason,
   };
+}
+
+function isValidCloudBackendStateShape(input: unknown): boolean {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return false;
+  const state = input as {
+    last_checked_at?: unknown;
+    last_start_ready_pull_at?: unknown;
+    pending_push?: unknown;
+    projection_identity_sha256?: unknown;
+  };
+  return (
+    isOptionalNullableString(state.last_checked_at) &&
+    isOptionalNullableString(state.last_start_ready_pull_at) &&
+    isOptionalPendingPush(state.pending_push) &&
+    (state.projection_identity_sha256 === undefined ||
+      state.projection_identity_sha256 === null ||
+      (typeof state.projection_identity_sha256 === "string" &&
+        SHA256_DIGEST_PATTERN.test(state.projection_identity_sha256)))
+  );
+}
+
+function isOptionalNullableString(input: unknown): boolean {
+  return input === undefined || input === null || typeof input === "string";
+}
+
+function isOptionalPendingPush(input: unknown): boolean {
+  if (input === undefined || input === null) return true;
+  if (typeof input !== "object" || Array.isArray(input)) return false;
+  const pending = input as { failed_at?: unknown; reason?: unknown };
+  return typeof pending.failed_at === "string" && typeof pending.reason === "string";
 }

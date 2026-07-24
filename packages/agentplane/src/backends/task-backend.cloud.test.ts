@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { captureStdIO, mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 import { CloudBackend, LocalBackend, type TaskData } from "./task-backend.js";
+import { cloudProjectionIdentitySha256 } from "./task-backend/cloud-projection-identity.js";
 
 function parseRequestBody<T>(body: unknown): T {
   if (typeof body !== "string") {
@@ -39,6 +40,16 @@ function makeTask(overrides: Partial<TaskData> & { id: string }): TaskData {
     verify: [],
     ...overrides,
   };
+}
+
+async function bootstrapCloudProjection(backend: CloudBackend): Promise<void> {
+  await backend.sync({
+    direction: "push",
+    conflict: "fail",
+    quiet: true,
+    confirm: true,
+    identityTransition: "bootstrap_local",
+  });
 }
 
 describe("CloudBackend", () => {
@@ -148,7 +159,18 @@ describe("CloudBackend", () => {
     await mkdir(stateDir, { recursive: true });
     await writeFile(
       path.join(stateDir, "state.json"),
-      `${JSON.stringify({ last_checked_at: "2026-05-05T00:00:00.000Z" }, null, 2)}\n`,
+      `${JSON.stringify(
+        {
+          last_checked_at: "2026-05-05T00:00:00.000Z",
+          projection_identity_sha256: cloudProjectionIdentitySha256({
+            endpoint: "https://cloud.example",
+            projectId: "project-1",
+            provider: "github-projects",
+          }),
+        },
+        null,
+        2,
+      )}\n`,
       "utf8",
     );
     const fetchImpl = vi.fn<typeof fetch>((url) => {
@@ -217,7 +239,7 @@ describe("CloudBackend", () => {
       { root: tempDir, cache, fetchImpl },
     );
 
-    await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
+    await bootstrapCloudProjection(backend);
 
     const firstCall = fetchImpl.mock.calls[0];
     if (!firstCall) throw new Error("Expected cloud backend to call fetch");
@@ -240,7 +262,18 @@ describe("CloudBackend", () => {
     await mkdir(stateDir, { recursive: true });
     await writeFile(
       path.join(stateDir, "state.json"),
-      `${JSON.stringify({ last_checked_at: "2026-05-05T00:00:00.000Z" }, null, 2)}\n`,
+      `${JSON.stringify(
+        {
+          last_checked_at: "2026-05-05T00:00:00.000Z",
+          projection_identity_sha256: cloudProjectionIdentitySha256({
+            endpoint: "https://cloud.example",
+            projectId: "project-1",
+            provider: "github-projects",
+          }),
+        },
+        null,
+        2,
+      )}\n`,
       "utf8",
     );
     const fetchImpl = vi.fn<typeof fetch>(() =>
@@ -261,6 +294,13 @@ describe("CloudBackend", () => {
     const stateText = await readFile(path.join(stateDir, "state.json"), "utf8");
     expect(stateText).toContain("2026-05-05T00:00:00.000Z");
     expect(stateText).not.toContain("2026-05-06T00:00:00.000Z");
+    expect(JSON.parse(stateText)).toMatchObject({
+      projection_identity_sha256: cloudProjectionIdentitySha256({
+        endpoint: "https://cloud.example",
+        projectId: "project-1",
+        provider: "github-projects",
+      }),
+    });
   });
 
   it("wraps aborted cloud requests with backend remediation", async () => {
@@ -279,9 +319,9 @@ describe("CloudBackend", () => {
       { root: tempDir, cache, fetchImpl },
     );
 
-    await expect(
-      backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true }),
-    ).rejects.toThrow("Safe command: agentplane backend inspect cloud --yes");
+    await expect(bootstrapCloudProjection(backend)).rejects.toThrow(
+      "Safe command: agentplane backend inspect cloud --yes",
+    );
   });
 
   it("wraps aborted cloud response bodies with backend remediation", async () => {
@@ -302,9 +342,9 @@ describe("CloudBackend", () => {
       { root: tempDir, cache, fetchImpl },
     );
 
-    await expect(
-      backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true }),
-    ).rejects.toThrow("Safe command: agentplane backend inspect cloud --yes");
+    await expect(bootstrapCloudProjection(backend)).rejects.toThrow(
+      "Safe command: agentplane backend inspect cloud --yes",
+    );
   });
 
   it("push sync uploads oversized projections in finalized batches", async () => {
@@ -343,7 +383,7 @@ describe("CloudBackend", () => {
       { root: tempDir, cache, fetchImpl },
     );
 
-    await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
+    await bootstrapCloudProjection(backend);
 
     const calls = fetchImpl.mock.calls.map(([url, init]) => ({
       url: requestUrl(url),
@@ -413,7 +453,7 @@ describe("CloudBackend", () => {
       { root: tempDir, cache, fetchImpl },
     );
 
-    await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
+    await bootstrapCloudProjection(backend);
 
     const calls = fetchImpl.mock.calls.map(([_url, init]) => {
       const body = parseRequestBody<{
@@ -468,7 +508,7 @@ describe("CloudBackend", () => {
       { root: tempDir, cache, fetchImpl },
     );
 
-    await backend.sync({ direction: "push", conflict: "diff", quiet: true, confirm: true });
+    await bootstrapCloudProjection(backend);
 
     const calls = fetchImpl.mock.calls.map(([_url, init]) => {
       const body = parseRequestBody<{
@@ -568,6 +608,7 @@ describe("CloudBackend", () => {
       conflict: "prefer-remote",
       quiet: true,
       confirm: true,
+      identityTransition: "adopt_remote",
     });
 
     const updated = await cache.getTask(task.id);
@@ -858,6 +899,7 @@ describe("CloudBackend", () => {
       conflict: "prefer-remote",
       quiet: true,
       confirm: true,
+      identityTransition: "adopt_remote",
     });
 
     expect(fetchImpl).toHaveBeenCalledTimes(2);
@@ -905,6 +947,7 @@ describe("CloudBackend", () => {
       conflict: "prefer-remote",
       quiet: true,
       confirm: true,
+      identityTransition: "adopt_remote",
     });
 
     expect(fetchImpl).toHaveBeenCalledTimes(2);
@@ -987,7 +1030,13 @@ describe("CloudBackend", () => {
     );
 
     await expect(
-      backend.sync({ direction: "pull", conflict: "prefer-remote", quiet: true, confirm: true }),
+      backend.sync({
+        direction: "pull",
+        conflict: "prefer-remote",
+        quiet: true,
+        confirm: true,
+        identityTransition: "adopt_remote",
+      }),
     ).rejects.toThrow("write failed");
     expect(writeTasks).toHaveBeenCalledTimes(1);
     await expect(

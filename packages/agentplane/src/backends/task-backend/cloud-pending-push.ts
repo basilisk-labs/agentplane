@@ -28,6 +28,7 @@ export function pendingCloudPushIdentityMismatchError(
       "Stop condition: do not push or pull until the intended remote identity is confirmed.",
     ].join("\n"),
     "E_BACKEND",
+    { reasonCode: "cloud_projection_pending_identity_mismatch" },
   );
 }
 

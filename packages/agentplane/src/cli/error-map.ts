@@ -88,8 +88,11 @@ export function mapCoreError(err: unknown, context: Record<string, unknown>): Cl
 
 export function mapBackendError(err: unknown, context: Record<string, unknown>): CliError {
   if (err instanceof BackendError) {
-    if (err.code === "E_NETWORK") return new NetworkError({ message: err.message, context });
-    return new BackendCliError({ message: err.message, context });
+    const backendContext = err.reasonCode ? { ...context, reason_code: err.reasonCode } : context;
+    if (err.code === "E_NETWORK") {
+      return new NetworkError({ message: err.message, context: backendContext });
+    }
+    return new BackendCliError({ message: err.message, context: backendContext });
   }
   return mapCoreError(err, context);
 }

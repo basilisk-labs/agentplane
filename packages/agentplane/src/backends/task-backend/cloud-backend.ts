@@ -3,6 +3,7 @@ import path from "node:path";
 import { loadDotEnv, type DotEnvLoadResult } from "../../shared/env.js";
 import {
   observeContainedCloudBackendState,
+  readContainedCloudBackendSyncCheckpoint,
   readCloudBackendState,
   writeCloudBackendState,
 } from "./cloud-backend-state.js";
@@ -42,6 +43,11 @@ import {
   type CloudConfigOverride,
 } from "./cloud-backend-utils.js";
 import { cloudProjectionIdentitySha256 } from "./cloud-projection-identity.js";
+import {
+  resolveCloudSyncProjectionIdentity,
+  type CloudSyncIdentityOrigin,
+  type CloudSyncIdentityTransition,
+} from "./cloud-sync-identity.js";
 import { firstNonEmptyString } from "./shared/strings.js";
 
 export type { CloudBackendSettings } from "./cloud-backend-settings.js";
@@ -251,6 +257,8 @@ export class CloudBackend implements TaskBackend {
       conflict: opts.conflict ?? "prefer-remote",
       quiet: opts.quiet ?? true,
       confirm: opts.allowNetwork,
+      identityOrigin: "automatic",
+      identityTransition: "routine",
     });
   }
 
@@ -264,7 +272,21 @@ export class CloudBackend implements TaskBackend {
       projectionIdentitySha256: this.projectionIdentitySha256,
       statePath: this.statePath,
       requestCloudSyncState: this.requestCloudSyncState.bind(this),
-      sync: this.sync.bind(this),
+      assertSyncIdentityReady: async () => {
+        await this.resolveSyncIdentity({
+          direction: "pull",
+          conflict: "prefer-remote",
+          identityOrigin: "automatic",
+          identityTransition: "routine",
+        });
+      },
+      sync: async (syncOpts) => {
+        await this.sync({
+          ...syncOpts,
+          identityOrigin: "automatic",
+          identityTransition: "routine",
+        });
+      },
     });
   }
 
@@ -273,10 +295,18 @@ export class CloudBackend implements TaskBackend {
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
     quiet: boolean;
     confirm: boolean;
+    identityOrigin?: CloudSyncIdentityOrigin;
+    identityTransition?: CloudSyncIdentityTransition;
     timeoutMs?: number;
     syncStateTimeoutMs?: number;
   }): Promise<void> {
     assertCloudBackendConfigured(this.configSnapshot());
+    const identityDecision = await this.resolveSyncIdentity({
+      direction: opts.direction,
+      conflict: opts.conflict,
+      identityOrigin: opts.identityOrigin ?? "explicit",
+      identityTransition: opts.identityTransition ?? "routine",
+    });
     await performCloudBackendSync(
       {
         provider: this.provider,
@@ -286,7 +316,6 @@ export class CloudBackend implements TaskBackend {
         cache: this.cache,
         request: this.request.bind(this),
         readState: this.readState.bind(this),
-        clearPendingPush: this.clearPendingPush.bind(this),
         assertNoPendingPushForPull: this.assertNoPendingPushForPull.bind(this),
         requestCloudSyncState: this.requestCloudSyncState.bind(this),
       },
@@ -297,6 +326,7 @@ export class CloudBackend implements TaskBackend {
         timeoutMs: opts.timeoutMs,
         syncStateTimeoutMs: opts.syncStateTimeoutMs,
         remoteCreatePolicy: this.remoteCreatePolicy,
+        bindProjectionIdentity: identityDecision.bindProjectionIdentity,
       },
     );
   }
@@ -336,6 +366,24 @@ export class CloudBackend implements TaskBackend {
     return await readCloudBackendState(this.statePath);
   }
 
+  private async resolveSyncIdentity(opts: {
+    direction: "push" | "pull";
+    conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+    identityOrigin: CloudSyncIdentityOrigin;
+    identityTransition: CloudSyncIdentityTransition;
+  }) {
+    return resolveCloudSyncProjectionIdentity({
+      ...opts,
+      checkpoint: await readContainedCloudBackendSyncCheckpoint({
+        repositoryRoot: this.repositoryRoot,
+        statePath: this.statePath,
+      }),
+      projectionIdentitySha256: this.projectionIdentitySha256,
+      origin: opts.identityOrigin,
+      transition: opts.identityTransition,
+    });
+  }
+
   private async ensureProjectionFreshForLocalMutation(opts: { reason: string }): Promise<void> {
     await ensureCloudProjectionFreshForLocalMutation(
       {
@@ -373,6 +421,8 @@ export class CloudBackend implements TaskBackend {
       conflict: "fail",
       quiet: true,
       confirm: true,
+      identityOrigin: "automatic",
+      identityTransition: "routine",
       timeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
       syncStateTimeoutMs: CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS,
     });
@@ -388,6 +438,8 @@ export class CloudBackend implements TaskBackend {
         conflict: "fail",
         quiet: true,
         confirm: true,
+        identityOrigin: "automatic",
+        identityTransition: "routine",
       });
     } catch (error) {
       await this.markPendingPush(error);

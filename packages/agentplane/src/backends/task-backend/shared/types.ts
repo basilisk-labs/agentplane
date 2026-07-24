@@ -238,6 +238,8 @@ export type TaskBackendSyncPort = {
     conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
     quiet: boolean;
     confirm: boolean;
+    identityOrigin?: "automatic" | "explicit";
+    identityTransition?: "adopt_remote" | "bootstrap_local" | "routine";
   }): Promise<void>;
 };
 

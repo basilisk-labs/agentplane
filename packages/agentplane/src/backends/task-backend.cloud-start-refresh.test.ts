@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkTempDir, silenceStdIO } from "@agentplane/testkit";
 
 import { CloudBackend, LocalBackend, type TaskData } from "./task-backend.js";
+import { cloudProjectionIdentitySha256 } from "./task-backend/cloud-projection-identity.js";
 
 function requestUrl(url: unknown): string {
   if (typeof url === "string") return url;
@@ -74,6 +75,11 @@ describe("CloudBackend task-start refresh", () => {
         {
           last_checked_at: new Date().toISOString(),
           last_start_ready_pull_at: "2000-01-01T00:00:00.000Z",
+          projection_identity_sha256: cloudProjectionIdentitySha256({
+            endpoint: "https://cloud.example",
+            projectId: "project-1",
+            provider: "github-projects",
+          }),
         },
         null,
         2,
@@ -143,6 +149,11 @@ describe("CloudBackend task-start refresh", () => {
         {
           last_checked_at: new Date().toISOString(),
           last_start_ready_pull_at: new Date().toISOString(),
+          projection_identity_sha256: cloudProjectionIdentitySha256({
+            endpoint: "https://cloud.example",
+            projectId: "project-1",
+            provider: "github-projects",
+          }),
         },
         null,
         2,
@@ -169,5 +180,43 @@ describe("CloudBackend task-start refresh", () => {
 
     await expect(backend.refreshProjectionBeforeTaskStart()).resolves.toBeUndefined();
     expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it("blocks legacy task-start identity adoption before network", async () => {
+    const stateDir = path.join(tempDir, ".agentplane", "backends", "cloud");
+    await mkdir(stateDir, { recursive: true });
+    const statePath = path.join(stateDir, "state.json");
+    const before = `${JSON.stringify(
+      {
+        last_checked_at: new Date().toISOString(),
+        last_start_ready_pull_at: "2000-01-01T00:00:00.000Z",
+      },
+      null,
+      2,
+    )}\n`;
+    await writeFile(statePath, before, "utf8");
+    const fetchImpl = vi.fn<typeof fetch>(() =>
+      Promise.resolve(Response.json({ error: "unexpected" }, { status: 500 })),
+    );
+    const backend = new CloudBackend(
+      {
+        endpoint: "https://cloud.example/",
+        token: "token",
+        project_id: "project-1",
+        provider: "github-projects",
+      },
+      {
+        root: tempDir,
+        cache: new LocalBackend({ dir: path.join(tempDir, ".agentplane", "tasks") }),
+        fetchImpl,
+        autoSyncNetworkAllowed: true,
+      },
+    );
+
+    await expect(backend.refreshProjectionBeforeTaskStart()).rejects.toThrow(
+      "requires explicit adoption",
+    );
+    expect(fetchImpl).not.toHaveBeenCalled();
+    await expect(readFile(statePath, "utf8")).resolves.toBe(before);
   });
 });

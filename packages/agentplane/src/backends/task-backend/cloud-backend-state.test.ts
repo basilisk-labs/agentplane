@@ -3,7 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
+import {
+  readCloudBackendState,
+  readContainedCloudBackendSyncCheckpoint,
+  writeCloudBackendState,
+} from "./cloud-backend-state.js";
 
 describe("cloud backend state", () => {
   it("falls back to stale state when state JSON is malformed", async () => {
@@ -16,6 +20,57 @@ describe("cloud backend state", () => {
       last_start_ready_pull_at: null,
       pending_push: null,
       projection_identity_sha256: null,
+    });
+  });
+
+  it.each([
+    ["malformed JSON", "{", "invalid_json"],
+    [
+      "invalid identity",
+      JSON.stringify({ projection_identity_sha256: "sha256:not-a-digest" }),
+      "invalid_shape",
+    ],
+    [
+      "invalid pending push",
+      JSON.stringify({ pending_push: { failed_at: 42, reason: "failed" } }),
+      "invalid_shape",
+    ],
+  ])("rejects %s in the strict sync checkpoint reader", async (_label, raw, reason) => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agentplane-cloud-state-"));
+    const statePath = path.join(dir, "state.json");
+    await writeFile(statePath, raw, "utf8");
+
+    await expect(
+      readContainedCloudBackendSyncCheckpoint({
+        repositoryRoot: dir,
+        statePath,
+      }),
+    ).resolves.toEqual({ kind: "invalid", reason });
+  });
+
+  it("distinguishes a missing sync checkpoint from a valid legacy checkpoint", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agentplane-cloud-state-"));
+    const statePath = path.join(dir, "state.json");
+
+    await expect(
+      readContainedCloudBackendSyncCheckpoint({
+        repositoryRoot: dir,
+        statePath,
+      }),
+    ).resolves.toEqual({ kind: "missing" });
+
+    await writeFile(statePath, JSON.stringify({ last_checked_at: "2026-05-14T09:00:00.000Z" }));
+    await expect(
+      readContainedCloudBackendSyncCheckpoint({
+        repositoryRoot: dir,
+        statePath,
+      }),
+    ).resolves.toMatchObject({
+      kind: "valid",
+      state: {
+        last_checked_at: "2026-05-14T09:00:00.000Z",
+        projection_identity_sha256: null,
+      },
     });
   });
 

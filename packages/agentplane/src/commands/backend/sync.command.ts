@@ -72,6 +72,20 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
       description:
         "Watch mode: stop after N iterations (0 means run until interrupted). Useful for tests.",
     },
+    {
+      kind: "boolean",
+      name: "bootstrap-projection",
+      default: false,
+      description:
+        "Explicitly bind a missing cloud checkpoint by pushing the confirmed local cache (requires push + conflict=fail).",
+    },
+    {
+      kind: "boolean",
+      name: "adopt-projection-identity",
+      default: false,
+      description:
+        "Explicitly adopt the active cloud identity and remote projection (requires pull + conflict=prefer-remote).",
+    },
     { kind: "boolean", name: "yes", default: false, description: "Auto-approve network access." },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],
@@ -91,6 +105,8 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
       typeof raw.opts["interval-ms"] === "string" ? Number(raw.opts["interval-ms"]) : 30_000,
     maxIterations:
       typeof raw.opts["max-iterations"] === "string" ? Number(raw.opts["max-iterations"]) : 0,
+    bootstrapProjection: raw.opts["bootstrap-projection"] === true,
+    adoptProjectionIdentity: raw.opts["adopt-projection-identity"] === true,
     yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
   }),
