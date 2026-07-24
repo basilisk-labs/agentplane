@@ -1,4 +1,8 @@
-import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "./git-path.js";
+import {
+  gitPathIsUnderPrefix,
+  gitPathPrefixIsUnderPrefix,
+  normalizeGitPathPrefix,
+} from "./git-path.js";
 
 export type ProtectedPathKind = "tasks" | "policy" | "config" | "hooks" | "ci";
 
@@ -13,7 +17,7 @@ function isSafeTaskPathSegment(taskId: string): boolean {
 }
 
 function taskWorkflowPrefixIsUnderWorkflowDir(workflowDir: string, taskPrefix: string): boolean {
-  return taskPrefix === workflowDir || gitPathIsUnderPrefix(taskPrefix, workflowDir);
+  return taskPrefix === workflowDir || gitPathPrefixIsUnderPrefix(taskPrefix, workflowDir);
 }
 
 function taskWorkflowPrefix(

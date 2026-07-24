@@ -1,11 +1,12 @@
-import { constants, type BigIntStats } from "node:fs";
-import { lstat, mkdir, open } from "node:fs/promises";
+import { constants } from "node:fs";
+import { mkdir, open } from "node:fs/promises";
 import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
 
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import type { InvalidRunnerResultManifestError } from "./result-manifest.js";
+import { readStableRegularFileNoFollow } from "./stable-file.js";
 import type {
   AgentReportedClaimConflict,
   AgentReportedSemanticResult,
@@ -19,67 +20,6 @@ import type {
 const INVALID_RESULT_MANIFEST_SUFFIX = ".invalid.json";
 const SOURCE_RESULT_MANIFEST_SUFFIX = ".source.json";
 const NO_FOLLOW = constants.O_NOFOLLOW ?? 0;
-const NON_BLOCKING = constants.O_NONBLOCK ?? 0;
-
-type StableFileIdentity = {
-  dev: bigint;
-  ino: bigint;
-  size: bigint;
-  mtime_ns: bigint;
-  ctime_ns: bigint;
-};
-
-function stableFileIdentity(stat: BigIntStats): StableFileIdentity {
-  return {
-    dev: BigInt(stat.dev),
-    ino: BigInt(stat.ino),
-    size: BigInt(stat.size),
-    mtime_ns: BigInt(stat.mtimeNs),
-    ctime_ns: BigInt(stat.ctimeNs),
-  };
-}
-
-function stableFileIdentitiesMatch(left: StableFileIdentity, right: StableFileIdentity): boolean {
-  return (
-    left.dev === right.dev &&
-    left.ino === right.ino &&
-    left.size === right.size &&
-    left.mtime_ns === right.mtime_ns &&
-    left.ctime_ns === right.ctime_ns
-  );
-}
-
-async function readStableRegularFileNoFollow(filePath: string, label: string): Promise<Buffer> {
-  const pathStat = await lstat(filePath, { bigint: true });
-  if (!pathStat.isFile() || pathStat.isSymbolicLink()) {
-    throw new Error(`Refusing non-regular ${label}: ${filePath}`);
-  }
-  const pathIdentity = stableFileIdentity(pathStat);
-  let handle;
-  try {
-    handle = await open(filePath, constants.O_RDONLY | NO_FOLLOW | NON_BLOCKING);
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ELOOP") {
-      throw new Error(`Refusing non-regular ${label}: ${filePath}`);
-    }
-    throw error;
-  }
-  try {
-    const before = await handle.stat({ bigint: true });
-    if (!before.isFile() || !stableFileIdentitiesMatch(pathIdentity, stableFileIdentity(before))) {
-      throw new Error(`${label} changed before it could be snapshotted: ${filePath}`);
-    }
-    const beforeIdentity = stableFileIdentity(before);
-    const content = await handle.readFile();
-    const after = await handle.stat({ bigint: true });
-    if (!after.isFile() || !stableFileIdentitiesMatch(beforeIdentity, stableFileIdentity(after))) {
-      throw new Error(`${label} changed while it was being snapshotted: ${filePath}`);
-    }
-    return content;
-  } finally {
-    await handle.close();
-  }
-}
 
 export function invalidRunnerResultManifestPath(resultPath: string): string {
   const dir = path.dirname(resultPath);

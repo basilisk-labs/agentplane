@@ -29,12 +29,14 @@ export function createTimeoutController(opts: {
   mutable: TimeoutRefState;
   is_settled: () => boolean;
   finish_with_error: (err: unknown) => void;
+  assert_artifact_boundary?: () => Promise<void>;
 }) {
   let idleTimer: NodeJS.Timeout | null = null;
   let wallTimer: NodeJS.Timeout | null = null;
   let killTimer: NodeJS.Timeout | null = null;
 
   const patchRunningSupervision = async (patch: Partial<RunnerSupervisionState>) => {
+    await opts.assert_artifact_boundary?.();
     const currentState = await readRunnerRunState(opts.state_path);
     if (!currentState) return;
     await writeRunnerRunState({
@@ -46,6 +48,7 @@ export function createTimeoutController(opts: {
         supervision: mergeSupervisionState(currentState.supervision, patch),
       }),
     });
+    await opts.assert_artifact_boundary?.();
   };
 
   const requestTimeout = (reason: RunnerTimeoutReason) => {
@@ -53,25 +56,30 @@ export function createTimeoutController(opts: {
     opts.mutable.timeoutReason = reason;
     opts.mutable.timeoutRequestedAt = new Date().toISOString();
     opts.mutable.terminateSentAt = opts.mutable.timeoutRequestedAt;
+    const timeoutRequestedAt = opts.mutable.timeoutRequestedAt;
     void patchRunningSupervision({
       timeout_reason: reason,
       timeout_requested_at: opts.mutable.timeoutRequestedAt,
       terminate_sent_at: opts.mutable.terminateSentAt,
       heartbeat_at: opts.mutable.timeoutRequestedAt,
     }).catch(opts.finish_with_error);
-    void appendRunnerEvent({
-      events_path: opts.events_path,
-      event: {
-        at: opts.mutable.timeoutRequestedAt,
-        type: "runner_timeout_requested",
-        message: `runner timeout requested (${reason})`,
-        data: {
-          reason,
-          pid: opts.pid,
-          timeout_policy: opts.timeout_policy,
+    void (async () => {
+      await opts.assert_artifact_boundary?.();
+      await appendRunnerEvent({
+        events_path: opts.events_path,
+        event: {
+          at: timeoutRequestedAt,
+          type: "runner_timeout_requested",
+          message: `runner timeout requested (${reason})`,
+          data: {
+            reason,
+            pid: opts.pid,
+            timeout_policy: opts.timeout_policy,
+          },
         },
-      },
-    }).catch(opts.finish_with_error);
+      });
+      await opts.assert_artifact_boundary?.();
+    })().catch(opts.finish_with_error);
     if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
       try {
         process.kill(opts.signal_pid, "SIGTERM");
@@ -110,6 +118,8 @@ export function createTimeoutController(opts: {
       if (opts.is_settled() || !opts.mutable.timeoutReason) return;
       if (!opts.signal_pid || !isProcessAlive(opts.signal_pid)) return;
       opts.mutable.killSentAt = new Date().toISOString();
+      const killSentAt = opts.mutable.killSentAt;
+      const timeoutReason = opts.mutable.timeoutReason;
       void patchRunningSupervision({
         timeout_reason: opts.mutable.timeoutReason,
         timeout_requested_at: opts.mutable.timeoutRequestedAt,
@@ -118,19 +128,23 @@ export function createTimeoutController(opts: {
         force_killed: true,
         heartbeat_at: opts.mutable.killSentAt,
       }).catch(opts.finish_with_error);
-      void appendRunnerEvent({
-        events_path: opts.events_path,
-        event: {
-          at: opts.mutable.killSentAt,
-          type: "runner_timeout_force_kill",
-          message: `runner force-killed after timeout (${opts.mutable.timeoutReason})`,
-          data: {
-            reason: opts.mutable.timeoutReason,
-            pid: opts.pid,
-            timeout_policy: opts.timeout_policy,
+      void (async () => {
+        await opts.assert_artifact_boundary?.();
+        await appendRunnerEvent({
+          events_path: opts.events_path,
+          event: {
+            at: killSentAt,
+            type: "runner_timeout_force_kill",
+            message: `runner force-killed after timeout (${timeoutReason})`,
+            data: {
+              reason: timeoutReason,
+              pid: opts.pid,
+              timeout_policy: opts.timeout_policy,
+            },
           },
-        },
-      }).catch(opts.finish_with_error);
+        });
+        await opts.assert_artifact_boundary?.();
+      })().catch(opts.finish_with_error);
       if (opts.signal_pid && isProcessAlive(opts.signal_pid)) {
         try {
           process.kill(opts.signal_pid, "SIGKILL");

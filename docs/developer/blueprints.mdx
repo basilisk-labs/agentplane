@@ -602,13 +602,19 @@ Required surfaces:
 Runner artifacts are task-run artifacts, not task lifecycle state. They live under:
 
 ```text
-.agentplane/tasks/<task-id>/runs/<run-id>/
+<git-common-dir>/agentplane/runner/tasks/<task-id>/runs/<run-id>/
   bundle.json
   blueprint-plan.json
   blueprint-execution-plan.json
   blueprint-execution-state.json
   context-manifest.json
 ```
+
+This supervisor-owned storage is shared by linked worktrees and survives worktree cleanup. Native
+Codex `read-only` and `workspace-write` sandboxes cannot write it. `danger-full-access` and
+host-authority custom or Hermes runners can address it, so their filesystem authority remains
+unverified. Consumers resolve artifacts through runner status, inspect, and logs APIs rather than
+constructing paths from the current checkout.
 
 The execution plan is deterministic for a prepared run. It contains ordered node contracts,
 dependencies, allowed commands, policy modules, expected evidence, accepted recipe extensions, and

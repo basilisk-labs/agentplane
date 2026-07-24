@@ -1,3 +1,4 @@
+import { realpath } from "node:fs/promises";
 import path from "node:path";
 
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
@@ -10,20 +11,21 @@ import { createRunnerAdapter } from "../adapters/index.js";
 import { runnerAdapterCancelledResult } from "../adapters/shared.js";
 import { evolveRunnerRunState } from "../artifacts.js";
 import { isProcessAlive, readObservedProcessIdentity } from "../process-supervision/signals.js";
-import { assertRunnerBundleMatchesTask, RunnerRunRepository } from "../run-repository.js";
+import {
+  assertRunnerBundleArtifactPaths,
+  assertRunnerBundleMatchesTask,
+  assertRunnerStateMatchesBundle,
+  RunnerRunRepository,
+} from "../run-repository.js";
 import type {
-  RunnerContextBundle,
+  RunnerInvocation,
   RunnerLifecycleStatus,
   RunnerProcessSignal,
-  RunnerResult,
   RunnerRunState,
 } from "../types.js";
 
-import {
-  assertRunnerTaskExecutable,
-  type ExecutedTaskRunnerExecution,
-  type PreparedTaskRunnerExecution,
-} from "./task-run.js";
+import { assertRunnerTaskExecutable } from "./task-run-authority.js";
+import type { ExecutedTaskRunnerExecution, PreparedTaskRunnerExecution } from "./task-run.js";
 
 export type LoadedRunnerExecution = PreparedTaskRunnerExecution & {
   ctx: CommandContext;
@@ -31,14 +33,18 @@ export type LoadedRunnerExecution = PreparedTaskRunnerExecution & {
   repository: RunnerRunRepository;
 };
 
+type LoadedRunnerRun = Omit<LoadedRunnerExecution, "invocation">;
+
 export type CancelledTaskRunnerExecution = LoadedRunnerExecution & {
   previous_status: RunnerLifecycleStatus;
   changed: boolean;
 };
 
-export type ResumedTaskRunnerExecution = LoadedRunnerExecution & {
+export type ResumedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
+  ctx: CommandContext;
+  source_run_id: string;
+  source_status: RunnerLifecycleStatus;
   previous_status: RunnerLifecycleStatus;
-  result: RunnerResult;
 };
 
 export type RetriedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
@@ -47,7 +53,16 @@ export type RetriedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
   source_status: RunnerLifecycleStatus;
 };
 
-function assertCurrentTaskDoing(taskId: string, task: TaskData | null): void {
+export type RunnerReplayAction = "resume" | "retry";
+
+export function runnerReplayDangerAuthoritySource(action: RunnerReplayAction): string {
+  return `task run ${action} --allow-danger-full-access`;
+}
+
+export function assertCurrentTaskDoing(
+  taskId: string,
+  task: TaskData | null,
+): asserts task is TaskData {
   if (!task) {
     throw new CliError({
       exitCode: 4,
@@ -63,17 +78,6 @@ function assertCurrentTaskDoing(taskId: string, task: TaskData | null): void {
     message:
       `${taskId}: runner lifecycle commands require task status DOING ` +
       `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${taskId} --author <ROLE> --body "Start: ..."\` first).`,
-  });
-}
-
-export function assertExecuteMode(bundle: RunnerContextBundle, action: "resume" | "retry"): void {
-  if (bundle.execution.mode === "execute") return;
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message:
-      `runner ${action} requires an execute-mode run ` +
-      `(current=${JSON.stringify(bundle.execution.mode)}; dry-run artifacts cannot be ${action}d).`,
   });
 }
 
@@ -197,31 +201,40 @@ export function buildSyntheticCancelledState(opts: {
   });
 }
 
-export async function loadExistingRunnerExecution(opts: {
+async function loadExistingRunnerRun(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string | null;
   task_id: string;
   run_id: string;
   require_task_doing?: boolean;
-}): Promise<LoadedRunnerExecution> {
+}): Promise<LoadedRunnerRun> {
   const command =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const executionContext = await makeReadOnlyExecutionContext(command);
+  const currentTask = await executionContext.backend.task_backend.getTask(opts.task_id);
   if (opts.require_task_doing !== false) {
-    assertCurrentTaskDoing(
-      opts.task_id,
-      await executionContext.backend.task_backend.getTask(opts.task_id),
-    );
+    assertCurrentTaskDoing(opts.task_id, currentTask);
   }
 
-  const repository = RunnerRunRepository.forTaskRun({
-    git_root: executionContext.repo.git_root,
-    workflow_dir: executionContext.repo.workflow_dir,
-    task_id: opts.task_id,
-    run_id: opts.run_id,
-  });
+  let repository: RunnerRunRepository;
+  try {
+    repository = await RunnerRunRepository.openExistingTaskRun({
+      git_root: executionContext.repo.git_root,
+      workflow_dir: executionContext.repo.workflow_dir,
+      task_id: opts.task_id,
+      run_id: opts.run_id,
+      storage: "supervisor",
+    });
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw err;
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `Runner artifacts not found for ${opts.task_id}:${opts.run_id}`,
+    });
+  }
   const record = await repository.readRecord();
   if (!record) {
     throw new CliError({
@@ -231,15 +244,75 @@ export async function loadExistingRunnerExecution(opts: {
     });
   }
   assertRunnerBundleMatchesTask(record.bundle, opts.task_id, opts.run_id);
+  assertRunnerBundleArtifactPaths(record.bundle, repository.paths, opts.task_id, opts.run_id);
+  let declaredRepositoryRoot: string;
+  let expectedRepositoryRoot: string;
+  try {
+    [declaredRepositoryRoot, expectedRepositoryRoot] = await Promise.all([
+      realpath(path.resolve(record.bundle.repository.git_root)),
+      realpath(path.resolve(executionContext.repo.git_root)),
+    ]);
+  } catch (err) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message:
+        `Runner bundle repository root is unavailable for ${opts.task_id}:${opts.run_id}: ` +
+        `${err instanceof Error ? err.message : String(err)}`,
+    });
+  }
+  if (declaredRepositoryRoot !== expectedRepositoryRoot) {
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message:
+        `Runner bundle repository root mismatch for ${opts.task_id}:${opts.run_id} ` +
+        `(declared=${JSON.stringify(declaredRepositoryRoot)}; ` +
+        `expected=${JSON.stringify(expectedRepositoryRoot)})`,
+      context: {
+        task_id: opts.task_id,
+        run_id: opts.run_id,
+        declared_repository_root: declaredRepositoryRoot,
+        expected_repository_root: expectedRepositoryRoot,
+      },
+    });
+  }
+  assertRunnerStateMatchesBundle(
+    record.state,
+    record.bundle,
+    repository.paths,
+    opts.task_id,
+    opts.run_id,
+  );
   assertRunnerTaskExecutable(record.bundle);
 
-  const adapter = createRunnerAdapter(executionContext.config);
-  const invocation = await adapter.prepare(record.bundle);
   return {
     ctx: executionContext.command,
     bundle: record.bundle,
-    invocation,
     state: record.state,
     repository,
   };
+}
+
+async function prepareLoadedRunnerExecution(
+  loaded: LoadedRunnerRun,
+): Promise<LoadedRunnerExecution> {
+  const invocation: RunnerInvocation = await createRunnerAdapter(loaded.ctx.config).prepare(
+    loaded.bundle,
+  );
+  return {
+    ...loaded,
+    invocation,
+  };
+}
+
+export async function loadExistingRunnerExecution(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string | null;
+  task_id: string;
+  run_id: string;
+  require_task_doing?: boolean;
+}): Promise<LoadedRunnerExecution> {
+  return await prepareLoadedRunnerExecution(await loadExistingRunnerRun(opts));
 }

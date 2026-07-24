@@ -49,6 +49,33 @@ function normalizeStringList(values: string[] | undefined): string[] | undefined
   return normalized.length > 0 ? normalized : undefined;
 }
 
+function normalizeDurableEvidencePaths(values: string[] | undefined): string[] | undefined {
+  const normalized = normalizeStringList(values)?.filter((value) => {
+    const portable = value.replaceAll("\\", "/");
+    return (
+      !path.isAbsolute(value) &&
+      !path.win32.isAbsolute(value) &&
+      !/(?:^|\/)\.agentplane\/tasks\/[^/]+\/runs\/[^/]+\//u.test(portable) &&
+      !/(?:^|\/)(?:\.git\/)?agentplane\/runner\/tasks\/[^/]+\/runs\/[^/]+\//u.test(portable)
+    );
+  });
+  return normalized && normalized.length > 0 ? normalized : undefined;
+}
+
+export function projectDurableTaskHandoffRunnerHint(
+  runner: TaskHandoffRunnerHint,
+): TaskHandoffRunnerHint {
+  return {
+    run_id: runner.run_id,
+    status: runner.status,
+    heartbeat_at: runner.heartbeat_at,
+    next_action: runner.next_action,
+    next_command: runner.next_command,
+    resume_command: runner.resume_command,
+    retry_command: runner.retry_command,
+  };
+}
+
 function normalizeRoute(route: TaskHandoffRoute | undefined): TaskHandoffRoute | undefined {
   if (!route) return undefined;
   return {
@@ -197,12 +224,12 @@ export function buildTaskHandoffArtifact(opts: {
     head_sha: trimOrNull(opts.head_sha),
     workspace_root: trimOrNull(opts.workspace_root),
     pr_branch: trimOrNull(opts.pr_branch),
-    runner: opts.runner,
+    runner: opts.runner ? projectDurableTaskHandoffRunnerHint(opts.runner) : undefined,
     route: normalizeRoute(opts.route),
     next_actions: normalizeStringList(opts.next_actions),
     risks: normalizeStringList(opts.risks),
     open_questions: normalizeStringList(opts.open_questions),
-    evidence_paths: normalizeStringList(opts.evidence_paths),
+    evidence_paths: normalizeDurableEvidencePaths(opts.evidence_paths),
   } satisfies TaskHandoffArtifact);
 }
 

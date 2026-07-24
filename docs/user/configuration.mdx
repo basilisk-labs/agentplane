@@ -110,9 +110,15 @@ prompts.
 
 Runner configuration controls the local `agentplane task run <task-id>` execution path. The default
 adapter is `codex`; it runs Codex non-interactively against the prepared AgentPlane bundle and starts
-the prompt with `/goal ...`. Runner state, events, trace, and stderr artifacts are written under
-`.agentplane/tasks/<task-id>/runs/<run-id>/` and can be inspected with `agentplane task run status`,
-`agentplane task run inspect`, and `agentplane task run logs`.
+the prompt with `/goal ...`. Production run state, events, receipts, traces, and stderr are stored in
+supervisor-owned local Git administration storage. Native Codex `read-only` and `workspace-write`
+sandboxes cannot write that storage. `danger-full-access` and host-authority custom or Hermes
+runners can address it, so their filesystem authority remains unverified. Inspect artifacts with
+`agentplane task run status`, `agentplane task run inspect`, and `agentplane task run logs`; their
+internal filesystem location is not a public mutation surface.
+
+The workflow field `observability.runs_dir` is informational and reserved. AgentPlane enforces the
+Git-common-dir runner layout; changing this field does not override production artifact storage.
 
 ### runner.custom
 

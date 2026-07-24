@@ -1,10 +1,7 @@
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
-import { RunnerRunRepository } from "../../runner/run-repository.js";
-import { readTraceArtifactText } from "../../runner/trace-artifacts.js";
 import type { LoadedTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import type { RunnerLifecycleStatus } from "../../runner/types.js";
 import { isProcessAlive } from "../../runner/process-supervision/signals.js";
-import { CliError } from "../../shared/errors.js";
 import type { TaskRunLogsParsed } from "./run-parse.js";
 
 export function renderTaskRunPayload(opts: {
@@ -17,6 +14,8 @@ export function renderTaskRunPayload(opts: {
   bootstrapPath: string;
   resultPath: string;
   status?: string;
+  verificationState?: string;
+  receiptPath?: string;
   exitCode?: number | null;
   summary?: string;
 }) {
@@ -30,6 +29,8 @@ export function renderTaskRunPayload(opts: {
     bootstrap_path: opts.bootstrapPath,
     result_path: opts.resultPath,
     ...(opts.status ? { status: opts.status } : {}),
+    ...(opts.verificationState ? { verification_state: opts.verificationState } : {}),
+    ...(opts.receiptPath ? { receipt_path: opts.receiptPath } : {}),
     ...(opts.exitCode === undefined ? {} : { exit_code: opts.exitCode }),
     ...(opts.summary ? { summary: opts.summary } : {}),
   };
@@ -58,6 +59,7 @@ function runnerProcessAlive(inspection: LoadedTaskRunnerInspection): boolean | n
 export function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection) {
   const state = inspection.state;
   const supervision = state.supervision ?? null;
+  const executionReceipt = state.result?.execution_receipt ?? null;
   return {
     task_id: inspection.task_id,
     run_id: inspection.run_id,
@@ -75,6 +77,8 @@ export function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection
     pid_alive: runnerProcessAlive(inspection),
     exit_code: state.result?.exit_code ?? null,
     summary: state.result?.summary ?? null,
+    verification_state: executionReceipt?.verification_state ?? null,
+    receipt_path: executionReceipt?.path ?? null,
     paths: {
       run_dir: inspection.paths.run_dir,
       state: inspection.paths.state_path,
@@ -87,6 +91,34 @@ export function renderRunnerStatusPayload(inspection: LoadedTaskRunnerInspection
       bootstrap: inspection.paths.bootstrap_path,
     },
   };
+}
+
+function renderRunnerStatusReportEntries(payload: ReturnType<typeof renderRunnerStatusPayload>) {
+  return [
+    { label: "task", value: payload.task_id },
+    { label: "run", value: payload.run_id },
+    { label: "status", value: payload.status },
+    { label: "verification", value: payload.verification_state },
+    { label: "mode", value: payload.mode },
+    { label: "adapter", value: payload.adapter_id },
+    { label: "updated_at", value: payload.updated_at },
+    { label: "heartbeat_at", value: payload.heartbeat_at },
+    { label: "pid", value: payload.pid },
+    { label: "pid_alive", value: payload.pid_alive },
+    { label: "summary", value: payload.summary },
+    { label: "receipt", value: payload.receipt_path },
+    { label: "state", value: payload.paths.state },
+    { label: "trace", value: payload.paths.trace },
+  ];
+}
+
+export function reportRunnerStatus(
+  payload: ReturnType<typeof renderRunnerStatusPayload>,
+  taskId: string,
+): void {
+  createCliEmitter().report(renderRunnerStatusReportEntries(payload), {
+    header: infoMessage(`task runner status: ${taskId}`),
+  });
 }
 
 export function renderRunnerInspectPayload(
@@ -108,27 +140,15 @@ export async function loadRunnerLogText(
 ): Promise<string> {
   if (stream === "events") return inspection.events_text;
   if (stream === "trace") {
-    const repository = new RunnerRunRepository(inspection.paths);
-    return await repository.readTraceTextRequired({
+    return await inspection.repository.readTraceTextRequired({
       task_id: inspection.task_id,
       run_id: inspection.run_id,
     });
   }
-  try {
-    return await readTraceArtifactText(inspection.paths.stderr_path);
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException | null)?.code;
-    if (code === "ENOENT") {
-      throw new CliError({
-        exitCode: 4,
-        code: "E_IO",
-        message:
-          `Runner artifact not found for ${inspection.task_id}:${inspection.run_id} ` +
-          `(stderr at ${inspection.paths.stderr_path} or ${inspection.paths.stderr_path}.gz)`,
-      });
-    }
-    throw err;
-  }
+  return await inspection.repository.readStderrTextRequired({
+    task_id: inspection.task_id,
+    run_id: inspection.run_id,
+  });
 }
 
 export function reportPreparedTaskRun(
@@ -160,9 +180,11 @@ export function reportExecutedTaskRun(
       { label: "adapter", value: payload.adapter_id },
       { label: "run", value: payload.run_id },
       { label: "status", value: payload.status ?? "unknown" },
+      { label: "verification", value: payload.verification_state ?? "unavailable" },
       { label: "exit_code", value: payload.exit_code ?? null },
       { label: "summary", value: payload.summary ?? null },
       { label: "result", value: payload.result_path },
+      { label: "receipt", value: payload.receipt_path ?? null },
     ],
     { header: infoMessage(`task run completed: ${taskId}`) },
   );

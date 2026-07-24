@@ -4,6 +4,7 @@ import type {
   ExecutionReceiptGitObservation,
   ExecutionReceiptObservedCheck,
   ExecutionReceiptProcessObservation,
+  ExecutionReceiptScopeEvaluation,
   ExecutionReceiptSuccessPolicy,
 } from "@agentplaneorg/core/schemas";
 
@@ -15,9 +16,16 @@ export function evaluateExecutionSuccessPolicy(opts: {
   artifacts: ExecutionReceiptArtifactObservation[];
   checks: ExecutionReceiptObservedCheck[];
   collection: ExecutionReceiptCollection;
+  scope_evaluation: ExecutionReceiptScopeEvaluation;
 }): ExecutionReceiptSuccessPolicy {
   const rejectionReasons: string[] = [];
   const unverifiedReasons: string[] = [];
+  const filesystemEffectsEnforced = opts.checks.some(
+    (check) =>
+      check.id === "runner.sandbox.filesystem_effects_enforced" &&
+      check.required &&
+      check.status === "passed",
+  );
   if (
     opts.process.outcome !== "exited" ||
     opts.process.exit_code !== 0 ||
@@ -26,7 +34,7 @@ export function evaluateExecutionSuccessPolicy(opts: {
   ) {
     rejectionReasons.push("process did not complete with a clean observed exit");
   }
-  if (opts.process.process_tree.containment_state !== "bounded") {
+  if (opts.process.process_tree.containment_state !== "bounded" && !filesystemEffectsEnforced) {
     unverifiedReasons.push(
       opts.process.process_tree.containment_limitation ??
         "bounded descendant containment was not established",
@@ -37,6 +45,28 @@ export function evaluateExecutionSuccessPolicy(opts: {
   }
   if (opts.collection.status !== "complete") {
     unverifiedReasons.push("receipt collection is partial");
+  }
+  switch (opts.scope_evaluation.state) {
+    case "rejected": {
+      rejectionReasons.push(
+        ...opts.scope_evaluation.violations.map(
+          (violation) => `${violation.kind} write observed: ${violation.path}`,
+        ),
+      );
+      unverifiedReasons.push(...opts.scope_evaluation.limitations);
+      break;
+    }
+    case "unverified": {
+      unverifiedReasons.push(...opts.scope_evaluation.limitations);
+      break;
+    }
+    case "not_evaluated": {
+      unverifiedReasons.push("write scope was not evaluated");
+      break;
+    }
+    case "passed": {
+      break;
+    }
   }
   for (const artifact of opts.artifacts) {
     if (artifact.required && artifact.state !== "present") {

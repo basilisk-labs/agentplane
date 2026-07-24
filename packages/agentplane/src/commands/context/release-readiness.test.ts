@@ -6,13 +6,13 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
+import { validateContextTaskArtifacts } from "../../context/verify-task.js";
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextIngest } from "./ingest.js";
 import { cmdContextInit } from "./init.js";
 import { cmdContextReindex, readContextProjection } from "./reindex.js";
 import { cmdContextSearch } from "./search.js";
 import { cmdContextShow } from "./show.js";
-import { cmdContextVerifyTask } from "./verify-task.js";
 import { createTaskNewParsed } from "../../context/ingest-task.js";
 import type { ManifestEntry } from "../../context/ingest.js";
 import { cmdContextWikiExplain, cmdContextWikiLint, cmdContextWikiNew } from "./wiki.js";
@@ -531,7 +531,7 @@ describe("context release readiness guards", () => {
         },
       },
     };
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: [".agentplane/context/derived/facts/facts.jsonl"],
@@ -546,10 +546,10 @@ describe("context release readiness guards", () => {
     } as unknown as CommandContext;
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/fact row has no source_ref/u);
   });
@@ -579,7 +579,7 @@ describe("context release readiness guards", () => {
         },
       },
     };
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: [".agentplane/context/agentplane.context.yaml", "context/wiki/AGENTS.md"],
@@ -594,10 +594,10 @@ describe("context release readiness guards", () => {
     } as unknown as CommandContext;
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
-    await cmdContextVerifyTask({
+    await validateContextTaskArtifacts({
       ctx,
-      cwd: root,
-      parsed: { taskId: task.id },
+      task,
+      changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
     });
 
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
@@ -628,7 +628,7 @@ describe("context release readiness guards", () => {
         },
       },
     };
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: [],
@@ -643,10 +643,10 @@ describe("context release readiness guards", () => {
     } as unknown as CommandContext;
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/extensions\.agentplane\.context\.source_set\.files must not be empty/u);
   });

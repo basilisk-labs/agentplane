@@ -8,7 +8,8 @@ import {
   schemaErrors,
 } from "../tasks/task-artifact-schema.shared.js";
 
-export const EXECUTION_RECEIPT_SCHEMA_VERSION = 1 as const;
+export const EXECUTION_RECEIPT_LEGACY_SCHEMA_VERSION = 1 as const;
+export const EXECUTION_RECEIPT_SCHEMA_VERSION = 2 as const;
 export const EXECUTION_RECEIPT_KIND = "execution_receipt" as const;
 export const EXECUTION_RECEIPT_OBSERVER = "agentplane" as const;
 export const EXECUTION_RECEIPT_PROVENANCE = "supervisor_observed" as const;
@@ -51,6 +52,12 @@ export const EXECUTION_RECEIPT_SUCCESS_POLICY_OUTCOME_VALUES = [
   "rejected",
   "unverified",
 ] as const;
+const EXECUTION_RECEIPT_SANDBOX_VALUES = [
+  "read-only",
+  "workspace-write",
+  "danger-full-access",
+] as const;
+const EXECUTION_RECEIPT_DANGER_SANDBOX = EXECUTION_RECEIPT_SANDBOX_VALUES[2];
 
 const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const GIT_OID_SCHEMA = z.string().regex(/^[0-9a-f]{7,64}$/u);
@@ -60,6 +67,7 @@ const PROCESS_SIGNAL_SCHEMA = z
   .regex(/^SIG[A-Z0-9]+$/u)
   .nullable();
 const TIMEOUT_REASON_SCHEMA = z.enum(["idle", "wall_clock"]).nullable();
+const EXECUTION_RECEIPT_SANDBOX_ZOD_SCHEMA = z.enum(EXECUTION_RECEIPT_SANDBOX_VALUES);
 
 const SUPERVISOR_PROVENANCE_SHAPE = {
   provenance: z.literal(EXECUTION_RECEIPT_PROVENANCE),
@@ -313,7 +321,114 @@ const EXECUTION_RECEIPT_COLLECTION_ZOD_SCHEMA = z.discriminatedUnion("status", [
     .strict(),
 ]);
 
-const EXECUTION_RECEIPT_SCOPE_EVALUATION_ZOD_SCHEMA = z
+const EXECUTION_RECEIPT_SANDBOX_AUTHORITY_ZOD_SCHEMA = z
+  .object({
+    danger_full_access_authorized: z.boolean(),
+    provenance: z.literal("explicit_operator").nullable(),
+    source: NON_EMPTY_STRING.nullable(),
+  })
+  .strict();
+
+const EXECUTION_RECEIPT_SANDBOX_POLICY_ZOD_SCHEMA = z
+  .object({
+    requested: EXECUTION_RECEIPT_SANDBOX_ZOD_SCHEMA,
+    effective: EXECUTION_RECEIPT_SANDBOX_ZOD_SCHEMA.nullable(),
+    source: z.enum(["role_default", "recipe_run_profile", "cli_override"]),
+    role: NON_EMPTY_STRING,
+    enforcement: z.enum(["enforced", "advisory", "unsupported"]),
+    capability_level: z.enum(["native", "wrapper", "advisory", "unsupported"]),
+    channel: z.enum(["argv", "env", "result", "none"]),
+    authority: EXECUTION_RECEIPT_SANDBOX_AUTHORITY_ZOD_SCHEMA,
+  })
+  .strict()
+  .superRefine((sandbox, ctx) => {
+    const dangerRequested = sandbox.requested === EXECUTION_RECEIPT_DANGER_SANDBOX;
+    if (
+      dangerRequested &&
+      (sandbox.authority.danger_full_access_authorized !== true ||
+        sandbox.authority.provenance !== "explicit_operator" ||
+        sandbox.authority.source === null)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["authority"],
+        message: "danger sandbox requires explicit operator authority provenance",
+      });
+    }
+    if (
+      !dangerRequested &&
+      (sandbox.authority.danger_full_access_authorized ||
+        sandbox.authority.provenance !== null ||
+        sandbox.authority.source !== null)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["authority"],
+        message: "non-danger sandbox cannot claim danger authority",
+      });
+    }
+    if (
+      (sandbox.enforcement === "enforced" && sandbox.effective !== sandbox.requested) ||
+      (sandbox.enforcement !== "enforced" && sandbox.effective !== null)
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["effective"],
+        message:
+          "enforced sandbox must record the requested effective value; downgrade must record null",
+      });
+    }
+  });
+
+const EXECUTION_RECEIPT_SCOPE_VIOLATION_ZOD_SCHEMA = z
+  .object({
+    path: NON_EMPTY_STRING,
+    kind: z.enum(["out_of_scope", "protected_path"]),
+  })
+  .strict();
+
+const EXECUTION_RECEIPT_SCOPE_COMMON_SHAPE = {
+  ...SUPERVISOR_PROVENANCE_SHAPE,
+  sandbox: EXECUTION_RECEIPT_SANDBOX_POLICY_ZOD_SCHEMA,
+  mutation_scope: NON_EMPTY_STRING.nullable(),
+  writable_roots: z.array(NON_EMPTY_STRING),
+  protected_paths: z.array(NON_EMPTY_STRING),
+} as const;
+
+const EXECUTION_RECEIPT_SCOPE_EVALUATION_ZOD_SCHEMA = z.discriminatedUnion("state", [
+  z
+    .object({
+      ...SUPERVISOR_PROVENANCE_SHAPE,
+      state: z.literal("not_evaluated"),
+    })
+    .strict(),
+  z
+    .object({
+      ...EXECUTION_RECEIPT_SCOPE_COMMON_SHAPE,
+      state: z.literal("passed"),
+      violations: z.array(EXECUTION_RECEIPT_SCOPE_VIOLATION_ZOD_SCHEMA).length(0),
+      limitations: z.array(NON_EMPTY_STRING).length(0),
+    })
+    .strict(),
+  z
+    .object({
+      ...EXECUTION_RECEIPT_SCOPE_COMMON_SHAPE,
+      state: z.literal("rejected"),
+      violations: z.array(EXECUTION_RECEIPT_SCOPE_VIOLATION_ZOD_SCHEMA).min(1),
+      limitations: z.array(NON_EMPTY_STRING),
+    })
+    .strict(),
+  z
+    .object({
+      ...EXECUTION_RECEIPT_SCOPE_COMMON_SHAPE,
+      state: z.literal("unverified"),
+      violations: z.array(EXECUTION_RECEIPT_SCOPE_VIOLATION_ZOD_SCHEMA).length(0),
+      limitations: z.array(NON_EMPTY_STRING).min(1),
+    })
+    .strict(),
+]);
+
+const EXECUTION_RECEIPT_LEGACY_SCOPE_EVALUATION_ZOD_SCHEMA = z
   .object({
     ...SUPERVISOR_PROVENANCE_SHAPE,
     state: z.literal("not_evaluated"),
@@ -337,22 +452,40 @@ const EXECUTION_RECEIPT_SUCCESS_POLICY_ZOD_SCHEMA = z.discriminatedUnion("outcom
     .strict(),
 ]);
 
-export const EXECUTION_RECEIPT_ZOD_SCHEMA = z
+const EXECUTION_RECEIPT_COMMON_SHAPE = {
+  kind: z.literal(EXECUTION_RECEIPT_KIND),
+  observed_by: z.literal(EXECUTION_RECEIPT_OBSERVER),
+  run_id: NON_EMPTY_STRING,
+  work_order_id: NON_EMPTY_STRING,
+  process: EXECUTION_RECEIPT_PROCESS_OBSERVATION_ZOD_SCHEMA,
+  git: EXECUTION_RECEIPT_GIT_OBSERVATION_ZOD_SCHEMA,
+  artifacts: z.array(EXECUTION_RECEIPT_ARTIFACT_OBSERVATION_ZOD_SCHEMA),
+  checks: z.array(EXECUTION_RECEIPT_OBSERVED_CHECK_ZOD_SCHEMA),
+  collection: EXECUTION_RECEIPT_COLLECTION_ZOD_SCHEMA,
+  success_policy: EXECUTION_RECEIPT_SUCCESS_POLICY_ZOD_SCHEMA,
+} as const;
+
+export const EXECUTION_RECEIPT_V1_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(EXECUTION_RECEIPT_LEGACY_SCHEMA_VERSION),
+    ...EXECUTION_RECEIPT_COMMON_SHAPE,
+    scope_evaluation: EXECUTION_RECEIPT_LEGACY_SCOPE_EVALUATION_ZOD_SCHEMA,
+  })
+  .strict();
+
+export const EXECUTION_RECEIPT_V2_ZOD_SCHEMA = z
   .object({
     schema_version: z.literal(EXECUTION_RECEIPT_SCHEMA_VERSION),
-    kind: z.literal(EXECUTION_RECEIPT_KIND),
-    observed_by: z.literal(EXECUTION_RECEIPT_OBSERVER),
-    run_id: NON_EMPTY_STRING,
-    work_order_id: NON_EMPTY_STRING,
-    process: EXECUTION_RECEIPT_PROCESS_OBSERVATION_ZOD_SCHEMA,
-    git: EXECUTION_RECEIPT_GIT_OBSERVATION_ZOD_SCHEMA,
-    artifacts: z.array(EXECUTION_RECEIPT_ARTIFACT_OBSERVATION_ZOD_SCHEMA),
-    checks: z.array(EXECUTION_RECEIPT_OBSERVED_CHECK_ZOD_SCHEMA),
-    collection: EXECUTION_RECEIPT_COLLECTION_ZOD_SCHEMA,
+    ...EXECUTION_RECEIPT_COMMON_SHAPE,
     scope_evaluation: EXECUTION_RECEIPT_SCOPE_EVALUATION_ZOD_SCHEMA,
-    success_policy: EXECUTION_RECEIPT_SUCCESS_POLICY_ZOD_SCHEMA,
   })
-  .strict()
+  .strict();
+
+export const EXECUTION_RECEIPT_ZOD_SCHEMA = z
+  .discriminatedUnion("schema_version", [
+    EXECUTION_RECEIPT_V1_ZOD_SCHEMA,
+    EXECUTION_RECEIPT_V2_ZOD_SCHEMA,
+  ])
   .superRefine((receipt, ctx) => {
     if (Date.parse(receipt.process.ended_at) < Date.parse(receipt.process.started_at)) {
       ctx.addIssue({
@@ -400,24 +533,42 @@ export const EXECUTION_RECEIPT_ZOD_SCHEMA = z
         message: "timeout_reason is required when process outcome is timed_out",
       });
     }
+    if (
+      receipt.schema_version === EXECUTION_RECEIPT_SCHEMA_VERSION &&
+      receipt.scope_evaluation.state === "passed"
+    ) {
+      const sandbox = receipt.scope_evaluation.sandbox;
+      const sandboxIsEnforced =
+        sandbox.enforcement === "enforced" &&
+        (sandbox.capability_level === "native" || sandbox.capability_level === "wrapper") &&
+        sandbox.channel !== "none" &&
+        sandbox.effective === sandbox.requested;
+      if (!sandboxIsEnforced) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["scope_evaluation", "state"],
+          message: "passed scope evaluation requires a coherent native or wrapper enforced sandbox",
+        });
+      }
+      if (sandbox.requested === EXECUTION_RECEIPT_DANGER_SANDBOX) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["scope_evaluation", "state"],
+          message: "danger-full-access sandbox cannot produce a passed scope evaluation",
+        });
+      }
+    }
     if (receipt.success_policy.outcome !== "observed_success") return;
     if (
       receipt.process.outcome !== "exited" ||
       receipt.process.exit_code !== 0 ||
       receipt.process.exit_signal !== null ||
-      receipt.process.timeout_reason !== null ||
-      receipt.process.process_tree.scope !== "posix_process_group" ||
-      receipt.process.process_tree.containment_state !== "bounded" ||
-      !["not_needed", "terminated", "force_killed"].includes(
-        receipt.process.process_tree.cleanup_state,
-      ) ||
-      receipt.process.process_tree.residual_alive !== false
+      receipt.process.timeout_reason !== null
     ) {
       ctx.addIssue({
         code: "custom",
         path: ["success_policy", "outcome"],
-        message:
-          "observed_success requires a clean observed process exit, bounded containment, and completed process-group cleanup",
+        message: "observed_success requires a clean observed process exit",
       });
     }
     if (receipt.git.state !== "observed" || receipt.collection.status !== "complete") {
@@ -425,6 +576,16 @@ export const EXECUTION_RECEIPT_ZOD_SCHEMA = z
         code: "custom",
         path: ["success_policy", "outcome"],
         message: "observed_success requires complete Git and collection observations",
+      });
+    }
+    if (
+      receipt.schema_version === EXECUTION_RECEIPT_SCHEMA_VERSION &&
+      receipt.scope_evaluation.state !== "passed"
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["success_policy", "outcome"],
+        message: "observed_success requires a passed supervisor-owned scope evaluation",
       });
     }
     if (
@@ -440,15 +601,68 @@ export const EXECUTION_RECEIPT_ZOD_SCHEMA = z
     const containmentCheck = receipt.checks.find(
       (check) => check.id === "runner.process_containment",
     );
-    if (containmentCheck?.required !== true || containmentCheck.status !== "passed") {
+    const processGroupCleanupCheck = receipt.checks.find(
+      (check) => check.id === "runner.process_group_cleanup",
+    );
+    const filesystemEffectCheck = receipt.checks.find(
+      (check) => check.id === "runner.sandbox.filesystem_effects_enforced",
+    );
+    const boundedProcessContainment =
+      receipt.process.process_tree.scope === "posix_process_group" &&
+      ["not_needed", "terminated", "force_killed"].includes(
+        receipt.process.process_tree.cleanup_state,
+      ) &&
+      receipt.process.process_tree.residual_alive === false &&
+      receipt.process.process_tree.containment_state === "bounded" &&
+      containmentCheck?.required === true &&
+      containmentCheck.status === "passed";
+    const processCleanupCompatibleWithFilesystemEffects =
+      (receipt.process.process_tree.scope === "posix_process_group" &&
+        ["not_needed", "terminated", "force_killed"].includes(
+          receipt.process.process_tree.cleanup_state,
+        ) &&
+        receipt.process.process_tree.residual_alive === false) ||
+      (receipt.process.process_tree.scope === "direct_child_only" &&
+        receipt.process.process_tree.cleanup_state === "unsupported" &&
+        receipt.process.process_tree.group_id === null &&
+        receipt.process.process_tree.residual_alive === null &&
+        processGroupCleanupCheck?.required === false &&
+        processGroupCleanupCheck.status === "not_run");
+    const sandboxFilesystemEffectsContained =
+      receipt.schema_version === EXECUTION_RECEIPT_SCHEMA_VERSION &&
+      processCleanupCompatibleWithFilesystemEffects &&
+      filesystemEffectCheck?.required === true &&
+      filesystemEffectCheck.status === "passed" &&
+      receipt.scope_evaluation.state === "passed" &&
+      receipt.scope_evaluation.sandbox.enforcement === "enforced" &&
+      receipt.scope_evaluation.sandbox.capability_level === "native" &&
+      receipt.scope_evaluation.sandbox.effective === receipt.scope_evaluation.sandbox.requested &&
+      receipt.scope_evaluation.sandbox.requested === "read-only" &&
+      receipt.scope_evaluation.mutation_scope === "none" &&
+      receipt.scope_evaluation.writable_roots.length === 0;
+    if (!boundedProcessContainment && !sandboxFilesystemEffectsContained) {
       ctx.addIssue({
         code: "custom",
         path: ["success_policy", "outcome"],
-        message: "observed_success requires a passed required runner.process_containment check",
+        message:
+          "observed_success requires either bounded process containment or a passed required native sandbox filesystem-effect containment check",
+      });
+    }
+    const scopeCheck = receipt.checks.find((check) => check.id === "runner.scope.within_authority");
+    if (
+      receipt.schema_version === EXECUTION_RECEIPT_SCHEMA_VERSION &&
+      (scopeCheck?.required !== true || scopeCheck.status !== "passed")
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["success_policy", "outcome"],
+        message: "observed_success requires a passed required runner.scope.within_authority check",
       });
     }
   });
 
+export type ExecutionReceiptV1 = z.infer<typeof EXECUTION_RECEIPT_V1_ZOD_SCHEMA>;
+export type ExecutionReceiptV2 = z.infer<typeof EXECUTION_RECEIPT_V2_ZOD_SCHEMA>;
 export type ExecutionReceipt = z.infer<typeof EXECUTION_RECEIPT_ZOD_SCHEMA>;
 export type ExecutionReceiptProcessObservation = z.infer<
   typeof EXECUTION_RECEIPT_PROCESS_OBSERVATION_ZOD_SCHEMA
@@ -477,7 +691,7 @@ export type ExecutionReceiptSuccessPolicy = z.infer<
 
 const EXECUTION_RECEIPT_SCHEMA = buildJsonSchemaDocument(EXECUTION_RECEIPT_ZOD_SCHEMA, {
   $id: "https://agentplane.org/schemas/execution-receipt.schema.json",
-  title: "Execution receipt (v1)",
+  title: "Execution receipt (v1-v2)",
   description:
     "Supervisor-owned process, Git, artifact, check, collection, and success-policy observations for one agent execution.",
 });
@@ -487,7 +701,7 @@ const SHA_B = `sha256:${"2".repeat(64)}`;
 const SHA_C = `sha256:${"3".repeat(64)}`;
 const SHA_D = `sha256:${"4".repeat(64)}`;
 
-export const EXECUTION_RECEIPT_V1_VALID_FIXTURE = {
+export const EXECUTION_RECEIPT_V2_VALID_FIXTURE = {
   schema_version: EXECUTION_RECEIPT_SCHEMA_VERSION,
   kind: EXECUTION_RECEIPT_KIND,
   observed_by: EXECUTION_RECEIPT_OBSERVER,
@@ -546,12 +760,12 @@ export const EXECUTION_RECEIPT_V1_VALID_FIXTURE = {
       ],
       sha256: SHA_D,
     },
-    excluded_paths: [".agentplane/tasks/work-order-example-001/runs/run-example-001"],
+    excluded_paths: [],
   },
   artifacts: [
     {
       provenance: EXECUTION_RECEIPT_PROVENANCE,
-      path: ".agentplane/tasks/work-order-example-001/runs/run-example-001/result.source.json",
+      path: "/repo/.git/agentplane/runner/tasks/work-order-example-001/runs/run-example-001/result.source.json",
       label: "source-result-manifest",
       required: true,
       state: "present",
@@ -576,6 +790,13 @@ export const EXECUTION_RECEIPT_V1_VALID_FIXTURE = {
       duration_ms: 4,
       details: "The supervisor parsed the source manifest with the canonical schema.",
     },
+    {
+      provenance: EXECUTION_RECEIPT_PROVENANCE,
+      id: "runner.scope.within_authority",
+      required: true,
+      status: "passed",
+      details: "Observed writes remained inside the declared writable scope.",
+    },
   ],
   collection: {
     provenance: EXECUTION_RECEIPT_PROVENANCE,
@@ -584,14 +805,45 @@ export const EXECUTION_RECEIPT_V1_VALID_FIXTURE = {
   },
   scope_evaluation: {
     provenance: EXECUTION_RECEIPT_PROVENANCE,
-    state: "not_evaluated",
+    state: "passed",
+    sandbox: {
+      requested: "workspace-write",
+      effective: "workspace-write",
+      source: "role_default",
+      role: "CODER",
+      enforcement: "enforced",
+      capability_level: "native",
+      channel: "argv",
+      authority: {
+        danger_full_access_authorized: false,
+        provenance: null,
+        source: null,
+      },
+    },
+    mutation_scope: "code",
+    writable_roots: ["."],
+    protected_paths: [".agentplane/policy", "AGENTS.md"],
+    violations: [],
+    limitations: [],
   },
   success_policy: {
     provenance: EXECUTION_RECEIPT_PROVENANCE,
     outcome: "observed_success",
     reasons: [],
   },
-} as const satisfies ExecutionReceipt;
+} as const satisfies ExecutionReceiptV2;
+
+export const EXECUTION_RECEIPT_V1_VALID_FIXTURE = {
+  ...EXECUTION_RECEIPT_V2_VALID_FIXTURE,
+  schema_version: EXECUTION_RECEIPT_LEGACY_SCHEMA_VERSION,
+  checks: EXECUTION_RECEIPT_V2_VALID_FIXTURE.checks.filter(
+    (check) => check.id !== "runner.scope.within_authority",
+  ),
+  scope_evaluation: {
+    provenance: EXECUTION_RECEIPT_PROVENANCE,
+    state: "not_evaluated",
+  },
+} as const satisfies ExecutionReceiptV1;
 
 export function listExecutionReceiptSchemaErrors(value: unknown): string[] {
   return schemaErrors("execution receipt", EXECUTION_RECEIPT_ZOD_SCHEMA, value);
@@ -603,6 +855,10 @@ export function validateExecutionReceipt(value: unknown): ExecutionReceipt {
 
 export function renderExecutionReceiptSchemaJson(): string {
   return `${JSON.stringify(EXECUTION_RECEIPT_SCHEMA, null, 2)}\n`;
+}
+
+export function renderExecutionReceiptV2ValidFixtureJson(): string {
+  return `${JSON.stringify(EXECUTION_RECEIPT_V2_VALID_FIXTURE, null, 2)}\n`;
 }
 
 export function renderExecutionReceiptV1ValidFixtureJson(): string {

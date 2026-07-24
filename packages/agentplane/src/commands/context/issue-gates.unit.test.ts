@@ -6,12 +6,12 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
+import { validateContextTaskArtifacts } from "../../context/verify-task.js";
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextIngest } from "./ingest.js";
 import { cmdContextInit } from "./init.js";
 import { cmdContextReindex } from "./reindex.js";
 import { cmdContextSearch } from "./search.js";
-import { cmdContextVerifyTask } from "./verify-task.js";
 
 let tempRoots: string[] = [];
 
@@ -421,7 +421,7 @@ describe("context GitHub issue regression gates", () => {
       },
       runner: { evidence: { changed_paths: ["context/wiki/managed-agents.md"] } },
     };
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: ["context/wiki/managed-agents.md"],
@@ -436,10 +436,10 @@ describe("context GitHub issue regression gates", () => {
     } as unknown as CommandContext;
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/requires non-empty derived facts, graph entities, graph edges/u);
   });

@@ -229,7 +229,7 @@ export function configRawToWorkflowFrontMatter(
       },
     observability: config.observability ??
       base.observability ?? {
-        runs_dir: ".agentplane/tasks/<task-id>/runs",
+        runs_dir: "<git-common-dir>/agentplane/runner/tasks/<task-id>/runs",
         events: "jsonl",
       },
     retry_policy: structuredClone(base.retry_policy),

@@ -3,9 +3,13 @@ import type { RunnerCustomConfig } from "@agentplaneorg/core/config";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import type { RunnerAdapterCapabilities, RunnerContextBundle, RunnerInvocation } from "../types.js";
-import { buildRecipeRunnerEnv, readRecipeRunProfile } from "./recipe-run-profile.js";
+import { RUNNER_DANGER_FULL_ACCESS_SANDBOX } from "../types.js";
+import {
+  hasExplicitRunnerDangerFullAccessAuthority,
+  resolveRunnerSandboxPolicy,
+} from "../sandbox-policy.js";
+import { buildRecipeRunnerEnv } from "./recipe-run-profile.js";
 
-const CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES = ["workspace-write"];
 export type CustomRunnerAdapterId = "custom" | "hermes";
 
 function normalizeCustomEnforcement(config: RunnerCustomConfig | undefined): {
@@ -28,17 +32,23 @@ export function buildCustomCapabilities(
     `(platform=${JSON.stringify(enforcement.platform)}).`;
   return {
     adapter_id: adapterId,
+    filesystem_effect_containment: {
+      level: "advisory",
+      supported_sandboxes: [],
+      boundary: "workspace",
+      descendant_inheritance: "not_enforced",
+      lifetime_containment: "not_provided",
+      note: "Custom and Hermes commands receive sandbox intent only; the adapter cannot attest inherited filesystem-effect containment.",
+    },
     fields: {
       sandbox:
         enforcement.mode === "codex_sandbox_full_auto"
           ? {
-              level: "wrapper",
-              channel: "argv",
-              supported_values: [...CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES],
+              level: "unsupported",
+              channel: "none",
               note:
-                `${configuredModeNote} Custom runner sandbox is enforced through ` +
-                "`codex sandbox <platform> --full-auto` and currently supports workspace-write only, " +
-                "because the shared runner contract requires writable result and trace artifacts inside run_dir.",
+                `${configuredModeNote} The legacy codex sandbox <platform> --full-auto wrapper ` +
+                "is not a stable Codex CLI contract and is refused instead of claiming enforcement.",
             }
           : {
               level: "advisory",
@@ -56,118 +66,43 @@ export function buildCustomCapabilities(
   };
 }
 
-function resolveCodexSandboxPlatform(
-  value: NonNullable<RunnerCustomConfig["enforcement"]>["platform"],
-): "macos" | "linux" | "windows" {
-  const currentPlatform = (() => {
-    switch (process.platform) {
-      case "darwin": {
-        return "macos";
-      }
-      case "linux": {
-        return "linux";
-      }
-      case "win32": {
-        return "windows";
-      }
-      default: {
-        return null;
-      }
-    }
-  })();
-  if (!currentPlatform) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_RUNTIME"),
-      code: "E_RUNTIME",
-      message: `Custom runner codex sandbox wrapper does not support current platform ${JSON.stringify(process.platform)}.`,
-      context: {
-        adapter_id: "custom",
-        wrapper_mode: "codex_sandbox_full_auto",
-        platform: process.platform,
-        policy_field: "sandbox",
-      },
-    });
-  }
-  if (value && value !== "auto") {
-    if (value !== currentPlatform) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_RUNTIME"),
-        code: "E_RUNTIME",
-        message:
-          `Custom runner codex sandbox wrapper is configured for ${JSON.stringify(value)} but current platform is ` +
-          `${JSON.stringify(currentPlatform)}.`,
-        context: {
-          adapter_id: "custom",
-          wrapper_mode: "codex_sandbox_full_auto",
-          configured_platform: value,
-          platform: currentPlatform,
-          policy_field: "sandbox",
-        },
-      });
-    }
-    return value;
-  }
-  return currentPlatform;
-}
-
 function unsupportedCustomSandboxError(opts: {
+  adapterId: CustomRunnerAdapterId;
   enforcementMode: string;
   requestedSandbox: string;
 }): CliError {
   const baseContext = {
-    adapter_id: "custom",
+    adapter_id: opts.adapterId,
     wrapper_mode: opts.enforcementMode,
     policy_field: "sandbox",
     declared_value: opts.requestedSandbox,
-    supported_values: CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES,
+    supported_values: [],
   } as const;
-  if (opts.requestedSandbox === "read-only") {
-    return new CliError({
-      exitCode: exitCodeForError("E_RUNTIME"),
-      code: "E_RUNTIME",
-      message:
-        `Custom runner wrapper mode ${JSON.stringify(opts.enforcementMode)} cannot support recipe sandbox ` +
-        `${JSON.stringify(opts.requestedSandbox)} because the shared runner contract requires write access ` +
-        "to result.json and trace artifacts inside run_dir, while the default codex sandbox blocks writes " +
-        "to cwd and TMPDIR. Supported values: workspace-write.",
-      context: baseContext,
-    });
-  }
   return new CliError({
     exitCode: exitCodeForError("E_RUNTIME"),
     code: "E_RUNTIME",
     message:
-      `Custom runner wrapper mode ${JSON.stringify(opts.enforcementMode)} does not support recipe sandbox ` +
-      `${JSON.stringify(opts.requestedSandbox)}; supported values: ${CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.join(", ")}.`,
+      `${opts.adapterId === "hermes" ? "Hermes" : "Custom"} runner wrapper mode ${JSON.stringify(opts.enforcementMode)} cannot enforce requested sandbox ` +
+      `${JSON.stringify(opts.requestedSandbox)} because its legacy Codex CLI argv contract is unavailable. ` +
+      "Use the native Codex adapter or configure the custom adapter as advisory.",
     context: baseContext,
   });
 }
 
 function buildCustomCommand(opts: {
+  adapterId: CustomRunnerAdapterId;
   config: RunnerCustomConfig | undefined;
-  bundle: RunnerContextBundle;
   command: string[];
+  requestedSandbox: string;
 }): string[] {
   const enforcement = normalizeCustomEnforcement(opts.config);
   if (enforcement.mode !== "codex_sandbox_full_auto") return opts.command;
 
-  const runProfile = readRecipeRunProfile(opts.bundle.recipe);
-  const requestedSandbox = typeof runProfile?.sandbox === "string" ? runProfile.sandbox.trim() : "";
-  if (!requestedSandbox) return opts.command;
-  if (!CUSTOM_SANDBOX_WRAPPER_SUPPORTED_VALUES.includes(requestedSandbox)) {
-    throw unsupportedCustomSandboxError({
-      enforcementMode: enforcement.mode,
-      requestedSandbox,
-    });
-  }
-
-  return [
-    "codex",
-    "sandbox",
-    resolveCodexSandboxPlatform(enforcement.platform),
-    "--full-auto",
-    ...opts.command,
-  ];
+  throw unsupportedCustomSandboxError({
+    adapterId: opts.adapterId,
+    enforcementMode: enforcement.mode,
+    requestedSandbox: opts.requestedSandbox,
+  });
 }
 
 function normalizeCustomCommand(value: RunnerCustomConfig["command"] | undefined): string[] {
@@ -188,18 +123,43 @@ export function buildCustomInvocation(opts: {
     );
   }
   const { execution } = opts.bundle;
-  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe);
+  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.task_id);
   const enforcement = normalizeCustomEnforcement(opts.config);
+  const sandboxPolicy =
+    execution.sandbox_policy ??
+    resolveRunnerSandboxPolicy({
+      task: opts.bundle.task?.data,
+      recipe: opts.bundle.recipe,
+    });
+  if (
+    sandboxPolicy.requested === RUNNER_DANGER_FULL_ACCESS_SANDBOX &&
+    !hasExplicitRunnerDangerFullAccessAuthority(sandboxPolicy.authority)
+  ) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: "Custom runner danger-full-access intent requires explicit operator authority.",
+      context: {
+        adapter_id: opts.adapterId,
+        policy_field: "sandbox",
+        declared_value: sandboxPolicy.requested,
+        required_authority: "danger_full_access_authorized",
+      },
+    });
+  }
   const preparedCommand = buildCustomCommand({
+    adapterId: opts.adapterId,
     config: opts.config,
-    bundle: opts.bundle,
     command,
+    requestedSandbox: sandboxPolicy.requested,
   });
+  const sandboxDecision = execution.policy_decision?.fields.sandbox;
   return {
     adapter_id: opts.adapterId,
     run_id: execution.run_id,
     work_order_id: execution.run_id,
     repository_root: opts.bundle.repository.git_root,
+    artifact_root: execution.artifact_paths.artifact_root ?? opts.bundle.repository.git_root,
     run_dir: execution.artifact_paths.run_dir,
     bundle_path: execution.artifact_paths.bundle_path,
     state_path: execution.artifact_paths.state_path,
@@ -212,6 +172,7 @@ export function buildCustomInvocation(opts: {
     timeout_policy: execution.timeout_policy,
     bootstrap_path: execution.artifact_paths.bootstrap_path,
     output_last_message_path: null,
+    filesystem_effect_containment: null,
     argv: preparedCommand,
     env: {
       ...opts.config?.env,
@@ -230,6 +191,11 @@ export function buildCustomInvocation(opts: {
       AGENTPLANE_RUNNER_RESULT_PATH: execution.artifact_paths.result_path,
       AGENTPLANE_RUNNER_ENFORCEMENT_MODE: enforcement.mode ?? "none",
       AGENTPLANE_RUNNER_ENFORCEMENT_PLATFORM: enforcement.platform ?? "auto",
+      AGENTPLANE_RUNNER_SANDBOX_REQUESTED: sandboxPolicy.requested,
+      AGENTPLANE_RUNNER_SANDBOX_ENFORCEMENT: sandboxDecision?.status ?? "unsupported",
+      AGENTPLANE_RUNNER_DANGER_AUTHORIZED: String(
+        sandboxPolicy.authority.danger_full_access_authorized,
+      ),
       ...recipeEnv,
     },
     dry_run: execution.mode === "dry_run",

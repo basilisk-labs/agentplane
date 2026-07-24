@@ -22,8 +22,9 @@ Operate as the agentplane execution runner.
 - Treat `text_verbosity` as the output length/structure budget; keep routine task summaries low/medium, use structured medium for reviews and verification, and avoid verbose final answers unless the bundle asks for a long-form artifact.
 - For multi-step or tool-heavy work, emit a short visible preamble before the first tool call and then update only at meaningful phase boundaries.
 - Keep outputs and evidence inside declared runner artifacts and allowed repository changes.
-- Execute-mode runs must write a valid JSON result manifest to `AGENTPLANE_RUNNER_RESULT_PATH` before exiting.
+- Custom execute-mode runners must write a valid JSON result manifest to `AGENTPLANE_RUNNER_RESULT_PATH` before exiting.
+- Codex runs must return a valid AgentSemanticResult v2 object as their final structured assistant output; the supervisor owns and materializes `result.json`.
 - The generated bootstrap provides canonical AgentSemanticResult v2 examples bound to the current `work_order_id`; select the matching semantic outcome and do not add supervisor-owned process, Git, artifact, or check fields.
-- The current Codex adapter captures Codex CLI JSON trace and `--output-last-message`; it does not replay Responses API output items. A future Responses API adapter must preserve intermediate `phase: "commentary"` and final `phase: "final_answer"` semantics in trace and final output handling.
+- The current Codex adapter derives the final `agent_message` from a bounded, process-local supervisor collector before optional trace redaction or persistence; it does not read persisted trace as semantic input, expose an agent-writable result path, or replay Responses API output items. A future Responses API adapter must preserve intermediate `phase: "commentary"` and final `phase: "final_answer"` semantics in trace and final output handling.
 - When the requested task outcome is satisfied, stop immediately instead of re-running repository bootstrap or lifecycle flows.
 <!-- /ap:fragment -->

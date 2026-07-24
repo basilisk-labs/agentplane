@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CommandContext } from "../shared/task-backend.js";
 import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import { attachObservedExecutionReceiptFixture } from "../../context/verify-task.testkit.js";
-import { readStableExecutionReceiptFile } from "../../context/verify-task.js";
+import { validateContextTaskArtifacts } from "../../context/verify-task.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 
 let tempRoots: string[] = [];
@@ -180,7 +180,7 @@ describe("maximum-assimilation task verification", () => {
         },
       },
     };
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: ["context/raw/unreported.md"],
@@ -195,64 +195,44 @@ describe("maximum-assimilation task verification", () => {
     } as unknown as CommandContext;
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/context\/raw\/unreported\.md: raw mutation is forbidden/u);
   });
 
-  it("rejects a tampered execution receipt before context policy evaluation", async () => {
+  it("rejects an exact valid v2 observed-success receipt and matching task reference", async () => {
     const root = await tempRoot();
-    const task = {
-      id: "202605281326-CTXTMP",
-      status: "DOING",
-      owner: "CURATOR",
-      task_kind: "context",
-      mutation_scope: "context",
-      blueprint_request: "context.assimilation",
-      extensions: { "agentplane.context": {} },
-      runner: {},
-    };
+    const task = receiptBindingTask("202605281326-CTXAUTH");
+    await attachObservedExecutionReceiptFixture({
+      root,
+      task,
+      changedPaths: [],
+    });
+
+    await expect(
+      cmdContextVerifyTask({
+        ctx: contextForReceiptBinding(root, task),
+        cwd: root,
+        parsed: { taskId: task.id },
+      }),
+    ).rejects.toThrow(/compatibility_unverified: persisted execution receipt is unauthenticated/u);
+  });
+
+  it("does not read persisted receipt bytes after authentication fails", async () => {
+    const root = await tempRoot();
+    const task = receiptBindingTask("202605281326-CTXMISS");
     const receipt = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: [],
     });
-    await write(root, receipt.path, `${receipt.text}\n`);
-    const ctx = {
-      resolvedProject: { gitRoot: root },
-      config: { paths: { workflow_dir: ".agentplane/tasks" } },
-      taskBackend: { getTask: () => Promise.resolve(task) },
-      backendId: "local",
-      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
-      memo: {},
-    } as unknown as CommandContext;
-
-    await expect(
-      cmdContextVerifyTask({
-        ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
-      }),
-    ).rejects.toThrow(/receipt integrity failure: sha256 mismatch/u);
-  });
-
-  it("rejects a symlinked execution receipt even when its target has the expected bytes", async () => {
-    const root = await tempRoot();
-    const outsideRoot = await tempRoot();
-    const task = receiptBindingTask("202605281326-CTXSYM");
-    const receipt = await attachObservedExecutionReceiptFixture({
-      root,
-      task,
-      changedPaths: [],
-    });
-    const receiptPath = path.resolve(root, ...receipt.path.split("/"));
-    const outsideReceiptPath = path.join(outsideRoot, "execution-receipt.json");
-    await writeFile(outsideReceiptPath, receipt.text, "utf8");
-    await rm(receiptPath, { force: true });
-    await symlink(outsideReceiptPath, receiptPath, "file");
+    await rm(
+      path.isAbsolute(receipt.path) ? receipt.path : path.resolve(root, ...receipt.path.split("/")),
+      { force: true },
+    );
 
     await expect(
       cmdContextVerifyTask({
@@ -260,205 +240,7 @@ describe("maximum-assimilation task verification", () => {
         cwd: root,
         parsed: { taskId: task.id },
       }),
-    ).rejects.toThrow(/receipt path is not a regular file/u);
-  });
-
-  it("detects a deterministic receipt identity change on the opened handle", async () => {
-    const root = await tempRoot();
-    const receiptPath = path.join(root, "execution-receipt.json");
-    await writeFile(receiptPath, "before", "utf8");
-
-    await expect(
-      readStableExecutionReceiptFile({
-        projectRoot: root,
-        receiptPath,
-        afterHandleValidated: async () => {
-          await writeFile(receiptPath, "after-with-a-different-size", "utf8");
-        },
-      }),
-    ).rejects.toThrow(/receipt changed while it was being read/u);
-  });
-
-  it("requires runner run_id before accepting a referenced receipt", async () => {
-    const root = await tempRoot();
-    const task = receiptBindingTask("202605281326-CTXRID");
-    await attachObservedExecutionReceiptFixture({
-      root,
-      task,
-      changedPaths: [],
-    });
-    delete task.runner.run_id;
-
-    await expect(
-      cmdContextVerifyTask({
-        ctx: contextForReceiptBinding(root, task),
-        cwd: root,
-        parsed: { taskId: task.id },
-      }),
-    ).rejects.toThrow(/compatibility_unverified: runner run_id is missing/u);
-  });
-
-  it.each([
-    "",
-    ".",
-    "..",
-    "nested/run",
-    "nested\\run",
-    " run-with-space ",
-    "run-with-newline\n",
-    "run-with-null\0",
-  ])("rejects unsafe runner run_id %j before resolving runner paths", async (unsafeRunId) => {
-    const root = await tempRoot();
-    const task = receiptBindingTask("202605281326-CTXUNSAFE");
-    await attachObservedExecutionReceiptFixture({
-      root,
-      task,
-      changedPaths: [],
-    });
-    task.runner.run_id = unsafeRunId;
-
-    await expect(
-      cmdContextVerifyTask({
-        ctx: contextForReceiptBinding(root, task),
-        cwd: root,
-        parsed: { taskId: task.id },
-      }),
-    ).rejects.toThrow(/runner run_id is not a safe path segment/u);
-  });
-
-  it.each([
-    {
-      label: "default workflow_dir",
-      workflowDir: ".agentplane/tasks",
-      traversalRunId: "../../../tasks/CTXOTHER/runs/run-source",
-    },
-    {
-      label: "custom workflow_dir",
-      workflowDir: ".custom/work-items",
-      traversalRunId: "../../../work-items/CTXOTHER/runs/run-source",
-    },
-  ])(
-    "rejects a traversal run_id replay under $label before path construction",
-    async ({ workflowDir, traversalRunId }) => {
-      const root = await tempRoot();
-      const sourceTask = receiptBindingTask("CTXOTHER");
-      await attachObservedExecutionReceiptFixture({
-        root,
-        task: sourceTask,
-        changedPaths: [],
-        workflowDir,
-        runId: "run-source",
-        receiptRunId: traversalRunId,
-        workOrderId: traversalRunId,
-      });
-      const targetTask = receiptBindingTask("CTXTARGET");
-      targetTask.runner = {
-        run_id: traversalRunId,
-        execution_receipt: sourceTask.runner.execution_receipt,
-      };
-
-      await expect(
-        cmdContextVerifyTask({
-          ctx: contextForReceiptBinding(root, targetTask, workflowDir),
-          cwd: root,
-          parsed: { taskId: targetTask.id },
-        }),
-      ).rejects.toThrow(/runner run_id is not a safe path segment/u);
-    },
-  );
-
-  it.each([
-    {
-      relation: "the same run_id",
-      sourceRunId: "run-shared",
-      targetRunId: "run-shared",
-    },
-    {
-      relation: "a different run_id",
-      sourceRunId: "run-source",
-      targetRunId: "run-target",
-    },
-  ])("rejects another task's receipt with $relation", async ({ sourceRunId, targetRunId }) => {
-    const root = await tempRoot();
-    const sourceTask = receiptBindingTask("202605281326-CTXSRC");
-    await attachObservedExecutionReceiptFixture({
-      root,
-      task: sourceTask,
-      changedPaths: [],
-      runId: sourceRunId,
-    });
-    const targetTask = receiptBindingTask("202605281326-CTXTGT");
-    targetTask.runner = {
-      run_id: targetRunId,
-      execution_receipt: sourceTask.runner.execution_receipt,
-    };
-
-    await expect(
-      cmdContextVerifyTask({
-        ctx: contextForReceiptBinding(root, targetTask),
-        cwd: root,
-        parsed: { taskId: targetTask.id },
-      }),
-    ).rejects.toThrow(/does not resolve to expected runner receipt path/u);
-  });
-
-  it("rejects a receipt whose run_id differs from the runner invocation", async () => {
-    const root = await tempRoot();
-    const task = receiptBindingTask("202605281326-CTXRID2");
-    await attachObservedExecutionReceiptFixture({
-      root,
-      task,
-      changedPaths: [],
-      receiptRunId: "run-replayed",
-    });
-
-    await expect(
-      cmdContextVerifyTask({
-        ctx: contextForReceiptBinding(root, task),
-        cwd: root,
-        parsed: { taskId: task.id },
-      }),
-    ).rejects.toThrow(/receipt run_id .* does not match expected invocation/u);
-  });
-
-  it("rejects a receipt whose work_order_id differs from the runner invocation", async () => {
-    const root = await tempRoot();
-    const task = receiptBindingTask("202605281326-CTXWID");
-    await attachObservedExecutionReceiptFixture({
-      root,
-      task,
-      changedPaths: [],
-      workOrderId: "run-replayed-work-order",
-    });
-
-    await expect(
-      cmdContextVerifyTask({
-        ctx: contextForReceiptBinding(root, task),
-        cwd: root,
-        parsed: { taskId: task.id },
-      }),
-    ).rejects.toThrow(/receipt work_order_id .* does not match expected invocation/u);
-  });
-
-  it("accepts the canonical receipt path under a custom workflow_dir", async () => {
-    const root = await tempRoot();
-    const workflowDir = ".custom/work-items";
-    const task = receiptBindingTask("202605281326-CTXCUS");
-    await attachObservedExecutionReceiptFixture({
-      root,
-      task,
-      changedPaths: [],
-      workflowDir,
-    });
-    vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-
-    await expect(
-      cmdContextVerifyTask({
-        ctx: contextForReceiptBinding(root, task, workflowDir),
-        cwd: root,
-        parsed: { taskId: task.id },
-      }),
-    ).resolves.toBe(0);
+    ).rejects.toThrow(/compatibility_unverified: persisted execution receipt is unauthenticated/u);
   });
 
   it("rejects glossary files without navigable canonical entries", async () => {
@@ -505,7 +287,7 @@ Canonical terms will be added later.
         },
       },
     };
-    await attachObservedExecutionReceiptFixture({
+    const { receipt } = await attachObservedExecutionReceiptFixture({
       root,
       task,
       changedPaths: ["context/wiki/glossary.md"],
@@ -520,10 +302,10 @@ Canonical terms will be added later.
     } as unknown as CommandContext;
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/glossary must include at least one navigable canonical wiki entry/u);
 
@@ -543,10 +325,10 @@ agentplane_context:
     );
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/requires non-empty derived facts/u);
 
@@ -632,10 +414,10 @@ agentplane_context:
     );
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).rejects.toThrow(/requires non-empty source coverage rows/u);
 
@@ -800,10 +582,10 @@ agentplane_context:
     });
 
     await expect(
-      cmdContextVerifyTask({
+      validateContextTaskArtifacts({
         ctx,
-        cwd: root,
-        parsed: { taskId: task.id },
+        task,
+        changedPaths: receipt.git.state === "observed" ? receipt.git.delta.changed_paths : [],
       }),
     ).resolves.toBe(0);
   });

@@ -2,7 +2,11 @@ import {
   getProtectedPathOverride,
   protectedPathKindForFile,
 } from "../../shared/protected-paths.js";
-import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
+import {
+  gitPathIsUnderPrefix,
+  normalizeGitPathCandidate,
+  normalizeGitPathPrefix,
+} from "../../shared/git-path.js";
 
 import { gitError, okResult } from "../result.js";
 import type { PolicyAction, PolicyContext, PolicyResult } from "../model.js";
@@ -26,7 +30,7 @@ function isHookAllowedTaskArtifact(opts: {
   taskId: string | undefined;
 }): boolean {
   if (!opts.taskId) return false;
-  const filePath = normalizeGitPathPrefix(opts.filePath);
+  const filePath = normalizeGitPathCandidate(opts.filePath);
   const tasksPath = normalizeGitPathPrefix(opts.tasksPath);
   if (filePath === tasksPath) return false;
   return gitPathIsUnderPrefix(
@@ -52,7 +56,7 @@ function isExplicitlyAllowedSameTaskArtifact(opts: {
   ) {
     return false;
   }
-  const filePath = normalizeGitPathPrefix(opts.filePath);
+  const filePath = normalizeGitPathCandidate(opts.filePath);
   const taskPrefix = `${normalizeGitPathPrefix(opts.workflowDir)}/${opts.taskId}`;
   if (
     !["blueprint", "quality"].some((dir) => gitPathIsUnderPrefix(filePath, `${taskPrefix}/${dir}`))

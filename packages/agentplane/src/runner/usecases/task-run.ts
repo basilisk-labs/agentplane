@@ -1,5 +1,3 @@
-import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
-
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { buildTaskRouteDecision } from "../../commands/shared/route-decision.js";
@@ -23,8 +21,13 @@ import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-d
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { persistRunnerOutcomeToTask } from "../task-state.js";
 import { RunnerRunRepository } from "../run-repository.js";
-import { createRunnerRunId, resolveTaskRunnerPaths } from "../task-run-paths.js";
-import { normalizeRecipeArtifactPrefixes } from "../result-manifest-policy.js";
+import { createRunnerRunId, resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
+import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "../sandbox-policy.js";
+import {
+  assertRunnerCheckoutAuthority,
+  assertRunnerPolicyCompatibility,
+  assertRunnerTaskExecutable,
+} from "./task-run-authority.js";
 import { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { assertRunnerBlueprintPolicyModuleBudget } from "./task-run-blueprint-plan.js";
@@ -37,6 +40,7 @@ import {
   RUNNER_API_VERSION,
   RUNNER_BUNDLE_SCHEMA_VERSION,
   type RunnerContextBundle,
+  type RunnerDangerFullAccessAuthority,
   type RunnerExecutionContract,
   type RunnerInvocation,
   type RunnerRecipeContext,
@@ -88,49 +92,12 @@ function collectFrameworkExplainBehaviorInputs(
   );
 }
 
-function isEnforcedCapabilityLevel(level: string | undefined): boolean {
-  return level === "native" || level === "wrapper";
-}
-
-function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): void {
-  const profile = readRecipeRunProfile(bundle.recipe);
-  if (!profile) return;
-  const adapterId = bundle.execution.adapter_id;
-  const capabilities = bundle.execution.adapter_capabilities;
-
-  if (profile.sandbox) {
-    const sandboxCapability = capabilities?.fields.sandbox;
-    if (
-      isEnforcedCapabilityLevel(sandboxCapability?.level) &&
-      sandboxCapability?.supported_values &&
-      !sandboxCapability.supported_values.includes(profile.sandbox)
-    ) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_RUNTIME"),
-        code: "E_RUNTIME",
-        message:
-          `Runner adapter ${JSON.stringify(adapterId)} does not support recipe sandbox ` +
-          `${JSON.stringify(profile.sandbox)}; supported values: ${sandboxCapability.supported_values.join(", ")}.`,
-        context: {
-          adapter_id: adapterId,
-          policy_field: "sandbox",
-          declared_value: profile.sandbox,
-          capability: sandboxCapability,
-        },
-      });
-    }
-  }
-  if (profile.writes_artifacts_to && profile.writes_artifacts_to.length > 0) {
-    normalizeRecipeArtifactPrefixes(profile.writes_artifacts_to);
-  }
-}
-
 async function writeRunnerRefusalArtifacts(opts: {
   bundle: RunnerContextBundle;
   error: CliError;
+  repository: RunnerRunRepository;
 }): Promise<RunnerRunState> {
-  const repository = RunnerRunRepository.fromBundle(opts.bundle);
-  const prepared = await repository.writePrepared({
+  const prepared = await opts.repository.writePrepared({
     bundle: opts.bundle,
     bootstrap_markdown: renderTaskRunnerBootstrap(opts.bundle),
   });
@@ -148,8 +115,8 @@ async function writeRunnerRefusalArtifacts(opts: {
     result,
     updated_at: prepared.created_at,
   });
-  await repository.writeState(refused);
-  await repository.appendEvent({
+  await opts.repository.writeState(refused);
+  await opts.repository.appendEvent({
     at: prepared.created_at,
     type: "runner_refused",
     message: `runner refused before adapter prepare: ${opts.error.message}`,
@@ -167,20 +134,6 @@ async function writeRunnerRefusalArtifacts(opts: {
   return refused;
 }
 
-export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
-  const task = bundle.task;
-  if (!task) return;
-  const status = normalizeTaskStatus(task.data.status);
-  if (status === "DOING") return;
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message:
-      `${task.task_id}: runner execution requires task status DOING ` +
-      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.task_id} --author <ROLE> --body "Start: ..."\` first).`,
-  });
-}
-
 export async function prepareTaskRunnerExecution(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -190,6 +143,10 @@ export async function prepareTaskRunnerExecution(opts: {
   run_id?: string;
   recipe?: RunnerRecipeContext;
   target?: RunnerTarget;
+  danger_authority?: RunnerDangerFullAccessAuthority | null;
+  execution_role?: string;
+  include_route_runner_state?: boolean;
+  sandbox_override?: string;
 }): Promise<PreparedTaskRunnerExecution> {
   const command =
     opts.ctx ??
@@ -234,6 +191,7 @@ export async function prepareTaskRunnerExecution(opts: {
     ctx: executionContext.command,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
+    includeRunnerState: opts.include_route_runner_state,
     taskId: opts.task_id,
   });
   const framework_explain = appendFrameworkExplainBehaviorInputs(
@@ -246,11 +204,28 @@ export async function prepareTaskRunnerExecution(opts: {
   const adapter: RunnerAdapter = createRunnerAdapter(executionContext.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] = adapter.id;
   const run_id = opts.run_id ?? createRunnerRunId();
-  const artifact_paths = resolveTaskRunnerPaths({
+  const artifact_paths = await resolveSupervisorTaskRunnerPaths({
     git_root: taskEnvelope.repository.git_root,
     workflow_dir: taskEnvelope.repository.workflow_dir,
     task_id: opts.task_id,
     run_id,
+  });
+  const sandbox_policy = resolveRunnerSandboxPolicy({
+    task: taskEnvelope.task.data,
+    recipe: opts.recipe,
+    danger_authority: opts.danger_authority,
+    execution_role:
+      opts.execution_role ??
+      taskEnvelope.task.data.owner ??
+      route_decision.executionPacket.recommendedRole ??
+      undefined,
+    requested_sandbox: opts.sandbox_override,
+  });
+  const write_scope = resolveRunnerWriteScopePolicy({
+    sandbox: sandbox_policy,
+    protected_path_groups: executionContext.harness.policy.protected_paths,
+    task: taskEnvelope.task.data,
+    recipe: opts.recipe,
   });
   const bundle: RunnerContextBundle = {
     schema_version: RUNNER_BUNDLE_SCHEMA_VERSION,
@@ -273,6 +248,8 @@ export async function prepareTaskRunnerExecution(opts: {
       trace_policy: executionProfile.runner.trace_policy,
       timeout_policy: executionProfile.runner.timeout_policy,
       evaluator_skepticism_level: executionContext.config.evaluator.skepticism_level,
+      sandbox_policy,
+      write_scope,
       approvals: {
         require_plan: executionContext.approvals.require_plan,
         require_verify: executionContext.approvals.require_verify,
@@ -287,10 +264,15 @@ export async function prepareTaskRunnerExecution(opts: {
   });
   bundle.execution.profile_runtime = executionProfile;
   bundle.execution.adapter_capabilities = adapter.describeCapabilities(bundle);
+  const requestedPolicy = {
+    ...(readRecipeRunProfile(bundle.recipe) ?? {}),
+    sandbox: sandbox_policy.requested,
+  };
   bundle.execution.policy_decision = buildRunnerPolicyDecision({
     adapter_id: bundle.execution.adapter_id,
     capabilities: bundle.execution.adapter_capabilities,
     recipe: bundle.recipe,
+    requested: requestedPolicy,
   });
   bundle.execution.adapter_capability_registry = resolveRunnerAdapterCapabilityRegistry({
     adapter_id: bundle.execution.adapter_id,
@@ -299,9 +281,24 @@ export async function prepareTaskRunnerExecution(opts: {
   });
   assertRunnerBlueprintPolicyModuleBudget(bundle);
   assertRunnerTaskExecutable(bundle);
-  await writeTaskBlueprintSnapshot(bundle);
+  await assertRunnerCheckoutAuthority({
+    bundle,
+    authoritative_checkout_path: route_decision.executionPacket.authoritativeCheckoutPath,
+    mutation_path_hint: route_decision.executionPacket.mutationPathHint,
+  });
+  const repository = RunnerRunRepository.fromBundle(bundle);
+  await repository.createFreshDirectory({
+    run_id: bundle.execution.run_id,
+  });
+  let invocation: RunnerInvocation;
   try {
     assertRunnerPolicyCompatibility(bundle);
+    await repository.assertBoundary("before writing the blueprint snapshot");
+    await writeTaskBlueprintSnapshot(bundle, {
+      assert_artifact_boundary: async (phase) => await repository.assertBoundary(phase),
+    });
+    await repository.assertBoundary("after writing the blueprint snapshot");
+    invocation = await adapter.prepare(bundle);
   } catch (err) {
     if (err instanceof CliError) {
       bundle.execution.policy_decision = applyRunnerPolicyRefusal({
@@ -311,16 +308,15 @@ export async function prepareTaskRunnerExecution(opts: {
             adapter_id: bundle.execution.adapter_id,
             capabilities: bundle.execution.adapter_capabilities,
             recipe: bundle.recipe,
+            requested: requestedPolicy,
           }),
         error: err,
       });
-      const state = await writeRunnerRefusalArtifacts({ bundle, error: err });
+      const state = await writeRunnerRefusalArtifacts({ bundle, error: err, repository });
       throw new RunnerPreparationCliError({ cause: err, bundle, state });
     }
     throw err;
   }
-  const invocation = await adapter.prepare(bundle);
-  const repository = RunnerRunRepository.fromBundle(bundle);
   const state = await repository.writePrepared({
     bundle,
     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
@@ -337,6 +333,10 @@ export async function executeTaskRunnerExecution(opts: {
   run_id?: string;
   recipe?: RunnerRecipeContext;
   target?: RunnerTarget;
+  danger_authority?: RunnerDangerFullAccessAuthority | null;
+  execution_role?: string;
+  include_route_runner_state?: boolean;
+  sandbox_override?: string;
 }): Promise<ExecutedTaskRunnerExecution> {
   const ctx =
     opts.ctx ??
@@ -352,6 +352,10 @@ export async function executeTaskRunnerExecution(opts: {
       run_id: opts.run_id,
       recipe: opts.recipe,
       target: opts.target,
+      danger_authority: opts.danger_authority,
+      execution_role: opts.execution_role,
+      include_route_runner_state: opts.include_route_runner_state,
+      sandbox_override: opts.sandbox_override,
     });
   } catch (err) {
     if (err instanceof RunnerPreparationCliError) {
@@ -366,15 +370,12 @@ export async function executeTaskRunnerExecution(opts: {
   }
   const adapter = createRunnerAdapter(ctx.config);
   const result = await adapter.execute(prepared.invocation);
-  const repository = RunnerRunRepository.fromInvocation(prepared.invocation);
-  const state =
-    (await repository.readState()) ??
-    evolveRunnerRunState({
-      state: prepared.state,
-      status: result.status,
-      result,
-      updated_at: result.ended_at,
-    });
+  const state = evolveRunnerRunState({
+    state: prepared.state,
+    status: result.status,
+    result,
+    updated_at: result.ended_at,
+  });
   await persistRunnerOutcomeToTask({
     ctx,
     task_id: opts.task_id,
@@ -383,6 +384,7 @@ export async function executeTaskRunnerExecution(opts: {
   });
   return {
     ...prepared,
+    state,
     result,
   };
 }

@@ -57,12 +57,12 @@
       ],
       "sha256": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
     },
-    "excluded_paths": [".agentplane/tasks/work-order-example-001/runs/run-example-001"]
+    "excluded_paths": []
   },
   "artifacts": [
     {
       "provenance": "supervisor_observed",
-      "path": ".agentplane/tasks/work-order-example-001/runs/run-example-001/result.source.json",
+      "path": "/repo/.git/agentplane/runner/tasks/work-order-example-001/runs/run-example-001/result.source.json",
       "label": "source-result-manifest",
       "required": true,
       "state": "present",

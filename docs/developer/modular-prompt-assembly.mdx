@@ -225,10 +225,12 @@ This keeps the runner output stable while making each block explainable as a pro
 New runner prompt sources should be added as prompt blocks first, then round-tripped through
 `runnerPromptBlocksToModuleGraph` and `compileRunnerPromptModuleGraph` in tests.
 
-The current Codex adapter uses `codex exec --json --output-last-message` and stores the raw CLI
-trace plus the assistant last message. It does not replay Responses API output items. If a future
-Responses API adapter is added, it must preserve intermediate `phase: "commentary"` and final
-`phase: "final_answer"` semantics in both trace capture and final output handling.
+The current Codex adapter uses `codex exec --json` and derives the final `agent_message` from a
+bounded, process-local supervisor collector before optional trace redaction or persistence. It does
+not read the persisted trace as semantic input, expose an agent-writable `--output-last-message`
+path, or replay Responses API output items. If a future Responses API adapter is added, it must
+preserve intermediate `phase: "commentary"` and final `phase: "final_answer"` semantics in both
+trace capture and final output handling.
 
 ## Recipe layer
 

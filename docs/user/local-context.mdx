@@ -326,7 +326,12 @@ The verifier does not require every known term to be linked. Agents should still
 Markdown cross-links when an existing page or glossary anchor helps a future reader navigate related
 concepts, decisions, modules, risks, or entities.
 
-Run it before closing tasks that write or rely on context artifacts.
+During the v0.7 supervisor migration, repository-local receipt bytes and their task reference are
+not treated as authenticated evidence. The standalone command and `context finalize-task` fail
+closed with `compatibility_unverified` instead of accepting a matching path and SHA-256 from the
+same writable repository. Until the beta supervisor supplies the observation through a trusted
+channel, run `context wiki lint`, `context graph validate`, and `context doctor` separately and
+record independent task verification with `ap verify`.
 
 ## How this differs from RAG
 

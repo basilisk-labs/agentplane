@@ -69,6 +69,10 @@ Unknown root keys are rejected. Known optional sections such as `workspace`, `ta
 typed extension fields without data loss. The `workflow` section remains v2-only; v1 uses the flat
 `mode` discriminant.
 
+`observability.runs_dir` is an informational, reserved description of the enforced supervisor
+layout. It is not an executable storage override: production run artifacts always resolve through
+the repository Git common directory.
+
 ## Failure behavior
 
 Invalid `.agentplane/WORKFLOW.md` must fail validation with explicit diagnostics:

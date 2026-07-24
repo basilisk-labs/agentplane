@@ -13,6 +13,7 @@ import {
   currentGitBranch,
   readTaskHandoffLatest,
   readTaskPrMetaSummary,
+  projectDurableTaskHandoffRunnerHint,
   resolveTaskHandoffPaths,
   type TaskHandoffArtifact,
   type TaskHandoffRunnerHint,
@@ -48,6 +49,7 @@ export async function buildTaskResumeContext(opts: {
   rootOverride?: string | null;
   task_id: string;
   run_id?: string;
+  include_runner_state?: boolean;
 }): Promise<TaskResumeContext> {
   const ctx =
     opts.ctx ??
@@ -73,33 +75,7 @@ export async function buildTaskResumeContext(opts: {
     }).catch(() => null));
 
   let runner: TaskHandoffRunnerHint;
-  try {
-    const inspection = await loadTaskRunnerInspection({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      task_id: opts.task_id,
-      run_id: opts.run_id,
-    });
-    const pid = inspection.state.supervision?.pid;
-    const pidAlive = typeof pid === "number" ? isProcessAlive(pid) : null;
-    const commands = buildRunnerHintCommands({
-      task_id: opts.task_id,
-      run_id: inspection.run_id,
-      status: inspection.state.status,
-      pid_alive: pidAlive,
-      author: task.owner,
-    });
-    runner = {
-      run_id: inspection.run_id,
-      status: inspection.state.status,
-      heartbeat_at: inspection.state.supervision?.heartbeat_at ?? null,
-      state_path: inspection.paths.state_path,
-      trace_path: inspection.paths.trace_path,
-      ...commands,
-    };
-  } catch (err) {
-    const noRun = nullIfCliIo(err);
+  if (opts.include_runner_state === false) {
     runner = {
       run_id: null,
       status: null,
@@ -108,10 +84,51 @@ export async function buildTaskResumeContext(opts: {
       trace_path: null,
       ...buildRunnerHintCommands({
         task_id: opts.task_id,
-        run_id: noRun,
+        run_id: null,
         status: null,
       }),
     };
+  } else {
+    try {
+      const inspection = await loadTaskRunnerInspection({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+        task_id: opts.task_id,
+        run_id: opts.run_id,
+      });
+      const pid = inspection.state.supervision?.pid;
+      const pidAlive = typeof pid === "number" ? isProcessAlive(pid) : null;
+      const commands = buildRunnerHintCommands({
+        task_id: opts.task_id,
+        run_id: inspection.run_id,
+        status: inspection.state.status,
+        pid_alive: pidAlive,
+        author: task.owner,
+      });
+      runner = {
+        run_id: inspection.run_id,
+        status: inspection.state.status,
+        heartbeat_at: inspection.state.supervision?.heartbeat_at ?? null,
+        state_path: inspection.paths.state_path,
+        trace_path: inspection.paths.trace_path,
+        ...commands,
+      };
+    } catch (err) {
+      const noRun = nullIfCliIo(err);
+      runner = {
+        run_id: null,
+        status: null,
+        heartbeat_at: null,
+        state_path: null,
+        trace_path: null,
+        ...buildRunnerHintCommands({
+          task_id: opts.task_id,
+          run_id: noRun,
+          status: null,
+        }),
+      };
+    }
   }
 
   return {
@@ -167,7 +184,7 @@ export async function buildRecordedTaskHandoff(opts: {
       head_sha: resume.head_sha,
       workspace_root: resume.workspace_root,
       pr_branch: resume.pr_branch,
-      runner: resume.runner,
+      runner: projectDurableTaskHandoffRunnerHint(resume.runner),
       next_actions: opts.next_actions,
       risks: opts.risks,
       open_questions: opts.open_questions,

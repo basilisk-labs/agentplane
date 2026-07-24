@@ -37,7 +37,7 @@ evaluator:
   verdicts:
     - pass
 observability:
-  runs_dir: .agentplane/tasks/<task-id>/runs
+  runs_dir: <git-common-dir>/agentplane/runner/tasks/<task-id>/runs
 retry_policy:
   normal_exit_continuation: true
   abnormal_backoff: exponential

@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-
 import type { RunnerCustomConfig } from "@agentplaneorg/core/config";
 
 import type {
@@ -27,6 +25,7 @@ import {
   executeSupervisedRunnerAdapter,
   type SupervisedRunnerArtifactInput,
 } from "./execute-supervised.js";
+import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
 
 function customAdapterLabel(adapterId: CustomRunnerAdapterId): string {
   return adapterId === "hermes" ? "Hermes" : "Custom";
@@ -86,7 +85,10 @@ export class CustomRunnerAdapter implements RunnerAdapter {
           invocation: input,
         }),
       readStdinText: async (input) =>
-        input.bootstrap_path ? await readFile(input.bootstrap_path, "utf8") : "",
+        await readValidatedPreparedRunnerStdin({
+          invocation: input,
+          require_bootstrap: false,
+        }),
       startMessage: `${this.id} runner started`,
       buildArtifacts: buildCustomArtifacts,
       capabilitiesUsed: (input) => [`${this.id}:${input.argv[0] ?? "runner"}`],

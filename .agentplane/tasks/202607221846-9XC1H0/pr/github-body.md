@@ -15,8 +15,14 @@ RF-03: default executor/context runs to workspace-write and evaluator runs to re
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+REWORK at 3e79cc151: current diff contains only lifecycle and PR metadata; no RF-03 sandbox or scope
+implementation exists yet. Return to CODER for the approved implementation and rerun all Verify
+Steps.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

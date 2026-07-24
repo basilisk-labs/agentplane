@@ -60,6 +60,7 @@ export async function persistRunnerOutcomeToTask(opts: {
         result: opts.state.result ?? null,
       };
       const outcome = buildTaskRunnerOutcome({
+        task_id: opts.task_id,
         projection,
         previous: current.runner ?? null,
       });
@@ -102,6 +103,7 @@ export async function persistRunnerOutcomeToTask(opts: {
     result: opts.state.result ?? null,
   };
   const outcome = buildTaskRunnerOutcome({
+    task_id: opts.task_id,
     projection,
     previous: task.runner ?? null,
   });

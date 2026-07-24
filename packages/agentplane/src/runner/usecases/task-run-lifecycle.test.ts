@@ -1,29 +1,40 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, realpath, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
-
-import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
-  waitForCondition,
+  runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
+import { writeRunnerExecutable } from "@agentplane/testkit/runner";
+
 import { runCli } from "../../cli/run-cli.js";
+import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { CliError } from "../../shared/errors.js";
+import { CustomRunnerAdapter } from "../adapters/custom.js";
 import { evolveRunnerRunState, readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
-import * as processSupervision from "../process-supervision/signals.js";
+import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
+import type { RunnerContextBundle, RunnerDangerFullAccessAuthority } from "../types.js";
 
 import {
   cancelTaskRunnerExecution,
   resumeTaskRunnerExecution,
   retryTaskRunnerExecution,
 } from "./task-run-lifecycle.js";
+import { runnerReplayDangerAuthoritySource } from "./task-run-lifecycle-shared.js";
 import { executeTaskRunnerExecution, prepareTaskRunnerExecution } from "./task-run.js";
-import { writeRunnerExecutable } from "@agentplane/testkit/runner";
+import {
+  INITIAL_DANGER_AUTHORITY,
+  recordFailedExternalRunnerAnchor,
+  replayDangerAuthority,
+  sha256,
+} from "./task-run-lifecycle.testkit.js";
 
 installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;
@@ -58,6 +69,19 @@ async function createDoingTask(root: string, title: string): Promise<string> {
       io.restore();
     }
   }
+  await runCliSilent([
+    "task",
+    "plan",
+    "set",
+    taskId,
+    "--text",
+    `Execute lifecycle test task: ${title}.`,
+    "--updated-by",
+    "ORCHESTRATOR",
+    "--root",
+    root,
+  ]);
+  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
   const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
   const task = await commandCtx.taskBackend.getTask(taskId);
   expect(task).toBeTruthy();
@@ -89,23 +113,6 @@ async function configureCustomRunner(root: string, scriptLines: string[]): Promi
   process.env.PATH = `${fakeBinDir}${path.delimiter}${process.env.PATH ?? ""}`;
 }
 
-async function waitForState(
-  statePath: string,
-  predicate: (state: Awaited<ReturnType<typeof readRunnerRunState>>) => boolean,
-  timeoutMs = 5000,
-): Promise<Awaited<ReturnType<typeof readRunnerRunState>>> {
-  return await waitForCondition({
-    description: `runner state in ${statePath}`,
-    timeoutMs,
-    read: async () => await readRunnerRunState(statePath),
-    predicate,
-    onTimeout: (lastState) =>
-      new Error(
-        `Timed out waiting for runner state in ${statePath}: ${lastState?.status ?? "unknown"}`,
-      ),
-  });
-}
-
 describe("task-run lifecycle usecases", () => {
   it("keeps legacy guidance semantic, marker-safe, and visible across runner history", async () => {
     const root = await mkGitRepoRoot();
@@ -127,7 +134,7 @@ describe("task-run lifecycle usecases", () => {
       run_id: runId,
     });
 
-    expect(executed.result.status).toBe("failed");
+    expect(executed.result.status).toBe("success");
     expect(executed.result.exit_code).toBe(0);
     expect(executed.result.summary).toBe(
       "Runner blocked <!-- END RUNNER OUTCOME --> on sibling-owned paths.",
@@ -158,7 +165,7 @@ describe("task-run lifecycle usecases", () => {
         {
           field: "status",
           agent_reported: "blocked",
-          observed: "failed",
+          observed: "success",
           resolution: "observed_wins",
         },
         {
@@ -180,7 +187,7 @@ describe("task-run lifecycle usecases", () => {
 
     const task = await ctx.taskBackend.getTask(taskId);
     expect(task?.doc).toContain(
-      "Summary: Custom runner failed; inspect run artifacts for details.",
+      "Summary: Custom runner completed successfully. | AgentSemanticStatus[agent_reported]: blocked",
     );
     expect(task?.doc).toContain(
       "AgentSummary[agent_reported]: Runner blocked &lt;!-- END RUNNER OUTCOME --&gt; on sibling-owned paths.",
@@ -195,7 +202,7 @@ describe("task-run lifecycle usecases", () => {
     expect(task?.doc).not.toContain("BlockedReason: sibling runner owns the same file");
     expect(task?.doc).not.toContain("ParentAction: split task scope before retrying");
     expect(task?.doc).toContain(
-      "VerificationHint: runner failed; inspect artifacts before retrying or recording verification evidence.",
+      "VerificationHint: runner completed successfully; human verification and closure remain explicit lifecycle steps.",
     );
     expect(task?.doc).not.toContain(
       "AgentSummary[agent_reported]: Runner blocked <!-- END RUNNER OUTCOME -->",
@@ -276,291 +283,440 @@ describe("task-run lifecycle usecases", () => {
     ).rejects.toThrow("Invalid project-local blueprint trust registry");
   });
 
-  it("cancel terminates a running execute-mode run via persisted supervision metadata", async () => {
+  it("persists a typed refusal when a danger recipe lacks explicit operator authority", async () => {
     const root = await mkGitRepoRoot();
-    await configureCustomRunner(root, [
-      "#!/bin/sh",
-      "trap 'exit 0' TERM",
-      "cat >/dev/null",
-      "while :; do sleep 1; done",
-    ]);
-    const taskId = await createDoingTask(root, "Cancel live run");
+    const taskId = await createDoingTask(root, "Danger recipe refusal");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const runId = "run-live-cancel";
-    const statePath = path.join(
-      root,
-      ".agentplane",
-      "tasks",
-      taskId,
-      "runs",
-      runId,
-      "run-state.json",
-    );
-    const executionPromise = executeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
+    const runId = "run-danger-refused";
+    const runnerPaths = await resolveSupervisorTaskRunnerPaths({
+      git_root: root,
+      workflow_dir: ".agentplane/tasks",
       task_id: taskId,
       run_id: runId,
     });
+    const runDir = runnerPaths.run_dir;
+    let error: unknown = null;
 
-    const runningState = await waitForState(
-      statePath,
-      (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
-    );
-    expect(runningState?.status).toBe("running");
-    expect(runningState?.supervision?.pid).toBeGreaterThan(0);
-    expect(runningState?.supervision?.command).toContain("custom-runner");
-    expect(runningState?.supervision?.started_at).toMatch(/T/);
-    vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
-      pid: runningState!.supervision!.pid!,
-      command: runningState!.supervision!.command ?? null,
-      started_at: runningState!.supervision!.started_at ?? null,
-    });
-
-    const cancelled = await cancelTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-
-    const executed = await executionPromise;
-    const finalState = await waitForState(
-      statePath,
-      (state) =>
-        state?.status === "cancelled" &&
-        Boolean(state.supervision?.cancel_signal) &&
-        state.result?.status === "cancelled",
-    );
-
-    expect(cancelled.changed).toBe(true);
-    expect(cancelled.state.status).toBe("cancelled");
-    expect(cancelled.state.supervision?.cancel_requested_at).toBeTruthy();
-    expect(cancelled.state.supervision?.cancel_signal).toBeTruthy();
-    expect(executed.result.status).toBe("cancelled");
-    expect(finalState?.status).toBe("cancelled");
-    expect(finalState?.supervision?.cancel_signal).toBeTruthy();
-  });
-
-  it("cancel keeps cancel_signal and exit_signal semantics distinct during TERM cancellation", async () => {
-    const root = await mkGitRepoRoot();
-    await configureCustomRunner(root, [
-      "#!/bin/sh",
-      "trap 'exit 0' TERM",
-      "cat >/dev/null",
-      "while :; do sleep 1; done",
-    ]);
-    const taskId = await createDoingTask(root, "Cancel graceful TERM run");
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const runId = "run-graceful-term-cancel";
-    const statePath = path.join(
-      root,
-      ".agentplane",
-      "tasks",
-      taskId,
-      "runs",
-      runId,
-      "run-state.json",
-    );
-    const executionPromise = executeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-
-    const runningState = await waitForState(
-      statePath,
-      (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
-    );
-    expect(runningState?.status).toBe("running");
-    vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
-      pid: runningState!.supervision!.pid!,
-      command: runningState!.supervision!.command ?? null,
-      started_at: runningState!.supervision!.started_at ?? null,
-    });
-
-    const cancelled = await cancelTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-
-    const executed = await executionPromise;
-    const finalState = await waitForState(
-      statePath,
-      (state) =>
-        state?.status === "cancelled" &&
-        state.supervision?.cancel_signal === "SIGTERM" &&
-        state.result?.status === "cancelled",
-    );
-
-    expect(cancelled.state.status).toBe("cancelled");
-    expect(cancelled.state.supervision?.cancel_signal).toBe("SIGTERM");
-    expect(executed.result.status).toBe("cancelled");
-    expect(executed.result.exit_code).not.toBeNull();
-    expect(finalState?.status).toBe("cancelled");
-    expect(finalState?.supervision?.cancel_signal).toBe("SIGTERM");
-    expect([null, "SIGTERM"]).toContain(finalState?.supervision?.exit_signal ?? null);
-    expect(finalState?.result?.exit_code).toBe(executed.result.exit_code);
-  });
-
-  it("cancel refuses when the live process identity no longer matches persisted supervision metadata", async () => {
-    const root = await mkGitRepoRoot();
-    await configureCustomRunner(root, [
-      "#!/bin/sh",
-      "trap 'exit 0' TERM",
-      "cat >/dev/null",
-      "while :; do sleep 1; done",
-    ]);
-    const taskId = await createDoingTask(root, "Cancel mismatched live run");
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const runId = "run-live-mismatch";
-    const statePath = path.join(
-      root,
-      ".agentplane",
-      "tasks",
-      taskId,
-      "runs",
-      runId,
-      "run-state.json",
-    );
-    const eventsPath = path.join(
-      root,
-      ".agentplane",
-      "tasks",
-      taskId,
-      "runs",
-      runId,
-      "events.jsonl",
-    );
-    const executionPromise = executeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-
-    const runningState = await waitForState(
-      statePath,
-      (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
-    );
-    const pid = runningState?.supervision?.pid;
-    expect(pid).toBeGreaterThan(0);
-    vi.spyOn(processSupervision, "readObservedProcessIdentity").mockResolvedValue({
-      pid: pid!,
-      command: runningState?.supervision?.command ?? null,
-      started_at: runningState?.supervision?.started_at ?? null,
-    });
-    await writeRunnerRunState({
-      state_path: statePath,
-      state: evolveRunnerRunState({
-        state: runningState!,
-        status: "running",
-        updated_at: new Date().toISOString(),
-        supervision: {
-          ...runningState?.supervision,
-          command: "different-runner --bad-state",
-          started_at: "2000-01-01T00:00:00.000Z",
-        },
-      }),
-    });
-
-    await expect(
-      cancelTaskRunnerExecution({
+    try {
+      await prepareTaskRunnerExecution({
         ctx,
         cwd: root,
         rootOverride: root,
         task_id: taskId,
+        mode: "dry_run",
         run_id: runId,
-      }),
-    ).rejects.toMatchObject({
-      code: "E_RUNTIME",
+        recipe: {
+          recipe_id: "danger-recipe",
+          scenario_id: "DANGER_SCENARIO",
+          run_profile: {
+            sandbox: "danger-full-access",
+          },
+        },
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    expect(error).toBeInstanceOf(CliError);
+    expect(error).toMatchObject({
+      code: "E_VALIDATION",
       context: {
-        task_id: taskId,
-        run_id: runId,
-        pid,
+        adapter_id: "codex",
+        policy_field: "sandbox",
+        declared_value: "danger-full-access",
+        required_authority: "danger_full_access_authorized",
+      },
+      state: {
+        status: "failed",
+      },
+      bundle: {
+        execution: {
+          sandbox_policy: {
+            requested: "danger-full-access",
+            source: "recipe_run_profile",
+            authority: {
+              danger_full_access_authorized: false,
+              provenance: null,
+              source: null,
+            },
+          },
+          policy_decision: {
+            refusal_reason: {
+              code: "E_VALIDATION",
+              policy_field: "sandbox",
+              declared_value: "danger-full-access",
+            },
+          },
+        },
       },
     });
 
-    expect(await readFile(eventsPath, "utf8")).toContain("runner_cancel_refused");
-
-    process.kill(pid!, "SIGKILL");
-    const executed = await executionPromise;
-    expect(executed.result.status).toBe("failed");
-  });
-
-  it("resume re-executes an existing prepared execute-mode run in place", async () => {
-    const root = await mkGitRepoRoot();
-    await configureCustomRunner(root, [
-      "#!/bin/sh",
-      String.raw`printf "resumed runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,
-      "cat >/dev/null",
-      "exit 0",
-    ]);
-    const taskId = await createDoingTask(root, "Resume run");
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const prepared = await prepareTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      mode: "execute",
-      run_id: "run-resume",
+    const persistedBundle = JSON.parse(
+      await readFile(path.join(runDir, "bundle.json"), "utf8"),
+    ) as {
+      execution?: {
+        sandbox_policy?: {
+          requested?: string;
+          authority?: { danger_full_access_authorized?: boolean };
+        };
+        policy_decision?: {
+          refusal_reason?: {
+            code?: string;
+            policy_field?: string;
+            declared_value?: string;
+          };
+        };
+      };
+    };
+    expect(persistedBundle.execution?.sandbox_policy).toMatchObject({
+      requested: "danger-full-access",
+      authority: {
+        danger_full_access_authorized: false,
+      },
     });
-
-    const resumed = await resumeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: prepared.invocation.run_id,
+    expect(persistedBundle.execution?.policy_decision?.refusal_reason).toMatchObject({
+      code: "E_VALIDATION",
+      policy_field: "sandbox",
+      declared_value: "danger-full-access",
     });
-
-    expect(resumed.previous_status).toBe("prepared");
-    expect(resumed.result.status).toBe("failed");
-    expect(resumed.result.summary).toBe("Custom runner execution completed successfully.");
-    expect(resumed.result.stdout_summary).toBe(
-      "Raw execution trace was captured in agent-trace.jsonl.",
-    );
-    const state = await readRunnerRunState(resumed.invocation.state_path);
-    expect(state?.status).toBe("failed");
-    const events = await readFile(resumed.invocation.events_path, "utf8");
-    expect(events).toContain("runner_resume_requested");
-    expect(events).toContain("runner_execute_finish");
-    const task = await ctx.taskBackend.getTask(taskId);
-    expect(task?.runner).toMatchObject({
-      run_id: "run-resume",
+    expect(await readRunnerRunState(path.join(runDir, "run-state.json"))).toMatchObject({
       status: "failed",
-      adapter_id: "custom",
-      mode: "execute",
+      result: {
+        status: "failed",
+        exit_code: 3,
+      },
     });
-    expect(task?.doc).toContain("RUNNER — failed");
+    expect(await readFile(path.join(runDir, "events.jsonl"), "utf8")).toContain(
+      '"type":"runner_refused"',
+    );
   });
 
-  it("retry creates a new run from a failed execute-mode run snapshot", async () => {
+  it("rejects runtime danger authority with true but null or blank source", async () => {
     const root = await mkGitRepoRoot();
-    await configureCustomRunner(root, [
-      "#!/bin/sh",
-      String.raw`printf "retried runner %s\n" "$AGENTPLANE_RUNNER_RUN_DIR"`,
-      "cat >/dev/null",
-      "exit 0",
-    ]);
-    const taskId = await createDoingTask(root, "Retry run");
+    const taskId = await createDoingTask(root, "Malformed danger authority");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+
+    for (const [suffix, source] of [
+      ["null", null],
+      ["blank", " "],
+    ] as const) {
+      let error: unknown = null;
+      try {
+        await prepareTaskRunnerExecution({
+          ctx,
+          cwd: root,
+          rootOverride: root,
+          task_id: taskId,
+          mode: "dry_run",
+          run_id: `run-danger-${suffix}-source`,
+          recipe: {
+            recipe_id: "danger-recipe",
+            scenario_id: "DANGER_SCENARIO",
+            run_profile: {
+              sandbox: "danger-full-access",
+            },
+          },
+          danger_authority: {
+            danger_full_access_authorized: true,
+            provenance: "explicit_operator",
+            source,
+          } as unknown as RunnerDangerFullAccessAuthority,
+        });
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error).toBeInstanceOf(CliError);
+      expect(error).toMatchObject({
+        code: "E_VALIDATION",
+        context: {
+          adapter_id: "codex",
+          policy_field: "sandbox",
+          declared_value: "danger-full-access",
+          required_authority: "danger_full_access_authorized",
+        },
+        bundle: {
+          execution: {
+            sandbox_policy: {
+              authority: {
+                danger_full_access_authorized: false,
+                provenance: null,
+                source: null,
+              },
+            },
+          },
+        },
+      });
+    }
+  });
+
+  it("persists a legacy custom-wrapper refusal raised by adapter.prepare", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.runner.default_adapter = "custom";
+    config.runner.custom = {
+      command: ["custom-runner"],
+      enforcement: {
+        mode: "codex_sandbox_full_auto",
+        platform: "auto",
+      },
+    };
+    await writeConfig(root, config);
+    await writeRunnerExecutable(root, "custom-runner", ["#!/bin/sh", "exit 0"]);
+    vi.spyOn(CustomRunnerAdapter.prototype, "describeCapabilities").mockReturnValue({
+      adapter_id: "custom",
+      fields: {
+        sandbox: {
+          level: "advisory",
+          channel: "env",
+        },
+      },
+    });
+    const taskId = await createDoingTask(root, "Legacy wrapper refusal");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const runId = "run-legacy-wrapper-refused";
+    const runnerPaths = await resolveSupervisorTaskRunnerPaths({
+      git_root: root,
+      workflow_dir: ".agentplane/tasks",
+      task_id: taskId,
+      run_id: runId,
+    });
+    const runDir = runnerPaths.run_dir;
+    let error: unknown = null;
+
+    try {
+      await prepareTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        mode: "dry_run",
+        run_id: runId,
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    expect(error).toBeInstanceOf(CliError);
+    expect(error).toMatchObject({
+      code: "E_RUNTIME",
+      context: {
+        adapter_id: "custom",
+        wrapper_mode: "codex_sandbox_full_auto",
+        policy_field: "sandbox",
+        declared_value: "workspace-write",
+        supported_values: [],
+      },
+      state: {
+        status: "failed",
+      },
+      bundle: {
+        execution: {
+          policy_decision: {
+            refusal_reason: {
+              code: "E_RUNTIME",
+              policy_field: "sandbox",
+              declared_value: "workspace-write",
+            },
+          },
+        },
+      },
+    });
+    expect((error as CliError).message).toContain("legacy Codex CLI argv contract is unavailable");
+
+    const persistedBundle = JSON.parse(
+      await readFile(path.join(runDir, "bundle.json"), "utf8"),
+    ) as {
+      execution?: {
+        policy_decision?: {
+          fields?: { sandbox?: { status?: string } };
+          refusal_reason?: {
+            code?: string;
+            policy_field?: string;
+            declared_value?: string;
+          };
+        };
+      };
+    };
+    expect(persistedBundle.execution?.policy_decision).toMatchObject({
+      fields: {
+        sandbox: {
+          status: "advisory",
+        },
+      },
+      refusal_reason: {
+        code: "E_RUNTIME",
+        policy_field: "sandbox",
+        declared_value: "workspace-write",
+      },
+    });
+    expect(await readRunnerRunState(path.join(runDir, "run-state.json"))).toMatchObject({
+      status: "failed",
+      result: {
+        status: "failed",
+        exit_code: 8,
+      },
+    });
+    expect(await readFile(path.join(runDir, "events.jsonl"), "utf8")).toContain(
+      '"type":"runner_refused"',
+    );
+  });
+
+  it("blocks a write-capable run outside the route-authoritative task worktree", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const taskId = await createDoingTask(root, "Route-authoritative runner checkout");
+    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}`], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed route-authority task"], { cwd: root });
+    const branch = `task/${taskId}/route-authority`;
+    const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-route-authority`);
+    await mkdir(path.dirname(worktreePath), { recursive: true });
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath], { cwd: root });
+    const authoritativeWorktreePath = await realpath(worktreePath);
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const runId = "run-checkout-mismatch";
+    let error: unknown = null;
+
+    try {
+      await prepareTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        mode: "dry_run",
+        run_id: runId,
+      });
+    } catch (err) {
+      error = err;
+    }
+
+    expect(error).toBeInstanceOf(CliError);
+    expect(error).toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        policy_field: "write_scope",
+        authoritative_checkout_path: authoritativeWorktreePath,
+      },
+    });
+    expect(error).not.toHaveProperty("state");
+    expect(error).not.toHaveProperty("bundle");
+    expect(
+      await readRunnerRunState(
+        path.join(root, ".agentplane", "tasks", taskId, "runs", runId, "run-state.json"),
+      ),
+    ).toBeNull();
+    expect((error as CliError).message).toContain("route-authoritative");
+  });
+
+  it.each(["resume", "retry"] as const)(
+    "%s refuses to reuse stored danger authority before adapter preparation or lifecycle writes",
+    async (action) => {
+      const root = await mkGitRepoRoot();
+      await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
+      const taskId = await createDoingTask(root, `Danger ${action} refusal`);
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+      const sourceRunId = `run-danger-${action}-source`;
+      const prepared = await prepareTaskRunnerExecution({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        task_id: taskId,
+        mode: "execute",
+        run_id: sourceRunId,
+        sandbox_override: "danger-full-access",
+        danger_authority: INITIAL_DANGER_AUTHORITY,
+      });
+      const failedAt = new Date().toISOString();
+      await writeRunnerRunState({
+        state_path: prepared.invocation.state_path,
+        state: evolveRunnerRunState({
+          state: prepared.state,
+          status: "failed",
+          updated_at: failedAt,
+          result: {
+            status: "failed",
+            exit_code: 1,
+            started_at: failedAt,
+            ended_at: failedAt,
+            stderr_summary: "simulated failure",
+          },
+        }),
+      });
+      await recordFailedExternalRunnerAnchor({
+        ctx,
+        taskId,
+        prepared,
+        updatedAt: failedAt,
+      });
+      const beforeBundle = await readFile(prepared.invocation.bundle_path, "utf8");
+      const beforeState = await readFile(prepared.invocation.state_path, "utf8");
+      const beforeEvents = await readFile(prepared.invocation.events_path, "utf8");
+      const prepareSpy = vi.spyOn(CustomRunnerAdapter.prototype, "prepare");
+      const destinationRunId = `run-danger-${action}-destination`;
+
+      const replay =
+        action === "resume"
+          ? resumeTaskRunnerExecution({
+              ctx,
+              cwd: root,
+              rootOverride: root,
+              task_id: taskId,
+              run_id: sourceRunId,
+              new_run_id: destinationRunId,
+              danger_authority: INITIAL_DANGER_AUTHORITY,
+            })
+          : retryTaskRunnerExecution({
+              ctx,
+              cwd: root,
+              rootOverride: root,
+              task_id: taskId,
+              run_id: sourceRunId,
+              new_run_id: destinationRunId,
+              danger_authority: INITIAL_DANGER_AUTHORITY,
+            });
+
+      await expect(replay).rejects.toMatchObject({
+        code: "E_VALIDATION",
+        context: {
+          task_id: taskId,
+          run_id: sourceRunId,
+          replay_action: action,
+          declared_value: "danger-full-access",
+          required_authority: "fresh_explicit_operator_danger_full_access_authority",
+          expected_source: runnerReplayDangerAuthoritySource(action),
+        },
+      });
+      expect(prepareSpy).not.toHaveBeenCalled();
+      expect(await readFile(prepared.invocation.bundle_path, "utf8")).toBe(beforeBundle);
+      expect(await readFile(prepared.invocation.state_path, "utf8")).toBe(beforeState);
+      expect(await readFile(prepared.invocation.events_path, "utf8")).toBe(beforeEvents);
+      await expect(
+        readFile(
+          path.join(root, ".agentplane", "tasks", taskId, "runs", destinationRunId, "bundle.json"),
+          "utf8",
+        ),
+      ).rejects.toMatchObject({ code: "ENOENT" });
+    },
+  );
+
+  it("resume persists a fresh action-scoped danger authority before adapter preparation", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
+    const taskId = await createDoingTask(root, "Danger resume authority refresh");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const sourceRunId = "run-danger-resume-authorized-source";
+    const destinationRunId = "run-danger-resume-authorized-destination";
     const prepared = await prepareTaskRunnerExecution({
       ctx,
       cwd: root,
       rootOverride: root,
       task_id: taskId,
       mode: "execute",
-      run_id: "run-retry-source",
+      run_id: sourceRunId,
+      sandbox_override: "danger-full-access",
+      danger_authority: INITIAL_DANGER_AUTHORITY,
     });
     const failedAt = new Date().toISOString();
     await writeRunnerRunState({
@@ -578,37 +734,111 @@ describe("task-run lifecycle usecases", () => {
         },
       }),
     });
+    await recordFailedExternalRunnerAnchor({
+      ctx,
+      taskId,
+      prepared,
+      updatedAt: failedAt,
+    });
+    const sourceBundleBefore = await readFile(prepared.invocation.bundle_path, "utf8");
+    const prepareSpy = vi.spyOn(CustomRunnerAdapter.prototype, "prepare");
+
+    const resumed = await resumeTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      run_id: sourceRunId,
+      new_run_id: destinationRunId,
+      danger_authority: replayDangerAuthority("resume"),
+    });
+
+    expect(prepareSpy).toHaveBeenCalledTimes(1);
+    expect(resumed.bundle.execution.sandbox_policy?.authority).toEqual(
+      replayDangerAuthority("resume"),
+    );
+    expect(resumed.source_run_id).toBe(sourceRunId);
+    expect(resumed.source_status).toBe("failed");
+    expect(resumed.previous_status).toBe("failed");
+    const destinationBundleText = await readFile(resumed.invocation.bundle_path, "utf8");
+    const destinationBundle = JSON.parse(destinationBundleText) as RunnerContextBundle;
+    const destinationState = await readRunnerRunState(resumed.invocation.state_path);
+    expect(destinationBundle.execution.sandbox_policy?.authority).toEqual(
+      replayDangerAuthority("resume"),
+    );
+    expect(destinationState?.prepared_metadata?.bundle_sha256).toBe(sha256(destinationBundleText));
+    expect(destinationState?.prepared_metadata?.bundle_bytes).toBe(
+      Buffer.byteLength(destinationBundleText, "utf8"),
+    );
+    expect(await readFile(prepared.invocation.bundle_path, "utf8")).toBe(sourceBundleBefore);
+  });
+
+  it("retry stores only the fresh action-scoped danger authority in the destination run", async () => {
+    const root = await mkGitRepoRoot();
+    await configureCustomRunner(root, ["#!/bin/sh", "cat >/dev/null", "exit 0"]);
+    const taskId = await createDoingTask(root, "Danger retry authority refresh");
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const sourceRunId = "run-danger-retry-authorized-source";
+    const destinationRunId = "run-danger-retry-authorized-destination";
+    const prepared = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: sourceRunId,
+      sandbox_override: "danger-full-access",
+      danger_authority: INITIAL_DANGER_AUTHORITY,
+    });
+    const failedAt = new Date().toISOString();
+    await writeRunnerRunState({
+      state_path: prepared.invocation.state_path,
+      state: evolveRunnerRunState({
+        state: prepared.state,
+        status: "failed",
+        updated_at: failedAt,
+        result: {
+          status: "failed",
+          exit_code: 1,
+          started_at: failedAt,
+          ended_at: failedAt,
+          stderr_summary: "simulated failure",
+        },
+      }),
+    });
+    await recordFailedExternalRunnerAnchor({
+      ctx,
+      taskId,
+      prepared,
+      updatedAt: failedAt,
+    });
+    const sourceBundleBefore = await readFile(prepared.invocation.bundle_path, "utf8");
+    const prepareSpy = vi.spyOn(CustomRunnerAdapter.prototype, "prepare");
 
     const retried = await retryTaskRunnerExecution({
       ctx,
       cwd: root,
       rootOverride: root,
       task_id: taskId,
-      run_id: prepared.invocation.run_id,
-      new_run_id: "run-retry-dest",
+      run_id: sourceRunId,
+      new_run_id: destinationRunId,
+      danger_authority: replayDangerAuthority("retry"),
     });
 
-    expect(retried.source_run_id).toBe("run-retry-source");
-    expect(retried.invocation.run_id).toBe("run-retry-dest");
-    expect(retried.result.status).toBe("failed");
-    expect(retried.result.summary).toBe("Custom runner execution completed successfully.");
-    expect(retried.result.stdout_summary).toBe(
-      "Raw execution trace was captured in agent-trace.jsonl.",
+    expect(prepareSpy).toHaveBeenCalledTimes(1);
+    expect(retried.bundle.execution.sandbox_policy?.authority).toEqual(
+      replayDangerAuthority("retry"),
     );
-    const newState = await readRunnerRunState(retried.invocation.state_path);
-    expect(newState?.status).toBe("failed");
-    const sourceEvents = await readFile(prepared.invocation.events_path, "utf8");
-    expect(sourceEvents).toContain("runner_retry_requested");
-    const retryEvents = await readFile(retried.invocation.events_path, "utf8");
-    expect(retryEvents).toContain("runner_prepared");
-    expect(retryEvents).toContain("runner_retry_created");
-    const task = await ctx.taskBackend.getTask(taskId);
-    expect(task?.runner).toMatchObject({
-      run_id: "run-retry-dest",
-      status: "failed",
-      adapter_id: "custom",
-      mode: "execute",
-    });
-    expect(task?.doc).toContain("RunId: run-retry-dest");
+    const destinationBundleText = await readFile(retried.invocation.bundle_path, "utf8");
+    const destinationBundle = JSON.parse(destinationBundleText) as RunnerContextBundle;
+    const destinationState = await readRunnerRunState(retried.invocation.state_path);
+    expect(destinationBundle.execution.sandbox_policy?.authority).toEqual(
+      replayDangerAuthority("retry"),
+    );
+    expect(destinationState?.prepared_metadata?.bundle_sha256).toBe(sha256(destinationBundleText));
+    expect(destinationState?.prepared_metadata?.bundle_bytes).toBe(
+      Buffer.byteLength(destinationBundleText, "utf8"),
+    );
+    expect(await readFile(prepared.invocation.bundle_path, "utf8")).toBe(sourceBundleBefore);
   });
 });

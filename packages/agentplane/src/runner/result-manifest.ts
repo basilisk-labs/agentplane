@@ -1,4 +1,3 @@
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { AGENT_SEMANTIC_RESULT_ZOD_SCHEMA } from "@agentplaneorg/core/schemas";
@@ -8,6 +7,7 @@ import type {
   RunnerResultManifest,
   RunnerResultManifestWarning,
 } from "./types.js";
+import { readStableRegularTextNoFollow } from "./stable-file.js";
 
 export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 2 as const;
 const LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
@@ -279,7 +279,7 @@ export async function readRunnerResultManifest(
   resultPath: string,
 ): Promise<RunnerResultManifest | null> {
   try {
-    const rawText = await readFile(resultPath, "utf8");
+    const rawText = await readStableRegularTextNoFollow(resultPath, "runner result manifest");
     return parseRunnerResultManifestText(rawText, resultPath);
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;

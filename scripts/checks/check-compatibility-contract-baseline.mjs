@@ -61,6 +61,28 @@ function assertOnlyKeys(value, required, optional, label) {
   }
 }
 
+function escapeRegExp(value) {
+  return value.replaceAll(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+}
+
+function collectNamedReexports(entrypoint) {
+  const source = readFileSync(path.join(repoRoot, entrypoint.path), "utf8");
+  const pattern = new RegExp(
+    String.raw`export\s*\{([^}]*)\}\s*from\s*["']${escapeRegExp(entrypoint.module)}["']`,
+    "gu",
+  );
+  const names = [];
+  for (const match of source.matchAll(pattern)) {
+    for (const rawEntry of match[1].split(",")) {
+      const entry = rawEntry.trim().replace(/^type\s+/u, "");
+      if (!entry) continue;
+      const alias = entry.split(/\s+as\s+/u);
+      names.push(alias.at(-1));
+    }
+  }
+  return [...new Set(names)].toSorted();
+}
+
 function validateRegistry(registry) {
   assert(registry?.source === "npm_registry", "published registry source must be npm_registry");
   assert(registry?.version === "0.6.24", "published registry version must be 0.6.24");
@@ -269,7 +291,16 @@ function validateReviewedCandidate({
 }) {
   assertOnlyKeys(
     candidate,
-    ["schema_version", "candidate_id", "source_tasks", "base", "candidate", "review", "deltas"],
+    [
+      "schema_version",
+      "candidate_id",
+      "source_tasks",
+      "base",
+      "candidate",
+      "contract_artifacts",
+      "review",
+      "deltas",
+    ],
     [],
     "compatibility candidate",
   );
@@ -278,7 +309,12 @@ function validateReviewedCandidate({
     candidate.candidate_id === "agentplane.compatibility.v0.7.cumulative",
     "compatibility candidate id drift",
   );
-  const expectedSourceTasks = ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"];
+  const expectedSourceTasks = [
+    "202607221846-4VB97J",
+    "202607221846-YGWMA2",
+    "202607230554-YFYT83",
+    "202607221846-9XC1H0",
+  ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
     "compatibility source task inventory drift",
@@ -312,6 +348,81 @@ function validateReviewedCandidate({
     hashJson(candidate.candidate.section_digests) === hashJson(currentSectionDigests),
     "candidate section digest inventory drift",
   );
+
+  assertOnlyKeys(
+    candidate.contract_artifacts,
+    ["execution_receipt_schema", "core_execution_receipt_exports"],
+    [],
+    "compatibility candidate contract artifacts",
+  );
+  const executionReceiptArtifact = candidate.contract_artifacts.execution_receipt_schema;
+  assertOnlyKeys(
+    executionReceiptArtifact,
+    ["path", "sha256", "comparison", "source_task"],
+    [],
+    "execution receipt contract artifact",
+  );
+  assert(
+    executionReceiptArtifact.path === "schemas/execution-receipt.schema.json",
+    "execution receipt contract artifact path drift",
+  );
+  assert(
+    executionReceiptArtifact.comparison === "canonical_json_exact",
+    "execution receipt contract artifact comparison drift",
+  );
+  assert(
+    executionReceiptArtifact.source_task === "202607221846-9XC1H0",
+    "execution receipt contract artifact source task drift",
+  );
+  const executionReceiptSchema = JSON.parse(
+    readFileSync(path.join(repoRoot, executionReceiptArtifact.path), "utf8"),
+  );
+  assert(
+    executionReceiptArtifact.sha256 === hashJson(executionReceiptSchema),
+    "execution receipt contract artifact digest drift",
+  );
+  const executionReceiptExports = candidate.contract_artifacts.core_execution_receipt_exports;
+  assertOnlyKeys(
+    executionReceiptExports,
+    ["comparison", "source_task", "entrypoints"],
+    [],
+    "core execution receipt export contract",
+  );
+  assert(
+    executionReceiptExports.comparison === "required_named_reexports",
+    "core execution receipt export comparison drift",
+  );
+  assert(
+    executionReceiptExports.source_task === "202607221846-9XC1H0",
+    "core execution receipt export source task drift",
+  );
+  assert(
+    Array.isArray(executionReceiptExports.entrypoints) &&
+      executionReceiptExports.entrypoints.length === 2,
+    "core execution receipt export entrypoints drift",
+  );
+  for (const [index, entrypoint] of executionReceiptExports.entrypoints.entries()) {
+    assertOnlyKeys(
+      entrypoint,
+      ["path", "module", "required_symbols"],
+      [],
+      `core execution receipt export entrypoint ${index}`,
+    );
+    assert(
+      Array.isArray(entrypoint.required_symbols) &&
+        entrypoint.required_symbols.length > 0 &&
+        hashJson(entrypoint.required_symbols) ===
+          hashJson([...new Set(entrypoint.required_symbols)].toSorted()),
+      `core execution receipt export entrypoint ${index} symbols must be unique and sorted`,
+    );
+    const exported = new Set(collectNamedReexports(entrypoint));
+    for (const symbol of entrypoint.required_symbols) {
+      assert(
+        exported.has(symbol),
+        `${entrypoint.path}: required execution receipt export missing: ${symbol}`,
+      );
+    }
+  }
 
   assertOnlyKeys(
     candidate.review,
@@ -417,6 +528,20 @@ function validateReviewedCandidate({
       choices: ["human_supplied", "evaluator_supplied"],
     },
     {
+      command: "task run",
+      name: "allow-danger-full-access",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task run",
+      name: "sandbox",
+      kind: "string",
+      valueHint: "<read-only|workspace-write|danger-full-access>",
+      choices: ["read-only", "workspace-write", "danger-full-access"],
+    },
+    {
       command: "workflow migrate",
       name: "dry-run",
       kind: "boolean",
@@ -443,6 +568,18 @@ function validateReviewedCandidate({
       command: "evaluator run",
       name: "provenance",
       source_task: "202607221846-YGWMA2",
+    },
+    {
+      kind: "option",
+      command: "task run",
+      name: "allow-danger-full-access",
+      source_task: "202607221846-9XC1H0",
+    },
+    {
+      kind: "option",
+      command: "task run",
+      name: "sandbox",
+      source_task: "202607221846-9XC1H0",
     },
     {
       kind: "option",

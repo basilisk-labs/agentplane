@@ -1,11 +1,11 @@
 import { createHash } from "node:crypto";
-import { createReadStream } from "node:fs";
 import { lstat } from "node:fs/promises";
 import path from "node:path";
 
 import type { ExecutionReceiptArtifactObservation } from "@agentplaneorg/core/schemas";
 
 import type { RunnerResultArtifact } from "../types.js";
+import { readStableRegularFileNoFollow } from "../stable-file.js";
 
 const OBSERVED_PROVENANCE = "supervisor_observed" as const;
 
@@ -40,14 +40,9 @@ function identitiesMatch(left: ArtifactIdentity, right: ArtifactIdentity): boole
 }
 
 async function sha256File(filePath: string): Promise<string> {
-  const hash = createHash("sha256");
-  await new Promise<void>((resolve, reject) => {
-    const stream = createReadStream(filePath);
-    stream.on("data", (chunk) => hash.update(chunk));
-    stream.on("error", reject);
-    stream.on("end", resolve);
-  });
-  return `sha256:${hash.digest("hex")}`;
+  return `sha256:${createHash("sha256")
+    .update(await readStableRegularFileNoFollow(filePath, "runner artifact"))
+    .digest("hex")}`;
 }
 
 function normalizeSpecs(

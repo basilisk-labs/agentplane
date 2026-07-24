@@ -1,7 +1,12 @@
 {
   "schema_version": 2,
   "candidate_id": "agentplane.compatibility.v0.7.cumulative",
-  "source_tasks": ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"],
+  "source_tasks": [
+    "202607221846-4VB97J",
+    "202607221846-YGWMA2",
+    "202607230554-YFYT83",
+    "202607221846-9XC1H0"
+  ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
     "reference": "exact_main",
@@ -9,15 +14,111 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "cd5fb5b60eb7d554c6fe2bd14cdf9cfbe31625c4ba2d5f9a787968a4c6d31246",
+    "surface_sha256": "8b69ad6c096cd4b873785454cc1d1570a980529b47599e40a3561fc8dacb5951",
     "section_digests": {
-      "cli_topology": "f44122c97483b733ffa7c1de543d95f37672532562e2f5526525c1f6a0b23e4a",
+      "cli_topology": "61e9b7ce283f2e6381c68c95783a5e0b63180288d06de34d6e91a0b349a91f11",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "4b5a62135ada227eca13961e1ef3fbaaae269eea082375539a5c9fa085b9a613",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
       "agent_facing_context_contracts": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
       "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
       "tarball_policy": "a13f8e06e2c2cb4aa9d7fc69aaf01998c33cd010444cba8b6670a97d85d816e6"
+    }
+  },
+  "contract_artifacts": {
+    "execution_receipt_schema": {
+      "path": "schemas/execution-receipt.schema.json",
+      "sha256": "2182ce7788ff3cffea246a15864c27350b6787555588ba1444fbc3fc5b0f3db9",
+      "comparison": "canonical_json_exact",
+      "source_task": "202607221846-9XC1H0"
+    },
+    "core_execution_receipt_exports": {
+      "comparison": "required_named_reexports",
+      "source_task": "202607221846-9XC1H0",
+      "entrypoints": [
+        {
+          "path": "packages/core/src/index.ts",
+          "module": "./schemas/index.js",
+          "required_symbols": [
+            "EXECUTION_RECEIPT_ARTIFACT_STATE_VALUES",
+            "EXECUTION_RECEIPT_CHECK_STATUS_VALUES",
+            "EXECUTION_RECEIPT_COLLECTION_STATUS_VALUES",
+            "EXECUTION_RECEIPT_GIT_CHANGE_VALUES",
+            "EXECUTION_RECEIPT_GIT_STATE_VALUES",
+            "EXECUTION_RECEIPT_KIND",
+            "EXECUTION_RECEIPT_LEGACY_SCHEMA_VERSION",
+            "EXECUTION_RECEIPT_OBSERVER",
+            "EXECUTION_RECEIPT_PROCESS_OUTCOME_VALUES",
+            "EXECUTION_RECEIPT_PROVENANCE",
+            "EXECUTION_RECEIPT_SCHEMA_VERSION",
+            "EXECUTION_RECEIPT_SUCCESS_POLICY_OUTCOME_VALUES",
+            "EXECUTION_RECEIPT_V1_VALID_FIXTURE",
+            "EXECUTION_RECEIPT_V1_ZOD_SCHEMA",
+            "EXECUTION_RECEIPT_V2_VALID_FIXTURE",
+            "EXECUTION_RECEIPT_V2_ZOD_SCHEMA",
+            "EXECUTION_RECEIPT_ZOD_SCHEMA",
+            "ExecutionReceipt",
+            "ExecutionReceiptArtifactObservation",
+            "ExecutionReceiptCollection",
+            "ExecutionReceiptGitDelta",
+            "ExecutionReceiptGitDeltaEntry",
+            "ExecutionReceiptGitObservation",
+            "ExecutionReceiptGitSnapshot",
+            "ExecutionReceiptObservedCheck",
+            "ExecutionReceiptProcessObservation",
+            "ExecutionReceiptScopeEvaluation",
+            "ExecutionReceiptSuccessPolicy",
+            "ExecutionReceiptV1",
+            "ExecutionReceiptV2",
+            "listExecutionReceiptSchemaErrors",
+            "renderExecutionReceiptSchemaJson",
+            "renderExecutionReceiptV1ValidFixtureJson",
+            "renderExecutionReceiptV2ValidFixtureJson",
+            "validateExecutionReceipt"
+          ]
+        },
+        {
+          "path": "packages/core/src/schemas/index.ts",
+          "module": "../runner/execution-receipt.js",
+          "required_symbols": [
+            "EXECUTION_RECEIPT_ARTIFACT_STATE_VALUES",
+            "EXECUTION_RECEIPT_CHECK_STATUS_VALUES",
+            "EXECUTION_RECEIPT_COLLECTION_STATUS_VALUES",
+            "EXECUTION_RECEIPT_GIT_CHANGE_VALUES",
+            "EXECUTION_RECEIPT_GIT_STATE_VALUES",
+            "EXECUTION_RECEIPT_KIND",
+            "EXECUTION_RECEIPT_LEGACY_SCHEMA_VERSION",
+            "EXECUTION_RECEIPT_OBSERVER",
+            "EXECUTION_RECEIPT_PROCESS_OUTCOME_VALUES",
+            "EXECUTION_RECEIPT_PROVENANCE",
+            "EXECUTION_RECEIPT_SCHEMA_VERSION",
+            "EXECUTION_RECEIPT_SUCCESS_POLICY_OUTCOME_VALUES",
+            "EXECUTION_RECEIPT_V1_VALID_FIXTURE",
+            "EXECUTION_RECEIPT_V1_ZOD_SCHEMA",
+            "EXECUTION_RECEIPT_V2_VALID_FIXTURE",
+            "EXECUTION_RECEIPT_V2_ZOD_SCHEMA",
+            "EXECUTION_RECEIPT_ZOD_SCHEMA",
+            "ExecutionReceipt",
+            "ExecutionReceiptArtifactObservation",
+            "ExecutionReceiptCollection",
+            "ExecutionReceiptGitDelta",
+            "ExecutionReceiptGitDeltaEntry",
+            "ExecutionReceiptGitObservation",
+            "ExecutionReceiptGitSnapshot",
+            "ExecutionReceiptObservedCheck",
+            "ExecutionReceiptProcessObservation",
+            "ExecutionReceiptScopeEvaluation",
+            "ExecutionReceiptSuccessPolicy",
+            "ExecutionReceiptV1",
+            "ExecutionReceiptV2",
+            "listExecutionReceiptSchemaErrors",
+            "renderExecutionReceiptSchemaJson",
+            "renderExecutionReceiptV1ValidFixtureJson",
+            "renderExecutionReceiptV2ValidFixtureJson",
+            "validateExecutionReceipt"
+          ]
+        }
+      ]
     }
   },
   "review": {
@@ -33,15 +134,20 @@
   "deltas": [
     {
       "section": "cli_topology",
-      "source_tasks": ["202607221846-4VB97J", "202607221846-YGWMA2", "202607230554-YFYT83"],
+      "source_tasks": [
+        "202607221846-4VB97J",
+        "202607221846-YGWMA2",
+        "202607230554-YFYT83",
+        "202607221846-9XC1H0"
+      ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "f44122c97483b733ffa7c1de543d95f37672532562e2f5526525c1f6a0b23e4a",
+      "to_sha256": "61e9b7ce283f2e6381c68c95783a5e0b63180288d06de34d6e91a0b349a91f11",
       "classification": "additive",
-      "summary": "Adds workflow migration controls, explicit evaluator provenance, and task-scoped merged cleanup; no command or option is removed or mutated.",
+      "summary": "Adds workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, and typed task-run sandbox authority; no command or option is removed or mutated.",
       "evidence": {
         "command_count": { "from": 243, "to": 244 },
         "positional_count": { "from": 165, "to": 165 },
-        "option_count": { "from": 767, "to": 771 },
+        "option_count": { "from": 767, "to": 773 },
         "added_commands": ["workflow migrate"],
         "removed_commands": [],
         "added_command_descriptors": [
@@ -83,6 +189,20 @@
             "choices": ["human_supplied", "evaluator_supplied"]
           },
           {
+            "command": "task run",
+            "name": "allow-danger-full-access",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "task run",
+            "name": "sandbox",
+            "kind": "string",
+            "valueHint": "<read-only|workspace-write|danger-full-access>",
+            "choices": ["read-only", "workspace-write", "danger-full-access"]
+          },
+          {
             "command": "workflow migrate",
             "name": "dry-run",
             "kind": "boolean",
@@ -115,6 +235,18 @@
             "command": "evaluator run",
             "name": "provenance",
             "source_task": "202607221846-YGWMA2"
+          },
+          {
+            "kind": "option",
+            "command": "task run",
+            "name": "allow-danger-full-access",
+            "source_task": "202607221846-9XC1H0"
+          },
+          {
+            "kind": "option",
+            "command": "task run",
+            "name": "sandbox",
+            "source_task": "202607221846-9XC1H0"
           },
           {
             "kind": "option",

@@ -9,7 +9,17 @@ export type RunnerCapabilityDescriptor = {
   note?: string;
 };
 
+type RunnerFilesystemEffectContainmentCapability = {
+  level: RunnerCapabilityLevel;
+  supported_sandboxes: string[];
+  boundary: "workspace";
+  descendant_inheritance: "enforced" | "not_enforced";
+  lifetime_containment: "not_provided";
+  note?: string;
+};
+
 export type RunnerAdapterCapabilities = {
   adapter_id: string;
   fields: Record<string, RunnerCapabilityDescriptor>;
+  filesystem_effect_containment?: RunnerFilesystemEffectContainmentCapability;
 };
