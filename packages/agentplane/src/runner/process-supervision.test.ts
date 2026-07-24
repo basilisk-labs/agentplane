@@ -55,7 +55,7 @@ describe("runSupervisedProcess", () => {
     await mkdir(runDir, { recursive: true });
     await writeFile(
       scriptPath,
-      `await import("node:fs/promises").then(({ writeFile }) => writeFile(${JSON.stringify(markerPath)}, "spawned", "utf8"));\n`,
+      'await import("node:fs/promises").then(({ writeFile }) => writeFile(new URL("./spawned.txt", import.meta.url), "spawned", "utf8"));\n',
       "utf8",
     );
     const invocation = {
@@ -287,7 +287,7 @@ describe("runSupervisedProcess", () => {
     await writeFile(
       scriptPath,
       [
-        `await import("node:fs/promises").then(({ writeFile }) => writeFile(${JSON.stringify(pidPath)}, String(process.pid), "utf8"));`,
+        'await import("node:fs/promises").then(({ writeFile }) => writeFile(new URL("./runner.pid", import.meta.url), String(process.pid), "utf8"));',
         "for (let i = 0; i < 1000; i += 1) {",
         "  process.stdout.write(`short-line-${i}\\n`);",
         "}",
