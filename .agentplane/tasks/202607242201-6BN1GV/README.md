@@ -4,7 +4,7 @@ title: "Amend the AgentPlane 0.7 graph with the effect-in-doubt safety gate"
 status: "DOING"
 priority: "high"
 owner: "PLANNER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -30,10 +30,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved bounded graph amendment after splitting journal and resolution at separate verification boundaries."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-24T22:12:36.988Z"
+  updated_by: "PLANNER"
+  note: "PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint --verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0 errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI."
   attempts: 0
 commit: null
 comments:
@@ -48,8 +48,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Persist the reviewed effect journal and operator-resolution safety leaves in the executable v0.7 release graph, update the canonical roadmap, and verify full release ancestry."
+  -
+    type: "verify"
+    at: "2026-07-24T22:12:36.988Z"
+    author: "PLANNER"
+    state: "ok"
+    note: "PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint --verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0 errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:09:59.430Z"
+doc_updated_at: "2026-07-24T22:12:37.474Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
@@ -73,6 +79,36 @@ sections:
     4. Run bun run task-state:check, node .agentplane/policy/check-routing.mjs, bun run format:check and ap doctor. Expected: no new errors; any pre-existing warning is recorded with evidence.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-24T22:12:36.988Z — VERIFY — ok
+
+    By: PLANNER
+
+    Note: PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint --verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0 errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:09:59.430Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+    - old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607242201-6BN1GV
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert only this planning-task PR before either SX8T09 or QV09NA implementation begins.
@@ -86,6 +122,10 @@ sections:
     - Observation: Doctor passed with zero errors and three historical warnings: two older DONE tasks missing implementation hashes and one RF-02 task pointing at a close commit.
       Impact: The graph amendment introduces no workflow or workspace error; the warnings predate and are outside this docs-only task scope.
       Resolution: Record them as pre-existing non-blocking evidence and leave repair to separately scoped lifecycle-maintenance work.
+
+    - Observation: RF-06 effect uncertainty needed separate journal and resolution verification boundaries.
+      Impact: The alpha.2 gate and downstream runner lifecycle now fail closed until both safety contracts are complete.
+      Resolution: Persist two atomic CODER leaves and one reviewed graph amendment with exact dependency fan-in.
 id_source: "generated"
 ---
 ## Summary
@@ -117,6 +157,36 @@ Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 ex
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-24T22:12:36.988Z — VERIFY — ok
+
+By: PLANNER
+
+Note: PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint --verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0 errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:09:59.430Z, excerpt_hash=sha256:1b877df7e0eb9bbf93dd1dec01ae2218fcd2d74e6fb9d3117e8d45804ffe5aa6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607242201-6BN1GV-amend-the-agentplane-0-7-graph-with-the-effect-i/.agentplane/tasks/202607242201-6BN1GV/blueprint/resolved-snapshot.json
+- old_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- current_digest: d47a4b9387d94df3fb46e784643e1163c66cf1e91fc0b4dee54e7ec48bdf4bc4
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242201-6BN1GV
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607242201-6BN1GV
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -134,3 +204,7 @@ Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 ex
 - Observation: Doctor passed with zero errors and three historical warnings: two older DONE tasks missing implementation hashes and one RF-02 task pointing at a close commit.
   Impact: The graph amendment introduces no workflow or workspace error; the warnings predate and are outside this docs-only task scope.
   Resolution: Record them as pre-existing non-blocking evidence and leave repair to separately scoped lifecycle-maintenance work.
+
+- Observation: RF-06 effect uncertainty needed separate journal and resolution verification boundaries.
+  Impact: The alpha.2 gate and downstream runner lifecycle now fail closed until both safety contracts are complete.
+  Resolution: Persist two atomic CODER leaves and one reviewed graph amendment with exact dependency fan-in.
