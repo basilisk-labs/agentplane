@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -34,31 +34,27 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-24T06:09:28.151Z"
-  updated_by: "TESTER"
-  note: "PASS at e79d03abc: CodeQL alerts #38/#39 are fixed without production changes by removing path interpolation from generated .mjs fixtures. process-supervision tests pass 12/12; format, typecheck, and git diff checks pass; prior full RF-03 verification at f161a6e56 remains applicable to unchanged production code."
+  updated_at: "2026-07-24T06:34:44.218Z"
+  updated_by: "CODER"
+  note: "Linux CI repair at 1728201ae: immutable process start time, separate running-state publication time, and offline RF-04 fixture maintenance isolation. Local test:fast 425/425 files and 2659/2659 tests; test:critical 71/71; ci:contract, typecheck, format, replay evidence, and hotspot contracts passed."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-24T06:09:45.160Z"
+  updated_at: "2026-07-24T06:37:58.091Z"
   updated_by: "EVALUATOR"
-  note: "RF-03 remains PASS at e79d03abc; the only post-review change removes two CodeQL code-construction findings from test fixtures without altering production behavior."
-  evaluated_sha: "e79d03abc931372a4e3a75b09275dd02457fa053"
+  note: "PASS at 1728201ae: Linux CI races are causally fixed without changing the immutable RF-04 capture harness or weakening .git mutation enforcement."
+  evaluated_sha: "1728201aeb11e03e04d39157ceb90820d3f083b2"
   blueprint_digest: "ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea"
   evidence_refs:
     - ".agentplane/tasks/202607221846-9XC1H0/README.md"
-    - ".agentplane/tasks/202607221846-9XC1H0/quality/20260724-060945160-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221846-9XC1H0/quality/20260724-060945160-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221846-9XC1H0/quality/20260724-060945160-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221846-9XC1H0/quality/20260724-063758091-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221846-9XC1H0/quality/20260724-063758091-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221846-9XC1H0/quality/20260724-063758091-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221846-9XC1H0/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/runner/process-supervision.test.ts"
-    - "GitHub CodeQL alerts 38 and 39"
-    - "process-supervision.test.ts: 12/12; bun run format:check; bun run typecheck; git diff --check"
+    - "commit:1728201aeb11e03e04d39157ceb90820d3f083b2"
   findings:
-    - "Both js/bad-code-sanitization sources were eliminated by replacing interpolated absolute paths with static sibling URLs derived from import.meta.url."
-    - "The fixture and asserted files remain siblings in the same temporary directory; there is no user-controlled input, traversal, cwd dependency, or generated code."
-    - "Independent review passed and process-supervision tests pass 12/12; format, typecheck, and diff checks are green."
+    - "No P0/P1 findings. Process started_at remains the immutable spawn timestamp while running-state publication has its own timestamp. Host Git auto-maintenance is disabled only in the mocked offline fixture. Focused suites passed 15/15; full test:fast 2659/2659, test:critical 71/71, and ci:contract passed."
 commit:
   hash: "057be8021e42a0af3b34ac7a1a9f3983a964e8cd"
   message: "✅ 9XC1H0 task: pre-merge closure"
@@ -148,8 +144,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-24T06:34:44.218Z"
+    author: "CODER"
+    state: "ok"
+    note: "Linux CI repair at 1728201ae: immutable process start time, separate running-state publication time, and offline RF-04 fixture maintenance isolation. Local test:fast 425/425 files and 2659/2659 tests; test:critical 71/71; ci:contract, typecheck, format, replay evidence, and hotspot contracts passed."
 doc_version: 3
-doc_updated_at: "2026-07-24T06:18:57.438Z"
+doc_updated_at: "2026-07-24T06:34:44.672Z"
 doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
@@ -294,6 +296,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-24T06:34:44.218Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Linux CI repair at 1728201ae: immutable process start time, separate running-state publication time, and offline RF-04 fixture maintenance isolation. Local test:fast 425/425 files and 2659/2659 tests; test:critical 71/71; ci:contract, typecheck, format, replay evidence, and hotspot contracts passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T06:18:57.438Z, excerpt_hash=sha256:fdd02d6de6b9d9ca7a9e3b4e00efd56e99a70ecc294cc0c2791776222c993eee
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-9XC1H0-enforce-role-scoped-sandboxes-and-actual-write-b/.agentplane/tasks/202607221846-9XC1H0/blueprint/resolved-snapshot.json
+    - old_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+    - current_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221846-9XC1H0
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+    - diagnostic_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) without changing unrelated task state.
@@ -315,6 +347,10 @@ sections:
     - Observation: Two CodeQL js/bad-code-sanitization alerts identified JSON.stringify path interpolation in generated JavaScript test fixtures.
       Impact: The fixture pattern produced medium code-injection findings and blocked PR review despite using locally generated temporary paths.
       Resolution: Replaced dynamic code construction with static sibling file URLs based on import.meta.url; targeted tests and independent security review pass.
+
+    - Observation: Hosted CI exposed fast-child timestamp inversion and Git 2.54 maintenance.lock crossing the mocked RF-04 episode boundary.
+      Impact: verify-unit and verify-cli-critical failed despite macOS-local success.
+      Resolution: Preserved spawn timestamp through delayed running publication; disabled host Git auto-maintenance only in the offline mocked test fixture, leaving the immutable 50-run/55-episode capture harness and strict .git detector unchanged.
 extensions:
   implementation_commit:
     hash: "e79d03abc931372a4e3a75b09275dd02457fa053"
@@ -471,6 +507,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-24T06:34:44.218Z — VERIFY — ok
+
+By: CODER
+
+Note: Linux CI repair at 1728201ae: immutable process start time, separate running-state publication time, and offline RF-04 fixture maintenance isolation. Local test:fast 425/425 files and 2659/2659 tests; test:critical 71/71; ci:contract, typecheck, format, replay evidence, and hotspot contracts passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T06:18:57.438Z, excerpt_hash=sha256:fdd02d6de6b9d9ca7a9e3b4e00efd56e99a70ecc294cc0c2791776222c993eee
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221846-9XC1H0-enforce-role-scoped-sandboxes-and-actual-write-b/.agentplane/tasks/202607221846-9XC1H0/blueprint/resolved-snapshot.json
+- old_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+- current_digest: ee4dae58b254cdc1bd7dd5fc50176ad71155d880e51062ed2b75ebefe30cb2ea
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221846-9XC1H0
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+- diagnostic_command: agentplane task next-action 202607221846-9XC1H0 --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -496,3 +562,7 @@ DecisionContextRef:
 - Observation: Two CodeQL js/bad-code-sanitization alerts identified JSON.stringify path interpolation in generated JavaScript test fixtures.
   Impact: The fixture pattern produced medium code-injection findings and blocked PR review despite using locally generated temporary paths.
   Resolution: Replaced dynamic code construction with static sibling file URLs based on import.meta.url; targeted tests and independent security review pass.
+
+- Observation: Hosted CI exposed fast-child timestamp inversion and Git 2.54 maintenance.lock crossing the mocked RF-04 episode boundary.
+  Impact: verify-unit and verify-cli-critical failed despite macOS-local success.
+  Resolution: Preserved spawn timestamp through delayed running publication; disabled host Git auto-maintenance only in the offline mocked test fixture, leaving the immutable 50-run/55-episode capture harness and strict .git detector unchanged.

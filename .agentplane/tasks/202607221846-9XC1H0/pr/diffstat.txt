@@ -20,6 +20,7 @@
  .../src/backends/task-backend/shared/normalize.ts  |    3 +
  .../src/cli/run-cli.core.task-run.test.ts          |  452 +++-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   51 +-
+ ...tical.agent-efficiency-replay-hardening.test.ts |   35 +
  .../src/cli/run-cli/command-catalog/task.ts        |    7 +
  .../src/cli/run-cli/command-loaders/task.ts        |    4 +
  .../src/commands/context/issue-gates.unit.test.ts  |   10 +-
@@ -89,7 +90,7 @@
  .../src/runner/process-supervision/clock.ts        |   71 +
  .../process-supervision/process-tree.test.ts       |  157 ++
  .../src/runner/process-supervision/process-tree.ts |  232 ++-
- .../src/runner/process-supervision/run.ts          |  398 +++-
+ .../src/runner/process-supervision/run.ts          |  399 +++-
  .../src/runner/process-supervision/signals.test.ts |   29 +
  .../src/runner/process-supervision/signals.ts      |    8 +-
  .../src/runner/process-supervision/state.ts        |    9 +-
@@ -202,4 +203,4 @@
  scripts/checks/check-spec-examples.mjs             |   20 +
  scripts/generate/sync-schemas.mjs                  |    7 +
  website/static/llms-full.txt                       |   20 +-
- 204 files changed, 27863 insertions(+), 3737 deletions(-)
+ 205 files changed, 27898 insertions(+), 3738 deletions(-)
