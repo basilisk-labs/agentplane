@@ -1,0 +1,17 @@
+ .github/workflows/ci.yml                           |  57 +++++
+ docs/developer/cli-contract.mdx                    |  37 +--
+ docs/user/cli-reference.generated.mdx              |  51 +++-
+ packages/agentplane/src/cli/cli-contract.test.ts   |  66 ++++-
+ packages/agentplane/src/cli/exit-codes.ts          |  21 ++
+ .../src/cli/run-cli.core.docs-cli.test.ts          |   3 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   6 +-
+ .../agentplane/src/cli/spec/docs-render.test.ts    |  19 ++
+ packages/agentplane/src/cli/spec/docs-render.ts    |  57 ++++-
+ .../release/workflow-node-version-contract.test.ts | 120 ++++++++-
+ packages/agentplane/src/shared/errors.test.ts      |  58 +++++
+ packages/agentplane/src/shared/errors.ts           |  69 +++++-
+ .../baselines/v0.7-compatibility-candidate.json    |  28 ++-
+ .../check-compatibility-contract-baseline.mjs      |  42 +++-
+ .../release/check-local-tarball-install-smoke.mjs  | 267 ++++++++++++++++++++-
+ scripts/release/check-package-node-runtime.mjs     | 164 +++++++++++++
+ 16 files changed, 1024 insertions(+), 41 deletions(-)
