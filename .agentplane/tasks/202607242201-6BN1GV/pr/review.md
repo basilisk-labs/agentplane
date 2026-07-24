@@ -13,7 +13,7 @@ Created: 2026-07-24T22:08:21.434Z
 ## Verification
 
 - State: ok
-- Note: Count correction verified at 926a09a31: roadmap table has 60 rows with one PLANNER amendment, therefore 59 implementation/release leaves; both safety leaves and their dependency gates remain in final-release ancestry. task-state: 3138 tasks, routing, task lint, format, and doctor passed; doctor reported 0 errors and 3 pre-existing warnings.
+- Note: Rebase verification at 14f388668: merged bounded-supervisor graph and effect-safety graph contain 61 unique roadmap rows, 60 non-PLANNER implementation/release leaves, and a 62-task final-release closure with all roadmap rows plus the original PLANNER; no unknown dependency or cycle. task-state: 3140 tasks; routing, task lint, format, and doctor passed with 0 errors and 3 historical warnings.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,8 +33,8 @@ Created: 2026-07-24T22:08:21.434Z
  .agentplane/tasks/202607221908-9M2FBQ/README.md |   3 +-
  .agentplane/tasks/202607242158-QV09NA/README.md | 145 ++++++++++++++++++++++++
  .agentplane/tasks/202607242204-SX8T09/README.md | 140 +++++++++++++++++++++++
- docs/internal/v0.7-refactor-plan.md             |  24 +++-
- 5 files changed, 333 insertions(+), 14 deletions(-)
+ docs/internal/v0.7-refactor-plan.md             |  28 ++++-
+ 5 files changed, 337 insertions(+), 14 deletions(-)
 ```
 
 </details>
