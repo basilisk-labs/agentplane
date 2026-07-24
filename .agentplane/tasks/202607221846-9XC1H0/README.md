@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -56,8 +56,8 @@ quality_review:
   findings:
     - "No P0/P1 findings. Process started_at remains the immutable spawn timestamp while running-state publication has its own timestamp. Host Git auto-maintenance is disabled only in the mocked offline fixture. Focused suites passed 15/15; full test:fast 2659/2659, test:critical 71/71, and ci:contract passed."
 commit:
-  hash: "057be8021e42a0af3b34ac7a1a9f3983a964e8cd"
-  message: "✅ 9XC1H0 task: pre-merge closure"
+  hash: "55b562ff7fd14282c57fdf88dc3d39d28fb17abe"
+  message: "🚧 9XC1H0 task: record Linux CI verification"
 comments:
   -
     author: "CODER"
@@ -65,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -150,8 +153,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Linux CI repair at 1728201ae: immutable process start time, separate running-state publication time, and offline RF-04 fixture maintenance isolation. Local test:fast 425/425 files and 2659/2659 tests; test:critical 71/71; ci:contract, typecheck, format, replay evidence, and hotspot contracts passed."
+  -
+    type: "status"
+    at: "2026-07-24T06:39:07.173Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T06:34:44.672Z"
+doc_updated_at: "2026-07-24T06:39:07.174Z"
 doc_updated_by: "CODER"
 description: "RF-03: default executor/context runs to workspace-write and evaluator runs to read-only, require explicit authority for danger mode, and reject actual out-of-scope or protected-path mutations."
 sections:
@@ -353,8 +363,8 @@ sections:
       Resolution: Preserved spawn timestamp through delayed running publication; disabled host Git auto-maintenance only in the offline mocked test fixture, leaving the immutable 50-run/55-episode capture harness and strict .git detector unchanged.
 extensions:
   implementation_commit:
-    hash: "e79d03abc931372a4e3a75b09275dd02457fa053"
-    message: "🛡️ 9XC1H0 task: avoid generated test code"
+    hash: "1728201aeb11e03e04d39157ceb90820d3f083b2"
+    message: "🚧 9XC1H0 task: fix Linux CI races"
 id_source: "generated"
 ---
 ## Summary
