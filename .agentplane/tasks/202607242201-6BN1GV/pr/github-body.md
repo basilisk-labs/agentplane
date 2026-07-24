@@ -20,10 +20,12 @@ Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 ex
 - Note:
 
 ```text
-PASS at b1e6bd6c6: split journal and operator-resolution leaves are approved, acyclic, reachable
-from XV67TD, and wired through alpha.2 plus typed runner results. Checks passed: ap task lint
---verify-steps-changed; bun run task-state:check (3138 tasks); policy routing; format; doctor (0
-errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI.
+REWORK PASS at 0b9d9e4d5: SX8T09 now requires an atomic cross-process single-winner race with
+exactly one adapter spawn; R7WS01 consumes typed effect_in_doubt/applied/not_applied states and
+resolution provenance while forbidding generic retry; the roadmap separates provider_key_forwarded
+from provider exactly-once and gates the latter on a documented, integration-tested provider
+deduplication contract. Checks passed: task lint, task-state (3138), routing, format and doctor (0
+errors; 3 recorded pre-existing warnings).
 ```
 - Canonical workflow state lives in the task README.
 
@@ -35,12 +37,12 @@ errors, 3 recorded pre-existing warnings); pre-push docs-only fast CI.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .agentplane/tasks/202607221850-R7WS01/README.md |   3 +-
+ .agentplane/tasks/202607221850-R7WS01/README.md |  35 ++++--
  .agentplane/tasks/202607221908-9M2FBQ/README.md |   3 +-
  .agentplane/tasks/202607242158-QV09NA/README.md | 145 ++++++++++++++++++++++++
- .agentplane/tasks/202607242204-SX8T09/README.md | 136 ++++++++++++++++++++++
- docs/internal/v0.7-refactor-plan.md             |  20 +++-
- 5 files changed, 303 insertions(+), 4 deletions(-)
+ .agentplane/tasks/202607242204-SX8T09/README.md | 140 +++++++++++++++++++++++
+ docs/internal/v0.7-refactor-plan.md             |  24 +++-
+ 5 files changed, 333 insertions(+), 14 deletions(-)
 ```
 
 </details>
