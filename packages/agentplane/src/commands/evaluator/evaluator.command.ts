@@ -12,8 +12,8 @@ import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
 import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import { gitDiffNames, gitIsAncestor, gitRevParse } from "@agentplaneorg/core/git";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import {
@@ -103,81 +103,6 @@ async function loadCatalogForCommand(ctx: CommandCtx, includeBuiltin: boolean) {
     });
   }
   return await loadEvaluatorCatalog({ projectRoot, includeBuiltin });
-}
-
-async function resolveEvaluatedSha(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  taskId: string;
-  previousEvaluatedSha?: string | null;
-}): Promise<string | null> {
-  const head = await gitRevParse(opts.gitRoot, ["HEAD"]).catch(() => null);
-  if (!head) return null;
-
-  const normalizedWorkflowDir = opts.workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
-  const taskArtifactPrefix = `${normalizedWorkflowDir}/${opts.taskId}/`;
-  const workflowArtifactPrefix = `${normalizedWorkflowDir}/`;
-  const previousEvaluatedSha = await (async (): Promise<string | null> => {
-    const candidate = opts.previousEvaluatedSha?.trim();
-    if (!candidate) return null;
-    const resolved = await gitRevParse(opts.gitRoot, [`${candidate}^{commit}`]).catch(() => null);
-    if (!resolved) return null;
-    return (await gitIsAncestor(opts.gitRoot, resolved, head)) ? resolved : null;
-  })();
-  let current = head;
-  let currentTaskArtifactHead: string | null = null;
-
-  for (let depth = 0; depth < 20; depth += 1) {
-    if (current === previousEvaluatedSha) {
-      return currentTaskArtifactHead ?? current;
-    }
-    let parent: string;
-    try {
-      parent = await gitRevParse(opts.gitRoot, [`${current}^`]);
-    } catch {
-      return current;
-    }
-
-    const changed = await gitDiffNames(opts.gitRoot, parent, current);
-    if (changed.length === 0) {
-      return current;
-    }
-    const touchesCurrentTask = changed.some((name) => name.startsWith(taskArtifactPrefix));
-    const touchesOnlyCurrentTask = changed.every((name) => name.startsWith(taskArtifactPrefix));
-    const touchesOnlyWorkflowArtifacts = changed.every((name) =>
-      name.startsWith(workflowArtifactPrefix),
-    );
-    if (!touchesOnlyCurrentTask && !touchesOnlyWorkflowArtifacts) {
-      return current;
-    }
-    if (touchesOnlyCurrentTask) {
-      const taskRelativePaths = changed.map((name) => name.slice(taskArtifactPrefix.length));
-      const touchesDerivedArtifacts = taskRelativePaths.some(
-        (name) =>
-          name.startsWith("quality/") || name.startsWith("pr/") || name.startsWith("blueprint/"),
-      );
-      const touchesOnlyManagedArtifacts = taskRelativePaths.every(
-        (name) =>
-          name === "README.md" ||
-          name.startsWith("quality/") ||
-          name.startsWith("pr/") ||
-          name.startsWith("blueprint/"),
-      );
-      if (previousEvaluatedSha && touchesDerivedArtifacts && touchesOnlyManagedArtifacts) {
-        current = parent;
-        continue;
-      }
-      currentTaskArtifactHead ??= current;
-      current = parent;
-      continue;
-    }
-    if (touchesCurrentTask) {
-      return currentTaskArtifactHead ?? current;
-    }
-    return currentTaskArtifactHead;
-  }
-
-  return currentTaskArtifactHead ?? current;
 }
 
 function assertRunnableReviewInput(parsed: EvaluatorRunParsed): void {
@@ -312,7 +237,7 @@ export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p
   );
   await mkdir(reviewDir, { recursive: true });
 
-  const evaluatedSha = await resolveEvaluatedSha({
+  const evaluatedSha = await resolveQualityReviewTargetSha({
     gitRoot,
     workflowDir: command.config.paths.workflow_dir,
     taskId: p.taskId,

@@ -4,7 +4,7 @@ title: "Align integration quality review targets for metadata-only tasks"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -22,10 +22,10 @@ risk_flags:
   - "merge"
 blueprint_request: "code.branch_pr"
 verify:
-  - "/Users/densmirnov/.bun/bin/bun run ci:contract"
+  - "/Users/densmirnov/.bun/bin/bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts"
   - "/Users/densmirnov/.bun/bin/bun run test:critical"
+  - "/Users/densmirnov/.bun/bin/bun run ci:contract"
   - "/Users/densmirnov/.bun/bin/bun run typecheck"
-  - "/Users/densmirnov/.bun/bin/bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts"
 plan_approval:
   state: "approved"
   updated_at: "2026-07-24T07:36:59.288Z"
@@ -51,7 +51,7 @@ events:
     to: "DOING"
     note: "Start: unify metadata-only quality-review target resolution across evaluator and integration without weakening stale-review safety."
 doc_version: 3
-doc_updated_at: "2026-07-24T07:37:26.271Z"
+doc_updated_at: "2026-07-24T07:56:12.237Z"
 doc_updated_by: "CODER"
 description: "Reuse the evaluator metadata-only review target contract in integration preparation so the route oracle and integration queue agree, while preserving rejection after semantic or new independently reviewable task-local changes."
 sections:
@@ -70,7 +70,7 @@ sections:
     4. Run focused tests, critical tests, contract checks, and typecheck; record independent EVALUATOR evidence.
     5. Publish the task PR, complete pre-merge closure, integrate through the queue, verify hosted close, and clean the task worktree/branches.
   Verify Steps: |-
-    1. Run `/Users/densmirnov/.bun/bin/bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: evaluator, finish, route oracle, and integration preparation agree on metadata-only review targets; all focused tests pass.
+    1. Run `/Users/densmirnov/.bun/bin/bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: evaluator, finish, route oracle, and integration preparation agree on metadata-only review targets; all focused tests pass.
     2. Inspect regression coverage. Expected: managed task-artifact tails, including a tail longer than twenty commits, preserve the reviewed SHA; semantic changes and a new independently reviewable task-local work unit invalidate the old review.
     3. Run `/Users/densmirnov/.bun/bin/bun run test:critical`. Expected: all critical lifecycle and quality gates pass.
     4. Run `/Users/densmirnov/.bun/bin/bun run ci:contract`. Expected: repository contract checks pass.
@@ -105,7 +105,7 @@ Reuse the evaluator metadata-only review target contract in integration preparat
 
 ## Verify Steps
 
-1. Run `/Users/densmirnov/.bun/bin/bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: evaluator, finish, route oracle, and integration preparation agree on metadata-only review targets; all focused tests pass.
+1. Run `/Users/densmirnov/.bun/bin/bunx vitest run packages/agentplane/src/commands/shared/quality-review-target.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts packages/agentplane/src/commands/shared/route-oracle.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: evaluator, finish, route oracle, and integration preparation agree on metadata-only review targets; all focused tests pass.
 2. Inspect regression coverage. Expected: managed task-artifact tails, including a tail longer than twenty commits, preserve the reviewed SHA; semantic changes and a new independently reviewable task-local work unit invalidate the old review.
 3. Run `/Users/densmirnov/.bun/bin/bun run test:critical`. Expected: all critical lifecycle and quality gates pass.
 4. Run `/Users/densmirnov/.bun/bin/bun run ci:contract`. Expected: repository contract checks pass.

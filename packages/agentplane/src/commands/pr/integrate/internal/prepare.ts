@@ -26,6 +26,7 @@ import {
 } from "../../../task/shared.js";
 import { assertEvaluatorQualityReviewPassed } from "../../../task/quality-review-gate.js";
 import { assessPreMergeClosureFreshness } from "../../../task/hosted-close-premerge.js";
+import { resolveQualityReviewTargetSha } from "../../../shared/quality-review-target.js";
 
 import { readPrArtifact, resolvePrPaths } from "../../internal/pr-paths.js";
 import { requireOpenGithubPrAtHead } from "../../provider-head.js";
@@ -73,40 +74,6 @@ type PreparedIntegrate = {
   shouldRunVerify: boolean;
   hostedPr: Awaited<ReturnType<typeof requireOpenGithubPrAtHead>>;
 };
-
-async function resolveQualityReviewExpectedSha(
-  gitRoot: string,
-  taskId: string,
-  branchHeadSha: string,
-): Promise<string> {
-  const taskArtifactPrefix = `.agentplane/tasks/${taskId}/`;
-  const workflowArtifactPrefix = ".agentplane/tasks/";
-  let current = branchHeadSha;
-
-  for (let depth = 0; depth < 20; depth += 1) {
-    let parent: string;
-    try {
-      parent = await gitRevParse(gitRoot, [`${current}^`]);
-    } catch {
-      return current;
-    }
-
-    const changed = await gitDiffNames(gitRoot, parent, current);
-    if (changed.length === 0) {
-      return current;
-    }
-    const touchesOnlyCurrentTask = changed.every((name) => name.startsWith(taskArtifactPrefix));
-    const touchesOnlyWorkflowArtifacts = changed.every((name) =>
-      name.startsWith(workflowArtifactPrefix),
-    );
-    if (!touchesOnlyCurrentTask && !touchesOnlyWorkflowArtifacts) {
-      return current;
-    }
-    current = parent;
-  }
-
-  return current;
-}
 
 export async function prepareIntegrate(opts: {
   ctx?: CommandContext;
@@ -374,11 +341,13 @@ export async function prepareIntegrate(opts: {
   }
   ensurePlanApprovedIfRequired(task, loadedConfig);
   ensureVerificationSatisfiedIfRequired(task, loadedConfig);
-  const qualityReviewExpectedSha = await resolveQualityReviewExpectedSha(
-    resolved.gitRoot,
-    opts.taskId,
-    branchHeadSha,
-  );
+  const qualityReviewExpectedSha = await resolveQualityReviewTargetSha({
+    gitRoot: resolved.gitRoot,
+    workflowDir: loadedConfig.paths.workflow_dir,
+    taskId: opts.taskId,
+    headSha: branchHeadSha,
+    previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
+  });
   assertEvaluatorQualityReviewPassed({
     task,
     expectedSha: qualityReviewExpectedSha,
