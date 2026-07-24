@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607240736-FCBKJQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T08:10:22.479Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Integration freshness can fail open when the shared resolver returns no current-task target.",
+  "evaluated_sha": "14eed3b7b0fec317f175bb0e407db2b4d2a0fb25",
+  "blueprint_digest": "d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae",
+  "findings": [
+    "prepareIntegrate forwards a null expected SHA into assertEvaluatorQualityReviewPassed, whose conditional comparison then skips freshness validation even though the route oracle marks the same state stale."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607240736-FCBKJQ/README.md",
+    "packages/agentplane/src/commands/shared/quality-review-target.ts",
+    "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts",
+    "packages/agentplane/src/commands/task/quality-review-gate.ts"
+  ],
+  "missing_tests": [
+    "Cover null resolver results for invalid ancestry and unrelated-task artifact tails in resolver, route, and integration preparation."
+  ],
+  "hidden_assumptions": [
+    "A null target was assumed to be harmless even though it has different semantics in evaluator recording and integration authorization."
+  ],
+  "residual_risks": [
+    "Commit-by-commit history traversal is unbounded for long workflow-only tails."
+  ]
+}

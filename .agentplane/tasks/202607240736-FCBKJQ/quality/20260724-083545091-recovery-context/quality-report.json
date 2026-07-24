@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202607240736-FCBKJQ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-24T08:35:45.091Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Quality-review target resolution is consistent across evaluator, route, and integration.",
+  "evaluated_sha": "f5b90e98344d4ad2d9dadb89905f620ee7c3a892",
+  "blueprint_digest": "d4d3caabe5e9649e18cc5dc9fe287835b6e418cbf3717f82179b52181c0ec2ae",
+  "findings": [
+    "No blocking findings remain: evaluator and prepare use the same normalized primary-plus-included task set, route resolves the equivalent PR batch set, and integration fails closed when no target can be resolved.",
+    "Real-Git regressions prove included-task metadata becomes the review target while included quality and PR artifact tails preserve the reviewed SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607240736-FCBKJQ/README.md",
+    "packages/agentplane/src/commands/evaluator/evaluator.command.ts",
+    "packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+    "packages/agentplane/src/commands/pr/integrate/internal/prepare.ts",
+    "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
+    "focused 67/67; critical 71/71; ci:contract; lint; typecheck; arch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Task extension and PR metadata batch IDs are kept synchronized by the normal PR sync path."
+  ],
+  "residual_risks": [
+    "The resolver performs an unbounded first-parent walk across workflow-only history.",
+    "A commit mixing manual README semantics with derived lifecycle artifacts remains classified as managed, preserving the existing contract.",
+    "Drift between task-extension and PR-metadata batch sets is not cross-validated before integration and should be reconciled in a follow-up."
+  ]
+}

@@ -17,6 +17,7 @@ import {
   summarizeTaskWorktreeChanges,
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
+import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 
 function addBlocker(blockers: RouteBlocker[], code: RouteBlockerCode, summary: string): void {
   if (blockers.some((blocker) => blocker.code === code)) return;
@@ -99,18 +100,20 @@ async function qualityReviewIsFreshForHead(opts: {
   }
   if (!review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json"))) return false;
   if (review.findings.length === 0) return false;
-  if (!opts.headSha || !review.evaluated_sha) return true;
+  if (!opts.headSha) return true;
+  if (!review.evaluated_sha) return false;
   if (review.evaluated_sha === opts.headSha) return true;
   const taskIds =
     opts.batchOwnership.role === "none" ? [opts.task.id] : opts.batchOwnership.allTaskIds;
-  return isTaskSetLocalOnlyAdvance({
+  const expectedSha = await resolveQualityReviewTargetSha({
     gitRoot: opts.ctx.resolvedProject.gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
-    tasksPath: opts.ctx.config.paths.tasks_path,
+    taskId: opts.task.id,
     taskIds,
-    fromRef: review.evaluated_sha,
-    toRef: opts.headSha,
-  }).catch(() => false);
+    headSha: opts.headSha,
+    previousEvaluatedSha: review.evaluated_sha,
+  }).catch(() => null);
+  return expectedSha === review.evaluated_sha;
 }
 
 async function readLocalPrMeta(opts: {
@@ -279,6 +282,28 @@ export async function deriveBlockers(opts: {
         blockers,
         "pre_merge_closure_stale",
         `pre-merge closure cannot authorize integration: ${freshness.reason}`,
+      );
+    }
+    const review = opts.task.quality_review;
+    if (!review) {
+      addBlocker(
+        blockers,
+        "quality_review_missing",
+        "closed branch_pr task requires EVALUATOR quality review before integration",
+      );
+    } else if (
+      !(await qualityReviewIsFreshForHead({
+        ctx: opts.ctx,
+        task: opts.task,
+        headSha: opts.prFlow.branch.headSha,
+        batchOwnership: opts.batchOwnership,
+        expectedState: "pass",
+      }))
+    ) {
+      addBlocker(
+        blockers,
+        "quality_review_stale",
+        "EVALUATOR quality review is missing required evidence or does not cover the current implementation head",
       );
     }
   }
