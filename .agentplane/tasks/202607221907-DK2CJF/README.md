@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
     - "The diff from passed SHA 22ef62f5e to current published head 0779eec63 is limited to task lifecycle, PR metadata, and evaluator artifacts."
     - "Qualification evidence, compatibility and efficiency baselines, runtime, tests, schemas, policy, and package contracts are byte-identical across the metadata-only tail."
 commit:
-  hash: "0bba13813d37e731053454402da6a96251ee9890"
-  message: "🧪 DK2CJF task: record independent qualification pass"
+  hash: "83a9e5397614a20e5db96433e2a41358986739b4"
+  message: "🧪 DK2CJF task: record final metadata review"
 comments:
   -
     author: "TESTER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "TESTER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "TESTER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -101,8 +104,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-24T07:29:58.915Z"
+    author: "TESTER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T07:25:43.747Z"
+doc_updated_at: "2026-07-24T07:29:58.915Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-alpha.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
