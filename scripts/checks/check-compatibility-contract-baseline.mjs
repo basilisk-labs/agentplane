@@ -309,12 +309,13 @@ function validateReviewedCandidate({
     candidate.candidate_id === "agentplane.compatibility.v0.7.cumulative",
     "compatibility candidate id drift",
   );
-  const expectedSourceTasks = [
+  const cliSourceTasks = [
     "202607221846-4VB97J",
     "202607221846-YGWMA2",
     "202607230554-YFYT83",
     "202607221846-9XC1H0",
   ];
+  const expectedSourceTasks = [...cliSourceTasks, "202607221848-ABG7SD"];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
     "compatibility source task inventory drift",
@@ -481,7 +482,8 @@ function validateReviewedCandidate({
     );
   }
   const expectedDeltaSources = {
-    cli_topology: expectedSourceTasks,
+    cli_topology: cliSourceTasks,
+    machine_output_contract: ["202607221848-ABG7SD"],
     workflow_schema: ["202607221846-4VB97J"],
     tarball_policy: ["202607221846-4VB97J"],
   };
@@ -682,6 +684,42 @@ function validateReviewedCandidate({
   );
   assert(cliTopologyDelta.removed_options.length === 0, "candidate removes an existing CLI option");
   assert(cliTopologyDelta.mutated_options.length === 0, "candidate mutates an existing CLI option");
+
+  const machineOutputDelta = candidate.deltas.find(
+    (delta) => delta.section === "machine_output_contract",
+  );
+  const beforeJsonErrorSource = exactMainSurface.machine_output_contract.source_contracts.find(
+    (contract) => contract.marker === "formatJsonError",
+  );
+  const afterJsonErrorSource = currentSurface.machine_output_contract.source_contracts.find(
+    (contract) => contract.marker === "formatJsonError",
+  );
+  assert(beforeJsonErrorSource && afterJsonErrorSource, "formatJsonError source contract missing");
+  assert(
+    machineOutputDelta?.classification === "behavior_preserving_hardening",
+    "machine output candidate classification drift",
+  );
+  assert(
+    hashJson(machineOutputDelta.evidence) ===
+      hashJson({
+        envelope_contract_unchanged:
+          hashJson(exactMainSurface.machine_output_contract.error_envelope) ===
+            hashJson(currentSurface.machine_output_contract.error_envelope) &&
+          hashJson(exactMainSurface.machine_output_contract.success_envelope) ===
+            hashJson(currentSurface.machine_output_contract.success_envelope),
+        source_contract: {
+          path: afterJsonErrorSource.path,
+          marker: afterJsonErrorSource.marker,
+          from_sha256: beforeJsonErrorSource.normalized_sha256,
+          to_sha256: afterJsonErrorSource.normalized_sha256,
+        },
+        projected_nested_fields: {
+          next_action: ["command", "reason", "reasonCode"],
+          reason_decode: ["code", "category", "summary", "action"],
+        },
+      }),
+    "machine output candidate evidence drift",
+  );
 
   const schemaDelta = candidate.deltas.find((delta) => delta.section === "workflow_schema");
   const workflowSchema = JSON.parse(

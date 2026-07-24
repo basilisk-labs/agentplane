@@ -11,6 +11,7 @@ import {
   RuntimeError,
   UsageError,
   ValidationError,
+  JSON_ERROR_CONTRACT,
   formatJsonError,
 } from "./errors.js";
 
@@ -106,5 +107,62 @@ describe("errors", () => {
     expect(json.error?.state).toBe("release apply cannot start from a dirty tracked tree");
     expect(json.error?.likely_cause).toBe("tracked edits already exist in the workspace");
     expect(json.error?.next_action?.command).toBe("git status --short --untracked-files=no");
+  });
+
+  it("keeps runtime JSON metadata aligned with the fully populated envelope", () => {
+    const json = JSON.parse(
+      formatJsonError(
+        new CliError({
+          code: "E_GIT",
+          message: "Git failed",
+          context: { command: "work start" },
+        }),
+        {
+          state: "base branch is stale",
+          likelyCause: "origin/main advanced",
+          hint: "Refresh the base branch.",
+          remediation: {
+            code: "stale_base",
+            why: "Starting from stale state can produce an invalid PR.",
+            fix: "Fast-forward the base branch.",
+            safeCommand: "git pull --ff-only",
+            stopCondition: "Stop if the pull is not a fast-forward.",
+          },
+          nextAction: Object.assign(
+            {
+              command: "git pull --ff-only",
+              reason: "refresh the base branch",
+              reasonCode: "stale_base",
+            },
+            { unexpected: "must not leak" },
+          ),
+          reasonDecode: Object.assign(
+            {
+              code: "stale_base",
+              category: "git",
+              summary: "base branch is behind its upstream",
+              action: "refresh the base branch",
+            },
+            { unexpected: "must not leak" },
+          ),
+        },
+      ),
+    ) as {
+      error: Record<string, unknown> & {
+        remediation: Record<string, unknown>;
+        next_action: Record<string, unknown>;
+        reason_decode: Record<string, unknown>;
+      };
+    };
+
+    expect(Object.keys(json)).toEqual([JSON_ERROR_CONTRACT.rootField]);
+    expect(Object.keys(json.error)).toEqual([
+      ...JSON_ERROR_CONTRACT.error.requiredFields,
+      ...JSON_ERROR_CONTRACT.error.optionalFields,
+    ]);
+    for (const [field, contract] of Object.entries(JSON_ERROR_CONTRACT.nestedObjects)) {
+      const nested = json.error[field] as Record<string, unknown>;
+      expect(Object.keys(nested)).toEqual([...contract.requiredFields, ...contract.optionalFields]);
+    }
   });
 });

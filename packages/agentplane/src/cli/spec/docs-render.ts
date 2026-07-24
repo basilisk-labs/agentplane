@@ -1,4 +1,11 @@
 import type { HelpJson } from "./help-render.js";
+import {
+  DEFAULT_ERROR_EXIT_CODES,
+  ERROR_CODE_SUMMARIES,
+  JSON_ERROR_CONTRACT,
+  type ErrorCode,
+} from "../../shared/errors.js";
+import { EXIT_CODE_CONTRACT } from "../exit-codes.js";
 
 const DOCS_GROUP_ORDER = new Map<string, number>([
   ["Core", 10],
@@ -96,6 +103,52 @@ function isVisibleOption(option: NonNullable<HelpJson["options"]>[number]): bool
   return option.hidden !== true && option.deprecated !== "disabled";
 }
 
+function codeList(values: readonly string[]): string {
+  return values.map((value) => `\`${value}\``).join(", ");
+}
+
+function renderRuntimeErrorContract(): string[] {
+  const exitCodeLines = EXIT_CODE_CONTRACT.map(
+    ({ code, name, meaning }) => `- \`${code}\` — ${name}: ${meaning}`,
+  );
+  const errorCodeLines = (Object.keys(ERROR_CODE_SUMMARIES) as ErrorCode[]).map(
+    (code) =>
+      `- \`${code}\` → exit \`${DEFAULT_ERROR_EXIT_CODES[code]}\`: ${ERROR_CODE_SUMMARIES[code]}`,
+  );
+  const nestedObjectLines = Object.entries(JSON_ERROR_CONTRACT.nestedObjects).map(
+    ([field, contract]) => {
+      const optional =
+        contract.optionalFields.length === 0
+          ? ""
+          : `; optional fields: ${codeList(contract.optionalFields)}`;
+      return `- \`${field}\` required fields: ${codeList(contract.requiredFields)}${optional}.`;
+    },
+  );
+
+  return [
+    "## Runtime error contract",
+    "",
+    "The following reference is generated from the runtime error and exit-code metadata.",
+    "",
+    "### Exit codes",
+    "",
+    ...exitCodeLines,
+    "",
+    "### JSON error envelope",
+    "",
+    `- Root field: \`${JSON_ERROR_CONTRACT.rootField}\`.`,
+    `- Required error fields: ${codeList(JSON_ERROR_CONTRACT.error.requiredFields)}.`,
+    `- Optional error fields: ${codeList(JSON_ERROR_CONTRACT.error.optionalFields)}.`,
+    ...nestedObjectLines,
+    "",
+    "Field names and casing are exact. Optional fields are omitted when no value is available.",
+    "",
+    "### Error codes",
+    "",
+    ...errorCodeLines,
+  ];
+}
+
 export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
   const actionableSpecs = specs.filter((spec) => !isGroupOnlyCommand(spec, specs));
   const byGroup = new Map<string, readonly HelpJson[]>();
@@ -189,7 +242,9 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
   const lines = [
     "# CLI Reference (Generated)",
     "",
-    "This page is generated from the CLI command specs. Do not edit it by hand; edit the specs instead.",
+    "This page is generated from CLI command specs and runtime error metadata. Do not edit it by hand; edit those sources instead.",
+    "",
+    ...renderRuntimeErrorContract(),
     "",
     "## Index",
     "",
