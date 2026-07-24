@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "PLANNER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on:
@@ -59,8 +59,8 @@ quality_review:
     - "SX8T09/QV09NA effect safety and 1BFWEY bounded-supervisor journal dependencies are both preserved through their alpha.2 and beta.1 gates; no cycle, unknown dependency, or missing roadmap row exists."
     - "Effect uncertainty and bounded supervisor constraints coexist, while agentplane-loops, LoopSpec, and ap loop remain explicit non-goals for the 0.7 implementation."
 commit:
-  hash: "1b38432ccefcc3c163b072774d3e2c59f750c45a"
-  message: "🚧 6BN1GV task: Record corrected graph quality pass"
+  hash: "41357e206a86d5ee463771f6a8346ed4d2b65c51"
+  message: "🚧 6BN1GV task: Record reconciled graph quality pass"
 comments:
   -
     author: "PLANNER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "PLANNER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "PLANNER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "PLANNER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -137,8 +140,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rebase verification at 14f388668: merged bounded-supervisor graph and effect-safety graph contain 61 unique roadmap rows, 60 non-PLANNER implementation/release leaves, and a 62-task final-release closure with all roadmap rows plus the original PLANNER; no unknown dependency or cycle. task-state: 3140 tasks; routing, task lint, format, and doctor passed with 0 errors and 3 historical warnings."
+  -
+    type: "status"
+    at: "2026-07-24T23:29:42.482Z"
+    author: "PLANNER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T23:20:33.711Z"
+doc_updated_at: "2026-07-24T23:29:42.482Z"
 doc_updated_by: "PLANNER"
 description: "Persist the mandatory durable effect_in_doubt follow-up in the AgentPlane 0.7 executable DAG, wire alpha.2 and typed runner lifecycle fan-in, and update the internal execution roadmap and closure counts."
 sections:
@@ -309,8 +319,8 @@ sections:
       Resolution: Rebased onto main, combined both plan constraints and dependency rows, recalculated ownership and final ancestry, and reran all declared checks.
 extensions:
   implementation_commit:
-    hash: "926a09a31ecb9de1c73bc6da2714ba9590f0c6c8"
-    message: "🚧 6BN1GV task: Correct release graph task count"
+    hash: "722d4d626859383dfd1126096e52cfed99c8d03c"
+    message: "🚧 6BN1GV task: clarify effect safety contracts"
 id_source: "generated"
 ---
 ## Summary
