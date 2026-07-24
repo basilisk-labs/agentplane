@@ -36,6 +36,7 @@ export type CloudSyncStateSnapshot = {
 type CloudSyncDeps = {
   provider: string | null;
   projectId: string;
+  projectionIdentitySha256: string;
   statePath: string;
   cache: Pick<LocalBackend, "listTasks" | "writeTasks" | "deleteTask">;
   request: <T>(pathname: string, init: RequestInit, opts?: { timeoutMs?: number }) => Promise<T>;
@@ -133,6 +134,7 @@ export async function performCloudBackendSync(
     last_checked_at: pull.lastCheckedAt,
     last_start_ready_pull_at: existing.last_start_ready_pull_at,
     pending_push: null,
+    projection_identity_sha256: deps.projectionIdentitySha256,
   });
 }
 
@@ -226,6 +228,7 @@ async function applyCloudPullResponse(opts: {
       last_checked_at: opts.pull.lastCheckedAt,
       last_start_ready_pull_at: state.last_start_ready_pull_at,
       pending_push: state.pending_push,
+      projection_identity_sha256: opts.deps.projectionIdentitySha256,
     });
   }
 }

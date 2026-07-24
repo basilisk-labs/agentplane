@@ -1,7 +1,10 @@
 import { BackendError } from "./shared.js";
 import { readCloudBackendState, writeCloudBackendState } from "./cloud-backend-state.js";
 import { CLOUD_AUTO_SYNC_REQUEST_TIMEOUT_MS, cloudConflictMessage } from "./cloud-backend-utils.js";
-import { pendingCloudPushError } from "./cloud-pending-push.js";
+import {
+  pendingCloudPushError,
+  pendingCloudPushIdentityMismatchError,
+} from "./cloud-pending-push.js";
 
 type CloudTaskStartSyncState = {
   conflicts: unknown[];
@@ -14,6 +17,7 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
   autoSyncNetworkAllowed: boolean;
   missingConfigKeys: () => string[];
   projectId: string;
+  projectionIdentitySha256: string;
   statePath: string;
   requestCloudSyncState: (
     projectId: string,
@@ -32,8 +36,16 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
   if (opts.missingConfigKeys().length > 0) return;
 
   const state = await readCloudBackendState(opts.statePath);
-  if (sameLocalDate(state.last_start_ready_pull_at, new Date())) return;
+  if (
+    state.projection_identity_sha256 === opts.projectionIdentitySha256 &&
+    sameLocalDate(state.last_start_ready_pull_at, new Date())
+  ) {
+    return;
+  }
   if (state.pending_push) {
+    if (state.projection_identity_sha256 !== opts.projectionIdentitySha256) {
+      throw pendingCloudPushIdentityMismatchError(state.pending_push);
+    }
     throw pendingCloudPushError(state.pending_push);
   }
   if (!opts.autoSyncNetworkAllowed) {
@@ -77,6 +89,7 @@ export async function refreshCloudProjectionBeforeTaskStart(opts: {
     last_checked_at: refreshed.last_checked_at,
     last_start_ready_pull_at: new Date().toISOString(),
     pending_push: refreshed.pending_push,
+    projection_identity_sha256: refreshed.projection_identity_sha256,
   });
 }
 
