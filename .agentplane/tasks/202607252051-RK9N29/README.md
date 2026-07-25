@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -27,23 +27,25 @@ verification:
   note: "CI remediation moves branch-aware metadata-path construction into the PR helper; targeted route and artifact tests, lint, hotspots, typecheck, architecture, guards, lifecycle, policy routing, and critical CLI checks passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T21:47:49.676Z"
+  updated_at: "2026-07-25T21:58:14.157Z"
   updated_by: "EVALUATOR"
-  note: "Hosted CI found deterministic compliance failures on the current PR head."
-  evaluated_sha: "bf6ae520184549e1e43a53005160a7c11873a3d0"
+  note: "CI-contract remediation preserves branch-snapshot semantics and satisfies the local quality gates that failed on the previous head."
+  evaluated_sha: "285135cfeff7fd54b505bfd53cb8c77d8534d718"
   blueprint_digest: "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23"
   evidence_refs:
     - ".agentplane/tasks/202607252051-RK9N29/README.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-214749676-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-214749676-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-214749676-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-215814157-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-215814157-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-215814157-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json"
-    - "https://github.com/basilisk-labs/agentplane/actions/runs/30176058282/job/89724927469"
-    - "https://github.com/basilisk-labs/agentplane/actions/runs/30176058282/job/89724927472"
+    - "packages/agentplane/src/commands/pr/internal/pr-paths.ts"
+    - "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+    - "packages/agentplane/src/commands/shared/route-decision.ts"
   findings:
-    - "The route decision module exceeds the 600-line hotspot limit, and two newly added test declarations violate lint rules."
+    - "Canonical PR metadata construction now lives beside the branch-aware artifact reader; route behavior remains covered while the route module returns below the enforced hotspot threshold."
 commit:
   hash: "ec932f0aabd07c0da6b4a88aaa5a406817c925c5"
   message: "🧐 RK9N29 task: record evaluator pass"
