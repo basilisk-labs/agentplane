@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 50
+revision: 51
 origin:
   system: "manual"
 depends_on: []
@@ -58,8 +58,8 @@ quality_review:
     - "The same forked Windows test route already passes an equivalent real process.chdir/restore pattern, while the changed file is excluded from full-fast unit routing and cannot explain the invalid historical-temp overload."
     - "Focused, repeated, platform-critical, cleanup, publication, integration, targeted PR, full fast, critical, static, lifecycle, and zero-temp-inventory checks all pass after exact-prefix cleanup."
 commit:
-  hash: "8003f34e83c1a2304c653393a2631e33320e4087"
-  message: "🧪 DFWJM6 code: use real cwd in init regression"
+  hash: "e07506d30ed14f92d093a6961fed2b744093fb3b"
+  message: "🧪 DFWJM6 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -88,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -206,8 +209,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T12:07:26.763Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T12:06:53.029Z"
+doc_updated_at: "2026-07-25T12:07:26.763Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -550,8 +560,8 @@ sections:
       Resolution: Run evaluator, create fresh pre-merge closure, publish through guarded force-with-lease, and require stable green hosted checks before integration.
 extensions:
   implementation_commit:
-    hash: "cbf4ac33977ceaf346803963c55848cab66ff76d"
-    message: "🧪 DFWJM6 task: complete hosted PR regressions"
+    hash: "8003f34e83c1a2304c653393a2631e33320e4087"
+    message: "🧪 DFWJM6 code: use real cwd in init regression"
 id_source: "generated"
 ---
 ## Summary
