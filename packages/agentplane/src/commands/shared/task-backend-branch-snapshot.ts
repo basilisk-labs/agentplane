@@ -67,20 +67,19 @@ function normalizeBranchPrefix(prefix: string): string {
 async function listRemoteTaskBranches(cwd: string, prefix: string): Promise<string[]> {
   const normalized = normalizeBranchPrefix(prefix);
   if (!normalized) return [];
+  const remotePrefix = `origin/${normalized}`;
   const { stdout } = await execFileAsync(
     "git",
-    [
-      "for-each-ref",
-      "--format=%(refname:short)",
-      `refs/remotes/origin/${normalized}`,
-      `refs/remotes/origin/${normalized}/`,
-    ],
+    ["for-each-ref", "--format=%(refname:short)", "refs/remotes/origin"],
     { cwd, env: gitEnv() },
   );
   return String(stdout)
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line.length > 0 && !line.endsWith("/HEAD"));
+    .filter(
+      (line) =>
+        (line === remotePrefix || line.startsWith(`${remotePrefix}/`)) && !line.endsWith("/HEAD"),
+    );
 }
 
 function uniqueBranchCandidates(branches: string[]): string[] {
