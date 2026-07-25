@@ -15,13 +15,14 @@ RF-06b: reduce RouteState to typed CLI operation, agent episode, approval, human
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted Core CI verify-static failed: dependency-cruiser found three circular imports among
-workflow-step, projections, factory, reducer, and branch modules. Local bun run arch:check
-reproduces the failure; break the cycles and rerun the architecture gate.
+Rework verified: bun run arch:check now has no dependency violations;
+workflow-step/projections/fingerprint tests pass (41 tests), route-decision matrix passes (41
+tests), and critical CLI passes (11/11 chunks). typecheck, format, lint, knip, hotspots, guards,
+lifecycle invariants, and policy routing pass.
 ```
 - Canonical workflow state lives in the task README.
 

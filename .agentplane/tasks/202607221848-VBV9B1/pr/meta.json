@@ -3,15 +3,22 @@
   "branch": "task/202607221848-VBV9B1/replace-route-string-dispatch-with-typed-workflo",
   "created_at": "2026-07-24T22:15:24.666Z",
   "diffstat_sha256": "sha256:0c6fd2b0462de09fc6701b6942ffe2926d7043ce7521b7b4a22ddf542d758352",
-  "last_verified_at": "2026-07-25T20:14:53.732Z",
-  "last_verified_diffstat_sha256": "sha256:440147bf78a7e8ceec28c020c01ea74dce7471e3292427878130164819933e28",
+  "last_verified_at": "2026-07-25T20:25:01.857Z",
+  "last_verified_diffstat_sha256": "sha256:0c6fd2b0462de09fc6701b6942ffe2926d7043ce7521b7b4a22ddf542d758352",
   "pr_number": 4618,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4618",
+  "pre_merge_closure": {
+    "basis_commit": "06207ca15571411f94e28c49d6b52e3a43468bf3",
+    "branch": "task/202607221848-VBV9B1/replace-route-string-dispatch-with-typed-workflo",
+    "pr_number": 4618,
+    "recorded_at": "2026-07-25T20:28:37.667Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221848-VBV9B1",
   "updated_at": "2026-07-25T14:23:57.389Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

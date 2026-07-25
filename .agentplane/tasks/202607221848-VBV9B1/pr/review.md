@@ -6,14 +6,14 @@ Created: 2026-07-24T22:15:24.666Z
 
 - Task: `202607221848-VBV9B1`
 - Title: Replace route string dispatch with typed WorkflowStep decisions
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221848-VBV9B1/replace-route-string-dispatch-with-typed-workflo`
 - Canonical task record: `.agentplane/tasks/202607221848-VBV9B1/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted Core CI verify-static failed: dependency-cruiser found three circular imports among workflow-step, projections, factory, reducer, and branch modules. Local bun run arch:check reproduces the failure; break the cycles and rerun the architecture gate.
+- State: ok
+- Note: Rework verified: bun run arch:check now has no dependency violations; workflow-step/projections/fingerprint tests pass (41 tests), route-decision matrix passes (41 tests), and critical CLI passes (11/11 chunks). typecheck, format, lint, knip, hotspots, guards, lifecycle invariants, and policy routing pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
