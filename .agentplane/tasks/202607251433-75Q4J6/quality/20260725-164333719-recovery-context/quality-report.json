@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607251433-75Q4J6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T16:43:33.719Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "P1: a real source-code repair was classified as analysis.light with mutation scope none, so the required code, security, and DoD gates were bypassed.",
+  "evaluated_sha": "3e88523f6f7ddb8ffcd4115c1741d1503c6c318e",
+  "blueprint_digest": "a21e9997108b80409fcab3629d9b97ff46ee6b8d238c79cbd4e133927187f8f1",
+  "findings": [
+    "P1: PR #4619 changes packages/agentplane/src/context/knowledge-ref.ts, but the current resolved snapshot selects analysis.light, declares mutation none and touchedPaths [], and loads no policy modules. Retag the task as code and regenerate the snapshot before any verification or quality pass can be accepted."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607251433-75Q4J6/README.md",
+    ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json: resolverInput mutation=none, touchedPaths=[], selectedBlueprint=analysis.light, policyModules=[]",
+    "packages/agentplane/src/context/knowledge-ref.ts: canonical guard import replaces local isRecord implementation",
+    "GitHub PR #4619 at published head 1a41d3bd7d0f7c1bec4422d1ec88b90842bf5c11: source diff includes KnowledgeRef code change"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The analysis-light snapshot was treated as a valid basis for code verification despite a changed implementation file."
+  ],
+  "residual_risks": [
+    "A pass based on the misclassified snapshot would certify code without its mandatory security, branch_pr, and code DoD contract."
+  ]
+}

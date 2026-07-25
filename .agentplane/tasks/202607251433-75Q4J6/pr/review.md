@@ -13,7 +13,7 @@ Created: 2026-07-25T14:34:50.856Z
 ## Verification
 
 - State: ok
-- Note: Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed; typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed.
+- Note: After code-route correction to code.branch_pr, independently reran guards:check (shared guards and trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product diff only imports canonical shared isRecord and removes the local helper.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

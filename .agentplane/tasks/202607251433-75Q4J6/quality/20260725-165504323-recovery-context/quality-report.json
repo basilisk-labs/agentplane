@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607251433-75Q4J6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T16:55:04.323Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Pass: the corrected task now follows the required code route. The resolved snapshot classifies this source repair as code.branch_pr with mutation=code and loads the required security, core DoD, code DoD, and branch_pr policies; fresh TESTER verification follows that correction.",
+  "evaluated_sha": "3e88523f6f7ddb8ffcd4115c1741d1503c6c318e",
+  "blueprint_digest": "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542",
+  "findings": [
+    "Required code route/classification and policy gates are now correct: the task is tagged code, the snapshot selects code.branch_pr with code mutation, and the required policy modules are present. The product patch only imports canonical shared isRecord and removes the duplicate local helper; guards:check, core KnowledgeRef 38/38, and agentplane KnowledgeRef 10/10 pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607251433-75Q4J6/README.md",
+    ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json: code.branch_pr, mutation=code, required policy modules",
+    ".agentplane/tasks/202607251433-75Q4J6/README.md: fresh TESTER verification after route correction",
+    "packages/agentplane/src/context/knowledge-ref.ts: canonical shared isRecord import replaces local definition",
+    "bun run guards:check: passed shared guards and trust-boundary ratchet",
+    "vitest core packages/core/src/runner/knowledge-ref.test.ts: 38 passed",
+    "vitest agentplane packages/agentplane/src/context/knowledge-ref.test.ts: 10 passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted checks must still be evaluated on the exact published task-artifact head before integration."
+  ]
+}
