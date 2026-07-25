@@ -6,14 +6,14 @@ Created: 2026-07-24T22:17:13.092Z
 
 - Task: `202607221848-ER5H6N`
 - Title: Define digest-addressed KnowledgeRef contracts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221848-ER5H6N/define-digest-addressed-knowledgeref-contracts`
 - Canonical task record: `.agentplane/tasks/202607221848-ER5H6N/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: the branch contains only task lifecycle and PR artifacts; no KnowledgeRef implementation or focused contract tests are present yet.
+- State: ok
+- Note: PASS: independent adversarial review rejected forged receipts, parser/schema drift, projection symlink escape, and Unicode boundary drift; test:critical passed 11/11. Post-rebase focused verification passed 55/55 with schemas, types, format, lint, compatibility, spec examples, and hotspot gates green.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
