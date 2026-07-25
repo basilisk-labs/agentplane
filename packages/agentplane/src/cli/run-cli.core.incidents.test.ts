@@ -21,7 +21,6 @@ const INCIDENTS_CLI_TIMEOUT_MS = 120_000;
 
 const compactRegistryHeader = [
   "# Policy Incidents Log",
-  "",
   "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.",
 ].join("\n");
 
