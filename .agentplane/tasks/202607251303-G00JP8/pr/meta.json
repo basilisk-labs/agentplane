@@ -8,10 +8,10 @@
   "pr_number": 4617,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4617",
   "pre_merge_closure": {
-    "basis_commit": "002c1dce9c088812b823707bc98571ba8cc2961a",
+    "basis_commit": "7b380df643e2d6430049e6922f5996c8568057c3",
     "branch": "task/202607251303-G00JP8/stabilize-parallel-full-fast-runner-and-integrat",
     "pr_number": 4617,
-    "recorded_at": "2026-07-25T13:49:10.005Z",
+    "recorded_at": "2026-07-25T13:49:58.596Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
