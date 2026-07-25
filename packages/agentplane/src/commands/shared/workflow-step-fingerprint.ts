@@ -80,6 +80,7 @@ function routeProjection(state: WorkflowRouteStateInput): Record<string, unknown
     blockers: state.blockers,
     batch: state.batchOwnership,
     taskWorktree: state.taskWorktree ?? null,
+    foreignTaskReadmeReplicaRepair: state.foreignTaskReadmeReplicaRepair ?? null,
     workflowMode: state.workflowMode,
   };
 }

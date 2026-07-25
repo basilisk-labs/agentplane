@@ -18,6 +18,7 @@ function collect(opts: { changedPaths: string[]; requireAllChanges: boolean }): 
     },
     workflowDir: ".agentplane/tasks",
     tasksPath: ".agentplane/tasks.json",
+    taskId: "T-1",
     requireAllChanges: opts.requireAllChanges,
   });
   return blockers;
@@ -64,6 +65,20 @@ describe("route task-worktree blockers", () => {
       {
         code: "verification_required",
         summary: "the committed task implementation does not have a passing verification record",
+      },
+    ]);
+  });
+
+  it("blocks a foreign task README during a DOING task episode", () => {
+    expect(
+      collect({
+        changedPaths: [".agentplane/tasks/T-2/README.md"],
+        requireAllChanges: false,
+      }),
+    ).toEqual([
+      {
+        code: "task_worktree_dirty",
+        summary: "task worktree contains uncommitted changes (.agentplane/tasks/T-2/README.md)",
       },
     ]);
   });

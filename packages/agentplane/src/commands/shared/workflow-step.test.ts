@@ -210,6 +210,10 @@ describe("typed WorkflowStep reducer", () => {
         params: { taskId: task.id },
         argv: ["agentplane", "pr", "flow", "status", task.id],
       },
+      "flow.repair.foreign_task_readme": {
+        params: { taskId: task.id },
+        argv: ["agentplane", "flow", "repair", task.id, "--safe-apply"],
+      },
       "route.remote.refresh": {
         params: { taskId: task.id },
         argv: ["agentplane", "task", "next-action", task.id, "--remote", "--explain"],

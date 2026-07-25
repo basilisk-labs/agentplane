@@ -43,6 +43,7 @@ import {
   inspectTaskWorktreeCleanliness,
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
+import { inspectForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
@@ -459,6 +460,18 @@ export async function buildTaskRouteDecision(opts: {
         worktreePath: null,
         changedPaths: [],
       };
+  const foreignTaskReadmeReplicaRepair =
+    taskWorktreeCleanliness.state === "dirty" && taskWorktreeCleanliness.worktreePath
+      ? await inspectForeignTaskReadmeReplicaRepair({
+          ctx,
+          activeTaskId: task.id,
+          taskWorktreePath: taskWorktreeCleanliness.worktreePath,
+          baseBranch: resume.base_branch,
+        }).catch(() => ({
+          state: "not_applicable" as const,
+          reason: "foreign_replica_inspection_failed",
+        }))
+      : { state: "not_applicable" as const, reason: "task_worktree_not_dirty" };
   const cleanupProbe = await resolveDoneCleanupProbe({
     ctx,
     resume,
@@ -485,6 +498,7 @@ export async function buildTaskRouteDecision(opts: {
     blockers,
     batchOwnership,
     taskWorktree: taskWorktreeCleanliness,
+    foreignTaskReadmeReplicaRepair,
   };
   const provisionalWorkflowStep = reduceRouteState(
     withBootstrapWorkflowFingerprint(routeStateInput),
@@ -499,6 +513,7 @@ export async function buildTaskRouteDecision(opts: {
       cleanliness: taskWorktreeCleanliness,
       workflowDir: ctx.config.paths.workflow_dir,
       tasksPath: ctx.config.paths.tasks_path,
+      taskId: task.id,
       requireAllChanges: true,
     });
   }

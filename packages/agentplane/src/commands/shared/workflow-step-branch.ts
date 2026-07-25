@@ -4,6 +4,7 @@ import {
   approvalStep,
   cliOperationStep,
   commonExecution,
+  foreignTaskReadmeReplicaRepairStep,
   implementationReworkStep,
   includedBatchStep,
   qualityReviewStep,
@@ -186,7 +187,12 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const worktreeBlocker = taskWorktreeBlocker(state);
   if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (worktreeBlocker) {
+    return (
+      foreignTaskReadmeReplicaRepairStep(state, worktreeBlocker) ??
+      worktreeResolutionStep(state, worktreeBlocker)
+    );
+  }
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
@@ -444,7 +450,12 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (worktreeBlocker) {
+    return (
+      foreignTaskReadmeReplicaRepairStep(state, worktreeBlocker) ??
+      worktreeResolutionStep(state, worktreeBlocker)
+    );
+  }
   const batchVerificationStep = primaryBatchVerificationStep(state);
   if (batchVerificationStep) return batchVerificationStep;
   if (

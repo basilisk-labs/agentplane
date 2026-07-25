@@ -7,6 +7,7 @@ import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
+import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
 
 export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
 export type WorkflowCheckout = RouteOracle["authoritativeCheckout"];
@@ -20,6 +21,7 @@ export type WorkflowRouteState = {
   blockers: readonly RouteBlocker[];
   batchOwnership: RouteBatchOwnership;
   taskWorktree?: TaskWorktreeCleanliness;
+  foreignTaskReadmeReplicaRepair?: ForeignTaskReadmeReplicaRepair;
   preconditionFingerprint: StateFingerprint;
 };
 
@@ -59,6 +61,7 @@ type WorkflowOperationType =
   | "task_record_result"
   | "task_start"
   | "task_view"
+  | "workflow_repair"
   | "worktree_prepare";
 
 export type WorkflowOperationId =
@@ -71,6 +74,7 @@ export type WorkflowOperationId =
   | "pr.open"
   | "pr.sync_or_verify"
   | "provider.pr.refresh"
+  | "flow.repair.foreign_task_readme"
   | "route.remote.refresh"
   | "runner.follow"
   | "task.artifacts.commit"
@@ -97,6 +101,7 @@ export type WorkflowOperationParams = {
   "pr.open": { taskId: string; author: string; includeTaskIds: readonly string[] };
   "pr.sync_or_verify": { taskId: string; includeTaskIds: readonly string[] };
   "provider.pr.refresh": { taskId: string };
+  "flow.repair.foreign_task_readme": { taskId: string };
   "route.remote.refresh": { taskId: string };
   "runner.follow":
     | { mode: "reclaim"; taskId: string; author: string; reason: string }
@@ -396,6 +401,20 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     ],
     triggersGitHooks: false,
     verificationCandidate: "agentplane task next-action <task-id> --remote --explain",
+    needsVerificationRecord: false,
+  },
+  "flow.repair.foreign_task_readme": {
+    type: "workflow_repair",
+    phase: "task_worktree_foreign_artifact_repair",
+    checkout: "task_worktree",
+    role: "CODER",
+    expectedPostconditions: [POSTCONDITION.routeRecomputed],
+    mustNot: [
+      "do not remove any path unless flow repair re-proves one foreign untracked README replica immediately before removal",
+      "do not apply this repair to active-task, modified, symlinked, unknown, or mixed worktree artifacts",
+    ],
+    triggersGitHooks: false,
+    verificationCandidate: null,
     needsVerificationRecord: false,
   },
   "task.pre_merge_close": {

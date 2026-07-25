@@ -52,6 +52,9 @@ function operationArgv(operation: WorkflowOperation): string[] {
     case "provider.pr.refresh": {
       return ["agentplane", "pr", "flow", "status", operation.params.taskId];
     }
+    case "flow.repair.foreign_task_readme": {
+      return ["agentplane", "flow", "repair", operation.params.taskId, "--safe-apply"];
+    }
     case "route.remote.refresh": {
       return [
         "agentplane",

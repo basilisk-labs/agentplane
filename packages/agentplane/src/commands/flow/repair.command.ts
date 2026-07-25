@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { realpath } from "node:fs/promises";
 import { promisify } from "node:util";
 
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
@@ -6,6 +7,7 @@ import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import { applyForeignTaskReadmeReplicaRepair } from "../shared/task-worktree-foreign-artifact-repair.js";
 import { cmdPrUpdate } from "../pr/update.js";
 import { executeHostedClosePrPlan } from "../task/hosted-close-pr.execute.js";
 import { postcheckHostedClosePrResult } from "../task/hosted-close-pr.postcheck.js";
@@ -98,6 +100,8 @@ async function applySafeRepairStep(opts: {
   taskId: string;
   step: { code: string; command: string | null };
   prBranch: string | null;
+  baseBranch: string | null;
+  taskWorktreePath: string | null;
   json: boolean;
 }): Promise<FlowRepairApplyResult> {
   const base = { code: opts.step.code, command: opts.step.command };
@@ -119,6 +123,23 @@ async function applySafeRepairStep(opts: {
       cwd: opts.commandCtx.resolvedProject.gitRoot,
     });
     return { ...base, status: "applied" };
+  }
+  if (opts.step.code === "repair_foreign_task_readme_replica") {
+    const [commandRoot, taskWorktreeRoot] = await Promise.all([
+      realpath(opts.commandCtx.resolvedProject.gitRoot).catch(() => null),
+      opts.taskWorktreePath ? realpath(opts.taskWorktreePath).catch(() => null) : null,
+    ]);
+    if (!commandRoot || !taskWorktreeRoot || commandRoot !== taskWorktreeRoot) {
+      return { ...base, status: "skipped", reason: "must_run_from_task_worktree" };
+    }
+    const result = await applyForeignTaskReadmeReplicaRepair({
+      ctx: opts.commandCtx,
+      activeTaskId: opts.taskId,
+      baseBranch: opts.baseBranch,
+    });
+    return result.state === "applied"
+      ? { ...base, status: "applied" }
+      : { ...base, status: "skipped", reason: result.reason };
   }
   if (opts.step.code === "open_close_tail") {
     await runHostedClosePrRepair({
@@ -162,6 +183,8 @@ export function makeRunFlowRepairHandler(getCtx: (cmd: string) => Promise<Comman
             taskId: parsed.taskId,
             step,
             prBranch: decision.workspace.prBranch,
+            baseBranch: decision.workspace.baseBranch,
+            taskWorktreePath: decision.workspace.taskWorktreePath,
             json: parsed.json,
           }),
         );

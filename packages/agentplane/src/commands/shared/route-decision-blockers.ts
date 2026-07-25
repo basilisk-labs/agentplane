@@ -174,11 +174,25 @@ function isTaskArtifactPath(opts: {
   );
 }
 
+function isForeignTaskReadmePath(opts: {
+  workflowDir: string;
+  taskId: string | undefined;
+  relPath: string;
+}): boolean {
+  if (!opts.taskId) return false;
+  const workflowDir = opts.workflowDir.replaceAll("\\", "/").replace(/\/+$/u, "");
+  const relPath = opts.relPath.replaceAll("\\", "/");
+  if (!relPath.startsWith(`${workflowDir}/`) || !relPath.endsWith("/README.md")) return false;
+  const segments = relPath.slice(workflowDir.length + 1).split("/");
+  return segments.length === 2 && segments[0] !== opts.taskId && segments[1] === "README.md";
+}
+
 export function addTaskWorktreeCleanlinessBlocker(opts: {
   blockers: RouteBlocker[];
   cleanliness: TaskWorktreeCleanliness;
   workflowDir: string;
   tasksPath: string;
+  taskId?: string;
   requireAllChanges: boolean;
 }): void {
   if (opts.cleanliness.state === "unavailable") {
@@ -192,14 +206,32 @@ export function addTaskWorktreeCleanlinessBlocker(opts: {
   if (opts.cleanliness.state !== "dirty") return;
   const blockingPaths = opts.requireAllChanges
     ? opts.cleanliness.changedPaths
-    : opts.cleanliness.changedPaths.filter(
-        (relPath) =>
+    : opts.cleanliness.changedPaths.filter((relPath) => {
+        if (
           !isTaskArtifactPath({
             workflowDir: opts.workflowDir,
             tasksPath: opts.tasksPath,
             relPath,
-          }),
-      );
+          })
+        ) {
+          return true;
+        }
+        if (
+          isTaskArtifactPath({
+            workflowDir: opts.workflowDir,
+            tasksPath: opts.tasksPath,
+            taskId: opts.taskId,
+            relPath,
+          })
+        ) {
+          return false;
+        }
+        return isForeignTaskReadmePath({
+          workflowDir: opts.workflowDir,
+          taskId: opts.taskId,
+          relPath,
+        });
+      });
   if (blockingPaths.length === 0) return;
   addBlocker(
     opts.blockers,
@@ -246,6 +278,7 @@ export async function deriveBlockers(opts: {
       cleanliness: opts.taskWorktreeCleanliness,
       workflowDir: opts.ctx.config.paths.workflow_dir,
       tasksPath: opts.ctx.config.paths.tasks_path,
+      taskId: opts.task.id,
       requireAllChanges: normalizedTaskStatus === "DONE",
     });
   }

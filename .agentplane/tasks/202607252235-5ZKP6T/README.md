@@ -4,7 +4,7 @@ title: "Prevent foreign task artifacts in branch_pr worktrees"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -14,10 +14,16 @@ tags:
   - "milestone-alpha2"
   - "v0.7"
   - "workflow"
-verify: []
+  - "code"
+verify:
+  - "bun run typecheck"
+  - "bun run lint:core"
+  - "bun run lifecycle:invariants"
+  - "node .agentplane/policy/check-routing.mjs"
+  - "git diff --check"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-25T22:36:32.814Z"
+  updated_at: "2026-07-25T22:41:52.446Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
@@ -40,7 +46,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-25T22:39:31.207Z"
+doc_updated_at: "2026-07-25T23:10:49.452Z"
 doc_updated_by: "CODER"
 description: "Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion."
 sections:
@@ -51,13 +57,12 @@ sections:
   Scope: |-
     - In scope: Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion.
     - Out of scope: unrelated refactors not required for "Prevent foreign task artifacts in branch_pr worktrees".
-  Plan: "1. Trace branch_pr work-start materialization and the task-worktree-dirty route with an isolated fixture. 2. Make work start materialize and hand off only the active task artifact; preserve backend/branch-snapshot resolution for other tasks. 3. Extend the formal flow-repair route with a deterministic, guarded repair for foreign untracked task README replicas: only a byte-identical, authoritative foreign task README may be removed; reject unknown, modified, symlinked, active-task, or mixed artifacts. 4. Add focused regression tests for prevention, safe repair, and fail-closed cases; keep all user and unrelated artifacts untouched. 5. Add this corrective task to the alpha.2 fan-in and v0.7 roadmap, then run focused tests, typecheck, lint, lifecycle invariants, routing check, and diff check. 6. Complete branch_pr verification, quality review, hosted checks, and integration."
+  Plan: "1. Trace branch_pr work-start materialization and the task-worktree-dirty route with an isolated fixture. 2. Make work start materialize and hand off only the active task artifact; preserve backend/branch-snapshot resolution for other tasks. 3. Extend the formal flow-repair route with a deterministic, guarded repair for a foreign untracked task README replica. Permit removal only when the path is a regular untracked README under a foreign valid task ID, there are no other dirty paths, and it is proven either byte-identical to the authoritative source or a recognized lifecycle replica: immutable and semantic task fields match, and the only delta is the exact allowed start-ready transition. Reject missing, modified, symlinked, active-task, unknown, or mixed artifacts. 4. Add focused regression tests for prevention, safe repair, lifecycle-replica repair, and fail-closed cases; keep all user and unrelated artifacts untouched. 5. Add this corrective task to the alpha.2 fan-in and v0.7 roadmap, preserving existing SNV and THDN fan-in changes, then run focused tests, typecheck, lint, lifecycle invariants, routing check, and diff check. 6. Complete branch_pr verification, quality review, hosted checks, and integration."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Prevent foreign task artifacts in branch_pr worktrees". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Prevent foreign task artifacts in branch_pr worktrees". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run the focused work-start and foreign-replica test files. Expected: only the active task artifact is materialized, byte-identical and exact start-ready replicas are removable, and modified, missing, symlinked, active-task, mixed, and wrong-root cases fail closed.
+    2. Run task next-action and flow repair from a current checkout with --root pointing to the older target worktree. Expected: the route emits flow repair and safe-apply removes only the proven foreign README.
+    3. Confirm the alpha.2 gate depends on SNV847, THDN0G, and 5ZKP6T, and the v0.7 roadmap lists both corrective leaves.
+    4. Run typecheck, core lint, lifecycle invariants, policy routing, and diff checks. Expected: all pass without unrelated artifacts.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -84,15 +89,14 @@ Stop work start from materializing foreign untracked task artifacts into a task 
 
 ## Plan
 
-1. Trace branch_pr work-start materialization and the task-worktree-dirty route with an isolated fixture. 2. Make work start materialize and hand off only the active task artifact; preserve backend/branch-snapshot resolution for other tasks. 3. Extend the formal flow-repair route with a deterministic, guarded repair for foreign untracked task README replicas: only a byte-identical, authoritative foreign task README may be removed; reject unknown, modified, symlinked, active-task, or mixed artifacts. 4. Add focused regression tests for prevention, safe repair, and fail-closed cases; keep all user and unrelated artifacts untouched. 5. Add this corrective task to the alpha.2 fan-in and v0.7 roadmap, then run focused tests, typecheck, lint, lifecycle invariants, routing check, and diff check. 6. Complete branch_pr verification, quality review, hosted checks, and integration.
+1. Trace branch_pr work-start materialization and the task-worktree-dirty route with an isolated fixture. 2. Make work start materialize and hand off only the active task artifact; preserve backend/branch-snapshot resolution for other tasks. 3. Extend the formal flow-repair route with a deterministic, guarded repair for a foreign untracked task README replica. Permit removal only when the path is a regular untracked README under a foreign valid task ID, there are no other dirty paths, and it is proven either byte-identical to the authoritative source or a recognized lifecycle replica: immutable and semantic task fields match, and the only delta is the exact allowed start-ready transition. Reject missing, modified, symlinked, active-task, unknown, or mixed artifacts. 4. Add focused regression tests for prevention, safe repair, lifecycle-replica repair, and fail-closed cases; keep all user and unrelated artifacts untouched. 5. Add this corrective task to the alpha.2 fan-in and v0.7 roadmap, preserving existing SNV and THDN fan-in changes, then run focused tests, typecheck, lint, lifecycle invariants, routing check, and diff check. 6. Complete branch_pr verification, quality review, hosted checks, and integration.
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Prevent foreign task artifacts in branch_pr worktrees". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Prevent foreign task artifacts in branch_pr worktrees". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run the focused work-start and foreign-replica test files. Expected: only the active task artifact is materialized, byte-identical and exact start-ready replicas are removable, and modified, missing, symlinked, active-task, mixed, and wrong-root cases fail closed.
+2. Run task next-action and flow repair from a current checkout with --root pointing to the older target worktree. Expected: the route emits flow repair and safe-apply removes only the proven foreign README.
+3. Confirm the alpha.2 gate depends on SNV847, THDN0G, and 5ZKP6T, and the v0.7 roadmap lists both corrective leaves.
+4. Run typecheck, core lint, lifecycle invariants, policy routing, and diff checks. Expected: all pass without unrelated artifacts.
 
 ## Verification
 

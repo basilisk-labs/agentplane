@@ -391,6 +391,27 @@ export function taskWorktreeBlocker(state: WorkflowRouteState): RouteBlocker | n
   );
 }
 
+export function foreignTaskReadmeReplicaRepairStep(
+  state: WorkflowRouteState,
+  blocker: RouteBlocker,
+): WorkflowStep | null {
+  if (
+    blocker.code !== "task_worktree_dirty" ||
+    state.foreignTaskReadmeReplicaRepair?.state !== "eligible"
+  ) {
+    return null;
+  }
+  return cliOperationStep({
+    state,
+    operationId: "flow.repair.foreign_task_readme",
+    params: { taskId: state.task.id },
+    code: "repair_foreign_task_readme_replica",
+    summary:
+      "remove the single proven foreign task README replica through the guarded flow repair command",
+    selectedBlocker: blocker,
+  });
+}
+
 export function implementationReworkStep(state: WorkflowRouteState): WorkflowStep {
   return agentEpisodeStep({
     state,

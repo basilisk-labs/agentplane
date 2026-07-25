@@ -21,6 +21,7 @@ export const WORKFLOW_OPERATION_EFFECTS = {
   "pr.open": "mutating",
   "pr.head.publish": "mutating",
   "provider.pr.refresh": "read_only",
+  "flow.repair.foreign_task_readme": "mutating",
   "route.remote.refresh": "read_only",
   "task.pre_merge_close": "mutating",
   "integration.enqueue": "mutating",
