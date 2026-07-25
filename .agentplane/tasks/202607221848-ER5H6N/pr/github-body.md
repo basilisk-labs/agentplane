@@ -15,12 +15,12 @@ RF-08: standardize reproducible references into the existing context knowledge p
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one
-unrelated active-claim history race (targeted repetition passed 20/20).
+Rebased implementation head 77c09bca8 satisfies the KnowledgeRef contract and all required
+regression gates on main ba92fff2d.
 ```
 - Canonical workflow state lives in the task README.
 

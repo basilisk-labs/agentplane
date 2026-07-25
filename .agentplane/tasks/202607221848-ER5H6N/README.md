@@ -2,10 +2,10 @@
 id: "202607221848-ER5H6N"
 title: "Define digest-addressed KnowledgeRef contracts"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -31,36 +31,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the independent KnowledgeRef contract leaf for alpha.2 under the existing full v0.7 authorization."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T12:52:00.175Z"
+  state: "ok"
+  updated_at: "2026-07-25T14:05:05.817Z"
   updated_by: "TESTER"
-  note: "Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one unrelated active-claim history race (targeted repetition passed 20/20)."
-  attempts: 1
+  note: "Rebased implementation head 77c09bca8 satisfies the KnowledgeRef contract and all required regression gates on main ba92fff2d."
+  attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T12:38:00.970Z"
-  updated_by: "EVALUATOR"
-  note: "Post-rebase semantic review passed: patch-identical KnowledgeRef implementation preserves strict canonical references, freshness withholding, bounded receipts, path defenses, and compatibility views."
-  evaluated_sha: "efb741edda2aa24c85b11315a0b0b92f66710b26"
+  provenance: "human_supplied"
+  updated_at: "2026-07-25T14:13:56.947Z"
+  updated_by: "HUMAN"
+  note: "Final post-G00JP8 review passed: rebased RF08 preserves strict digest-addressed KnowledgeRef semantics, fail-closed freshness, bounded excerpt receipts, schema parity, and compatibility views on head 77c09bca8."
+  evaluated_sha: "77c09bca80625b9bb0c7054f3d2423295e2b652d"
   blueprint_digest: "3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0"
   evidence_refs:
     - ".agentplane/tasks/202607221848-ER5H6N/README.md"
-    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-123800970-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-123800970-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-123800970-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-141356947-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-141356947-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-141356947-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-ER5H6N/blueprint/resolved-snapshot.json"
-    - "packages/core/src/runner/knowledge-ref.ts"
-    - "packages/core/src/runner/knowledge-ref.test.ts"
-    - "packages/agentplane/src/context/knowledge-ref.ts"
-    - "packages/agentplane/src/context/knowledge-ref.test.ts"
-    - "patch-id 10e58015c6e4f77ad6a2b5db36c14fe9286a03b2 matches prior reviewed implementation"
-    - "focused 55/55; critical 11/11 chunks; schemas, typecheck, format, lint, compatibility, spec examples, hotspots passed"
+    - "implementation head 77c09bca8 rebased on main ba92fff2d"
+    - "packages/core/src/runner/knowledge-ref.ts and packages/core/src/runner/knowledge-ref.test.ts"
+    - "packages/agentplane/src/context/knowledge-ref.ts and packages/agentplane/src/context/knowledge-ref.test.ts"
+    - "focused KnowledgeRef 48/48; critical 72/72; test:fast 455 files/3096 tests"
+    - "schemas:check, typecheck, format:check, lint:core, knip:check, compatibility baseline, spec examples, hotspots, doctor, policy routing, diff check: passed"
   findings:
-    - "All five KnowledgeRef kinds resolve through strict canonical selectors tied to digest and source identity; stale, missing, and unavailable states never expose content as fresh."
-    - "Receipt validation covers digest, span, byte and line counters, limits, and mutually exclusive included, omitted, missing, and stale outcomes."
-    - "Traversal, source and projection symlinks, noncanonical percent encoding, Unicode code-point bounds, and descending ranges are rejected; context-pack.md remains unchanged and new views are optional."
-commit: null
+    - "All five KnowledgeRef kinds resolve through canonical refs bound to digest and source identity; drift returns stale with no content and deletion returns missing with no source or content."
+    - "Prepared excerpt receipts enforce mutually exclusive included, omitted, missing, and stale outcomes plus canonical ref, source span, digest, UTF-8 counters, limits, and omission reasons; context-pack.md remains unchanged."
+    - "Root, core, and spec schemas are byte-identical and generated from one renderer; supported core entrypoints and the v0.7 compatibility ratchet expose the full public surface."
+    - "The final two commits do not weaken public behavior: one changes lifecycle artifacts only and the other removes exactly two unused internal agentplane re-exports while preserving public core exports."
+commit:
+  hash: "77c09bca80625b9bb0c7054f3d2423295e2b652d"
+  message: "🧠 ER5H6N context: remove unused excerpt re-exports"
 comments:
   -
     author: "CODER"
@@ -71,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -111,8 +116,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one unrelated active-claim history race (targeted repetition passed 20/20)."
+  -
+    type: "verify"
+    at: "2026-07-25T14:05:05.817Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rebased implementation head 77c09bca8 satisfies the KnowledgeRef contract and all required regression gates on main ba92fff2d."
+  -
+    type: "status"
+    at: "2026-07-25T14:14:18.567Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T12:52:00.728Z"
+doc_updated_at: "2026-07-25T14:14:18.567Z"
 doc_updated_by: "CODER"
 description: "RF-08: standardize reproducible references into the existing context knowledge plane with digest, reason, retrieval provenance, score, requirement, freshness, and bounded excerpts."
 sections:
@@ -226,6 +244,38 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T14:05:05.817Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rebased implementation head 77c09bca8 satisfies the KnowledgeRef contract and all required regression gates on main ba92fff2d.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T12:52:00.728Z, excerpt_hash=sha256:e0a28fae052431332f5b445eac80ed7582457c8d3a88fac7abd2596dba299882
+
+    Details:
+
+    Evidence: schemas:check passed; core KnowledgeRef 38/38; agentplane KnowledgeRef 10/10; critical-cli 11 chunks/72 tests; test:fast 455 files/3096 tests; typecheck, full format check, lint:core, knip:check, compatibility baseline, spec examples, hotspots, doctor, policy routing, and diff check passed. The previous hosted blockers are resolved by main G00JP8 plus removal of the two unused excerpt exports. Worktree is clean.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ER5H6N-define-digest-addressed-knowledgeref-contracts/.agentplane/tasks/202607221848-ER5H6N/blueprint/resolved-snapshot.json
+    - old_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+    - current_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-ER5H6N
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -243,6 +293,10 @@ sections:
     - Observation: Core CI failed knip on MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES/LINES re-exports and one full-suite active-claim concurrency attempt returned fail-closed E_IO instead of the expected active-claim E_USAGE.
       Impact: PR #4613 cannot integrate until the unused exports are removed and a fresh full fast run passes.
       Resolution: Remove only the unused internal re-exports, rerun focused/static/full-fast checks, then refresh evaluator and pre-merge closure.
+
+    - Observation: The earlier RF08 head was semantically complete but its hosted evidence was invalidated by two unused exports and the independent active-claim/full-fast reliability race.
+      Impact: Publishing that head would keep the KnowledgeRef wave blocked despite correct digest-addressed semantics.
+      Resolution: Rebased onto main ba92fff2d containing G00JP8, retained the two export removals, and reran the full local matrix successfully on 77c09bca8.
 extensions:
   implementation_commit:
     hash: "efb741edda2aa24c85b11315a0b0b92f66710b26"
@@ -368,6 +422,38 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T14:05:05.817Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rebased implementation head 77c09bca8 satisfies the KnowledgeRef contract and all required regression gates on main ba92fff2d.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T12:52:00.728Z, excerpt_hash=sha256:e0a28fae052431332f5b445eac80ed7582457c8d3a88fac7abd2596dba299882
+
+Details:
+
+Evidence: schemas:check passed; core KnowledgeRef 38/38; agentplane KnowledgeRef 10/10; critical-cli 11 chunks/72 tests; test:fast 455 files/3096 tests; typecheck, full format check, lint:core, knip:check, compatibility baseline, spec examples, hotspots, doctor, policy routing, and diff check passed. The previous hosted blockers are resolved by main G00JP8 plus removal of the two unused excerpt exports. Worktree is clean.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ER5H6N-define-digest-addressed-knowledgeref-contracts/.agentplane/tasks/202607221848-ER5H6N/blueprint/resolved-snapshot.json
+- old_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+- current_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-ER5H6N
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -389,3 +475,7 @@ DecisionContextRef:
 - Observation: Core CI failed knip on MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES/LINES re-exports and one full-suite active-claim concurrency attempt returned fail-closed E_IO instead of the expected active-claim E_USAGE.
   Impact: PR #4613 cannot integrate until the unused exports are removed and a fresh full fast run passes.
   Resolution: Remove only the unused internal re-exports, rerun focused/static/full-fast checks, then refresh evaluator and pre-merge closure.
+
+- Observation: The earlier RF08 head was semantically complete but its hosted evidence was invalidated by two unused exports and the independent active-claim/full-fast reliability race.
+  Impact: Publishing that head would keep the KnowledgeRef wave blocked despite correct digest-addressed semantics.
+  Resolution: Rebased onto main ba92fff2d containing G00JP8, retained the two export removals, and reran the full local matrix successfully on 77c09bca8.
