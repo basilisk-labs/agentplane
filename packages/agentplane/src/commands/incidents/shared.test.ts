@@ -133,7 +133,7 @@ describe("incident registry mirror writes", () => {
     );
 
     expect(mirrored).toBe(canonical);
-    expect(mirrored).toStartWith(`${compactRegistryHeader}\n- id:`);
+    expect(mirrored.startsWith(`${compactRegistryHeader}\n- id:`)).toBe(true);
     expect(mirrored).toContain("incident promotion left hidden policy drift");
     expect(mirrored.endsWith("\n")).toBe(true);
   });
