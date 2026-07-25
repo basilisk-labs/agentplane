@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607252218-XBHBE5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T22:29:43.907Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The task archives only the resolved incident, preserves its original fields, and restores the release gate without weakening the guard or policy.",
+  "evaluated_sha": "43d3ad13dd3c977aa680e1d9bd9994ab261115f1",
+  "blueprint_digest": "13e88c2eeda33d77de4ca340dcb3d938814cbb01aaacfdb7db0f76370c6e6a1a",
+  "findings": [
+    "PR #4619 and the current main guard check provide sufficient evidence that INC-20260725-01 no longer needs active operator handling."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607252218-XBHBE5/README.md",
+    ".agentplane/policy/incidents.md",
+    "docs/developer/incident-archive.mdx",
+    "node scripts/check-release-incidents.mjs: pass",
+    "bun run guards:check: pass"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The task worktree contains the separate planned THDN0G README as an untracked artifact; it is not staged or within this task scope."
+  ]
+}

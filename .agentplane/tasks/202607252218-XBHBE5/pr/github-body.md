@@ -14,8 +14,8 @@ In scope: archive only INC-20260725-01 after validating task 202607251433-75Q4J6
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Archived the resolved guard incident and cleared the release incident gate.
 - Canonical workflow state lives in the task README.
 
 <details>
