@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607250037-96WEYY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T01:14:02.383Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Independent review confirms the RF-04 cleanup-only macOS race is bounded at the test boundary without mutating the frozen replay harness or provider evidence.",
+  "evaluated_sha": "e1ed542204ffdf66d142c0689c76af3e863a2631",
+  "blueprint_digest": "877eb9a360741e407588402f2d2ef75b4a50f1a2059aad710594c155f5e99e21",
+  "findings": [
+    "Cleanup retries are capped at four attempts, retain the first persistent retryable error, and surface non-retryable errors immediately; deterministic tests distinguish first-vs-last error identity and one-call EIO behavior.",
+    "Capture retry cleanup deletes only newly created rf04-replay roots and preserves pre-existing roots; three repeated focused runs and the full 11-chunk critical suite passed with the same 50/70/27/170 evidence and structural digest."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607250037-96WEYY/README.md",
+    "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts",
+    "e1ed542204ff",
+    "bun run test:critical: 11/11 chunks PASS; focused RF-04: 3 consecutive 10/10 PASS with unchanged structural SHA 006ddc...9ee4"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The frozen production capture harness retains one-shot internal cleanup; changing those bytes would invalidate the approved provider evidence, so this task intentionally hardens only the offline test boundary."
+  ]
+}
