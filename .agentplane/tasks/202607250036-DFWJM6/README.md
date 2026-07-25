@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-25T01:06:30.385Z"
-  updated_by: "TESTER"
-  note: "Independent review PASS at 8d06aecb: 20/20 focused publication tests passed; exact repo-bound force-with-lease and all fail-closed cases verified; typecheck, lint:core, hotspots, architecture, task-state, task lint, routing, diff-check, and doctor passed. Unchanged website lint baseline remains outside scope."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-25T01:17:09.694Z"
+  updated_by: "REVIEWER"
+  note: "GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "human_supplied"
@@ -56,9 +56,7 @@ quality_review:
   findings:
     - "The force path is available only for an existing open PR whose provider repository, origin fetch repository, origin push repository, branch, and observed remote head all agree."
     - "Publication uses only the exact ref-scoped lease and refuses mismatched repository/head, wrong upstream/current branch, closed or missing PR, and a remote race; first publication remains unchanged."
-commit:
-  hash: "4acdfcbb6ca4f391b573f17c3f38b7221e776c96"
-  message: "🧩 DFWJM6 task: refresh task artifacts after commit"
+commit: null
 comments:
   -
     author: "CODER"
@@ -107,8 +105,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T01:17:09.694Z"
+    author: "REVIEWER"
+    state: "needs_rework"
+    note: "GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD."
 doc_version: 3
-doc_updated_at: "2026-07-25T01:10:57.839Z"
+doc_updated_at: "2026-07-25T01:23:38.264Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -126,7 +130,7 @@ sections:
     4. Add focused regression tests for success and all safety refusals; run focused tests, typecheck, lint, lifecycle guards, and task verification.
     5. Commit with DCO and leave the task branch unintegrated for parent review.
   Verify Steps: |-
-    1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: the rebased open-PR branch is updated only with an exact ref-scoped lease bound to the same GitHub repository; wrong upstream/current branch, mismatched repository/head, closed or missing PR, and a remote race remain fail-closed; existing first-publish behavior remains green.
+    1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: the exact observed local object is the force-push source, and repository, lease, refusal, destination-race, and source-race regressions pass.
     2. Run `bun run typecheck`. Expected: all TypeScript packages compile without errors.
     3. Run `bun run lint:core`. Expected: repository core lint passes without new findings; the unrelated website lint baseline is reported separately.
     4. Run `bun run hotspots:check`. Expected: the extracted publication module and focused regression suite stay within repository size budgets.
@@ -163,6 +167,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T01:17:09.694Z — VERIFY — needs_rework
+
+    By: REVIEWER
+
+    Note: GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T01:10:57.839Z, excerpt_hash=sha256:451cb09864f23f28a6a06d7c13507c4a133d450286d8d0de27a8cf39e904a6ce
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -173,6 +207,16 @@ sections:
     - Wrong upstream/current branch, mismatched repository/head, closed or missing PR, and a remote race are covered by explicit fail-closed regression tests.
     - Independent safety re-review verdict: PASS with no remaining findings.
     - Full `bun run lint` remains red on unchanged `website/scripts/generate-social-images.mjs:207` (`unicorn/prefer-string-replace-all`); `bun run lint:core` and targeted ESLint pass. This task does not widen into website cleanup.
+
+    - Observation: The lease protected only the destination ref while the source refspec remained HEAD.
+      Impact: A concurrent checkout or amend after observation could publish an unobserved source commit under a valid destination lease.
+      Resolution: Use the observed local object ID as the source refspec and add a deterministic source-race regression.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+
+    - Observation: GitHub review P1 source-side race is resolved and independently re-reviewed PASS.
+      Impact: Force publication can no longer substitute a concurrent worktree HEAD for the commit that passed local/provider/remote observation.
+      Resolution: The refspec source is the validated observed local object ID; a nondestructive fake-git `update-ref HEAD` immediately before push proves the remote still receives that object rather than the changed HEAD.
 extensions:
   implementation_commit:
     hash: "8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
@@ -200,7 +244,7 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verify Steps
 
-1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: the rebased open-PR branch is updated only with an exact ref-scoped lease bound to the same GitHub repository; wrong upstream/current branch, mismatched repository/head, closed or missing PR, and a remote race remain fail-closed; existing first-publish behavior remains green.
+1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: the exact observed local object is the force-push source, and repository, lease, refusal, destination-race, and source-race regressions pass.
 2. Run `bun run typecheck`. Expected: all TypeScript packages compile without errors.
 3. Run `bun run lint:core`. Expected: repository core lint passes without new findings; the unrelated website lint baseline is reported separately.
 4. Run `bun run hotspots:check`. Expected: the extracted publication module and focused regression suite stay within repository size budgets.
@@ -239,6 +283,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T01:17:09.694Z — VERIFY — needs_rework
+
+By: REVIEWER
+
+Note: GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T01:10:57.839Z, excerpt_hash=sha256:451cb09864f23f28a6a06d7c13507c4a133d450286d8d0de27a8cf39e904a6ce
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -253,3 +327,13 @@ DecisionContextRef:
 - Wrong upstream/current branch, mismatched repository/head, closed or missing PR, and a remote race are covered by explicit fail-closed regression tests.
 - Independent safety re-review verdict: PASS with no remaining findings.
 - Full `bun run lint` remains red on unchanged `website/scripts/generate-social-images.mjs:207` (`unicorn/prefer-string-replace-all`); `bun run lint:core` and targeted ESLint pass. This task does not widen into website cleanup.
+
+- Observation: The lease protected only the destination ref while the source refspec remained HEAD.
+  Impact: A concurrent checkout or amend after observation could publish an unobserved source commit under a valid destination lease.
+  Resolution: Use the observed local object ID as the source refspec and add a deterministic source-race regression.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+
+- Observation: GitHub review P1 source-side race is resolved and independently re-reviewed PASS.
+  Impact: Force publication can no longer substitute a concurrent worktree HEAD for the commit that passed local/provider/remote observation.
+  Resolution: The refspec source is the validated observed local object ID; a nondestructive fake-git `update-ref HEAD` immediately before push proves the remote still receives that object rather than the changed HEAD.

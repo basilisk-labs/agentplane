@@ -192,6 +192,7 @@ async function pushRebasedBranchWithObservedLease(opts: {
     !remoteHead ||
     localHead === remoteHead ||
     remoteHead !== observedHead ||
+    !GIT_OBJECT_ID_PATTERN.test(localHead) ||
     !GIT_OBJECT_ID_PATTERN.test(remoteHead)
   ) {
     return false;
@@ -204,9 +205,8 @@ async function pushRebasedBranchWithObservedLease(opts: {
       "push",
       "--no-verify",
       `--force-with-lease=${remoteRef}:${remoteHead}`,
-      "-u",
       opts.remote,
-      `HEAD:${remoteRef}`,
+      `${localHead}:${remoteRef}`,
     ],
     {
       cwd: opts.gitRoot,

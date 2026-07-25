@@ -15,15 +15,8 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Independent review PASS at 8d06aecb: 20/20 focused publication tests passed; exact repo-bound
-force-with-lease and all fail-closed cases verified; typecheck, lint:core, hotspots, architecture,
-task-state, task lint, routing, diff-check, and doctor passed. Unchanged website lint baseline
-remains outside scope.
-```
+- State: needs_rework
+- Note: GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -34,11 +27,11 @@ remains outside scope.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/pr/branch-publication.test.ts     | 452 +++++++++++++++++++++
- .../src/commands/pr/branch-publication.ts          | 284 +++++++++++++
+ .../src/commands/pr/branch-publication.test.ts     | 522 +++++++++++++++++++++
+ .../src/commands/pr/branch-publication.ts          | 284 +++++++++++
  .../src/commands/pr/internal/sync-github.ts        |   2 +-
- packages/agentplane/src/commands/pr/open.ts        | 138 +------
- 4 files changed, 740 insertions(+), 136 deletions(-)
+ packages/agentplane/src/commands/pr/open.ts        | 138 +-----
+ 4 files changed, 810 insertions(+), 136 deletions(-)
 ```
 
 </details>
