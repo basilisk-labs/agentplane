@@ -6,7 +6,7 @@ Created: 2026-07-25T00:39:52.775Z
 
 - Task: `202607250037-96WEYY`
 - Title: Make RF-04 replay cleanup retry-safe on macOS
-- Status: TODO
+- Status: DOING
 - Branch: `task/202607250037-96WEYY/make-rf-04-replay-cleanup-retry-safe-on-macos`
 - Canonical task record: `.agentplane/tasks/202607250037-96WEYY/README.md`
 

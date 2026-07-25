@@ -1,10 +1,10 @@
 ---
 id: "202607250037-96WEYY"
 title: "Make RF-04 replay cleanup retry-safe on macOS"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: make RF-04 replay cleanup retry-safe without changing frozen evidence."
+events:
+  -
+    type: "status"
+    at: "2026-07-25T00:43:04.222Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: make RF-04 replay cleanup retry-safe without changing frozen evidence."
 doc_version: 3
-doc_updated_at: "2026-07-25T00:39:06.635Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-07-25T00:43:04.222Z"
+doc_updated_by: "CODER"
 description: "Prevent Finder-created .DS_Store files from turning successful RF-04 offline replay assertions into cleanup-only ENOTEMPTY failures. Keep the frozen 50-run/55-provider-episode evidence unchanged and add deterministic cleanup regression coverage."
 sections:
   Summary: |-
