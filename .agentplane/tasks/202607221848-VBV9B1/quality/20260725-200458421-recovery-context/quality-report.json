@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-VBV9B1",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T20:04:58.421Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Typed workflow decisions preserve safety gates and Hermes execution authority.",
+  "evaluated_sha": "dc166cc393b91a88caa4993c62616726a926ab15",
+  "blueprint_digest": "29b8f03842c5dea829e9ba611d12b62dcd826876a111b44387855830b4d0a64f",
+  "findings": [
+    "No blocking findings after independent review and the final regression matrix."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-VBV9B1/README.md",
+    "bun test packages/agentplane/src/commands/shared/workflow-step.test.ts; bun test packages/agentplane/src/commands/shared/workflow-step-projections.test.ts; bun test packages/agentplane/src/commands/hermes/hermes.command.test.ts; bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run test:critical; bun run guards:check; bun run lifecycle:invariants"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

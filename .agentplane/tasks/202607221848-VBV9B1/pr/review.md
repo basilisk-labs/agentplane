@@ -6,14 +6,14 @@ Created: 2026-07-24T22:15:24.666Z
 
 - Task: `202607221848-VBV9B1`
 - Title: Replace route string dispatch with typed WorkflowStep decisions
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221848-VBV9B1/replace-route-string-dispatch-with-typed-workflo`
 - Canonical task record: `.agentplane/tasks/202607221848-VBV9B1/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18), and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip, hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no remaining blocker.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
