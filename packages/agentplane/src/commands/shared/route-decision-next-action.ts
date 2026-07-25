@@ -1,9 +1,7 @@
 import type { RouteNextAction } from "./route-decision-types.js";
-import {
-  projectWorkflowStepNextAction,
-  reduceRouteState,
-  type WorkflowRouteState,
-} from "./workflow-step.js";
+import type { WorkflowRouteState } from "./workflow-step.js";
+import { projectWorkflowStepNextAction } from "./workflow-step-projections.js";
+import { reduceRouteState } from "./workflow-step-reducer.js";
 import {
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,

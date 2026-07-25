@@ -13,13 +13,13 @@ import {
   addVerificationRequiredBlocker,
   deriveBlockers,
 } from "./route-decision-blockers.js";
+import type { WorkflowStep } from "./workflow-step.js";
 import {
   projectWorkflowStepExecutionPacket,
   projectWorkflowStepNextAction,
   projectWorkflowStepOracle,
-  reduceRouteState,
-  type WorkflowStep,
-} from "./workflow-step.js";
+} from "./workflow-step-projections.js";
+import { reduceRouteState } from "./workflow-step-reducer.js";
 import {
   captureWorkflowStepFingerprint,
   withBootstrapWorkflowFingerprint,

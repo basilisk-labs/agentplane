@@ -30,7 +30,7 @@ import {
   WORKFLOW_STATE_FINGERPRINT_POLICY,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
-import { reduceRouteState } from "./workflow-step.js";
+import { reduceRouteState } from "./workflow-step-reducer.js";
 
 const execFileAsync = promisify(execFile);
 const TASK_ID = "202607250100-LIVEFP";

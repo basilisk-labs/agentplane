@@ -7,16 +7,18 @@ import { deriveRouteAmbiguities } from "./route-decision-repair.js";
 import { projectWorkflowOperationArgv, renderCliArgv } from "./workflow-operation-projection.js";
 import { cliOperationStep } from "./workflow-step-factory.js";
 import {
-  projectWorkflowStepExecutionPacket,
-  projectWorkflowStepNextAction,
-  projectWorkflowStepOracle,
-  reduceRouteState,
   WORKFLOW_OPERATION_ARGV_PREFIX,
   WORKFLOW_OPERATION_REGISTRY,
   type WorkflowOperationId,
   type WorkflowOperationParams,
   type WorkflowRouteState,
 } from "./workflow-step.js";
+import {
+  projectWorkflowStepExecutionPacket,
+  projectWorkflowStepNextAction,
+  projectWorkflowStepOracle,
+} from "./workflow-step-projections.js";
+import { reduceRouteState } from "./workflow-step-reducer.js";
 import {
   WORKFLOW_STATE_FINGERPRINT_POLICY,
   withBootstrapWorkflowFingerprint,
@@ -41,7 +43,6 @@ const task = {
   },
   verification: { state: "pending" },
 } satisfies TaskData;
-
 const resume = {
   task_id: task.id,
   task_status: task.status,
@@ -965,7 +966,6 @@ describe("typed WorkflowStep reducer", () => {
     }
     expect(first.operation.idempotencyKey).toBe(repeated.operation.idempotencyKey);
     expect(changed.operation.idempotencyKey).not.toBe(first.operation.idempotencyKey);
-
     const blocker = routeState().blockers[0]!;
     const oracle = projectWorkflowStepOracle({
       step: first,
