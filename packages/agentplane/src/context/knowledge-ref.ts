@@ -26,10 +26,6 @@ import { projectRowsForFile } from "./reindex-projection.js";
 import { readContextProjection } from "./reindex.js";
 
 const DEFAULT_MAX_SOURCE_BYTES = 16 * 1024 * 1024;
-export {
-  MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES,
-  MAX_PREPARED_KNOWLEDGE_EXCERPT_LINES,
-} from "@agentplaneorg/core/schemas";
 
 export type KnowledgeIndexSnapshot = {
   metadata: {
