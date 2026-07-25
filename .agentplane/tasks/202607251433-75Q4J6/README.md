@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -28,25 +28,24 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T16:55:04.323Z"
+  updated_at: "2026-07-25T16:59:28.586Z"
   updated_by: "EVALUATOR"
-  note: "Pass: the corrected task now follows the required code route. The resolved snapshot classifies this source repair as code.branch_pr with mutation=code and loads the required security, core DoD, code DoD, and branch_pr policies; fresh TESTER verification follows that correction."
-  evaluated_sha: "3e88523f6f7ddb8ffcd4115c1741d1503c6c318e"
+  note: "Pass: final pre-merge closure bd65aae19808 preserves the approved guard repair; no product semantics changed after the prior evaluator review."
+  evaluated_sha: "bd65aae198086282959f23c9996521df2a3df6a5"
   blueprint_digest: "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542"
   evidence_refs:
     - ".agentplane/tasks/202607251433-75Q4J6/README.md"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165504323-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165504323-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165504323-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165928586-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165928586-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165928586-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json"
+    - "bd65aae19808: final closure commit audited; no packages/agentplane/src changes after implementation commit 3e88523f6"
     - ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json: code.branch_pr, mutation=code, required policy modules"
-    - ".agentplane/tasks/202607251433-75Q4J6/README.md: fresh TESTER verification after route correction"
-    - "packages/agentplane/src/context/knowledge-ref.ts: canonical shared isRecord import replaces local definition"
     - "bun run guards:check: passed shared guards and trust-boundary ratchet"
-    - "vitest core packages/core/src/runner/knowledge-ref.test.ts: 38 passed"
-    - "vitest agentplane packages/agentplane/src/context/knowledge-ref.test.ts: 10 passed"
+    - ".agentplane/tasks/202607251433-75Q4J6/README.md: TESTER verification and exact prior checks"
   findings:
-    - "Required code route/classification and policy gates are now correct: the task is tagged code, the snapshot selects code.branch_pr with code mutation, and the required policy modules are present. The product patch only imports canonical shared isRecord and removes the duplicate local helper; guards:check, core KnowledgeRef 38/38, and agentplane KnowledgeRef 10/10 pass."
+    - "The resolved snapshot remains code.branch_pr with code mutation and required policy modules. Final closure bd65aae19808 changes only managed closure, incident, PR, and quality artifacts; the sole product diff remains the canonical shared isRecord import replacing the local helper."
+    - "Independent final bun run guards:check passes. Prior fresh TESTER evidence records core KnowledgeRef 38/38, agentplane KnowledgeRef 10/10, typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passing."
 commit:
   hash: "c36c0a32f53395014d6d9a6337229283572c67bf"
   message: "🧪 75Q4J6 task: record verification evidence"
