@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient",
+  "created_at": "2026-07-25T22:13:26.625Z",
+  "diffstat_sha256": "sha256:a7773780b203840da8ef63609e8f7dbeed72fc4be5be0ef602bac49f21b8f2bf",
+  "last_verified_at": "2026-07-25T23:24:12.276Z",
+  "last_verified_diffstat_sha256": "sha256:a7773780b203840da8ef63609e8f7dbeed72fc4be5be0ef602bac49f21b8f2bf",
+  "pr_number": 4622,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4622",
+  "pre_merge_closure": {
+    "basis_commit": "651d161277df67291a15e0e01f2cbff0e8053d8b",
+    "branch": "task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient",
+    "pr_number": 4622,
+    "recorded_at": "2026-07-25T23:29:42.020Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202607252051-ZMVZRZ",
+  "updated_at": "2026-07-25T22:14:25.745Z",
+  "verify": {
+    "status": "pass"
+  }
+}

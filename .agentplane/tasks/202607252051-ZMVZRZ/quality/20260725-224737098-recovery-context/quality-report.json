@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607252051-ZMVZRZ",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T22:47:37.098Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Pass: the cleanup-only implementation satisfies the approved recovery and idempotence contract at HEAD 6c19d647.",
+  "evaluated_sha": "6c19d647ac0428ba1ffe5dbec72e87a0ad75b0b3",
+  "blueprint_digest": "92178a1454bd824173b1a681f483f352b53626d4dbf572d6759785967e897ced",
+  "findings": [
+    "Partial-removal recovery runs only after existing clean, repo-local, non-current-worktree and expected-head safeguards; failed orphan removal preserves the branch with a diagnosed E_GIT outcome.",
+    "Remote deletion checks the remote ref before push and treats a branch that disappears in the deletion race as idempotent success."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607252051-ZMVZRZ/README.md",
+    "packages/agentplane/src/commands/shared/merged-branch-cleanup.ts",
+    "packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts",
+    "bun test focused cleanup suite: 31 pass",
+    "typecheck, lint:core, guards:check, lifecycle:invariants, and policy routing passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The exact Git-unregistration-plus-filesystem-failure path is deterministically covered by mocks; reproducing that filesystem fault end-to-end is cross-platform non-deterministic."
+  ]
+}

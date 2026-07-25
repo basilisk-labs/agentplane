@@ -30,6 +30,7 @@ function isMissingRemoteBranchDelete(error: unknown): boolean {
 }
 
 async function deleteRemoteBranchIfPresent(gitRoot: string, branch: string): Promise<boolean> {
+  if (!(await remoteBranchExists(gitRoot, branch))) return false;
   try {
     await execFileAsync("git", ["push", "origin", "--delete", branch], {
       cwd: gitRoot,
@@ -37,9 +38,23 @@ async function deleteRemoteBranchIfPresent(gitRoot: string, branch: string): Pro
     });
     return true;
   } catch (error) {
-    if (isMissingRemoteBranchDelete(error)) return false;
+    if (isMissingRemoteBranchDelete(error) && !(await remoteBranchExists(gitRoot, branch))) {
+      return false;
+    }
     throw error;
   }
+}
+
+async function remoteBranchExists(gitRoot: string, branch: string): Promise<boolean> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["ls-remote", "--heads", "origin", `refs/heads/${branch}`],
+    {
+      cwd: gitRoot,
+      env: gitEnv(),
+    },
+  );
+  return String(stdout).trim().length > 0;
 }
 
 function normalizeRequestedTaskIds(taskIds: readonly string[] | undefined): string[] {
