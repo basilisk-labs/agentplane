@@ -8,10 +8,10 @@
   "pr_number": 4620,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4620",
   "pre_merge_closure": {
-    "basis_commit": "b0b3c38440851f91f9d80b90f6c2e5733ccbcce1",
+    "basis_commit": "8ea6b5c28a7220a2dafde63d08573954ea4ead2c",
     "branch": "task/202607251715-D9HW3D/preserve-compact-incident-registry-formatting",
     "pr_number": 4620,
-    "recorded_at": "2026-07-25T17:33:55.493Z",
+    "recorded_at": "2026-07-25T17:38:37.641Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
