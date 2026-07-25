@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -21,27 +21,27 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-25T16:50:28.218Z"
+  updated_at: "2026-07-25T18:33:50.295Z"
   updated_by: "TESTER"
-  note: "After code-route correction to code.branch_pr, independently reran guards:check (shared guards and trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product diff only imports canonical shared isRecord and removes the local helper."
+  note: "Rebased head 49e981cc passes guards:check, 48 focused KnowledgeRef tests, typecheck, full and changed format checks, lint:core, critical CLI 11/11, routing, doctor, knip baseline, and hotspot thresholds."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T18:13:39.159Z"
+  updated_at: "2026-07-25T18:36:26.086Z"
   updated_by: "EVALUATOR"
-  note: "Hosted PR #4619 is behind main and its exact published head fails verify-contract because pre-D9 task artifacts render a compact incident header without the required blank line."
-  evaluated_sha: "bd65aae198086282959f23c9996521df2a3df6a5"
+  note: "Rebased implementation head restores the canonical shared guard invariant without KnowledgeRef behavior or public API drift; policy registries are excluded from the final diff."
+  evaluated_sha: "49e981cc1944cf9577b2e95f077f40044e2ac3f2"
   blueprint_digest: "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542"
   evidence_refs:
     - ".agentplane/tasks/202607251433-75Q4J6/README.md"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-181339159-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-181339159-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-181339159-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-183626086-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-183626086-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-183626086-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json"
-    - "GitHub PR #4619 head=286a2c2d555a0deacbab12d33121bcc7470a4ec2 base=8c8fae8c6b2856f1525978faf16dd5d167992cdc mergeStateStatus=BEHIND; verify-contract=FAILURE; origin/main=a7394e4ac9e6458d107f115d5a589fd866c46ba4"
+    - "49e981cc; git diff --check origin/main...49e981cc; bun run guards:check; bun test packages/core/src/runner/knowledge-ref.test.ts packages/agentplane/src/context/knowledge-ref.test.ts (48 pass); bun run typecheck; bun run format:check; bun run lint:core; bun run test:critical (11/11); node .agentplane/policy/check-routing.mjs; agentplane doctor; bun run knip:check; bun run hotspots:check"
   findings:
-    - "Rebase the task branch onto main@a7394e4a, regenerate task artifacts through the D9-fixed renderer, then rerun the declared KnowledgeRef and guard verification contract on the new head."
+    - "packages/agentplane/src/context/knowledge-ref.ts imports the canonical isRecord guard and removes only the local duplicate; focused and full contract checks pass on 49e981cc."
 commit:
   hash: "298f970f74aed1a0a2dc87fd8485d3fb7c77b463"
   message: "🧪 75Q4J6 task: record final quality review"
@@ -89,8 +89,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T18:33:50.295Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rebased head 49e981cc passes guards:check, 48 focused KnowledgeRef tests, typecheck, full and changed format checks, lint:core, critical CLI 11/11, routing, doctor, knip baseline, and hotspot thresholds."
 doc_version: 3
-doc_updated_at: "2026-07-25T17:01:24.439Z"
+doc_updated_at: "2026-07-25T18:33:50.683Z"
 doc_updated_by: "CODER"
 description: "Replace the inherited local isRecord helper in KnowledgeRef with the canonical shared guard so guards:check passes on main before RF06b integration."
 sections:
@@ -143,6 +149,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T14:39:38.510Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251433-75Q4J6-restore-shared-guard-invariant-after-knowledgere/.agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json
+    - old_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+    - current_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607251433-75Q4J6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-25T18:33:50.295Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rebased head 49e981cc passes guards:check, 48 focused KnowledgeRef tests, typecheck, full and changed format checks, lint:core, critical CLI 11/11, routing, doctor, knip baseline, and hotspot thresholds.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T17:01:24.439Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
 
     Details:
 
@@ -245,6 +281,36 @@ Note: After code-route correction to code.branch_pr, independently reran guards:
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T14:39:38.510Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251433-75Q4J6-restore-shared-guard-invariant-after-knowledgere/.agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json
+- old_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+- current_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607251433-75Q4J6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-25T18:33:50.295Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rebased head 49e981cc passes guards:check, 48 focused KnowledgeRef tests, typecheck, full and changed format checks, lint:core, critical CLI 11/11, routing, doctor, knip baseline, and hotspot thresholds.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T17:01:24.439Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
 
 Details:
 
