@@ -38,6 +38,15 @@ async function makeRoot(name: string, identity?: GitIdentity): Promise<string> {
   return root;
 }
 
+async function waitForHolderReady(ready: Promise<void>, holder: Promise<unknown>): Promise<void> {
+  await Promise.race([
+    ready,
+    holder.then(() => {
+      throw new Error("Integration queue mutex holder completed before its callback started.");
+    }),
+  ]);
+}
+
 describe("integration queue mutex coordination", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -70,39 +79,48 @@ describe("integration queue mutex coordination", () => {
       gitDir: path.join(commonDir, "worktrees", "task-b"),
     });
 
-    let release!: () => void;
-    const queueHolder = withIntegrationQueueMutex(baseRoot, async () => {
-      await new Promise<void>((resolve) => {
-        release = resolve;
-      });
+    let releaseQueueHolder!: () => void;
+    const holdQueue = new Promise<void>((resolve) => {
+      releaseQueueHolder = resolve;
     });
+    let markQueueHolderReady!: () => void;
+    const queueHolderReady = new Promise<void>((resolve) => {
+      markQueueHolderReady = resolve;
+    });
+    const queueHolder = withIntegrationQueueMutex(baseRoot, async () => {
+      markQueueHolderReady();
+      await holdQueue;
+    });
+    await waitForHolderReady(queueHolderReady, queueHolder);
+    try {
+      const results = await Promise.all([
+        withGitMutationMutex(
+          {
+            repoRoot: taskRootA,
+            operation: "git-add",
+            workflowMode: "branch_pr",
+            mutationKind: "implementation_commit",
+            taskId: "202601010101-TASKA",
+          },
+          () => Promise.resolve("task-a"),
+        ),
+        withGitMutationMutex(
+          {
+            repoRoot: taskRootB,
+            operation: "git-add",
+            workflowMode: "branch_pr",
+            mutationKind: "implementation_commit",
+            taskId: "202601010101-TASKB",
+          },
+          () => Promise.resolve("task-b"),
+        ),
+      ]);
 
-    const results = await Promise.all([
-      withGitMutationMutex(
-        {
-          repoRoot: taskRootA,
-          operation: "git-add",
-          workflowMode: "branch_pr",
-          mutationKind: "implementation_commit",
-          taskId: "202601010101-TASKA",
-        },
-        () => Promise.resolve("task-a"),
-      ),
-      withGitMutationMutex(
-        {
-          repoRoot: taskRootB,
-          operation: "git-add",
-          workflowMode: "branch_pr",
-          mutationKind: "implementation_commit",
-          taskId: "202601010101-TASKB",
-        },
-        () => Promise.resolve("task-b"),
-      ),
-    ]);
-
-    expect(results).toEqual(["task-a", "task-b"]);
-    release();
-    await queueHolder;
+      expect(results).toEqual(["task-a", "task-b"]);
+    } finally {
+      releaseQueueHolder();
+      await queueHolder;
+    }
   });
 
   it("rejects a legacy enqueue writer while the final integration critical section is held", async () => {
@@ -120,37 +138,44 @@ describe("integration queue mutex coordination", () => {
     });
     await writeIntegrationQueue(root, initial);
 
-    let release!: () => void;
-    const critical = withIntegrationQueueMutex(root, async () => {
-      await new Promise<void>((resolve) => {
-        release = resolve;
-      });
+    let releaseCritical!: () => void;
+    const holdCritical = new Promise<void>((resolve) => {
+      releaseCritical = resolve;
     });
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    await expect(
-      withIntegrationQueueMutex(root, async () => {
-        const current = await readIntegrationQueue(root);
-        await writeIntegrationQueue(
-          root,
-          upsertQueuedEntry(current, {
-            task_id: "T-1",
-            branch: "task/T-1/work",
-            base: "main",
-            head_sha: "head-2",
-            base_sha: "base-1",
-            changed_paths: ["src/work.ts"],
-            pr_number: 101,
-            pr_url: "https://example.invalid/pull/101",
-            priority: 0,
-          }),
-        );
-      }),
-    ).rejects.toMatchObject({ code: "E_GIT_RACE" });
-    const currentQueue = await readIntegrationQueue(root);
-    expect(currentQueue.entries[0]?.head_sha).toBe("head-1");
-
-    release();
-    await critical;
+    let markCriticalReady!: () => void;
+    const criticalReady = new Promise<void>((resolve) => {
+      markCriticalReady = resolve;
+    });
+    const critical = withIntegrationQueueMutex(root, async () => {
+      markCriticalReady();
+      await holdCritical;
+    });
+    await waitForHolderReady(criticalReady, critical);
+    try {
+      await expect(
+        withIntegrationQueueMutex(root, async () => {
+          const current = await readIntegrationQueue(root);
+          await writeIntegrationQueue(
+            root,
+            upsertQueuedEntry(current, {
+              task_id: "T-1",
+              branch: "task/T-1/work",
+              base: "main",
+              head_sha: "head-2",
+              base_sha: "base-1",
+              changed_paths: ["src/work.ts"],
+              pr_number: 101,
+              pr_url: "https://example.invalid/pull/101",
+              priority: 0,
+            }),
+          );
+        }),
+      ).rejects.toMatchObject({ code: "E_GIT_RACE" });
+      const currentQueue = await readIntegrationQueue(root);
+      expect(currentQueue.entries[0]?.head_sha).toBe("head-1");
+    } finally {
+      releaseCritical();
+      await critical;
+    }
   });
 });

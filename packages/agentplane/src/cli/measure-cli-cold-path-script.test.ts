@@ -15,7 +15,11 @@ async function runScript(args: string[]) {
   try {
     const result = await execFileAsync(process.execPath, [SCRIPT_PATH, ...args], {
       cwd: process.cwd(),
-      env: process.env,
+      env: {
+        ...process.env,
+        AGENTPLANE_DEV_AUTO_BOOTSTRAP: "0",
+        AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
+      },
       maxBuffer: 10 * 1024 * 1024,
     });
     return {
@@ -43,6 +47,26 @@ async function writeSlowCli(root: string, delayMs: number): Promise<string> {
       `const startedAt = Date.now();`,
       `while (Date.now() - startedAt < ${delayMs}) {}`,
       String.raw`process.stdout.write("slow\n");`,
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  return cliPath;
+}
+
+async function writeEnvCheckingCli(root: string): Promise<string> {
+  const cliDir = path.join(root, "env-stub", "bin");
+  const cliPath = path.join(cliDir, "agentplane.js");
+  await mkdir(cliDir, { recursive: true });
+  await writeFile(
+    cliPath,
+    [
+      'if (process.env.AGENTPLANE_DEV_AUTO_BOOTSTRAP !== "0" ||',
+      '    process.env.AGENTPLANE_DEV_ALLOW_STALE_DIST !== "1") {',
+      '  process.stderr.write("missing benchmark isolation environment\\n");',
+      "  process.exit(9);",
+      "}",
+      'process.stdout.write("benchmark environment isolated\\n");',
       "",
     ].join("\n"),
     "utf8",
@@ -165,6 +189,38 @@ describe("measure-cli-cold-path script", () => {
       }
     },
   );
+
+  it("forwards no-bootstrap isolation to every measured CLI process", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const cliPath = await writeEnvCheckingCli(root);
+
+    const result = await runScript([
+      "--root",
+      root,
+      "--cli",
+      cliPath,
+      "--command-id",
+      "quickstart",
+      "--runs",
+      "1",
+      "--warmups",
+      "0",
+    ]);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stderr).toBe("");
+    const payload = JSON.parse(result.stdout) as {
+      commands?: {
+        exit_code?: number;
+        stdout_preview?: string;
+      }[];
+    };
+    expect(payload.commands?.[0]).toMatchObject({
+      exit_code: 0,
+      stdout_preview: "benchmark environment isolated",
+    });
+  });
 
   it("marks commands as timed out instead of hanging indefinitely", async () => {
     const root = await mkGitRepoRoot();

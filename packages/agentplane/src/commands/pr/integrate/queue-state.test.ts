@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readdir, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -41,19 +41,13 @@ async function makeRoot(name: string): Promise<string> {
   return mkdtemp(path.join(tmpdir(), `agentplane-${name}-`));
 }
 
-async function waitForQueueLock(root: string): Promise<string> {
-  const locksDir = path.join(root, ".agentplane", "cache", "locks");
-  for (let attempt = 0; attempt < 50; attempt++) {
-    try {
-      const entries = await readdir(locksDir);
-      const lock = entries.find((entry) => entry === "integration-queue.lock");
-      if (lock) return path.join(locksDir, lock);
-    } catch {
-      // keep polling until the holder creates the lock directory
-    }
-    await new Promise((resolve) => setTimeout(resolve, 10));
-  }
-  throw new Error("Timed out waiting for integration queue mutex");
+async function waitForHolderReady(ready: Promise<void>, holder: Promise<unknown>): Promise<void> {
+  await Promise.race([
+    ready,
+    holder.then(() => {
+      throw new Error("Integration queue mutex holder completed before its callback started.");
+    }),
+  ]);
 }
 
 describe("integration queue state", () => {
@@ -282,28 +276,38 @@ describe("integration queue state", () => {
   it("serializes integration queue writers with a queue-owned mutex", async () => {
     const root = await makeRoot("integration-queue");
     try {
-      let release!: () => void;
-      const holder = withIntegrationQueueMutex(root, async () => {
-        await new Promise<void>((resolve) => {
-          release = resolve;
+      let releaseHolder!: () => void;
+      const hold = new Promise<void>((resolve) => {
+        releaseHolder = resolve;
+      });
+      let markHolderReady!: () => void;
+      const holderReady = new Promise<void>((resolve) => {
+        markHolderReady = resolve;
+      });
+      let lockPath = "";
+      const holder = withIntegrationQueueMutex(root, async (mutex) => {
+        lockPath = mutex.lockPath;
+        markHolderReady();
+        await hold;
+      });
+
+      await waitForHolderReady(holderReady, holder);
+      try {
+        await expect(
+          withIntegrationQueueMutex(root, () => Promise.resolve(null)),
+        ).rejects.toMatchObject<CliError>({
+          code: "E_GIT_RACE",
+          context: {
+            mutation_kind: "integration",
+            integration_queue_lock_path: lockPath,
+            remediation:
+              "Inspect the lock with `agentplane integrate queue doctor --json`, reconcile queue state against provider/base evidence, then manually remove the exact lock path only after confirming no active writer.",
+          },
         });
-      });
-
-      const lockPath = await waitForQueueLock(root);
-      await expect(
-        withIntegrationQueueMutex(root, () => Promise.resolve(null)),
-      ).rejects.toMatchObject<CliError>({
-        code: "E_GIT_RACE",
-        context: {
-          mutation_kind: "integration",
-          integration_queue_lock_path: lockPath,
-          remediation:
-            "Inspect the lock with `agentplane integrate queue doctor --json`, reconcile queue state against provider/base evidence, then manually remove the exact lock path only after confirming no active writer.",
-        },
-      });
-
-      release();
-      await holder;
+      } finally {
+        releaseHolder();
+        await holder;
+      }
       await expect(stat(lockPath)).rejects.toMatchObject({ code: "ENOENT" });
     } finally {
       await rm(root, { recursive: true, force: true });

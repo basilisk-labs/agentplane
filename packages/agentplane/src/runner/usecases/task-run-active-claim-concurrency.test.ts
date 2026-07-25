@@ -1,4 +1,4 @@
-import { lstat, readFile, writeFile } from "node:fs/promises";
+import { lstat, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -8,6 +8,10 @@ import { installRunCliIntegrationHarness } from "@agentplane/testkit";
 import { CustomRunnerAdapter } from "../adapters/custom.js";
 import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 
+import {
+  acquireTaskRunnerActiveClaim,
+  releaseTaskRunnerActiveClaim,
+} from "./task-run-active-claim.js";
 import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
 import { executeTaskRunnerExecution, type ExecutedTaskRunnerExecution } from "./task-run.js";
 import {
@@ -31,6 +35,47 @@ afterEach(() => {
 });
 
 describe("task-run supervisor active claim", () => {
+  it("reports a live competing claim before inspecting mutable supervisor history", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "TASK-LIVE-CLAIM-PRECEDENCE";
+    const lease = await acquireTaskRunnerActiveClaim({
+      git_root: root,
+      workflow_dir: ".agentplane/tasks",
+      task_id: taskId,
+      run_id: "run-live-owner",
+      operation: "execute",
+    });
+    const invalidHistoryPath = path.join(
+      lease.history_anchor.boundary.run_dir,
+      "invalid-history-entry",
+    );
+    await writeFile(invalidHistoryPath, "mutable\n", "utf8");
+
+    try {
+      await expect(
+        acquireTaskRunnerActiveClaim({
+          git_root: root,
+          workflow_dir: ".agentplane/tasks",
+          task_id: taskId,
+          run_id: "run-competing-retry",
+          operation: "retry",
+        }),
+      ).rejects.toMatchObject({
+        code: "E_USAGE",
+        context: {
+          task_id: taskId,
+          runner_operation: "retry",
+          active_run_authority: "supervisor_active_run_claim",
+          competing_run_id: lease.claim.run_id,
+          competing_operation: lease.claim.operation,
+        },
+      });
+    } finally {
+      await unlink(invalidHistoryPath).catch(() => null);
+      await releaseTaskRunnerActiveClaim(lease);
+    }
+  });
+
   it("atomically rejects a concurrent generated retry while generated resume is executing", async () => {
     const root = await mkGitRepoRoot();
     const startedPath = path.join(root, "claim-started.log");

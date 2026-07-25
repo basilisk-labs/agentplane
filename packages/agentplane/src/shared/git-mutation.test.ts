@@ -1,4 +1,4 @@
-import { mkdtemp, readdir, rm, stat } from "node:fs/promises";
+import { mkdtemp, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
@@ -31,19 +31,13 @@ async function makeRoot(name: string, identity: GitIdentity): Promise<string> {
   return root;
 }
 
-async function waitForLock(root: string): Promise<string> {
-  const locksDir = path.join(root, ".agentplane", "cache", "locks");
-  for (let attempt = 0; attempt < 50; attempt++) {
-    try {
-      const entries = await readdir(locksDir);
-      const lock = entries.find((entry) => entry.endsWith(".git-add.lock"));
-      if (lock) return path.join(locksDir, lock);
-    } catch {
-      // keep polling until the holder creates the lock directory
-    }
-    await new Promise((resolve) => setTimeout(resolve, 10));
-  }
-  throw new Error("Timed out waiting for Git mutation mutex");
+async function waitForHolderReady(ready: Promise<void>, holder: Promise<unknown>): Promise<void> {
+  await Promise.race([
+    ready,
+    holder.then(() => {
+      throw new Error("Git mutation mutex holder completed before its callback started.");
+    }),
+  ]);
 }
 
 describe("Git mutation mutex", () => {
@@ -74,7 +68,15 @@ describe("Git mutation mutex", () => {
     });
     const { withGitMutationMutex } = await import("./git-mutation.js");
 
-    let release!: () => void;
+    let releaseHolder!: () => void;
+    const hold = new Promise<void>((resolve) => {
+      releaseHolder = resolve;
+    });
+    let markHolderReady!: () => void;
+    const holderReady = new Promise<void>((resolve) => {
+      markHolderReady = resolve;
+    });
+    let lockPath = "";
     const holder = withGitMutationMutex(
       {
         repoRoot: root,
@@ -83,36 +85,38 @@ describe("Git mutation mutex", () => {
         mutationKind: "implementation_commit",
         taskId: "202601010101-ABCDEF",
       },
-      async () => {
-        await new Promise<void>((resolve) => {
-          release = resolve;
-        });
+      async (mutex) => {
+        lockPath = mutex.lockPath;
+        markHolderReady();
+        await hold;
       },
     );
 
-    const lockPath = await waitForLock(root);
-    await expect(
-      withGitMutationMutex(
-        {
-          repoRoot: root,
-          operation: "git-add",
-          workflowMode: "branch_pr",
-          mutationKind: "implementation_commit",
-          taskId: "202601010101-ABCDEF",
+    await waitForHolderReady(holderReady, holder);
+    try {
+      await expect(
+        withGitMutationMutex(
+          {
+            repoRoot: root,
+            operation: "git-add",
+            workflowMode: "branch_pr",
+            mutationKind: "implementation_commit",
+            taskId: "202601010101-ABCDEF",
+          },
+          () => Promise.resolve(null),
+        ),
+      ).rejects.toMatchObject<CliError>({
+        code: "E_GIT_RACE",
+        context: {
+          git_mutation_lock_path: lockPath,
+          mutation_kind: "implementation_commit",
+          task_id: "202601010101-ABCDEF",
         },
-        () => Promise.resolve(null),
-      ),
-    ).rejects.toMatchObject<CliError>({
-      code: "E_GIT_RACE",
-      context: {
-        git_mutation_lock_path: lockPath,
-        mutation_kind: "implementation_commit",
-        task_id: "202601010101-ABCDEF",
-      },
-    });
-
-    release();
-    await holder;
+      });
+    } finally {
+      releaseHolder();
+      await holder;
+    }
     await expect(stat(lockPath)).rejects.toMatchObject({ code: "ENOENT" });
   });
 
