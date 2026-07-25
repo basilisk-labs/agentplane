@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -50,8 +50,8 @@ quality_review:
   findings:
     - "The new blank line intentionally consumes one physical policy-budget line; the exact boundary remains 95 existing compact entries plus one promotion at 100 lines, while 96 plus one is rejected."
 commit:
-  hash: "b0b3c38440851f91f9d80b90f6c2e5733ccbcce1"
-  message: "🧪 D9HW3D incidents: retain legacy compact fixture"
+  hash: "8ea6b5c28a7220a2dafde63d08573954ea4ead2c"
+  message: "🧪 D9HW3D task: pre-merge closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -59,6 +59,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -86,8 +89,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified final implementation b0b3c384: focused incident suites 21/21, format, templates, TypeScript, targeted lint, policy routing, doctor, and hotspot baseline pass. The closure commit only records lifecycle evidence; compact rendering and mirror behavior are unchanged."
+  -
+    type: "status"
+    at: "2026-07-25T17:38:37.583Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T17:36:52.429Z"
+doc_updated_at: "2026-07-25T17:38:37.584Z"
 doc_updated_by: "CODER"
 description: "Repair the incident-registry renderer so compact rewrites retain the required blank line after the heading, keep the canonical and asset mirrors byte-identical, and add regression coverage. This unblocks the hosted format check for task 202607251433-75Q4J6 without manually editing a policy log in that task."
 sections:
@@ -174,6 +184,10 @@ sections:
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: ""
+extensions:
+  implementation_commit:
+    hash: "b0b3c38440851f91f9d80b90f6c2e5733ccbcce1"
+    message: "🧪 D9HW3D incidents: retain legacy compact fixture"
 id_source: "generated"
 ---
 ## Summary
