@@ -8,10 +8,10 @@
   "pr_number": 4615,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4615",
   "pre_merge_closure": {
-    "basis_commit": "18c0d75004c7cb5486266753d5e782ab09e71521",
+    "basis_commit": "c09a9cca0e5ba2bb78e4a302f8d7bd0bf0c56ef0",
     "branch": "task/202607250037-96WEYY/make-rf-04-replay-cleanup-retry-safe-on-macos",
     "pr_number": 4615,
-    "recorded_at": "2026-07-25T01:14:44.360Z",
+    "recorded_at": "2026-07-25T03:24:33.179Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
