@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -31,31 +31,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T01:43:58.774Z"
+  state: "ok"
+  updated_at: "2026-07-25T03:54:40.008Z"
   updated_by: "TESTER"
-  note: "Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease identity, and SKIPPED check state must be aligned before integration."
-  attempts: 1
+  note: "Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass, full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22 files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run temp-root birthtime inventory is empty."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T01:27:37.503Z"
+  updated_at: "2026-07-25T03:54:55.490Z"
   updated_by: "EVALUATOR"
-  note: "PASS: force publication pins the source to the exact observed local commit and the destination lease to the observed remote head; the deterministic source-race regression would fail the previous mutable-HEAD implementation."
-  evaluated_sha: "c0f4d84b6685088df363cfe2cc165023e6f5d255"
+  note: "Guarded force-with-lease publication and the RF04-compatible test-root cleanup satisfy the approved rework scope."
+  evaluated_sha: "cbf4ac33977ceaf346803963c55848cab66ff76d"
   blueprint_digest: "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43"
   evidence_refs:
     - ".agentplane/tasks/202607250036-DFWJM6/README.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-012737503-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-012737503-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-012737503-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-035455490-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-035455490-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-035455490-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/pr/branch-publication.ts"
     - "packages/agentplane/src/commands/pr/branch-publication.test.ts"
-    - "bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts: 21/21 passed"
+    - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
+    - "packages/testkit/src/index.test.ts"
   findings:
-    - "Exact observed localHead source and exact destination lease are both preserved; fake git moves HEAD immediately before push without changing the published source object."
-commit: null
+    - "Exact source identity, repository identity, expected destination, destination lease, and source-race refusal are covered; forward-compatible closure parsing is structurally bounded; full and targeted suites pass with zero new temp-root leaks."
+commit:
+  hash: "cbf4ac33977ceaf346803963c55848cab66ff76d"
+  message: "🧪 DFWJM6 task: complete hosted PR regressions"
 comments:
   -
     author: "CODER"
@@ -69,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -132,8 +137,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease identity, and SKIPPED check state must be aligned before integration."
+  -
+    type: "verify"
+    at: "2026-07-25T03:54:40.008Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass, full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22 files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run temp-root birthtime inventory is empty."
+  -
+    type: "status"
+    at: "2026-07-25T03:55:24.673Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T03:04:48.323Z"
+doc_updated_at: "2026-07-25T03:55:24.674Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -281,6 +299,36 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-25T03:54:40.008Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass, full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22 files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run temp-root birthtime inventory is empty.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T03:04:48.323Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -471,6 +519,36 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-25T03:54:40.008Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass, full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22 files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run temp-root birthtime inventory is empty.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T03:04:48.323Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
