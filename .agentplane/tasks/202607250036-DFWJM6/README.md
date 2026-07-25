@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 50
 origin:
   system: "manual"
 depends_on: []
@@ -31,31 +31,35 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T04:32:25.924Z"
+  state: "ok"
+  updated_at: "2026-07-25T12:06:02.950Z"
   updated_by: "TESTER"
-  note: "Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries."
-  attempts: 1
+  note: "Rework verified at 8003f34e: real cwd/restore preserves no-root init semantics; focused 17/17, repeated scenario 5/5, platform-critical 91/91, cleanup 105/105, publication 21/21, integration 48/48, targeted PR 134/134, full fast 453 files and 3046 tests, critical 11/11, typecheck/lint/hotspots/format/task-lint/routing/doctor pass; all tracked temp-directory classes remain at zero."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T04:20:34.665Z"
+  updated_at: "2026-07-25T12:06:32.518Z"
   updated_by: "EVALUATOR"
-  note: "Bounded testkit cleanup retries resolve the hosted Windows EBUSY rework without weakening init semantics or widening the public API."
-  evaluated_sha: "db062c2cdb31ea164cda1729623349160c45101d"
+  note: "The rework replaces a JS-only cwd spy with a real, always-restored process cwd, preserving the no-root init contract and removing the plausible persistent Windows directory handle without widening production behavior."
+  evaluated_sha: "8003f34e83c1a2304c653393a2631e33320e4087"
   blueprint_digest: "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43"
   evidence_refs:
     - ".agentplane/tasks/202607250036-DFWJM6/README.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-042034665-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-042034665-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-042034665-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-120632518-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-120632518-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-120632518-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts"
     - "packages/testkit/src/cli-harness/temp-root-cleanup.ts"
     - "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts"
   findings:
-    - "All helper-owned roots now share recursive force cleanup with five bounded linear retries; roots remain registered after failed removal; the option contract, original init scenario, platform-critical suite, full fast suite, and leak inventory pass. Two independent reviews found no blocking issue."
-commit: null
+    - "runCli still receives no --root and initializes the child directory; the conflicting parent-repository assertion remains intact."
+    - "The same forked Windows test route already passes an equivalent real process.chdir/restore pattern, while the changed file is excluded from full-fast unit routing and cannot explain the invalid historical-temp overload."
+    - "Focused, repeated, platform-critical, cleanup, publication, integration, targeted PR, full fast, critical, static, lifecycle, and zero-temp-inventory checks all pass after exact-prefix cleanup."
+commit:
+  hash: "8003f34e83c1a2304c653393a2631e33320e4087"
+  message: "🧪 DFWJM6 code: use real cwd in init regression"
 comments:
   -
     author: "CODER"
@@ -78,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -186,8 +193,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries."
+  -
+    type: "verify"
+    at: "2026-07-25T12:06:02.950Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verified at 8003f34e: real cwd/restore preserves no-root init semantics; focused 17/17, repeated scenario 5/5, platform-critical 91/91, cleanup 105/105, publication 21/21, integration 48/48, targeted PR 134/134, full fast 453 files and 3046 tests, critical 11/11, typecheck/lint/hotspots/format/task-lint/routing/doctor pass; all tracked temp-directory classes remain at zero."
+  -
+    type: "status"
+    at: "2026-07-25T12:06:53.028Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T04:32:26.811Z"
+doc_updated_at: "2026-07-25T12:06:53.029Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -458,6 +478,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T12:06:02.950Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verified at 8003f34e: real cwd/restore preserves no-root init semantics; focused 17/17, repeated scenario 5/5, platform-critical 91/91, cleanup 105/105, publication 21/21, integration 48/48, targeted PR 134/134, full fast 453 files and 3046 tests, critical 11/11, typecheck/lint/hotspots/format/task-lint/routing/doctor pass; all tracked temp-directory classes remain at zero.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T04:32:26.811Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -494,6 +544,10 @@ sections:
     - Observation: test-windows failed 13 tests because the same magic_fresh_directory stayed EBUSY across repeated afterEach cleanup attempts.
       Impact: PR verification remains red; DFWJM6 cannot integrate.
       Resolution: Replace the in-process process.cwd spy in the current-directory init scenario with a real chdir restored in finally, then repeat local and hosted verification.
+
+    - Observation: The prior full-fast attempt was invalidated by 31,259 historical test-temp directories; after exact-prefix cleanup, the canonical rerun completed normally and left zero helper-owned temp directories.
+      Impact: Local verification is complete; Windows handle release still requires hosted test-windows proof on the new PR head.
+      Resolution: Run evaluator, create fresh pre-merge closure, publish through guarded force-with-lease, and require stable green hosted checks before integration.
 extensions:
   implementation_commit:
     hash: "cbf4ac33977ceaf346803963c55848cab66ff76d"
@@ -776,6 +830,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T12:06:02.950Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verified at 8003f34e: real cwd/restore preserves no-root init semantics; focused 17/17, repeated scenario 5/5, platform-critical 91/91, cleanup 105/105, publication 21/21, integration 48/48, targeted PR 134/134, full fast 453 files and 3046 tests, critical 11/11, typecheck/lint/hotspots/format/task-lint/routing/doctor pass; all tracked temp-directory classes remain at zero.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T04:32:26.811Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -816,3 +900,7 @@ DecisionContextRef:
 - Observation: test-windows failed 13 tests because the same magic_fresh_directory stayed EBUSY across repeated afterEach cleanup attempts.
   Impact: PR verification remains red; DFWJM6 cannot integrate.
   Resolution: Replace the in-process process.cwd spy in the current-directory init scenario with a real chdir restored in finally, then repeat local and hosted verification.
+
+- Observation: The prior full-fast attempt was invalidated by 31,259 historical test-temp directories; after exact-prefix cleanup, the canonical rerun completed normally and left zero helper-owned temp directories.
+  Impact: Local verification is complete; Windows handle release still requires hosted test-windows proof on the new PR head.
+  Resolution: Run evaluator, create fresh pre-merge closure, publish through guarded force-with-lease, and require stable green hosted checks before integration.

@@ -6,14 +6,14 @@ Created: 2026-07-25T00:37:21.141Z
 
 - Task: `202607250036-DFWJM6`
 - Title: Publish rebased PR branches with an explicit force-with-lease
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607250036-DFWJM6/force-with-lease-pr-publish`
 - Canonical task record: `.agentplane/tasks/202607250036-DFWJM6/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries.
+- State: ok
+- Note: Rework verified at 8003f34e: real cwd/restore preserves no-root init semantics; focused 17/17, repeated scenario 5/5, platform-critical 91/91, cleanup 105/105, publication 21/21, integration 48/48, targeted PR 134/134, full fast 453 files and 3046 tests, critical 11/11, typecheck/lint/hotspots/format/task-lint/routing/doctor pass; all tracked temp-directory classes remain at zero.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
