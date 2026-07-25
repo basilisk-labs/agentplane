@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607252051-RK9N29",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T21:36:24.814Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Branch-snapshot routing fix and CodeQL remediation satisfy the approved branch_pr truth contract.",
+  "evaluated_sha": "bf6ae520184549e1e43a53005160a7c11873a3d0",
+  "blueprint_digest": "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23",
+  "findings": [
+    "Remote task refs are enumerated from a constant origin root and filtered after Git returns names; branch snapshot remains authoritative over stale base state for route, PR flow, blockers, and resume."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607252051-RK9N29/README.md",
+    "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts",
+    "packages/agentplane/src/commands/shared/task-backend.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts",
+    "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The unrelated stale runner-reclaim fixture fails identically on untouched main; it is recorded for a separate follow-up and does not cover this routing change."
+  ]
+}

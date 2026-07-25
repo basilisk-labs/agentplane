@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -27,22 +27,25 @@ verification:
   note: "Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T21:30:44.995Z"
+  updated_at: "2026-07-25T21:36:24.814Z"
   updated_by: "EVALUATOR"
-  note: "CodeQL identified unsafe command construction in the new remote task-branch discovery path."
-  evaluated_sha: "4af6f2d47700f7bc5814ad74492a39c6baa638b1"
+  note: "Branch-snapshot routing fix and CodeQL remediation satisfy the approved branch_pr truth contract."
+  evaluated_sha: "bf6ae520184549e1e43a53005160a7c11873a3d0"
   blueprint_digest: "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23"
   evidence_refs:
     - ".agentplane/tasks/202607252051-RK9N29/README.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213044995-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213044995-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213044995-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213624814-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213624814-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213624814-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+    - "packages/agentplane/src/commands/shared/task-backend.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
+    - "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts"
   findings:
-    - "The remote branch prefix derived from configuration is interpolated into git for-each-ref argv; replace it with a constant ref root and filter returned refs in TypeScript."
+    - "Remote task refs are enumerated from a constant origin root and filtered after Git returns names; branch snapshot remains authoritative over stale base state for route, PR flow, blockers, and resume."
 commit:
   hash: "4af6f2d47700f7bc5814ad74492a39c6baa638b1"
   message: "🧩 RK9N29 routing: prefer task branch snapshots"
