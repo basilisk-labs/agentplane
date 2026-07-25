@@ -24,7 +24,7 @@ Created: 2026-07-25T22:16:38.350Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-25T22:16:38.350Z
+- Updated: 2026-07-25T22:33:03.739Z
 - Branch: task/202607252215-SNV847/repair-stale-runner-reclaim-regression-fixture
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
