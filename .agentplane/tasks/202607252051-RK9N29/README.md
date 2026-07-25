@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -47,8 +47,8 @@ quality_review:
   findings:
     - "Remote task refs are enumerated from a constant origin root and filtered after Git returns names; branch snapshot remains authoritative over stale base state for route, PR flow, blockers, and resume."
 commit:
-  hash: "4af6f2d47700f7bc5814ad74492a39c6baa638b1"
-  message: "🧩 RK9N29 routing: prefer task branch snapshots"
+  hash: "ec932f0aabd07c0da6b4a88aaa5a406817c925c5"
+  message: "🧐 RK9N29 task: record evaluator pass"
 comments:
   -
     author: "CODER"
@@ -56,6 +56,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -83,8 +86,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed."
+  -
+    type: "status"
+    at: "2026-07-25T21:37:43.368Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T21:33:22.298Z"
+doc_updated_at: "2026-07-25T21:37:43.368Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr control-plane truth: routes, flow status, blockers, and resume must prefer the active task branch snapshot (live worktree, local branch, then origin) for task README and PR metadata, falling back to base only when no branch snapshot exists. Regress stale base TODO versus task-branch DONE/open PR so the CLI selects publication or integration, never a false plan approval. Keep typed route semantics unchanged."
 sections:
@@ -172,6 +182,9 @@ sections:
       Impact: The PR could not pass its required review gate until the command construction was made constant.
       Resolution: Remote refs are now listed from a constant origin root and filtered in TypeScript; origin-only snapshot coverage remains green.
 extensions:
+  implementation_commit:
+    hash: "bf6ae520184549e1e43a53005160a7c11873a3d0"
+    message: "🧩 RK9N29 correctness: avoid dynamic remote ref argv"
   workflow_route_baseline:
     start_head_sha: "8e37e79ba5f2c934ab7c35a242c181049180e164"
     version: 1
