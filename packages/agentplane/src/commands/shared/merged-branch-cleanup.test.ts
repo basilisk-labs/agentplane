@@ -1,12 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { realpathSync } from "node:fs";
 
-const mocks = vi.hoisted(() => ({
+const mocks = {
   execFileAsync: vi.fn(),
   gitBranchExists: vi.fn(),
   gitRevParse: vi.fn(),
   findWorktreeForBranch: vi.fn(),
-}));
+  rm: vi.fn(),
+};
 
+vi.mock("node:fs/promises", () => ({
+  realpath: (filePath: string) => Promise.resolve(realpathSync(filePath)),
+  rm: mocks.rm,
+}));
 vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
@@ -21,10 +27,15 @@ vi.mock("@agentplaneorg/core/git", () => ({
 
 describe("commands/shared/merged-branch-cleanup", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    mocks.execFileAsync.mockReset();
+    mocks.gitBranchExists.mockReset();
+    mocks.gitRevParse.mockReset();
+    mocks.findWorktreeForBranch.mockReset();
+    mocks.rm.mockReset();
     mocks.findWorktreeForBranch.mockResolvedValue(null);
     mocks.gitBranchExists.mockResolvedValue(true);
     mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
+    mocks.rm.mockResolvedValue(undefined);
   });
 
   it("removes a repo-local worktree and then deletes the merged branch", async () => {
@@ -111,6 +122,133 @@ describe("commands/shared/merged-branch-cleanup", () => {
       "git",
       ["worktree", "remove", "/repo/.agentplane/worktrees/task-T5"],
       expect.objectContaining({ cwd: "/repo" }),
+    );
+  });
+
+  it("removes an orphaned directory when git unregisters a clean worktree before reporting failure", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    const worktreePath = "/repo/.agentplane/worktrees/task-T5-recovery";
+    mocks.findWorktreeForBranch.mockResolvedValueOnce(worktreePath).mockResolvedValueOnce(null);
+    mocks.execFileAsync.mockImplementation((_command: string, args: string[]) => {
+      if (args[0] === "worktree" && args[1] === "remove") {
+        return Promise.reject(new Error("failed to delete directory: Directory not empty"));
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+
+    const result = await cleanupMergedLocalBranch({
+      gitRoot: "/repo",
+      branch: "task/T-5-recovery",
+    });
+
+    expect(result).toEqual({
+      removedBranch: true,
+      removedWorktree: true,
+      worktreePath,
+      skippedReason: null,
+      preservedDirtyState: false,
+      stashMessage: null,
+    });
+    expect(mocks.rm).toHaveBeenCalledWith(worktreePath, {
+      recursive: true,
+      maxRetries: 3,
+      retryDelay: 100,
+    });
+    expect(mocks.execFileAsync).toHaveBeenCalledWith(
+      "git",
+      ["branch", "-D", "task/T-5-recovery"],
+      expect.objectContaining({ cwd: "/repo" }),
+    );
+  });
+
+  it("preserves the branch when orphan recovery cannot remove the unregistered directory", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    const worktreePath = "/repo/.agentplane/worktrees/task-T5-recovery-failed";
+    mocks.findWorktreeForBranch.mockResolvedValueOnce(worktreePath).mockResolvedValueOnce(null);
+    mocks.execFileAsync.mockImplementation((_command: string, args: string[]) => {
+      if (args[0] === "worktree" && args[1] === "remove") {
+        return Promise.reject(new Error("failed to delete directory: Directory not empty"));
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+    mocks.rm.mockRejectedValue(new Error("permission denied"));
+
+    await expect(
+      cleanupMergedLocalBranch({
+        gitRoot: "/repo",
+        branch: "task/T-5-recovery-failed",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_GIT",
+      context: {
+        reason_code: "merged_worktree_orphan_recovery_failed",
+        branch: "task/T-5-recovery-failed",
+        worktree_path: worktreePath,
+      },
+    });
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      ["branch", "-D", "task/T-5-recovery-failed"],
+      expect.anything(),
+    );
+  });
+
+  it("preserves the branch when the failed worktree removal remains registered", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    const worktreePath = "/repo/.agentplane/worktrees/task-T5-still-registered";
+    mocks.findWorktreeForBranch.mockResolvedValue(worktreePath);
+    mocks.execFileAsync.mockImplementation((_command: string, args: string[]) => {
+      if (args[0] === "worktree" && args[1] === "remove") {
+        return Promise.reject(new Error("failed to delete directory: Directory not empty"));
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+
+    await expect(
+      cleanupMergedLocalBranch({
+        gitRoot: "/repo",
+        branch: "task/T-5-still-registered",
+      }),
+    ).rejects.toThrow("failed to delete directory: Directory not empty");
+    expect(mocks.rm).not.toHaveBeenCalled();
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      ["branch", "-D", "task/T-5-still-registered"],
+      expect.anything(),
+    );
+  });
+
+  it("preserves the orphaned directory when the branch moves before recovery", async () => {
+    const { cleanupMergedLocalBranch } = await import("./merged-branch-cleanup.js");
+    const worktreePath = "/repo/.agentplane/worktrees/task-T5-head-race";
+    mocks.findWorktreeForBranch.mockResolvedValueOnce(worktreePath).mockResolvedValueOnce(null);
+    mocks.gitRevParse.mockResolvedValueOnce("head-1").mockResolvedValueOnce("head-2");
+    mocks.execFileAsync.mockImplementation((_command: string, args: string[]) => {
+      if (args[0] === "worktree" && args[1] === "remove") {
+        return Promise.reject(new Error("failed to delete directory: Directory not empty"));
+      }
+      return Promise.resolve({ stdout: "", stderr: "" });
+    });
+
+    await expect(
+      cleanupMergedLocalBranch({
+        gitRoot: "/repo",
+        branch: "task/T-5-head-race",
+        expectedHeadSha: "head-1",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_GIT_RACE",
+      context: {
+        reason_code: "merged_branch_head_changed",
+        expected_head_sha: "head-1",
+        current_head_sha: "head-2",
+      },
+    });
+    expect(mocks.rm).not.toHaveBeenCalled();
+    expect(mocks.execFileAsync).not.toHaveBeenCalledWith(
+      "git",
+      ["branch", "-D", "task/T-5-head-race"],
+      expect.anything(),
     );
   });
 

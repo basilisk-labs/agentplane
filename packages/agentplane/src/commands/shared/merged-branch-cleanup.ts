@@ -1,3 +1,5 @@
+import { rm } from "node:fs/promises";
+
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv, findWorktreeForBranch } from "@agentplaneorg/core/git";
 import { CliError } from "../../shared/errors.js";
@@ -93,9 +95,11 @@ export async function cleanupMergedLocalBranch(opts: {
         },
       });
     }
-    await execFileAsync("git", ["worktree", "remove", worktreePath], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
+    await removeCleanWorktree({
+      gitRoot: opts.gitRoot,
+      branch: opts.branch,
+      worktreePath,
+      expectedHeadSha: opts.expectedHeadSha ?? null,
     });
     let removed: boolean;
     try {
@@ -129,6 +133,81 @@ export async function cleanupMergedLocalBranch(opts: {
     preservedDirtyState: false,
     stashMessage: null,
   };
+}
+
+async function removeCleanWorktree(opts: {
+  gitRoot: string;
+  branch: string;
+  worktreePath: string;
+  expectedHeadSha: string | null;
+}): Promise<void> {
+  try {
+    await execFileAsync("git", ["worktree", "remove", opts.worktreePath], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    return;
+  } catch (error) {
+    const registeredWorktree = await findWorktreeForBranch(opts.gitRoot, opts.branch).catch(
+      () => opts.worktreePath,
+    );
+    if (registeredWorktree) throw error;
+    await assertExpectedBranchHead(opts);
+    await removeUnregisteredWorktreeDirectory({
+      gitRoot: opts.gitRoot,
+      branch: opts.branch,
+      worktreePath: opts.worktreePath,
+      cause: error,
+    });
+  }
+}
+
+async function removeUnregisteredWorktreeDirectory(opts: {
+  gitRoot: string;
+  branch: string;
+  worktreePath: string;
+  cause: unknown;
+}): Promise<void> {
+  const repoRoot = await resolvePathFallback(opts.gitRoot);
+  const resolvedWorktreePath = await resolvePathFallback(opts.worktreePath);
+  if (!isPathWithin(repoRoot, resolvedWorktreePath) || resolvedWorktreePath === repoRoot) {
+    throw new CliError({
+      code: "E_GIT",
+      message:
+        `Git unregistered worktree ${opts.worktreePath} after a failed removal, but ` +
+        "its path is no longer safe to remove; preserving the task branch for recovery.",
+      context: {
+        reason_code: "merged_worktree_orphan_recovery_unsafe",
+        branch: opts.branch,
+        worktree_path: opts.worktreePath,
+        cause: opts.cause instanceof Error ? opts.cause.message : String(opts.cause),
+      },
+    });
+  }
+  try {
+    await rm(resolvedWorktreePath, {
+      recursive: true,
+      maxRetries: 3,
+      retryDelay: 100,
+    });
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException | null)?.code;
+    if (code === "ENOENT") return;
+    throw new CliError({
+      code: "E_GIT",
+      message:
+        `Git unregistered worktree ${opts.worktreePath} after a failed removal and ` +
+        `its directory could not be removed; preserving ${opts.branch} for recovery.`,
+      context: {
+        reason_code: "merged_worktree_orphan_recovery_failed",
+        branch: opts.branch,
+        worktree_path: opts.worktreePath,
+        cause: error instanceof Error ? error.message : String(error),
+        worktree_remove_cause:
+          opts.cause instanceof Error ? opts.cause.message : String(opts.cause),
+      },
+    });
+  }
 }
 
 async function assertExpectedBranchHead(opts: {
