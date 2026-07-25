@@ -12,8 +12,8 @@ Created: 2026-07-25T13:06:52.051Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Implementation evidence is not present yet; the lifecycle-only PR head cannot satisfy the task Verify Steps.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,14 @@ Created: 2026-07-25T13:06:52.051Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/cli/measure-cli-cold-path-script.test.ts   |  58 +++++++-
+ .../src/commands/pr/integrate/queue-mutex.test.ts  | 147 ++++++++++++---------
+ .../src/commands/pr/integrate/queue-state.test.ts  |  70 +++++-----
+ .../task-run-active-claim-concurrency.test.ts      |  47 ++++++-
+ .../usecases/task-run-active-claim-conflict.ts     |  35 +++++
+ .../src/runner/usecases/task-run-active-claim.ts   |  77 ++++++-----
+ .../agentplane/src/shared/git-mutation.test.ts     |  86 ++++++------
+ 7 files changed, 344 insertions(+), 176 deletions(-)
 ```
 
 </details>

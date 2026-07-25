@@ -19,9 +19,9 @@ import {
   inspectTaskRunnerActiveClaimOwner,
   inspectTaskRunnerClaimedRunAuthority,
   isExplicitlyRecoverableClaimedRun,
-  type TaskRunnerActiveClaimOwnerStatus,
   type TaskRunnerClaimedRunAuthority,
 } from "./task-run-active-claim-authority.js";
+import { competingTaskRunnerActiveClaimError } from "./task-run-active-claim-conflict.js";
 import {
   acquireTaskRunnerActiveClaimRecoveryLease,
   beginTaskRunnerActiveClaimRetirement,
@@ -280,34 +280,6 @@ async function retireObservedClaim(opts: {
   return archivePath;
 }
 
-function competingClaimError(
-  requested: TaskRunnerActiveClaim,
-  competing: TaskRunnerActiveClaim,
-  ownerStatus: TaskRunnerActiveClaimOwnerStatus,
-  runAuthority?: TaskRunnerClaimedRunAuthority,
-): CliError {
-  return new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message:
-      `runner ${requested.operation} refuses to start while supervisor-owned active claim ` +
-      `${competing.task_id}:${competing.run_id} is held by ${competing.operation}.`,
-    context: {
-      task_id: requested.task_id,
-      run_id: requested.run_id,
-      runner_operation: requested.operation,
-      active_run_authority: "supervisor_active_run_claim",
-      competing_run_id: competing.run_id,
-      competing_operation: competing.operation,
-      competing_claimed_at: competing.claimed_at,
-      competing_owner_status: ownerStatus,
-      competing_owner_pid: competing.owner_pid,
-      ...(runAuthority ? { competing_run_authority: runAuthority } : {}),
-      ...(competing.source_run_id ? { competing_source_run_id: competing.source_run_id } : {}),
-    },
-  });
-}
-
 export async function acquireTaskRunnerActiveClaim(
   opts: TaskRunnerActiveClaimPathOptions & {
     operation: TaskRunnerActiveClaimOperation;
@@ -317,11 +289,6 @@ export async function acquireTaskRunnerActiveClaim(
   },
 ): Promise<TaskRunnerActiveClaimLease> {
   const directory = await resolveClaimDirectory(opts);
-  const historyAnchor = await captureTaskRunnerSupervisorHistoryAnchor({
-    git_root: opts.git_root,
-    workflow_dir: opts.workflow_dir,
-    task_id: opts.task_id,
-  });
   const generation = randomUUID();
   const claim: TaskRunnerActiveClaim = {
     schema_version: 1,
@@ -335,6 +302,18 @@ export async function acquireTaskRunnerActiveClaim(
     ...(opts.source_run_id ? { source_run_id: opts.source_run_id } : {}),
     ...(opts.source_status ? { source_status: opts.source_status } : {}),
   };
+  const existing = await readObservedClaim(directory);
+  if (existing) {
+    const ownerStatus = await inspectTaskRunnerActiveClaimOwner(existing.claim);
+    if (ownerStatus !== "stale") {
+      throw competingTaskRunnerActiveClaimError(claim, existing.claim, ownerStatus);
+    }
+  }
+  const historyAnchor = await captureTaskRunnerSupervisorHistoryAnchor({
+    git_root: opts.git_root,
+    workflow_dir: opts.workflow_dir,
+    task_id: opts.task_id,
+  });
   const candidatePath = path.join(
     directory.task_dir,
     `.active-run-claim.${generation}.candidate.json`,
@@ -390,7 +369,7 @@ export async function acquireTaskRunnerActiveClaim(
         if (!competing) continue;
         const ownerStatus = await inspectTaskRunnerActiveClaimOwner(competing.claim);
         if (ownerStatus !== "stale") {
-          throw competingClaimError(claim, competing.claim, ownerStatus);
+          throw competingTaskRunnerActiveClaimError(claim, competing.claim, ownerStatus);
         }
         const runAuthority = await inspectTaskRunnerClaimedRunAuthority(directory, competing.claim);
         if (runAuthority === "terminal" && opts.reconcile_terminal_claim) {
@@ -410,12 +389,27 @@ export async function acquireTaskRunnerActiveClaim(
           if (
             (await inspectTaskRunnerClaimedRunAuthority(directory, reconciled.claim)) !== "terminal"
           ) {
-            throw competingClaimError(claim, reconciled.claim, ownerStatus, runAuthority);
+            throw competingTaskRunnerActiveClaimError(
+              claim,
+              reconciled.claim,
+              ownerStatus,
+              runAuthority,
+            );
           }
-          throw competingClaimError(claim, reconciled.claim, ownerStatus, runAuthority);
+          throw competingTaskRunnerActiveClaimError(
+            claim,
+            reconciled.claim,
+            ownerStatus,
+            runAuthority,
+          );
         }
         if (runAuthority !== "absent" && runAuthority !== "incomplete_pre_provider") {
-          throw competingClaimError(claim, competing.claim, ownerStatus, runAuthority);
+          throw competingTaskRunnerActiveClaimError(
+            claim,
+            competing.claim,
+            ownerStatus,
+            runAuthority,
+          );
         }
         const recovered = await recoverTaskRunnerActiveClaim({
           git_root: opts.git_root,
@@ -426,7 +420,12 @@ export async function acquireTaskRunnerActiveClaim(
           expected_owner: competing.claim,
         });
         if (recovered.status === "recovered" || recovered.status === "absent") continue;
-        throw competingClaimError(claim, recovered.claim, ownerStatus, runAuthority);
+        throw competingTaskRunnerActiveClaimError(
+          claim,
+          recovered.claim,
+          ownerStatus,
+          runAuthority,
+        );
       }
     }
   } finally {

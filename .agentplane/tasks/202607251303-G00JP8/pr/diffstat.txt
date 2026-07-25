@@ -1,0 +1,8 @@
+ .../src/cli/measure-cli-cold-path-script.test.ts   |  58 +++++++-
+ .../src/commands/pr/integrate/queue-mutex.test.ts  | 147 ++++++++++++---------
+ .../src/commands/pr/integrate/queue-state.test.ts  |  70 +++++-----
+ .../task-run-active-claim-concurrency.test.ts      |  47 ++++++-
+ .../usecases/task-run-active-claim-conflict.ts     |  35 +++++
+ .../src/runner/usecases/task-run-active-claim.ts   |  77 ++++++-----
+ .../agentplane/src/shared/git-mutation.test.ts     |  86 ++++++------
+ 7 files changed, 344 insertions(+), 176 deletions(-)
