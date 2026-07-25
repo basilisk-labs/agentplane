@@ -231,7 +231,9 @@ export async function deriveBlockers(opts: {
   const normalizedTaskStatus = String(opts.task.status).toUpperCase();
   if (
     opts.workflowMode === "branch_pr" &&
-    (normalizedTaskStatus === "DOING" || normalizedTaskStatus === "DONE")
+    (normalizedTaskStatus === "TODO" ||
+      normalizedTaskStatus === "DOING" ||
+      normalizedTaskStatus === "DONE")
   ) {
     addTaskWorktreeCleanlinessBlocker({
       blockers,

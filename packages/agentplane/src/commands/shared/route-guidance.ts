@@ -1,5 +1,6 @@
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import { projectWorkflowOperationCommand, renderCliArgv } from "./workflow-operation-projection.js";
+import { workflowOperationMutatesState } from "./workflow-step.js";
 
 export type RouteOperatorGuidance = {
   schemaVersion: 1;
@@ -172,6 +173,19 @@ function taskScopedCandidate(candidate: string | null, taskId: string): string |
   return candidate?.replaceAll("<task-id>", taskId) ?? null;
 }
 
+function localCommandCanExecute(decision: TaskRouteDecision): boolean {
+  const step = decision.workflowStep;
+  if (
+    decision.executionPacket.actionKind !== "local_command" ||
+    decision.executionPacket.exactArgv === null ||
+    decision.executionPacket.authoritativeCheckoutPath === null
+  ) {
+    return false;
+  }
+  if (step.kind !== "cli_operation") return decision.executionPacket.safeToMutate;
+  return !workflowOperationMutatesState(step.operation) || decision.executionPacket.safeToMutate;
+}
+
 function deriveSourceOfTruth(
   decision: TaskRouteDecision,
   risks: readonly RouteOperatorRisk[],
@@ -199,10 +213,10 @@ function deriveSourceOfTruth(
 function deriveRunnerContext(decision: TaskRouteDecision): RouteRunnerContext {
   const step = decision.workflowStep;
   const runnerIsAllowedNow =
-    decision.executionPacket.actionKind === "local_command" &&
-    decision.executionPacket.safeToMutate &&
     step.kind === "cli_operation" &&
-    step.operation.id === "runner.follow";
+    step.operation.id === "runner.follow" &&
+    workflowOperationMutatesState(step.operation) &&
+    localCommandCanExecute(decision);
   const runnerIsRequired =
     runnerIsAllowedNow ||
     step.kind === "wait" ||
@@ -226,32 +240,14 @@ function deriveExecutorContext(
 ): RouteExecutorContext {
   const step = decision.workflowStep;
   const runnerRouteActive = runnerContext.runnerIsRequired || runnerContext.runnerIsAllowedNow;
-  const currentAgentMustExecute =
-    !runnerRouteActive &&
-    decision.executionPacket.actionKind === "local_command" &&
-    decision.executionPacket.safeToMutate;
-  if (runnerRouteActive) {
-    return {
-      executor: "runner",
-      runnerRouteActive,
-      currentAgentMustExecute: false,
-      instruction: "runner_route_follow_runner_lifecycle",
-      warning:
-        "runner route is active; inspect runner artifacts/status before local mutation or verification",
-    };
-  }
-  if (
-    step.kind === "agent_episode" &&
-    step.episode.purpose === "implementation_rework" &&
-    decision.executionPacket.safeToMutate
-  ) {
+  const currentAgentMustExecute = localCommandCanExecute(decision);
+  if (step.kind === "agent_episode" && decision.executionPacket.safeToMutate) {
     return {
       executor: "current_agent",
       runnerRouteActive,
       currentAgentMustExecute: true,
       instruction: "current_agent_performs_semantic_rework",
-      warning:
-        "current CODER owns semantic implementation rework in the authoritative task worktree; preserve the evaluator report and recompute the route after verification",
+      warning: `current ${step.episode.role} owns the ${step.episode.purpose} episode in the authoritative task worktree; recompute the route after the semantic work is verified`,
     };
   }
   if (currentAgentMustExecute) {
@@ -261,6 +257,16 @@ function deriveExecutorContext(
       currentAgentMustExecute,
       instruction: "current_agent_executes_safe_command",
       warning: "current coding agent must run safe_command itself",
+    };
+  }
+  if (runnerRouteActive) {
+    return {
+      executor: "runner",
+      runnerRouteActive,
+      currentAgentMustExecute: false,
+      instruction: "runner_route_follow_runner_lifecycle",
+      warning:
+        "runner route is active; inspect runner artifacts/status before local mutation or verification",
     };
   }
   return {
@@ -287,10 +293,7 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
   const safeCommand = decision.executionPacket.exactArgv
     ? renderCliArgv(decision.executionPacket.exactArgv)
     : null;
-  const canExecuteNow =
-    decision.executionPacket.actionKind === "local_command" &&
-    decision.executionPacket.safeToMutate &&
-    safeCommand !== null;
+  const canExecuteNow = localCommandCanExecute(decision) && safeCommand !== null;
   const diagnosticCommand =
     artifactRisk?.mitigationCommand ??
     taskScopedCandidate(decision.executionPacket.verificationCandidate, decision.task.id) ??

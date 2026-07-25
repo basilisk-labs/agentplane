@@ -1,16 +1,11 @@
 import type { RouteAmbiguity, RouteRepairStep, TaskRouteDecision } from "./route-decision-types.js";
-import type { WorkflowStep } from "./workflow-step.js";
+import { workflowOperationMutatesState, type WorkflowStep } from "./workflow-step.js";
 
 type DecisionForAmbiguity = Omit<
   TaskRouteDecision,
   "ambiguities" | "repairPlan" | "sourceConfidence"
 >;
 type DecisionForRepair = Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">;
-
-function operationMutatesState(step: WorkflowStep): boolean {
-  if (step.kind !== "cli_operation") return false;
-  return step.operation.type !== "provider_refresh" && step.operation.type !== "task_view";
-}
 
 export function deriveRouteAmbiguities(opts: { decision: DecisionForAmbiguity }): RouteAmbiguity[] {
   const ambiguities: RouteAmbiguity[] = [];
@@ -71,7 +66,7 @@ export function deriveRouteRepairPlan(decision: DecisionForRepair): RouteRepairS
       code: step.compatibility.code,
       command: step.kind === "cli_operation" ? step.compatibility.command : null,
       summary: step.summary,
-      mutates: operationMutatesState(step),
+      mutates: step.kind === "cli_operation" && workflowOperationMutatesState(step.operation),
     },
   ];
 }

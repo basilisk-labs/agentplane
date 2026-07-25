@@ -21,7 +21,7 @@ export type WorkflowBlueprintObservation = {
   policyModules: readonly string[];
 };
 
-export type WorkflowBlueprintBlockerCode =
+type WorkflowBlueprintBlockerCode =
   | "blueprint_resolution_failed"
   | "blueprint_snapshot_invalid"
   | "blueprint_snapshot_missing_after_start"

@@ -23,11 +23,7 @@ export type WorkflowRouteState = {
   preconditionFingerprint: StateFingerprint;
 };
 
-export type { StateFingerprint } from "@agentplaneorg/core/schemas";
-/** @deprecated Use the canonical StateFingerprint contract directly. */
-export type WorkflowRouteFingerprint = StateFingerprint;
-
-export type WorkflowPostconditionId =
+type WorkflowPostconditionId =
   | "base_checkout_synced"
   | "hosted_close_pr_open"
   | "included_batch_closure_reconciled"
@@ -46,13 +42,13 @@ export type WorkflowPostconditionId =
   | "task_worktree_present"
   | "pre_merge_closure_recorded";
 
-export type WorkflowPostcondition = {
+type WorkflowPostcondition = {
   id: WorkflowPostconditionId;
   subject: "base" | "provider" | "route" | "runner" | "task";
   expected: string;
 };
 
-export type WorkflowOperationType =
+type WorkflowOperationType =
   | "batch_reconcile"
   | "cleanup"
   | "hosted_close_prepare"
@@ -507,6 +503,49 @@ type WorkflowOperationBase<Id extends WorkflowOperationId> = {
 export type WorkflowOperation = {
   [Id in WorkflowOperationId]: WorkflowOperationBase<Id>;
 }[WorkflowOperationId];
+
+type WorkflowOperationEffect = "mutating" | "read_only" | "mode_dependent";
+
+/**
+ * Explicit authority classification for every formal CLI operation. `mode_dependent`
+ * is reserved for runner.follow, whose reclaim/run variants mutate durable state
+ * while status/verify are observational.
+ */
+export const WORKFLOW_OPERATION_EFFECTS = {
+  "task.artifacts.commit": "mutating",
+  "task.start": "mutating",
+  "task.branch.start": "mutating",
+  "task.verify.show": "read_only",
+  "runner.follow": "mode_dependent",
+  "batch.follow_primary": "read_only",
+  "batch.collect_included": "read_only",
+  "batch.reconcile_included": "mutating",
+  "worktree.prepare": "mutating",
+  "pr.artifacts.update": "mutating",
+  "pr.open": "mutating",
+  "pr.head.publish": "mutating",
+  "provider.pr.refresh": "read_only",
+  "route.remote.refresh": "read_only",
+  "task.pre_merge_close": "mutating",
+  "integration.enqueue": "mutating",
+  "task.hosted_close.open": "mutating",
+  "task.hosted_close.finalize": "mutating",
+  "task.worktree.cleanup": "mutating",
+  "pr.sync_or_verify": "mutating",
+} as const satisfies Record<WorkflowOperationId, WorkflowOperationEffect>;
+
+function workflowOperationEffect(operation: WorkflowOperation): "mutating" | "read_only" {
+  if (operation.id === "runner.follow") {
+    return operation.params.mode === "reclaim" || operation.params.mode === "run"
+      ? "mutating"
+      : "read_only";
+  }
+  return WORKFLOW_OPERATION_EFFECTS[operation.id] === "mutating" ? "mutating" : "read_only";
+}
+
+export function workflowOperationMutatesState(operation: WorkflowOperation): boolean {
+  return workflowOperationEffect(operation) === "mutating";
+}
 
 type WorkflowStepExecution = {
   actionKind: RouteExecutionPacket["actionKind"];

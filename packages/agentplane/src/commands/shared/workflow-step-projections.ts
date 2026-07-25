@@ -2,7 +2,11 @@ import type { TaskData } from "../../backends/task-backend.js";
 import type { RouteNextAction } from "./route-decision-types.js";
 import type { RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
-import type { WorkflowCheckout, WorkflowStep } from "./workflow-step.js";
+import {
+  workflowOperationMutatesState,
+  type WorkflowCheckout,
+  type WorkflowStep,
+} from "./workflow-step.js";
 
 export function projectWorkflowStepNextAction(step: WorkflowStep): RouteNextAction {
   return { ...step.compatibility };
@@ -37,9 +41,10 @@ export function projectWorkflowStepOracle(opts: {
     opts.step.authoritativeCheckout,
     opts.paths ?? {},
   );
+  const operationMutates =
+    opts.step.kind === "cli_operation" && workflowOperationMutatesState(opts.step.operation);
   const safeToMutate =
-    (opts.step.execution.actionKind === "local_command" ||
-      opts.step.execution.semanticMutationAllowed) &&
+    (operationMutates || opts.step.execution.semanticMutationAllowed) &&
     opts.step.blockers.every((blocker) => blocker.code !== "runner_alive") &&
     authoritativeCheckoutPath !== null;
   return {
@@ -96,11 +101,18 @@ function packetMustNot(step: WorkflowStep): string[] {
     ...step.execution.mustNot,
   ];
   if (step.execution.actionKind === "local_command") {
-    return [
+    const localCommandMustNot = [
       ...base,
       "do not execute raw shell when exactArgv is null",
       "do not continue after a non-zero command exit without recomputing the route",
     ];
+    if (step.kind === "cli_operation" && !workflowOperationMutatesState(step.operation)) {
+      return [
+        ...localCommandMustNot,
+        "do not use this read-only command to mutate task, PR, branch, runner, or worktree state",
+      ];
+    }
+    return localCommandMustNot;
   }
   if (step.execution.actionKind === "provider_action") {
     return [...base, "do not complete AgentPlane task truth from provider/card state"];
@@ -111,10 +123,17 @@ function packetMustNot(step: WorkflowStep): string[] {
   if (step.execution.semanticMutationAllowed) {
     return [
       ...base,
-      "do not mutate task lifecycle or PR state while control belongs to implementation rework",
+      "do not mutate task lifecycle or PR state while control belongs to the active semantic agent episode",
     ];
   }
   return [...base, "do not perform further task mutation for this route state"];
+}
+
+function recomputeWithRemoteTruth(step: WorkflowStep): boolean {
+  return (
+    step.kind === "cli_operation" &&
+    (step.operation.id === "provider.pr.refresh" || step.operation.id === "route.remote.refresh")
+  );
 }
 
 export function projectWorkflowStepExecutionPacket(opts: {
@@ -132,11 +151,17 @@ export function projectWorkflowStepExecutionPacket(opts: {
     : opts.step.blockers;
   for (const value of blockerEvidence(blockersForEvidence)) missing.add(value);
   const actionKind = opts.step.execution.actionKind;
+  const operationMutates =
+    opts.step.kind === "cli_operation" && workflowOperationMutatesState(opts.step.operation);
+  const remoteRecompute = recomputeWithRemoteTruth(opts.step);
+  const staleStateCheck =
+    `agentplane task next-action ${opts.task.id}` +
+    `${remoteRecompute ? " --remote" : ""} --explain`;
   return {
     schemaVersion: 1,
     actionKind,
     safeToMutate:
-      (actionKind === "local_command" || opts.step.execution.semanticMutationAllowed) &&
+      (operationMutates || opts.step.execution.semanticMutationAllowed) &&
       opts.oracle.mutationPathHint !== null,
     requiresProviderAction: actionKind === "provider_action",
     recommendedRole: opts.step.execution.recommendedRole,
@@ -149,9 +174,11 @@ export function projectWorkflowStepExecutionPacket(opts: {
         ? projectWorkflowOperationArgv(opts.step.operation)
         : null,
     mustNot: [...new Set(packetMustNot(opts.step))],
-    returnControlWhen: opts.step.execution.returnControlWhen,
+    returnControlWhen: remoteRecompute
+      ? `after the exact command exits; recompute live provider truth with ${staleStateCheck} before any further step`
+      : opts.step.execution.returnControlWhen,
     humanProviderAction: actionKind === "provider_action" ? opts.step.summary : null,
-    staleStateCheck: `agentplane task next-action ${opts.task.id} --explain`,
+    staleStateCheck,
     evidenceMissing: [...missing].toSorted((left, right) => left.localeCompare(right)),
     verificationCandidate: opts.step.execution.verificationCandidate,
     stopReason:
