@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -43,7 +43,7 @@ quality_review:
   findings:
     - "Semantic review confirms packages/agentplane/src/context/knowledge-ref.ts delegates record detection to the canonical shared guard, while the closure packet does not alter runtime behavior."
 commit:
-  hash: "b42001106254cc4f203013e00d8affa0976cfa8a"
+  hash: "0ff15a60bdc713f18d2d42e8cc02aa801708c73f"
   message: "🧪 75Q4J6 task: pre-merge closure"
 comments:
   -
@@ -52,6 +52,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -105,8 +108,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T18:42:16.972Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T18:39:25.568Z"
+doc_updated_at: "2026-07-25T18:42:16.972Z"
 doc_updated_by: "CODER"
 description: "Replace the inherited local isRecord helper in KnowledgeRef with the canonical shared guard so guards:check passes on main before RF06b integration."
 sections:
@@ -227,8 +237,8 @@ sections:
       Resolution: Accept the implementation for hosted verification and integration.
 extensions:
   implementation_commit:
-    hash: "49e981cc1944cf9577b2e95f077f40044e2ac3f2"
-    message: "🧩 75Q4J6 reliability: retain D9 incident registry format"
+    hash: "e8fba53b254bbaf83fd5e90a70b7c7d21acc8f7c"
+    message: "🧪 75Q4J6 task: pre-merge closure"
 id_source: "generated"
 ---
 ## Summary
