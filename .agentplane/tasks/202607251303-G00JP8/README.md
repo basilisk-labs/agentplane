@@ -1,10 +1,10 @@
 ---
 id: "202607251303-G00JP8"
 title: "Stabilize parallel full-fast runner and integration tests"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +35,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: stabilize the diagnosed runner claim precedence and test isolation races before resuming RF08 integration."
+events:
+  -
+    type: "status"
+    at: "2026-07-25T13:08:41.267Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: stabilize the diagnosed runner claim precedence and test isolation races before resuming RF08 integration."
 doc_version: 3
-doc_updated_at: "2026-07-25T13:05:53.127Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-25T13:08:41.267Z"
+doc_updated_by: "CODER"
 description: "Remove three v0.7 integration blockers found by RF08 hosted/full-suite verification: return deterministic busy authority when a live runner claim races mutable history scanning; make the integration-queue mutex concurrency test deterministic; and isolate the Bun compiled CLI smoke from mutable shared build artifacts. Preserve fail-closed safety and production behavior outside the diagnosed error precedence."
 sections:
   Summary: |-

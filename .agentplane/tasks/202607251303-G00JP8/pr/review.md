@@ -6,7 +6,7 @@ Created: 2026-07-25T13:06:52.051Z
 
 - Task: `202607251303-G00JP8`
 - Title: Stabilize parallel full-fast runner and integration tests
-- Status: TODO
+- Status: DOING
 - Branch: `task/202607251303-G00JP8/stabilize-parallel-full-fast-runner-and-integrat`
 - Canonical task record: `.agentplane/tasks/202607251303-G00JP8/README.md`
 
