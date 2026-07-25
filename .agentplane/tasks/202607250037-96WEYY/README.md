@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -51,8 +51,8 @@ quality_review:
     - "Cleanup retries are capped at four attempts, retain the first persistent retryable error, and surface non-retryable errors immediately; deterministic tests distinguish first-vs-last error identity and one-call EIO behavior."
     - "Capture retry cleanup deletes only newly created rf04-replay roots and preserves pre-existing roots; three repeated focused runs and the full 11-chunk critical suite passed with the same 50/70/27/170 evidence and structural digest."
 commit:
-  hash: "18c0d75004c7cb5486266753d5e782ab09e71521"
-  message: "🧭 96WEYY task: record independent quality pass"
+  hash: "c09a9cca0e5ba2bb78e4a302f8d7bd0bf0c56ef0"
+  message: "🧩 96WEYY task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -60,6 +60,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -87,8 +90,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T03:24:33.112Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T01:14:44.308Z"
+doc_updated_at: "2026-07-25T03:24:33.113Z"
 doc_updated_by: "CODER"
 description: "Prevent Finder-created .DS_Store files from turning successful RF-04 offline replay assertions into cleanup-only ENOTEMPTY failures. Keep the frozen 50-run/55-provider-episode evidence unchanged and add deterministic cleanup regression coverage."
 sections:
