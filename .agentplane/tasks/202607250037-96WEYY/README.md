@@ -1,10 +1,11 @@
 ---
 id: "202607250037-96WEYY"
 title: "Make RF-04 replay cleanup retry-safe on macOS"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -49,11 +50,16 @@ quality_review:
   findings:
     - "Cleanup retries are capped at four attempts, retain the first persistent retryable error, and surface non-retryable errors immediately; deterministic tests distinguish first-vs-last error identity and one-call EIO behavior."
     - "Capture retry cleanup deletes only newly created rf04-replay roots and preserves pre-existing roots; three repeated focused runs and the full 11-chunk critical suite passed with the same 50/70/27/170 evidence and structural digest."
-commit: null
+commit:
+  hash: "18c0d75004c7cb5486266753d5e782ab09e71521"
+  message: "🧭 96WEYY task: record independent quality pass"
 comments:
   -
     author: "CODER"
     body: "Start: make RF-04 replay cleanup retry-safe without changing frozen evidence."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -74,8 +80,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent review PASS at e1ed542204ff. Focused RF-04 test passed three consecutive final runs (10/10 each) with unchanged 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, and structural SHA 006ddc...9ee4; test:critical passed all 11 chunks; typecheck, scoped ESLint, Prettier, routing, hotspots, task lint, and diff-check passed; no provider/model calls were made."
+  -
+    type: "status"
+    at: "2026-07-25T01:14:44.308Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T01:13:15.170Z"
+doc_updated_at: "2026-07-25T01:14:44.308Z"
 doc_updated_by: "CODER"
 description: "Prevent Finder-created .DS_Store files from turning successful RF-04 offline replay assertions into cleanup-only ENOTEMPTY failures. Keep the frozen 50-run/55-provider-episode evidence unchanged and add deterministic cleanup regression coverage."
 sections:
@@ -166,6 +179,10 @@ sections:
     - Observation: Finder can race temporary replay cleanup and emit retryable ENOTEMPTY after the semantic assertion has already completed.
       Impact: A cleanup-only race can mask the real replay result and create a false release-gate failure without changing provider evidence.
       Resolution: Use a four-attempt test-boundary cleanup/replay wrapper that deletes only capture roots created by the current test, preserves the first persistent cleanup error, and immediately surfaces non-retryable errors; production harness bytes remain frozen.
+extensions:
+  implementation_commit:
+    hash: "e1ed542204ffdf66d142c0689c76af3e863a2631"
+    message: "🛠️ 96WEYY task: retry replay cleanup at test boundary"
 id_source: "generated"
 ---
 ## Summary
