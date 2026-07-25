@@ -1,10 +1,11 @@
 ---
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -55,11 +56,16 @@ quality_review:
   findings:
     - "The force path is available only for an existing open PR whose provider repository, origin fetch repository, origin push repository, branch, and observed remote head all agree."
     - "Publication uses only the exact ref-scoped lease and refuses mismatched repository/head, wrong upstream/current branch, closed or missing PR, and a remote race; first publication remains unchanged."
-commit: null
+commit:
+  hash: "4fca1c1fdf04db6bd95a5f549844c501d2fd21ea"
+  message: "🧭 DFWJM6 task: record independent quality pass"
 comments:
   -
     author: "CODER"
     body: "Start: implement a narrow explicit force-with-lease publication path for existing matching open PRs, with regression coverage for mismatches and remote races."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -74,8 +80,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent review PASS at 8d06aecb: 20/20 focused publication tests passed; exact repo-bound force-with-lease and all fail-closed cases verified; typecheck, lint:core, hotspots, architecture, task-state, task lint, routing, diff-check, and doctor passed. Unchanged website lint baseline remains outside scope."
+  -
+    type: "status"
+    at: "2026-07-25T01:08:17.205Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T01:06:30.760Z"
+doc_updated_at: "2026-07-25T01:08:17.206Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -140,6 +153,10 @@ sections:
     - Wrong upstream/current branch, mismatched repository/head, closed or missing PR, and a remote race are covered by explicit fail-closed regression tests.
     - Independent safety re-review verdict: PASS with no remaining findings.
     - Full `bun run lint` remains red on unchanged `website/scripts/generate-social-images.mjs:207` (`unicorn/prefer-string-replace-all`); `bun run lint:core` and targeted ESLint pass. This task does not widen into website cleanup.
+extensions:
+  implementation_commit:
+    hash: "8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
+    message: "🛡️ DFWJM6 task: guard rebased PR publication"
 id_source: "generated"
 ---
 ## Summary
