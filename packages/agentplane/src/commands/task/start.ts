@@ -7,6 +7,7 @@ import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { ensurePrArtifactsSynced } from "../pr/internal/sync.js";
 import { writeTaskBlueprintResolvedSnapshot } from "../blueprint/snapshot-artifact.js";
+import { withWorkflowRouteBaseline } from "../shared/workflow-step-policy-scope.js";
 
 import {
   applyTaskStatusTransitionCommand,
@@ -95,6 +96,7 @@ export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promi
       config: ctx.config,
     });
     const commentBody = preparedComment.commentBody ?? opts.body;
+    const startHeadSha = await ctx.git.headCommit().catch(() => null);
 
     const at = nowIso();
     const transition = await applyTaskStatusTransitionCommand({
@@ -120,6 +122,9 @@ export async function cmdStart(opts: TaskTransitionCommentCommandOptions): Promi
             action: "start",
             confirmed: opts.confirmStatusCommit,
             quiet: opts.quiet,
+          },
+          extraFields: {
+            extensions: withWorkflowRouteBaseline(current, startHeadSha),
           },
         };
       },

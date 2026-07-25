@@ -5,6 +5,7 @@ import {
   type RouteOperatorGuidance,
 } from "../shared/route-guidance.js";
 import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
+import type { WorkflowStep } from "../shared/workflow-step.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   agentWorkContextContract,
@@ -129,6 +130,10 @@ export type TaskBrief = {
   source_confidence: Record<string, AgentWorkContextSourceConfidence>;
 };
 
+export type TaskBriefWithWorkflowStep = TaskBrief & {
+  workflow_step: WorkflowStep;
+};
+
 function buildSourceConfidence(opts: {
   blueprintError?: string;
   remoteEnabled: boolean;
@@ -227,7 +232,7 @@ export async function buildTaskBrief(opts: {
   cwd: string;
   parsed: TaskBriefParsed;
   rootOverride?: string | null;
-}): Promise<TaskBrief> {
+}): Promise<TaskBriefWithWorkflowStep> {
   const task = await loadTaskFromContext({ ctx: opts.commandCtx, taskId: opts.parsed.taskId });
   const doc =
     typeof task.doc === "string"
@@ -300,6 +305,7 @@ export async function buildTaskBrief(opts: {
       ambiguities: route.ambiguities.map((ambiguity) => ({ ...ambiguity })),
       repair_plan: route.repairPlan.map((step) => ({ ...step })),
     },
+    workflow_step: route.workflowStep,
     batch_ownership: batchOwnership,
     next_action: {
       code: route.nextAction.code,

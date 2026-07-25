@@ -195,6 +195,63 @@ async function createClosedPreMergeTask(): Promise<{
       cwd: root,
     });
   }
+  await runCliSilent([
+    "evaluator",
+    "run",
+    taskId,
+    "--provenance",
+    "evaluator_supplied",
+    "--verdict",
+    "pass",
+    "--summary",
+    "Final closed-head quality review passed.",
+    "--finding",
+    "No blocking findings at the final semantic head.",
+    "--evidence",
+    "impl.txt",
+    "--root",
+    root,
+  ]);
+  await execFileAsync("git", ["add", `.agentplane/tasks/${taskId}`], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "task: record final quality review"], {
+    cwd: root,
+  });
+  const { stdout: reviewedHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: root,
+  });
+  const refreshIo = captureStdIO();
+  try {
+    const refreshCode = await runCli([
+      "finish",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Verified: refreshed closure is current after the final quality review.",
+      "--result",
+      "pre-merge closure",
+      "--commit",
+      reviewedHeadRaw.trim(),
+      "--pre-merge-closure",
+      "--force",
+      "--yes",
+      "--root",
+      root,
+    ]);
+    if (refreshCode !== 0) throw new Error(refreshIo.stderr);
+    expect(refreshCode).toBe(0);
+  } finally {
+    refreshIo.restore();
+  }
+  const { stdout: refreshedClosureStatus } = await execFileAsync("git", ["status", "--porcelain"], {
+    cwd: root,
+  });
+  if (refreshedClosureStatus.trim()) {
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "task: refresh pre-merge closure"], {
+      cwd: root,
+    });
+  }
   const { stdout: branchHeadRaw } = await execFileAsync("git", ["rev-parse", branchName], {
     cwd: root,
   });

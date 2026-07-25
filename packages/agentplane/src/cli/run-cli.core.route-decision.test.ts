@@ -251,6 +251,9 @@ describe("runCli route decision commands", () => {
           expect(code).toBe(0);
           expect(textIo.stdout).toContain(`task brief: ${taskId}`);
           expect(textIo.stdout).toContain("phase:");
+          expect(textIo.stdout).toContain("step_kind:");
+          expect(textIo.stdout).toContain("step_id:");
+          expect(textIo.stdout).toContain("operation_id:");
           expect(textIo.stdout).toContain("authoritative_checkout:");
           expect(textIo.stdout).toContain("next_code:");
           expect(textIo.stdout).toContain("recommended_role:");
@@ -564,7 +567,7 @@ describe("runCli route decision commands", () => {
       expect(parsed.execution_packet.safeToMutate).toBe(true);
       expect(parsed.next_action).toMatchObject({
         code: "cancel_then_resume",
-        command: `agentplane task reclaim ${taskId} --author CODER --reason "stale runner pid is no longer alive"`,
+        command: `agentplane task reclaim ${taskId} --author CODER --reason 'stale runner pid is no longer alive'`,
       });
     } finally {
       nextIo.restore();
@@ -1084,7 +1087,7 @@ describe("runCli route decision commands", () => {
         repair_plan: { code: string }[];
       };
       expect(parsed.blockers.map((blocker) => blocker.code)).toContain("branch_head_missing");
-      expect(parsed.repair_plan.map((step) => step.code)).toContain("fetch_branch");
+      expect(parsed.repair_plan.map((step) => step.code)).toContain("repair_branch_head");
       expect(parsed.repair_plan.map((step) => step.code)).not.toContain("no_repair_needed");
     } finally {
       repairIo.restore();

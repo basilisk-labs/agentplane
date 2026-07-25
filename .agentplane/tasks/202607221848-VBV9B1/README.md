@@ -1,10 +1,10 @@
 ---
 id: "202607221848-VBV9B1"
 title: "Replace route string dispatch with typed WorkflowStep decisions"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -27,10 +27,10 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-07-24T22:14:51.805Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved as the first critical-path alpha.2 leaf under the existing full v0.7 refactor authorization."
 verification:
   state: "pending"
   updated_at: null
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: Implement the single typed WorkflowStep decision boundary, operation registry, compatibility projections, and lifecycle parity fixtures without semantic route-string inference."
+events:
+  -
+    type: "status"
+    at: "2026-07-24T22:15:24.501Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Implement the single typed WorkflowStep decision boundary, operation registry, compatibility projections, and lifecycle parity fixtures without semantic route-string inference."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:48:48.546Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-24T22:15:24.501Z"
+doc_updated_by: "CODER"
 description: "RF-06b: reduce RouteState to typed CLI operation, agent episode, approval, human input, wait, and terminal steps with idempotency keys and postconditions."
 sections:
   Summary: |-

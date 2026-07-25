@@ -658,6 +658,11 @@ describe("runCli", { timeout: TASKS_CLI_TIMEOUT_MS }, () => {
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(task.frontmatter.status).toBe("DOING");
+    const extensions = task.frontmatter.extensions as Record<string, unknown> | undefined;
+    expect(extensions?.workflow_route_baseline).toEqual({
+      version: 1,
+      start_head_sha: null,
+    });
   });
 
   it("task start-ready prints matching incident advice for analogous tasks", async () => {

@@ -3,6 +3,19 @@ import { describe, expect, it } from "vitest";
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteOperatorGuidance, routeRunnerContextIsRelevant } from "./route-guidance.js";
 
+function cliWorkflowStep(
+  operation: Record<string, unknown> & { id: string; triggersGitHooks: boolean },
+): TaskRouteDecision["workflowStep"] {
+  return {
+    kind: "cli_operation",
+    operation,
+  } as TaskRouteDecision["workflowStep"];
+}
+
+function waitWorkflowStep(): TaskRouteDecision["workflowStep"] {
+  return { kind: "wait" } as TaskRouteDecision["workflowStep"];
+}
+
 describe("route operator guidance", () => {
   it("surfaces PR artifact freshness loops separately from executable route commands", () => {
     const decision = {
@@ -15,6 +28,11 @@ describe("route operator guidance", () => {
         verification: "ok",
         commit: "abc123",
       },
+      workflowStep: cliWorkflowStep({
+        id: "pr.artifacts.update",
+        triggersGitHooks: true,
+      }),
+      blockers: [],
       nextAction: {
         code: "update_pr_artifacts",
         command: "agentplane pr update 202606041604-E3EJG8",
@@ -102,6 +120,11 @@ describe("route operator guidance", () => {
         verification: "pending",
         commit: null,
       },
+      workflowStep: cliWorkflowStep({
+        id: "pr.sync_or_verify",
+        triggersGitHooks: true,
+      }),
+      blockers: [],
       nextAction: {
         code: "verify_or_update_pr",
         command: "agentplane pr update 202606042157-020DWK",
@@ -142,6 +165,53 @@ describe("route operator guidance", () => {
     });
   });
 
+  it("does not report Git-hook risk for the typed integration queue operation", () => {
+    const decision = {
+      task: { id: "202606050000-QUEUE" },
+      workflowStep: cliWorkflowStep({
+        id: "integration.enqueue",
+        triggersGitHooks: false,
+      }),
+      blockers: [],
+      nextAction: {
+        code: "wait_hosted_checks",
+        command: "agentplane integrate queue enqueue 202606050000-QUEUE --branch task/queue",
+        summary: "enqueue integration",
+        requiresApproval: false,
+      },
+      oracle: {
+        phase: "pr_open_integration_lane",
+        authoritativeCheckout: "base_checkout",
+        authoritativeCheckoutPath: "/repo",
+        mutationPathHint: "/repo",
+        blocker: null,
+        nextCommand: "agentplane integrate queue enqueue 202606050000-QUEUE --branch task/queue",
+        summary: "enqueue integration",
+      },
+      executionPacket: {
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: [
+          "agentplane",
+          "integrate",
+          "queue",
+          "enqueue",
+          "202606050000-QUEUE",
+          "--branch",
+          "task/queue",
+        ],
+        stopReason: null,
+        returnControlWhen: "after enqueue",
+        staleStateCheck: "agentplane task next-action 202606050000-QUEUE --explain",
+        verificationCandidate: "agentplane pr check <task-id>",
+      },
+    } as unknown as TaskRouteDecision;
+
+    expect(deriveRouteOperatorGuidance(decision).risks.map((risk) => risk.code)).not.toContain(
+      "git_hook_side_effect",
+    );
+  });
+
   it("keeps runner context visible only for an active runner route", () => {
     const decision = {
       task: {
@@ -153,6 +223,7 @@ describe("route operator guidance", () => {
         verification: "pending",
         commit: null,
       },
+      workflowStep: waitWorkflowStep(),
       nextAction: {
         code: "wait_runner",
         command: null,
@@ -208,6 +279,10 @@ describe("route operator guidance", () => {
         verification: null,
         commit: null,
       },
+      workflowStep: cliWorkflowStep({
+        id: "worktree.prepare",
+        triggersGitHooks: false,
+      }),
       nextAction: {
         code: "start_or_recover_worktree",
         command:
@@ -281,9 +356,14 @@ describe("route operator guidance", () => {
         verification: "ok",
         commit: "abc123",
       },
+      workflowStep: cliWorkflowStep({
+        id: "task.hosted_close.finalize",
+        params: { taskId: "202606080612-F8PTW7", base: "main" },
+        triggersGitHooks: false,
+      }),
       nextAction: {
         code: "sync_hosted_close",
-        command: "agentplane cleanup merged --finalize --base main",
+        command: "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
         summary:
           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
         requiresApproval: false,
@@ -294,7 +374,8 @@ describe("route operator guidance", () => {
         authoritativeCheckoutPath: "/repo",
         mutationPathHint: "/repo",
         blocker: null,
-        nextCommand: "agentplane cleanup merged --finalize --base main",
+        nextCommand:
+          "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
         summary:
           "hosted close-tail already landed upstream; finalize base sync and clean merged task branches/worktrees",
       },
@@ -302,7 +383,16 @@ describe("route operator guidance", () => {
       executionPacket: {
         actionKind: "local_command",
         safeToMutate: true,
-        exactArgv: ["agentplane", "cleanup", "merged", "--finalize", "--base", "main"],
+        exactArgv: [
+          "agentplane",
+          "cleanup",
+          "merged",
+          "--task-id",
+          "202606080612-F8PTW7",
+          "--finalize",
+          "--base",
+          "main",
+        ],
         stopReason: null,
         returnControlWhen:
           "after the exact command exits; recompute task next-action before any further step",
@@ -313,18 +403,20 @@ describe("route operator guidance", () => {
 
     expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
       canExecuteNow: true,
-      safeCommand: "agentplane cleanup merged --finalize --base main",
-      diagnosticCommand: "agentplane cleanup merged --finalize --base main",
+      safeCommand: "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
+      diagnosticCommand:
+        "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
       risks: [
         {
           code: "hosted_close_finalize",
-          mitigationCommand: "agentplane cleanup merged --finalize --base main",
+          mitigationCommand:
+            "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
         },
       ],
     });
   });
 
-  it("stops unsafe shell-chain routes until an argv-safe command exists", () => {
+  it("derives hosted-close diagnostics from the typed operation, not compatibility strings", () => {
     const decision = {
       task: {
         id: "202606080612-F8PTW7",
@@ -335,6 +427,11 @@ describe("route operator guidance", () => {
         verification: "ok",
         commit: "abc123",
       },
+      workflowStep: cliWorkflowStep({
+        id: "task.hosted_close.finalize",
+        params: { taskId: "202606080612-F8PTW7", base: "main" },
+        triggersGitHooks: false,
+      }),
       nextAction: {
         code: "sync_hosted_close",
         command: "git fetch origin main && git merge --ff-only origin/main",
@@ -352,11 +449,19 @@ describe("route operator guidance", () => {
       },
       blockers: [],
       executionPacket: {
-        actionKind: "stop",
-        safeToMutate: false,
-        exactArgv: null,
-        stopReason:
-          "next command is not argv-safe; route must be split before an external agent can execute it",
+        actionKind: "local_command",
+        safeToMutate: true,
+        exactArgv: [
+          "agentplane",
+          "cleanup",
+          "merged",
+          "--task-id",
+          "202606080612-F8PTW7",
+          "--finalize",
+          "--base",
+          "main",
+        ],
+        stopReason: null,
         returnControlWhen:
           "after this route is split into argv-safe steps; recompute task next-action before mutating",
         staleStateCheck: "agentplane task next-action 202606080612-F8PTW7 --explain",
@@ -365,8 +470,8 @@ describe("route operator guidance", () => {
     } as TaskRouteDecision;
 
     expect(deriveRouteOperatorGuidance(decision)).toMatchObject({
-      canExecuteNow: false,
-      operatorAction: "stop",
+      canExecuteNow: true,
+      operatorAction: "run_exact_argv",
       diagnosticCommand:
         "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
       risks: [
@@ -374,10 +479,6 @@ describe("route operator guidance", () => {
           code: "hosted_close_finalize",
           mitigationCommand:
             "agentplane cleanup merged --task-id 202606080612-F8PTW7 --finalize --base main",
-        },
-        {
-          code: "unsafe_shell_chain_route",
-          mitigationCommand: "agentplane task next-action 202606080612-F8PTW7 --explain",
         },
       ],
     });

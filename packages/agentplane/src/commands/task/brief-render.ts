@@ -1,6 +1,7 @@
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { routeRunnerContextIsRelevant } from "../shared/route-guidance.js";
-import type { TaskBrief } from "./brief-model.js";
+import { renderCliArgv } from "../shared/workflow-operation-projection.js";
+import type { TaskBrief, TaskBriefWithWorkflowStep } from "./brief-model.js";
 
 function splitNonEmptyLines(text: string): string[] {
   return text
@@ -19,7 +20,7 @@ function formatSourceConfidence(sourceConfidence: TaskBrief["source_confidence"]
     .join(", ");
 }
 
-export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
+export function reportTaskBriefText(brief: TaskBriefWithWorkflowStep, taskId: string): void {
   const output = createCliEmitter();
   output.report(
     [
@@ -28,6 +29,13 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
       { label: "owner", value: brief.task.owner },
       { label: "workflow", value: brief.workflow.mode },
       { label: "phase", value: brief.route.phase },
+      { label: "step_kind", value: brief.workflow_step.kind },
+      { label: "step_id", value: brief.workflow_step.id },
+      {
+        label: "operation_id",
+        value:
+          brief.workflow_step.kind === "cli_operation" ? brief.workflow_step.operation.id : "none",
+      },
       { label: "authoritative_checkout", value: brief.route.authoritative_checkout },
       {
         label: "authoritative_checkout_path",
@@ -95,7 +103,9 @@ export function reportTaskBriefText(brief: TaskBrief, taskId: string): void {
       },
       {
         label: "exact_argv",
-        value: brief.execution_packet.exact_argv?.join(" ") ?? "none",
+        value: brief.execution_packet.exact_argv
+          ? renderCliArgv(brief.execution_packet.exact_argv)
+          : "none",
       },
       {
         label: "return_control_when",

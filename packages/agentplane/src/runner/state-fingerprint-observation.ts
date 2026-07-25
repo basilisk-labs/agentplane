@@ -1,4 +1,3 @@
-import { createHash } from "node:crypto";
 import path from "node:path";
 
 import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
@@ -9,7 +8,6 @@ import type { TaskRouteDecision } from "../commands/shared/route-decision-types.
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { makeReadOnlyExecutionContext } from "../runtime/execution-context.js";
 import { consumeExecutionProfileBudget } from "../runtime/execution-profile/index.js";
-import { readContainedStableTextNoFollow } from "../shared/contained-stable-file.js";
 import { collectRunnerBasePrompts } from "./context/base-prompts.js";
 import { assembleRunnerTaskContext } from "./context/task-context.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "./sandbox-policy.js";
@@ -20,13 +18,12 @@ import {
   preparedRunnerExecutionConfigProjection,
 } from "./state-fingerprint-authority.js";
 import { observeBackendProjection } from "./state-fingerprint-backend-projection.js";
+import { observeKnowledgeProjection } from "./state-fingerprint-knowledge.js";
 import { observeRunnerPolicyComponent } from "./state-fingerprint-policy.js";
 import { observeRunnerTaskProjection, runnerTaskProjectionReader } from "./task-observation.js";
 import type { RunnerContextBundle, RunnerPromptBlock, RunnerRecipeContext } from "./types.js";
 import { assembleRunnerRecipeContext } from "./context/recipe-context.js";
 import { resolveRunnerBlueprintPlan } from "./usecases/task-run-blueprint-plan.js";
-
-const KNOWLEDGE_MANIFEST_MAX_BYTES = 16 * 1024 * 1024;
 
 export type RunnerStateFingerprintComponentProbes = {
   load_context?: () => Promise<CommandContext>;
@@ -75,10 +72,6 @@ function authoritativePreparedRepositoryRoot(opts: {
     );
   }
   return contextRoot;
-}
-
-function digestText(text: string): string {
-  return `sha256:${createHash("sha256").update(text, "utf8").digest("hex")}`;
 }
 
 function unavailableComponent(
@@ -221,63 +214,6 @@ function blueprintComponent(
     source: "blueprint_resolver",
     value: projection,
   };
-}
-
-async function observeKnowledgeProjection(
-  repositoryRoot: string,
-): Promise<StateFingerprintComponentInput> {
-  const manifestPath = path.join(repositoryRoot, ".agentplane", "context", "manifest.lock.json");
-  let manifestText = "";
-  try {
-    manifestText = await readContainedStableTextNoFollow({
-      repository_root: repositoryRoot,
-      file_path: manifestPath,
-      label: "knowledge manifest lock",
-      max_bytes: KNOWLEDGE_MANIFEST_MAX_BYTES,
-    });
-    JSON.parse(manifestText);
-    return {
-      state: "present",
-      source: "context_manifest_lock",
-      value: {
-        path: ".agentplane/context/manifest.lock.json",
-        initialized: true,
-        sha256: digestText(manifestText),
-      },
-    };
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      return unavailableComponent("context_manifest_lock", "knowledge_manifest_invalid", {
-        path: ".agentplane/context/manifest.lock.json",
-        sha256: digestText(manifestText),
-      });
-    }
-    if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") {
-      return unavailableComponent("context_manifest_lock", "knowledge_manifest_unreadable");
-    }
-    try {
-      await readContainedStableTextNoFollow({
-        repository_root: repositoryRoot,
-        file_path: path.join(repositoryRoot, ".agentplane", "context", "agentplane.context.yaml"),
-        label: "knowledge manifest",
-        max_bytes: KNOWLEDGE_MANIFEST_MAX_BYTES,
-      });
-      return unavailableComponent("context_manifest_lock", "knowledge_manifest_lock_missing");
-    } catch (manifestError) {
-      if ((manifestError as NodeJS.ErrnoException | null)?.code === "ENOENT") {
-        return {
-          state: "present",
-          source: "context_manifest_lock",
-          value: {
-            path: ".agentplane/context/manifest.lock.json",
-            initialized: false,
-            sha256: null,
-          },
-        };
-      }
-      return unavailableComponent("context_manifest_lock", "knowledge_manifest_unreadable");
-    }
-  }
 }
 
 async function resolveLiveState(opts: {

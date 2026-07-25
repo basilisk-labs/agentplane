@@ -142,28 +142,15 @@ async function readLocalPreMergeState(opts: {
   return { open: meta?.status === "OPEN" };
 }
 
-function hasStructuredIncludedBatchMetadata(task: TaskData): boolean {
-  const batch = isRecord(task.extensions?.branch_pr_batch) ? task.extensions.branch_pr_batch : null;
-  return batch?.role === "included";
-}
-
-function hasIncludedBatchProse(task: TaskData): boolean {
-  const haystack = [
-    task.title,
-    task.description,
-    typeof task.doc === "string" ? task.doc : "",
-    ...(Array.isArray(task.comments) ? task.comments.map((comment) => comment.body) : []),
-  ]
-    .join("\n")
-    .toLowerCase();
-  return (
-    haystack.includes("included in batch") ||
-    haystack.includes("included in the batch") ||
-    haystack.includes("included task from merged") ||
-    haystack.includes("closed included batch task") ||
-    haystack.includes("batch worktree") ||
-    haystack.includes("included tasks in batch")
-  );
+function includedBatchMetadataState(task: TaskData): "absent" | "valid" | "invalid" {
+  if (!isRecord(task.extensions) || !("branch_pr_batch" in task.extensions)) return "absent";
+  const batch = task.extensions.branch_pr_batch;
+  if (!isRecord(batch) || batch.role !== "included") return "invalid";
+  const primaryTaskId =
+    typeof batch.primary_task_id === "string" ? batch.primary_task_id.trim() : "";
+  const branch = typeof batch.branch === "string" ? batch.branch.trim() : "";
+  const base = typeof batch.base === "string" ? batch.base.trim() : "";
+  return primaryTaskId && branch && base ? "valid" : "invalid";
 }
 
 function isTaskArtifactPath(opts: {
@@ -466,13 +453,12 @@ export async function deriveBlockers(opts: {
       opts.task.verification?.state === "ok" &&
       String(opts.task.status).toUpperCase() === "DOING" &&
       !opts.task.commit?.hash &&
-      !hasStructuredIncludedBatchMetadata(opts.task) &&
-      hasIncludedBatchProse(opts.task)
+      includedBatchMetadataState(opts.task) === "invalid"
     ) {
       addBlocker(
         blockers,
         "missing_included_batch_metadata",
-        "task text mentions included batch closure but structured branch_pr batch metadata is missing",
+        "structured branch_pr batch metadata is incomplete or malformed",
       );
     }
   }

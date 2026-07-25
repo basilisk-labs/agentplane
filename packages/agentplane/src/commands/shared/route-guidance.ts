@@ -1,4 +1,5 @@
 import type { TaskRouteDecision } from "./route-decision-types.js";
+import { projectWorkflowOperationCommand, renderCliArgv } from "./workflow-operation-projection.js";
 
 export type RouteOperatorGuidance = {
   schemaVersion: 1;
@@ -25,8 +26,7 @@ type RouteOperatorRisk = {
     | "git_hook_side_effect"
     | "runner_rail_confusion"
     | "worktree_projection_drift"
-    | "hosted_close_finalize"
-    | "unsafe_shell_chain_route";
+    | "hosted_close_finalize";
   summary: string;
   mitigationCommand: string;
   stopCondition: string;
@@ -81,22 +81,12 @@ type RouteRunnerContext = {
   returnControlWhen: string;
 };
 
-function commandTouchesGitHooks(command: string | null): boolean {
-  const normalized = command?.trim() ?? "";
-  return (
-    /\b(agentplane|ap)\s+(pr\s+(open|update)|integrate|finish)\b/.test(normalized) ||
-    /\b(agentplane|ap)\s+task\s+commit\b/.test(normalized) ||
-    /\bgit\s+commit\b/.test(normalized)
-  );
-}
-
 function artifactFreshnessRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
-  if (
-    decision.nextAction.code !== "update_pr_artifacts" &&
-    decision.nextAction.code !== "verify_or_update_pr"
-  ) {
-    return null;
-  }
+  const step = decision.workflowStep;
+  const artifactRefresh =
+    step?.kind === "cli_operation" &&
+    (step.operation.id === "pr.artifacts.update" || step.operation.id === "pr.sync_or_verify");
+  if (!artifactRefresh) return null;
   return {
     code: "pr_artifact_freshness_loop",
     summary:
@@ -108,7 +98,9 @@ function artifactFreshnessRisk(decision: TaskRouteDecision): RouteOperatorRisk |
 }
 
 function gitHookRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
-  if (!commandTouchesGitHooks(decision.oracle.nextCommand)) return null;
+  const step = decision.workflowStep;
+  const triggersGitHooks = step.kind === "cli_operation" ? step.operation.triggersGitHooks : false;
+  if (!triggersGitHooks) return null;
   return {
     code: "git_hook_side_effect",
     summary:
@@ -120,11 +112,11 @@ function gitHookRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
 }
 
 function runnerRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
-  const command = decision.oracle.nextCommand ?? "";
+  const step = decision.workflowStep;
   const runnerRoute =
-    decision.nextAction.code === "wait_runner" ||
-    (decision.blockers ?? []).some((blocker) => blocker.code === "runner_alive") ||
-    /\b(agentplane|ap)\s+task\s+run\b/.test(command);
+    step.kind === "wait" ||
+    (step.kind === "cli_operation" && step.operation.id === "runner.follow") ||
+    decision.blockers.some((blocker) => blocker.code === "runner_alive");
   if (!runnerRoute) return null;
   return {
     code: "runner_rail_confusion",
@@ -136,13 +128,11 @@ function runnerRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
   };
 }
 
-function commandIsArgvSafeCandidate(command: string | null): boolean {
-  const trimmed = command?.trim() ?? "";
-  return trimmed.length > 0 && !/[;&|<>`$]/u.test(trimmed);
-}
-
 function worktreeProjectionRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
-  if (decision.nextAction.code !== "start_or_recover_worktree") return null;
+  const step = decision.workflowStep;
+  if (!(step.kind === "cli_operation" && step.operation.id === "worktree.prepare")) {
+    return null;
+  }
   return {
     code: "worktree_projection_drift",
     summary:
@@ -154,13 +144,11 @@ function worktreeProjectionRisk(decision: TaskRouteDecision): RouteOperatorRisk 
 }
 
 function hostedCloseFinalizeRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
-  if (decision.nextAction.code !== "sync_hosted_close") return null;
-  const base = decision.workspace?.baseBranch ?? "main";
-  const fallback =
-    `agentplane cleanup merged --task-id ${decision.task.id} --finalize ` + `--base ${base}`;
-  const command = commandIsArgvSafeCandidate(decision.nextAction.command)
-    ? (decision.nextAction.command ?? fallback)
-    : fallback;
+  const step = decision.workflowStep;
+  if (!(step.kind === "cli_operation" && step.operation.id === "task.hosted_close.finalize")) {
+    return null;
+  }
+  const command = projectWorkflowOperationCommand(step.operation);
   return {
     code: "hosted_close_finalize",
     summary:
@@ -168,23 +156,6 @@ function hostedCloseFinalizeRisk(decision: TaskRouteDecision): RouteOperatorRisk
     mitigationCommand: command,
     stopCondition:
       "if finalize cannot fast-forward base or cleanup reports dirty state, stop and inspect git status before deleting branches/worktrees",
-  };
-}
-
-function unsafeShellChainRisk(decision: TaskRouteDecision): RouteOperatorRisk | null {
-  if (
-    decision.executionPacket.actionKind !== "stop" ||
-    !decision.executionPacket.stopReason?.includes("not argv-safe")
-  ) {
-    return null;
-  }
-  return {
-    code: "unsafe_shell_chain_route",
-    summary:
-      "route selected a compound shell command that external agents must not execute as a raw shell string",
-    mitigationCommand: decision.executionPacket.staleStateCheck,
-    stopCondition:
-      "do not split or mutate manually until the route emits an argv-safe command or an AgentPlane-owned wrapper",
   };
 }
 
@@ -226,21 +197,22 @@ function deriveSourceOfTruth(
 }
 
 function deriveRunnerContext(decision: TaskRouteDecision): RouteRunnerContext {
-  const command = decision.oracle.nextCommand ?? "";
+  const step = decision.workflowStep;
   const runnerIsAllowedNow =
     decision.executionPacket.actionKind === "local_command" &&
     decision.executionPacket.safeToMutate &&
-    /\b(agentplane|ap)\s+task\s+run\b/.test(command);
+    step.kind === "cli_operation" &&
+    step.operation.id === "runner.follow";
   const runnerIsRequired =
     runnerIsAllowedNow ||
-    decision.nextAction.code === "wait_runner" ||
-    (decision.blockers ?? []).some((blocker) => blocker.code === "runner_alive");
+    step.kind === "wait" ||
+    decision.blockers.some((blocker) => blocker.code === "runner_alive");
   return {
     runnerIsRequired,
     runnerIsAllowedNow,
     localWorkAllowedIfRunnerFails: !runnerIsRequired && decision.executionPacket.safeToMutate,
     runnerFailureMeans: runnerIsRequired
-      ? decision.nextAction.code === "wait_runner"
+      ? step.kind === "wait"
         ? "inspect_runner_artifacts"
         : "runner_infrastructure_or_task_unknown"
       : "not_runner_route",
@@ -252,6 +224,7 @@ function deriveExecutorContext(
   decision: TaskRouteDecision,
   runnerContext: RouteRunnerContext,
 ): RouteExecutorContext {
+  const step = decision.workflowStep;
   const runnerRouteActive = runnerContext.runnerIsRequired || runnerContext.runnerIsAllowedNow;
   const currentAgentMustExecute =
     !runnerRouteActive &&
@@ -268,7 +241,8 @@ function deriveExecutorContext(
     };
   }
   if (
-    decision.nextAction.code === "implementation_rework_required" &&
+    step.kind === "agent_episode" &&
+    step.episode.purpose === "implementation_rework" &&
     decision.executionPacket.safeToMutate
   ) {
     return {
@@ -305,14 +279,14 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
     runnerRisk(decision),
     worktreeProjectionRisk(decision),
     hostedCloseFinalizeRisk(decision),
-    unsafeShellChainRisk(decision),
   ].filter((risk): risk is RouteOperatorRisk => risk !== null);
   const artifactRisk = risks.find((risk) => risk.code === "pr_artifact_freshness_loop") ?? null;
   const hookRisk = risks.find((risk) => risk.code === "git_hook_side_effect") ?? null;
   const worktreeRisk = risks.find((risk) => risk.code === "worktree_projection_drift") ?? null;
   const hostedCloseRisk = risks.find((risk) => risk.code === "hosted_close_finalize") ?? null;
-  const unsafeShellRisk = risks.find((risk) => risk.code === "unsafe_shell_chain_route") ?? null;
-  const safeCommand = decision.executionPacket.exactArgv?.join(" ") ?? null;
+  const safeCommand = decision.executionPacket.exactArgv
+    ? renderCliArgv(decision.executionPacket.exactArgv)
+    : null;
   const canExecuteNow =
     decision.executionPacket.actionKind === "local_command" &&
     decision.executionPacket.safeToMutate &&
@@ -322,7 +296,6 @@ export function deriveRouteOperatorGuidance(decision: TaskRouteDecision): RouteO
     taskScopedCandidate(decision.executionPacket.verificationCandidate, decision.task.id) ??
     worktreeRisk?.mitigationCommand ??
     hostedCloseRisk?.mitigationCommand ??
-    unsafeShellRisk?.mitigationCommand ??
     risks.find((risk) => risk.code === "runner_rail_confusion")?.mitigationCommand ??
     null;
   const repeatAllowed = canExecuteNow && artifactRisk === null;
