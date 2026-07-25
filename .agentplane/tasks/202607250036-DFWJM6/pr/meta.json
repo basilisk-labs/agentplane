@@ -8,10 +8,10 @@
   "pr_number": 4616,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4616",
   "pre_merge_closure": {
-    "basis_commit": "d40eaea364c9559ff8d10fdef060fa159e33142f",
+    "basis_commit": "4acdfcbb6ca4f391b573f17c3f38b7221e776c96",
     "branch": "task/202607250036-DFWJM6/force-with-lease-pr-publish",
     "pr_number": 4616,
-    "recorded_at": "2026-07-25T01:09:01.509Z",
+    "recorded_at": "2026-07-25T01:10:57.887Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
