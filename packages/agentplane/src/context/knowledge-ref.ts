@@ -16,6 +16,7 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import { readContainedStableTextNoFollow } from "../shared/contained-stable-file.js";
+import { isRecord } from "../shared/guards.js";
 import {
   buildSnippet,
   jsonlRowIdentity,
@@ -82,9 +83,6 @@ function sha256(content: string): string {
 }
 function contentLineCount(content: string): number {
   return content.length === 0 ? 0 : content.split(/\r?\n/u).length;
-}
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 function normalizeProjectionVersion(value: number): number | null {
   return Number.isSafeInteger(value) && value > 0 ? value : null;
