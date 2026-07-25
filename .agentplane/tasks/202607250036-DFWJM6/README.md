@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -56,8 +56,8 @@ quality_review:
   findings:
     - "Exact source identity, repository identity, expected destination, destination lease, and source-race refusal are covered; forward-compatible closure parsing is structurally bounded; full and targeted suites pass with zero new temp-root leaks."
 commit:
-  hash: "cbf4ac33977ceaf346803963c55848cab66ff76d"
-  message: "🧪 DFWJM6 task: complete hosted PR regressions"
+  hash: "b37323bf0bf704f57c476af4258c814130d976f4"
+  message: "🧪 DFWJM6 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -150,8 +153,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T03:56:09.016Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T03:55:24.674Z"
+doc_updated_at: "2026-07-25T03:56:09.018Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -362,8 +372,8 @@ sections:
       Fixability: repo-fixable
 extensions:
   implementation_commit:
-    hash: "8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
-    message: "🛡️ DFWJM6 task: guard rebased PR publication"
+    hash: "cbf4ac33977ceaf346803963c55848cab66ff76d"
+    message: "🧪 DFWJM6 task: complete hosted PR regressions"
 id_source: "generated"
 ---
 ## Summary
