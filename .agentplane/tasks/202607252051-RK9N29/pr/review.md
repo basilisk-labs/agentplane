@@ -6,14 +6,14 @@ Created: 2026-07-25T20:53:29.950Z
 
 - Task: `202607252051-RK9N29`
 - Title: Make branch_pr route resolution branch-snapshot aware
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607252051-RK9N29/make-branch-pr-route-resolution-branch-snapshot`
 - Canonical task record: `.agentplane/tasks/202607252051-RK9N29/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused route, PR-flow, resume, task-backend, and artifact tests passed; typecheck, lint, guards, lifecycle, routing, architecture, formatting, and diff checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
