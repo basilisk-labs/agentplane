@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607251433-75Q4J6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T18:41:21.669Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The current task head preserves the canonical shared isRecord migration and adds only deterministic closure/incident traceability artifacts; KnowledgeRef behavior and public API remain unchanged.",
+  "evaluated_sha": "e8fba53b254bbaf83fd5e90a70b7c7d21acc8f7c",
+  "blueprint_digest": "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542",
+  "findings": [
+    "Semantic review confirms packages/agentplane/src/context/knowledge-ref.ts delegates record detection to the canonical shared guard, while the closure packet does not alter runtime behavior."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607251433-75Q4J6/README.md",
+    "e8fba53b; git diff --check origin/main...e8fba53b; bun run guards:check; bun test packages/core/src/runner/knowledge-ref.test.ts packages/agentplane/src/context/knowledge-ref.test.ts (48 pass); bun run typecheck; bun run format:check; bun run lint:core; bun run test:critical (11/11); node .agentplane/policy/check-routing.mjs; agentplane doctor; bun run knip:check; bun run hotspots:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
