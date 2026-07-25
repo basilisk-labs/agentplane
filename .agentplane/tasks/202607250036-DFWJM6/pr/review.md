@@ -6,14 +6,14 @@ Created: 2026-07-25T00:37:21.141Z
 
 - Task: `202607250036-DFWJM6`
 - Title: Publish rebased PR branches with an explicit force-with-lease
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607250036-DFWJM6/force-with-lease-pr-publish`
 - Canonical task record: `.agentplane/tasks/202607250036-DFWJM6/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass, full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22 files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run temp-root birthtime inventory is empty.
+- State: needs_rework
+- Note: Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -47,10 +47,12 @@ Created: 2026-07-25T00:37:21.141Z
  packages/agentplane/src/commands/pr/open.ts        | 138 +-----
  .../agentplane/src/commands/shared/pr-meta.test.ts |  14 +
  .../src/commands/shared/pr-meta/parser.ts          |   5 +
- packages/testkit/src/cli-harness.ts                | 383 ++++++++++++++-
+ packages/testkit/src/cli-harness.ts                | 390 ++++++++++++++-
+ .../src/cli-harness/temp-root-cleanup.test.ts      |  19 +
+ .../testkit/src/cli-harness/temp-root-cleanup.ts   |  14 +
  packages/testkit/src/github-pr.ts                  |  65 ++-
  packages/testkit/src/index.test.ts                 |  14 +-
- 21 files changed, 1417 insertions(+), 263 deletions(-)
+ 23 files changed, 1456 insertions(+), 264 deletions(-)
 ```
 
 </details>

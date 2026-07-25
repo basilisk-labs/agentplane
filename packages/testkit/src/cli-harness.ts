@@ -11,6 +11,7 @@ import { readTask } from "@agentplaneorg/core/tasks";
 import { runCli } from "./agentplane-internal.js";
 import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
 import { captureStdIO, runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
+import { removeTempRoot } from "./cli-harness/temp-root-cleanup.js";
 import { installFakeGhPrLookup } from "./github-pr.js";
 import { makeTaskBackendDouble } from "./task.js";
 
@@ -44,7 +45,7 @@ function restoreEnvValue(name: string, value: string | undefined): void {
 
 function registerTestTempPath(tempPath: string): void {
   testEnvRestorations.push(async () => {
-    await rm(tempPath, { recursive: true, force: true });
+    await removeTempRoot(tempPath);
   });
 }
 
@@ -78,13 +79,17 @@ async function copyDirContents(src: string, dest: string): Promise<void> {
 
 afterEach(async () => {
   const roots = [...testRoots];
-  testRoots.clear();
-  await Promise.all(roots.map((root) => rm(root, { recursive: true, force: true })));
+  await Promise.all(
+    roots.map(async (root) => {
+      await removeTempRoot(root);
+      testRoots.delete(root);
+    }),
+  );
 });
 
 afterAll(async () => {
   if (!gitTemplateRoot) return;
-  await rm(gitTemplateRoot, { recursive: true, force: true });
+  await removeTempRoot(gitTemplateRoot);
   gitTemplateRoot = null;
   gitTemplatePromise = null;
 });
@@ -110,7 +115,7 @@ export function registerAgentplaneHome(): void {
 
   afterAll(async () => {
     if (agentplaneHome) {
-      await rm(agentplaneHome, { recursive: true, force: true });
+      await removeTempRoot(agentplaneHome);
       agentplaneHome = null;
     }
     if (originalAgentplaneHome === undefined) {

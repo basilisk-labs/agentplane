@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-25T03:54:40.008Z"
+  state: "needs_rework"
+  updated_at: "2026-07-25T04:03:08.504Z"
   updated_by: "TESTER"
-  note: "Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass, full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22 files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run temp-root birthtime inventory is empty."
-  attempts: 0
+  note: "Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -55,9 +55,7 @@ quality_review:
     - "packages/testkit/src/index.test.ts"
   findings:
     - "Exact source identity, repository identity, expected destination, destination lease, and source-race refusal are covered; forward-compatible closure parsing is structurally bounded; full and targeted suites pass with zero new temp-root leaks."
-commit:
-  hash: "b37323bf0bf704f57c476af4258c814130d976f4"
-  message: "🧪 DFWJM6 task: pre-merge closure"
+commit: null
 comments:
   -
     author: "CODER"
@@ -160,8 +158,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T04:03:08.504Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification."
 doc_version: 3
-doc_updated_at: "2026-07-25T03:56:09.018Z"
+doc_updated_at: "2026-07-25T04:03:09.395Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -342,6 +346,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T04:03:08.504Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T03:56:09.018Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -370,6 +404,10 @@ sections:
       Resolution: Remove registered roots after each scenario, delete the per-file Git template after all tests, and route every direct non-git fixture through mkTempDir.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: Windows Node 24 returned EBUSY from recursive rmdir of an agentplane-cli-test child immediately after init completed.
+      Impact: PR #4616 cannot satisfy the hosted gate; the global no-leak cleanup is not yet cross-platform robust.
+      Resolution: Centralize helper-owned root deletion with bounded maxRetries/retryDelay, add deterministic regression coverage, rerun focused/full local checks, then republish and require green test-windows.
 extensions:
   implementation_commit:
     hash: "cbf4ac33977ceaf346803963c55848cab66ff76d"
@@ -562,6 +600,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T04:03:08.504Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T03:56:09.018Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -594,3 +662,7 @@ DecisionContextRef:
   Resolution: Remove registered roots after each scenario, delete the per-file Git template after all tests, and route every direct non-git fixture through mkTempDir.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+- Observation: Windows Node 24 returned EBUSY from recursive rmdir of an agentplane-cli-test child immediately after init completed.
+  Impact: PR #4616 cannot satisfy the hosted gate; the global no-leak cleanup is not yet cross-platform robust.
+  Resolution: Centralize helper-owned root deletion with bounded maxRetries/retryDelay, add deterministic regression coverage, rerun focused/full local checks, then republish and require green test-windows.
