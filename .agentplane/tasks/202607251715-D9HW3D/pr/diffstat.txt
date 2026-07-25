@@ -1,5 +1,4 @@
- packages/agentplane/src/cli/run-cli.core.incidents.test.ts |  1 +
- packages/agentplane/src/commands/incidents/shared.test.ts  | 10 ++++++++--
- packages/agentplane/src/runtime/incidents/resolve.test.ts  | 14 +++++++++++---
- packages/agentplane/src/runtime/incidents/shared.ts        |  1 +
- 4 files changed, 21 insertions(+), 5 deletions(-)
+ packages/agentplane/src/commands/incidents/shared.test.ts | 10 ++++++++--
+ packages/agentplane/src/runtime/incidents/resolve.test.ts | 14 +++++++++++---
+ packages/agentplane/src/runtime/incidents/shared.ts       |  1 +
+ 3 files changed, 20 insertions(+), 5 deletions(-)
