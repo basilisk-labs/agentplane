@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -47,8 +47,8 @@ quality_review:
   findings:
     - "Canonical PR metadata construction now lives beside the branch-aware artifact reader; route behavior remains covered while the route module returns below the enforced hotspot threshold."
 commit:
-  hash: "ec932f0aabd07c0da6b4a88aaa5a406817c925c5"
-  message: "🧐 RK9N29 task: record evaluator pass"
+  hash: "8269171d5bd7ead9d8d352d3d8afcf9096aee9da"
+  message: "🧐 RK9N29 task: record CI remediation review"
 comments:
   -
     author: "CODER"
@@ -56,6 +56,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -99,8 +102,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "CI remediation moves branch-aware metadata-path construction into the PR helper; targeted route and artifact tests, lint, hotspots, typecheck, architecture, guards, lifecycle, policy routing, and critical CLI checks passed."
+  -
+    type: "status"
+    at: "2026-07-25T21:59:16.546Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T21:52:06.923Z"
+doc_updated_at: "2026-07-25T21:59:16.546Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr control-plane truth: routes, flow status, blockers, and resume must prefer the active task branch snapshot (live worktree, local branch, then origin) for task README and PR metadata, falling back to base only when no branch snapshot exists. Regress stale base TODO versus task-branch DONE/open PR so the CLI selects publication or integration, never a false plan approval. Keep typed route semantics unchanged."
 sections:
@@ -223,8 +233,8 @@ sections:
       Resolution: The route module is back below the threshold without semantic changes, and both test declarations are now type-safe.
 extensions:
   implementation_commit:
-    hash: "bf6ae520184549e1e43a53005160a7c11873a3d0"
-    message: "🧩 RK9N29 correctness: avoid dynamic remote ref argv"
+    hash: "285135cfeff7fd54b505bfd53cb8c77d8534d718"
+    message: "🧩 RK9N29 correctness: satisfy CI contracts"
   workflow_route_baseline:
     start_head_sha: "8e37e79ba5f2c934ab7c35a242c181049180e164"
     version: 1
