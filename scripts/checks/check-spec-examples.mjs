@@ -26,6 +26,7 @@ const PUBLIC_EXAMPLE_ROUTES = [
   ["agent-semantic-result-v2.valid.json", "agent-semantic-result.schema.json"],
   ["execution-receipt-v1.valid.json", "execution-receipt.schema.json"],
   ["execution-receipt-v2.valid.json", "execution-receipt.schema.json"],
+  ["knowledge-ref-v1.valid.json", "knowledge-ref.schema.json"],
 ];
 const PUBLIC_COMPATIBILITY_ONLY_EXAMPLES = ["runner-result-manifest-v1.legacy.json"];
 
@@ -78,22 +79,32 @@ function validateSchema(schema, value, location, errors) {
     return;
   }
 
-  const alternatives = Array.isArray(schema.oneOf)
-    ? schema.oneOf
-    : Array.isArray(schema.anyOf)
-      ? schema.anyOf
-      : null;
-  if (alternatives) {
-    const branchErrors = [];
-    for (const branch of alternatives) {
+  if (Array.isArray(schema.allOf)) {
+    for (const branch of schema.allOf) {
+      validateSchema(branch, value, location, errors);
+    }
+  }
+
+  for (const keyword of ["oneOf", "anyOf"]) {
+    const alternatives = schema[keyword];
+    if (!Array.isArray(alternatives)) continue;
+    const branchErrors = alternatives.map((branch) => {
       const nextErrors = [];
       validateSchema(branch, value, location, nextErrors);
-      if (nextErrors.length === 0) return;
-      branchErrors.push(nextErrors);
+      return nextErrors;
+    });
+    const matches = branchErrors.filter((entry) => entry.length === 0).length;
+    const accepted = keyword === "oneOf" ? matches === 1 : matches >= 1;
+    if (!accepted) {
+      errors.push(
+        keyword === "oneOf"
+          ? `${location}: expected exactly one matching schema branch, got ${matches}`
+          : `${location}: did not match any allowed schema branch`,
+      );
+      if (matches === 0 && branchErrors[0]?.[0]) {
+        errors.push(`  first branch: ${branchErrors[0][0]}`);
+      }
     }
-    errors.push(`${location}: did not match any allowed schema branch`);
-    if (branchErrors[0]?.[0]) errors.push(`  first branch: ${branchErrors[0][0]}`);
-    return;
   }
 
   if (Object.hasOwn(schema, "const") && value !== schema.const) {
@@ -119,8 +130,15 @@ function validateSchema(schema, value, location, errors) {
   }
 
   if (typeof value === "string") {
-    if (typeof schema.minLength === "number" && value.length < schema.minLength) {
+    const codePointLength = [...value].length;
+    if (typeof schema.minLength === "number" && codePointLength < schema.minLength) {
       errors.push(`${location}: expected string length >= ${schema.minLength}`);
+    }
+    if (typeof schema.maxLength === "number" && codePointLength > schema.maxLength) {
+      errors.push(`${location}: expected string length <= ${schema.maxLength}`);
+    }
+    if (typeof schema.pattern === "string" && !new RegExp(schema.pattern, "u").test(value)) {
+      errors.push(`${location}: did not match required pattern ${inspect(schema.pattern)}`);
     }
     if (schema.format === "date-time" && Number.isNaN(Date.parse(value))) {
       errors.push(`${location}: expected date-time string, got ${inspect(value)}`);
@@ -223,6 +241,30 @@ function validateExecutionReceiptRejectsUnknownSandbox(failures) {
   }
 }
 
+function validateKnowledgeRefRejectsInvalidExamples(failures) {
+  const schemaPath = path.join(publicSchemasDir, "knowledge-ref.schema.json");
+  const examplePath = path.join(publicExamplesDir, "knowledge-ref-v1.valid.json");
+  const schema = readJson(schemaPath);
+  const validExample = readJson(examplePath);
+  const invalidCases = [
+    ["invalid digest", { ...validExample, digest: "sha256:not-a-digest" }],
+    ["kind/ref mismatch", { ...validExample, kind: "fact" }],
+    ["non-canonical ref", { ...validExample, ref: "context/wiki/a.md#fact=x" }],
+    ["whitespace reason", { ...validExample, reason: "   " }],
+    ["oversized reason", { ...validExample, reason: "r".repeat(4097) }],
+    ["oversized Unicode reason", { ...validExample, reason: "😀".repeat(4097) }],
+  ];
+  for (const [label, value] of invalidCases) {
+    const errors = [];
+    validateSchema(schema, value, "$", errors);
+    if (errors.length === 0) {
+      failures.push(
+        `${path.relative(repoRoot, schemaPath)} accepted ${label} in its public example contract`,
+      );
+    }
+  }
+}
+
 function main() {
   verifyRouteCoverage(specExamplesDir, SPEC_EXAMPLE_ROUTES);
   verifyRouteCoverage(publicExamplesDir, PUBLIC_EXAMPLE_ROUTES, PUBLIC_COMPATIBILITY_ONLY_EXAMPLES);
@@ -231,6 +273,7 @@ function main() {
   validateExamples(SPEC_EXAMPLE_ROUTES, specExamplesDir, generatedSchemasDir, failures);
   validateExamples(PUBLIC_EXAMPLE_ROUTES, publicExamplesDir, publicSchemasDir, failures);
   validateExecutionReceiptRejectsUnknownSandbox(failures);
+  validateKnowledgeRefRejectsInvalidExamples(failures);
 
   if (failures.length > 0) {
     throw new Error(`spec example validation failed\n${failures.join("\n")}`);

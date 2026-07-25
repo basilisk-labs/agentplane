@@ -7,7 +7,8 @@
     "202607230554-YFYT83",
     "202607221846-9XC1H0",
     "202607221848-ABG7SD",
-    "202607221848-0ZAB1F"
+    "202607221848-0ZAB1F",
+    "202607221848-ER5H6N"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -16,7 +17,7 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "4eadd265e96921a3d4354558c54811749758127596781041a48f4d8b665807d8",
+    "surface_sha256": "1fc32280809fc2a3b91910478eb9c51b678d1a8d4323f5badc21d4b7d7216b7d",
     "section_digests": {
       "cli_topology": "afcc9c0ce680834c9d9f058822a2bc46f1cc9e035784878e21462896f06fe8c1",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
@@ -24,7 +25,7 @@
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
       "agent_facing_context_contracts": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
       "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-      "tarball_policy": "a13f8e06e2c2cb4aa9d7fc69aaf01998c33cd010444cba8b6670a97d85d816e6"
+      "tarball_policy": "7f4bfe0ddb1be5cf45770e97265c37998c7a3372f5ce23d4c5931ecf71330396"
     }
   },
   "contract_artifacts": {
@@ -118,6 +119,84 @@
             "renderExecutionReceiptV1ValidFixtureJson",
             "renderExecutionReceiptV2ValidFixtureJson",
             "validateExecutionReceipt"
+          ]
+        }
+      ]
+    },
+    "knowledge_ref_schema": {
+      "path": "schemas/knowledge-ref.schema.json",
+      "sha256": "4a898d1d8bb5a2d05c8e132170e44861630eb864d7329d515b04bdbfdf832ac7",
+      "comparison": "canonical_json_exact",
+      "source_task": "202607221848-ER5H6N"
+    },
+    "core_knowledge_ref_exports": {
+      "comparison": "required_named_reexports",
+      "source_task": "202607221848-ER5H6N",
+      "entrypoints": [
+        {
+          "path": "packages/core/src/index.ts",
+          "module": "./schemas/index.js",
+          "required_symbols": [
+            "CanonicalKnowledgeSelector",
+            "KNOWLEDGE_INDEX_FRESHNESS_VALUES",
+            "KNOWLEDGE_INDEX_FRESHNESS_ZOD_SCHEMA",
+            "KNOWLEDGE_REF_KIND_VALUES",
+            "KNOWLEDGE_REF_RETRIEVAL_VALUES",
+            "KNOWLEDGE_REF_SCHEMA_VERSION",
+            "KNOWLEDGE_REF_V1_VALID_FIXTURE",
+            "KNOWLEDGE_REF_ZOD_SCHEMA",
+            "KNOWLEDGE_SOURCE_IDENTITY_ZOD_SCHEMA",
+            "KnowledgeIndexFreshness",
+            "KnowledgeRef",
+            "KnowledgeRefKind",
+            "KnowledgeRefRetrieval",
+            "KnowledgeSourceIdentity",
+            "MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES",
+            "MAX_PREPARED_KNOWLEDGE_EXCERPT_LINES",
+            "PREPARED_KNOWLEDGE_EXCERPT_KIND",
+            "PREPARED_KNOWLEDGE_EXCERPT_SCHEMA_VERSION",
+            "PREPARED_KNOWLEDGE_EXCERPT_ZOD_SCHEMA",
+            "ParsedCanonicalKnowledgeRef",
+            "PreparedKnowledgeExcerpt",
+            "listKnowledgeRefSchemaErrors",
+            "parseCanonicalKnowledgeRef",
+            "renderKnowledgeRefSchemaJson",
+            "renderKnowledgeRefV1ValidFixtureJson",
+            "validateKnowledgeRef",
+            "validatePreparedKnowledgeExcerpt"
+          ]
+        },
+        {
+          "path": "packages/core/src/schemas/index.ts",
+          "module": "../runner/knowledge-ref.js",
+          "required_symbols": [
+            "CanonicalKnowledgeSelector",
+            "KNOWLEDGE_INDEX_FRESHNESS_VALUES",
+            "KNOWLEDGE_INDEX_FRESHNESS_ZOD_SCHEMA",
+            "KNOWLEDGE_REF_KIND_VALUES",
+            "KNOWLEDGE_REF_RETRIEVAL_VALUES",
+            "KNOWLEDGE_REF_SCHEMA_VERSION",
+            "KNOWLEDGE_REF_V1_VALID_FIXTURE",
+            "KNOWLEDGE_REF_ZOD_SCHEMA",
+            "KNOWLEDGE_SOURCE_IDENTITY_ZOD_SCHEMA",
+            "KnowledgeIndexFreshness",
+            "KnowledgeRef",
+            "KnowledgeRefKind",
+            "KnowledgeRefRetrieval",
+            "KnowledgeSourceIdentity",
+            "MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES",
+            "MAX_PREPARED_KNOWLEDGE_EXCERPT_LINES",
+            "PREPARED_KNOWLEDGE_EXCERPT_KIND",
+            "PREPARED_KNOWLEDGE_EXCERPT_SCHEMA_VERSION",
+            "PREPARED_KNOWLEDGE_EXCERPT_ZOD_SCHEMA",
+            "ParsedCanonicalKnowledgeRef",
+            "PreparedKnowledgeExcerpt",
+            "listKnowledgeRefSchemaErrors",
+            "parseCanonicalKnowledgeRef",
+            "renderKnowledgeRefSchemaJson",
+            "renderKnowledgeRefV1ValidFixtureJson",
+            "validateKnowledgeRef",
+            "validatePreparedKnowledgeExcerpt"
           ]
         }
       ]
@@ -393,15 +472,15 @@
     },
     {
       "section": "tarball_policy",
-      "source_tasks": ["202607221846-4VB97J"],
+      "source_tasks": ["202607221846-4VB97J", "202607221848-ER5H6N"],
       "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
-      "to_sha256": "a13f8e06e2c2cb4aa9d7fc69aaf01998c33cd010444cba8b6670a97d85d816e6",
+      "to_sha256": "7f4bfe0ddb1be5cf45770e97265c37998c7a3372f5ce23d4c5931ecf71330396",
       "classification": "additive",
-      "summary": "Publishes the generated workflow schema from the core package; no package source file is removed.",
+      "summary": "Publishes the generated workflow and KnowledgeRef schemas from the core package; no package source file is removed.",
       "evidence": {
         "package": "@agentplaneorg/core",
-        "source_file_count": { "from": 17, "to": 18 },
-        "added_source_files": ["schemas/workflow.schema.json"],
+        "source_file_count": { "from": 17, "to": 19 },
+        "added_source_files": ["schemas/knowledge-ref.schema.json", "schemas/workflow.schema.json"],
         "removed_source_files": []
       }
     }

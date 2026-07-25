@@ -12,8 +12,8 @@ Created: 2026-07-24T22:17:13.092Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: the branch contains only task lifecycle and PR artifacts; no KnowledgeRef implementation or focused contract tests are present yet.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,28 @@ Created: 2026-07-24T22:17:13.092Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  40 +-
+ packages/agentplane/src/commands/context/show.ts   |  14 +-
+ packages/agentplane/src/context/context-utils.ts   |  76 +-
+ .../agentplane/src/context/knowledge-ref.test.ts   | 562 ++++++++++++
+ packages/agentplane/src/context/knowledge-ref.ts   | 594 +++++++++++++
+ .../agentplane/src/context/reindex-projection.ts   |  41 +-
+ packages/agentplane/src/context/reindex.ts         |  46 +-
+ packages/agentplane/src/runner/types/context.ts    |  17 +-
+ packages/core/schemas/knowledge-ref.schema.json    | 135 +++
+ packages/core/src/index.ts                         |  27 +
+ packages/core/src/runner/knowledge-ref.test.ts     | 831 +++++++++++++++++
+ packages/core/src/runner/knowledge-ref.ts          | 990 +++++++++++++++++++++
+ packages/core/src/schemas/index.ts                 |  30 +
+ packages/spec/examples/acr.json                    |   4 +-
+ packages/spec/schemas/knowledge-ref.schema.json    | 135 +++
+ schemas/examples/knowledge-ref-v1.valid.json       |  10 +
+ schemas/knowledge-ref.schema.json                  | 135 +++
+ .../baselines/v0.7-compatibility-candidate.json    |  95 +-
+ .../check-compatibility-contract-baseline.mjs      |  85 +-
+ scripts/checks/check-spec-examples.mjs             |  71 +-
+ scripts/generate/sync-schemas.mjs                  |  17 +
+ 21 files changed, 3883 insertions(+), 72 deletions(-)
 ```
 
 </details>

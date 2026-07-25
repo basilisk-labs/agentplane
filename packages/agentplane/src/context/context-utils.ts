@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, unicorn/consistent-function-scoping, unicorn/no-array-sort */
+/* eslint-disable @typescript-eslint/no-unused-vars, unicorn/no-array-sort */
 import { lstatSync, existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
@@ -36,6 +36,33 @@ export function parseSourceRef(raw: string): ParsedSourceRef {
 
 export function toPosix(p: string): string {
   return p.split(path.sep).join("/");
+}
+
+function containsAsciiControlCharacter(value: string): boolean {
+  return [...value].some((character) => {
+    const codePoint = character.codePointAt(0);
+    return codePoint !== undefined && (codePoint <= 0x1f || codePoint === 0x7f);
+  });
+}
+
+export function jsonlRowIdentity(
+  row: { id?: unknown; [key: string]: unknown },
+  index: number,
+): string {
+  if (
+    typeof row.id === "string" &&
+    row.id.length > 0 &&
+    row.id === row.id.trim() &&
+    !containsAsciiControlCharacter(row.id)
+  ) {
+    try {
+      encodeURIComponent(row.id);
+      return row.id;
+    } catch {
+      // A lone UTF-16 surrogate cannot form a canonical percent-encoded selector.
+    }
+  }
+  return typeof row.id === "number" && Number.isFinite(row.id) ? String(row.id) : String(index + 1);
 }
 
 export async function fileExists(filePath: string): Promise<boolean> {
@@ -230,23 +257,46 @@ export function parseLineRange(selector: string | undefined): [number, number] |
   return [start, end];
 }
 
+function markdownSectionBaseSlug(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/gu, "-")
+    .replaceAll(/^-+|-+$/gu, "");
+}
+
+export function createMarkdownSectionSlugger(): (heading: string) => string | null {
+  const used = new Set<string>();
+  const nextSuffixByBase = new Map<string, number>();
+  return (heading: string) => {
+    const base = markdownSectionBaseSlug(heading);
+    if (!base) return null;
+    let suffix = nextSuffixByBase.get(base) ?? 1;
+    let candidate = base;
+    while (used.has(candidate)) {
+      suffix += 1;
+      candidate = `${base}-${suffix}`;
+    }
+    nextSuffixByBase.set(base, suffix);
+    used.add(candidate);
+    return candidate;
+  };
+}
+
 export function locateMarkdownSection(
   text: string,
   section: string,
 ): { start: number; end: number } | null {
   const lines = text.split(/\r?\n/);
-  const slug = (value: string) =>
-    value
-      .trim()
-      .toLowerCase()
-      .replaceAll(/[^a-z0-9]+/gu, "-")
-      .replaceAll(/^-+|-+$/gu, "");
-  const target = slug(section);
+  const target = markdownSectionBaseSlug(section);
+  const nextSlug = createMarkdownSectionSlugger();
   for (let index = 0; index < lines.length; index += 1) {
     const line = lines[index];
     if (!/^#{1,6}\s+/.test(line)) continue;
     const heading = line.replace(/^#{1,6}\s+/, "").trim();
-    if (slug(heading) === target) {
+    const canonicalSlug = nextSlug(heading);
+    if (!canonicalSlug) continue;
+    if (canonicalSlug === target) {
       const start = index + 1;
       let end = lines.length;
       for (let i = index + 1; i < lines.length; i += 1) {
@@ -263,7 +313,8 @@ export function locateMarkdownSection(
 
 export function buildSnippet(lines: string[], start: number, end: number): string {
   const from = Math.max(1, start);
-  const to = Math.max(from, Math.min(lines.length, end));
+  const to = Math.min(lines.length, end);
+  if (from > lines.length || to < from) return "";
   return lines
     .slice(from - 1, to)
     .join("\n")
@@ -291,7 +342,10 @@ export function parseJsonlLines(raw: string): { id?: string; [key: string]: unkn
   return lines
     .map((line) => {
       try {
-        return JSON.parse(line) as { id?: string; [key: string]: unknown };
+        const parsed = JSON.parse(line) as unknown;
+        return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+          ? (parsed as { id?: string; [key: string]: unknown })
+          : null;
       } catch {
         return null;
       }

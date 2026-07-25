@@ -106,6 +106,36 @@ export {
 } from "../runner/state-fingerprint.js";
 
 export {
+  KNOWLEDGE_INDEX_FRESHNESS_VALUES,
+  KNOWLEDGE_INDEX_FRESHNESS_ZOD_SCHEMA,
+  KNOWLEDGE_REF_KIND_VALUES,
+  KNOWLEDGE_REF_RETRIEVAL_VALUES,
+  KNOWLEDGE_REF_SCHEMA_VERSION,
+  KNOWLEDGE_REF_V1_VALID_FIXTURE,
+  KNOWLEDGE_REF_ZOD_SCHEMA,
+  KNOWLEDGE_SOURCE_IDENTITY_ZOD_SCHEMA,
+  MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES,
+  MAX_PREPARED_KNOWLEDGE_EXCERPT_LINES,
+  PREPARED_KNOWLEDGE_EXCERPT_KIND,
+  PREPARED_KNOWLEDGE_EXCERPT_SCHEMA_VERSION,
+  PREPARED_KNOWLEDGE_EXCERPT_ZOD_SCHEMA,
+  listKnowledgeRefSchemaErrors,
+  parseCanonicalKnowledgeRef,
+  renderKnowledgeRefSchemaJson,
+  renderKnowledgeRefV1ValidFixtureJson,
+  validateKnowledgeRef,
+  validatePreparedKnowledgeExcerpt,
+  type CanonicalKnowledgeSelector,
+  type KnowledgeIndexFreshness,
+  type KnowledgeRef,
+  type KnowledgeRefKind,
+  type KnowledgeRefRetrieval,
+  type KnowledgeSourceIdentity,
+  type ParsedCanonicalKnowledgeRef,
+  type PreparedKnowledgeExcerpt,
+} from "../runner/knowledge-ref.js";
+
+export {
   ACR_VERSION,
   computeAcrRecordDigest,
   listAgentPlaneRunnerHandoffJsonSchemaErrors,

@@ -10,9 +10,9 @@
   "repository": {
     "vcs": "git",
     "base_ref": "main",
-    "base_commit": "abc123",
+    "base_commit": "abc1234",
     "work_ref": "task/202605031625-886KZ6/acr-core-schema",
-    "work_commit": "def456"
+    "work_commit": "def4567"
   },
   "task": {
     "task_id": "202605031625-886KZ6",

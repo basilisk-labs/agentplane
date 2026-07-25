@@ -22,6 +22,8 @@ import {
   renderExecutionReceiptSchemaJson,
   renderExecutionReceiptV1ValidFixtureJson,
   renderExecutionReceiptV2ValidFixtureJson,
+  renderKnowledgeRefSchemaJson,
+  renderKnowledgeRefV1ValidFixtureJson,
 } from "../../packages/core/src/schemas/index.ts";
 
 const GENERATED_RUNTIME_SCHEMAS = [
@@ -34,6 +36,7 @@ const GENERATED_RUNTIME_SCHEMAS = [
   "task-handoff.schema.json",
   "runner-handoff.schema.json",
   "task-observation.schema.json",
+  "knowledge-ref.schema.json",
 ];
 
 const STATIC_CONTEXT_SCHEMAS = [
@@ -59,6 +62,7 @@ const ROOT_ONLY_PUBLIC_EXAMPLES = [
   "execution-receipt-v1.valid.json",
   "execution-receipt-v2.valid.json",
   "runner-result-manifest-v1.legacy.json",
+  "knowledge-ref-v1.valid.json",
 ];
 
 const main = defineScript({
@@ -198,6 +202,19 @@ const main = defineScript({
         label: "execution receipt v2 valid example",
         rendered: renderExecutionReceiptV2ValidFixtureJson(),
         targets: [path.join(repoRoot, "schemas", "examples", "execution-receipt-v2.valid.json")],
+      },
+      {
+        label: "KnowledgeRef schema",
+        rendered: await format(renderKnowledgeRefSchemaJson(), {
+          parser: "json",
+          printWidth: 100,
+        }),
+        targets: schemaTargets("knowledge-ref.schema.json"),
+      },
+      {
+        label: "KnowledgeRef v1 valid example",
+        rendered: renderKnowledgeRefV1ValidFixtureJson(),
+        targets: [path.join(repoRoot, "schemas", "examples", "knowledge-ref-v1.valid.json")],
       },
       {
         label: "runner result manifest v1 legacy example",
