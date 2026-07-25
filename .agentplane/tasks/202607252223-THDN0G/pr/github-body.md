@@ -21,7 +21,7 @@ In scope: task-active route evaluation, shared branch-snapshot inventory helpers
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-25T22:34:35.505Z
+- Updated: 2026-07-25T22:57:41.166Z
 - Branch: task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
