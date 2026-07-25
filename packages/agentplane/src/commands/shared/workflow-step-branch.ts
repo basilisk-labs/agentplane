@@ -364,17 +364,28 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const worktreeBlocker = taskWorktreeBlocker(state);
   const status = String(state.task.status).toUpperCase();
-  if (status === "TODO" && state.taskWorktree?.state === "unavailable") {
-    return worktreeResolutionStep(state, worktreeBlocker ?? unavailableWorktreeBlocker(state));
-  }
-  if (
-    status === "TODO" &&
-    state.taskWorktree !== undefined &&
-    state.taskWorktree.state !== "not_present" &&
-    state.taskWorktree.state !== "unavailable" &&
-    state.taskWorktree.branch !== state.resume.base_branch &&
-    !state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
-  ) {
+  if (status === "TODO") {
+    if (state.taskWorktree?.state === "unavailable") {
+      return worktreeResolutionStep(state, worktreeBlocker ?? unavailableWorktreeBlocker(state));
+    }
+    if (state.blockers.some((blocker) => blocker.code === "branch_head_missing")) {
+      return branchHeadRepairStep(state);
+    }
+    if (
+      !state.taskWorktree ||
+      state.taskWorktree.state === "not_present" ||
+      state.taskWorktree.branch === state.resume.base_branch
+    ) {
+      const slug = workSlug(state.task);
+      return cliOperationStep({
+        state,
+        operationId: "worktree.prepare",
+        params: { taskId: id, agent: state.task.owner, slug },
+        code: "start_or_recover_worktree",
+        summary: "create or recover the dedicated branch_pr worktree before starting the task",
+        selectedBlocker: routeBlockerFor(state, "missing_pr_branch", "on_base_checkout"),
+      });
+    }
     const body = "Start: continue branch_pr task in the dedicated task worktree.";
     return cliOperationStep({
       state,
@@ -416,12 +427,32 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (worktreeBlocker?.code === "task_worktree_state_unavailable") {
     return worktreeResolutionStep(state, worktreeBlocker);
   }
+  if (
+    state.taskWorktree?.state === "not_present" &&
+    state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
+  ) {
+    const slug = workSlug(state.task);
+    return cliOperationStep({
+      state,
+      operationId: "worktree.prepare",
+      params: { taskId: id, agent: state.task.owner, slug },
+      code: "start_or_recover_worktree",
+      summary: "recover the dedicated branch_pr worktree before task-scoped PR operations",
+      selectedBlocker: routeBlockerFor(state, "on_base_checkout", "missing_pr_branch"),
+    });
+  }
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
-  if (state.blockers.some((blocker) => blocker.code === "pr_meta_stale")) {
-    const batchVerificationStep = primaryBatchVerificationStep(state);
-    if (batchVerificationStep) return batchVerificationStep;
+  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  const batchVerificationStep = primaryBatchVerificationStep(state);
+  if (batchVerificationStep) return batchVerificationStep;
+  if (
+    state.taskWorktree !== undefined &&
+    state.taskWorktree.state !== "not_present" &&
+    state.taskWorktree.state !== "unavailable" &&
+    state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
+  ) {
     return cliOperationStep({
       state,
       operationId: "pr.artifacts.update",
@@ -431,7 +462,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "pr_meta_stale"),
     });
   }
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   if (state.blockers.some((blocker) => blocker.code === "missing_pr_branch")) {
     const slug = workSlug(state.task);
     return cliOperationStep({
@@ -448,8 +478,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (state.blockers.some((blocker) => blocker.code === "branch_head_missing")) {
     return branchHeadRepairStep(state);
   }
-  const batchVerificationStep = primaryBatchVerificationStep(state);
-  if (batchVerificationStep) return batchVerificationStep;
   if (
     state.prFlow?.pr.state === "not_found" &&
     state.prFlow.branch.name &&

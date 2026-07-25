@@ -36,7 +36,7 @@ export type HermesRoutePacketForExecution = {
     code: string;
     summary: string;
   };
-  execution_packet: Pick<RouteExecutionPacket, "actionKind" | "exactArgv">;
+  execution_packet: Pick<RouteExecutionPacket, "actionKind" | "exactArgv" | "safeToMutate">;
 };
 
 function taskTerminalForHermesComplete(task: {
@@ -237,10 +237,6 @@ function typedAgentplaneArgs(packet: HermesRoutePacketForExecution): string[] | 
   return argv.slice(1);
 }
 
-function matchesTypedArgs(args: readonly string[], expected: readonly string[]): boolean {
-  return expected.every((value, index) => args[index] === value);
-}
-
 function blockedTypedStep(packet: HermesRoutePacketForExecution, reason: string) {
   return {
     code: packet.next_action.code,
@@ -264,64 +260,24 @@ export function executableStepFor(packet: HermesRoutePacketForExecution): {
         : "Agentplane route does not authorize a local typed command for Hermes execution",
     );
   }
-  switch (packet.next_action.code) {
-    case "update_pr_artifacts":
-    case "verify_or_update_pr": {
-      if (matchesTypedArgs(args, ["pr", "update", taskId])) {
-        return { code: packet.next_action.code, args, reason: null };
-      }
-      return blockedTypedStep(packet, "typed PR update argv does not target the current task");
-    }
-    case "open_pr": {
-      if (matchesTypedArgs(args, ["pr", "open", taskId])) {
-        return { code: packet.next_action.code, args, reason: null };
-      }
-      return blockedTypedStep(packet, "typed PR open argv does not target the current task");
-    }
-    case "continue_direct": {
-      if (matchesTypedArgs(args, ["task", "verify-show", taskId])) {
-        return { code: packet.next_action.code, args, reason: null };
-      }
-      return blockedTypedStep(
-        packet,
-        "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command",
-      );
-    }
-    case "complete_direct": {
-      return blockedTypedStep(
-        packet,
-        "direct closeout needs operator-supplied --result and --commit values; do not rerun task execution",
-      );
-    }
-    case "approve_plan": {
-      return blockedTypedStep(
-        packet,
-        "plan approval is an orchestration decision and is not executed by Hermes worker lanes",
-      );
-    }
-    case "wait_runner":
-    case "wait_hosted_checks":
-    case "merge_close_tail":
-    case "done":
-    case "cleanup": {
-      return blockedTypedStep(packet, packet.next_action.summary);
-    }
-    case "start_or_recover_worktree": {
-      if (matchesTypedArgs(args, ["work", "start", taskId])) {
-        return { code: packet.next_action.code, args, reason: null };
-      }
-      return blockedTypedStep(packet, "typed worktree argv does not target the current task");
-    }
-    default: {
-      break;
-    }
-  }
-  if (args.length === 3 && matchesTypedArgs(args, ["task", "run", taskId])) {
+  if (
+    packet.execution_packet.safeToMutate &&
+    args.length === 3 &&
+    args[0] === "task" &&
+    args[1] === "run" &&
+    args[2] === taskId
+  ) {
     return { code: packet.next_action.code, args, reason: null };
+  }
+  if (!packet.execution_packet.safeToMutate) {
+    return blockedTypedStep(
+      packet,
+      "Hermes may execute only a mutation-authorized typed task runner command",
+    );
   }
   return blockedTypedStep(
     packet,
-    `unsupported typed Agentplane Hermes route action: ${packet.next_action.code}`,
+    "Hermes allowlist permits only the exact typed task runner argv for the current task",
   );
 }
 

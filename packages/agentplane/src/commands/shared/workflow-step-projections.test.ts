@@ -261,14 +261,14 @@ describe("WorkflowStep execution projections", () => {
     });
   });
 
-  it("starts an inspectable TODO task before resolving its dirty worktree", () => {
+  it("starts an inspectable TODO task before stale PR artifacts or dirty-worktree resolution", () => {
     const blocker = {
       code: "task_worktree_dirty" as const,
       summary: "the task worktree contains uncommitted changes",
     };
     const state = routeState({
       task: { ...task, status: "TODO" },
-      blockers: [blocker],
+      blockers: [blocker, { code: "pr_meta_stale", summary: "task PR artifacts are stale" }],
       taskWorktree: {
         state: "dirty",
         branch: taskBranch,
@@ -311,13 +311,13 @@ describe("WorkflowStep execution projections", () => {
     });
   });
 
-  it("allows CODER semantic repair only inside a dirty DOING task worktree", () => {
+  it("keeps dirty DOING worktree resolution ahead of stale PR artifacts", () => {
     const blocker = {
       code: "task_worktree_dirty" as const,
       summary: "the task worktree contains uncommitted changes",
     };
     const state = routeState({
-      blockers: [blocker],
+      blockers: [blocker, { code: "pr_meta_stale", summary: "task PR artifacts are stale" }],
       taskWorktree: {
         state: "dirty",
         branch: taskBranch,
@@ -349,8 +349,10 @@ describe("WorkflowStep execution projections", () => {
       safeToMutate: true,
       mutationPathHint: taskWorktreePath,
       exactArgv: null,
-      evidenceMissing: ["clean_committed_task_worktree"],
     });
+    expect(packet.evidenceMissing).toEqual(
+      expect.arrayContaining(["clean_committed_task_worktree", "fresh_pr_artifacts"]),
+    );
     expect(packet.mustNot).toContain(
       "do not mutate task lifecycle or PR state while control belongs to the active semantic agent episode",
     );
@@ -364,6 +366,48 @@ describe("WorkflowStep execution projections", () => {
       currentAgentMustExecute: true,
       instruction: "current_agent_performs_semantic_work",
     });
+  });
+
+  it("prepares a missing task worktree before stale PR artifacts", () => {
+    const state = routeState({
+      blockers: [{ code: "pr_meta_stale", summary: "task PR artifacts are stale" }],
+      taskWorktree: {
+        state: "not_present",
+        branch: taskBranch,
+        worktreePath: null,
+        changedPaths: [],
+      },
+    });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({
+      state,
+      step,
+      paths: { baseCheckoutPath: "/repo" },
+    });
+
+    expect(step).toMatchObject({
+      kind: "cli_operation",
+      id: "worktree.prepare",
+      authoritativeCheckout: "base_checkout",
+      operation: { id: "worktree.prepare", params: { taskId: task.id, agent: "CODER" } },
+    });
+    expect(oracle.mutationPathHint).toBe("/repo");
+    expect(packet).toMatchObject({
+      actionKind: "local_command",
+      safeToMutate: true,
+      mutationPathHint: "/repo",
+    });
+    expect(packet.exactArgv).toEqual([
+      "agentplane",
+      "work",
+      "start",
+      task.id,
+      "--agent",
+      "CODER",
+      "--slug",
+      "workflow-step-projection-fixture",
+      "--worktree",
+    ]);
   });
 
   it("does not grant semantic mutation authority for a dirty DONE task worktree", () => {

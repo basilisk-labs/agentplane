@@ -3,11 +3,11 @@
  ...li.core.route-decision.pr-open-metadata.test.ts | 127 ++-
  .../run-cli.core.route-decision.pre-merge.test.ts  |  57 ++
  .../run-cli.core.route-decision.quality.test.ts    |   2 +-
- .../src/cli/run-cli.core.route-decision.test.ts    |   9 +-
+ .../src/cli/run-cli.core.route-decision.test.ts    |  55 +-
  .../cli/run-cli.core.task-next-action-json.test.ts |  70 ++
  .../src/cli/run-cli.core.tasks.lifecycle.test.ts   |   5 +
- .../src/commands/hermes/hermes-runtime.ts          | 131 ++-
- .../src/commands/hermes/hermes.command.test.ts     | 133 ++-
+ .../src/commands/hermes/hermes-runtime.ts          | 127 +--
+ .../src/commands/hermes/hermes.command.test.ts     | 221 ++++-
  .../src/commands/shared/route-decision-blockers.ts |  40 +-
  .../commands/shared/route-decision-next-action.ts  | 489 +---------
  .../src/commands/shared/route-decision-repair.ts   | 205 +----
@@ -22,13 +22,13 @@
  .../commands/shared/workflow-operation-effects.ts  |  44 +
  .../commands/shared/workflow-operation-prefix.ts   |  24 +
  .../shared/workflow-operation-projection.ts        | 184 ++++
- .../src/commands/shared/workflow-step-branch.ts    | 557 ++++++++++++
+ .../src/commands/shared/workflow-step-branch.ts    | 585 ++++++++++++
  .../src/commands/shared/workflow-step-factory.ts   | 532 +++++++++++
  .../shared/workflow-step-fingerprint-blueprint.ts  | 219 +++++
  .../shared/workflow-step-fingerprint.test.ts       | 742 +++++++++++++++
  .../commands/shared/workflow-step-fingerprint.ts   | 488 ++++++++++
  .../commands/shared/workflow-step-policy-scope.ts  | 178 ++++
- .../shared/workflow-step-projections.test.ts       | 828 +++++++++++++++++
+ .../shared/workflow-step-projections.test.ts       | 872 ++++++++++++++++++
  .../commands/shared/workflow-step-projections.ts   | 189 ++++
  .../src/commands/shared/workflow-step-reducer.ts   |  95 ++
  .../src/commands/shared/workflow-step.test.ts      | 999 +++++++++++++++++++++
@@ -45,4 +45,4 @@
  scripts/baselines/knip-baseline.json               |   5 -
  scripts/baselines/trust-boundary-violations.json   |  18 -
  scripts/checks/check-lifecycle-invariants.mjs      |  20 +-
- 47 files changed, 6685 insertions(+), 1961 deletions(-)
+ 47 files changed, 6853 insertions(+), 1995 deletions(-)

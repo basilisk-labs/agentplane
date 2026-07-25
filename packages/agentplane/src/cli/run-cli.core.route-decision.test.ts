@@ -369,28 +369,35 @@ describe("runCli route decision commands", () => {
           });
           expect(parsed.task.id).toBe(taskId);
           expect(parsed.route.workflow_mode).toBe("branch_pr");
-          expect(parsed.route.phase).toBe("verify_or_pr_update");
-          expect(parsed.route.authoritative_checkout).toBe("task_worktree");
-          expect(parsed.route.authoritative_checkout_path).toBe(null);
-          expect(parsed.route.mutation_path_hint).toBe(null);
-          expect(parsed.route.next_action_code).toBe("verify_or_update_pr");
-          expect(parsed.execution_packet.safe_to_mutate).toBe(false);
-          expect(parsed.execution_packet.mutation_path_hint).toBe(null);
+          expect(parsed.route.phase).toBe("worktree_needed");
+          expect(parsed.route.authoritative_checkout).toBe("base_checkout");
+          expect(parsed.route.authoritative_checkout_path).not.toBeNull();
+          expect(parsed.route.mutation_path_hint).not.toBeNull();
+          expect(parsed.route.next_action_code).toBe("start_or_recover_worktree");
+          expect(parsed.execution_packet.safe_to_mutate).toBe(true);
+          expect(parsed.execution_packet.mutation_path_hint).not.toBeNull();
           expect(parsed.execution_packet.exact_argv).toEqual([
             "agentplane",
-            "pr",
-            "update",
+            "work",
+            "start",
             taskId,
+            "--agent",
+            "CODER",
+            "--slug",
+            "route-decision-task",
+            "--worktree",
           ]);
-          expect(parsed.execution_packet.must_run_from).toBeNull();
+          expect(parsed.execution_packet.must_run_from).not.toBeNull();
           expect(parsed.execution_packet.return_control_when).toContain(
             "recompute task next-action",
           );
           expect(parsed.execution_packet.stale_state_check).toBe(
             `agentplane task next-action ${taskId} --explain`,
           );
-          expect(parsed.next_action.code).toBe("verify_or_update_pr");
-          expect(parsed.next_action.command).toBe(`agentplane pr update ${taskId}`);
+          expect(parsed.next_action.code).toBe("start_or_recover_worktree");
+          expect(parsed.next_action.command).toBe(
+            `agentplane work start ${taskId} --agent CODER --slug route-decision-task --worktree`,
+          );
           expect(parsed.verify_steps.text).toContain("PLANNER fallback scaffold");
           expect(parsed.verify_steps.filled).toBe(true);
           expect(parsed.verify_steps.quality).toBe("fallback");
@@ -944,6 +951,21 @@ describe("runCli route decision commands", () => {
 
       const branch = `task/${taskId}/route-decision`;
       await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+      await runCliSilent([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: exercise stale PR metadata routing in the task worktree.",
+        "--root",
+        root,
+      ]);
+      await execFileAsync("git", ["add", "--all"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "chore: prepare stale PR route fixture"], {
+        cwd: root,
+      });
       await writeFile(path.join(root, "impl.txt"), "implementation\n");
       await execFileAsync("git", ["add", "impl.txt"], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "feat: implementation"], { cwd: root });

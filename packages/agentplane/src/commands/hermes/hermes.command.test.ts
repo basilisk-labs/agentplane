@@ -56,6 +56,37 @@ async function createApprovedTask(root: string): Promise<string> {
   return taskId;
 }
 
+async function createRunnableDirectTask(root: string): Promise<string> {
+  await runCliSilent(["init", "--workflow", "direct", "--yes", "--root", root]);
+  const taskId = await createTask(root);
+  await runCliSilent([
+    "task",
+    "plan",
+    "set",
+    taskId,
+    "--text",
+    "Fixture plan for Hermes task-run execution coverage.",
+    "--updated-by",
+    "CODER",
+    "--root",
+    root,
+  ]);
+  await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+  await runCliSilent([
+    "task",
+    "start-ready",
+    taskId,
+    "--author",
+    "CODER",
+    "--body",
+    "Start: prepare the direct task runner fixture.",
+    "--root",
+    root,
+  ]);
+  expect(await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root])).toBe(0);
+  return taskId;
+}
+
 describe("hermes adapter commands", () => {
   it("allowlists same-task typed Agentplane task run actions only", () => {
     const taskId = "202606010525-5TJNPS";
@@ -67,6 +98,7 @@ describe("hermes adapter commands", () => {
       },
       execution_packet: {
         actionKind: "local_command" as const,
+        safeToMutate: true,
         exactArgv: ["agentplane", "task", "run", taskId],
       },
     };
@@ -87,6 +119,55 @@ describe("hermes adapter commands", () => {
         execution_packet: {
           ...packet.execution_packet,
           exactArgv: ["agentplane", "task", "run", taskId, "--unsafe"],
+        },
+      }).args,
+    ).toBeNull();
+    expect(
+      executableStepFor({
+        ...packet,
+        execution_packet: {
+          ...packet.execution_packet,
+          safeToMutate: false,
+        },
+      }).args,
+    ).toBeNull();
+    expect(
+      executableStepFor({
+        ...packet,
+        next_action: { code: "open_pr", summary: "publish the task PR" },
+        execution_packet: {
+          ...packet.execution_packet,
+          exactArgv: ["agentplane", "pr", "open", taskId, "--author", "CODER"],
+        },
+      }).args,
+    ).toBeNull();
+    expect(
+      executableStepFor({
+        ...packet,
+        next_action: { code: "update_pr_artifacts", summary: "refresh task PR artifacts" },
+        execution_packet: {
+          ...packet.execution_packet,
+          exactArgv: ["agentplane", "pr", "update", taskId, "--include-task", "202606010525-OTHER"],
+        },
+      }).args,
+    ).toBeNull();
+    expect(
+      executableStepFor({
+        ...packet,
+        next_action: { code: "start_or_recover_worktree", summary: "prepare a task worktree" },
+        execution_packet: {
+          ...packet.execution_packet,
+          exactArgv: [
+            "agentplane",
+            "work",
+            "start",
+            taskId,
+            "--agent",
+            "CODER",
+            "--slug",
+            "hermes-task",
+            "--worktree",
+          ],
         },
       }).args,
     ).toBeNull();
@@ -269,7 +350,7 @@ describe("hermes adapter commands", () => {
 
   it("supervise dry-runs one allowlisted typed route step", async () => {
     const root = await mkGitRepoRoot();
-    const taskId = await createApprovedTask(root);
+    const taskId = await createRunnableDirectTask(root);
 
     const io = captureStdIO();
     try {
@@ -316,6 +397,7 @@ describe("hermes adapter commands", () => {
       },
       execution_packet: {
         actionKind: "local_command",
+        safeToMutate: true,
         exactArgv: ["agentplane", "task", "run", "202606010530-BEYQXA"],
       },
     });
@@ -342,6 +424,7 @@ describe("hermes adapter commands", () => {
       },
       execution_packet: {
         actionKind: "stop",
+        safeToMutate: true,
         exactArgv: null,
       },
     });
@@ -482,17 +565,18 @@ describe("hermes adapter commands", () => {
       },
       execution_packet: {
         actionKind: "local_command",
+        safeToMutate: true,
         exactArgv: ["agentplane", "task", "run", "202606010531-OTHER1"],
       },
     });
 
     expect(step.args).toBeNull();
-    expect(step.reason).toContain("unsupported typed Agentplane Hermes route action");
+    expect(step.reason).toContain("Hermes allowlist permits only the exact typed task runner argv");
   });
 
   it("supervise returns the child Agentplane command failure code", async () => {
     const root = await mkGitRepoRoot();
-    const taskId = await createApprovedTask(root);
+    const taskId = await createRunnableDirectTask(root);
     const fakeBin = path.join(root, "failing-agentplane.js");
     await writeFile(
       fakeBin,
