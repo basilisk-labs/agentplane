@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -61,8 +61,8 @@ quality_review:
     - "Receipt validation covers digest, span, byte and line counters, limits, and mutually exclusive included, omitted, missing, and stale outcomes."
     - "Traversal, source and projection symlinks, noncanonical percent encoding, Unicode code-point bounds, and descending ranges are rejected; context-pack.md remains unchanged and new views are optional."
 commit:
-  hash: "c7f0d8b8433b5ff7a1818a15ef11c90151d53546"
-  message: "🧠 ER5H6N context: add digest-addressed knowledge refs"
+  hash: "0a58ea4f7b0f66b372d25a5f1058bae46d5750ee"
+  message: "🧠 ER5H6N task: refresh post-rebase quality review"
 comments:
   -
     author: "CODER"
@@ -70,6 +70,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -97,8 +100,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T12:39:06.243Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T00:33:38.550Z"
+doc_updated_at: "2026-07-25T12:39:06.243Z"
 doc_updated_by: "CODER"
 description: "RF-08: standardize reproducible references into the existing context knowledge plane with digest, reason, retrieval provenance, score, requirement, freshness, and bounded excerpts."
 sections:
@@ -195,6 +205,10 @@ sections:
     - Observation: All supported KnowledgeRef kinds resolve to digest-linked source identities; stale/missing states withhold content; bounded excerpt receipts preserve context-pack.md. A redundant macOS critical rerun completed the 50-run RF-04 replay logic but Finder-created .DS_Store files caused cleanup-only ENOTEMPTY after the assertions.
       Impact: RF-08 contract semantics and its required gates are verified. The unrelated macOS temporary-directory cleanup race remains a release-reliability follow-up, not a KnowledgeRef correctness failure.
       Resolution: Accept RF-08 and create a separate narrow reliability task to make RF-04 temporary cleanup retry-safe before stable 0.7.0.
+extensions:
+  implementation_commit:
+    hash: "efb741edda2aa24c85b11315a0b0b92f66710b26"
+    message: "🧠 ER5H6N context: add digest-addressed knowledge refs"
 id_source: "generated"
 ---
 ## Summary
