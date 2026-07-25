@@ -48,6 +48,7 @@ import {
   writeConfig,
   writeDefaultConfig,
   recordVerificationOk,
+  prepareHostedIntegrateFixture,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
@@ -160,6 +161,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      await prepareHostedIntegrateFixture({
+        root,
+        taskId,
+        branch,
+        scenarioName: "integrate-rebase-verify-fail",
+      });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
@@ -246,6 +253,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      await prepareHostedIntegrateFixture({
+        root,
+        taskId,
+        branch,
+        scenarioName: "integrate-missing-pr-after-merge",
+      });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -437,6 +450,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      await prepareHostedIntegrateFixture({
+        root,
+        taskId,
+        branch,
+        scenarioName: "integrate-run-verify",
+      });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
 

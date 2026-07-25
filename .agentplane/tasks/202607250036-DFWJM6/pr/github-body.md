@@ -15,14 +15,12 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic
-source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21).
-Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and
-diff-check pass. Independent re-review: PASS.
+Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease
+identity, and SKIPPED check state must be aligned before integration.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -9,6 +9,7 @@ import {
   normalizeRelatedTaskIds,
 } from "./helpers.js";
 import type { PrMeta } from "./model.js";
+import { readPreMergeClosureMarker } from "./pre-merge-closure.js";
 
 const DIFFSTAT_DIGEST_FIELD = "diffstat_sha256";
 const LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD = "last_verified_diffstat_sha256";
@@ -69,6 +70,7 @@ type ForwardCompatiblePrMetaRecord = {
   artifact_state_updated_at?: unknown;
   diffstat_sha256?: unknown;
   last_verified_diffstat_sha256?: unknown;
+  pre_merge_closure?: unknown;
 };
 
 function buildForwardCompatiblePrMeta(
@@ -132,6 +134,9 @@ function buildForwardCompatiblePrMeta(
   const lastVerifiedDiffstatDigest = asNonEmptyString(parsed.last_verified_diffstat_sha256);
   if (lastVerifiedDiffstatDigest) {
     meta[LAST_VERIFIED_DIFFSTAT_DIGEST_FIELD] = lastVerifiedDiffstatDigest;
+  }
+  if (readPreMergeClosureMarker(parsed)) {
+    (meta as PrMeta & { pre_merge_closure?: unknown }).pre_merge_closure = parsed.pre_merge_closure;
   }
   return meta;
 }

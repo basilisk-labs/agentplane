@@ -1,16 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
-import {
-  chmod,
-  mkdir,
-  mkdtemp,
-  readdir,
-  readFile,
-  realpath,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { chmod, mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -48,6 +39,7 @@ import {
   writeConfig,
   writeDefaultConfig,
   recordVerificationOk,
+  prepareHostedIntegrateFixture,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
@@ -223,7 +215,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
   });
 
   it("integrate maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const root = await mkTempDir();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
     await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
@@ -390,16 +382,16 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
     await runCliSilent(["pr", "update", taskId, "--branch", branch, "--root", root]);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh pr artifacts`);
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-protected-main",
+      protectedBase: true,
+    });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
-
-    const { fakeBin, logPath } = await installFakeGhProtection({
-      scenarioName: "integrate-protected-main",
-    });
-    const originalPath = process.env.PATH;
-    process.env.PATH = `${fakeBin}${path.delimiter}${originalPath ?? ""}`;
-    process.env.AGENTPLANE_GH_LOG = logPath;
 
     const { stdout: beforeMainHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
@@ -419,8 +411,6 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       );
     } finally {
       io.restore();
-      process.env.PATH = originalPath;
-      delete process.env.AGENTPLANE_GH_LOG;
     }
 
     const { stdout: afterMainHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
@@ -465,13 +455,14 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       status: "awaiting_github_merge",
       local_mutation: "not_performed",
       finalize_via: "github_task_pr_merge_then_hosted_close",
-      pr_number: null,
+      pr_number: 321,
+      pr_url: "https://github.com/example/repo/pull/321",
       handoff_show_command: `agentplane task handoff show ${taskId}`,
       base_pull_command: "git pull --ff-only",
     });
     expect(handoff.next_actions).toEqual([
       `agentplane task handoff show ${taskId}`,
-      "Continue GitHub PR merge for the GitHub PR for branch " + branch,
+      "Continue GitHub PR merge for GitHub PR #321: https://github.com/example/repo/pull/321",
       "Wait for Task Hosted Close to finish",
       "git pull --ff-only",
     ]);

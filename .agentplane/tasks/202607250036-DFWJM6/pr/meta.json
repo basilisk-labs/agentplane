@@ -3,22 +3,15 @@
   "branch": "task/202607250036-DFWJM6/force-with-lease-pr-publish",
   "created_at": "2026-07-25T00:37:21.141Z",
   "diffstat_sha256": "sha256:0c6c3fe30a9a31b60fb5195e37f6bf1cfc85f3727b019d06eb2ee5a03571e68b",
-  "last_verified_at": "2026-07-25T01:26:53.345Z",
+  "last_verified_at": "2026-07-25T01:43:58.774Z",
   "last_verified_diffstat_sha256": "sha256:0c6c3fe30a9a31b60fb5195e37f6bf1cfc85f3727b019d06eb2ee5a03571e68b",
   "pr_number": 4616,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4616",
-  "pre_merge_closure": {
-    "basis_commit": "c0f4d84b6685088df363cfe2cc165023e6f5d255",
-    "branch": "task/202607250036-DFWJM6/force-with-lease-pr-publish",
-    "pr_number": 4616,
-    "recorded_at": "2026-07-25T01:28:05.071Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607250036-DFWJM6",
   "updated_at": "2026-07-25T01:04:43.697Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

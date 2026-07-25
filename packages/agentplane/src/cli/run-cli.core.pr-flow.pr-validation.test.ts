@@ -27,8 +27,6 @@ import {
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   mkTempDir,
-  mkdtemp,
-  os,
   path,
   pathExists,
   promisify,
@@ -109,7 +107,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr note maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const root = await mkTempDir();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
     await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
@@ -1023,7 +1021,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
   });
 
   it("pr check maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const root = await mkTempDir();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
     await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();

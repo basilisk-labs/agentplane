@@ -43,6 +43,7 @@ import {
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkTempDir,
   pathExists,
   stageGitignoreIfPresent,
   stubTaskBackend,
@@ -406,7 +407,7 @@ describe("runCli hooks run", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
   });
 
   it("hooks run pre-commit maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const root = await mkTempDir();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
     await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();

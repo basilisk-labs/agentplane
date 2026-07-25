@@ -5,14 +5,12 @@ import {
   chmod,
   copyFile,
   mkdir,
-  mkdtemp,
   readdir,
   readFile,
   realpath,
   rm,
   writeFile,
 } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
@@ -64,7 +62,7 @@ describe("runCli", () => {
   });
 
   it("branch base get maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const root = await mkTempDir();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
     await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
@@ -180,7 +178,7 @@ describe("runCli", () => {
   }, 60_000);
 
   it("branch base set maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const root = await mkTempDir();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
     await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();

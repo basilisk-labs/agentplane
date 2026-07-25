@@ -12,6 +12,7 @@ import {
   configureGitUser,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
+  prepareHostedIntegrateFixture,
   recordVerificationOk,
   runCliSilent,
   stageGitignoreIfPresent,
@@ -96,6 +97,12 @@ describe("runCli integrate rebase race", () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      await prepareHostedIntegrateFixture({
+        root,
+        taskId,
+        branch,
+        scenarioName: "integrate-rebase-race",
+      });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
@@ -122,7 +129,7 @@ describe("runCli integrate rebase race", () => {
           root,
         ]);
         expect(code).toBe(5);
-        expect(io.stderr).toContain("merge --ff-only");
+        expect(io.stderr).toContain("Base branch moved before fast-forward integration");
       } finally {
         io.restore();
       }
