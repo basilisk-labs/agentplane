@@ -15,8 +15,15 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Independent review PASS at 8d06aecb: 20/20 focused publication tests passed; exact repo-bound
+force-with-lease and all fail-closed cases verified; typecheck, lint:core, hotspots, architecture,
+task-state, task lint, routing, diff-check, and doctor passed. Unchanged website lint baseline
+remains outside scope.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
