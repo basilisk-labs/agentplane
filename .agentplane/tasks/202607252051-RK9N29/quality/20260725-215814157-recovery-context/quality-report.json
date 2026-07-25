@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607252051-RK9N29",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T21:58:14.157Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "CI-contract remediation preserves branch-snapshot semantics and satisfies the local quality gates that failed on the previous head.",
+  "evaluated_sha": "285135cfeff7fd54b505bfd53cb8c77d8534d718",
+  "blueprint_digest": "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23",
+  "findings": [
+    "Canonical PR metadata construction now lives beside the branch-aware artifact reader; route behavior remains covered while the route module returns below the enforced hotspot threshold."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607252051-RK9N29/README.md",
+    "packages/agentplane/src/commands/pr/internal/pr-paths.ts",
+    "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts",
+    "packages/agentplane/src/commands/shared/route-decision.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted CI must run again on the newly published head; the unrelated runner-reclaim fixture remains a separately tracked baseline follow-up."
+  ]
+}
