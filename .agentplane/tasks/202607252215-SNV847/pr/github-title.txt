@@ -1,1 +1,1 @@
-🚧 SNV847 task: Repair stale runner reclaim regression fixture [202607252215-SNV847]
+✅ SNV847 task: Repair stale runner reclaim regression fixture [202607252215-SNV847]
