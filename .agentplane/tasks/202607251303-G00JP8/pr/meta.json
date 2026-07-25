@@ -3,15 +3,22 @@
   "branch": "task/202607251303-G00JP8/stabilize-parallel-full-fast-runner-and-integrat",
   "created_at": "2026-07-25T13:06:52.051Z",
   "diffstat_sha256": "sha256:42e15c026ef49796f75b5714523a738b647afda464ba905aaeffa98dd77283ad",
-  "last_verified_at": "2026-07-25T13:10:23.500Z",
-  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": "2026-07-25T13:48:00.968Z",
+  "last_verified_diffstat_sha256": "sha256:42e15c026ef49796f75b5714523a738b647afda464ba905aaeffa98dd77283ad",
   "pr_number": 4617,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4617",
+  "pre_merge_closure": {
+    "basis_commit": "002c1dce9c088812b823707bc98571ba8cc2961a",
+    "branch": "task/202607251303-G00JP8/stabilize-parallel-full-fast-runner-and-integrat",
+    "pr_number": 4617,
+    "recorded_at": "2026-07-25T13:49:10.005Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607251303-G00JP8",
   "updated_at": "2026-07-25T13:06:55.461Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

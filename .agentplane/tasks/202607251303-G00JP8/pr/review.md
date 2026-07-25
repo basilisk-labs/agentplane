@@ -6,14 +6,14 @@ Created: 2026-07-25T13:06:52.051Z
 
 - Task: `202607251303-G00JP8`
 - Title: Stabilize parallel full-fast runner and integration tests
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607251303-G00JP8/stabilize-parallel-full-fast-runner-and-integrat`
 - Canonical task record: `.agentplane/tasks/202607251303-G00JP8/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Implementation evidence is not present yet; the lifecycle-only PR head cannot satisfy the task Verify Steps.
+- State: ok
+- Note: Implementation commit 002c1dce9 satisfies all five Verify Steps; targeted, stress, full, static, doctor, routing, and independent reviews pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
