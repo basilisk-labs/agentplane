@@ -4,7 +4,7 @@ title: "Restore shared guard invariant after KnowledgeRef merge"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -18,10 +18,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-25T14:39:38.105Z"
+  updated_by: "TESTER"
+  note: "Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed; typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed."
   attempts: 0
 commit: null
 comments:
@@ -36,8 +36,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: restore the canonical shared guard invariant with a surgical KnowledgeRef change."
+  -
+    type: "verify"
+    at: "2026-07-25T14:39:38.105Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed; typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-07-25T14:37:25.360Z"
+doc_updated_at: "2026-07-25T14:39:38.510Z"
 doc_updated_by: "CODER"
 description: "Replace the inherited local isRecord helper in KnowledgeRef with the canonical shared guard so guards:check passes on main before RF06b integration."
 sections:
@@ -52,6 +58,36 @@ sections:
   Verify Steps: "1. From current main, bun run guards:check passes and reports no local isRecord definitions outside the canonical allowlist. 2. KnowledgeRef resolution behavior remains unchanged: core and agentplane focused KnowledgeRef suites pass, including missing/stale/content withholding cases. 3. The product diff is limited to using the canonical shared guard plus task/PR artifacts; no schema or public API changes. 4. bun run typecheck, bun run format:changed, bun run lint:core, and bun run test:critical pass. 5. Hosted PR checks pass on the exact published head and merged main independently passes bun run guards:check."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-25T14:39:38.105Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed; typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T14:37:25.360Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251433-75Q4J6-restore-shared-guard-invariant-after-knowledgere/.agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json
+    - old_digest: a21e9997108b80409fcab3629d9b97ff46ee6b8d238c79cbd4e133927187f8f1
+    - current_digest: a21e9997108b80409fcab3629d9b97ff46ee6b8d238c79cbd4e133927187f8f1
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607251433-75Q4J6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607251433-75Q4J6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -62,6 +98,10 @@ sections:
       Resolution: Import the canonical shared guard and remove the duplicate helper; retain existing KnowledgeRef behavior and tests.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: The diff replaces only the duplicate local isRecord helper with the canonical shared import.
+      Impact: Main guard invariants are restored without schema, API, or KnowledgeRef behavior changes.
+      Resolution: Accept the implementation for hosted verification and integration.
 id_source: "generated"
 ---
 ## Summary
@@ -86,6 +126,36 @@ Replace the inherited local isRecord helper in KnowledgeRef with the canonical s
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-25T14:39:38.105Z — VERIFY — ok
+
+By: TESTER
+
+Note: Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed; typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T14:37:25.360Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251433-75Q4J6-restore-shared-guard-invariant-after-knowledgere/.agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json
+- old_digest: a21e9997108b80409fcab3629d9b97ff46ee6b8d238c79cbd4e133927187f8f1
+- current_digest: a21e9997108b80409fcab3629d9b97ff46ee6b8d238c79cbd4e133927187f8f1
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607251433-75Q4J6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607251433-75Q4J6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -100,3 +170,7 @@ Replace the inherited local isRecord helper in KnowledgeRef with the canonical s
   Resolution: Import the canonical shared guard and remove the duplicate helper; retain existing KnowledgeRef behavior and tests.
   Promotion: incident-candidate
   Fixability: repo-fixable
+
+- Observation: The diff replaces only the duplicate local isRecord helper with the canonical shared import.
+  Impact: Main guard invariants are restored without schema, API, or KnowledgeRef behavior changes.
+  Resolution: Accept the implementation for hosted verification and integration.
