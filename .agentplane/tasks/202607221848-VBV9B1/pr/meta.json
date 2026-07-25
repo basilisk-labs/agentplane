@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221848-VBV9B1/replace-route-string-dispatch-with-typed-workflo",
   "created_at": "2026-07-24T22:15:24.666Z",
-  "diffstat_sha256": "sha256:d719eba8749a4afc8d7696afb126a4ced0226b194d9bf4428176a5f81a741f2c",
+  "diffstat_sha256": "sha256:440147bf78a7e8ceec28c020c01ea74dce7471e3292427878130164819933e28",
   "last_verified_at": null,
   "pr_number": 4618,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4618",
