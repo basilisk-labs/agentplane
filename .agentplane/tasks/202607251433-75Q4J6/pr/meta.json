@@ -3,10 +3,17 @@
   "branch": "task/202607251433-75Q4J6/restore-shared-guard-invariant-after-knowledgere",
   "created_at": "2026-07-25T14:34:50.856Z",
   "diffstat_sha256": "sha256:a53ec72decc572241357e76c80624f163cdcface7e785aa516ad4ffb5ba7005a",
-  "last_verified_at": "2026-07-25T14:39:38.105Z",
+  "last_verified_at": "2026-07-25T16:50:28.218Z",
   "last_verified_diffstat_sha256": "sha256:a53ec72decc572241357e76c80624f163cdcface7e785aa516ad4ffb5ba7005a",
   "pr_number": 4619,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4619",
+  "pre_merge_closure": {
+    "basis_commit": "c36c0a32f53395014d6d9a6337229283572c67bf",
+    "branch": "task/202607251433-75Q4J6/restore-shared-guard-invariant-after-knowledgere",
+    "pr_number": 4619,
+    "recorded_at": "2026-07-25T16:56:25.152Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607251433-75Q4J6",

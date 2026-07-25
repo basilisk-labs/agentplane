@@ -1,16 +1,18 @@
 ---
 id: "202607251433-75Q4J6"
 title: "Restore shared guard invariant after KnowledgeRef merge"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 13
 origin:
   system: "manual"
 depends_on: []
 tags:
   - "reliability"
   - "v0.7"
+  - "code"
 verify: []
 plan_approval:
   state: "approved"
@@ -19,15 +21,42 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-25T14:39:38.105Z"
+  updated_at: "2026-07-25T16:50:28.218Z"
   updated_by: "TESTER"
-  note: "Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed; typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed."
+  note: "After code-route correction to code.branch_pr, independently reran guards:check (shared guards and trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product diff only imports canonical shared isRecord and removes the local helper."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-25T16:55:04.323Z"
+  updated_by: "EVALUATOR"
+  note: "Pass: the corrected task now follows the required code route. The resolved snapshot classifies this source repair as code.branch_pr with mutation=code and loads the required security, core DoD, code DoD, and branch_pr policies; fresh TESTER verification follows that correction."
+  evaluated_sha: "3e88523f6f7ddb8ffcd4115c1741d1503c6c318e"
+  blueprint_digest: "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542"
+  evidence_refs:
+    - ".agentplane/tasks/202607251433-75Q4J6/README.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165504323-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165504323-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165504323-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json: code.branch_pr, mutation=code, required policy modules"
+    - ".agentplane/tasks/202607251433-75Q4J6/README.md: fresh TESTER verification after route correction"
+    - "packages/agentplane/src/context/knowledge-ref.ts: canonical shared isRecord import replaces local definition"
+    - "bun run guards:check: passed shared guards and trust-boundary ratchet"
+    - "vitest core packages/core/src/runner/knowledge-ref.test.ts: 38 passed"
+    - "vitest agentplane packages/agentplane/src/context/knowledge-ref.test.ts: 10 passed"
+  findings:
+    - "Required code route/classification and policy gates are now correct: the task is tagged code, the snapshot selects code.branch_pr with code mutation, and the required policy modules are present. The product patch only imports canonical shared isRecord and removes the duplicate local helper; guards:check, core KnowledgeRef 38/38, and agentplane KnowledgeRef 10/10 pass."
+commit:
+  hash: "c36c0a32f53395014d6d9a6337229283572c67bf"
+  message: "🧪 75Q4J6 task: record verification evidence"
 comments:
   -
     author: "CODER"
     body: "Start: restore the canonical shared guard invariant with a surgical KnowledgeRef change."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -42,8 +71,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed; typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed."
+  -
+    type: "verify"
+    at: "2026-07-25T16:50:28.218Z"
+    author: "TESTER"
+    state: "ok"
+    note: "After code-route correction to code.branch_pr, independently reran guards:check (shared guards and trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product diff only imports canonical shared isRecord and removes the local helper."
+  -
+    type: "status"
+    at: "2026-07-25T16:56:25.069Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T14:39:38.510Z"
+doc_updated_at: "2026-07-25T16:56:25.070Z"
 doc_updated_by: "CODER"
 description: "Replace the inherited local isRecord helper in KnowledgeRef with the canonical shared guard so guards:check passes on main before RF06b integration."
 sections:
@@ -88,6 +130,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T16:50:28.218Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: After code-route correction to code.branch_pr, independently reran guards:check (shared guards and trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product diff only imports canonical shared isRecord and removes the local helper.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T14:39:38.510Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251433-75Q4J6-restore-shared-guard-invariant-after-knowledgere/.agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json
+    - old_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+    - current_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607251433-75Q4J6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -102,6 +174,10 @@ sections:
     - Observation: The diff replaces only the duplicate local isRecord helper with the canonical shared import.
       Impact: Main guard invariants are restored without schema, API, or KnowledgeRef behavior changes.
       Resolution: Accept the implementation for hosted verification and integration.
+extensions:
+  implementation_commit:
+    hash: "3e88523f6f7ddb8ffcd4115c1741d1503c6c318e"
+    message: "🐛 75Q4J6 reliability: restore canonical record guard"
 id_source: "generated"
 ---
 ## Summary
@@ -150,6 +226,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607251433-75Q4J6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-25T16:50:28.218Z — VERIFY — ok
+
+By: TESTER
+
+Note: After code-route correction to code.branch_pr, independently reran guards:check (shared guards and trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product diff only imports canonical shared isRecord and removes the local helper.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T14:39:38.510Z, excerpt_hash=sha256:4532a1505cf6b26d06fd9189ef23786be89208db1bc3333737c3d572e2cd2949
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251433-75Q4J6-restore-shared-guard-invariant-after-knowledgere/.agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json
+- old_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+- current_digest: 1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607251433-75Q4J6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
