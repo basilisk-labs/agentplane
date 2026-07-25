@@ -18,12 +18,14 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease
-identity, and SKIPPED check state must be aligned before integration.
+Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass,
+full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22
+files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run
+temp-root birthtime inventory is empty.
 ```
 - Canonical workflow state lives in the task README.
 

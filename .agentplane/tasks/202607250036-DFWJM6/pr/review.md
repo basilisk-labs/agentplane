@@ -6,14 +6,14 @@ Created: 2026-07-25T00:37:21.141Z
 
 - Task: `202607250036-DFWJM6`
 - Title: Publish rebased PR branches with an explicit force-with-lease
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607250036-DFWJM6/force-with-lease-pr-publish`
 - Canonical task record: `.agentplane/tasks/202607250036-DFWJM6/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease identity, and SKIPPED check state must be aligned before integration.
+- State: ok
+- Note: Rework verified at cbf4ac33977c: focused publication 21/21, parser and integration regressions pass, full fast 452/452 files and 3045/3045 tests, critical CLI 11/11 chunks, targeted PR route 22/22 files and 134/134 tests, typecheck/lint/format/hotspots/task lint/policy routing pass, and post-run temp-root birthtime inventory is empty.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

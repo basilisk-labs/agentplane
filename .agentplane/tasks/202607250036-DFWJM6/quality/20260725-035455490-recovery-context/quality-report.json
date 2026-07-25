@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607250036-DFWJM6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T03:54:55.490Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Guarded force-with-lease publication and the RF04-compatible test-root cleanup satisfy the approved rework scope.",
+  "evaluated_sha": "cbf4ac33977ceaf346803963c55848cab66ff76d",
+  "blueprint_digest": "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43",
+  "findings": [
+    "Exact source identity, repository identity, expected destination, destination lease, and source-race refusal are covered; forward-compatible closure parsing is structurally bounded; full and targeted suites pass with zero new temp-root leaks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607250036-DFWJM6/README.md",
+    "packages/agentplane/src/commands/pr/branch-publication.test.ts",
+    "packages/agentplane/src/commands/shared/pr-meta.test.ts",
+    "packages/testkit/src/index.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted GitHub publication must still confirm that the canonical ap pr open route updates the existing PR head with the recorded lease."
+  ],
+  "residual_risks": [
+    "Hosted checks and queue integration remain pending until the rebased head is published."
+  ]
+}
