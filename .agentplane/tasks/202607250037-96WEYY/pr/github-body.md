@@ -27,7 +27,8 @@ Prevent Finder-created .DS_Store files from turning successful RF-04 offline rep
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...tical.agent-efficiency-replay-hardening.test.ts | 74 +++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
 ```
 
 </details>

@@ -29,7 +29,8 @@ Created: 2026-07-25T00:39:52.775Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...tical.agent-efficiency-replay-hardening.test.ts | 74 +++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
 ```
 
 </details>
