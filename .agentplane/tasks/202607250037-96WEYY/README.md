@@ -4,7 +4,7 @@ title: "Make RF-04 replay cleanup retry-safe on macOS"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -24,11 +24,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved under the existing AgentPlane 0.7 authorization as a narrow release-reliability fix for a reproduced cleanup-only failure."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T00:44:48.440Z"
+  state: "ok"
+  updated_at: "2026-07-25T01:13:14.872Z"
   updated_by: "TESTER"
-  note: "No implementation diff exists yet; the branch contains only lifecycle artifacts."
-  attempts: 1
+  note: "Independent review PASS at e1ed542204ff. Focused RF-04 test passed three consecutive final runs (10/10 each) with unchanged 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, and structural SHA 006ddc...9ee4; test:critical passed all 11 chunks; typecheck, scoped ESLint, Prettier, routing, hotspots, task lint, and diff-check passed; no provider/model calls were made."
+  attempts: 0
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "No implementation diff exists yet; the branch contains only lifecycle artifacts."
+  -
+    type: "verify"
+    at: "2026-07-25T01:13:14.872Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent review PASS at e1ed542204ff. Focused RF-04 test passed three consecutive final runs (10/10 each) with unchanged 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, and structural SHA 006ddc...9ee4; test:critical passed all 11 chunks; typecheck, scoped ESLint, Prettier, routing, hotspots, task lint, and diff-check passed; no provider/model calls were made."
 doc_version: 3
-doc_updated_at: "2026-07-25T00:44:48.777Z"
+doc_updated_at: "2026-07-25T01:13:15.170Z"
 doc_updated_by: "CODER"
 description: "Prevent Finder-created .DS_Store files from turning successful RF-04 offline replay assertions into cleanup-only ENOTEMPTY failures. Keep the frozen 50-run/55-provider-episode evidence unchanged and add deterministic cleanup regression coverage."
 sections:
@@ -98,6 +104,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T01:13:14.872Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent review PASS at e1ed542204ff. Focused RF-04 test passed three consecutive final runs (10/10 each) with unchanged 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, and structural SHA 006ddc...9ee4; test:critical passed all 11 chunks; typecheck, scoped ESLint, Prettier, routing, hotspots, task lint, and diff-check passed; no provider/model calls were made.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T00:44:48.777Z, excerpt_hash=sha256:ce52142cae84398119276adf38634f5a5ab92fdbf2f92e6d361d2053deb7f271
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250037-96WEYY-make-rf-04-replay-cleanup-retry-safe-on-macos/.agentplane/tasks/202607250037-96WEYY/blueprint/resolved-snapshot.json
+    - old_digest: 877eb9a360741e407588402f2d2ef75b4a50f1a2059aad710594c155f5e99e21
+    - current_digest: 877eb9a360741e407588402f2d2ef75b4a50f1a2059aad710594c155f5e99e21
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250037-96WEYY
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -106,6 +142,10 @@ sections:
     - Observation: The published branch changes only task and PR metadata, so none of the four Verify Steps can be exercised.
       Impact: Accepting this state would allow an empty PR to advance as if RF-04 cleanup reliability were implemented.
       Resolution: Return the task to CODER, implement bounded retry cleanup plus deterministic late-entry and persistent-failure coverage, then rerun the declared gates.
+
+    - Observation: Finder can race temporary replay cleanup and emit retryable ENOTEMPTY after the semantic assertion has already completed.
+      Impact: A cleanup-only race can mask the real replay result and create a false release-gate failure without changing provider evidence.
+      Resolution: Use a four-attempt test-boundary cleanup/replay wrapper that deletes only capture roots created by the current test, preserves the first persistent cleanup error, and immediately surfaces non-retryable errors; production harness bytes remain frozen.
 id_source: "generated"
 ---
 ## Summary
@@ -163,6 +203,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T01:13:14.872Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent review PASS at e1ed542204ff. Focused RF-04 test passed three consecutive final runs (10/10 each) with unchanged 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, and structural SHA 006ddc...9ee4; test:critical passed all 11 chunks; typecheck, scoped ESLint, Prettier, routing, hotspots, task lint, and diff-check passed; no provider/model calls were made.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T00:44:48.777Z, excerpt_hash=sha256:ce52142cae84398119276adf38634f5a5ab92fdbf2f92e6d361d2053deb7f271
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250037-96WEYY-make-rf-04-replay-cleanup-retry-safe-on-macos/.agentplane/tasks/202607250037-96WEYY/blueprint/resolved-snapshot.json
+- old_digest: 877eb9a360741e407588402f2d2ef75b4a50f1a2059aad710594c155f5e99e21
+- current_digest: 877eb9a360741e407588402f2d2ef75b4a50f1a2059aad710594c155f5e99e21
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250037-96WEYY
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -175,3 +245,7 @@ DecisionContextRef:
 - Observation: The published branch changes only task and PR metadata, so none of the four Verify Steps can be exercised.
   Impact: Accepting this state would allow an empty PR to advance as if RF-04 cleanup reliability were implemented.
   Resolution: Return the task to CODER, implement bounded retry cleanup plus deterministic late-entry and persistent-failure coverage, then rerun the declared gates.
+
+- Observation: Finder can race temporary replay cleanup and emit retryable ENOTEMPTY after the semantic assertion has already completed.
+  Impact: A cleanup-only race can mask the real replay result and create a false release-gate failure without changing provider evidence.
+  Resolution: Use a four-attempt test-boundary cleanup/replay wrapper that deletes only capture roots created by the current test, preserves the first persistent cleanup error, and immediately surfaces non-retryable errors; production harness bytes remain frozen.
