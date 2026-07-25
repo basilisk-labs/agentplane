@@ -1,1 +1,1 @@
-🚧 RK9N29 task: Make branch_pr route resolution branch-snapshot aware [202607252051-RK9N29]
+✅ RK9N29 task: Make branch_pr route resolution branch-snapshot aware [202607252051-RK9N29]

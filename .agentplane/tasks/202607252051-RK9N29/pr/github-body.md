@@ -14,8 +14,13 @@ In scope: make branch_pr route, PR flow, blocker, and resume reads prefer a veri
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused route, PR-flow, resume, task-backend, and artifact tests passed; typecheck, lint, guards,
+lifecycle, routing, architecture, formatting, and diff checks passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
