@@ -14,7 +14,7 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import {
   defaultConfig,
   extractTaskSuffix,
@@ -145,7 +145,8 @@ describe("runCli", () => {
     process.env.GIT_COMMITTER_NAME = "Test User";
     process.env.GIT_COMMITTER_EMAIL = "test@example.com";
 
-    const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(child);
+    const originalCwd = process.cwd();
+    process.chdir(child);
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes"]);
@@ -154,8 +155,8 @@ describe("runCli", () => {
       expect(await pathExists(path.join(child, ".agentplane", "WORKFLOW.md"))).toBe(true);
       expect(io.stderr).not.toContain("Init conflicts detected");
     } finally {
+      process.chdir(originalCwd);
       io.restore();
-      cwdSpy.mockRestore();
       process.env = originalEnv;
     }
   });
