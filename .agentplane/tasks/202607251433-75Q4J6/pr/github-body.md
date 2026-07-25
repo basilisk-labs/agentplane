@@ -15,8 +15,13 @@ Replace the inherited local isRecord helper in KnowledgeRef with the canonical s
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Exact head 1a41d3bd7: guards:check passed; KnowledgeRef core 38/38 and agentplane 10/10 passed;
+typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
