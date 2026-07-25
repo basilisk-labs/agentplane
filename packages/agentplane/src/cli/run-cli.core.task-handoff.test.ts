@@ -1,14 +1,17 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   installRunCliIntegrationHarness,
   mkGitRepoRoot,
+  mkGitRepoRootWithBranch,
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit";
@@ -200,4 +203,90 @@ describe("runCli task handoff and recovery", () => {
       nextIo.restore();
     }
   }, 15_000);
+
+  it("resume-context reads the task branch state and PR metadata before stale base artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed branch_pr base"], { cwd: root });
+
+    let taskId = "";
+    const taskIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Resume branch snapshot",
+          "--description",
+          "Resume context must ignore stale base task artifacts before integration.",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      taskId = taskIo.stdout.trim();
+    } finally {
+      taskIo.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: persist stale base task"], { cwd: root });
+
+    const branch = `task/${taskId}/resume-snapshot`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const branchReadme = await readFile(readmePath, "utf8");
+    await writeFile(
+      readmePath,
+      branchReadme.replace(/status:\s*["']?TODO["']?/u, 'status: "DONE"'),
+      "utf8",
+    );
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        task_id: taskId,
+        branch,
+        base: "main",
+        status: "OPEN",
+        pr_number: 321,
+        pr_url: "https://github.com/example/repo/pull/321",
+        created_at: "2026-07-25T00:00:00.000Z",
+        updated_at: "2026-07-25T00:00:00.000Z",
+      })}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: add task branch resume metadata"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      expect(await runCli(["task", "resume-context", taskId, "--json", "--root", root])).toBe(0);
+      const parsed = JSON.parse(io.stdout) as {
+        task_status: string;
+        base_branch: string | null;
+        pr_branch: string | null;
+      };
+      expect(parsed).toMatchObject({
+        task_status: "DONE",
+        base_branch: "main",
+        pr_branch: branch,
+      });
+    } finally {
+      io.restore();
+    }
+  });
 });

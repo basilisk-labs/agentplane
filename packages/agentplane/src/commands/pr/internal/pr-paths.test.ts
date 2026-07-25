@@ -6,14 +6,19 @@ import type { readFile as readFileFn } from "node:fs/promises";
 import type { loadConfig as loadConfigFn } from "@agentplaneorg/core/config";
 import type { resolveProject as resolveProjectFn } from "@agentplaneorg/core/project";
 import type { fileExists as fileExistsFn } from "../../../cli/fs-utils.js";
-import type { gitShowFile as gitShowFileFn } from "@agentplaneorg/core/git";
+import type {
+  findWorktreeForBranch as findWorktreeForBranchFn,
+  gitShowFile as gitShowFileFn,
+} from "@agentplaneorg/core/git";
 
 const mocks = {
   resolveProject: vi.fn(),
   loadConfig: vi.fn(),
   fileExists: vi.fn(),
   readFile: vi.fn(),
+  findWorktreeForBranch: vi.fn(),
   gitShowFile: vi.fn(),
+  resolveTaskBranchFromContext: vi.fn(),
 };
 
 const callResolveProject = (
@@ -32,6 +37,10 @@ const callGitShowFile = (
   ...args: Parameters<typeof gitShowFileFn>
 ): ReturnType<typeof gitShowFileFn> =>
   mocks.gitShowFile(...args) as ReturnType<typeof gitShowFileFn>;
+const callFindWorktreeForBranch = (
+  ...args: Parameters<typeof findWorktreeForBranchFn>
+): ReturnType<typeof findWorktreeForBranchFn> =>
+  mocks.findWorktreeForBranch(...args) as ReturnType<typeof findWorktreeForBranchFn>;
 
 vi.mock("@agentplaneorg/core/project", () => ({
   resolveProject: callResolveProject,
@@ -47,7 +56,11 @@ vi.mock("node:fs/promises", () => ({
 }));
 vi.mock("@agentplaneorg/core/git", () => ({
   toGitPath: (value: string) => value.replaceAll("\\", "/"),
+  findWorktreeForBranch: callFindWorktreeForBranch,
   gitShowFile: callGitShowFile,
+}));
+vi.mock("../../shared/task-backend.js", () => ({
+  resolveTaskBranchFromContext: (...args: unknown[]) => mocks.resolveTaskBranchFromContext(...args),
 }));
 
 describe("pr/internal/pr-paths", () => {
@@ -172,5 +185,89 @@ describe("pr/internal/pr-paths", () => {
       branch: "task/T-3",
     });
     expect(fromBranchOnly).toBe("git-only");
+  });
+
+  it("readTaskPrArtifact prefers the task branch and only falls back to base without one", async () => {
+    const { readTaskPrArtifact } = await import("./pr-paths.js");
+    mocks.resolveTaskBranchFromContext.mockResolvedValue("task/T-4/snapshot");
+    mocks.findWorktreeForBranch.mockResolvedValue(null);
+    mocks.gitShowFile.mockResolvedValueOnce("branch-content");
+
+    await expect(
+      readTaskPrArtifact({
+        ctx: {
+          resolvedProject: { gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" },
+        } as never,
+        taskId: "T-4",
+        prDir: "/repo/.agentplane/tasks/T-4/pr",
+        fileName: "meta.json",
+        preferBranchSnapshot: true,
+      }),
+    ).resolves.toEqual({ content: "branch-content", branch: "task/T-4/snapshot" });
+
+    mocks.findWorktreeForBranch.mockResolvedValueOnce(null);
+    mocks.gitShowFile.mockResolvedValueOnce("branch-git-content");
+
+    await expect(
+      readTaskPrArtifact({
+        ctx: {
+          resolvedProject: { gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" },
+        } as never,
+        taskId: "T-4",
+        prDir: "/repo/.agentplane/tasks/T-4/pr",
+        fileName: "meta.json",
+        preferBranchSnapshot: true,
+      }),
+    ).resolves.toEqual({ content: "branch-git-content", branch: "task/T-4/snapshot" });
+
+    mocks.resolveTaskBranchFromContext.mockResolvedValueOnce("origin/task/T-4/snapshot");
+    mocks.findWorktreeForBranch.mockResolvedValueOnce(null);
+    mocks.gitShowFile.mockResolvedValueOnce("origin-content");
+
+    await expect(
+      readTaskPrArtifact({
+        ctx: {
+          resolvedProject: { gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" },
+        } as never,
+        taskId: "T-4",
+        prDir: "/repo/.agentplane/tasks/T-4/pr",
+        fileName: "meta.json",
+        preferBranchSnapshot: true,
+      }),
+    ).resolves.toEqual({ content: "origin-content", branch: "origin/task/T-4/snapshot" });
+
+    mocks.resolveTaskBranchFromContext.mockResolvedValueOnce("task/T-4/snapshot");
+    mocks.findWorktreeForBranch.mockResolvedValueOnce(null);
+    mocks.gitShowFile
+      .mockRejectedValueOnce(new Error("missing local task branch"))
+      .mockRejectedValueOnce(new Error("missing remote task branch"));
+
+    await expect(
+      readTaskPrArtifact({
+        ctx: {
+          resolvedProject: { gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" },
+        } as never,
+        taskId: "T-4",
+        prDir: "/repo/.agentplane/tasks/T-4/pr",
+        fileName: "meta.json",
+        preferBranchSnapshot: true,
+      }),
+    ).resolves.toEqual({ content: null, branch: "task/T-4/snapshot" });
+
+    mocks.resolveTaskBranchFromContext.mockResolvedValueOnce(null);
+    mocks.readFile.mockReset();
+    mocks.readFile.mockResolvedValue("base-content");
+
+    await expect(
+      readTaskPrArtifact({
+        ctx: {
+          resolvedProject: { gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" },
+        } as never,
+        taskId: "T-4",
+        prDir: "/repo/.agentplane/tasks/T-4/pr",
+        fileName: "meta.json",
+        preferBranchSnapshot: true,
+      }),
+    ).resolves.toEqual({ content: "base-content", branch: null });
   });
 });

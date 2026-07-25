@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-
 import { gitRevParse, taskCloseBranchName } from "@agentplaneorg/core/git";
 
 import { createCliEmitter } from "../../cli/output.js";
@@ -32,7 +30,7 @@ import {
   type PrHeadPublicationStatus,
 } from "./head-publication.js";
 
-import { resolvePrPaths } from "./internal/pr-paths.js";
+import { readTaskPrArtifact, resolvePrPaths } from "./internal/pr-paths.js";
 import {
   observeExistingGithubPrByBranch,
   observeExistingGithubPrByNumber,
@@ -145,9 +143,10 @@ export async function matchesMergedPreMergeClosure(opts: {
   });
 }
 
-async function readPrMetaIfPresent(metaPath: string, taskId: string): Promise<PrMeta | null> {
+function parsePrMetaIfPresent(content: string | null, taskId: string): PrMeta | null {
+  if (content === null) return null;
   try {
-    return parsePrMeta(await readFile(metaPath, "utf8"), taskId);
+    return parsePrMeta(content, taskId);
   } catch {
     return null;
   }
@@ -352,13 +351,7 @@ export async function resolvePrFlowStatus(opts: {
   rootOverride?: string;
   taskId: string;
 }): Promise<PrFlowStatusReport> {
-  const { task } = await loadBackendTask({
-    ctx: opts.ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    taskId: opts.taskId,
-  });
-  const { resolved, config, metaPath } = await resolvePrPaths({ ...opts, ctx: opts.ctx });
+  const { resolved, config, prDir } = await resolvePrPaths({ ...opts, ctx: opts.ctx });
   if (config.workflow_mode !== "branch_pr") {
     throw new CliError({
       exitCode: exitCodeForError("E_USAGE"),
@@ -366,14 +359,29 @@ export async function resolvePrFlowStatus(opts: {
       message: `Invalid workflow_mode: ${config.workflow_mode} (expected branch_pr)`,
     });
   }
+  const { task } = await loadBackendTask({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+    preferBranchSnapshot: true,
+  });
 
-  const meta = await readPrMetaIfPresent(metaPath, task.id);
+  const taskMeta = await readTaskPrArtifact({
+    ctx: opts.ctx,
+    taskId: task.id,
+    prDir,
+    fileName: "meta.json",
+    preferBranchSnapshot: true,
+  });
+  const meta = parsePrMetaIfPresent(taskMeta.content, task.id);
   const queue = await readIntegrationQueue(resolved.gitRoot);
   const queueEntry = queue.entries.find((candidate) => candidate.task_id === task.id) ?? null;
   const metaBranch = meta?.branch?.trim() ?? "";
   const inferredTaskBranch =
     metaBranch.length === 0 && !queueEntry
-      ? await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: task.id })
+      ? (taskMeta.branch ??
+        (await resolveTaskBranchFromContext({ ctx: opts.ctx, taskId: task.id })))
       : null;
   const rawBranch =
     metaBranch.length > 0

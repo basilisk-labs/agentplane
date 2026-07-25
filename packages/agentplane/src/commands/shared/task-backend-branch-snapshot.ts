@@ -3,11 +3,13 @@ import path from "node:path";
 
 import {
   findWorktreeForBranch,
+  gitEnv,
   gitListTaskBranches,
   gitShowFile,
   parseTaskIdFromBranch,
   toGitPath,
 } from "@agentplaneorg/core/git";
+import { execFileAsync } from "@agentplaneorg/core/process";
 import type { TaskRecord } from "@agentplaneorg/core/tasks";
 import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 import {
@@ -34,9 +36,10 @@ export async function resolveTaskBranchFromContext(opts: {
   }
 
   const prefix = opts.ctx.config.branch.task_prefix;
-  const branches = await gitListTaskBranches(opts.ctx.resolvedProject.gitRoot, prefix);
-  const matches = branches.filter(
-    (branch) => parseTaskIdFromBranch(prefix, branch) === opts.taskId,
+  const localBranches = await gitListTaskBranches(opts.ctx.resolvedProject.gitRoot, prefix);
+  const remoteBranches = await listRemoteTaskBranches(opts.ctx.resolvedProject.gitRoot, prefix);
+  const matches = uniqueBranchCandidates([...localBranches, ...remoteBranches]).filter(
+    (branch) => parseTaskIdFromBranch(prefix, stripOriginPrefix(branch)) === opts.taskId,
   );
   if (matches.length === 1) return matches[0] ?? null;
   if (matches.length > 1) {
@@ -47,6 +50,49 @@ export async function resolveTaskBranchFromContext(opts: {
     });
   }
   return null;
+}
+
+function stripOriginPrefix(branch: string): string {
+  return branch.startsWith("origin/") ? branch.slice("origin/".length) : branch;
+}
+
+function normalizeBranchPrefix(prefix: string): string {
+  let start = 0;
+  let end = prefix.length;
+  while (start < end && prefix[start] === "/") start += 1;
+  while (end > start && prefix[end - 1] === "/") end -= 1;
+  return prefix.slice(start, end);
+}
+
+async function listRemoteTaskBranches(cwd: string, prefix: string): Promise<string[]> {
+  const normalized = normalizeBranchPrefix(prefix);
+  if (!normalized) return [];
+  const { stdout } = await execFileAsync(
+    "git",
+    [
+      "for-each-ref",
+      "--format=%(refname:short)",
+      `refs/remotes/origin/${normalized}`,
+      `refs/remotes/origin/${normalized}/`,
+    ],
+    { cwd, env: gitEnv() },
+  );
+  return String(stdout)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.endsWith("/HEAD"));
+}
+
+function uniqueBranchCandidates(branches: string[]): string[] {
+  const seen = new Set<string>();
+  const candidates: string[] = [];
+  for (const branch of branches) {
+    const key = stripOriginPrefix(branch);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    candidates.push(key);
+  }
+  return candidates;
 }
 
 function taskDataFromReadmeText(opts: {

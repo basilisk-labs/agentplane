@@ -17,7 +17,12 @@ import {
   mockConfig,
   writeDefaultConfig,
 } from "@agentplane/testkit";
-import { listTaskSummariesMemo, loadCommandContext, loadTaskFromContext } from "./task-backend.js";
+import {
+  listTaskSummariesMemo,
+  loadCommandContext,
+  loadTaskFromContext,
+  resolveTaskBranchFromContext,
+} from "./task-backend.js";
 
 const TASK_BACKEND_INTEGRATION_TIMEOUT_MS = 180_000;
 
@@ -337,11 +342,13 @@ describe(
         await execFileAsync("git", ["branch", "-D", branch], { cwd: root });
 
         const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+        await expect(resolveTaskBranchFromContext({ ctx, taskId: created.id })).resolves.toBe(
+          branch,
+        );
         const task = await loadTaskFromContext({
           ctx,
           taskId: created.id,
           preferBranchSnapshot: true,
-          branchSnapshotBranch: branch,
         });
 
         expect(task.id).toBe(created.id);

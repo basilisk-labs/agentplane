@@ -236,6 +236,8 @@ export async function loadBackendTask(opts: {
   cwd: string;
   rootOverride?: string | null;
   taskId: string;
+  preferBranchSnapshot?: boolean;
+  branchSnapshotBranch?: string | null;
 }): Promise<{
   backend: CommandContext["taskBackend"];
   backendId: string;
@@ -247,7 +249,12 @@ export async function loadBackendTask(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+  const task = await loadTaskFromContext({
+    ctx,
+    taskId: opts.taskId,
+    preferBranchSnapshot: opts.preferBranchSnapshot,
+    branchSnapshotBranch: opts.branchSnapshotBranch,
+  });
   return {
     backend: ctx.taskBackend,
     backendId: ctx.backendId,

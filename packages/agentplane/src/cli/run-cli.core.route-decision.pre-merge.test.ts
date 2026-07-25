@@ -68,6 +68,7 @@ async function withFakeGh<T>(filename: string, source: string, run: () => Promis
 async function createClosedPreMergeTask(): Promise<{
   root: string;
   taskId: string;
+  baseBranch: string;
   branchName: string;
   branchHeadSha: string;
 }> {
@@ -76,6 +77,13 @@ async function createClosedPreMergeTask(): Promise<{
   config.workflow_mode = "branch_pr";
   await writeConfig(root, config);
   await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+  const { stdout: baseBranchRaw } = await execFileAsync("git", ["branch", "--show-current"], {
+    cwd: root,
+  });
+  const baseBranch = baseBranchRaw.trim();
+  await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test: seed branch_pr base"], { cwd: root });
 
   const taskId = await createBranchPrTask(root);
   const branchName = `task/${taskId}/pre-merge-closure`;
@@ -255,7 +263,7 @@ async function createClosedPreMergeTask(): Promise<{
   const { stdout: branchHeadRaw } = await execFileAsync("git", ["rev-parse", branchName], {
     cwd: root,
   });
-  return { root, taskId, branchName, branchHeadSha: branchHeadRaw.trim() };
+  return { root, taskId, baseBranch, branchName, branchHeadSha: branchHeadRaw.trim() };
 }
 
 describe("pre-merge closure route decisions", () => {
@@ -399,6 +407,106 @@ describe("pre-merge closure route decisions", () => {
         });
       } finally {
         statusIo.restore();
+      }
+    });
+  });
+
+  it("uses the DONE task branch snapshot instead of a stale base task copy", async () => {
+    const { root, taskId, baseBranch, branchName, branchHeadSha } =
+      await createClosedPreMergeTask();
+    await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["update-ref", `refs/remotes/origin/${branchName}`, branchHeadSha], {
+      cwd: root,
+    });
+    await execFileAsync(
+      "git",
+      ["branch", "--set-upstream-to", `origin/${branchName}`, branchName],
+      { cwd: root },
+    );
+    await execFileAsync("git", ["checkout", baseBranch], { cwd: root });
+
+    const { stdout: branchReadme } = await execFileAsync(
+      "git",
+      ["show", `${branchName}:.agentplane/tasks/${taskId}/README.md`],
+      { cwd: root },
+    );
+    const staleBaseReadme = branchReadme
+      .replace(/status:\s*["']?DONE["']?/u, 'status: "TODO"')
+      .replace(/(plan_approval:\s*\n\s*state:\s*)["']?approved["']?/u, '$1"pending"');
+    expect(staleBaseReadme).toContain('status: "TODO"');
+    expect(staleBaseReadme).toMatch(/plan_approval:\s*\n\s*state:\s*["']?pending/u);
+    const baseTaskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(baseTaskDir, { recursive: true });
+    await writeFile(path.join(baseTaskDir, "README.md"), staleBaseReadme, "utf8");
+    await rm(path.join(baseTaskDir, "pr"), { recursive: true, force: true });
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: persist stale base task copy"], {
+      cwd: root,
+    });
+
+    const fakeSource = [
+      "const args = process.argv.slice(2);",
+      'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4402") {',
+      `  console.log(${JSON.stringify(
+        JSON.stringify({
+          number: 4402,
+          html_url: "https://github.test/pull/4402",
+          state: "open",
+          merged_at: null,
+          merge_commit_sha: null,
+          head: { ref: branchName, sha: branchHeadSha },
+          base: { ref: "main" },
+        }),
+      )});`,
+      "  process.exit(0);",
+      "}",
+      'if (args[0] === "pr" && args[1] === "checks") {',
+      '  console.log("[]");',
+      "  process.exit(0);",
+      "}",
+      'if (args[0] === "api" && args[1] === "graphql") {',
+      "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [] } } } } }));",
+      "  process.exit(0);",
+      "}",
+      "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
+      "process.exit(91);",
+      "",
+    ].join("\n");
+
+    await withFakeGh("gh-branch-snapshot-route.js", fakeSource, async () => {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "next-action",
+          taskId,
+          "--json",
+          "--remote",
+          "--root",
+          root,
+        ]);
+        if (code !== 0) process.stderr.write(io.stderr);
+        expect(code).toBe(0);
+        const parsed = JSON.parse(io.stdout) as {
+          task: { status: string };
+          workflow_step: { operation: { id: string; params: { taskId: string; branch: string } } };
+          next_action: { code: string; command: string };
+          blockers: Array<{ code: string }>;
+        };
+        expect(parsed.task.status).toBe("DONE");
+        expect(parsed.workflow_step.operation).toMatchObject({
+          id: "integration.enqueue",
+          params: { taskId, branch: branchName },
+        });
+        expect(parsed.next_action).toMatchObject({
+          code: "wait_hosted_checks",
+          command: `agentplane integrate queue enqueue ${taskId} --branch ${branchName}`,
+        });
+        expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain("plan_not_approved");
+      } finally {
+        io.restore();
       }
     });
   });
