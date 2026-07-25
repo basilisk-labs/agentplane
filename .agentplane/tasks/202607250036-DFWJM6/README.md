@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -57,8 +57,8 @@ quality_review:
     - "The force path is available only for an existing open PR whose provider repository, origin fetch repository, origin push repository, branch, and observed remote head all agree."
     - "Publication uses only the exact ref-scoped lease and refuses mismatched repository/head, wrong upstream/current branch, closed or missing PR, and a remote race; first publication remains unchanged."
 commit:
-  hash: "d40eaea364c9559ff8d10fdef060fa159e33142f"
-  message: "🧭 DFWJM6 task: pre-merge closure"
+  hash: "4acdfcbb6ca4f391b573f17c3f38b7221e776c96"
+  message: "🧩 DFWJM6 task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -66,6 +66,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -97,8 +100,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T01:10:57.839Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T01:09:01.464Z"
+doc_updated_at: "2026-07-25T01:10:57.839Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
