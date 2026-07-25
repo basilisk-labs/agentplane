@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-ER5H6N",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T14:13:56.947Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Final post-G00JP8 review passed: rebased RF08 preserves strict digest-addressed KnowledgeRef semantics, fail-closed freshness, bounded excerpt receipts, schema parity, and compatibility views on head 77c09bca8.",
+  "evaluated_sha": "77c09bca80625b9bb0c7054f3d2423295e2b652d",
+  "blueprint_digest": "3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0",
+  "findings": [
+    "All five KnowledgeRef kinds resolve through canonical refs bound to digest and source identity; drift returns stale with no content and deletion returns missing with no source or content.",
+    "Prepared excerpt receipts enforce mutually exclusive included, omitted, missing, and stale outcomes plus canonical ref, source span, digest, UTF-8 counters, limits, and omission reasons; context-pack.md remains unchanged.",
+    "Root, core, and spec schemas are byte-identical and generated from one renderer; supported core entrypoints and the v0.7 compatibility ratchet expose the full public surface.",
+    "The final two commits do not weaken public behavior: one changes lifecycle artifacts only and the other removes exactly two unused internal agentplane re-exports while preserving public core exports."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-ER5H6N/README.md",
+    "implementation head 77c09bca8 rebased on main ba92fff2d",
+    "packages/core/src/runner/knowledge-ref.ts and packages/core/src/runner/knowledge-ref.test.ts",
+    "packages/agentplane/src/context/knowledge-ref.ts and packages/agentplane/src/context/knowledge-ref.test.ts",
+    "focused KnowledgeRef 48/48; critical 72/72; test:fast 455 files/3096 tests",
+    "schemas:check, typecheck, format:check, lint:core, knip:check, compatibility baseline, spec examples, hotspots, doctor, policy routing, diff check: passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Direct prepareKnowledgeExcerpt runtime cases for both missing reasons and a multibyte max_bytes boundary are not separate tests; core receipt invariants and adjacent runtime branches cover the behavior.",
+    "JSONL id uniqueness remains an upstream invariant; duplicate ids choose the first row while digest mismatch remains fail-closed.",
+    "No tarball smoke imports every new symbol from both core entrypoints; static exports, typecheck, schema parity, compatibility ratchet, and hosted package checks mitigate this."
+  ]
+}

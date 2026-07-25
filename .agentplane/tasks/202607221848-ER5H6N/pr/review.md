@@ -6,14 +6,14 @@ Created: 2026-07-24T22:17:13.092Z
 
 - Task: `202607221848-ER5H6N`
 - Title: Define digest-addressed KnowledgeRef contracts
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221848-ER5H6N/define-digest-addressed-knowledgeref-contracts`
 - Canonical task record: `.agentplane/tasks/202607221848-ER5H6N/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one unrelated active-claim history race (targeted repetition passed 20/20).
+- State: ok
+- Note: Rebased implementation head 77c09bca8 satisfies the KnowledgeRef contract and all required regression gates on main ba92fff2d.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
