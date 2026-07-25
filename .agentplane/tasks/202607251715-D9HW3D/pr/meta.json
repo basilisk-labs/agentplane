@@ -3,8 +3,8 @@
   "branch": "task/202607251715-D9HW3D/preserve-compact-incident-registry-formatting",
   "created_at": "2026-07-25T17:16:51.010Z",
   "diffstat_sha256": "sha256:9211f690b6daf226716ae44d44632f4218418e2483a65866abab81ef83bf84f0",
-  "last_verified_at": "2026-07-25T17:28:30.085Z",
-  "last_verified_diffstat_sha256": "sha256:1cc71fc825426b53edba1938c2e757c564f20f38d9caf027d08f5edf2c46255b",
+  "last_verified_at": "2026-07-25T17:36:52.020Z",
+  "last_verified_diffstat_sha256": "sha256:9211f690b6daf226716ae44d44632f4218418e2483a65866abab81ef83bf84f0",
   "pr_number": 4620,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4620",
   "pre_merge_closure": {
