@@ -6,14 +6,14 @@ Created: 2026-07-25T00:37:21.141Z
 
 - Task: `202607250036-DFWJM6`
 - Title: Publish rebased PR branches with an explicit force-with-lease
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607250036-DFWJM6/force-with-lease-pr-publish`
 - Canonical task record: `.agentplane/tasks/202607250036-DFWJM6/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20, platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime inventory is empty. Hosted Windows rerun remains the external gate.
+- State: needs_rework
+- Note: Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,6 +33,7 @@ Created: 2026-07-25T00:37:21.141Z
  .../src/cli/run-cli.core.hooks.hook-run.test.ts    |   3 +-
  .../src/cli/run-cli.core.hooks.install.test.ts     |  15 +-
  .../src/cli/run-cli.core.hooks.uninstall.test.ts   |  15 +-
+ .../run-cli.core.init.validation-conflicts.test.ts |   7 +-
  .../run-cli.core.pr-flow.cleanup-merged.test.ts    |   2 +-
  ...run-cli.core.pr-flow.integrate-failures.test.ts |  19 +
  .../run-cli.core.pr-flow.integrate-merge.test.ts   |  59 ++-
@@ -52,7 +53,7 @@ Created: 2026-07-25T00:37:21.141Z
  .../testkit/src/cli-harness/temp-root-cleanup.ts   |  14 +
  packages/testkit/src/github-pr.ts                  |  65 ++-
  packages/testkit/src/index.test.ts                 |  14 +-
- 23 files changed, 1456 insertions(+), 264 deletions(-)
+ 24 files changed, 1460 insertions(+), 267 deletions(-)
 ```
 
 </details>

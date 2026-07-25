@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-25T04:20:21.439Z"
+  state: "needs_rework"
+  updated_at: "2026-07-25T04:32:25.924Z"
   updated_by: "TESTER"
-  note: "Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20, platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime inventory is empty. Hosted Windows rerun remains the external gate."
-  attempts: 0
+  note: "Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -55,9 +55,7 @@ quality_review:
     - "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts"
   findings:
     - "All helper-owned roots now share recursive force cleanup with five bounded linear retries; roots remain registered after failed removal; the option contract, original init scenario, platform-critical suite, full fast suite, and leak inventory pass. Two independent reviews found no blocking issue."
-commit:
-  hash: "db062c2cdb31ea164cda1729623349160c45101d"
-  message: "🧪 DFWJM6 code: retry temporary-root cleanup"
+commit: null
 comments:
   -
     author: "CODER"
@@ -182,8 +180,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T04:32:25.924Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries."
 doc_version: 3
-doc_updated_at: "2026-07-25T04:21:04.734Z"
+doc_updated_at: "2026-07-25T04:32:26.811Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -424,6 +428,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T04:32:25.924Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T04:21:04.734Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -456,6 +490,10 @@ sections:
     - Observation: Windows Node 24 returned EBUSY from recursive rmdir of an agentplane-cli-test child immediately after init completed.
       Impact: PR #4616 cannot satisfy the hosted gate; the global no-leak cleanup is not yet cross-platform robust.
       Resolution: Centralize helper-owned root deletion with bounded maxRetries/retryDelay, add deterministic regression coverage, rerun focused/full local checks, then republish and require green test-windows.
+
+    - Observation: test-windows failed 13 tests because the same magic_fresh_directory stayed EBUSY across repeated afterEach cleanup attempts.
+      Impact: PR verification remains red; DFWJM6 cannot integrate.
+      Resolution: Replace the in-process process.cwd spy in the current-directory init scenario with a real chdir restored in finally, then repeat local and hosted verification.
 extensions:
   implementation_commit:
     hash: "cbf4ac33977ceaf346803963c55848cab66ff76d"
@@ -708,6 +746,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T04:32:25.924Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation root remains locked after bounded cleanup retries.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T04:21:04.734Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -744,3 +812,7 @@ DecisionContextRef:
 - Observation: Windows Node 24 returned EBUSY from recursive rmdir of an agentplane-cli-test child immediately after init completed.
   Impact: PR #4616 cannot satisfy the hosted gate; the global no-leak cleanup is not yet cross-platform robust.
   Resolution: Centralize helper-owned root deletion with bounded maxRetries/retryDelay, add deterministic regression coverage, rerun focused/full local checks, then republish and require green test-windows.
+
+- Observation: test-windows failed 13 tests because the same magic_fresh_directory stayed EBUSY across repeated afterEach cleanup attempts.
+  Impact: PR verification remains red; DFWJM6 cannot integrate.
+  Resolution: Replace the in-process process.cwd spy in the current-directory init scenario with a real chdir restored in finally, then repeat local and hosted verification.
