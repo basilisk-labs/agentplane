@@ -1,5 +1,5 @@
- .../src/commands/pr/branch-publication.test.ts     | 452 +++++++++++++++++++++
- .../src/commands/pr/branch-publication.ts          | 284 +++++++++++++
+ .../src/commands/pr/branch-publication.test.ts     | 522 +++++++++++++++++++++
+ .../src/commands/pr/branch-publication.ts          | 284 +++++++++++
  .../src/commands/pr/internal/sync-github.ts        |   2 +-
- packages/agentplane/src/commands/pr/open.ts        | 138 +------
- 4 files changed, 740 insertions(+), 136 deletions(-)
+ packages/agentplane/src/commands/pr/open.ts        | 138 +-----
+ 4 files changed, 810 insertions(+), 136 deletions(-)

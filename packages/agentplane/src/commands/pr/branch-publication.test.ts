@@ -40,6 +40,7 @@ async function installGithubPushTransport(opts: {
   branch: string;
   advertisedPushUrl?: string;
   raceHead?: string | null;
+  sourceRaceHead?: string | null;
 }): Promise<{ fakeGitBin: string; pushLogPath: string }> {
   const execFileAsync = promisify(execFile);
   const fakeGitBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-github-push-transport-"));
@@ -61,6 +62,7 @@ async function installGithubPushTransport(opts: {
       `const remoteRef = ${JSON.stringify(`refs/heads/${opts.branch}`)};`,
       `const advertisedPushUrl = ${JSON.stringify(advertisedPushUrl)};`,
       `const raceHead = ${JSON.stringify(opts.raceHead ?? null)};`,
+      `const sourceRaceHead = ${JSON.stringify(opts.sourceRaceHead ?? null)};`,
       `const pushLogPath = ${JSON.stringify(pushLogPath)};`,
       "const args = process.argv.slice(2);",
       "if (args[0] === 'remote' && args[1] === 'get-url' && args.includes('--push') && args.at(-1) === 'origin') {",
@@ -70,6 +72,11 @@ async function installGithubPushTransport(opts: {
       "if (args[0] === 'push') fs.appendFileSync(pushLogPath, `${JSON.stringify(args)}\\n`);",
       "if (raceHead && args[0] === 'push' && args.some((arg) => arg.startsWith('--force-with-lease='))) {",
       "  const update = spawnSync(realGit, [`--git-dir=${remotePath}`, 'update-ref', remoteRef, raceHead], { stdio: 'inherit', env: process.env });",
+      "  if (update.error) throw update.error;",
+      "  if ((update.status ?? 1) !== 0) process.exit(update.status ?? 1);",
+      "}",
+      "if (sourceRaceHead && args[0] === 'push' && args.some((arg) => arg.startsWith('--force-with-lease='))) {",
+      "  const update = spawnSync(realGit, ['update-ref', 'HEAD', sourceRaceHead], { cwd: process.cwd(), stdio: 'inherit', env: process.env });",
       "  if (update.error) throw update.error;",
       "  if ((update.status ?? 1) !== 0) process.exit(update.status ?? 1);",
       "}",
@@ -448,5 +455,68 @@ describe("PR task branch publication", { timeout: TEST_TIMEOUT_MS }, () => {
       `--force-with-lease=refs/heads/${fixture.branch}:${fixture.oldHead}`,
     );
     expect(forcePush).not.toContain("--force");
+  });
+
+  it("publishes the observed source commit when worktree HEAD changes before push", async () => {
+    const fixture = await setupRewrittenOpenPrBranch("force-lease-source-race");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "unobserved-source-head", fixture.localHead], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "feat unobserved source head"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const { stdout: sourceRaceHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const sourceRaceHead = sourceRaceHeadStdout.trim();
+    await execFileAsync("git", ["checkout", fixture.branch], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    const { fakeGitBin, pushLogPath } = await installGithubPushTransport({
+      root: fixture.root,
+      remotePath: fixture.remotePath,
+      branch: fixture.branch,
+      sourceRaceHead,
+    });
+
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${fakeGitBin}${path.delimiter}${fixture.fakeGhBin}${path.delimiter}${originalPath ?? ""}`;
+    try {
+      await expect(
+        pushTaskBranchUpstreamIfConfigured({
+          gitRoot: fixture.root,
+          branch: fixture.branch,
+          baseBranch: "main",
+          prNumber: 321,
+        }),
+      ).resolves.toBe(true);
+    } finally {
+      process.env.PATH = originalPath;
+    }
+
+    await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
+      fixture.localHead,
+    );
+    const { stdout: finalLocalHeadStdout } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    expect(finalLocalHeadStdout.trim()).toBe(sourceRaceHead);
+
+    const pushLogText = await readFile(pushLogPath, "utf8");
+    const pushes = pushLogText
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line) as string[]);
+    const forcePush = pushes.find((args) =>
+      args.some((arg) => arg.startsWith("--force-with-lease=")),
+    );
+    expect(forcePush).toContain(`${fixture.localHead}:refs/heads/${fixture.branch}`);
+    expect(forcePush).not.toContain(`HEAD:refs/heads/${fixture.branch}`);
   });
 });
