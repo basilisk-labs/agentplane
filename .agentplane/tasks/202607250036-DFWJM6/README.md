@@ -4,7 +4,7 @@ title: "Publish rebased PR branches with an explicit force-with-lease"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -35,6 +35,26 @@ verification:
   updated_by: "TESTER"
   note: "Independent review PASS at 8d06aecb: 20/20 focused publication tests passed; exact repo-bound force-with-lease and all fail-closed cases verified; typecheck, lint:core, hotspots, architecture, task-state, task lint, routing, diff-check, and doctor passed. Unchanged website lint baseline remains outside scope."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-07-25T01:07:41.002Z"
+  updated_by: "HUMAN"
+  note: "Independent review confirms guarded force-with-lease publication is repository-bound, ref-scoped, race-safe, and fail-closed."
+  evaluated_sha: "8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
+  blueprint_digest: "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43"
+  evidence_refs:
+    - ".agentplane/tasks/202607250036-DFWJM6/README.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-010741002-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-010741002-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-010741002-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/branch-publication.ts"
+    - "packages/agentplane/src/commands/pr/branch-publication.test.ts"
+    - "20/20 focused tests plus typecheck, lint:core, hotspots, architecture, task-state, task lint, routing, diff-check, and doctor PASS at 8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
+  findings:
+    - "The force path is available only for an existing open PR whose provider repository, origin fetch repository, origin push repository, branch, and observed remote head all agree."
+    - "Publication uses only the exact ref-scoped lease and refuses mismatched repository/head, wrong upstream/current branch, closed or missing PR, and a remote race; first publication remains unchanged."
 commit: null
 comments:
   -
