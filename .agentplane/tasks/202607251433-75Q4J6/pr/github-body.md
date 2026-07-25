@@ -22,7 +22,7 @@ Replace the inherited local isRecord helper in KnowledgeRef with the canonical s
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-25T14:34:50.856Z
+- Updated: 2026-07-25T14:38:29.835Z
 - Branch: task/202607251433-75Q4J6/restore-shared-guard-invariant-after-knowledgere
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
