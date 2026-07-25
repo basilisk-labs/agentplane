@@ -1,4 +1,5 @@
 import type { TaskSummary } from "../../backends/task-backend.js";
+import { mapLimit } from "../../backends/task-backend/shared/concurrency.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
@@ -56,6 +57,7 @@ type ActiveWorkItem = {
 };
 
 const ACTIVE_SELECTOR_STATUSES = ["TODO", "DOING", "BLOCKED", "MERGED_PENDING_CLOSE"] as const;
+const ACTIVE_ROUTE_CONCURRENCY = 4;
 
 export const taskActiveSpec: CommandSpec<TaskActiveParsed> = {
   id: ["task", "active"],
@@ -240,7 +242,7 @@ function formatActiveWorkLine(item: ActiveWorkItem): string {
   return `${item.task.id} [${item.task.status}] ${item.task.title || "(untitled task)"} (${extras.join(", ")})`;
 }
 
-async function buildActiveWorkItems(opts: {
+export async function buildActiveWorkItems(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride?: string | null;
@@ -260,58 +262,57 @@ async function buildActiveWorkItems(opts: {
     defaultStatuses: [...ACTIVE_SELECTOR_STATUSES],
   });
   const active = filtered.filter((task) => isActiveSelectorTask(task));
-  const items = await Promise.all(
-    active.map(async (task) => {
-      const route = await buildTaskRouteDecision({
-        ctx: opts.ctx,
-        cwd: opts.cwd,
-        includeRemote: false,
-        rootOverride: opts.rootOverride ?? null,
-        taskId: task.id,
-      });
-      const dependency = dependencyReadiness(depState.get(task.id));
-      const statusKey = taskListStatusKey(task);
-      const status = taskListStatusLabel(task);
-      const blockerCount = route.blockers.length;
-      const priority = normalizePriority(task.priority);
-      const humanInput = getHumanInputState(task);
-      return {
-        task: {
-          id: task.id,
-          title: task.title?.trim() ?? "",
-          status,
-          owner: task.owner?.trim() ?? "",
-          priority,
-        },
-        dependency_readiness: dependency,
-        next_action: {
-          code: route.nextAction.code,
-          command: route.nextAction.command,
-          summary: route.nextAction.summary,
-          requires_approval: route.nextAction.requiresApproval,
-        },
-        blocker_count: blockerCount,
-        blockers: route.blockers.map((blocker) => ({ ...blocker })),
-        human_input: {
-          waiting_on_user: humanInput.openQuestion !== null,
-          question: humanInput.openQuestion?.question ?? null,
-          answer_command: humanInput.openQuestion ? humanInputAnswerCommand(task.id) : null,
-        },
-        source_freshness: "live_local" as const,
-        rank: {
-          bucket: actionRank({
-            dependency,
-            status: statusKey,
-            nextCode: route.nextAction.code,
-            blockerCount,
-            requiresApproval: route.nextAction.requiresApproval,
-          }),
-          priority: priorityRank(priority ?? undefined),
+  const buildItem = async (task: TaskSummary): Promise<ActiveWorkItem> => {
+    const route = await buildTaskRouteDecision({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      includeRemote: false,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: task.id,
+    });
+    const dependency = dependencyReadiness(depState.get(task.id));
+    const statusKey = taskListStatusKey(task);
+    const status = taskListStatusLabel(task);
+    const blockerCount = route.blockers.length;
+    const priority = normalizePriority(task.priority);
+    const humanInput = getHumanInputState(task);
+    return {
+      task: {
+        id: task.id,
+        title: task.title?.trim() ?? "",
+        status,
+        owner: task.owner?.trim() ?? "",
+        priority,
+      },
+      dependency_readiness: dependency,
+      next_action: {
+        code: route.nextAction.code,
+        command: route.nextAction.command,
+        summary: route.nextAction.summary,
+        requires_approval: route.nextAction.requiresApproval,
+      },
+      blocker_count: blockerCount,
+      blockers: route.blockers.map((blocker) => ({ ...blocker })),
+      human_input: {
+        waiting_on_user: humanInput.openQuestion !== null,
+        question: humanInput.openQuestion?.question ?? null,
+        answer_command: humanInput.openQuestion ? humanInputAnswerCommand(task.id) : null,
+      },
+      source_freshness: "live_local" as const,
+      rank: {
+        bucket: actionRank({
+          dependency,
           status: statusKey,
-        },
-      };
-    }),
-  );
+          nextCode: route.nextAction.code,
+          blockerCount,
+          requiresApproval: route.nextAction.requiresApproval,
+        }),
+        priority: priorityRank(priority ?? undefined),
+        status: statusKey,
+      },
+    };
+  };
+  const items = await mapLimit(active, ACTIVE_ROUTE_CONCURRENCY, buildItem);
   const sorted = items.toSorted((a, b) => {
     if (a.rank.bucket !== b.rank.bucket) return a.rank.bucket - b.rank.bucket;
     if (a.blocker_count !== b.blocker_count) return a.blocker_count - b.blocker_count;

@@ -6,6 +6,7 @@ import { syncDirectory } from "@agentplaneorg/core/fs";
 import { CliError } from "../../shared/errors.js";
 import {
   captureRunnerArtifactDirectoryBoundary,
+  captureRunnerArtifactDirectoryBoundaryIfPresent,
   ensureStableRunnerArtifactDirectoryChain,
 } from "../run-directory-boundary.js";
 import {
@@ -110,6 +111,28 @@ async function resolveClaimDirectory(
   };
 }
 
+async function inspectClaimDirectory(
+  opts: TaskRunnerActiveClaimPathOptions,
+): Promise<TaskRunnerActiveClaimDirectory | null> {
+  const paths = await resolveSupervisorTaskRunnerPaths(opts);
+  const claimPath = path.join(paths.task_dir, ACTIVE_RUN_CLAIM_FILENAME);
+  const boundary = await captureRunnerArtifactDirectoryBoundaryIfPresent({
+    run_dir: paths.task_dir,
+    artifact_root: paths.artifact_root,
+    artifact_paths: [claimPath],
+  });
+  if (!boundary) return null;
+  await boundary.assertStable("after capturing runner active claim task directory");
+  return {
+    git_root: opts.git_root,
+    workflow_dir: opts.workflow_dir,
+    task_id: opts.task_id,
+    task_dir: paths.task_dir,
+    claim_path: claimPath,
+    boundary,
+  };
+}
+
 async function readObservedClaim(
   directory: TaskRunnerActiveClaimDirectory,
 ): Promise<ObservedTaskRunnerActiveClaim | null> {
@@ -156,7 +179,8 @@ async function readObservedClaim(
 export async function readTaskRunnerActiveClaim(
   opts: TaskRunnerActiveClaimPathOptions,
 ): Promise<TaskRunnerActiveClaim | null> {
-  const directory = await resolveClaimDirectory(opts);
+  const directory = await inspectClaimDirectory(opts);
+  if (!directory) return null;
   const observed = await readObservedClaim(directory);
   return observed?.claim ?? null;
 }

@@ -20,6 +20,8 @@ depends_on:
   - "202607221849-TBTX8X"
   - "202607221907-DK2CJF"
   - "202607242158-QV09NA"
+  - "202607252215-SNV847"
+  - "202607252223-THDN0G"
 tags:
   - "milestone-0-7-0-alpha-2"
   - "quality"

@@ -27,6 +27,20 @@ function backendSupportsTaskBranchSnapshots(ctx: CommandContext): boolean {
   return capabilities.canonical_source === "local" && capabilities.writes_task_readmes === true;
 }
 
+async function loadTaskBranchInventory(ctx: CommandContext): Promise<{
+  localBranches: string[];
+  remoteBranches: string[];
+}> {
+  if (!ctx.memo.taskBranchInventory) {
+    const prefix = ctx.config.branch.task_prefix;
+    ctx.memo.taskBranchInventory = Promise.all([
+      gitListTaskBranches(ctx.resolvedProject.gitRoot, prefix),
+      listRemoteTaskBranches(ctx.resolvedProject.gitRoot, prefix),
+    ]).then(([localBranches, remoteBranches]) => ({ localBranches, remoteBranches }));
+  }
+  return await ctx.memo.taskBranchInventory;
+}
+
 export async function resolveTaskBranchFromContext(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -36,8 +50,7 @@ export async function resolveTaskBranchFromContext(opts: {
   }
 
   const prefix = opts.ctx.config.branch.task_prefix;
-  const localBranches = await gitListTaskBranches(opts.ctx.resolvedProject.gitRoot, prefix);
-  const remoteBranches = await listRemoteTaskBranches(opts.ctx.resolvedProject.gitRoot, prefix);
+  const { localBranches, remoteBranches } = await loadTaskBranchInventory(opts.ctx);
   const matches = uniqueBranchCandidates([...localBranches, ...remoteBranches]).filter(
     (branch) => parseTaskIdFromBranch(prefix, stripOriginPrefix(branch)) === opts.taskId,
   );

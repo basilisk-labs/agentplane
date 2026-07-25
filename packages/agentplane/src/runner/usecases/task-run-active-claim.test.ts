@@ -53,6 +53,29 @@ afterEach(() => {
 });
 
 describe("task-run active claim hardening", () => {
+  it("returns absent without creating runner claim directories", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "TASK-READ-ONLY-ABSENT";
+    const paths = await resolveSupervisorTaskRunnerPaths({
+      git_root: root,
+      workflow_dir: ".agentplane/tasks",
+      task_id: taskId,
+      run_id: "run-read-only-absent",
+    });
+
+    await expect(
+      readTaskRunnerActiveClaim({
+        git_root: root,
+        workflow_dir: ".agentplane/tasks",
+        task_id: taskId,
+        run_id: "run-read-only-absent",
+      }),
+    ).resolves.toBeNull();
+    await expect(lstat(path.join(paths.artifact_root, "agentplane"))).rejects.toMatchObject({
+      code: "ENOENT",
+    });
+  });
+
   it("does not confirm cleanup with causally reversed signal timestamps", () => {
     expect(
       isRunnerManagedScopeCleanupConfirmed({
@@ -478,6 +501,14 @@ describe("task-run active claim hardening", () => {
     await mkdir(outside, { recursive: true });
     await symlink(outside, path.join(paths.artifact_root, "agentplane"), "dir");
 
+    await expect(
+      readTaskRunnerActiveClaim({
+        git_root: root,
+        workflow_dir: ".agentplane/tasks",
+        task_id: "TASK-SYMLINK-CLAIM",
+        run_id: "run-symlink",
+      }),
+    ).rejects.toThrow(/non-symlink directories/u);
     await expect(
       acquireTaskRunnerActiveClaim({
         git_root: root,

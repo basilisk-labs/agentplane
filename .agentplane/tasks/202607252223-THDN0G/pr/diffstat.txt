@@ -1,0 +1,11 @@
+ .agentplane/tasks/202607221908-9M2FBQ/README.md    |   2 +
+ docs/internal/v0.7-refactor-plan.md                |  17 ++--
+ .../src/cli/run-cli.core.tasks.active.test.ts      |  49 ++++++++++
+ .../shared/task-backend-branch-snapshot.ts         |  17 +++-
+ .../task-backend-branch-snapshot.unit.test.ts      |  86 +++++++++++++++++
+ .../agentplane/src/commands/shared/task-backend.ts |   4 +
+ .../agentplane/src/commands/task/active.command.ts | 105 +++++++++++----------
+ .../src/commands/task/active.command.unit.test.ts  |  82 ++++++++++++++++
+ .../runner/usecases/task-run-active-claim.test.ts  |  31 ++++++
+ .../src/runner/usecases/task-run-active-claim.ts   |  26 ++++-
+ 10 files changed, 357 insertions(+), 62 deletions(-)

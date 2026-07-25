@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active",
+  "created_at": "2026-07-25T22:34:35.505Z",
+  "diffstat_sha256": "sha256:7cb6cadb9b19f6639da463d79e9cd4a85713d4b1f50525b50c1b755b10a7993b",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607252223-THDN0G",
+  "updated_at": "2026-07-25T22:34:35.505Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
