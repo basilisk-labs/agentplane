@@ -22,7 +22,7 @@ Remove three v0.7 integration blockers found by RF08 hosted/full-suite verificat
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-25T13:06:52.051Z
+- Updated: 2026-07-25T13:06:55.461Z
 - Branch: task/202607251303-G00JP8/stabilize-parallel-full-fast-runner-and-integrat
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
