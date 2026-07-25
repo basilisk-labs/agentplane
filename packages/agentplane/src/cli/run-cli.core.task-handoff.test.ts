@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -6,6 +6,10 @@ import { describe, expect, it } from "vitest";
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
+import { loadCommandContext } from "../commands/shared/task-backend.js";
+import { evolveRunnerRunState, writeRunnerRunState } from "../runner/artifacts.js";
+import { staleClaim, writeActiveClaim } from "../runner/usecases/task-run-active-claim.testkit.js";
+import { prepareTaskRunnerExecution } from "../runner/usecases/task-run.js";
 import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
@@ -135,34 +139,32 @@ describe("runCli task handoff and recovery", () => {
       "--root",
       root,
     ]);
-    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
-
-    let statePath = "";
-    const statusIo = captureStdIO();
-    try {
-      expect(await runCli(["task", "run", "status", taskId, "--json", "--root", root])).toBe(0);
-      const payload = JSON.parse(statusIo.stdout) as { paths: { state: string } };
-      statePath = payload.paths.state;
-    } finally {
-      statusIo.restore();
-    }
-    const state = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
-    await writeFile(
-      statePath,
-      `${JSON.stringify(
-        {
-          ...state,
-          status: "running",
-          supervision: {
-            pid: 999_999,
-            started_at: "2026-05-29T19:14:00.000Z",
-            heartbeat_at: "2026-05-29T19:14:01.000Z",
-          },
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const prepared = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-stale-running-reclaim",
+    });
+    const staleAt = "2000-01-01T00:00:00.000Z";
+    await writeRunnerRunState({
+      state_path: prepared.invocation.state_path,
+      state: evolveRunnerRunState({
+        state: prepared.state,
+        status: "running",
+        updated_at: staleAt,
+        supervision: {
+          pid: 999_997,
+          started_at: staleAt,
+          heartbeat_at: staleAt,
         },
-        null,
-        2,
-      )}\n`,
-      "utf8",
+      }),
+    });
+    const activeClaim = await writeActiveClaim(
+      root,
+      staleClaim({ task_id: taskId, run_id: prepared.invocation.run_id }),
     );
 
     const reclaimIo = captureStdIO();
@@ -176,17 +178,50 @@ describe("runCli task handoff and recovery", () => {
           "CODER",
           "--reason",
           "stale runner pid is no longer alive",
+          "--json",
           "--root",
           root,
         ]),
       ).toBe(0);
-      expect(reclaimIo.stdout).toContain("task reclaimed");
+      const handoff = JSON.parse(reclaimIo.stdout) as {
+        to_role: string | null;
+        runner?: { run_id?: string | null; status?: string | null; next_action?: string | null };
+      };
+      expect(handoff).toMatchObject({
+        to_role: "CODER",
+        runner: {
+          run_id: prepared.invocation.run_id,
+          status: "cancelled",
+          next_action: "retry",
+        },
+      });
     } finally {
       reclaimIo.restore();
     }
 
-    const reclaimedState = JSON.parse(await readFile(statePath, "utf8")) as Record<string, unknown>;
+    const reclaimedState = JSON.parse(
+      await readFile(prepared.invocation.state_path, "utf8"),
+    ) as Record<string, unknown>;
     expect(reclaimedState.status).toBe("cancelled");
+    await expect(access(activeClaim.claim_path)).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(prepared.invocation.events_path, "utf8")).resolves.toContain(
+      "runner_orphaned_running_cancelled",
+    );
+
+    const resumeIo = captureStdIO();
+    try {
+      expect(await runCli(["task", "resume-context", taskId, "--json", "--root", root])).toBe(0);
+      const resume = JSON.parse(resumeIo.stdout) as {
+        latest_handoff: { to_role: string | null } | null;
+        runner: { status: string | null; next_action: string | null };
+      };
+      expect(resume).toMatchObject({
+        latest_handoff: { to_role: "CODER" },
+        runner: { status: "cancelled", next_action: "retry" },
+      });
+    } finally {
+      resumeIo.restore();
+    }
 
     const nextIo = captureStdIO();
     try {
@@ -202,6 +237,96 @@ describe("runCli task handoff and recovery", () => {
     } finally {
       nextIo.restore();
     }
+  }, 15_000);
+
+  it("task reclaim leaves an unclaimed stale running state non-terminal without a handoff", async () => {
+    const root = await mkGitRepoRoot();
+    await writeConfig(root, defaultConfig());
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "task",
+            "new",
+            "--title",
+            "Unclaimed stale runner reclaim",
+            "--description",
+            "Fail closed when no supervisor active-run claim proves ownership.",
+            "--owner",
+            "CODER",
+            "--tag",
+            "workflow",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: prepare an unclaimed running state to prove reclaim fails closed.",
+      "--root",
+      root,
+    ]);
+
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const prepared = await prepareTaskRunnerExecution({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+      mode: "execute",
+      run_id: "run-unclaimed-stale-reclaim",
+    });
+    const staleAt = "2000-01-01T00:00:00.000Z";
+    await writeRunnerRunState({
+      state_path: prepared.invocation.state_path,
+      state: evolveRunnerRunState({
+        state: prepared.state,
+        status: "running",
+        updated_at: staleAt,
+        supervision: {
+          pid: 999_996,
+          started_at: staleAt,
+          heartbeat_at: staleAt,
+        },
+      }),
+    });
+
+    expect(
+      await runCli([
+        "task",
+        "reclaim",
+        taskId,
+        "--author",
+        "CODER",
+        "--reason",
+        "stale runner pid is no longer alive without a supervisor claim",
+        "--root",
+        root,
+      ]),
+    ).toBe(8);
+
+    const retainedState = JSON.parse(
+      await readFile(prepared.invocation.state_path, "utf8"),
+    ) as Record<string, unknown>;
+    expect(retainedState.status).toBe("running");
+    await expect(
+      access(path.join(root, ".agentplane", "tasks", taskId, "handoff", "latest.json")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
   }, 15_000);
 
   it("resume-context reads the task branch state and PR metadata before stale base artifacts", async () => {

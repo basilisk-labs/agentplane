@@ -1,0 +1,3 @@
+ .agentplane/tasks/202607221908-9M2FBQ/README.md    |   3 +-
+ .../src/cli/run-cli.core.task-handoff.test.ts      | 185 +++++++++++++++++----
+ 2 files changed, 157 insertions(+), 31 deletions(-)
