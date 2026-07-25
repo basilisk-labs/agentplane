@@ -6,7 +6,7 @@ Created: 2026-07-25T00:37:21.141Z
 
 - Task: `202607250036-DFWJM6`
 - Title: Publish rebased PR branches with an explicit force-with-lease
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607250036-DFWJM6/force-with-lease-pr-publish`
 - Canonical task record: `.agentplane/tasks/202607250036-DFWJM6/README.md`
 
