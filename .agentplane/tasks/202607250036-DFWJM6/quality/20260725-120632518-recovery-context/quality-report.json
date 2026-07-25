@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607250036-DFWJM6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T12:06:32.518Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The rework replaces a JS-only cwd spy with a real, always-restored process cwd, preserving the no-root init contract and removing the plausible persistent Windows directory handle without widening production behavior.",
+  "evaluated_sha": "8003f34e83c1a2304c653393a2631e33320e4087",
+  "blueprint_digest": "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43",
+  "findings": [
+    "runCli still receives no --root and initializes the child directory; the conflicting parent-repository assertion remains intact.",
+    "The same forked Windows test route already passes an equivalent real process.chdir/restore pattern, while the changed file is excluded from full-fast unit routing and cannot explain the invalid historical-temp overload.",
+    "Focused, repeated, platform-critical, cleanup, publication, integration, targeted PR, full fast, critical, static, lifecycle, and zero-temp-inventory checks all pass after exact-prefix cleanup."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607250036-DFWJM6/README.md",
+    "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts",
+    "packages/testkit/src/cli-harness/temp-root-cleanup.ts",
+    "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The exact Windows EBUSY release is not locally reproducible on macOS; hosted test-windows on the new PR head remains the mandatory integration gate."
+  ]
+}

@@ -18,12 +18,15 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted Windows still fails at PR head 659ae331c780ed79b9c4f43f8d1578937101d039: one init validation
-root remains locked after bounded cleanup retries.
+Rework verified at 8003f34e: real cwd/restore preserves no-root init semantics; focused 17/17,
+repeated scenario 5/5, platform-critical 91/91, cleanup 105/105, publication 21/21, integration
+48/48, targeted PR 134/134, full fast 453 files and 3046 tests, critical 11/11,
+typecheck/lint/hotspots/format/task-lint/routing/doctor pass; all tracked temp-directory classes
+remain at zero.
 ```
 - Canonical workflow state lives in the task README.
 
