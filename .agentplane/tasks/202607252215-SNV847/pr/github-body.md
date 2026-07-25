@@ -15,8 +15,13 @@ Replace the invalid synthetic running-runner fixture with a real stale active-ru
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: claimed execute-mode reclaim cancels and removes its stale claim; unclaimed running state
+remains fail-closed; all declared checks passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

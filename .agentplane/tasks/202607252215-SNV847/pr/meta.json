@@ -3,14 +3,22 @@
   "branch": "task/202607252215-SNV847/repair-stale-runner-reclaim-regression-fixture",
   "created_at": "2026-07-25T22:16:38.350Z",
   "diffstat_sha256": "sha256:e0d86776a39a468dd9ee8e7abb6920de2f4a759cd01a4136cd901527e66a59bd",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-25T22:36:19.546Z",
+  "last_verified_diffstat_sha256": "sha256:e0d86776a39a468dd9ee8e7abb6920de2f4a759cd01a4136cd901527e66a59bd",
   "pr_number": 4624,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4624",
+  "pre_merge_closure": {
+    "basis_commit": "1788831e9b75bbad7aee3ab90f64077fafc82204",
+    "branch": "task/202607252215-SNV847/repair-stale-runner-reclaim-regression-fixture",
+    "pr_number": 4624,
+    "recorded_at": "2026-07-25T22:38:56.771Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607252215-SNV847",
   "updated_at": "2026-07-25T22:33:03.739Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

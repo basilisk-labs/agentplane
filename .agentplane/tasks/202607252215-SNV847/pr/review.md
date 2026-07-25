@@ -6,14 +6,14 @@ Created: 2026-07-25T22:16:38.350Z
 
 - Task: `202607252215-SNV847`
 - Title: Repair stale runner reclaim regression fixture
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607252215-SNV847/repair-stale-runner-reclaim-regression-fixture`
 - Canonical task record: `.agentplane/tasks/202607252215-SNV847/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: claimed execute-mode reclaim cancels and removes its stale claim; unclaimed running state remains fail-closed; all declared checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
