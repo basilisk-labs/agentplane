@@ -6,14 +6,14 @@ Created: 2026-07-25T00:37:21.141Z
 
 - Task: `202607250036-DFWJM6`
 - Title: Publish rebased PR branches with an explicit force-with-lease
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607250036-DFWJM6/force-with-lease-pr-publish`
 - Canonical task record: `.agentplane/tasks/202607250036-DFWJM6/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD.
+- State: ok
+- Note: Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21). Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and diff-check pass. Independent re-review: PASS.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

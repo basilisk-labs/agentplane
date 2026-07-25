@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607250036-DFWJM6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T01:27:37.503Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "PASS: force publication pins the source to the exact observed local commit and the destination lease to the observed remote head; the deterministic source-race regression would fail the previous mutable-HEAD implementation.",
+  "evaluated_sha": "c0f4d84b6685088df363cfe2cc165023e6f5d255",
+  "blueprint_digest": "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43",
+  "findings": [
+    "Exact observed localHead source and exact destination lease are both preserved; fake git moves HEAD immediately before push without changing the published source object."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607250036-DFWJM6/README.md",
+    "packages/agentplane/src/commands/pr/branch-publication.ts",
+    "packages/agentplane/src/commands/pr/branch-publication.test.ts",
+    "bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts: 21/21 passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Transport/provider failures remain fail-closed; no retry behavior was added."
+  ]
+}

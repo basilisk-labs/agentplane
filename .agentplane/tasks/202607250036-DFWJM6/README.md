@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -31,32 +31,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T01:17:09.694Z"
-  updated_by: "REVIEWER"
-  note: "GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-07-25T01:26:53.345Z"
+  updated_by: "TESTER"
+  note: "Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21). Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and diff-check pass. Independent re-review: PASS."
+  attempts: 0
 quality_review:
   state: "pass"
-  provenance: "human_supplied"
-  updated_at: "2026-07-25T01:07:41.002Z"
-  updated_by: "HUMAN"
-  note: "Independent review confirms guarded force-with-lease publication is repository-bound, ref-scoped, race-safe, and fail-closed."
-  evaluated_sha: "8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-25T01:27:37.503Z"
+  updated_by: "EVALUATOR"
+  note: "PASS: force publication pins the source to the exact observed local commit and the destination lease to the observed remote head; the deterministic source-race regression would fail the previous mutable-HEAD implementation."
+  evaluated_sha: "c0f4d84b6685088df363cfe2cc165023e6f5d255"
   blueprint_digest: "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43"
   evidence_refs:
     - ".agentplane/tasks/202607250036-DFWJM6/README.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-010741002-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-010741002-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-010741002-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-012737503-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-012737503-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-012737503-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/pr/branch-publication.ts"
     - "packages/agentplane/src/commands/pr/branch-publication.test.ts"
-    - "20/20 focused tests plus typecheck, lint:core, hotspots, architecture, task-state, task lint, routing, diff-check, and doctor PASS at 8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
+    - "bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts: 21/21 passed"
   findings:
-    - "The force path is available only for an existing open PR whose provider repository, origin fetch repository, origin push repository, branch, and observed remote head all agree."
-    - "Publication uses only the exact ref-scoped lease and refuses mismatched repository/head, wrong upstream/current branch, closed or missing PR, and a remote race; first publication remains unchanged."
-commit: null
+    - "Exact observed localHead source and exact destination lease are both preserved; fake git moves HEAD immediately before push without changing the published source object."
+commit:
+  hash: "c0f4d84b6685088df363cfe2cc165023e6f5d255"
+  message: "🛡️ DFWJM6 task: pin observed PR push source"
 comments:
   -
     author: "CODER"
@@ -70,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -111,8 +115,21 @@ events:
     author: "REVIEWER"
     state: "needs_rework"
     note: "GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD."
+  -
+    type: "verify"
+    at: "2026-07-25T01:26:53.345Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21). Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and diff-check pass. Independent re-review: PASS."
+  -
+    type: "status"
+    at: "2026-07-25T01:28:05.017Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T01:23:38.264Z"
+doc_updated_at: "2026-07-25T01:28:05.018Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -194,6 +211,36 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-25T01:26:53.345Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21). Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and diff-check pass. Independent re-review: PASS.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T01:23:38.264Z, excerpt_hash=sha256:e0575c766a7b46b94c022d38e9b17477df476e087e83bbb4d9606eb99abb00f2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -310,6 +357,36 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-25T01:26:53.345Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21). Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and diff-check pass. Independent re-review: PASS.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T01:23:38.264Z, excerpt_hash=sha256:e0575c766a7b46b94c022d38e9b17477df476e087e83bbb4d9606eb99abb00f2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
