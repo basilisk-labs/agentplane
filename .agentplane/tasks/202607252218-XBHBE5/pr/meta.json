@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607252218-XBHBE5/archive-resolved-knowledgeref-guard-incident",
+  "created_at": "2026-07-25T22:26:12.382Z",
+  "diffstat_sha256": "sha256:7c465e3e8b1adc4f4dbad155c2907f852675bc21d737d7de82390819d9317115",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607252218-XBHBE5",
+  "updated_at": "2026-07-25T22:26:12.382Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
