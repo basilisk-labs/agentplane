@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { unlink } from "node:fs/promises";
 import path from "node:path";
 
@@ -18,15 +19,34 @@ const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
 
 export type ForeignTaskReadmeReplicaProof = "byte_identical" | "start_ready_replica";
 
+type AuthoritativeSourceProof = {
+  path: string;
+  identity: ContainedPathChainIdentity;
+  content_sha256: string;
+};
+
+type ForeignTaskReadmeReplicaRepairEligible = {
+  state: "eligible";
+  activeTaskId: string;
+  foreignTaskId: string;
+  worktreePath: string;
+  replicaPath: string;
+  proof: ForeignTaskReadmeReplicaProof;
+};
+
+type ForeignTaskReadmeReplicaRepairNotApplicable = {
+  state: "not_applicable";
+  reason: string;
+};
+
 export type ForeignTaskReadmeReplicaRepair =
-  | {
-      state: "eligible";
-      activeTaskId: string;
-      foreignTaskId: string;
-      worktreePath: string;
-      replicaPath: string;
-      proof: ForeignTaskReadmeReplicaProof;
-    }
+  | ForeignTaskReadmeReplicaRepairEligible
+  | ForeignTaskReadmeReplicaRepairNotApplicable;
+
+type InspectedForeignTaskReadmeReplicaRepair =
+  | (ForeignTaskReadmeReplicaRepairEligible & {
+      authoritativeSource: AuthoritativeSourceProof;
+    })
   | {
       state: "not_applicable";
       reason: string;
@@ -45,6 +65,30 @@ export type ForeignTaskReadmeReplicaApplyResult =
 
 function canonicalEqual(left: unknown, right: unknown): boolean {
   return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
+}
+
+function contentSha256(value: string): string {
+  return createHash("sha256").update(value, "utf8").digest("hex");
+}
+
+function sameContainedPathChain(
+  left: ContainedPathChainIdentity,
+  right: ContainedPathChainIdentity,
+): boolean {
+  return (
+    left.repository_root === right.repository_root &&
+    left.file_path === right.file_path &&
+    left.target_exists === right.target_exists &&
+    left.identities.length === right.identities.length &&
+    left.identities.every(
+      (entry, index) =>
+        entry.path === right.identities[index]?.path &&
+        entry.dev === right.identities[index]?.dev &&
+        entry.ino === right.identities[index]?.ino &&
+        entry.ctime_ns === right.identities[index]?.ctime_ns &&
+        entry.mtime_ns === right.identities[index]?.mtime_ns,
+    )
+  );
 }
 
 function normalizedRelativePath(value: string): string {
@@ -271,12 +315,12 @@ function onlyForeignReplicaPath(opts: {
   return { relativePath: changedPath, foreignTaskId };
 }
 
-export async function inspectForeignTaskReadmeReplicaRepair(opts: {
+async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
   ctx: CommandContext;
   activeTaskId: string;
   taskWorktreePath: string;
   baseBranch: string | null;
-}): Promise<ForeignTaskReadmeReplicaRepair> {
+}): Promise<InspectedForeignTaskReadmeReplicaRepair> {
   const worktreePath = path.resolve(opts.taskWorktreePath);
   const git = new GitContext({ gitRoot: worktreePath });
   const [changedPaths, untrackedPaths] = await Promise.all([
@@ -328,8 +372,17 @@ export async function inspectForeignTaskReadmeReplicaRepair(opts: {
     candidate.foreignTaskId,
     "README.md",
   );
+  let sourceIdentity: ContainedPathChainIdentity;
   let sourceText: string;
   try {
+    sourceIdentity = await captureContainedPathChainIdentity({
+      repository_root: sourceWorktree,
+      file_path: sourcePath,
+      label: "authoritative foreign task README",
+    });
+    if (!sourceIdentity.target_exists) {
+      return { state: "not_applicable", reason: "authoritative_source_missing" };
+    }
     sourceText = await readContainedStableTextNoFollow({
       repository_root: sourceWorktree,
       file_path: sourcePath,
@@ -376,15 +429,60 @@ export async function inspectForeignTaskReadmeReplicaRepair(opts: {
     worktreePath,
     replicaPath,
     proof,
+    authoritativeSource: {
+      path: sourceIdentity.file_path,
+      identity: sourceIdentity,
+      content_sha256: contentSha256(sourceText),
+    },
   };
+}
+
+export async function inspectForeignTaskReadmeReplicaRepair(opts: {
+  ctx: CommandContext;
+  activeTaskId: string;
+  taskWorktreePath: string;
+  baseBranch: string | null;
+}): Promise<ForeignTaskReadmeReplicaRepair> {
+  const inspection = await inspectForeignTaskReadmeReplicaRepairForApply(opts);
+  if (inspection.state !== "eligible") return inspection;
+  const { authoritativeSource: _authoritativeSource, ...publicInspection } = inspection;
+  return publicInspection;
+}
+
+async function assertAuthoritativeSourceProofUnchanged(
+  proof: AuthoritativeSourceProof,
+): Promise<void> {
+  await assertContainedPathChainIdentityUnchanged(
+    proof.identity,
+    "authoritative foreign task README",
+  );
+  const sourceText = await readContainedStableTextNoFollow({
+    repository_root: proof.identity.repository_root,
+    file_path: proof.path,
+    label: "authoritative foreign task README",
+    max_bytes: TASK_README_MAX_BYTES,
+  });
+  if (contentSha256(sourceText) !== proof.content_sha256) {
+    throw new Error("authoritative foreign task README changed after proof");
+  }
+  const afterIdentity = await captureContainedPathChainIdentity({
+    repository_root: proof.identity.repository_root,
+    file_path: proof.path,
+    label: "authoritative foreign task README",
+  });
+  if (!afterIdentity.target_exists || !sameContainedPathChain(proof.identity, afterIdentity)) {
+    throw new Error("authoritative foreign task README path changed after proof");
+  }
 }
 
 export async function applyForeignTaskReadmeReplicaRepair(opts: {
   ctx: CommandContext;
   activeTaskId: string;
   baseBranch: string | null;
+  /** @internal Deterministic TOCTOU injection for security regression tests. */
+  after_inspection?: () => Promise<void>;
 }): Promise<ForeignTaskReadmeReplicaApplyResult> {
-  const inspection = await inspectForeignTaskReadmeReplicaRepair({
+  const inspection = await inspectForeignTaskReadmeReplicaRepairForApply({
     ctx: opts.ctx,
     activeTaskId: opts.activeTaskId,
     taskWorktreePath: opts.ctx.resolvedProject.gitRoot,
@@ -393,6 +491,7 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
   if (inspection.state !== "eligible") {
     return { state: "skipped", reason: inspection.reason };
   }
+  await opts.after_inspection?.();
   try {
     const replicaIdentity = await captureContainedPathChainIdentity({
       repository_root: inspection.worktreePath,
@@ -403,6 +502,15 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
       return { state: "skipped", reason: "foreign_replica_changed_before_remove" };
     }
     await assertContainedPathChainIdentityUnchanged(replicaIdentity, "foreign task README replica");
+  } catch {
+    return { state: "skipped", reason: "foreign_replica_changed_before_remove" };
+  }
+  try {
+    await assertAuthoritativeSourceProofUnchanged(inspection.authoritativeSource);
+  } catch {
+    return { state: "skipped", reason: "authoritative_source_changed_before_remove" };
+  }
+  try {
     await unlink(inspection.replicaPath);
   } catch {
     return { state: "skipped", reason: "foreign_replica_changed_before_remove" };

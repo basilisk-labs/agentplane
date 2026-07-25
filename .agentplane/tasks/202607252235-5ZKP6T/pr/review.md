@@ -12,8 +12,8 @@ Created: 2026-07-25T22:39:31.309Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: guarded repair may unlink the replica after its authoritative source changed, so the proof is stale at deletion time.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,21 +33,21 @@ Created: 2026-07-25T22:39:31.309Z
  docs/internal/v0.7-refactor-plan.md                |  18 +-
  .../commands/branch/work-start.hook-shim.test.ts   |  36 +-
  .../src/commands/branch/work-start.materialize.ts  |  36 +-
- .../agentplane/src/commands/flow/repair.command.ts |  23 ++
+ .../agentplane/src/commands/flow/repair.command.ts |  23 +
  .../src/commands/shared/route-decision-blockers.ts |  41 +-
  .../route-decision-blockers.worktree.test.ts       |  15 +
  .../src/commands/shared/route-decision.ts          |  15 +
- .../task-worktree-foreign-artifact-repair.test.ts  | 405 ++++++++++++++++++++
- .../task-worktree-foreign-artifact-repair.ts       | 415 +++++++++++++++++++++
+ .../task-worktree-foreign-artifact-repair.test.ts  | 438 +++++++++++++++++
+ .../task-worktree-foreign-artifact-repair.ts       | 523 +++++++++++++++++++++
  .../commands/shared/workflow-operation-effects.ts  |   1 +
  .../commands/shared/workflow-operation-prefix.ts   |   1 +
  .../shared/workflow-operation-projection.ts        |   3 +
  .../src/commands/shared/workflow-step-branch.ts    |  15 +-
- .../src/commands/shared/workflow-step-factory.ts   |  21 ++
+ .../src/commands/shared/workflow-step-factory.ts   |  21 +
  .../commands/shared/workflow-step-fingerprint.ts   |   1 +
  .../src/commands/shared/workflow-step.test.ts      |   4 +
  .../src/commands/shared/workflow-step.ts           |  19 +
- 18 files changed, 1037 insertions(+), 37 deletions(-)
+ 18 files changed, 1178 insertions(+), 37 deletions(-)
 ```
 
 </details>

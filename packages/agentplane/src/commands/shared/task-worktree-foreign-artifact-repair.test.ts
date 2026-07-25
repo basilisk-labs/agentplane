@@ -284,6 +284,39 @@ describe("foreign task README replica repair", () => {
     },
   );
 
+  it("leaves the replica intact when the authoritative source changes after proof", async () => {
+    const fixture = await createFixture("start_ready");
+    const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+
+    await expect(
+      applyForeignTaskReadmeReplicaRepair({
+        ctx,
+        activeTaskId: ACTIVE_TASK_ID,
+        baseBranch: "main",
+        after_inspection: async () => {
+          await writeFile(
+            fixture.sourcePath,
+            taskReadme({
+              taskId: FOREIGN_TASK_ID,
+              status: "DOING",
+              revision: 7,
+              title: "Source changed after repair proof",
+            }),
+            "utf8",
+          );
+        },
+      }),
+    ).resolves.toEqual({
+      state: "skipped",
+      reason: "authoritative_source_changed_before_remove",
+    });
+
+    await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
+    await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain(
+      "Source changed after repair proof",
+    );
+  });
+
   it("lets the current CLI repair an older task worktree selected by --root", async () => {
     const fixture = await createFixture("start_ready");
     const routeIo = captureStdIO();
