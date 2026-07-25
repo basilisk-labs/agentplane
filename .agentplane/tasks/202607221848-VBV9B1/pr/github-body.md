@@ -15,8 +15,15 @@ RF-06b: reduce RouteState to typed CLI operation, agent episode, approval, human
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18),
+and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip,
+hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no
+remaining blocker.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

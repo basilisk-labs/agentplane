@@ -1,10 +1,11 @@
 ---
 id: "202607221848-VBV9B1"
 title: "Replace route string dispatch with typed WorkflowStep decisions"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -32,16 +33,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the first critical-path alpha.2 leaf under the existing full v0.7 refactor authorization."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-25T20:04:39.054Z"
+  updated_by: "TESTER"
+  note: "Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18), and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip, hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no remaining blocker."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-25T20:04:58.421Z"
+  updated_by: "EVALUATOR"
+  note: "Typed workflow decisions preserve safety gates and Hermes execution authority."
+  evaluated_sha: "dc166cc393b91a88caa4993c62616726a926ab15"
+  blueprint_digest: "29b8f03842c5dea829e9ba611d12b62dcd826876a111b44387855830b4d0a64f"
+  evidence_refs:
+    - ".agentplane/tasks/202607221848-VBV9B1/README.md"
+    - ".agentplane/tasks/202607221848-VBV9B1/quality/20260725-200458421-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-VBV9B1/quality/20260725-200458421-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-VBV9B1/quality/20260725-200458421-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-VBV9B1/blueprint/resolved-snapshot.json"
+    - "bun test packages/agentplane/src/commands/shared/workflow-step.test.ts; bun test packages/agentplane/src/commands/shared/workflow-step-projections.test.ts; bun test packages/agentplane/src/commands/hermes/hermes.command.test.ts; bun test packages/agentplane/src/cli/run-cli.core.route-decision.test.ts; bun run test:critical; bun run guards:check; bun run lifecycle:invariants"
+  findings:
+    - "No blocking findings after independent review and the final regression matrix."
+commit:
+  hash: "dc166cc393b91a88caa4993c62616726a926ab15"
+  message: "🛡️ VBV9B1 task: enforce typed route safety gates"
 comments:
   -
     author: "CODER"
     body: "Start: Implement the single typed WorkflowStep decision boundary, operation registry, compatibility projections, and lifecycle parity fixtures without semantic route-string inference."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -50,8 +73,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implement the single typed WorkflowStep decision boundary, operation registry, compatibility projections, and lifecycle parity fixtures without semantic route-string inference."
+  -
+    type: "verify"
+    at: "2026-07-25T20:04:39.054Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18), and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip, hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no remaining blocker."
+  -
+    type: "status"
+    at: "2026-07-25T20:05:23.510Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:15:24.501Z"
+doc_updated_at: "2026-07-25T20:05:23.511Z"
 doc_updated_by: "CODER"
 description: "RF-06b: reduce RouteState to typed CLI operation, agent episode, approval, human input, wait, and terminal steps with idempotency keys and postconditions."
 sections:
@@ -75,6 +111,36 @@ sections:
     4. Run route/oracle/guidance/bootstrap tests, `bun run lifecycle:invariants`, `bun run guards:check`, and `bun run typecheck`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-25T20:04:39.054Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18), and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip, hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no remaining blocker.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:15:24.501Z, excerpt_hash=sha256:81d13ec3ef8cff47794690d511e2f03db6c6a41e05d0ec23effb27ff1b59656b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VBV9B1-replace-route-string-dispatch-with-typed-workflo/.agentplane/tasks/202607221848-VBV9B1/blueprint/resolved-snapshot.json
+    - old_digest: 29b8f03842c5dea829e9ba611d12b62dcd826876a111b44387855830b4d0a64f
+    - current_digest: 29b8f03842c5dea829e9ba611d12b62dcd826876a111b44387855830b4d0a64f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-VBV9B1
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221848-VBV9B1
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -112,6 +178,36 @@ RF-06b: reduce RouteState to typed CLI operation, agent episode, approval, human
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-25T20:04:39.054Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18), and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip, hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no remaining blocker.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-24T22:15:24.501Z, excerpt_hash=sha256:81d13ec3ef8cff47794690d511e2f03db6c6a41e05d0ec23effb27ff1b59656b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VBV9B1-replace-route-string-dispatch-with-typed-workflo/.agentplane/tasks/202607221848-VBV9B1/blueprint/resolved-snapshot.json
+- old_digest: 29b8f03842c5dea829e9ba611d12b62dcd826876a111b44387855830b4d0a64f
+- current_digest: 29b8f03842c5dea829e9ba611d12b62dcd826876a111b44387855830b4d0a64f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-VBV9B1
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221848-VBV9B1
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
