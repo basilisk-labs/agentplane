@@ -41,7 +41,7 @@ export type GithubPrLookupResult =
   | { state: "not_found" }
   | { state: "unavailable"; reason: string };
 
-function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
+export function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
   const trimmed = remoteUrl.trim();
   if (!trimmed) return null;
   const httpsMatch = /^https?:\/\/github\.com\/([^/]+)\/([^/]+?)(?:\.git)?\/?$/.exec(trimmed);
