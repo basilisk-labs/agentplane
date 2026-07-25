@@ -21,6 +21,44 @@ import { describeCritical } from "@agentplane/testkit";
 const REPO_ROOT = process.cwd();
 const TEST_ROOT = path.join(REPO_ROOT, ".agentplane/cache/rf04-test-targets");
 const temporaryRoots: string[] = [];
+const TEMPORARY_ROOT_CLEANUP_ATTEMPTS = 4;
+const RETRYABLE_CLEANUP_CODES = new Set(["EBUSY", "ENOTEMPTY", "EPERM"]);
+
+type TemporaryRootRemover = (root: string) => void;
+
+function isRetryableCleanupError(error: unknown): error is NodeJS.ErrnoException {
+  return (
+    error instanceof Error &&
+    typeof (error as NodeJS.ErrnoException).code === "string" &&
+    RETRYABLE_CLEANUP_CODES.has((error as NodeJS.ErrnoException).code ?? "")
+  );
+}
+
+function removeTemporaryRootAttempt(root: string): void {
+  rmSync(root, {
+    force: true,
+    maxRetries: 2,
+    recursive: true,
+    retryDelay: 25,
+  });
+}
+
+function cleanupTemporaryRoot(
+  root: string,
+  remove: TemporaryRootRemover = removeTemporaryRootAttempt,
+): void {
+  let firstRetryableError: unknown;
+  for (let attempt = 0; attempt < TEMPORARY_ROOT_CLEANUP_ATTEMPTS; attempt += 1) {
+    try {
+      remove(root);
+      return;
+    } catch (error) {
+      if (!isRetryableCleanupError(error)) throw error;
+      firstRetryableError ??= error;
+      if (attempt === TEMPORARY_ROOT_CLEANUP_ATTEMPTS - 1) throw firstRetryableError;
+    }
+  }
+}
 
 function temporaryRoot(): string {
   mkdirSync(TEST_ROOT, { recursive: true });
@@ -38,10 +76,44 @@ async function importModule<T>(relativePath: string): Promise<T> {
 }
 
 afterEach(() => {
-  for (const root of temporaryRoots.splice(0)) rmSync(root, { force: true, recursive: true });
+  for (const root of temporaryRoots.splice(0)) cleanupTemporaryRoot(root);
 });
 
 describeCritical("critical: RF-04 replay hardening boundaries", () => {
+  it("retries late temporary-root entries and preserves persistent cleanup errors", () => {
+    const lateEntryRoot = temporaryRoot();
+    let lateEntryAttempts = 0;
+    cleanupTemporaryRoot(lateEntryRoot, (root) => {
+      lateEntryAttempts += 1;
+      if (lateEntryAttempts === 1) {
+        writeFileSync(path.join(root, ".DS_Store"), "late entry\n");
+        throw Object.assign(new Error("simulated late temporary-root entry"), {
+          code: "ENOTEMPTY",
+        });
+      }
+      rmSync(root, { force: true, recursive: true });
+    });
+    expect(lateEntryAttempts).toBe(2);
+    expect(existsSync(lateEntryRoot)).toBe(false);
+
+    const persistentRoot = temporaryRoot();
+    const persistentError = Object.assign(new Error("persistent cleanup failure"), {
+      code: "ENOTEMPTY",
+    });
+    let persistentAttempts = 0;
+    let surfacedError: unknown;
+    try {
+      cleanupTemporaryRoot(persistentRoot, () => {
+        persistentAttempts += 1;
+        throw persistentError;
+      });
+    } catch (error) {
+      surfacedError = error;
+    }
+    expect(persistentAttempts).toBe(TEMPORARY_ROOT_CLEANUP_ATTEMPTS);
+    expect(surfacedError).toBe(persistentError);
+  });
+
   it("surfaces only a whole bounded UTF-8 replay driver diagnostic code", async () => {
     const safety = await importModule<{
       replayDriverDiagnosticCode(stderr: Uint8Array): string | null;
