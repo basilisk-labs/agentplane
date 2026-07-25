@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607252051-RK9N29",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T21:47:49.676Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Hosted CI found deterministic compliance failures on the current PR head.",
+  "evaluated_sha": "bf6ae520184549e1e43a53005160a7c11873a3d0",
+  "blueprint_digest": "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23",
+  "findings": [
+    "The route decision module exceeds the 600-line hotspot limit, and two newly added test declarations violate lint rules."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607252051-RK9N29/README.md",
+    "https://github.com/basilisk-labs/agentplane/actions/runs/30176058282/job/89724927469",
+    "https://github.com/basilisk-labs/agentplane/actions/runs/30176058282/job/89724927472"
+  ],
+  "missing_tests": [
+    "Run full lint and hotspot checks before publishing the repaired head."
+  ],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Do not change routing semantics or relax the hotspot threshold; only remove duplicate glue and correct test typing."
+  ]
+}

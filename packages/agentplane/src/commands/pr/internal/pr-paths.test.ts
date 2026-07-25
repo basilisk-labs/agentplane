@@ -10,6 +10,7 @@ import type {
   findWorktreeForBranch as findWorktreeForBranchFn,
   gitShowFile as gitShowFileFn,
 } from "@agentplaneorg/core/git";
+import type { resolveTaskBranchFromContext as resolveTaskBranchFromContextFn } from "../../shared/task-backend.js";
 
 const mocks = {
   resolveProject: vi.fn(),
@@ -41,6 +42,10 @@ const callFindWorktreeForBranch = (
   ...args: Parameters<typeof findWorktreeForBranchFn>
 ): ReturnType<typeof findWorktreeForBranchFn> =>
   mocks.findWorktreeForBranch(...args) as ReturnType<typeof findWorktreeForBranchFn>;
+const callResolveTaskBranchFromContext = (
+  ...args: Parameters<typeof resolveTaskBranchFromContextFn>
+): ReturnType<typeof resolveTaskBranchFromContextFn> =>
+  mocks.resolveTaskBranchFromContext(...args) as ReturnType<typeof resolveTaskBranchFromContextFn>;
 
 vi.mock("@agentplaneorg/core/project", () => ({
   resolveProject: callResolveProject,
@@ -60,7 +65,7 @@ vi.mock("@agentplaneorg/core/git", () => ({
   gitShowFile: callGitShowFile,
 }));
 vi.mock("../../shared/task-backend.js", () => ({
-  resolveTaskBranchFromContext: (...args: unknown[]) => mocks.resolveTaskBranchFromContext(...args),
+  resolveTaskBranchFromContext: callResolveTaskBranchFromContext,
 }));
 
 describe("pr/internal/pr-paths", () => {
@@ -269,5 +274,23 @@ describe("pr/internal/pr-paths", () => {
         preferBranchSnapshot: true,
       }),
     ).resolves.toEqual({ content: "base-content", branch: null });
+  });
+
+  it("readTaskPrMetaArtifact derives the canonical task metadata path", async () => {
+    const { readTaskPrMetaArtifact } = await import("./pr-paths.js");
+    mocks.resolveTaskBranchFromContext.mockResolvedValue(null);
+    mocks.readFile.mockResolvedValue("base-meta-content");
+
+    await expect(
+      readTaskPrMetaArtifact({
+        ctx: {
+          resolvedProject: { gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" },
+          config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        } as never,
+        taskId: "T-5",
+        preferBranchSnapshot: true,
+      }),
+    ).resolves.toEqual({ content: "base-meta-content", branch: null });
+    expect(mocks.readFile).toHaveBeenCalledWith("/repo/.agentplane/tasks/T-5/pr/meta.json", "utf8");
   });
 });

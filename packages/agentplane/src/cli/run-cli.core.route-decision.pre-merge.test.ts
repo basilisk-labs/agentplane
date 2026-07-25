@@ -493,7 +493,7 @@ describe("pre-merge closure route decisions", () => {
           task: { status: string };
           workflow_step: { operation: { id: string; params: { taskId: string; branch: string } } };
           next_action: { code: string; command: string };
-          blockers: Array<{ code: string }>;
+          blockers: { code: string }[];
         };
         expect(parsed.task.status).toBe("DONE");
         expect(parsed.workflow_step.operation).toMatchObject({
