@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,8 @@ quality_review:
     - "The cold-path benchmark passes no-bootstrap and stale-dist-read environment only to child processes, an explicit stub asserts both values, and compiled smoke remains on the actual built dist/cli.js."
     - "Task Plan, Verify Steps, findings, implementation, and verification evidence are aligned; targeted, stress, full-fast, critical, release-critical, static, doctor, and routing checks pass."
 commit:
-  hash: "002c1dce9c088812b823707bc98571ba8cc2961a"
-  message: "🐛 G00JP8 reliability: stabilize concurrent runner and full-fast tests"
+  hash: "7b380df643e2d6430049e6922f5996c8568057c3"
+  message: "🐛 G00JP8 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -96,8 +99,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T13:49:58.543Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T13:49:09.952Z"
+doc_updated_at: "2026-07-25T13:49:58.544Z"
 doc_updated_by: "CODER"
 description: "Remove three v0.7 integration blockers found by RF08 hosted/full-suite verification: return deterministic busy authority when a live runner claim races mutable history scanning; make the integration-queue mutex concurrency test deterministic; and isolate the Bun compiled CLI smoke from mutable shared build artifacts. Preserve fail-closed safety and production behavior outside the diagnosed error precedence."
 sections:
@@ -195,6 +205,10 @@ sections:
     - Observation: Three unrelated timing surfaces shared one integration symptom: live claim authority was evaluated after mutable history, mutex tests observed lock creation before callback readiness, and the cold-path benchmark could auto-bootstrap and rewrite shared dist.
       Impact: RF08 and subsequent v0.7 work could be blocked by misleading E_IO diagnostics and nondeterministic full-fast failures despite correct product behavior.
       Resolution: Implementation commit 002c1dce9 moves live-claim preflight ahead of history only for non-stale owners, preserves fail-closed stale and absent paths, uses callback-ready/finally barriers in tests, and makes the benchmark child read-only with explicit environment coverage while compiled smoke still validates real dist.
+extensions:
+  implementation_commit:
+    hash: "002c1dce9c088812b823707bc98571ba8cc2961a"
+    message: "🐛 G00JP8 reliability: stabilize concurrent runner and full-fast tests"
 id_source: "generated"
 ---
 ## Summary
