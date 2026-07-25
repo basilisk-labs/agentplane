@@ -6,14 +6,14 @@ Created: 2026-07-25T22:13:26.625Z
 
 - Task: `202607252051-ZMVZRZ`
 - Title: Make merged worktree cleanup resilient to partial removal
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient`
 - Canonical task record: `.agentplane/tasks/202607252051-ZMVZRZ/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted Core CI #30178341063 failed verify-contract at the hotspot baseline; task requires a bounded test split before re-verification.
+- State: ok
+- Note: Independent verification passed at 651d161277df67291a15e0e01f2cbff0e8053d8b: 31 focused cleanup tests across split CLI and shared cleanup suites; hotspot baseline now passes without expansion; typecheck, lint:core, guards, lifecycle invariants, routing, format, and diff checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

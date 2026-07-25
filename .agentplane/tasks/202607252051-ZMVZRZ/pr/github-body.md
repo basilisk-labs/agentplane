@@ -14,12 +14,13 @@ In scope: harden merged branch_pr worktree removal after a clean verified task, 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted Core CI #30178341063 failed verify-contract at the hotspot baseline; task requires a bounded
-test split before re-verification.
+Independent verification passed at 651d161277df67291a15e0e01f2cbff0e8053d8b: 31 focused cleanup
+tests across split CLI and shared cleanup suites; hotspot baseline now passes without expansion;
+typecheck, lint:core, guards, lifecycle invariants, routing, format, and diff checks pass.
 ```
 - Canonical workflow state lives in the task README.
 
