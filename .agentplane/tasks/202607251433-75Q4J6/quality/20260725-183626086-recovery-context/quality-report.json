@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607251433-75Q4J6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T18:36:26.086Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Rebased implementation head restores the canonical shared guard invariant without KnowledgeRef behavior or public API drift; policy registries are excluded from the final diff.",
+  "evaluated_sha": "49e981cc1944cf9577b2e95f077f40044e2ac3f2",
+  "blueprint_digest": "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542",
+  "findings": [
+    "packages/agentplane/src/context/knowledge-ref.ts imports the canonical isRecord guard and removes only the local duplicate; focused and full contract checks pass on 49e981cc."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607251433-75Q4J6/README.md",
+    "49e981cc; git diff --check origin/main...49e981cc; bun run guards:check; bun test packages/core/src/runner/knowledge-ref.test.ts packages/agentplane/src/context/knowledge-ref.test.ts (48 pass); bun run typecheck; bun run format:check; bun run lint:core; bun run test:critical (11/11); node .agentplane/policy/check-routing.mjs; agentplane doctor; bun run knip:check; bun run hotspots:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

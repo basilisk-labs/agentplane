@@ -19,9 +19,9 @@ Replace the inherited local isRecord helper in KnowledgeRef with the canonical s
 - Note:
 
 ```text
-After code-route correction to code.branch_pr, independently reran guards:check (shared guards and
-trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product
-diff only imports canonical shared isRecord and removes the local helper.
+Rebased head 49e981cc passes guards:check, 48 focused KnowledgeRef tests, typecheck, full and
+changed format checks, lint:core, critical CLI 11/11, routing, doctor, knip baseline, and hotspot
+thresholds.
 ```
 - Canonical workflow state lives in the task README.
 
