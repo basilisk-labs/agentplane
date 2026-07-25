@@ -24,7 +24,7 @@ Created: 2026-07-24T22:15:24.666Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-24T22:15:24.666Z
+- Updated: 2026-07-25T14:23:57.389Z
 - Branch: task/202607221848-VBV9B1/replace-route-string-dispatch-with-typed-workflo
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
