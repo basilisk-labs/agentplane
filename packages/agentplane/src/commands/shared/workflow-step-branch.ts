@@ -1,4 +1,5 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+import type { RouteBlocker } from "./route-oracle.js";
 import {
   approvalStep,
   cliOperationStep,
@@ -135,13 +136,60 @@ function hostedCloseStep(state: WorkflowRouteState): WorkflowStep | null {
   return null;
 }
 
+function runnerWaitStep(state: WorkflowRouteState): WorkflowStep {
+  const id = state.task.id;
+  const summary = "wait for the active runner or reclaim with explicit force if it is orphaned";
+  return {
+    schemaVersion: 1,
+    id: "wait.runner",
+    kind: "wait",
+    phase: "runner_wait",
+    authoritativeCheckout: "task_worktree",
+    summary,
+    blockers: routeBlockerSnapshot(state),
+    selectedBlocker: routeBlockerFor(state, "runner_alive"),
+    compatibility: {
+      code: "wait_runner",
+      command: null,
+      summary,
+      requiresApproval: false,
+    },
+    preconditionFingerprint: state.preconditionFingerprint,
+    condition: {
+      type: "runner_terminal",
+      taskId: id,
+      runId: state.resume.runner.run_id ?? null,
+    },
+    execution: commonExecution({
+      actionKind: "wait",
+      role: "CODER",
+      mustNot: ["do not reclaim or force progress without explicit parent approval"],
+    }),
+  };
+}
+
+function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
+  const probe = state.taskWorktree;
+  if (probe?.state === "unavailable") {
+    return {
+      code: "task_worktree_state_unavailable",
+      summary: `task worktree state could not be inspected: ${probe.reason}`,
+    };
+  }
+  return {
+    code: "task_worktree_state_unavailable",
+    summary: "task worktree state could not be inspected",
+  };
+}
+
 export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const worktreeBlocker = taskWorktreeBlocker(state);
+  if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
+  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
     return verificationStep(state);
   }
@@ -315,9 +363,15 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
 export function branchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const worktreeBlocker = taskWorktreeBlocker(state);
+  const status = String(state.task.status).toUpperCase();
+  if (status === "TODO" && state.taskWorktree?.state === "unavailable") {
+    return worktreeResolutionStep(state, worktreeBlocker ?? unavailableWorktreeBlocker(state));
+  }
   if (
-    String(state.task.status).toUpperCase() === "TODO" &&
-    state.taskWorktree?.state === "clean" &&
+    status === "TODO" &&
+    state.taskWorktree !== undefined &&
+    state.taskWorktree.state !== "not_present" &&
+    state.taskWorktree.state !== "unavailable" &&
     state.taskWorktree.branch !== state.resume.base_branch
   ) {
     const body = "Start: continue branch_pr task in the dedicated task worktree.";
@@ -357,37 +411,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "missing_included_batch_metadata"),
     });
   }
-  if (state.resume.runner.next_action === "wait") {
-    const fingerprint = state.preconditionFingerprint;
-    const summary = "wait for the active runner or reclaim with explicit force if it is orphaned";
-    return {
-      schemaVersion: 1,
-      id: "wait.runner",
-      kind: "wait",
-      phase: "runner_wait",
-      authoritativeCheckout: "task_worktree",
-      summary,
-      blockers: routeBlockerSnapshot(state),
-      selectedBlocker: routeBlockerFor(state, "runner_alive"),
-      compatibility: {
-        code: "wait_runner",
-        command: null,
-        summary,
-        requiresApproval: false,
-      },
-      preconditionFingerprint: fingerprint,
-      condition: {
-        type: "runner_terminal",
-        taskId: id,
-        runId: state.resume.runner.run_id ?? null,
-      },
-      execution: commonExecution({
-        actionKind: "wait",
-        role: "CODER",
-        mustNot: ["do not reclaim or force progress without explicit parent approval"],
-      }),
-    };
-  }
+  if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
+  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
@@ -402,7 +427,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: routeBlockerFor(state, "missing_pr_branch"),
     });
   }
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   const closeStep = hostedCloseStep(state);
   if (closeStep) return closeStep;
   if (state.blockers.some((blocker) => blocker.code === "branch_head_missing")) {

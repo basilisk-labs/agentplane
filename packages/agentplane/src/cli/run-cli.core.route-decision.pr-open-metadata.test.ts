@@ -46,7 +46,7 @@ async function createBranchPrTask(root: string): Promise<string> {
 }
 
 describe("runCli route decision open PR metadata", () => {
-  it("routes an existing task worktree without PR metadata directly to pr open", async () => {
+  it("starts a TODO task in its existing worktree before routing to pr open", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -78,24 +78,123 @@ describe("runCli route decision open PR metadata", () => {
     );
     await mkdir(path.dirname(worktreePath), { recursive: true });
     await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath], { cwd: root });
+    await writeFile(
+      path.join(worktreePath, "implementation.ts"),
+      "export const existingImplementation = true;\n",
+    );
     const { stdout: branches } = await execFileAsync(
       "git",
       ["branch", "--format=%(refname:short)"],
       { cwd: root },
     );
     expect(branches).toContain(branch);
+    const { stdout: worktreesBeforeStart } = await execFileAsync(
+      "git",
+      ["worktree", "list", "--porcelain"],
+      { cwd: root },
+    );
+    const taskWorktreesBeforeStart = worktreesBeforeStart
+      .split("\n")
+      .filter((line) => line.startsWith("worktree ") && line.includes(taskId));
 
-    const nextIo = captureStdIO();
+    const startRouteIo = captureStdIO();
     try {
       const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
       expect(code).toBe(0);
-      const parsed = JSON.parse(nextIo.stdout) as {
+      const parsed = JSON.parse(startRouteIo.stdout) as {
+        workflow_step: {
+          operation: { id: string };
+        };
         next_action: { code: string; command: string };
         route_oracle: {
           authoritativeCheckout: string;
           authoritativeCheckoutPath: string | null;
         };
       };
+      expect(parsed.workflow_step.operation.id).toBe("task.branch.start");
+      expect(parsed.next_action).toMatchObject({
+        code: "start_branch",
+      });
+      expect(parsed.next_action.command).toContain(
+        `agentplane task start-ready ${taskId} --author CODER`,
+      );
+      expect(parsed.route_oracle.authoritativeCheckout).toBe("task_worktree");
+      expect(parsed.route_oracle.authoritativeCheckoutPath).toContain(taskId);
+    } finally {
+      startRouteIo.restore();
+    }
+
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: continue branch_pr task in the existing dedicated worktree.",
+      "--root",
+      worktreePath,
+    ]);
+
+    const dirtyWorktreeRouteIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", worktreePath]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(dirtyWorktreeRouteIo.stdout) as {
+        workflow_step: {
+          kind: string;
+          episode: { purpose: string };
+          execution: { semanticMutationAllowed: boolean };
+        };
+        next_action: { code: string; command: string | null };
+        route_oracle: { mutationPathHint: string | null };
+        execution_packet: {
+          safe_to_mutate: boolean;
+          mutation_path_hint: string | null;
+          exact_argv: string[] | null;
+        };
+      };
+      expect(parsed.workflow_step).toMatchObject({
+        kind: "agent_episode",
+        episode: { purpose: "task_worktree_resolution" },
+        execution: { semanticMutationAllowed: true },
+      });
+      expect(parsed.next_action).toEqual({
+        code: "resolve_task_worktree_state",
+        command: null,
+        summary: expect.any(String),
+        requiresApproval: false,
+      });
+      expect(parsed.route_oracle.mutationPathHint).toContain(`${taskId}-bootstrap-existing`);
+      expect(parsed.execution_packet).toMatchObject({
+        safe_to_mutate: true,
+        mutation_path_hint: expect.stringContaining(`${taskId}-bootstrap-existing`),
+        exact_argv: null,
+      });
+    } finally {
+      dirtyWorktreeRouteIo.restore();
+    }
+
+    await execFileAsync("git", ["add", "."], { cwd: worktreePath });
+    await execFileAsync("git", ["commit", "-m", "feat: resolve existing worktree changes"], {
+      cwd: worktreePath,
+    });
+
+    const openPrRouteIo = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", worktreePath]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(openPrRouteIo.stdout) as {
+        workflow_step: {
+          operation: { id: string };
+        };
+        next_action: { code: string; command: string };
+        route_oracle: {
+          authoritativeCheckout: string;
+          authoritativeCheckoutPath: string | null;
+        };
+      };
+      expect(parsed.workflow_step.operation.id).toBe("pr.open");
       expect(parsed.next_action).toMatchObject({
         code: "open_pr",
         command: `agentplane pr open ${taskId} --author CODER`,
@@ -103,8 +202,20 @@ describe("runCli route decision open PR metadata", () => {
       expect(parsed.route_oracle.authoritativeCheckout).toBe("task_worktree");
       expect(parsed.route_oracle.authoritativeCheckoutPath).toContain(taskId);
     } finally {
-      nextIo.restore();
+      openPrRouteIo.restore();
     }
+
+    const { stdout: worktreesAfterStart } = await execFileAsync(
+      "git",
+      ["worktree", "list", "--porcelain"],
+      { cwd: root },
+    );
+    const taskWorktrees = worktreesAfterStart
+      .split("\n")
+      .filter((line) => line.startsWith("worktree ") && line.includes(taskId));
+    expect(taskWorktrees).toEqual(taskWorktreesBeforeStart);
+    expect(taskWorktrees).toHaveLength(1);
+    expect(taskWorktrees[0]).toContain(`${taskId}-bootstrap-existing`);
   });
 
   it("routes local open PR metadata to pre-merge closure without remote lookup", async () => {

@@ -1,5 +1,3 @@
-import type { RouteExecutionPacket } from "./route-execution-packet.js";
-
 export type { RouteExecutionPacket } from "./route-execution-packet.js";
 
 export type RouteBlockerCode =
@@ -47,9 +45,4 @@ export type RouteOracle = {
   blocker: RouteBlocker | null;
   nextCommand: string | null;
   summary: string;
-};
-
-export type WorkflowExecutionContract = {
-  oracle: RouteOracle;
-  packet: RouteExecutionPacket;
 };

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+
 import { runCli } from "../../cli/run-cli.js";
 import {
   executableStepFor,
@@ -321,6 +323,78 @@ describe("hermes adapter commands", () => {
 
   it("keeps Hermes runner projection for explicit task run routes", () => {
     const taskId = "202606010530-BEYQXA";
+    const fingerprintComponent = {
+      state: "present",
+      source: "hermes_runner_projection_fixture",
+      value: { taskId },
+    } as const;
+    const preconditionFingerprint = buildStateFingerprint({
+      task_id: taskId,
+      task_revision: 1,
+      git_head: null,
+      worktree: "/repo",
+      components: {
+        task: fingerprintComponent,
+        git: fingerprintComponent,
+        backend_projection: fingerprintComponent,
+        policy: fingerprintComponent,
+        blueprint: fingerprintComponent,
+        knowledge: fingerprintComponent,
+        provider: fingerprintComponent,
+        authority: fingerprintComponent,
+      },
+    });
+    const workflowStep = {
+      schemaVersion: 1,
+      id: "runner.follow",
+      kind: "cli_operation",
+      phase: "direct_execution",
+      authoritativeCheckout: "current_checkout",
+      summary: "continue the direct-mode task from the current checkout",
+      blockers: [],
+      selectedBlocker: null,
+      compatibility: {
+        code: "run",
+        command: `agentplane task run ${taskId}`,
+        summary: "continue the direct-mode task from the current checkout",
+        requiresApproval: false,
+      },
+      preconditionFingerprint,
+      operation: {
+        id: "runner.follow",
+        type: "runner_follow",
+        params: { mode: "run", taskId },
+        preconditionFingerprint,
+        authorityRef: `route:${taskId}:${preconditionFingerprint.digest}`,
+        idempotencyKey: `runner.follow:${taskId}:${preconditionFingerprint.digest}:fixture`,
+        expectedPostconditions: [
+          {
+            id: "runner_state_observed",
+            subject: "runner",
+            expected: "runner state is observed after the operation",
+          },
+          {
+            id: "route_state_recomputed",
+            subject: "route",
+            expected: "route state is recomputed before another mutation",
+          },
+        ],
+        triggersGitHooks: false,
+      },
+      execution: {
+        actionKind: "local_command",
+        recommendedRole: "CODER",
+        semanticMutationAllowed: false,
+        mustNot: [
+          "do not infer local lifecycle authority from runner output alone; inspect the durable runner state",
+        ],
+        returnControlWhen:
+          "after the exact command exits; recompute task next-action before any further step",
+        verificationCandidate: null,
+        evidenceMissing: [],
+        needsVerificationRecord: false,
+      },
+    } satisfies Extract<TaskRouteDecision["workflowStep"], { kind: "cli_operation" }>;
     const decision = {
       task: {
         id: taskId,
@@ -331,6 +405,7 @@ describe("hermes adapter commands", () => {
         verification: "pending",
         commit: null,
       },
+      workflowStep,
       nextAction: {
         code: "run",
         command: `agentplane task run ${taskId}`,

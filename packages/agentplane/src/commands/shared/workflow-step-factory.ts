@@ -421,6 +421,8 @@ export function worktreeResolutionStep(
     purpose: "task_worktree_resolution",
     summary,
     objective: "Classify and resolve the task worktree changes without guessing intent.",
+    semanticMutationAllowed:
+      blocker.code === "task_worktree_dirty" && String(state.task.status).toUpperCase() === "DOING",
     mustNot: [
       "do not publish, enqueue, claim, reserve, verify, or integrate while the actual task worktree has uncommitted changes or cannot be inspected",
       "do not infer whether uncommitted changes are intended; return that semantic decision to the CODER",

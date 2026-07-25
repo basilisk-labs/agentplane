@@ -22,22 +22,3 @@ export function deriveNextAction(
     "preconditionFingerprint" in state ? state : withBootstrapWorkflowFingerprint(state);
   return projectWorkflowStepNextAction(reduceRouteState(routedState));
 }
-
-export {
-  projectWorkflowStepExecutionPacket,
-  projectWorkflowStepNextAction,
-  projectWorkflowStepOracle,
-  reduceRouteState,
-  WORKFLOW_OPERATION_ARGV_PREFIX,
-  WORKFLOW_OPERATION_REGISTRY,
-  type WorkflowCheckout,
-  type WorkflowOperation,
-  type WorkflowOperationId,
-  type WorkflowPostcondition,
-  type WorkflowPostconditionId,
-  type WorkflowRole,
-  type WorkflowRouteFingerprint,
-  type WorkflowRouteState,
-  type WorkflowStep,
-} from "./workflow-step.js";
-export type { WorkflowRouteStateInput } from "./workflow-step-fingerprint.js";

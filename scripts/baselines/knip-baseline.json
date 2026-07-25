@@ -775,11 +775,6 @@
           "col": 14
         },
         {
-          "name": "buildTaskBlueprintResolvedSnapshot",
-          "line": 30,
-          "col": 23
-        },
-        {
           "name": "readTaskBlueprintResolvedSnapshot",
           "line": 69,
           "col": 23
