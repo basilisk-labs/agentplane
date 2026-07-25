@@ -1,8 +1,8 @@
 import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
+import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
 import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
 import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
@@ -138,15 +138,21 @@ async function resolveLocalRecordedCloseFlow(opts: {
   task: Awaited<ReturnType<typeof loadBackendTask>>["task"];
   onDiagnostic?: (message: string) => void;
 }): Promise<PrFlowStatusReport | null> {
-  const metaPath = path.join(
-    opts.ctx.resolvedProject.gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.task.id,
-    "pr",
-    "meta.json",
-  );
   try {
-    const meta = parsePrMeta(await readFile(metaPath, "utf8"), opts.task.id);
+    const { content } = await readTaskPrArtifact({
+      ctx: opts.ctx,
+      taskId: opts.task.id,
+      prDir: path.join(
+        opts.ctx.resolvedProject.gitRoot,
+        opts.ctx.config.paths.workflow_dir,
+        opts.task.id,
+        "pr",
+      ),
+      fileName: "meta.json",
+      preferBranchSnapshot: opts.ctx.config.workflow_mode === "branch_pr",
+    });
+    if (content === null) return null;
+    const meta = parsePrMeta(content, opts.task.id);
     const trimmedBase = meta.base?.trim();
     const base = trimmedBase && trimmedBase.length > 0 ? trimmedBase : "main";
     const branchHeadSha = meta.branch
@@ -400,6 +406,7 @@ export async function buildTaskRouteDecision(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
     taskId: opts.taskId,
+    preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
   });
   const resume = await buildTaskResumeContext({
     ctx,

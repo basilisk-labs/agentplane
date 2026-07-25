@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607252051-RK9N29/make-branch-pr-route-resolution-branch-snapshot",
   "created_at": "2026-07-25T20:53:29.950Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:f6a09483d3d565cff0657c358fbddc80190b158fb29416376ada40c75aa4a068",
   "last_verified_at": null,
+  "pr_number": 4621,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4621",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607252051-RK9N29",
-  "updated_at": "2026-07-25T20:53:29.950Z",
+  "updated_at": "2026-07-25T20:56:24.686Z",
   "verify": {
     "status": "skipped"
   }

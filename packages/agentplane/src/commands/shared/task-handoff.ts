@@ -14,6 +14,7 @@ import { gitEnv } from "@agentplaneorg/core/git";
 import { isRecord } from "../../shared/guards.js";
 import type { CommandContext } from "./task-backend.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
+import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
 
 export type TaskHandoffArtifact = TaskHandoff;
 export type TaskHandoffRunnerHint = TaskHandoffRunnerState;
@@ -162,15 +163,20 @@ export async function readTaskPrMetaSummary(opts: {
   ctx: CommandContext;
   task_id: string;
 }): Promise<{ branch: string | null; base: string | null }> {
-  const prMetaPath = path.join(
-    opts.ctx.resolvedProject.gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.task_id,
-    "pr",
-    "meta.json",
-  );
-  try {
-    const raw = JSON.parse(await readFile(prMetaPath, "utf8")) as {
+  const { content } = await readTaskPrArtifact({
+    ctx: opts.ctx,
+    taskId: opts.task_id,
+    prDir: path.join(
+      opts.ctx.resolvedProject.gitRoot,
+      opts.ctx.config.paths.workflow_dir,
+      opts.task_id,
+      "pr",
+    ),
+    fileName: "meta.json",
+    preferBranchSnapshot: opts.ctx.config.workflow_mode === "branch_pr",
+  });
+  if (content !== null) {
+    const raw = JSON.parse(content) as {
       branch?: string;
       base?: string;
     };
@@ -178,18 +184,13 @@ export async function readTaskPrMetaSummary(opts: {
       branch: trimOrNull(raw.branch),
       base: trimOrNull(raw.base),
     };
-  } catch (err) {
-    const code = (err as NodeJS.ErrnoException | null)?.code;
-    if (code === "ENOENT") {
-      const task = await opts.ctx.taskBackend.getTask(opts.task_id);
-      const batch = task ? readBranchPrBatchExtension(task) : null;
-      if (!batch?.branch || !batch.primaryTaskId) return { branch: null, base: null };
-      const primaryTask = await opts.ctx.taskBackend.getTask(batch.primaryTaskId);
-      if (!primaryTask) return { branch: null, base: null };
-      return { branch: batch.branch, base: batch.base };
-    }
-    throw err;
   }
+  const task = await opts.ctx.taskBackend.getTask(opts.task_id);
+  const batch = task ? readBranchPrBatchExtension(task) : null;
+  if (!batch?.branch || !batch.primaryTaskId) return { branch: null, base: null };
+  const primaryTask = await opts.ctx.taskBackend.getTask(batch.primaryTaskId);
+  if (!primaryTask) return { branch: null, base: null };
+  return { branch: batch.branch, base: batch.base };
 }
 
 export function buildTaskHandoffArtifact(opts: {

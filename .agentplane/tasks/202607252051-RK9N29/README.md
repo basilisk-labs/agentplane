@@ -4,7 +4,7 @@ title: "Make branch_pr route resolution branch-snapshot aware"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -39,7 +39,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-25T20:53:29.853Z"
+doc_updated_at: "2026-07-25T21:23:00.645Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr control-plane truth: routes, flow status, blockers, and resume must prefer the active task branch snapshot (live worktree, local branch, then origin) for task README and PR metadata, falling back to base only when no branch snapshot exists. Regress stale base TODO versus task-branch DONE/open PR so the CLI selects publication or integration, never a false plan approval. Keep typed route semantics unchanged."
 sections:
@@ -54,7 +54,10 @@ sections:
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task PR as one unit. This restores prior base-local route reads without altering task data or hosted PR state."
-  Findings: ""
+  Findings: |-
+    - Observation: The existing stale runner reclaim integration test exits 8 on both the task branch and untouched main worktree.
+      Impact: The full task-handoff test file cannot be used as a green gate for this branch-snapshot change; the new resume-context regression passes in isolation.
+      Resolution: Recorded as a pre-existing, out-of-scope baseline failure; retain the focused resume regression and route a separate runner-reclaim task before release.
 extensions:
   workflow_route_baseline:
     start_head_sha: "8e37e79ba5f2c934ab7c35a242c181049180e164"
@@ -89,3 +92,7 @@ In scope: make branch_pr route, PR flow, blocker, and resume reads prefer a veri
 Revert the task PR as one unit. This restores prior base-local route reads without altering task data or hosted PR state.
 
 ## Findings
+
+- Observation: The existing stale runner reclaim integration test exits 8 on both the task branch and untouched main worktree.
+  Impact: The full task-handoff test file cannot be used as a green gate for this branch-snapshot change; the new resume-context regression passes in isolation.
+  Resolution: Recorded as a pre-existing, out-of-scope baseline failure; retain the focused resume regression and route a separate runner-reclaim task before release.

@@ -8,9 +8,9 @@ import { isTaskSetLocalOnlyAdvance } from "./task-local-freshness.js";
 import type { CommandContext } from "./task-backend.js";
 import { isRecord } from "../../shared/guards.js";
 import { getHumanInputState } from "../task/human-input.js";
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { parsePrMeta, type PrMeta } from "./pr-meta.js";
+import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
 import { hasAcceptedQualityReviewProvenance } from "../task/quality-review-gate.js";
 import { assessPreMergeClosureFreshness } from "../task/hosted-close-premerge.js";
 import {
@@ -116,19 +116,25 @@ async function qualityReviewIsFreshForHead(opts: {
   return expectedSha === review.evaluated_sha;
 }
 
-async function readLocalPrMeta(opts: {
+async function readTaskPrMeta(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<PrMeta | null> {
-  const metaPath = path.join(
-    opts.ctx.resolvedProject.gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.taskId,
-    "pr",
-    "meta.json",
-  );
+  const { content } = await readTaskPrArtifact({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    prDir: path.join(
+      opts.ctx.resolvedProject.gitRoot,
+      opts.ctx.config.paths.workflow_dir,
+      opts.taskId,
+      "pr",
+    ),
+    fileName: "meta.json",
+    preferBranchSnapshot: opts.ctx.config.workflow_mode === "branch_pr",
+  });
+  if (content === null) return null;
   try {
-    return parsePrMeta(await readFile(metaPath, "utf8"), opts.taskId);
+    return parsePrMeta(content, opts.taskId);
   } catch {
     return null;
   }
@@ -138,7 +144,7 @@ async function readLocalPreMergeState(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<{ open: boolean }> {
-  const meta = await readLocalPrMeta(opts);
+  const meta = await readTaskPrMeta(opts);
   return { open: meta?.status === "OPEN" };
 }
 
@@ -255,7 +261,7 @@ export async function deriveBlockers(opts: {
     opts.prFlow.branch.name &&
     opts.prFlow.branch.headSha
   ) {
-    const meta = await readLocalPrMeta({ ctx: opts.ctx, taskId: opts.task.id });
+    const meta = await readTaskPrMeta({ ctx: opts.ctx, taskId: opts.task.id });
     const freshness = meta
       ? await assessPreMergeClosureFreshness({
           gitRoot: opts.ctx.resolvedProject.gitRoot,

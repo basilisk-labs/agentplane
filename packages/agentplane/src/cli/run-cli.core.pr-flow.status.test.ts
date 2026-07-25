@@ -255,6 +255,119 @@ describe("runCli pr flow status", () => {
     }
   });
 
+  it("reads task state and PR metadata from the task branch before a stale base copy", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seed branch_pr base"], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", "git@github.com:example/repo.git"], {
+      cwd: root,
+    });
+
+    let taskId = "";
+    const taskIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "new",
+          "--title",
+          "Read branch snapshot PR flow",
+          "--description",
+          "PR flow must prefer the task branch snapshot while base is still stale.",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "workflow",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+      taskId = taskIo.stdout.trim();
+    } finally {
+      taskIo.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: persist stale base task"], { cwd: root });
+
+    const branch = `task/${taskId}/branch-snapshot`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const branchReadme = await readFile(readmePath, "utf8");
+    await writeFile(
+      readmePath,
+      branchReadme.replace(/status:\s*["']?TODO["']?/u, 'status: "DONE"'),
+      "utf8",
+    );
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        task_id: taskId,
+        branch,
+        base: "main",
+        status: "OPEN",
+        pr_number: 123,
+        pr_url: "https://github.com/example/repo/pull/123",
+        created_at: "2026-07-25T00:00:00.000Z",
+        updated_at: "2026-07-25T00:00:00.000Z",
+      })}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: add task branch PR metadata"], {
+      cwd: root,
+    });
+    const { stdout: branchHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await execFileAsync(
+      "git",
+      ["update-ref", `refs/remotes/origin/${branch}`, branchHeadRaw.trim()],
+      {
+        cwd: root,
+      },
+    );
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const fakeBin = await installFakeGh(root, {
+      checksExitCode: 0,
+      pull: {
+        number: 123,
+        html_url: "https://github.com/example/repo/pull/123",
+        state: "open",
+        merged_at: null,
+        merge_commit_sha: null,
+        head: { ref: branch, sha: branchHeadRaw.trim() },
+        base: { ref: "main" },
+      },
+    });
+    const oldPath = process.env.PATH;
+    process.env.PATH = `${fakeBin}${path.delimiter}${oldPath ?? ""}`;
+    const io = captureStdIO();
+    try {
+      expect(await runCli(["pr", "flow", "status", taskId, "--root", root])).toBe(0);
+      expectLabeledValue(io.stdout, "task", `${taskId} DONE`);
+      expectLabeledValue(io.stdout, "branch", branch);
+      expectLabeledValue(
+        io.stdout,
+        "remote_pr",
+        "github: OPEN #123 https://github.com/example/repo/pull/123 (source=lookup)",
+      );
+    } finally {
+      io.restore();
+      process.env.PATH = oldPath;
+    }
+  });
+
   it("reports hosted check counts when gh returns pending status with exit code 8", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

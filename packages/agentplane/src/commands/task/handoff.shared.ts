@@ -54,7 +54,11 @@ export async function buildTaskResumeContext(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const task = await loadTaskFromContext({ ctx, taskId: opts.task_id });
+  const task = await loadTaskFromContext({
+    ctx,
+    taskId: opts.task_id,
+    preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
+  });
   const handoffPaths = resolveTaskHandoffPaths({
     git_root: ctx.resolvedProject.gitRoot,
     workflow_dir: ctx.config.paths.workflow_dir,

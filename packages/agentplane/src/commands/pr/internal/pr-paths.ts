@@ -6,8 +6,8 @@ import path from "node:path";
 import { loadConfig } from "@agentplaneorg/core/config";
 
 import { fileExists } from "../../../cli/fs-utils.js";
-import { gitShowFile, toGitPath } from "@agentplaneorg/core/git";
-import type { CommandContext } from "../../shared/task-backend.js";
+import { findWorktreeForBranch, gitShowFile, toGitPath } from "@agentplaneorg/core/git";
+import { resolveTaskBranchFromContext, type CommandContext } from "../../shared/task-backend.js";
 
 export type ResolvedPrPaths = {
   resolved: { gitRoot: string; agentplaneDir: string };
@@ -64,6 +64,45 @@ export async function readPrArtifact(opts: {
     return await readFile(filePath, "utf8");
   }
   return await readPrArtifactFromBranch(opts);
+}
+
+export async function readTaskPrArtifact(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  prDir: string;
+  fileName: string;
+  preferBranchSnapshot?: boolean;
+}): Promise<{ content: string | null; branch: string | null }> {
+  const branch = opts.preferBranchSnapshot
+    ? await resolveTaskBranchFromContext({
+        ctx: opts.ctx,
+        taskId: opts.taskId,
+      })
+    : null;
+  if (branch) {
+    const worktreePath = await findWorktreeForBranch(
+      opts.ctx.resolvedProject.gitRoot,
+      branch,
+    ).catch(() => null);
+    const content = await readPrArtifactFromBranch({
+      resolved: opts.ctx.resolvedProject,
+      prDir: opts.prDir,
+      fileName: opts.fileName,
+      branch,
+      worktreePath,
+    });
+    return { content, branch };
+  }
+
+  const filePath = path.join(opts.prDir, opts.fileName);
+  try {
+    return { content: await readFile(filePath, "utf8"), branch };
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException | null)?.code === "ENOENT") {
+      return { content: null, branch };
+    }
+    throw err;
+  }
 }
 
 export async function readPrArtifactFromBranch(opts: {
