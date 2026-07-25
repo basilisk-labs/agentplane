@@ -19,9 +19,9 @@ Repair the incident-registry renderer so compact rewrites retain the required bl
 - Note:
 
 ```text
-Verified published head 57da81c6: runtime incidents 10/10, mirror 1/1, CLI incidents 10/10, format,
-templates, TypeScript, targeted lint, policy routing, and doctor pass. Legacy compact input is
-normalized to the Prettier-compatible header and mirrors remain byte-identical.
+Verified final implementation b0b3c384: focused incident suites 21/21, format, templates,
+TypeScript, targeted lint, policy routing, doctor, and hotspot baseline pass. The closure commit
+only records lifecycle evidence; compact rendering and mirror behavior are unchanged.
 ```
 - Canonical workflow state lives in the task README.
 

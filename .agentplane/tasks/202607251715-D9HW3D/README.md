@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -28,9 +28,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-25T17:28:30.085Z"
+  updated_at: "2026-07-25T17:36:52.020Z"
   updated_by: "TESTER"
-  note: "Verified published head 57da81c6: runtime incidents 10/10, mirror 1/1, CLI incidents 10/10, format, templates, TypeScript, targeted lint, policy routing, and doctor pass. Legacy compact input is normalized to the Prettier-compatible header and mirrors remain byte-identical."
+  note: "Verified final implementation b0b3c384: focused incident suites 21/21, format, templates, TypeScript, targeted lint, policy routing, doctor, and hotspot baseline pass. The closure commit only records lifecycle evidence; compact rendering and mirror behavior are unchanged."
   attempts: 0
 quality_review:
   state: "pass"
@@ -80,8 +80,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T17:36:52.020Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified final implementation b0b3c384: focused incident suites 21/21, format, templates, TypeScript, targeted lint, policy routing, doctor, and hotspot baseline pass. The closure commit only records lifecycle evidence; compact rendering and mirror behavior are unchanged."
 doc_version: 3
-doc_updated_at: "2026-07-25T17:33:55.439Z"
+doc_updated_at: "2026-07-25T17:36:52.429Z"
 doc_updated_by: "CODER"
 description: "Repair the incident-registry renderer so compact rewrites retain the required blank line after the heading, keep the canonical and asset mirrors byte-identical, and add regression coverage. This unblocks the hosted format check for task 202607251433-75Q4J6 without manually editing a policy log in that task."
 sections:
@@ -130,6 +136,36 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-25T17:36:52.020Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified final implementation b0b3c384: focused incident suites 21/21, format, templates, TypeScript, targeted lint, policy routing, doctor, and hotspot baseline pass. The closure commit only records lifecycle evidence; compact rendering and mirror behavior are unchanged.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T17:33:55.439Z, excerpt_hash=sha256:2d03d77e36376633d6a26412923e23091dde0230ad77269c736c2def2f69eb01
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251715-D9HW3D-preserve-compact-incident-registry-formatting/.agentplane/tasks/202607251715-D9HW3D/blueprint/resolved-snapshot.json
+    - old_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+    - current_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607251715-D9HW3D
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607251715-D9HW3D --remote --explain
+    - diagnostic_command: agentplane task next-action 202607251715-D9HW3D --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -195,6 +231,36 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-25T17:36:52.020Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified final implementation b0b3c384: focused incident suites 21/21, format, templates, TypeScript, targeted lint, policy routing, doctor, and hotspot baseline pass. The closure commit only records lifecycle evidence; compact rendering and mirror behavior are unchanged.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T17:33:55.439Z, excerpt_hash=sha256:2d03d77e36376633d6a26412923e23091dde0230ad77269c736c2def2f69eb01
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251715-D9HW3D-preserve-compact-incident-registry-formatting/.agentplane/tasks/202607251715-D9HW3D/blueprint/resolved-snapshot.json
+- old_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+- current_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607251715-D9HW3D
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607251715-D9HW3D --remote --explain
+- diagnostic_command: agentplane task next-action 202607251715-D9HW3D --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
