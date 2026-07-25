@@ -13,6 +13,7 @@ export const STRUCTURED_INCIDENTS_HEADER = [
 
 export const COMPACT_INCIDENTS_HEADER = [
   "# Policy Incidents Log",
+  "",
   "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.",
 ].join("\n");
 
