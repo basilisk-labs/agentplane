@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607252051-RK9N29",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T21:30:44.995Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "CodeQL identified unsafe command construction in the new remote task-branch discovery path.",
+  "evaluated_sha": "4af6f2d47700f7bc5814ad74492a39c6baa638b1",
+  "blueprint_digest": "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23",
+  "findings": [
+    "The remote branch prefix derived from configuration is interpolated into git for-each-ref argv; replace it with a constant ref root and filter returned refs in TypeScript."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607252051-RK9N29/README.md",
+    "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

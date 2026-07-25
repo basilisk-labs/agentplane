@@ -37,12 +37,12 @@ Created: 2026-07-25T20:53:29.950Z
  .../src/commands/pr/internal/pr-paths.ts           |  43 +++++++-
  .../src/commands/shared/route-decision-blockers.ts |  30 +++---
  .../src/commands/shared/route-decision.ts          |  25 +++--
- .../shared/task-backend-branch-snapshot.ts         |  52 +++++++++-
+ .../shared/task-backend-branch-snapshot.ts         |  51 +++++++++-
  .../src/commands/shared/task-backend.test.ts       |  11 +-
  .../agentplane/src/commands/shared/task-backend.ts |   9 +-
  .../agentplane/src/commands/shared/task-handoff.ts |  41 ++++----
  .../agentplane/src/commands/task/handoff.shared.ts |   6 +-
- 13 files changed, 599 insertions(+), 67 deletions(-)
+ 13 files changed, 598 insertions(+), 67 deletions(-)
 ```
 
 </details>

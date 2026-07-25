@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -27,26 +27,22 @@ verification:
   note: "Focused route, PR-flow, resume, task-backend, and artifact tests passed; typecheck, lint, guards, lifecycle, routing, architecture, formatting, and diff checks passed."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T21:27:40.785Z"
+  updated_at: "2026-07-25T21:30:44.995Z"
   updated_by: "EVALUATOR"
-  note: "The branch-pr control plane now consistently treats the resolved task branch snapshot as authoritative for task state and PR metadata, while direct mode retains base-local reads."
+  note: "CodeQL identified unsafe command construction in the new remote task-branch discovery path."
   evaluated_sha: "4af6f2d47700f7bc5814ad74492a39c6baa638b1"
   blueprint_digest: "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23"
   evidence_refs:
     - ".agentplane/tasks/202607252051-RK9N29/README.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-212740785-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-212740785-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-212740785-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213044995-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213044995-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213044995-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/pr/internal/pr-paths.ts"
     - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts"
   findings:
-    - "A resolved task branch returns its own PR metadata result, including missing metadata, so a stale base meta.json cannot authorize or distort the route."
+    - "The remote branch prefix derived from configuration is interpolated into git for-each-ref argv; replace it with a constant ref root and filter returned refs in TypeScript."
 commit:
   hash: "4af6f2d47700f7bc5814ad74492a39c6baa638b1"
   message: "🧩 RK9N29 routing: prefer task branch snapshots"
