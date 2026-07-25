@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607252223-THDN0G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T23:29:50.919Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Independent review at 6f538546 confirms the Bun-compatible mock repair preserves the approved bounded-read contract without semantic scope creep.",
+  "evaluated_sha": "6f538546b276d4fa6db3b3d901084cadc0cb3457",
+  "blueprint_digest": "2f69b6c42284d67d479cd7c7933116259b50e329f6059215f702dcdedbe5e4d3",
+  "findings": [
+    "CommandContext now owns one shared local-and-origin branch inventory promise; concurrent branch lookups reuse it, while a new command context receives a fresh inventory.",
+    "task active uses mapLimit with concurrency 4; the 13-task regression preserves all items and observes a maximum of exactly four concurrent route evaluations.",
+    "Read-only active-claim inspection returns null when the protected chain is absent, does not create .git/agentplane, and still rejects unsafe symlinked paths; mutating claim acquisition retains its creator path.",
+    "The post-rework source delta changes only two unit-test mock harnesses from unsupported vi.hoisted/module mocks to Bun-compatible spies; assertions for memoization and fan-out remain intact."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607252223-THDN0G/README.md",
+    ".agentplane/tasks/202607252223-THDN0G/README.md (TESTER verification tied to 6f538546)",
+    "bun test active, branch-snapshot, runner-claim focused files: 29 pass, 0 fail",
+    "bun test packages/agentplane/src/commands/shared/task-backend.test.ts: 12 pass, 0 fail; includes stale-base and origin-only snapshot fallback",
+    "agentplane task active --owner CODER --limit 1 --json: success with filtered_count=38",
+    "git diff main...6f538546 reviewed: scoped task-active, branch inventory, read-only claim, regressions, and alpha.2 fan-in only"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The branch inventory is intentionally a command-scoped snapshot; branch changes during one active invocation appear on the next command, preserving bounded read cost."
+  ]
+}

@@ -1,10 +1,11 @@
 ---
 id: "202607252223-THDN0G"
 title: "Bound branch snapshot probes in task active"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -28,16 +29,45 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T23:02:20.383Z"
+  state: "ok"
+  updated_at: "2026-07-25T23:25:51.634Z"
   updated_by: "TESTER"
-  note: "Focused verification cannot pass until the new unit test harness is runnable under the repository test runtime."
-  attempts: 1
-commit: null
+  note: "Independent verification passed at 6f538546b276d4fa6db3b3d901084cadc0cb3457: 41 focused active/branch-snapshot/runner-claim tests, typecheck, lint:core, lifecycle invariants, routing, diff check, and built task active JSON behavior are green."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-25T23:29:50.919Z"
+  updated_by: "EVALUATOR"
+  note: "Independent review at 6f538546 confirms the Bun-compatible mock repair preserves the approved bounded-read contract without semantic scope creep."
+  evaluated_sha: "6f538546b276d4fa6db3b3d901084cadc0cb3457"
+  blueprint_digest: "2f69b6c42284d67d479cd7c7933116259b50e329f6059215f702dcdedbe5e4d3"
+  evidence_refs:
+    - ".agentplane/tasks/202607252223-THDN0G/README.md"
+    - ".agentplane/tasks/202607252223-THDN0G/quality/20260725-232950919-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607252223-THDN0G/quality/20260725-232950919-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607252223-THDN0G/quality/20260725-232950919-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607252223-THDN0G/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202607252223-THDN0G/README.md (TESTER verification tied to 6f538546)"
+    - "bun test active, branch-snapshot, runner-claim focused files: 29 pass, 0 fail"
+    - "bun test packages/agentplane/src/commands/shared/task-backend.test.ts: 12 pass, 0 fail; includes stale-base and origin-only snapshot fallback"
+    - "agentplane task active --owner CODER --limit 1 --json: success with filtered_count=38"
+    - "git diff main...6f538546 reviewed: scoped task-active, branch inventory, read-only claim, regressions, and alpha.2 fan-in only"
+  findings:
+    - "CommandContext now owns one shared local-and-origin branch inventory promise; concurrent branch lookups reuse it, while a new command context receives a fresh inventory."
+    - "task active uses mapLimit with concurrency 4; the 13-task regression preserves all items and observes a maximum of exactly four concurrent route evaluations."
+    - "Read-only active-claim inspection returns null when the protected chain is absent, does not create .git/agentplane, and still rejects unsafe symlinked paths; mutating claim acquisition retains its creator path."
+    - "The post-rework source delta changes only two unit-test mock harnesses from unsupported vi.hoisted/module mocks to Bun-compatible spies; assertions for memoization and fan-out remain intact."
+commit:
+  hash: "6f538546b276d4fa6db3b3d901084cadc0cb3457"
+  message: "🧩 THDN0G correctness: make unit mocks Bun-compatible"
 comments:
   -
     author: "CODER"
     body: "Start: bound branch snapshot inventory probes in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -52,8 +82,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Focused verification cannot pass until the new unit test harness is runnable under the repository test runtime."
+  -
+    type: "verify"
+    at: "2026-07-25T23:25:51.634Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent verification passed at 6f538546b276d4fa6db3b3d901084cadc0cb3457: 41 focused active/branch-snapshot/runner-claim tests, typecheck, lint:core, lifecycle invariants, routing, diff check, and built task active JSON behavior are green."
+  -
+    type: "status"
+    at: "2026-07-25T23:31:35.558Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T23:02:20.989Z"
+doc_updated_at: "2026-07-25T23:31:35.559Z"
 doc_updated_by: "CODER"
 description: "Prevent task active from spawning an unbounded local and remote branch probe per task route. Reuse one command-scoped branch inventory or apply a bounded concurrency strategy while preserving branch snapshot precedence and stale-base recovery."
 sections:
@@ -90,6 +133,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607252223-THDN0G
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-25T23:25:51.634Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent verification passed at 6f538546b276d4fa6db3b3d901084cadc0cb3457: 41 focused active/branch-snapshot/runner-claim tests, typecheck, lint:core, lifecycle invariants, routing, diff check, and built task active JSON behavior are green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T23:02:20.989Z, excerpt_hash=sha256:bf0c1c7986e7a823fdc75c2cbb39ca869d876f41085568bf5a8d1bf711f73f30
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252223-THDN0G-bound-branch-snapshot-probes-in-task-active/.agentplane/tasks/202607252223-THDN0G/blueprint/resolved-snapshot.json
+    - old_digest: 2f69b6c42284d67d479cd7c7933116259b50e329f6059215f702dcdedbe5e4d3
+    - current_digest: 2f69b6c42284d67d479cd7c7933116259b50e329f6059215f702dcdedbe5e4d3
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607252223-THDN0G
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -153,6 +226,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607252223-THDN0G
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-25T23:25:51.634Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent verification passed at 6f538546b276d4fa6db3b3d901084cadc0cb3457: 41 focused active/branch-snapshot/runner-claim tests, typecheck, lint:core, lifecycle invariants, routing, diff check, and built task active JSON behavior are green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T23:02:20.989Z, excerpt_hash=sha256:bf0c1c7986e7a823fdc75c2cbb39ca869d876f41085568bf5a8d1bf711f73f30
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252223-THDN0G-bound-branch-snapshot-probes-in-task-active/.agentplane/tasks/202607252223-THDN0G/blueprint/resolved-snapshot.json
+- old_digest: 2f69b6c42284d67d479cd7c7933116259b50e329f6059215f702dcdedbe5e4d3
+- current_digest: 2f69b6c42284d67d479cd7c7933116259b50e329f6059215f702dcdedbe5e4d3
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607252223-THDN0G
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

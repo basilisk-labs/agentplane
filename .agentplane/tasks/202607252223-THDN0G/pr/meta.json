@@ -3,15 +3,22 @@
   "branch": "task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active",
   "created_at": "2026-07-25T22:34:35.505Z",
   "diffstat_sha256": "sha256:7b9f4392444a2b8bf05d54a46b52b7e4f892d9b38e5158463e9ea1914804e74d",
-  "last_verified_at": "2026-07-25T23:02:20.383Z",
-  "last_verified_diffstat_sha256": "sha256:7cb6cadb9b19f6639da463d79e9cd4a85713d4b1f50525b50c1b755b10a7993b",
+  "last_verified_at": "2026-07-25T23:25:51.634Z",
+  "last_verified_diffstat_sha256": "sha256:7b9f4392444a2b8bf05d54a46b52b7e4f892d9b38e5158463e9ea1914804e74d",
   "pr_number": 4626,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4626",
+  "pre_merge_closure": {
+    "basis_commit": "6f538546b276d4fa6db3b3d901084cadc0cb3457",
+    "branch": "task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active",
+    "pr_number": 4626,
+    "recorded_at": "2026-07-25T23:31:35.610Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607252223-THDN0G",
   "updated_at": "2026-07-25T22:57:41.166Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

@@ -14,8 +14,14 @@ In scope: task-active route evaluation, shared branch-snapshot inventory helpers
 
 ## Verification
 
-- State: needs_rework
-- Note: Focused verification cannot pass until the new unit test harness is runnable under the repository test runtime.
+- State: ok
+- Note:
+
+```text
+Independent verification passed at 6f538546b276d4fa6db3b3d901084cadc0cb3457: 41 focused
+active/branch-snapshot/runner-claim tests, typecheck, lint:core, lifecycle invariants, routing, diff
+check, and built task active JSON behavior are green.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

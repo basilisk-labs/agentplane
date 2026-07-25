@@ -6,14 +6,14 @@ Created: 2026-07-25T22:34:35.505Z
 
 - Task: `202607252223-THDN0G`
 - Title: Bound branch snapshot probes in task active
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607252223-THDN0G/bound-branch-snapshot-probes-in-task-active`
 - Canonical task record: `.agentplane/tasks/202607252223-THDN0G/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Focused verification cannot pass until the new unit test harness is runnable under the repository test runtime.
+- State: ok
+- Note: Independent verification passed at 6f538546b276d4fa6db3b3d901084cadc0cb3457: 41 focused active/branch-snapshot/runner-claim tests, typecheck, lint:core, lifecycle invariants, routing, diff check, and built task active JSON behavior are green.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
