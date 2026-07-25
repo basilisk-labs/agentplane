@@ -9,6 +9,7 @@ import {
   readText,
   buildSnippet,
   fileExists,
+  jsonlRowIdentity,
   parseJsonlLines,
 } from "./context-utils.js";
 
@@ -99,14 +100,11 @@ export async function cmdContextShow(opts: {
       });
     }
     const rows = parseJsonlLines(text);
-    const row = rows.find(
-      (item) =>
-        String(
-          (item as Record<string, unknown>)[selectorValue] ??
-            (item as Record<string, unknown>).id ??
-            "",
-        ) === wanted,
-    );
+    const row =
+      rows.find((item, index) => jsonlRowIdentity(item, index) === wanted) ??
+      rows.find(
+        (item) => String((item as Record<string, unknown>)[selectorValue] ?? "") === wanted,
+      );
     if (!row) {
       throw new CliError({
         exitCode: 3,

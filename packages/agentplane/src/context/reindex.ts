@@ -1,11 +1,16 @@
 /* eslint-disable @typescript-eslint/no-empty-function, unicorn/no-array-sort */
 import { createHash } from "node:crypto";
-import { access, stat, mkdir, rm, readFile } from "node:fs/promises";
+import { access, stat, mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { infoMessage, warnMessage } from "../cli/output.js";
 import { ensureRuntimeSqliteGitignore } from "../runtime/shared/runtime-gitignore.js";
 import { resolveAgentplaneCacheSqlitePath } from "../shared/cache-paths.js";
+import {
+  assertContainedPathChainIdentityUnchanged,
+  captureContainedPathChainIdentity,
+  readContainedStableTextNoFollow,
+} from "../shared/contained-stable-file.js";
 import { collectMatchingFiles, fileExists, readText, toPosix } from "./context-utils.js";
 import {
   isSupportedProjectionPath,
@@ -15,6 +20,7 @@ import {
 import { readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
 
 const PROJECTION_VERSION = 1;
+const MAX_LEGACY_JSON_PROJECTION_BYTES = 256 * 1024 * 1024;
 
 type ProjectionIndex = {
   metadata: {
@@ -161,12 +167,44 @@ export async function cmdContextReindex(opts: {
 
 export async function readContextProjection(root: string): Promise<ProjectionIndex | null> {
   const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
-  const sqliteProjection = await readSqliteProjection(sqlitePath).catch(() => null);
-  if (sqliteProjection) return sqliteProjection;
+  let pathIdentity;
   try {
-    const raw = await readFile(sqlitePath, "utf8");
+    pathIdentity = await captureContainedPathChainIdentity({
+      repository_root: root,
+      file_path: sqlitePath,
+      label: "context projection cache",
+    });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+    throw error;
+  }
+  if (!pathIdentity.target_exists) return null;
+
+  const sqliteProjection = await readSqliteProjection(pathIdentity.file_path).catch(() => null);
+  await assertContainedPathChainIdentityUnchanged(pathIdentity, "context projection cache");
+  if (sqliteProjection) return sqliteProjection;
+
+  const expectedIdentity = pathIdentity.identities.at(-1);
+  if (!expectedIdentity) {
+    throw new Error(`Refusing invalid context projection cache path: ${pathIdentity.file_path}`);
+  }
+  try {
+    const raw = await readContainedStableTextNoFollow({
+      repository_root: pathIdentity.repository_root,
+      file_path: pathIdentity.file_path,
+      label: "context projection cache",
+      max_bytes: MAX_LEGACY_JSON_PROJECTION_BYTES,
+      expected_identity: expectedIdentity,
+    });
     return JSON.parse(raw) as ProjectionIndex;
-  } catch {
+  } catch (error) {
+    if (
+      (error as NodeJS.ErrnoException | null)?.code === "ELOOP" ||
+      (error instanceof Error &&
+        (error.message.startsWith("Refusing ") || error.message.includes(" path changed")))
+    ) {
+      throw error;
+    }
     return null;
   }
 }

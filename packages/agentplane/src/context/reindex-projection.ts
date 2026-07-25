@@ -1,7 +1,11 @@
-/* eslint-disable @typescript-eslint/no-base-to-string */
 import { createHash } from "node:crypto";
 
-import { parseJsonlLines, toPosix } from "./context-utils.js";
+import {
+  createMarkdownSectionSlugger,
+  jsonlRowIdentity,
+  parseJsonlLines,
+  toPosix,
+} from "./context-utils.js";
 
 export type ProjectionSourceRow = {
   path: string;
@@ -20,16 +24,12 @@ function pickProjectionPayload(input: string): string {
   return lines.slice(0, 36).join("\n");
 }
 
-function slug(value: string): string {
-  return value
-    .trim()
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/gu, "-")
-    .replaceAll(/^-+|-+$/gu, "");
-}
-
 function lineWindowRef(filePath: string, start: number, end: number): string {
   return `${toPosix(filePath)}#lines=${start}-${end}`;
+}
+
+function canonicalSelectorValue(value: string): string {
+  return encodeURIComponent(value).replaceAll("%3A", ":");
 }
 
 export function isSupportedProjectionPath(filePath: string): boolean {
@@ -74,7 +74,9 @@ function selectorForJsonlRow(filePath: string): string {
   const normalized = toPosix(filePath);
   if (normalized.includes("/facts/")) return "fact";
   if (normalized.endsWith("/entities.jsonl")) return "entity";
-  if (normalized.endsWith("/edges.jsonl")) return "edge";
+  if (normalized.endsWith("/edges.jsonl") || normalized.endsWith("/provenance_edges.jsonl")) {
+    return "edge";
+  }
   if (normalized.includes("/capabilities/")) return "capability";
   if (normalized.includes("/tasks/")) return "task";
   return "row";
@@ -100,7 +102,7 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
   const rel = toPosix(filePath);
   const lines = content.split(/\r?\n/);
   const fileSha256 = `sha256:${createHash("sha256").update(content).digest("hex")}`;
-  const sectionSlugCounts = new Map<string, number>();
+  const nextSectionSlug = createMarkdownSectionSlugger();
   const rows: ProjectionSourceRow[] = [
     {
       path: rel,
@@ -116,11 +118,8 @@ function projectMarkdownRows(filePath: string, content: string): ProjectionSourc
     const line = lines[index] ?? "";
     if (!/^#{1,6}\s+/.test(line)) continue;
     const heading = line.replace(/^#{1,6}\s+/, "").trim();
-    const headingSlug = slug(heading);
-    if (!headingSlug) continue;
-    const slugCount = (sectionSlugCounts.get(headingSlug) ?? 0) + 1;
-    sectionSlugCounts.set(headingSlug, slugCount);
-    const sectionSlug = slugCount === 1 ? headingSlug : `${headingSlug}-${slugCount}`;
+    const sectionSlug = nextSectionSlug(heading);
+    if (!sectionSlug) continue;
     let end = lines.length;
     for (let next = index + 1; next < lines.length; next += 1) {
       if (/^#{1,6}\s+/.test(lines[next] ?? "")) {
@@ -197,13 +196,15 @@ export function projectRowsForFile(filePath: string, content: string): Projectio
     }
     return rows.map((row, index) => {
       const serialized = JSON.stringify(row);
-      const id = String((row as { id?: unknown }).id ?? index + 1);
+      const id = jsonlRowIdentity(row, index);
+      const selectorValue = canonicalSelectorValue(id);
+      const ref = `${rel}#${selector}=${selectorValue}`;
       return {
-        path: `${rel}#${selector}=${id}`,
+        path: ref,
         sha256: `sha256:${createHash("sha256").update(serialized).digest("hex")}`,
         content_type: deriveContentType(filePath),
         kind: "jsonl-row",
-        source_refs: sourceRefsForJsonlRow(row, `${rel}#${selector}=${id}`),
+        source_refs: sourceRefsForJsonlRow(row, ref),
         body: serialized,
         size_bytes: serialized.length,
       };

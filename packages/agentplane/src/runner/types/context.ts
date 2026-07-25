@@ -3,7 +3,12 @@ import type {
   RunnerTraceConfig,
   RunnerTimeoutConfig,
 } from "@agentplaneorg/core/config";
-import type { StateFingerprint, StateFingerprintPolicy } from "@agentplaneorg/core/schemas";
+import type {
+  KnowledgeRef,
+  PreparedKnowledgeExcerpt,
+  StateFingerprint,
+  StateFingerprintPolicy,
+} from "@agentplaneorg/core/schemas";
 
 import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
@@ -141,5 +146,15 @@ export type RunnerContextBundle = {
   route_decision?: Record<string, unknown>;
   state_fingerprint?: StateFingerprint;
   state_fingerprint_policy?: StateFingerprintPolicy;
+  /**
+   * Digest-addressed views into the existing context knowledge plane.
+   * Optional for v1 compatibility; durable knowledge remains at the referenced paths.
+   */
+  knowledge_refs?: KnowledgeRef[];
+  /**
+   * Bounded, in-memory preparation results for this episode. These receipts are
+   * not a replacement for the assimilation task's context-pack.md artifact.
+   */
+  prepared_knowledge_excerpts?: PreparedKnowledgeExcerpt[];
   execution: RunnerExecutionContract;
 };

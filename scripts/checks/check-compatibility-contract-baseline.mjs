@@ -323,6 +323,7 @@ function validateReviewedCandidate({
     "202607221846-9XC1H0",
     "202607221848-ABG7SD",
     "202607221848-0ZAB1F",
+    "202607221848-ER5H6N",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -360,7 +361,12 @@ function validateReviewedCandidate({
 
   assertOnlyKeys(
     candidate.contract_artifacts,
-    ["execution_receipt_schema", "core_execution_receipt_exports"],
+    [
+      "execution_receipt_schema",
+      "core_execution_receipt_exports",
+      "knowledge_ref_schema",
+      "core_knowledge_ref_exports",
+    ],
     [],
     "compatibility candidate contract artifacts",
   );
@@ -432,6 +438,78 @@ function validateReviewedCandidate({
       );
     }
   }
+  const knowledgeRefArtifact = candidate.contract_artifacts.knowledge_ref_schema;
+  assertOnlyKeys(
+    knowledgeRefArtifact,
+    ["path", "sha256", "comparison", "source_task"],
+    [],
+    "KnowledgeRef contract artifact",
+  );
+  assert(
+    knowledgeRefArtifact.path === "schemas/knowledge-ref.schema.json",
+    "KnowledgeRef contract artifact path drift",
+  );
+  assert(
+    knowledgeRefArtifact.comparison === "canonical_json_exact",
+    "KnowledgeRef contract artifact comparison drift",
+  );
+  assert(
+    knowledgeRefArtifact.source_task === "202607221848-ER5H6N",
+    "KnowledgeRef contract artifact source task drift",
+  );
+  const knowledgeRefSchema = JSON.parse(
+    readFileSync(path.join(repoRoot, knowledgeRefArtifact.path), "utf8"),
+  );
+  assert(
+    knowledgeRefArtifact.sha256 === hashJson(knowledgeRefSchema),
+    "KnowledgeRef contract artifact digest drift",
+  );
+  assert(
+    knowledgeRefSchema.$id === "https://agentplane.org/schemas/knowledge-ref.schema.json" &&
+      knowledgeRefSchema.additionalProperties === false,
+    "KnowledgeRef public schema identity or strictness drift",
+  );
+  const knowledgeRefExports = candidate.contract_artifacts.core_knowledge_ref_exports;
+  assertOnlyKeys(
+    knowledgeRefExports,
+    ["comparison", "source_task", "entrypoints"],
+    [],
+    "core KnowledgeRef export contract",
+  );
+  assert(
+    knowledgeRefExports.comparison === "required_named_reexports",
+    "core KnowledgeRef export comparison drift",
+  );
+  assert(
+    knowledgeRefExports.source_task === "202607221848-ER5H6N",
+    "core KnowledgeRef export source task drift",
+  );
+  assert(
+    Array.isArray(knowledgeRefExports.entrypoints) && knowledgeRefExports.entrypoints.length === 2,
+    "core KnowledgeRef export entrypoints drift",
+  );
+  for (const [index, entrypoint] of knowledgeRefExports.entrypoints.entries()) {
+    assertOnlyKeys(
+      entrypoint,
+      ["path", "module", "required_symbols"],
+      [],
+      `core KnowledgeRef export entrypoint ${index}`,
+    );
+    assert(
+      Array.isArray(entrypoint.required_symbols) &&
+        entrypoint.required_symbols.length > 0 &&
+        hashJson(entrypoint.required_symbols) ===
+          hashJson([...new Set(entrypoint.required_symbols)].toSorted()),
+      `core KnowledgeRef export entrypoint ${index} symbols must be unique and sorted`,
+    );
+    const exported = new Set(collectNamedReexports(entrypoint));
+    for (const symbol of entrypoint.required_symbols) {
+      assert(
+        exported.has(symbol),
+        `${entrypoint.path}: required KnowledgeRef export missing: ${symbol}`,
+      );
+    }
+  }
 
   assertOnlyKeys(
     candidate.review,
@@ -493,7 +571,7 @@ function validateReviewedCandidate({
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
     workflow_schema: ["202607221846-4VB97J"],
-    tarball_policy: ["202607221846-4VB97J"],
+    tarball_policy: ["202607221846-4VB97J", "202607221848-ER5H6N"],
   };
   for (const delta of candidate.deltas) {
     assert(
@@ -836,7 +914,8 @@ function validateReviewedCandidate({
     "tarball candidate evidence drift",
   );
   assert(
-    hashJson(addedSourceFiles) === hashJson(["schemas/workflow.schema.json"]),
+    hashJson(addedSourceFiles) ===
+      hashJson(["schemas/knowledge-ref.schema.json", "schemas/workflow.schema.json"]),
     "unexpected core tarball source-file addition",
   );
   assert(removedSourceFiles.length === 0, "candidate removes a core tarball source file");
