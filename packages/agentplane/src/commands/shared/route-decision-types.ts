@@ -3,6 +3,7 @@ import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { RouteBatchNextAction, RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { SourceConfidence as RouteSourceConfidence } from "./source-confidence.js";
+import type { WorkflowStep } from "./workflow-step.js";
 
 export type RouteNextAction = RouteBatchNextAction;
 
@@ -63,6 +64,7 @@ export type TaskRouteDecision = {
   cleanupCandidateCount: number | null;
   blockers: RouteBlocker[];
   ambiguities: RouteAmbiguity[];
+  workflowStep: WorkflowStep;
   nextAction: RouteNextAction;
   oracle: RouteOracle;
   executionPacket: RouteExecutionPacket;

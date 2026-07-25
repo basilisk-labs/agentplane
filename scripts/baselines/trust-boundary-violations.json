@@ -218,15 +218,6 @@
       "rationale": "supervisor orchestration re-enters AgentPlane through a subprocess"
     },
     {
-      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/shared/route-execution-packet.ts:parser:exactArgvFor:ast:module:FunctionDeclaration:eb3da98db277:1",
-      "rule_id": "trust.no-rendered-command-orchestration",
-      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
-      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
-      "path": "packages/agentplane/src/commands/shared/route-execution-packet.ts",
-      "locator": "parser:exactArgvFor:ast:module:FunctionDeclaration:eb3da98db277:1",
-      "rationale": "route orchestration reparses a rendered command string into argv"
-    },
-    {
       "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/harness/hooks-lifecycle.ts:shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
       "rule_id": "trust.no-rendered-command-orchestration",
       "rf_owners": ["RF-06b", "RF-09", "RF-25"],

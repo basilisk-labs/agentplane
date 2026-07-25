@@ -8,6 +8,7 @@ import {
   type RouteOperatorGuidance,
 } from "../shared/route-guidance.js";
 import type { RouteExecutionPacket } from "../shared/route-oracle.js";
+import { renderCliArgv } from "../shared/workflow-operation-projection.js";
 
 export type TaskNextActionParsed = {
   taskId: string;
@@ -162,6 +163,8 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
     if (parsed.json) {
       output.json({
         task: decision.task,
+        workflow_step: decision.workflowStep,
+        workflowStep: decision.workflowStep,
         route_oracle: decision.oracle,
         execution_packet: executionPacketJson(decision.executionPacket),
         operator_guidance: operatorGuidanceJson(operatorGuidance),
@@ -239,6 +242,15 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
             ]
           : []),
         { label: "code", value: decision.nextAction.code },
+        { label: "step_kind", value: decision.workflowStep.kind },
+        { label: "step_id", value: decision.workflowStep.id },
+        {
+          label: "operation_id",
+          value:
+            decision.workflowStep.kind === "cli_operation"
+              ? decision.workflowStep.operation.id
+              : "none",
+        },
         { label: "summary", value: decision.nextAction.summary },
         { label: "requires_approval", value: decision.nextAction.requiresApproval },
         { label: "next_command", value: decision.oracle.nextCommand ?? "none" },
@@ -249,7 +261,9 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         { label: "must_run_from", value: decision.executionPacket.mustRunFrom ?? "unknown" },
         {
           label: "exact_argv",
-          value: decision.executionPacket.exactArgv?.join(" ") ?? "none",
+          value: decision.executionPacket.exactArgv
+            ? renderCliArgv(decision.executionPacket.exactArgv)
+            : "none",
         },
         {
           label: "return_control_when",

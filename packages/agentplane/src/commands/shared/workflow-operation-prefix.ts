@@ -1,0 +1,24 @@
+import type { WorkflowOperationId } from "./workflow-step.js";
+
+export const WORKFLOW_OPERATION_ARGV_PREFIX = {
+  "batch.collect_included": ["agentplane", "task", "brief"],
+  "batch.follow_primary": ["agentplane", "task", "brief"],
+  "batch.reconcile_included": ["agentplane", "release", "tasks", "reconcile"],
+  "integration.enqueue": ["agentplane", "integrate", "queue", "enqueue"],
+  "pr.artifacts.update": ["agentplane", "pr", "update"],
+  "pr.head.publish": ["agentplane", "pr", "open"],
+  "pr.open": ["agentplane", "pr", "open"],
+  "pr.sync_or_verify": ["agentplane", "pr", "update"],
+  "provider.pr.refresh": ["agentplane", "pr", "flow", "status"],
+  "route.remote.refresh": ["agentplane", "task", "next-action"],
+  "runner.follow": ["agentplane", "task"],
+  "task.artifacts.commit": ["agentplane", "commit"],
+  "task.branch.start": ["agentplane", "task", "start-ready"],
+  "task.hosted_close.open": ["agentplane", "task", "hosted-close-pr"],
+  "task.hosted_close.finalize": ["agentplane", "cleanup", "merged"],
+  "task.pre_merge_close": ["agentplane", "finish"],
+  "task.start": ["agentplane", "task", "start-ready"],
+  "task.verify.show": ["agentplane", "task", "verify-show"],
+  "task.worktree.cleanup": ["agentplane", "cleanup", "merged"],
+  "worktree.prepare": ["agentplane", "work", "start"],
+} as const satisfies Record<WorkflowOperationId, readonly string[]>;

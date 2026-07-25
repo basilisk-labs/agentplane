@@ -9,12 +9,12 @@ function read(relPath) {
 
 const checks = [
   {
-    name: "branch_pr route blocks unapproved plans",
+    name: "branch_pr route emits typed approval for unapproved plans",
     files: [
-      "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
-      "packages/agentplane/src/commands/shared/route-decision-repair.ts",
+      "packages/agentplane/src/commands/shared/workflow-step-reducer.ts",
+      "packages/agentplane/src/commands/shared/workflow-step.ts",
     ],
-    patterns: ["plan_not_approved", "agentplane task plan approve"],
+    patterns: ['id: "approval.plan"', 'type: "plan_approval"', "plan_not_approved"],
   },
   {
     name: "branch_pr route blocks base-checkout owner execution",
@@ -25,12 +25,16 @@ const checks = [
     patterns: ["on_base_checkout", "current checkout is the base branch"],
   },
   {
-    name: "branch_pr route requires close-tail after merged implementation PR",
+    name: "branch_pr route emits typed close-tail operation after merged implementation PR",
     files: [
-      "packages/agentplane/src/commands/shared/route-decision-blockers.ts",
-      "packages/agentplane/src/commands/shared/route-decision-repair.ts",
+      "packages/agentplane/src/commands/shared/workflow-step-branch.ts",
+      "packages/agentplane/src/commands/shared/workflow-step.ts",
     ],
-    patterns: ["close_tail_missing", "agentplane task hosted-close-pr"],
+    patterns: [
+      "close_tail_missing",
+      'operationId: "task.hosted_close.open"',
+      '"task.hosted_close.open": { taskId: string }',
+    ],
   },
   {
     name: "verify state is surfaced before integration decisions",

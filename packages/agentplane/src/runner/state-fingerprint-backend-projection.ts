@@ -45,6 +45,26 @@ function relativeRepositoryPath(ctx: CommandContext, filePath: string): string {
   return path.relative(ctx.resolvedProject.gitRoot, filePath).split(path.sep).join("/");
 }
 
+function remapRepositoryPath(
+  ctx: CommandContext,
+  filePath: string,
+  repositoryRoot: string,
+): { filePath: string; relativePath: string } | null {
+  const relativePath = relativeRepositoryPath(ctx, filePath);
+  if (
+    relativePath === "" ||
+    relativePath === ".." ||
+    relativePath.startsWith("../") ||
+    path.posix.isAbsolute(relativePath)
+  ) {
+    return null;
+  }
+  return {
+    filePath: path.join(repositoryRoot, ...relativePath.split("/")),
+    relativePath,
+  };
+}
+
 function runtimeBackendStatePath(ctx: CommandContext): string | null {
   const backend = ctx.taskBackend as CommandContext["taskBackend"] & { statePath?: unknown };
   return typeof backend.statePath === "string" && backend.statePath.trim().length > 0
@@ -54,18 +74,23 @@ function runtimeBackendStatePath(ctx: CommandContext): string | null {
 
 async function observeBackendConfig(
   ctx: CommandContext,
+  repositoryRoot: string,
 ): Promise<
   | { state: "present"; sha256: string }
   | { state: "missing"; reason_code: "backend_config_defaulted" }
   | { state: "unavailable"; reason_code: "backend_config_unreadable" }
 > {
+  const observed = remapRepositoryPath(ctx, ctx.backendConfigPath, repositoryRoot);
+  if (!observed) {
+    return { state: "unavailable", reason_code: "backend_config_unreadable" };
+  }
   try {
     return {
       state: "present",
       sha256: digestText(
         await readContainedStableTextNoFollow({
-          repository_root: ctx.resolvedProject.gitRoot,
-          file_path: ctx.backendConfigPath,
+          repository_root: repositoryRoot,
+          file_path: observed.filePath,
           label: "task backend configuration",
           max_bytes: BACKEND_CONFIG_MAX_BYTES,
         }),
@@ -87,6 +112,7 @@ async function observeBackendConfig(
 
 async function observeBackendState(
   ctx: CommandContext,
+  repositoryRoot: string,
 ): Promise<
   | { state: "present"; path: string; sha256: string }
   | { state: "missing"; path: string | null; reason_code: string }
@@ -100,15 +126,23 @@ async function observeBackendState(
       reason_code: "backend_state_not_applicable",
     };
   }
-  const relativePath = relativeRepositoryPath(ctx, statePath);
+  const observed = remapRepositoryPath(ctx, statePath, repositoryRoot);
+  const relativePath = observed?.relativePath ?? relativeRepositoryPath(ctx, statePath);
+  if (!observed) {
+    return {
+      state: "unavailable",
+      path: relativePath,
+      reason_code: "backend_state_unreadable",
+    };
+  }
   try {
     return {
       state: "present",
       path: relativePath,
       sha256: digestText(
         await readContainedStableTextNoFollow({
-          repository_root: ctx.resolvedProject.gitRoot,
-          file_path: statePath,
+          repository_root: repositoryRoot,
+          file_path: observed.filePath,
           label: "task backend projection state",
           max_bytes: BACKEND_STATE_MAX_BYTES,
         }),
@@ -222,11 +256,12 @@ function resolveBackendProjectionFreshness(observation: TaskBackendProjectionObs
 
 export async function observeBackendProjection(
   ctx: CommandContext,
-  opts?: { projection?: TaskBackendProjectionObservation },
+  opts?: { projection?: TaskBackendProjectionObservation; repository_root?: string },
 ): Promise<StateFingerprintComponentInput> {
+  const repositoryRoot = path.resolve(opts?.repository_root ?? ctx.resolvedProject.gitRoot);
   const [config, backendState] = await Promise.all([
-    observeBackendConfig(ctx),
-    observeBackendState(ctx),
+    observeBackendConfig(ctx, repositoryRoot),
+    observeBackendState(ctx, repositoryRoot),
   ]);
   if (config.state === "unavailable") {
     return unavailableComponent(config.reason_code);

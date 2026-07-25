@@ -1,5 +1,12 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+
 import { describe } from "vitest";
 
+import {
+  evaluateStateFingerprintPrecondition,
+  type StateFingerprint,
+} from "@agentplaneorg/core/schemas";
 import {
   captureStdIO,
   defaultConfig,
@@ -10,6 +17,22 @@ import {
   runCliSilent,
   writeConfig,
 } from "@agentplane/testkit/cli-core-pr-flow";
+import { WORKFLOW_STATE_FINGERPRINT_POLICY } from "../commands/shared/workflow-step-fingerprint.js";
+
+async function writeRoutePolicies(root: string): Promise<void> {
+  const files = [
+    "AGENTS.md",
+    ".agentplane/policy/security.must.md",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/policy/workflow.branch_pr.md",
+  ];
+  for (const relativePath of files) {
+    const absolutePath = path.join(root, relativePath);
+    await mkdir(path.dirname(absolutePath), { recursive: true });
+    await writeFile(absolutePath, `# ${relativePath}\n`, "utf8");
+  }
+}
 
 async function createBranchPrTask(root: string): Promise<string> {
   const taskIo = captureStdIO();
@@ -44,6 +67,7 @@ describe("task next-action JSON", () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
+    await writeRoutePolicies(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);
@@ -67,6 +91,22 @@ describe("task next-action JSON", () => {
       if (code !== 0) process.stderr.write(io.stderr);
       expect(code).toBe(0);
       const parsed = JSON.parse(io.stdout) as {
+        workflow_step: {
+          kind: string;
+          id: string;
+          preconditionFingerprint: StateFingerprint;
+          operation: {
+            id: string;
+            params: { taskId: string; agent: string; slug: string };
+            idempotencyKey: string;
+            expectedPostconditions: { id: string }[];
+          };
+        };
+        workflowStep: {
+          kind: string;
+          id: string;
+          operation: { id: string };
+        };
         execution_packet: {
           schema_version: number;
           schemaVersion: number;
@@ -88,10 +128,39 @@ describe("task next-action JSON", () => {
           effective_mutation_approval: boolean;
         };
       };
+      expect(parsed.workflow_step.kind).toBe("cli_operation");
+      expect(parsed.workflow_step.id).toBe("worktree.prepare");
+      expect(parsed.workflow_step.operation.id).toBe("worktree.prepare");
+      expect(parsed.workflow_step.operation.params).toMatchObject({
+        taskId,
+        agent: "CODER",
+      });
+      expect(parsed.workflow_step.operation.idempotencyKey).toContain("worktree.prepare");
+      expect(parsed.workflow_step.operation.expectedPostconditions.length).toBeGreaterThan(0);
+      expect(parsed.workflow_step.preconditionFingerprint.components.blueprint).toMatchObject({
+        state: "present",
+        source: "workflow_route_blueprint",
+      });
+      expect(
+        evaluateStateFingerprintPrecondition({
+          expected: parsed.workflow_step.preconditionFingerprint,
+          current: parsed.workflow_step.preconditionFingerprint,
+          policy: WORKFLOW_STATE_FINGERPRINT_POLICY,
+        }),
+      ).toMatchObject({
+        status: "fresh_with_bounded_uncertainty",
+        unavailable_required_components: [],
+      });
+      expect(parsed.workflowStep.operation.id).toBe(parsed.workflow_step.operation.id);
       expect(parsed.execution_packet.schema_version).toBe(1);
       expect(parsed.execution_packet.schemaVersion).toBe(1);
       expect(parsed.execution_packet.action_kind).toBe("local_command");
       expect(parsed.execution_packet.actionKind).toBe("local_command");
+      expect(parsed.execution_packet.exact_argv?.slice(0, 3)).toEqual([
+        "agentplane",
+        "work",
+        "start",
+      ]);
       expect(parsed.execution_packet.exact_argv).toEqual(parsed.execution_packet.exactArgv);
       expect(parsed.execution_packet.safe_to_mutate).toBe(parsed.execution_packet.safeToMutate);
       expect(parsed.operator_guidance.can_execute_now).toBe(parsed.operator_guidance.canExecuteNow);
@@ -111,6 +180,7 @@ describe("task next-action JSON", () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
+    await writeRoutePolicies(root);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const taskId = await createBranchPrTask(root);

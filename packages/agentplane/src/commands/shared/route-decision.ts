@@ -13,15 +13,24 @@ import {
   addVerificationRequiredBlocker,
   deriveBlockers,
 } from "./route-decision-blockers.js";
-import { deriveNextAction } from "./route-decision-next-action.js";
+import {
+  projectWorkflowStepExecutionPacket,
+  projectWorkflowStepNextAction,
+  projectWorkflowStepOracle,
+  reduceRouteState,
+  type WorkflowStep,
+} from "./workflow-step.js";
+import {
+  captureWorkflowStepFingerprint,
+  withBootstrapWorkflowFingerprint,
+  type WorkflowRouteStateInput,
+} from "./workflow-step-fingerprint.js";
 import {
   taskSummary,
   type RouteCleanupProbe,
   type TaskRouteDecision,
 } from "./route-decision-types.js";
-import { deriveRouteExecutionPacket, deriveRouteOracle } from "./route-oracle.js";
 import { deriveRouteAmbiguities, deriveRouteRepairPlan } from "./route-decision-repair.js";
-
 import {
   loadBackendTask,
   loadCommandContext,
@@ -81,10 +90,10 @@ function routeGatePriority(code: string): number {
 
 function deriveApprovalContract(
   ctx: CommandContext,
-  nextAction: TaskRouteDecision["nextAction"],
+  workflowStep: WorkflowStep,
 ): TaskRouteDecision["approval"] {
   const approvals = ctx.config.agents?.approvals;
-  const routeRequiresApproval = nextAction.requiresApproval === true;
+  const routeRequiresApproval = workflowStep.compatibility.requiresApproval === true;
   return {
     runtime: {
       requirePlan: approvals?.require_plan === true,
@@ -468,7 +477,7 @@ export async function buildTaskRouteDecision(opts: {
     cleanupProbe,
     taskWorktreeCleanliness,
   });
-  const provisionalNextAction = deriveNextAction({
+  const routeStateInput: WorkflowRouteStateInput = {
     task,
     resume,
     workflowMode: ctx.config.workflow_mode,
@@ -476,11 +485,15 @@ export async function buildTaskRouteDecision(opts: {
     cleanupProbe,
     blockers,
     batchOwnership,
-  });
-  const blockerCountBeforeFinalGates = blockers.length;
+    taskWorktree: taskWorktreeCleanliness,
+  };
+  const provisionalWorkflowStep = reduceRouteState(
+    withBootstrapWorkflowFingerprint(routeStateInput),
+  );
   if (
     ctx.config.workflow_mode === "branch_pr" &&
-    provisionalNextAction.code === "wait_hosted_checks"
+    provisionalWorkflowStep.kind === "cli_operation" &&
+    provisionalWorkflowStep.operation.id === "integration.enqueue"
   ) {
     addTaskWorktreeCleanlinessBlocker({
       blockers,
@@ -492,46 +505,56 @@ export async function buildTaskRouteDecision(opts: {
   }
   if (
     ctx.config.workflow_mode === "branch_pr" &&
-    ["record_pre_merge_closure", "wait_hosted_checks"].includes(provisionalNextAction.code)
+    provisionalWorkflowStep.kind === "cli_operation" &&
+    (provisionalWorkflowStep.operation.id === "task.pre_merge_close" ||
+      provisionalWorkflowStep.operation.id === "integration.enqueue")
   ) {
     addVerificationRequiredBlocker({ blockers, task });
   }
   blockers.sort((left, right) => routeGatePriority(left.code) - routeGatePriority(right.code));
-  const nextAction =
-    blockers.length === blockerCountBeforeFinalGates
-      ? provisionalNextAction
-      : deriveNextAction({
-          task,
-          resume,
-          workflowMode: ctx.config.workflow_mode,
-          prFlow,
-          cleanupProbe,
-          blockers,
-          batchOwnership,
-        });
+  const finalRouteStateInput: WorkflowRouteStateInput = {
+    ...routeStateInput,
+    blockers,
+  };
+  const draftWorkflowStep = reduceRouteState(
+    withBootstrapWorkflowFingerprint(finalRouteStateInput),
+  );
   const baseCheckoutPath = await findWorktreePath(ctx.resolvedProject.gitRoot, resume.base_branch);
   const taskWorktreePath =
     ctx.config.workflow_mode === "branch_pr" ? taskWorktreeCleanliness.worktreePath : null;
-  const oracle = deriveRouteOracle({
-    task,
-    workflowMode: ctx.config.workflow_mode,
-    nextAction,
-    blockers,
-    batchOwnership,
-    paths: {
-      baseCheckoutPath,
-      taskWorktreePath,
-      primaryTaskWorktreePath:
-        batchOwnership.role === "included"
-          ? taskWorktreeCleanliness.worktreePath
-          : taskWorktreePath,
-      currentCheckoutPath: resume.workspace_root,
-    },
+  const fingerprintPaths = {
+    baseCheckoutPath,
+    taskWorktreePath,
+    primaryTaskWorktreePath:
+      batchOwnership.role === "included" ? taskWorktreeCleanliness.worktreePath : taskWorktreePath,
+    currentCheckoutPath: resume.workspace_root,
+  };
+  const preconditionFingerprint = await captureWorkflowStepFingerprint({
+    ctx,
+    state: finalRouteStateInput,
+    step: draftWorkflowStep,
+    paths: fingerprintPaths,
   });
-  const executionPacket = deriveRouteExecutionPacket({
+  const workflowStep = reduceRouteState({
+    ...finalRouteStateInput,
+    preconditionFingerprint,
+  });
+  if (
+    workflowStep.kind !== draftWorkflowStep.kind ||
+    workflowStep.id !== draftWorkflowStep.id ||
+    workflowStep.authoritativeCheckout !== draftWorkflowStep.authoritativeCheckout
+  ) {
+    throw new Error("WorkflowStep classification changed while attaching StateFingerprint.");
+  }
+  const routedBlockers = workflowStep.blockers.map((blocker) => ({ ...blocker }));
+  const nextAction = projectWorkflowStepNextAction(workflowStep);
+  const oracle = projectWorkflowStepOracle({
+    step: workflowStep,
+    paths: fingerprintPaths,
+  });
+  const executionPacket = projectWorkflowStepExecutionPacket({
     task,
-    nextAction,
-    blockers,
+    step: workflowStep,
     oracle,
   });
   const partial = {
@@ -547,7 +570,7 @@ export async function buildTaskRouteDecision(opts: {
       baseCheckoutPath,
       taskWorktreePath,
     },
-    approval: deriveApprovalContract(ctx, nextAction),
+    approval: deriveApprovalContract(ctx, workflowStep),
     batchOwnership,
     prFlow,
     cleanupProbe,
@@ -557,7 +580,8 @@ export async function buildTaskRouteDecision(opts: {
         : cleanupProbe.state === "already_clean"
           ? 0
           : null,
-    blockers,
+    blockers: routedBlockers,
+    workflowStep,
     nextAction,
     oracle,
     executionPacket,

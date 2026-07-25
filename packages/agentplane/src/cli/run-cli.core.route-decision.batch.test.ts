@@ -486,7 +486,7 @@ describe("runCli route decision batch ownership", () => {
     }
   });
 
-  it("stops prose-only included batch closure until structured batch metadata is restored", async () => {
+  it("does not infer included-batch ownership from verification prose", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
@@ -526,21 +526,20 @@ describe("runCli route decision batch ownership", () => {
         next_action: { code: string; command: string | null; summary: string };
         blockers: { code: string }[];
         execution_packet: { evidenceMissing: string[]; actionKind: string };
+        route_oracle: { phase: string };
       };
       expect(parsed.next_action).toMatchObject({
-        code: "repair_included_batch_metadata",
-        command: null,
+        code: "start_or_recover_worktree",
       });
-      expect(parsed.next_action.summary).toContain(
-        "structured branch_pr batch metadata is missing",
-      );
-      expect(parsed.blockers.map((blocker) => blocker.code)).toContain(
+      expect(parsed.next_action.command).toContain("agentplane work start");
+      expect(parsed.blockers.map((blocker) => blocker.code)).not.toContain(
         "missing_included_batch_metadata",
       );
-      expect(parsed.execution_packet.evidenceMissing).toContain(
+      expect(parsed.execution_packet.evidenceMissing).not.toContain(
         "structured_branch_pr_batch_metadata",
       );
-      expect(parsed.execution_packet.actionKind).toBe("stop");
+      expect(parsed.execution_packet.actionKind).toBe("local_command");
+      expect(parsed.route_oracle.phase).toBe("worktree_needed");
     } finally {
       nextIo.restore();
     }
@@ -605,7 +604,7 @@ describe("runCli route decision batch ownership", () => {
       };
       expect(parsed.next_action).toMatchObject({
         code: "start_direct",
-        command: `agentplane task start-ready ${includedTaskId} --author CODER --body "Start: continue direct-mode task in current checkout."`,
+        command: `agentplane task start-ready ${includedTaskId} --author CODER --body 'Start: continue direct-mode task in current checkout.'`,
       });
       expect(parsed.next_action.command).not.toContain("task run");
     } finally {

@@ -1,183 +1,27 @@
-import { humanInputAnswerCommand } from "../task/human-input.js";
 import type { RouteAmbiguity, RouteRepairStep, TaskRouteDecision } from "./route-decision-types.js";
-import type { RouteBlockerCode } from "./route-oracle.js";
-import { workStartCommand } from "./work-start-command.js";
+import type { WorkflowStep } from "./workflow-step.js";
 
 type DecisionForAmbiguity = Omit<
   TaskRouteDecision,
   "ambiguities" | "repairPlan" | "sourceConfidence"
 >;
 type DecisionForRepair = Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">;
-type RepairFactory = (decision: DecisionForRepair) => RouteRepairStep;
 
-const qualityReviewRepair: RepairFactory = () => ({
-  code: "quality_review_required",
-  command: null,
-  summary:
-    "semantic quality review is required; run an EVALUATOR episode or explicitly record a human-supplied review",
-  mutates: false,
-});
-
-const implementationReworkHandoff: RepairFactory = () => ({
-  code: "implementation_rework_required",
-  command: null,
-  summary:
-    "return control to the CODER for implementation rework in the task worktree, then verify again",
-  mutates: false,
-});
-
-const REPAIR_BY_BLOCKER_CODE = {
-  branch_head_missing: (decision) => ({
-    code: "fetch_branch",
-    command: decision.workspace.prBranch ? `git fetch origin ${decision.workspace.prBranch}` : null,
-    summary: "fetch or recover the recorded task branch before continuing",
-    mutates: true,
-  }),
-  close_tail_missing: (decision) => ({
-    code: "open_close_tail",
-    command: `agentplane task hosted-close-pr ${decision.task.id}`,
-    summary: "open the hosted close-tail PR",
-    mutates: true,
-  }),
-  close_tail_open: () => ({
-    code: "wait_close_tail",
-    command: null,
-    summary: "wait for hosted checks and merge the open close-tail PR through the provider",
-    mutates: false,
-  }),
-  cleanup_blocked: () => ({
-    code: "inspect_cleanup_blocker",
-    command: null,
-    summary:
-      "inspect the exact provider/head/closure proof blocker before retrying targeted cleanup",
-    mutates: false,
-  }),
-  dirty_task_artifacts: (decision) => ({
-    code: "commit_direct_task_artifacts",
-    command: `agentplane commit ${decision.task.id} --close --unstage-others`,
-    summary: "commit the tracked direct-workflow task artifacts left by manual close handling",
-    mutates: true,
-  }),
-  human_input_required: (decision) => ({
-    code: "answer_user_question",
-    command: humanInputAnswerCommand(decision.task.id),
-    summary: "answer the open user question before continuing task execution",
-    mutates: true,
-  }),
-  implementation_rework_required: implementationReworkHandoff,
-  missing_included_batch_metadata: () => ({
-    code: "repair_included_batch_metadata",
-    command: null,
-    summary:
-      "restore structured extensions.branch_pr_batch or primary PR batch metadata before reconciling the included task",
-    mutates: false,
-  }),
-  missing_pr_branch: (decision) => ({
-    code: "create_worktree",
-    command: workStartCommand(decision.task),
-    summary: "create the missing branch_pr worktree",
-    mutates: true,
-  }),
-  on_base_checkout: (decision) => ({
-    code: "resume_worktree",
-    command: `agentplane work resume ${decision.task.id}`,
-    summary: "switch to or inspect the dedicated task worktree before continuing",
-    mutates: false,
-  }),
-  plan_not_approved: (decision) => ({
-    code: "approve_plan",
-    command: `agentplane task plan approve ${decision.task.id} --by ORCHESTRATOR`,
-    summary: "approve the task plan before owner-scoped execution",
-    mutates: true,
-  }),
-  pr_head_unpublished: (decision) => ({
-    code: "publish_pr_head",
-    command: `agentplane pr open ${decision.task.id} --author ${decision.task.owner}`,
-    summary: "publish the final local task branch head through the canonical PR command",
-    mutates: true,
-  }),
-  pr_meta_stale: (decision) => ({
-    code: "update_pr_artifacts",
-    command: `agentplane pr update ${decision.task.id}`,
-    summary: "refresh stale local PR metadata",
-    mutates: true,
-  }),
-  provider_pr_unavailable: (decision) => ({
-    code: "retry_provider_lookup",
-    command: `agentplane pr flow status ${decision.task.id}`,
-    summary: "retry live GitHub PR observation before publication or integration",
-    mutates: false,
-  }),
-  hosted_pr_head_mismatch: (decision) => ({
-    code: "publish_pr_head",
-    command: `agentplane pr open ${decision.task.id} --author ${decision.task.owner}`,
-    summary: "align the hosted PR head with the local task branch through the canonical PR command",
-    mutates: true,
-  }),
-  pre_merge_closure_missing: (decision) => ({
-    code: "record_pre_merge_closure",
-    command:
-      `agentplane finish ${decision.task.id} --author ${decision.task.owner} ` +
-      `--body "Verified: pre-merge closure packet is ready for the task PR." ` +
-      `--result "pre-merge closure" --commit HEAD --pre-merge-closure`,
-    summary: "record task DONE and pre-merge closure on the task branch before integration",
-    mutates: true,
-  }),
-  pre_merge_closure_stale: (decision) => ({
-    code: "record_pre_merge_closure",
-    command:
-      `agentplane finish ${decision.task.id} --author ${decision.task.owner} ` +
-      `--body "Verified: refreshed pre-merge closure packet is ready for the task PR." ` +
-      `--result "pre-merge closure" --commit HEAD --pre-merge-closure --force`,
-    summary: "record a fresh pre-merge closure after the latest verified implementation",
-    mutates: true,
-  }),
-  quality_review_missing: qualityReviewRepair,
-  quality_review_stale: qualityReviewRepair,
-  remote_pr_missing: (decision) => ({
-    code: "open_pr",
-    command: `agentplane pr open ${decision.task.id} --author ${decision.task.owner}`,
-    summary: "create or relink remote PR artifacts",
-    mutates: true,
-  }),
-  runner_alive: (decision) => ({
-    code: "inspect_runner",
-    command: `agentplane task resume-context ${decision.task.id}`,
-    summary: "inspect active runner state before reclaiming",
-    mutates: false,
-  }),
-  task_worktree_dirty: () => ({
-    code: "resolve_task_worktree_state",
-    command: null,
-    summary:
-      "inspect uncommitted task-worktree changes and commit intended work or restore unintended work before continuing",
-    mutates: false,
-  }),
-  task_worktree_state_unavailable: () => ({
-    code: "inspect_task_worktree_state",
-    command: null,
-    summary: "restore inspectable task-worktree state before continuing the branch_pr lifecycle",
-    mutates: false,
-  }),
-  verification_required: () => ({
-    code: "verification_required",
-    command: null,
-    summary:
-      "hand the committed task implementation to TESTER and record an evidence-based verification outcome",
-    mutates: false,
-  }),
-} satisfies Record<RouteBlockerCode, RepairFactory>;
+function operationMutatesState(step: WorkflowStep): boolean {
+  if (step.kind !== "cli_operation") return false;
+  return step.operation.type !== "provider_refresh" && step.operation.type !== "task_view";
+}
 
 export function deriveRouteAmbiguities(opts: { decision: DecisionForAmbiguity }): RouteAmbiguity[] {
   const ambiguities: RouteAmbiguity[] = [];
   const blockerCodes = new Set(opts.decision.blockers.map((blocker) => blocker.code));
+  const step = opts.decision.workflowStep;
+  const baseLane =
+    step.authoritativeCheckout === "base_checkout" || step.authoritativeCheckout === "provider";
   if (
     opts.decision.workflowMode === "branch_pr" &&
     blockerCodes.has("on_base_checkout") &&
-    opts.decision.nextAction.code !== "start_or_recover_worktree" &&
-    opts.decision.nextAction.code !== "merge_close_tail" &&
-    opts.decision.nextAction.code !== "sync_hosted_close" &&
-    opts.decision.nextAction.code !== "repair_included_batch_metadata"
+    !baseLane
   ) {
     ambiguities.push({
       code: "base_checkout_owner_scope",
@@ -187,7 +31,7 @@ export function deriveRouteAmbiguities(opts: { decision: DecisionForAmbiguity })
         "use the selected next action only if it is a base-lane action; otherwise run agentplane work resume <task-id>",
     });
   }
-  if (opts.decision.nextAction.requiresApproval && !opts.decision.nextAction.command) {
+  if (step.kind === "approval" && step.request.type === "provider_merge") {
     ambiguities.push({
       code: "approval_without_local_command",
       summary: "the selected next action requires approval but has no safe local command",
@@ -195,7 +39,11 @@ export function deriveRouteAmbiguities(opts: { decision: DecisionForAmbiguity })
         "treat this as a human/provider action and re-run task status --route after the external action completes",
     });
   }
-  if (blockerCodes.has("close_tail_open") && opts.decision.nextAction.code === "merge_close_tail") {
+  if (
+    blockerCodes.has("close_tail_open") &&
+    step.kind === "approval" &&
+    step.request.type === "provider_merge"
+  ) {
     ambiguities.push({
       code: "close_tail_provider_lane",
       summary: "hosted close-tail is open, so local task mutation is not the next source of truth",
@@ -207,25 +55,23 @@ export function deriveRouteAmbiguities(opts: { decision: DecisionForAmbiguity })
 }
 
 export function deriveRouteRepairPlan(decision: DecisionForRepair): RouteRepairStep[] {
-  if (decision.nextAction.code === "reconcile_included_task_closure") {
-    return [
-      {
-        code: "reconcile_included_task_closure",
-        command: decision.nextAction.command,
-        summary: "reconcile landed included-task closure metadata before opening new work",
-        mutates: true,
-      },
-    ];
-  }
-  if (decision.blockers.length === 0) {
+  const step = decision.workflowStep;
+  if (!step.selectedBlocker && decision.blockers.length === 0) {
     return [
       {
         code: "no_repair_needed",
-        command: decision.nextAction.command,
-        summary: decision.nextAction.summary,
+        command: step.kind === "cli_operation" ? step.compatibility.command : null,
+        summary: step.summary,
         mutates: false,
       },
     ];
   }
-  return decision.blockers.map((blocker) => REPAIR_BY_BLOCKER_CODE[blocker.code](decision));
+  return [
+    {
+      code: step.compatibility.code,
+      command: step.kind === "cli_operation" ? step.compatibility.command : null,
+      summary: step.summary,
+      mutates: operationMutatesState(step),
+    },
+  ];
 }

@@ -96,10 +96,10 @@ describe("runCli route decision direct closeout", () => {
       expect(parsed.route_oracle.phase).toBe("direct_execution");
       expect(parsed.next_action).toMatchObject({
         code: "start_direct",
-        command: `agentplane task start-ready ${taskId} --author CODER --body "Start: continue direct-mode task in current checkout."`,
+        command: `agentplane task start-ready ${taskId} --author CODER --body 'Start: continue direct-mode task in current checkout.'`,
       });
       expect(parsed.route_oracle.nextCommand).toBe(
-        `agentplane task start-ready ${taskId} --author CODER --body "Start: continue direct-mode task in current checkout."`,
+        `agentplane task start-ready ${taskId} --author CODER --body 'Start: continue direct-mode task in current checkout.'`,
       );
       expect(parsed.next_action.command).not.toContain("task run");
     } finally {

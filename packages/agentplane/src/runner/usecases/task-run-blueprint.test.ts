@@ -46,6 +46,20 @@ describe("runner blueprint guards", () => {
   it("renders route oracle fields into the runner bootstrap", () => {
     const bundle = makeRunnerContextBundle();
     bundle.route_decision = {
+      workflowStep: {
+        schemaVersion: 1,
+        id: "worktree.prepare",
+        kind: "cli_operation",
+        operation: {
+          id: "worktree.prepare",
+          type: "worktree_prepare",
+          params: {
+            taskId: "202603231410-ABC123",
+            agent: "CODER",
+            slug: "start-codex-runner-prompts",
+          },
+        },
+      },
       oracle: {
         phase: "worktree_needed",
         authoritativeCheckout: "base_checkout",
@@ -85,6 +99,9 @@ describe("runner blueprint guards", () => {
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
     expect(bootstrap).toContain("- route_phase: worktree_needed");
+    expect(bootstrap).toContain("- workflow_step_kind: cli_operation");
+    expect(bootstrap).toContain("- workflow_step_id: worktree.prepare");
+    expect(bootstrap).toContain("- workflow_operation_id: worktree.prepare");
     expect(bootstrap).toContain("- route_mutation_path_hint: /repo");
     expect(bootstrap).toContain("- route_safe_to_mutate: true");
     expect(bootstrap).toContain("- route_must_run_from: /repo");

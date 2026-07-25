@@ -119,6 +119,8 @@ export function renderTaskRunnerBootstrap(
   const routeOracle = objectField(routeDecision, "oracle");
   const routeExecutionPacket = objectField(routeDecision, "executionPacket");
   const routeWorkspace = objectField(routeDecision, "workspace");
+  const workflowStep = objectField(routeDecision, "workflowStep");
+  const workflowOperation = objectField(workflowStep, "operation");
   const routeMustNot = stringArrayField(routeExecutionPacket, "mustNot");
   const sandboxPolicy = bundle.execution.sandbox_policy;
   const supervisorOwnsSemanticResult =
@@ -156,6 +158,9 @@ export function renderTaskRunnerBootstrap(
       ? [
           `- checkout_role: ${stringField(routeWorkspace, "checkoutRole") ?? "unknown"}`,
           `- route_phase: ${stringField(routeOracle, "phase") ?? "unknown"}`,
+          `- workflow_step_kind: ${stringField(workflowStep, "kind") ?? "unknown"}`,
+          `- workflow_step_id: ${stringField(workflowStep, "id") ?? "unknown"}`,
+          `- workflow_operation_id: ${stringField(workflowOperation, "id") ?? "none"}`,
           `- route_mutation_path_hint: ${stringField(routeOracle, "mutationPathHint") ?? "none"}`,
           `- route_safe_to_mutate: ${String(
             booleanField(routeExecutionPacket, "safeToMutate") ?? false,
