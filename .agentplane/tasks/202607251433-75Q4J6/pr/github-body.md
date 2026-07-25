@@ -33,8 +33,10 @@ thresholds.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                  | 1 +
+ packages/agentplane/assets/policy/incidents.md   | 1 +
  packages/agentplane/src/context/knowledge-ref.ts | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 ```
 
 </details>
