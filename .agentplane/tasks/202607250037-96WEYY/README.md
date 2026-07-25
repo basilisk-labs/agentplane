@@ -4,7 +4,7 @@ title: "Make RF-04 replay cleanup retry-safe on macOS"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -29,6 +29,26 @@ verification:
   updated_by: "TESTER"
   note: "Independent review PASS at e1ed542204ff. Focused RF-04 test passed three consecutive final runs (10/10 each) with unchanged 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells, and structural SHA 006ddc...9ee4; test:critical passed all 11 chunks; typecheck, scoped ESLint, Prettier, routing, hotspots, task lint, and diff-check passed; no provider/model calls were made."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-07-25T01:14:02.383Z"
+  updated_by: "HUMAN"
+  note: "Independent review confirms the RF-04 cleanup-only macOS race is bounded at the test boundary without mutating the frozen replay harness or provider evidence."
+  evaluated_sha: "e1ed542204ffdf66d142c0689c76af3e863a2631"
+  blueprint_digest: "877eb9a360741e407588402f2d2ef75b4a50f1a2059aad710594c155f5e99e21"
+  evidence_refs:
+    - ".agentplane/tasks/202607250037-96WEYY/README.md"
+    - ".agentplane/tasks/202607250037-96WEYY/quality/20260725-011402383-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607250037-96WEYY/quality/20260725-011402383-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607250037-96WEYY/quality/20260725-011402383-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607250037-96WEYY/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
+    - "e1ed542204ff"
+    - "bun run test:critical: 11/11 chunks PASS; focused RF-04: 3 consecutive 10/10 PASS with unchanged structural SHA 006ddc...9ee4"
+  findings:
+    - "Cleanup retries are capped at four attempts, retain the first persistent retryable error, and surface non-retryable errors immediately; deterministic tests distinguish first-vs-last error identity and one-call EIO behavior."
+    - "Capture retry cleanup deletes only newly created rf04-replay roots and preserves pre-existing roots; three repeated focused runs and the full 11-chunk critical suite passed with the same 50/70/27/170 evidence and structural digest."
 commit: null
 comments:
   -
