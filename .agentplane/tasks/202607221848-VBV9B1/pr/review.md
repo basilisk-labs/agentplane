@@ -6,14 +6,14 @@ Created: 2026-07-24T22:15:24.666Z
 
 - Task: `202607221848-VBV9B1`
 - Title: Replace route string dispatch with typed WorkflowStep decisions
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221848-VBV9B1/replace-route-string-dispatch-with-typed-workflo`
 - Canonical task record: `.agentplane/tasks/202607221848-VBV9B1/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18), and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip, hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no remaining blocker.
+- State: needs_rework
+- Note: Hosted Core CI verify-static failed: dependency-cruiser found three circular imports among workflow-step, projections, factory, reducer, and branch modules. Local bun run arch:check reproduces the failure; break the cycles and rerun the architecture gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -40,7 +40,7 @@ Created: 2026-07-24T22:15:24.666Z
  .../src/commands/hermes/hermes-runtime.ts          | 127 +--
  .../src/commands/hermes/hermes.command.test.ts     | 221 ++++-
  .../src/commands/shared/route-decision-blockers.ts |  40 +-
- .../commands/shared/route-decision-next-action.ts  | 489 +---------
+ .../commands/shared/route-decision-next-action.ts  | 487 +---------
  .../src/commands/shared/route-decision-repair.ts   | 205 +----
  .../src/commands/shared/route-decision-types.ts    |   2 +
  .../src/commands/shared/route-decision.ts          | 108 ++-
@@ -59,11 +59,11 @@ Created: 2026-07-24T22:15:24.666Z
  .../shared/workflow-step-fingerprint.test.ts       | 742 +++++++++++++++
  .../commands/shared/workflow-step-fingerprint.ts   | 488 ++++++++++
  .../commands/shared/workflow-step-policy-scope.ts  | 178 ++++
- .../shared/workflow-step-projections.test.ts       | 872 ++++++++++++++++++
+ .../shared/workflow-step-projections.test.ts       | 874 ++++++++++++++++++
  .../commands/shared/workflow-step-projections.ts   | 189 ++++
  .../src/commands/shared/workflow-step-reducer.ts   |  95 ++
  .../src/commands/shared/workflow-step.test.ts      | 999 +++++++++++++++++++++
- .../src/commands/shared/workflow-step.ts           | 597 ++++++++++++
+ .../src/commands/shared/workflow-step.ts           | 591 ++++++++++++
  .../agentplane/src/commands/task/brief-model.ts    |   8 +-
  .../agentplane/src/commands/task/brief-render.ts   |  16 +-
  .../src/commands/task/next-action.command.ts       |  16 +-
@@ -76,7 +76,7 @@ Created: 2026-07-24T22:15:24.666Z
  scripts/baselines/knip-baseline.json               |   5 -
  scripts/baselines/trust-boundary-violations.json   |  18 -
  scripts/checks/check-lifecycle-invariants.mjs      |  20 +-
- 47 files changed, 6853 insertions(+), 1995 deletions(-)
+ 47 files changed, 6847 insertions(+), 1995 deletions(-)
 ```
 
 </details>

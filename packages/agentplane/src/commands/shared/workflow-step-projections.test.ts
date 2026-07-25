@@ -7,13 +7,15 @@ import type { TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteOperatorGuidance } from "./route-guidance.js";
 import { cliOperationStep } from "./workflow-step-factory.js";
 import {
-  projectWorkflowStepExecutionPacket,
-  projectWorkflowStepOracle,
-  reduceRouteState,
   WORKFLOW_OPERATION_EFFECTS,
   type WorkflowRouteState,
   type WorkflowStep,
 } from "./workflow-step.js";
+import {
+  projectWorkflowStepExecutionPacket,
+  projectWorkflowStepOracle,
+} from "./workflow-step-projections.js";
+import { reduceRouteState } from "./workflow-step-reducer.js";
 import {
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,

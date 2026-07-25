@@ -15,14 +15,13 @@ RF-06b: reduce RouteState to typed CLI operation, agent episode, approval, human
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified typed WorkflowStep authority: workflow-step (21/21), projections (16/16), Hermes (18/18),
-and CLI route decisions (10/10) pass. typecheck, critical CLI (11/11 chunks), format, lint, knip,
-hotspots, policy routing, guards, and lifecycle invariants pass. Independent review found no
-remaining blocker.
+Hosted Core CI verify-static failed: dependency-cruiser found three circular imports among
+workflow-step, projections, factory, reducer, and branch modules. Local bun run arch:check
+reproduces the failure; break the cycles and rerun the architecture gate.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -45,7 +44,7 @@ remaining blocker.
  .../src/commands/hermes/hermes-runtime.ts          | 127 +--
  .../src/commands/hermes/hermes.command.test.ts     | 221 ++++-
  .../src/commands/shared/route-decision-blockers.ts |  40 +-
- .../commands/shared/route-decision-next-action.ts  | 489 +---------
+ .../commands/shared/route-decision-next-action.ts  | 487 +---------
  .../src/commands/shared/route-decision-repair.ts   | 205 +----
  .../src/commands/shared/route-decision-types.ts    |   2 +
  .../src/commands/shared/route-decision.ts          | 108 ++-
@@ -64,11 +63,11 @@ remaining blocker.
  .../shared/workflow-step-fingerprint.test.ts       | 742 +++++++++++++++
  .../commands/shared/workflow-step-fingerprint.ts   | 488 ++++++++++
  .../commands/shared/workflow-step-policy-scope.ts  | 178 ++++
- .../shared/workflow-step-projections.test.ts       | 872 ++++++++++++++++++
+ .../shared/workflow-step-projections.test.ts       | 874 ++++++++++++++++++
  .../commands/shared/workflow-step-projections.ts   | 189 ++++
  .../src/commands/shared/workflow-step-reducer.ts   |  95 ++
  .../src/commands/shared/workflow-step.test.ts      | 999 +++++++++++++++++++++
- .../src/commands/shared/workflow-step.ts           | 597 ++++++++++++
+ .../src/commands/shared/workflow-step.ts           | 591 ++++++++++++
  .../agentplane/src/commands/task/brief-model.ts    |   8 +-
  .../agentplane/src/commands/task/brief-render.ts   |  16 +-
  .../src/commands/task/next-action.command.ts       |  16 +-
@@ -81,7 +80,7 @@ remaining blocker.
  scripts/baselines/knip-baseline.json               |   5 -
  scripts/baselines/trust-boundary-violations.json   |  18 -
  scripts/checks/check-lifecycle-invariants.mjs      |  20 +-
- 47 files changed, 6853 insertions(+), 1995 deletions(-)
+ 47 files changed, 6847 insertions(+), 1995 deletions(-)
 ```
 
 </details>
