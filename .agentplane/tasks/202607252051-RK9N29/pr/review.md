@@ -13,7 +13,7 @@ Created: 2026-07-25T20:53:29.950Z
 ## Verification
 
 - State: ok
-- Note: Focused route, PR-flow, resume, task-backend, and artifact tests passed; typecheck, lint, guards, lifecycle, routing, architecture, formatting, and diff checks passed.
+- Note: Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

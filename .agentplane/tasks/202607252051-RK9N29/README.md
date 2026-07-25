@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-25T21:26:11.564Z"
+  updated_at: "2026-07-25T21:33:21.580Z"
   updated_by: "TESTER"
-  note: "Focused route, PR-flow, resume, task-backend, and artifact tests passed; typecheck, lint, guards, lifecycle, routing, architecture, formatting, and diff checks passed."
+  note: "Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed."
   attempts: 0
 quality_review:
   state: "rework"
@@ -74,8 +74,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T21:33:21.580Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed."
 doc_version: 3
-doc_updated_at: "2026-07-25T21:28:01.419Z"
+doc_updated_at: "2026-07-25T21:33:22.298Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr control-plane truth: routes, flow status, blockers, and resume must prefer the active task branch snapshot (live worktree, local branch, then origin) for task README and PR metadata, falling back to base only when no branch snapshot exists. Regress stale base TODO versus task-branch DONE/open PR so the CLI selects publication or integration, never a false plan approval. Keep typed route semantics unchanged."
 sections:
@@ -118,6 +124,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T21:33:21.580Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T21:28:01.419Z, excerpt_hash=sha256:460fe3fb6bfdef8df9d4ee393a69eddb1a86b2163f03f06d62c83e5a6e6bee8b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252051-RK9N29-make-branch-pr-route-resolution-branch-snapshot/.agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json
+    - old_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+    - current_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607252051-RK9N29
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task PR as one unit. This restores prior base-local route reads without altering task data or hosted PR state."
   Findings: |-
@@ -128,6 +164,10 @@ sections:
     - Observation: The unrelated stale runner reclaim integration test exits 8 on both the task branch and untouched main.
       Impact: The full task-handoff file remains red despite the new resume regression passing.
       Resolution: Recorded as a task-local baseline finding and routed for a separate runner-reclaim follow-up.
+
+    - Observation: GitHub CodeQL flagged dynamic ref arguments in remote task-branch discovery.
+      Impact: The PR could not pass its required review gate until the command construction was made constant.
+      Resolution: Remote refs are now listed from a constant origin root and filtered in TypeScript; origin-only snapshot coverage remains green.
 extensions:
   workflow_route_baseline:
     start_head_sha: "8e37e79ba5f2c934ab7c35a242c181049180e164"
@@ -185,6 +225,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T21:33:21.580Z — VERIFY — ok
+
+By: TESTER
+
+Note: Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T21:28:01.419Z, excerpt_hash=sha256:460fe3fb6bfdef8df9d4ee393a69eddb1a86b2163f03f06d62c83e5a6e6bee8b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252051-RK9N29-make-branch-pr-route-resolution-branch-snapshot/.agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json
+- old_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+- current_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607252051-RK9N29
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -200,3 +270,7 @@ Revert the task PR as one unit. This restores prior base-local route reads witho
 - Observation: The unrelated stale runner reclaim integration test exits 8 on both the task branch and untouched main.
   Impact: The full task-handoff file remains red despite the new resume regression passing.
   Resolution: Recorded as a task-local baseline finding and routed for a separate runner-reclaim follow-up.
+
+- Observation: GitHub CodeQL flagged dynamic ref arguments in remote task-branch discovery.
+  Impact: The PR could not pass its required review gate until the command construction was made constant.
+  Resolution: Remote refs are now listed from a constant origin root and filtered in TypeScript; origin-only snapshot coverage remains green.

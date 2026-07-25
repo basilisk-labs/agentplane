@@ -18,8 +18,9 @@ In scope: make branch_pr route, PR flow, blocker, and resume reads prefer a veri
 - Note:
 
 ```text
-Focused route, PR-flow, resume, task-backend, and artifact tests passed; typecheck, lint, guards,
-lifecycle, routing, architecture, formatting, and diff checks passed.
+Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering;
+route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff
+checks passed.
 ```
 - Canonical workflow state lives in the task README.
 
