@@ -29,11 +29,28 @@ Created: 2026-07-25T00:37:21.141Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .../src/cli/run-cli.core.branch-meta.test.ts       |   6 +-
+ .../src/cli/run-cli.core.hooks.hook-run.test.ts    |   3 +-
+ .../src/cli/run-cli.core.hooks.install.test.ts     |  15 +-
+ .../src/cli/run-cli.core.hooks.uninstall.test.ts   |  15 +-
+ .../run-cli.core.pr-flow.cleanup-merged.test.ts    |   2 +-
+ ...run-cli.core.pr-flow.integrate-failures.test.ts |  19 +
+ .../run-cli.core.pr-flow.integrate-merge.test.ts   |  59 ++-
+ ...-cli.core.pr-flow.integrate-rebase-race.test.ts |   9 +-
+ ...n-cli.core.pr-flow.integrate-strategies.test.ts |  69 ++-
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |  35 +-
+ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |   6 +-
+ .../src/cli/run-cli.core.pr-flow.status.test.ts    |  15 +-
  .../src/commands/pr/branch-publication.test.ts     | 522 +++++++++++++++++++++
  .../src/commands/pr/branch-publication.ts          | 284 +++++++++++
  .../src/commands/pr/internal/sync-github.ts        |   2 +-
  packages/agentplane/src/commands/pr/open.ts        | 138 +-----
- 4 files changed, 810 insertions(+), 136 deletions(-)
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  14 +
+ .../src/commands/shared/pr-meta/parser.ts          |   5 +
+ packages/testkit/src/cli-harness.ts                | 383 ++++++++++++++-
+ packages/testkit/src/github-pr.ts                  |  65 ++-
+ packages/testkit/src/index.test.ts                 |  14 +-
+ 21 files changed, 1417 insertions(+), 263 deletions(-)
 ```
 
 </details>
