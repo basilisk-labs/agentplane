@@ -15,8 +15,8 @@ Prevent Finder-created .DS_Store files from turning successful RF-04 offline rep
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: No implementation diff exists yet; the branch contains only lifecycle artifacts.
 - Canonical workflow state lives in the task README.
 
 <details>
