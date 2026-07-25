@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 46
 origin:
   system: "manual"
 depends_on: []
@@ -31,31 +31,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T04:03:08.504Z"
+  state: "ok"
+  updated_at: "2026-07-25T04:20:21.439Z"
   updated_by: "TESTER"
-  note: "Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification."
-  attempts: 1
+  note: "Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20, platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime inventory is empty. Hosted Windows rerun remains the external gate."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T03:54:55.490Z"
+  updated_at: "2026-07-25T04:20:34.665Z"
   updated_by: "EVALUATOR"
-  note: "Guarded force-with-lease publication and the RF04-compatible test-root cleanup satisfy the approved rework scope."
-  evaluated_sha: "cbf4ac33977ceaf346803963c55848cab66ff76d"
+  note: "Bounded testkit cleanup retries resolve the hosted Windows EBUSY rework without weakening init semantics or widening the public API."
+  evaluated_sha: "db062c2cdb31ea164cda1729623349160c45101d"
   blueprint_digest: "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43"
   evidence_refs:
     - ".agentplane/tasks/202607250036-DFWJM6/README.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-035455490-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-035455490-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-035455490-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-042034665-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-042034665-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607250036-DFWJM6/quality/20260725-042034665-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/pr/branch-publication.test.ts"
-    - "packages/agentplane/src/commands/shared/pr-meta.test.ts"
-    - "packages/testkit/src/index.test.ts"
+    - "packages/testkit/src/cli-harness/temp-root-cleanup.ts"
+    - "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts"
   findings:
-    - "Exact source identity, repository identity, expected destination, destination lease, and source-race refusal are covered; forward-compatible closure parsing is structurally bounded; full and targeted suites pass with zero new temp-root leaks."
-commit: null
+    - "All helper-owned roots now share recursive force cleanup with five bounded linear retries; roots remain registered after failed removal; the option contract, original init scenario, platform-critical suite, full fast suite, and leak inventory pass. Two independent reviews found no blocking issue."
+commit:
+  hash: "db062c2cdb31ea164cda1729623349160c45101d"
+  message: "🧪 DFWJM6 code: retry temporary-root cleanup"
 comments:
   -
     author: "CODER"
@@ -78,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -164,8 +169,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification."
+  -
+    type: "verify"
+    at: "2026-07-25T04:20:21.439Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20, platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime inventory is empty. Hosted Windows rerun remains the external gate."
+  -
+    type: "status"
+    at: "2026-07-25T04:21:04.732Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T04:03:09.395Z"
+doc_updated_at: "2026-07-25T04:21:04.734Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -373,6 +391,36 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-25T04:20:21.439Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20, platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime inventory is empty. Hosted Windows rerun remains the external gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T04:03:09.395Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -627,6 +675,36 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-25T04:20:21.439Z — VERIFY — ok
+
+By: TESTER
+
+Note: Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20, platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime inventory is empty. Hosted Windows rerun remains the external gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T04:03:09.395Z, excerpt_hash=sha256:1efb02c455a6cd24d424b29828e1df8bdbcf780fae088c8d4d82a29f4afa8ee9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 

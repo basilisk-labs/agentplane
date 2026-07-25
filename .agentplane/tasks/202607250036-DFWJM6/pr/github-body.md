@@ -18,13 +18,14 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while
-recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned
-roots, cover the retry contract, and republish after local platform-critical verification.
+Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20,
+platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical
+CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime
+inventory is empty. Hosted Windows rerun remains the external gate.
 ```
 - Canonical workflow state lives in the task README.
 
