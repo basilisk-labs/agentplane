@@ -80,7 +80,7 @@ afterEach(() => {
 });
 
 describeCritical("critical: RF-04 replay hardening boundaries", () => {
-  it("retries late temporary-root entries and preserves persistent cleanup errors", () => {
+  it("retries late entries and preserves retryable and non-retryable cleanup errors", () => {
     const lateEntryRoot = temporaryRoot();
     let lateEntryAttempts = 0;
     cleanupTemporaryRoot(lateEntryRoot, (root) => {
@@ -97,13 +97,16 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     expect(existsSync(lateEntryRoot)).toBe(false);
 
     const persistentRoot = temporaryRoot();
-    const persistentError = Object.assign(new Error("persistent cleanup failure"), {
-      code: "ENOTEMPTY",
-    });
+    const persistentErrors = Array.from({ length: TEMPORARY_ROOT_CLEANUP_ATTEMPTS }, (_, index) =>
+      Object.assign(new Error(`persistent cleanup failure ${index + 1}`), {
+        code: "ENOTEMPTY",
+      }),
+    );
     let persistentAttempts = 0;
     let surfacedError: unknown;
     try {
       cleanupTemporaryRoot(persistentRoot, () => {
+        const persistentError = persistentErrors[persistentAttempts];
         persistentAttempts += 1;
         throw persistentError;
       });
@@ -111,7 +114,24 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       surfacedError = error;
     }
     expect(persistentAttempts).toBe(TEMPORARY_ROOT_CLEANUP_ATTEMPTS);
-    expect(surfacedError).toBe(persistentError);
+    expect(surfacedError).toBe(persistentErrors[0]);
+
+    const nonRetryableRoot = temporaryRoot();
+    const nonRetryableError = Object.assign(new Error("non-retryable cleanup failure"), {
+      code: "EIO",
+    });
+    let nonRetryableAttempts = 0;
+    let surfacedNonRetryableError: unknown;
+    try {
+      cleanupTemporaryRoot(nonRetryableRoot, () => {
+        nonRetryableAttempts += 1;
+        throw nonRetryableError;
+      });
+    } catch (error) {
+      surfacedNonRetryableError = error;
+    }
+    expect(nonRetryableAttempts).toBe(1);
+    expect(surfacedNonRetryableError).toBe(nonRetryableError);
   });
 
   it("surfaces only a whole bounded UTF-8 replay driver diagnostic code", async () => {
