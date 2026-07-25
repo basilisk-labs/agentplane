@@ -22,7 +22,7 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-25T00:37:21.141Z
+- Updated: 2026-07-25T01:04:43.697Z
 - Branch: task/202607250036-DFWJM6/force-with-lease-pr-publish
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
