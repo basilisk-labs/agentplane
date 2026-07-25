@@ -33,7 +33,7 @@ Created: 2026-07-24T22:17:13.092Z
  packages/agentplane/src/commands/context/show.ts   |  14 +-
  packages/agentplane/src/context/context-utils.ts   |  76 +-
  .../agentplane/src/context/knowledge-ref.test.ts   | 562 ++++++++++++
- packages/agentplane/src/context/knowledge-ref.ts   | 594 +++++++++++++
+ packages/agentplane/src/context/knowledge-ref.ts   | 590 ++++++++++++
  .../agentplane/src/context/reindex-projection.ts   |  41 +-
  packages/agentplane/src/context/reindex.ts         |  46 +-
  packages/agentplane/src/runner/types/context.ts    |  17 +-
@@ -50,7 +50,7 @@ Created: 2026-07-24T22:17:13.092Z
  .../check-compatibility-contract-baseline.mjs      |  85 +-
  scripts/checks/check-spec-examples.mjs             |  71 +-
  scripts/generate/sync-schemas.mjs                  |  17 +
- 21 files changed, 3883 insertions(+), 72 deletions(-)
+ 21 files changed, 3879 insertions(+), 72 deletions(-)
 ```
 
 </details>
