@@ -102,6 +102,13 @@ describe("pr-meta shell invocations", () => {
           artifact_state: "remote_staged",
           artifact_state_reason: "task branch is not published",
           artifact_state_updated_at: "2026-01-28T00:00:00Z",
+          pre_merge_closure: {
+            state: "closed_before_merge",
+            branch: "task/202601010101-ABCDE/example",
+            basis_commit: "abc1234",
+            recorded_at: "2026-01-28T00:00:00Z",
+            future_marker_field: true,
+          },
         }),
         "202601010101-ABCDE",
       ),
@@ -117,6 +124,13 @@ describe("pr-meta shell invocations", () => {
         artifact_state: "remote_staged",
         artifact_state_reason: "task branch is not published",
         artifact_state_updated_at: "2026-01-28T00:00:00Z",
+        pre_merge_closure: {
+          state: "closed_before_merge",
+          branch: "task/202601010101-ABCDE/example",
+          basis_commit: "abc1234",
+          recorded_at: "2026-01-28T00:00:00Z",
+          future_marker_field: true,
+        },
       }),
     );
   });
