@@ -6,14 +6,14 @@ Created: 2026-07-25T00:37:21.141Z
 
 - Task: `202607250036-DFWJM6`
 - Title: Publish rebased PR branches with an explicit force-with-lease
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607250036-DFWJM6/force-with-lease-pr-publish`
 - Canonical task record: `.agentplane/tasks/202607250036-DFWJM6/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted Windows test-windows failed at e473ea3ac4ca: helper afterEach cleanup hit EBUSY while recursively removing magic_fresh_directory. Rework: apply bounded fs.rm retries to helper-owned roots, cover the retry contract, and republish after local platform-critical verification.
+- State: ok
+- Note: Windows cleanup rework verified at db062c2cdb31: failing init scenario and helper contract 20/20, platform-critical 6/6 files and 91/91 tests, full fast 453/453 files and 3046/3046 tests, critical CLI 11/11 chunks, typecheck/lint/format/policy checks pass, and post-run temp-root birthtime inventory is empty. Hosted Windows rerun remains the external gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

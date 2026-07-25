@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607250036-DFWJM6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T04:20:34.665Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Bounded testkit cleanup retries resolve the hosted Windows EBUSY rework without weakening init semantics or widening the public API.",
+  "evaluated_sha": "db062c2cdb31ea164cda1729623349160c45101d",
+  "blueprint_digest": "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43",
+  "findings": [
+    "All helper-owned roots now share recursive force cleanup with five bounded linear retries; roots remain registered after failed removal; the option contract, original init scenario, platform-critical suite, full fast suite, and leak inventory pass. Two independent reviews found no blocking issue."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607250036-DFWJM6/README.md",
+    "packages/testkit/src/cli-harness/temp-root-cleanup.ts",
+    "packages/testkit/src/cli-harness/temp-root-cleanup.test.ts",
+    "packages/agentplane/src/cli/run-cli.core.init.validation-conflicts.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The transient Windows lock clears within the existing repository precedent of five 100ms linear-backoff retries."
+  ],
+  "residual_risks": [
+    "Only the republished hosted test-windows job can prove the OS-level EBUSY recovery on GitHub's Windows runner."
+  ]
+}
