@@ -15,12 +15,14 @@ RF-08: standardize reproducible references into the existing context knowledge p
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Rework: the branch contains only task lifecycle and PR artifacts; no KnowledgeRef implementation or
-focused contract tests are present yet.
+PASS: independent adversarial review rejected forged receipts, parser/schema drift, projection
+symlink escape, and Unicode boundary drift; test:critical passed 11/11. Post-rebase focused
+verification passed 55/55 with schemas, types, format, lint, compatibility, spec examples, and
+hotspot gates green.
 ```
 - Canonical workflow state lives in the task README.
 
