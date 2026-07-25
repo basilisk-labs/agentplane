@@ -60,6 +60,21 @@ function cleanupTemporaryRoot(
   }
 }
 
+function runWithReplayCleanupRetry<T>(run: () => T, cleanup: () => void): T {
+  let firstRetryableError: unknown;
+  for (let attempt = 0; attempt < TEMPORARY_ROOT_CLEANUP_ATTEMPTS; attempt += 1) {
+    try {
+      return run();
+    } catch (error) {
+      if (!isRetryableCleanupError(error)) throw error;
+      firstRetryableError ??= error;
+      cleanup();
+      if (attempt === TEMPORARY_ROOT_CLEANUP_ATTEMPTS - 1) throw firstRetryableError;
+    }
+  }
+  throw firstRetryableError;
+}
+
 function temporaryRoot(): string {
   mkdirSync(TEST_ROOT, { recursive: true });
   const root = mkdtempSync(path.join(TEST_ROOT, "hardening-"));
@@ -132,6 +147,31 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     }
     expect(nonRetryableAttempts).toBe(1);
     expect(surfacedNonRetryableError).toBe(nonRetryableError);
+
+    const transientRunCleanupError = Object.assign(new Error("transient replay cleanup failure"), {
+      code: "ENOTEMPTY",
+    });
+    const replayFailure = new Error("replay driver failure");
+    let runAttempts = 0;
+    let runCleanupAttempts = 0;
+    let surfacedReplayFailure: unknown;
+    try {
+      runWithReplayCleanupRetry(
+        () => {
+          runAttempts += 1;
+          if (runAttempts === 1) throw transientRunCleanupError;
+          throw replayFailure;
+        },
+        () => {
+          runCleanupAttempts += 1;
+        },
+      );
+    } catch (error) {
+      surfacedReplayFailure = error;
+    }
+    expect(runAttempts).toBe(2);
+    expect(runCleanupAttempts).toBe(1);
+    expect(surfacedReplayFailure).toBe(replayFailure);
   });
 
   it("surfaces only a whole bounded UTF-8 replay driver diagnostic code", async () => {
@@ -216,24 +256,36 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
     const replayCacheBefore = readdirSync(cacheRoot)
       .filter((name) => name.startsWith("rf04-replay-"))
       .toSorted();
+    const replayCacheBeforeSet = new Set(replayCacheBefore);
+    const cleanupFailedReplayCaptures = () => {
+      for (const name of readdirSync(cacheRoot)) {
+        if (name.startsWith("rf04-replay-") && !replayCacheBeforeSet.has(name)) {
+          cleanupTemporaryRoot(path.join(cacheRoot, name));
+        }
+      }
+    };
     writeFileSync(
       driverPath,
       'process.stderr.write("RF04_DRIVER_ERROR:CODEX_EXIT\\n");\nprocess.exitCode = 1;\n',
     );
     try {
       expect(() =>
-        capture.captureAgentEfficiencyReplay({
-          allowTestTargets: true,
-          anchor: replay.REPLAY_ANCHOR_COMMIT,
-          driverPath,
-          evidenceDirectory,
-          outputPath,
-          pilot: true,
-          registryPath: path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
-          replace: false,
-          runs: replay.MINIMUM_REPLAY_RUNS,
-          sourceDirectory,
-        }),
+        runWithReplayCleanupRetry(
+          () =>
+            capture.captureAgentEfficiencyReplay({
+              allowTestTargets: true,
+              anchor: replay.REPLAY_ANCHOR_COMMIT,
+              driverPath,
+              evidenceDirectory,
+              outputPath,
+              pilot: true,
+              registryPath: path.join(REPO_ROOT, "scripts/bench/agent-efficiency-fixtures.json"),
+              replace: false,
+              runs: replay.MINIMUM_REPLAY_RUNS,
+              sourceDirectory,
+            }),
+          cleanupFailedReplayCaptures,
+        ),
       ).toThrow("direct/run-01 replay driver failed with exit 1; diagnostic=CODEX_EXIT");
     } finally {
       rmSync(driverPath, { force: true });
