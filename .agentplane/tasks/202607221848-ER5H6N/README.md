@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -38,27 +38,28 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "human_supplied"
-  updated_at: "2026-07-25T00:33:05.573Z"
-  updated_by: "HUMAN"
-  note: "Independent adversarial review passed the RF-08 contract leaf with no remaining blockers."
-  evaluated_sha: "c7f0d8b8433b5ff7a1818a15ef11c90151d53546"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-25T12:38:00.970Z"
+  updated_by: "EVALUATOR"
+  note: "Post-rebase semantic review passed: patch-identical KnowledgeRef implementation preserves strict canonical references, freshness withholding, bounded receipts, path defenses, and compatibility views."
+  evaluated_sha: "efb741edda2aa24c85b11315a0b0b92f66710b26"
   blueprint_digest: "3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0"
   evidence_refs:
     - ".agentplane/tasks/202607221848-ER5H6N/README.md"
-    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-003305573-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-003305573-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-003305573-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-123800970-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-123800970-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-ER5H6N/quality/20260725-123800970-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-ER5H6N/blueprint/resolved-snapshot.json"
-    - "commit:c7f0d8b8433b5ff7a1818a15ef11c90151d53546"
+    - "packages/core/src/runner/knowledge-ref.ts"
     - "packages/core/src/runner/knowledge-ref.test.ts"
+    - "packages/agentplane/src/context/knowledge-ref.ts"
     - "packages/agentplane/src/context/knowledge-ref.test.ts"
-    - "bun run test:critical (11/11 chunks in independent review)"
-    - "post-rebase focused verification (55/55 tests)"
+    - "patch-id 10e58015c6e4f77ad6a2b5db36c14fe9286a03b2 matches prior reviewed implementation"
+    - "focused 55/55; critical 11/11 chunks; schemas, typecheck, format, lint, compatibility, spec examples, hotspots passed"
   findings:
-    - "Forged prepared receipts, unsupported parser routes, selectorless missing reasons, and repository-escaping source or projection symlinks are rejected."
-    - "Public Draft-07 schema and runtime parsing agree on canonical selector encoding, ascending ranges, reason/ref bounds, and Unicode code-point length limits."
-    - "Focused tests, critical suite, typecheck, schema sync, spec examples, compatibility baseline, ESLint, Prettier, hotspot guard, and diff checks passed on the reviewed implementation."
+    - "All five KnowledgeRef kinds resolve through strict canonical selectors tied to digest and source identity; stale, missing, and unavailable states never expose content as fresh."
+    - "Receipt validation covers digest, span, byte and line counters, limits, and mutually exclusive included, omitted, missing, and stale outcomes."
+    - "Traversal, source and projection symlinks, noncanonical percent encoding, Unicode code-point bounds, and descending ranges are rejected; context-pack.md remains unchanged and new views are optional."
 commit:
   hash: "c7f0d8b8433b5ff7a1818a15ef11c90151d53546"
   message: "🧠 ER5H6N context: add digest-addressed knowledge refs"
