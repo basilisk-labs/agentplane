@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607251433-75Q4J6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T18:13:39.159Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Hosted PR #4619 is behind main and its exact published head fails verify-contract because pre-D9 task artifacts render a compact incident header without the required blank line.",
+  "evaluated_sha": "bd65aae198086282959f23c9996521df2a3df6a5",
+  "blueprint_digest": "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542",
+  "findings": [
+    "Rebase the task branch onto main@a7394e4a, regenerate task artifacts through the D9-fixed renderer, then rerun the declared KnowledgeRef and guard verification contract on the new head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607251433-75Q4J6/README.md",
+    "GitHub PR #4619 head=286a2c2d555a0deacbab12d33121bcc7470a4ec2 base=8c8fae8c6b2856f1525978faf16dd5d167992cdc mergeStateStatus=BEHIND; verify-contract=FAILURE; origin/main=a7394e4ac9e6458d107f115d5a589fd866c46ba4"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

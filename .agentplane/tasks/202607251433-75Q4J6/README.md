@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -26,26 +26,22 @@ verification:
   note: "After code-route correction to code.branch_pr, independently reran guards:check (shared guards and trust ratchet OK), KnowledgeRef core 38/38, agentplane 10/10, and typecheck; all passed. The product diff only imports canonical shared isRecord and removes the local helper."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T16:59:28.586Z"
+  updated_at: "2026-07-25T18:13:39.159Z"
   updated_by: "EVALUATOR"
-  note: "Pass: final pre-merge closure bd65aae19808 preserves the approved guard repair; no product semantics changed after the prior evaluator review."
+  note: "Hosted PR #4619 is behind main and its exact published head fails verify-contract because pre-D9 task artifacts render a compact incident header without the required blank line."
   evaluated_sha: "bd65aae198086282959f23c9996521df2a3df6a5"
   blueprint_digest: "1e2e2632ef39a09f572be489bc3d4db81392456ecbcbdfedcae52c8cb4742542"
   evidence_refs:
     - ".agentplane/tasks/202607251433-75Q4J6/README.md"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165928586-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165928586-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-165928586-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-181339159-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-181339159-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607251433-75Q4J6/quality/20260725-181339159-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json"
-    - "bd65aae19808: final closure commit audited; no packages/agentplane/src changes after implementation commit 3e88523f6"
-    - ".agentplane/tasks/202607251433-75Q4J6/blueprint/resolved-snapshot.json: code.branch_pr, mutation=code, required policy modules"
-    - "bun run guards:check: passed shared guards and trust-boundary ratchet"
-    - ".agentplane/tasks/202607251433-75Q4J6/README.md: TESTER verification and exact prior checks"
+    - "GitHub PR #4619 head=286a2c2d555a0deacbab12d33121bcc7470a4ec2 base=8c8fae8c6b2856f1525978faf16dd5d167992cdc mergeStateStatus=BEHIND; verify-contract=FAILURE; origin/main=a7394e4ac9e6458d107f115d5a589fd866c46ba4"
   findings:
-    - "The resolved snapshot remains code.branch_pr with code mutation and required policy modules. Final closure bd65aae19808 changes only managed closure, incident, PR, and quality artifacts; the sole product diff remains the canonical shared isRecord import replacing the local helper."
-    - "Independent final bun run guards:check passes. Prior fresh TESTER evidence records core KnowledgeRef 38/38, agentplane KnowledgeRef 10/10, typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passing."
+    - "Rebase the task branch onto main@a7394e4a, regenerate task artifacts through the D9-fixed renderer, then rerun the declared KnowledgeRef and guard verification contract on the new head."
 commit:
   hash: "298f970f74aed1a0a2dc87fd8485d3fb7c77b463"
   message: "🧪 75Q4J6 task: record final quality review"
