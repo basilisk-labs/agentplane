@@ -1,0 +1,1 @@
+🚧 ZMVZRZ task: Make merged worktree cleanup resilient to partial removal [202607252051-ZMVZRZ]
