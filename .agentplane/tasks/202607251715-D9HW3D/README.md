@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -50,7 +50,7 @@ quality_review:
   findings:
     - "packages/agentplane/src/commands/incidents/shared.test.ts now asserts the same required compact header prefix through String.prototype.startsWith, preserving the regression invariant."
 commit:
-  hash: "8ea6b5c28a7220a2dafde63d08573954ea4ead2c"
+  hash: "c53d2f86db555e6034b6858e974e41b0992a6ff4"
   message: "🧪 D9HW3D task: pre-merge closure"
 comments:
   -
@@ -59,6 +59,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -96,8 +99,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T17:49:46.464Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T17:38:37.584Z"
+doc_updated_at: "2026-07-25T17:49:46.466Z"
 doc_updated_by: "CODER"
 description: "Repair the incident-registry renderer so compact rewrites retain the required blank line after the heading, keep the canonical and asset mirrors byte-identical, and add regression coverage. This unblocks the hosted format check for task 202607251433-75Q4J6 without manually editing a policy log in that task."
 sections:
@@ -186,8 +196,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "b0b3c38440851f91f9d80b90f6c2e5733ccbcce1"
-    message: "🧪 D9HW3D incidents: retain legacy compact fixture"
+    hash: "4e126a1325db4136601f15643bc03fa23418c8be"
+    message: "🧪 D9HW3D incidents: type-safe mirror prefix check"
 id_source: "generated"
 ---
 ## Summary
