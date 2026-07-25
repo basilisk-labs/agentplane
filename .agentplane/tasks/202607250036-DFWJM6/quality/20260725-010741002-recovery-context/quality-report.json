@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607250036-DFWJM6",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T01:07:41.002Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Independent review confirms guarded force-with-lease publication is repository-bound, ref-scoped, race-safe, and fail-closed.",
+  "evaluated_sha": "8d06aecb7afa3fdfa272288e0a4bab6ae49ee133",
+  "blueprint_digest": "a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43",
+  "findings": [
+    "The force path is available only for an existing open PR whose provider repository, origin fetch repository, origin push repository, branch, and observed remote head all agree.",
+    "Publication uses only the exact ref-scoped lease and refuses mismatched repository/head, wrong upstream/current branch, closed or missing PR, and a remote race; first publication remains unchanged."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607250036-DFWJM6/README.md",
+    "packages/agentplane/src/commands/pr/branch-publication.ts",
+    "packages/agentplane/src/commands/pr/branch-publication.test.ts",
+    "20/20 focused tests plus typecheck, lint:core, hotspots, architecture, task-state, task lint, routing, diff-check, and doctor PASS at 8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Provider/API unavailability remains an operational dependency and is handled fail-closed without unconditional force."
+  ]
+}
