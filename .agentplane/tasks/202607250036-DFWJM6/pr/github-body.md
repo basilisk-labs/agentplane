@@ -15,8 +15,15 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Verification
 
-- State: needs_rework
-- Note: GitHub review P1: force publication must push the exact observed local commit, not mutable HEAD.
+- State: ok
+- Note:
+
+```text
+Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic
+source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21).
+Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and
+diff-check pass. Independent re-review: PASS.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
