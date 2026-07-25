@@ -14,8 +14,13 @@ In scope: harden merged branch_pr worktree removal after a clean verified task, 
 
 ## Verification
 
-- State: ok
-- Note: Independent TESTER verification passed for PR #4622 at 6c19d647.
+- State: needs_rework
+- Note:
+
+```text
+Hosted Core CI #30178341063 failed verify-contract at the hotspot baseline; task requires a bounded
+test split before re-verification.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -26,11 +31,11 @@ In scope: harden merged branch_pr worktree removal after a clean verified task, 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../run-cli.core.pr-flow.cleanup-merged.test.ts    | 137 ++++++++++++++++++++
- .../src/commands/branch/cleanup-merged.ts          |  17 ++-
- .../commands/shared/merged-branch-cleanup.test.ts  | 144 ++++++++++++++++++++-
- .../src/commands/shared/merged-branch-cleanup.ts   |  85 +++++++++++-
- 4 files changed, 376 insertions(+), 7 deletions(-)
+ ...-cli.core.pr-flow.cleanup-merged.remote.test.ts | 171 +++++++++++++++++++++
+ .../src/commands/branch/cleanup-merged.ts          |  17 +-
+ .../commands/shared/merged-branch-cleanup.test.ts  | 144 ++++++++++++++++-
+ .../src/commands/shared/merged-branch-cleanup.ts   |  85 +++++++++-
+ 4 files changed, 410 insertions(+), 7 deletions(-)
 ```
 
 </details>
