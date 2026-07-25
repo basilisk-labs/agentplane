@@ -65,7 +65,7 @@ type RouteExecutorContext = {
   currentAgentMustExecute: boolean;
   instruction:
     | "current_agent_executes_safe_command"
-    | "current_agent_performs_semantic_rework"
+    | "current_agent_performs_semantic_work"
     | "runner_route_follow_runner_lifecycle"
     | "current_agent_waits_for_provider_or_recompute";
   warning: string;
@@ -246,7 +246,7 @@ function deriveExecutorContext(
       executor: "current_agent",
       runnerRouteActive,
       currentAgentMustExecute: true,
-      instruction: "current_agent_performs_semantic_rework",
+      instruction: "current_agent_performs_semantic_work",
       warning: `current ${step.episode.role} owns the ${step.episode.purpose} episode in the authoritative task worktree; recompute the route after the semantic work is verified`,
     };
   }

@@ -344,12 +344,25 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
       selectedBlocker: null,
     });
   }
-  return cliOperationStep({
+  return agentEpisodeStep({
     state,
-    operationId: "task.verify.show",
-    params: { taskId: id },
+    id: "agent.direct_implementation",
     code: "continue_direct",
-    summary: "continue the direct-mode task from the current checkout",
+    phase: "direct_execution",
+    checkout: "current_checkout",
+    role: "CODER",
+    purpose: "implementation",
+    summary:
+      "hand the direct-mode task to CODER for semantic implementation in the current checkout",
+    objective:
+      "Complete the task's semantic implementation in the current checkout, then record evidence-based verification before direct closeout.",
+    semanticMutationAllowed: true,
+    mustNot: [
+      "do not complete or close the task before semantic implementation is verified with recorded evidence",
+      "do not treat a missing runner artifact as a reason to replace the CODER semantic episode with a read-only CLI command",
+    ],
+    returnControlWhen:
+      "after the CODER completes semantic implementation and records evidence-based verification; recompute task next-action before direct closeout",
     selectedBlocker: null,
   });
 }

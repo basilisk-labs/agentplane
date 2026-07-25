@@ -523,7 +523,7 @@ describe("runCli route decision commands", () => {
       "--root",
       root,
     ]);
-    await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root]);
+    expect(await runCliSilent(["task", "run", taskId, "--dry-run", "--root", root])).toBe(0);
 
     const statusIo = captureStdIO();
     let statePath = "";

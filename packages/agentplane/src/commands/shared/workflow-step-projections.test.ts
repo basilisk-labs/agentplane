@@ -362,7 +362,7 @@ describe("WorkflowStep execution projections", () => {
     ).toMatchObject({
       executor: "current_agent",
       currentAgentMustExecute: true,
-      instruction: "current_agent_performs_semantic_rework",
+      instruction: "current_agent_performs_semantic_work",
     });
   });
 
@@ -547,6 +547,49 @@ describe("WorkflowStep execution projections", () => {
         "--reason",
         reason,
       ],
+    });
+  });
+
+  it("gives an active direct semantic implementation episode its checkout mutation authority", () => {
+    const directResume = {
+      ...resume,
+      branch: "main",
+      pr_branch: null,
+      workspace_root: "/repo",
+      runner: {
+        ...resume.runner,
+        run_id: null,
+        status: null,
+        next_action: "run",
+      },
+    } satisfies TaskResumeContext;
+    const state = routeState({
+      resume: directResume,
+      workflowMode: "direct",
+      prFlow: null,
+      taskWorktree: undefined,
+    });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({
+      state,
+      step,
+      paths: { currentCheckoutPath: "/repo" },
+    });
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      id: "agent.direct_implementation",
+      authoritativeCheckout: "current_checkout",
+      episode: { purpose: "implementation", role: "CODER", taskId: task.id },
+      compatibility: { code: "continue_direct", command: null },
+      execution: { semanticMutationAllowed: true },
+    });
+    expect(oracle.mutationPathHint).toBe("/repo");
+    expect(packet).toMatchObject({
+      actionKind: "stop",
+      safeToMutate: true,
+      mutationPathHint: "/repo",
+      exactArgv: null,
     });
   });
 

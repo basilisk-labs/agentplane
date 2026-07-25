@@ -7,6 +7,7 @@ import {
   deriveRouteOperatorGuidance,
   routeRunnerContextIsRelevant,
 } from "../shared/route-guidance.js";
+import type { RouteExecutionPacket } from "../shared/route-oracle.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 
 import { currentAgentplaneCommand } from "./hermes-environment.js";
@@ -33,9 +34,9 @@ export type HermesRoutePacketForExecution = {
   };
   next_action: {
     code: string;
-    command?: string | null;
     summary: string;
   };
+  execution_packet: Pick<RouteExecutionPacket, "actionKind" | "exactArgv">;
 };
 
 function taskTerminalForHermesComplete(task: {
@@ -229,103 +230,99 @@ export function buildHermesLifecycleRecommendation(
   };
 }
 
+function typedAgentplaneArgs(packet: HermesRoutePacketForExecution): string[] | null {
+  if (packet.execution_packet.actionKind !== "local_command") return null;
+  const argv = packet.execution_packet.exactArgv;
+  if (argv?.[0] !== "agentplane") return null;
+  return argv.slice(1);
+}
+
+function matchesTypedArgs(args: readonly string[], expected: readonly string[]): boolean {
+  return expected.every((value, index) => args[index] === value);
+}
+
+function blockedTypedStep(packet: HermesRoutePacketForExecution, reason: string) {
+  return {
+    code: packet.next_action.code,
+    args: null,
+    reason,
+  };
+}
+
 export function executableStepFor(packet: HermesRoutePacketForExecution): {
   code: string;
   args: string[] | null;
   reason: string | null;
 } {
   const taskId = packet.task.id;
-  const owner = packet.task.owner ?? "CODER";
-  const normalizedSlug = packet.task.title
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, "-")
-    .replaceAll(/^-+|-+$/g, "")
-    .replaceAll(/-{2,}/g, "-")
-    .slice(0, 48)
-    .replaceAll(/-+$/g, "");
-  const slug = normalizedSlug.length > 0 ? normalizedSlug : "hermes-work";
+  const args = typedAgentplaneArgs(packet);
+  if (!args) {
+    return blockedTypedStep(
+      packet,
+      packet.next_action.code === "continue_direct"
+        ? "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command"
+        : "Agentplane route does not authorize a local typed command for Hermes execution",
+    );
+  }
   switch (packet.next_action.code) {
     case "update_pr_artifacts":
     case "verify_or_update_pr": {
-      return { code: packet.next_action.code, args: ["pr", "update", taskId], reason: null };
+      if (matchesTypedArgs(args, ["pr", "update", taskId])) {
+        return { code: packet.next_action.code, args, reason: null };
+      }
+      return blockedTypedStep(packet, "typed PR update argv does not target the current task");
     }
     case "open_pr": {
-      return {
-        code: packet.next_action.code,
-        args: ["pr", "open", taskId, "--author", owner, "--sync-only"],
-        reason: null,
-      };
+      if (matchesTypedArgs(args, ["pr", "open", taskId])) {
+        return { code: packet.next_action.code, args, reason: null };
+      }
+      return blockedTypedStep(packet, "typed PR open argv does not target the current task");
     }
     case "continue_direct": {
-      return {
-        code: packet.next_action.code,
-        args: ["task", "verify-show", taskId],
-        reason: null,
-      };
+      if (matchesTypedArgs(args, ["task", "verify-show", taskId])) {
+        return { code: packet.next_action.code, args, reason: null };
+      }
+      return blockedTypedStep(
+        packet,
+        "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command",
+      );
     }
     case "complete_direct": {
-      return {
-        code: packet.next_action.code,
-        args: null,
-        reason:
-          "direct closeout needs operator-supplied --result and --commit values; do not rerun task execution",
-      };
+      return blockedTypedStep(
+        packet,
+        "direct closeout needs operator-supplied --result and --commit values; do not rerun task execution",
+      );
     }
     case "approve_plan": {
-      return {
-        code: packet.next_action.code,
-        args: null,
-        reason:
-          "plan approval is an orchestration decision and is not executed by Hermes worker lanes",
-      };
+      return blockedTypedStep(
+        packet,
+        "plan approval is an orchestration decision and is not executed by Hermes worker lanes",
+      );
     }
     case "wait_runner":
     case "wait_hosted_checks":
     case "merge_close_tail":
     case "done":
     case "cleanup": {
-      return { code: packet.next_action.code, args: null, reason: packet.next_action.summary };
+      return blockedTypedStep(packet, packet.next_action.summary);
     }
     case "start_or_recover_worktree": {
-      return {
-        code: packet.next_action.code,
-        args: ["work", "start", taskId, "--agent", owner, "--slug", slug, "--worktree"],
-        reason: null,
-      };
+      if (matchesTypedArgs(args, ["work", "start", taskId])) {
+        return { code: packet.next_action.code, args, reason: null };
+      }
+      return blockedTypedStep(packet, "typed worktree argv does not target the current task");
     }
     default: {
       break;
     }
   }
-  const command = packet.next_action.command?.trim() ?? "";
-  const commandParts = command.length > 0 ? command.split(/\s+/u) : [];
-  const subcommand = commandParts[2];
-  if (
-    commandParts.length === 4 &&
-    commandParts[0] === "agentplane" &&
-    commandParts[1] === "task" &&
-    subcommand === "run" &&
-    commandParts[3] === taskId
-  ) {
-    return { code: packet.next_action.code, args: ["task", "run", taskId], reason: null };
+  if (args.length === 3 && matchesTypedArgs(args, ["task", "run", taskId])) {
+    return { code: packet.next_action.code, args, reason: null };
   }
-  if (
-    commandParts.length === 4 &&
-    commandParts[0] === "agentplane" &&
-    commandParts[1] === "task" &&
-    (subcommand === "run" ||
-      subcommand === "verify-show" ||
-      subcommand === "status" ||
-      subcommand === "brief") &&
-    commandParts[3] === taskId
-  ) {
-    return { code: packet.next_action.code, args: ["task", subcommand, taskId], reason: null };
-  }
-  return {
-    code: packet.next_action.code,
-    args: null,
-    reason: `unsupported Agentplane Hermes route action: ${packet.next_action.code}`,
-  };
+  return blockedTypedStep(
+    packet,
+    `unsupported typed Agentplane Hermes route action: ${packet.next_action.code}`,
+  );
 }
 
 export async function runAgentplaneStep(args: string[], root: string, dryRun: boolean) {
