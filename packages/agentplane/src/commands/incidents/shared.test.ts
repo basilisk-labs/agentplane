@@ -8,11 +8,16 @@ import { afterEach, describe, expect, it } from "vitest";
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import { GitContext } from "@agentplaneorg/core/git";
 import type { CommandContext } from "../shared/task-backend.js";
-import { createIncidentRegistrySkeleton } from "../../runtime/incidents/index.js";
 
 import { collectTaskIncidents } from "./shared.js";
 
 const tempRoots: string[] = [];
+
+const compactRegistryHeader = [
+  "# Policy Incidents Log",
+  "",
+  "- Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.",
+].join("\n");
 
 function mkTask(): TaskData {
   return {
@@ -95,7 +100,7 @@ describe("incident registry mirror writes", () => {
     await mkdir(path.join(root, "packages", "agentplane", "assets", "policy"), {
       recursive: true,
     });
-    const registryText = createIncidentRegistrySkeleton();
+    const registryText = `${compactRegistryHeader}\n`;
     await writeFile(path.join(root, ".agentplane", "policy", "incidents.md"), registryText, "utf8");
     await writeFile(
       path.join(root, "packages", "agentplane", "assets", "policy", "incidents.md"),
@@ -128,6 +133,7 @@ describe("incident registry mirror writes", () => {
     );
 
     expect(mirrored).toBe(canonical);
+    expect(mirrored).toStartWith(`${compactRegistryHeader}\n- id:`);
     expect(mirrored).toContain("incident promotion left hidden policy drift");
     expect(mirrored.endsWith("\n")).toBe(true);
   });
