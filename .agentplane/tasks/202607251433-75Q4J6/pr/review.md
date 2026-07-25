@@ -6,7 +6,7 @@ Created: 2026-07-25T14:34:50.856Z
 
 - Task: `202607251433-75Q4J6`
 - Title: Restore shared guard invariant after KnowledgeRef merge
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607251433-75Q4J6/restore-shared-guard-invariant-after-knowledgere`
 - Canonical task record: `.agentplane/tasks/202607251433-75Q4J6/README.md`
 
@@ -29,8 +29,10 @@ Created: 2026-07-25T14:34:50.856Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                  | 2 +-
+ packages/agentplane/assets/policy/incidents.md   | 2 +-
  packages/agentplane/src/context/knowledge-ref.ts | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ 3 files changed, 3 insertions(+), 5 deletions(-)
 ```
 
 </details>

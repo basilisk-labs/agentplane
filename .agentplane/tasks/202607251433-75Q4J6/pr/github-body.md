@@ -33,8 +33,10 @@ diff only imports canonical shared isRecord and removes the local helper.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                  | 2 +-
+ packages/agentplane/assets/policy/incidents.md   | 2 +-
  packages/agentplane/src/context/knowledge-ref.ts | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ 3 files changed, 3 insertions(+), 5 deletions(-)
 ```
 
 </details>
