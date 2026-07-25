@@ -6,14 +6,14 @@ Created: 2026-07-25T22:13:26.625Z
 
 - Task: `202607252051-ZMVZRZ`
 - Title: Make merged worktree cleanup resilient to partial removal
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient`
 - Canonical task record: `.agentplane/tasks/202607252051-ZMVZRZ/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Independent TESTER verification passed for PR #4622 at 6c19d647.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

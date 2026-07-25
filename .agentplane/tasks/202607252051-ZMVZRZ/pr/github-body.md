@@ -14,8 +14,8 @@ In scope: harden merged branch_pr worktree removal after a clean verified task, 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Independent TESTER verification passed for PR #4622 at 6c19d647.
 - Canonical workflow state lives in the task README.
 
 <details>
