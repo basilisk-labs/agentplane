@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607251433-75Q4J6/restore-shared-guard-invariant-after-knowledgere",
   "created_at": "2026-07-25T14:34:50.856Z",
-  "diffstat_sha256": "sha256:a53ec72decc572241357e76c80624f163cdcface7e785aa516ad4ffb5ba7005a",
+  "diffstat_sha256": "sha256:644314feaed7af10709a9d39fabd83c12080ed461287a61c2a9626d81cd627ac",
   "last_verified_at": "2026-07-25T16:50:28.218Z",
   "last_verified_diffstat_sha256": "sha256:a53ec72decc572241357e76c80624f163cdcface7e785aa516ad4ffb5ba7005a",
   "pr_number": 4619,
