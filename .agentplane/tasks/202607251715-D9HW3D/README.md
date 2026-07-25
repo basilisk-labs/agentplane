@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -35,20 +35,20 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T17:33:30.155Z"
+  updated_at: "2026-07-25T17:46:43.329Z"
   updated_by: "EVALUATOR"
-  note: "Compact incident registry rendering preserves the required heading blank line while retaining legacy compact parsing and byte-identical canonical/asset mirrors."
-  evaluated_sha: "b0b3c38440851f91f9d80b90f6c2e5733ccbcce1"
+  note: "Lint-compatible prefix assertion is semantically equivalent for the UTF-8 string returned by readFile; no incident-registry behavior changed."
+  evaluated_sha: "4e126a1325db4136601f15643bc03fa23418c8be"
   blueprint_digest: "afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424"
   evidence_refs:
     - ".agentplane/tasks/202607251715-D9HW3D/README.md"
-    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-173330155-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-173330155-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-173330155-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-174643329-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-174643329-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-174643329-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607251715-D9HW3D/blueprint/resolved-snapshot.json"
-    - "b0b3c3844; focused incidents suite 21/21; format:check pass; agents:check pass; boundary probe 95+1=100 and 96+1=101"
+    - "4e126a132^..4e126a132; packages/agentplane/src/commands/incidents/shared.test.ts:126-139; git diff --check b0b3c3844..4e126a132"
   findings:
-    - "The new blank line intentionally consumes one physical policy-budget line; the exact boundary remains 95 existing compact entries plus one promotion at 100 lines, while 96 plus one is rejected."
+    - "packages/agentplane/src/commands/incidents/shared.test.ts now asserts the same required compact header prefix through String.prototype.startsWith, preserving the regression invariant."
 commit:
   hash: "8ea6b5c28a7220a2dafde63d08573954ea4ead2c"
   message: "🧪 D9HW3D task: pre-merge closure"

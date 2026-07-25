@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607251715-D9HW3D",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-25T17:46:43.329Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Lint-compatible prefix assertion is semantically equivalent for the UTF-8 string returned by readFile; no incident-registry behavior changed.",
+  "evaluated_sha": "4e126a1325db4136601f15643bc03fa23418c8be",
+  "blueprint_digest": "afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424",
+  "findings": [
+    "packages/agentplane/src/commands/incidents/shared.test.ts now asserts the same required compact header prefix through String.prototype.startsWith, preserving the regression invariant."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607251715-D9HW3D/README.md",
+    "4e126a132^..4e126a132; packages/agentplane/src/commands/incidents/shared.test.ts:126-139; git diff --check b0b3c3844..4e126a132"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
