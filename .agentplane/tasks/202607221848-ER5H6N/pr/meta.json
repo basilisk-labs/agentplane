@@ -3,22 +3,15 @@
   "branch": "task/202607221848-ER5H6N/define-digest-addressed-knowledgeref-contracts",
   "created_at": "2026-07-24T22:17:13.092Z",
   "diffstat_sha256": "sha256:228e653080620228410123b346807c0f7f0751cdb44463fe9dab7262e0382e97",
-  "last_verified_at": "2026-07-25T00:32:22.992Z",
+  "last_verified_at": "2026-07-25T12:52:00.175Z",
   "last_verified_diffstat_sha256": "sha256:228e653080620228410123b346807c0f7f0751cdb44463fe9dab7262e0382e97",
   "pr_number": 4613,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4613",
-  "pre_merge_closure": {
-    "basis_commit": "0a58ea4f7b0f66b372d25a5f1058bae46d5750ee",
-    "branch": "task/202607221848-ER5H6N/define-digest-addressed-knowledgeref-contracts",
-    "pr_number": 4613,
-    "recorded_at": "2026-07-25T12:39:06.297Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221848-ER5H6N",
   "updated_at": "2026-07-24T22:23:15.250Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

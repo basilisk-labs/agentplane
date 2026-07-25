@@ -2,10 +2,10 @@
 id: "202607221848-ER5H6N"
 title: "Define digest-addressed KnowledgeRef contracts"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -31,11 +31,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the independent KnowledgeRef contract leaf for alpha.2 under the existing full v0.7 authorization."
 verification:
-  state: "ok"
-  updated_at: "2026-07-25T00:32:22.992Z"
+  state: "needs_rework"
+  updated_at: "2026-07-25T12:52:00.175Z"
   updated_by: "TESTER"
-  note: "PASS: independent adversarial review rejected forged receipts, parser/schema drift, projection symlink escape, and Unicode boundary drift; test:critical passed 11/11. Post-rebase focused verification passed 55/55 with schemas, types, format, lint, compatibility, spec examples, and hotspot gates green."
-  attempts: 0
+  note: "Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one unrelated active-claim history race (targeted repetition passed 20/20)."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -60,9 +60,7 @@ quality_review:
     - "All five KnowledgeRef kinds resolve through strict canonical selectors tied to digest and source identity; stale, missing, and unavailable states never expose content as fresh."
     - "Receipt validation covers digest, span, byte and line counters, limits, and mutually exclusive included, omitted, missing, and stale outcomes."
     - "Traversal, source and projection symlinks, noncanonical percent encoding, Unicode code-point bounds, and descending ranges are rejected; context-pack.md remains unchanged and new views are optional."
-commit:
-  hash: "0a58ea4f7b0f66b372d25a5f1058bae46d5750ee"
-  message: "🧠 ER5H6N task: refresh post-rebase quality review"
+commit: null
 comments:
   -
     author: "CODER"
@@ -107,8 +105,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T12:52:00.175Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one unrelated active-claim history race (targeted repetition passed 20/20)."
 doc_version: 3
-doc_updated_at: "2026-07-25T12:39:06.243Z"
+doc_updated_at: "2026-07-25T12:52:00.728Z"
 doc_updated_by: "CODER"
 description: "RF-08: standardize reproducible references into the existing context knowledge plane with digest, reason, retrieval provenance, score, requirement, freshness, and bounded excerpts."
 sections:
@@ -192,6 +196,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T12:52:00.175Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one unrelated active-claim history race (targeted repetition passed 20/20).
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T12:39:06.243Z, excerpt_hash=sha256:e0a28fae052431332f5b445eac80ed7582457c8d3a88fac7abd2596dba299882
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ER5H6N-define-digest-addressed-knowledgeref-contracts/.agentplane/tasks/202607221848-ER5H6N/blueprint/resolved-snapshot.json
+    - old_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+    - current_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-ER5H6N
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607221848-ER5H6N --remote --explain
+    - diagnostic_command: agentplane task next-action 202607221848-ER5H6N --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -205,6 +239,10 @@ sections:
     - Observation: All supported KnowledgeRef kinds resolve to digest-linked source identities; stale/missing states withhold content; bounded excerpt receipts preserve context-pack.md. A redundant macOS critical rerun completed the 50-run RF-04 replay logic but Finder-created .DS_Store files caused cleanup-only ENOTEMPTY after the assertions.
       Impact: RF-08 contract semantics and its required gates are verified. The unrelated macOS temporary-directory cleanup race remains a release-reliability follow-up, not a KnowledgeRef correctness failure.
       Resolution: Accept RF-08 and create a separate narrow reliability task to make RF-04 temporary cleanup retry-safe before stable 0.7.0.
+
+    - Observation: Core CI failed knip on MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES/LINES re-exports and one full-suite active-claim concurrency attempt returned fail-closed E_IO instead of the expected active-claim E_USAGE.
+      Impact: PR #4613 cannot integrate until the unused exports are removed and a fresh full fast run passes.
+      Resolution: Remove only the unused internal re-exports, rerun focused/static/full-fast checks, then refresh evaluator and pre-merge closure.
 extensions:
   implementation_commit:
     hash: "efb741edda2aa24c85b11315a0b0b92f66710b26"
@@ -300,6 +338,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T12:52:00.175Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one unrelated active-claim history race (targeted repetition passed 20/20).
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T12:39:06.243Z, excerpt_hash=sha256:e0a28fae052431332f5b445eac80ed7582457c8d3a88fac7abd2596dba299882
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-ER5H6N-define-digest-addressed-knowledgeref-contracts/.agentplane/tasks/202607221848-ER5H6N/blueprint/resolved-snapshot.json
+- old_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+- current_digest: 3d481e7a7bf1aa47eed18b9d586376d441b3bbccc1851ce5bdd1dfedcb60fef0
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-ER5H6N
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607221848-ER5H6N --remote --explain
+- diagnostic_command: agentplane task next-action 202607221848-ER5H6N --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -317,3 +385,7 @@ DecisionContextRef:
 - Observation: All supported KnowledgeRef kinds resolve to digest-linked source identities; stale/missing states withhold content; bounded excerpt receipts preserve context-pack.md. A redundant macOS critical rerun completed the 50-run RF-04 replay logic but Finder-created .DS_Store files caused cleanup-only ENOTEMPTY after the assertions.
   Impact: RF-08 contract semantics and its required gates are verified. The unrelated macOS temporary-directory cleanup race remains a release-reliability follow-up, not a KnowledgeRef correctness failure.
   Resolution: Accept RF-08 and create a separate narrow reliability task to make RF-04 temporary cleanup retry-safe before stable 0.7.0.
+
+- Observation: Core CI failed knip on MAX_PREPARED_KNOWLEDGE_EXCERPT_BYTES/LINES re-exports and one full-suite active-claim concurrency attempt returned fail-closed E_IO instead of the expected active-claim E_USAGE.
+  Impact: PR #4613 cannot integrate until the unused exports are removed and a fresh full fast run passes.
+  Resolution: Remove only the unused internal re-exports, rerun focused/static/full-fast checks, then refresh evaluator and pre-merge closure.

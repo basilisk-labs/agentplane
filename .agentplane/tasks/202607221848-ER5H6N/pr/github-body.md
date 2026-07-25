@@ -15,14 +15,12 @@ RF-08: standardize reproducible references into the existing context knowledge p
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-PASS: independent adversarial review rejected forged receipts, parser/schema drift, projection
-symlink escape, and Unicode boundary drift; test:critical passed 11/11. Post-rebase focused
-verification passed 55/55 with schemas, types, format, lint, compatibility, spec examples, and
-hotspot gates green.
+Hosted rework: knip found two unused AgentPlane re-exports; full fast suite also observed one
+unrelated active-claim history race (targeted repetition passed 20/20).
 ```
 - Canonical workflow state lives in the task README.
 
