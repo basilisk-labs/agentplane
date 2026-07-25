@@ -8,10 +8,10 @@
   "pr_number": 4619,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4619",
   "pre_merge_closure": {
-    "basis_commit": "c36c0a32f53395014d6d9a6337229283572c67bf",
+    "basis_commit": "298f970f74aed1a0a2dc87fd8485d3fb7c77b463",
     "branch": "task/202607251433-75Q4J6/restore-shared-guard-invariant-after-knowledgere",
     "pr_number": 4619,
-    "recorded_at": "2026-07-25T16:56:25.152Z",
+    "recorded_at": "2026-07-25T17:01:24.498Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

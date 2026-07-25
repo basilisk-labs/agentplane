@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -47,8 +47,8 @@ quality_review:
     - "The resolved snapshot remains code.branch_pr with code mutation and required policy modules. Final closure bd65aae19808 changes only managed closure, incident, PR, and quality artifacts; the sole product diff remains the canonical shared isRecord import replacing the local helper."
     - "Independent final bun run guards:check passes. Prior fresh TESTER evidence records core KnowledgeRef 38/38, agentplane KnowledgeRef 10/10, typecheck, lint:core, critical 72/72, knip, hotspots, format, routing, and doctor passing."
 commit:
-  hash: "c36c0a32f53395014d6d9a6337229283572c67bf"
-  message: "🧪 75Q4J6 task: record verification evidence"
+  hash: "298f970f74aed1a0a2dc87fd8485d3fb7c77b463"
+  message: "🧪 75Q4J6 task: record final quality review"
 comments:
   -
     author: "CODER"
@@ -56,6 +56,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -83,8 +86,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-25T17:01:24.439Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T16:56:25.070Z"
+doc_updated_at: "2026-07-25T17:01:24.439Z"
 doc_updated_by: "CODER"
 description: "Replace the inherited local isRecord helper in KnowledgeRef with the canonical shared guard so guards:check passes on main before RF06b integration."
 sections:
@@ -175,8 +185,8 @@ sections:
       Resolution: Accept the implementation for hosted verification and integration.
 extensions:
   implementation_commit:
-    hash: "3e88523f6f7ddb8ffcd4115c1741d1503c6c318e"
-    message: "🐛 75Q4J6 reliability: restore canonical record guard"
+    hash: "bd65aae198086282959f23c9996521df2a3df6a5"
+    message: "🧪 75Q4J6 task: pre-merge closure"
 id_source: "generated"
 ---
 ## Summary
