@@ -1,10 +1,11 @@
 ---
 id: "202607251715-D9HW3D"
 title: "Preserve compact incident registry formatting"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -26,16 +27,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-25T17:28:30.085Z"
+  updated_by: "TESTER"
+  note: "Verified published head 57da81c6: runtime incidents 10/10, mirror 1/1, CLI incidents 10/10, format, templates, TypeScript, targeted lint, policy routing, and doctor pass. Legacy compact input is normalized to the Prettier-compatible header and mirrors remain byte-identical."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-25T17:33:30.155Z"
+  updated_by: "EVALUATOR"
+  note: "Compact incident registry rendering preserves the required heading blank line while retaining legacy compact parsing and byte-identical canonical/asset mirrors."
+  evaluated_sha: "b0b3c38440851f91f9d80b90f6c2e5733ccbcce1"
+  blueprint_digest: "afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424"
+  evidence_refs:
+    - ".agentplane/tasks/202607251715-D9HW3D/README.md"
+    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-173330155-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-173330155-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607251715-D9HW3D/quality/20260725-173330155-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607251715-D9HW3D/blueprint/resolved-snapshot.json"
+    - "b0b3c3844; focused incidents suite 21/21; format:check pass; agents:check pass; boundary probe 95+1=100 and 96+1=101"
+  findings:
+    - "The new blank line intentionally consumes one physical policy-budget line; the exact boundary remains 95 existing compact entries plus one promotion at 100 lines, while 96 plus one is rejected."
+commit:
+  hash: "b0b3c38440851f91f9d80b90f6c2e5733ccbcce1"
+  message: "🧪 D9HW3D incidents: retain legacy compact fixture"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: approved narrow repair for compact incident registry rendering and regression coverage; it unblocks the verified hosted formatting failure without altering the active incident content manually."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -44,9 +67,22 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: approved narrow repair for compact incident registry rendering and regression coverage; it unblocks the verified hosted formatting failure without altering the active incident content manually."
+  -
+    type: "verify"
+    at: "2026-07-25T17:28:30.085Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified published head 57da81c6: runtime incidents 10/10, mirror 1/1, CLI incidents 10/10, format, templates, TypeScript, targeted lint, policy routing, and doctor pass. Legacy compact input is normalized to the Prettier-compatible header and mirrors remain byte-identical."
+  -
+    type: "status"
+    at: "2026-07-25T17:33:55.438Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T17:15:18.391Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-07-25T17:33:55.439Z"
+doc_updated_by: "CODER"
 description: "Repair the incident-registry renderer so compact rewrites retain the required blank line after the heading, keep the canonical and asset mirrors byte-identical, and add regression coverage. This unblocks the hosted format check for task 202607251433-75Q4J6 without manually editing a policy log in that task."
 sections:
   Summary: |-
@@ -67,6 +103,36 @@ sections:
     5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-25T17:28:30.085Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified published head 57da81c6: runtime incidents 10/10, mirror 1/1, CLI incidents 10/10, format, templates, TypeScript, targeted lint, policy routing, and doctor pass. Legacy compact input is normalized to the Prettier-compatible header and mirrors remain byte-identical.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T17:15:18.391Z, excerpt_hash=sha256:2d03d77e36376633d6a26412923e23091dde0230ad77269c736c2def2f69eb01
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251715-D9HW3D-preserve-compact-incident-registry-formatting/.agentplane/tasks/202607251715-D9HW3D/blueprint/resolved-snapshot.json
+    - old_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+    - current_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607251715-D9HW3D
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607251715-D9HW3D
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -102,6 +168,36 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-25T17:28:30.085Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified published head 57da81c6: runtime incidents 10/10, mirror 1/1, CLI incidents 10/10, format, templates, TypeScript, targeted lint, policy routing, and doctor pass. Legacy compact input is normalized to the Prettier-compatible header and mirrors remain byte-identical.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T17:15:18.391Z, excerpt_hash=sha256:2d03d77e36376633d6a26412923e23091dde0230ad77269c736c2def2f69eb01
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607251715-D9HW3D-preserve-compact-incident-registry-formatting/.agentplane/tasks/202607251715-D9HW3D/blueprint/resolved-snapshot.json
+- old_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+- current_digest: afe0e20728b15b8d9b47cd281b4d34e77988acc95fdf57bf46b0a1fa306c4424
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607251715-D9HW3D
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607251715-D9HW3D
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
