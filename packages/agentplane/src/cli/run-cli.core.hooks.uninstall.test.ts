@@ -1,17 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { execFile, execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import {
-  chmod,
-  mkdir,
-  mkdtemp,
-  readdir,
-  readFile,
-  realpath,
-  rm,
-  writeFile,
-} from "node:fs/promises";
-import os from "node:os";
+import { chmod, mkdir, readdir, readFile, realpath, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -44,6 +34,7 @@ import {
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkTempDir,
   pathExists,
   stageGitignoreIfPresent,
   stubTaskBackend,
@@ -94,7 +85,7 @@ describe("runCli hooks uninstall", { timeout: HOOKS_SUITE_TIMEOUT_MS }, () => {
   });
 
   it("hooks uninstall maps errors for non-git roots", async () => {
-    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const root = await mkTempDir();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
     await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();

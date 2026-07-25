@@ -2,10 +2,10 @@
 id: "202607250036-DFWJM6"
 title: "Publish rebased PR branches with an explicit force-with-lease"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -27,15 +27,15 @@ verify:
   - "bun run hotspots:check"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-25T00:36:53.216Z"
+  updated_at: "2026-07-25T03:04:57.475Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-25T01:26:53.345Z"
+  state: "needs_rework"
+  updated_at: "2026-07-25T01:43:58.774Z"
   updated_by: "TESTER"
-  note: "Verified c0f4d84b6685: exact observed local object is the force-push source; deterministic source-race regression plus repository, lease, refusal, and destination-race coverage pass (21/21). Typecheck, lint:core, hotspots, architecture, task-state, routing, Prettier, task lint, and diff-check pass. Independent re-review: PASS."
-  attempts: 0
+  note: "Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease identity, and SKIPPED check state must be aligned before integration."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -55,9 +55,7 @@ quality_review:
     - "bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts: 21/21 passed"
   findings:
     - "Exact observed localHead source and exact destination lease are both preserved; fake git moves HEAD immediately before push without changing the published source object."
-commit:
-  hash: "c0f4d84b6685088df363cfe2cc165023e6f5d255"
-  message: "🛡️ DFWJM6 task: pin observed PR push source"
+commit: null
 comments:
   -
     author: "CODER"
@@ -128,8 +126,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T01:43:58.774Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease identity, and SKIPPED check state must be aligned before integration."
 doc_version: 3
-doc_updated_at: "2026-07-25T01:28:05.018Z"
+doc_updated_at: "2026-07-25T03:04:48.323Z"
 doc_updated_by: "CODER"
 description: "Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety."
 sections:
@@ -138,20 +142,26 @@ sections:
 
     Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety.
   Scope: |-
-    - In scope: Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety.
-    - Out of scope: unrelated refactors not required for "Publish rebased PR branches with an explicit force-with-lease".
+    - In scope: publish an existing matching open PR after a local rebase only through an exact observed source object and ref-scoped force-with-lease bound to the observed remote head.
+    - Required hosted-CI rework: align integration fixtures with evaluator provenance, queue identity, SKIPPED checks, canonical base pinning, exact published provider/upstream head, and fresh pre-merge closure.
+    - Required compatibility fix: preserve a structurally valid pre_merge_closure marker when forward-compatible PR metadata fallback reconstructs metadata with a future enum value.
+    - Required test-infrastructure hardening: unique fake GitHub directories, awaited cleanup of hosted-fixture resources, full removal of harness-managed roots after every scenario, per-file Git-template cleanup, and migration of direct non-git fixtures into that lifecycle.
+    - Out of scope: unrelated publication behavior, provider semantics, or production refactors not required by these enforced regressions.
   Plan: |-
     1. Reproduce the existing-open-PR non-fast-forward publication route without touching RF08.
-    2. Add a narrow decision that authorizes only ref-scoped --force-with-lease=<remote-ref>:<observed-head> when the open PR head exactly matches the local task branch and the observed upstream is stale.
-    3. Preserve fail-closed behavior for missing/mismatched PR metadata, wrong upstream/branch, and remote races.
-    4. Add focused regression tests for success and all safety refusals; run focused tests, typecheck, lint, lifecycle guards, and task verification.
-    5. Commit with DCO and leave the task branch unintegrated for parent review.
+    2. Authorize only an exact observed source object and ref-scoped force-with-lease bound to the observed remote head and canonical GitHub repository.
+    3. Preserve fail-closed behavior for wrong repository, branch, upstream, PR identity, source races, and destination races.
+    4. Align hosted PR integration fixtures with mandatory evaluator provenance, queue identity, SKIPPED check state, exact published head, and fresh pre-merge closure.
+    5. Preserve a structurally valid pre_merge_closure marker when forward-compatible PR metadata fallback handles a future enum value; keep invalid markers fail-closed.
+    6. Make fake-provider fixtures collision-safe, clean all harness-managed test roots after every scenario, remove per-file Git templates, and route direct non-git fixtures through the same lifecycle.
+    7. Run focused publication tests, parser and routed PR regressions, the affected cleanup suites, full fast CI, typecheck, lint, formatting, lifecycle guards, and independent review before publication.
   Verify Steps: |-
-    1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: the exact observed local object is the force-push source, and repository, lease, refusal, destination-race, and source-race regressions pass.
-    2. Run `bun run typecheck`. Expected: all TypeScript packages compile without errors.
-    3. Run `bun run lint:core`. Expected: repository core lint passes without new findings; the unrelated website lint baseline is reported separately.
-    4. Run `bun run hotspots:check`. Expected: the extracted publication module and focused regression suite stay within repository size budgets.
-    5. Run `agentplane task lint --verify-steps-changed`. Expected: task documentation and acceptance coverage pass.
+    1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: exact source object, repository identity, lease, refusal, destination-race, and source-race regressions pass.
+    2. Run `bunx vitest run packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-*.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts`. Expected: closure compatibility and hosted integration regressions pass.
+    3. Run the seven CLI suites that exercise non-git and hosted-fixture roots, then confirm no new `agentplane-cli-test-*`, `agentplane-git-template-*`, or `agentplane-home-*` directories remain. Expected: all affected tests pass and the recent-temp query is empty.
+    4. Run `node scripts/checks/run-local-ci.mjs --mode fast --changed-files packages/agentplane/src/commands/pr/branch-publication.ts` and `bun run ci:local:fast`. Expected: the targeted PR route and the full fast suite pass.
+    5. Run `bun run typecheck`, `bun run lint:core`, `bun run hotspots:check`, and `bun run format:check`. Expected: code, types, formatting, and repository budgets pass.
+    6. Run `agentplane task lint --verify-steps-changed` and `node .agentplane/policy/check-routing.mjs`. Expected: task documentation and policy routing pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-25T01:06:30.385Z — VERIFY — ok
@@ -244,26 +254,64 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T01:43:58.774Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease identity, and SKIPPED check state must be aligned before integration.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T01:28:05.018Z, excerpt_hash=sha256:e0575c766a7b46b94c022d38e9b17477df476e087e83bbb4d9606eb99abb00f2
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+    - old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
   Findings: |-
     - The fallback runs only after a normal task-branch push fails and requires the current branch plus exact `origin/<branch>` upstream.
-    - Force publication is authorized only when origin fetch/push URLs resolve to one identical canonical GitHub repository, the linked PR number is OPEN for the exact branch/base, and the provider head equals the observed remote head. The push uses only `--force-with-lease=refs/heads/<branch>:<observed-head>`.
-    - Wrong upstream/current branch, mismatched repository/head, closed or missing PR, and a remote race are covered by explicit fail-closed regression tests.
-    - Independent safety re-review verdict: PASS with no remaining findings.
-    - Full `bun run lint` remains red on unchanged `website/scripts/generate-social-images.mjs:207` (`unicorn/prefer-string-replace-all`); `bun run lint:core` and targeted ESLint pass. This task does not widen into website cleanup.
+    - Force publication is authorized only when origin fetch/push URLs resolve to one identical canonical GitHub repository, the linked PR number is OPEN for the exact branch/base, and the provider head equals the observed remote head. The push uses only `--force-with-lease=refs/heads/<branch>:<observed-head>` and the exact observed local object as source.
+    - Wrong upstream/current branch, mismatched repository/head, closed or missing PR, a destination race, and a source-side HEAD race are covered by explicit fail-closed regressions.
+    - Independent safety re-review of the production publication guard passed with no remaining findings.
+    - Full `bun run lint` remains red on the unchanged website baseline; `bun run lint:core` and targeted ESLint are the scoped gates.
 
-    - Observation: The lease protected only the destination ref while the source refspec remained HEAD.
-      Impact: A concurrent checkout or amend after observation could publish an unobserved source commit under a valid destination lease.
-      Resolution: Use the observed local object ID as the source refspec and add a deterministic source-race regression.
+    - Observation: The hosted routed PR suite initially failed 18 tests because legacy fixtures lacked mandatory evaluator provenance, queue identity, SKIPPED check normalization, exact hosted head, and fresh pre-merge closure.
+      Impact: PR publication could not satisfy the same route enforced by GitHub even though the narrow production publication tests passed.
+      Resolution: A shared hosted fixture now establishes canonical base identity, real local upstream publication, exact fake-provider head, fresh closure, stable projections, and cleanup. The exact route passes 22/22 files and 134/134 tests.
+
+    - Observation: Forward-compatible parsing discarded a valid pre_merge_closure marker when a future status value triggered fallback reconstruction.
+      Impact: Integrate incorrectly reported a missing closure for otherwise valid future metadata.
+      Resolution: Preserve only structurally valid raw closure markers through fallback parsing, retaining future nested fields while invalid markers remain fail-closed.
+
+    - Observation: Date-based fake GitHub directories could collide across workers and the hosted helper leaked its temporary provider and bare-remote directories.
+      Impact: Parallel CI could become flaky and repeated runs consumed disk.
+      Resolution: Use mkdtemp-backed unique provider directories and awaited lifecycle cleanup for every temporary resource created by the hosted helper.
+
+    - Observation: The CLI harness cleared only nested release artifacts and forgot every registered test root; eight direct non-git fixtures also bypassed registration.
+      Impact: A focused integration run left hundreds of agentplane-cli-test directories and hundreds of MiB behind, making repeated verification capable of exhausting disk space.
+      Resolution: Remove registered roots after each scenario, delete the per-file Git template after all tests, and route every direct non-git fixture through mkTempDir.
       Promotion: incident-candidate
       Fixability: repo-fixable
-
-    - Observation: GitHub review P1 source-side race is resolved and independently re-reviewed PASS.
-      Impact: Force publication can no longer substitute a concurrent worktree HEAD for the commit that passed local/provider/remote observation.
-      Resolution: The refspec source is the validated observed local object ID; a nondestructive fake-git `update-ref HEAD` immediately before push proves the remote still receives that object rather than the changed HEAD.
 extensions:
   implementation_commit:
     hash: "8d06aecb7afa3fdfa272288e0a4bab6ae49ee133"
@@ -278,24 +326,30 @@ Harden ap pr open so an existing matching open PR can publish a locally rebased 
 
 ## Scope
 
-- In scope: Harden ap pr open so an existing matching open PR can publish a locally rebased task branch only with an explicit ref-scoped force-with-lease bound to the observed remote head, while preserving wrong-branch, wrong-upstream, and remote-race safety.
-- Out of scope: unrelated refactors not required for "Publish rebased PR branches with an explicit force-with-lease".
+- In scope: publish an existing matching open PR after a local rebase only through an exact observed source object and ref-scoped force-with-lease bound to the observed remote head.
+- Required hosted-CI rework: align integration fixtures with evaluator provenance, queue identity, SKIPPED checks, canonical base pinning, exact published provider/upstream head, and fresh pre-merge closure.
+- Required compatibility fix: preserve a structurally valid pre_merge_closure marker when forward-compatible PR metadata fallback reconstructs metadata with a future enum value.
+- Required test-infrastructure hardening: unique fake GitHub directories, awaited cleanup of hosted-fixture resources, full removal of harness-managed roots after every scenario, per-file Git-template cleanup, and migration of direct non-git fixtures into that lifecycle.
+- Out of scope: unrelated publication behavior, provider semantics, or production refactors not required by these enforced regressions.
 
 ## Plan
 
 1. Reproduce the existing-open-PR non-fast-forward publication route without touching RF08.
-2. Add a narrow decision that authorizes only ref-scoped --force-with-lease=<remote-ref>:<observed-head> when the open PR head exactly matches the local task branch and the observed upstream is stale.
-3. Preserve fail-closed behavior for missing/mismatched PR metadata, wrong upstream/branch, and remote races.
-4. Add focused regression tests for success and all safety refusals; run focused tests, typecheck, lint, lifecycle guards, and task verification.
-5. Commit with DCO and leave the task branch unintegrated for parent review.
+2. Authorize only an exact observed source object and ref-scoped force-with-lease bound to the observed remote head and canonical GitHub repository.
+3. Preserve fail-closed behavior for wrong repository, branch, upstream, PR identity, source races, and destination races.
+4. Align hosted PR integration fixtures with mandatory evaluator provenance, queue identity, SKIPPED check state, exact published head, and fresh pre-merge closure.
+5. Preserve a structurally valid pre_merge_closure marker when forward-compatible PR metadata fallback handles a future enum value; keep invalid markers fail-closed.
+6. Make fake-provider fixtures collision-safe, clean all harness-managed test roots after every scenario, remove per-file Git templates, and route direct non-git fixtures through the same lifecycle.
+7. Run focused publication tests, parser and routed PR regressions, the affected cleanup suites, full fast CI, typecheck, lint, formatting, lifecycle guards, and independent review before publication.
 
 ## Verify Steps
 
-1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: the exact observed local object is the force-push source, and repository, lease, refusal, destination-race, and source-race regressions pass.
-2. Run `bun run typecheck`. Expected: all TypeScript packages compile without errors.
-3. Run `bun run lint:core`. Expected: repository core lint passes without new findings; the unrelated website lint baseline is reported separately.
-4. Run `bun run hotspots:check`. Expected: the extracted publication module and focused regression suite stay within repository size budgets.
-5. Run `agentplane task lint --verify-steps-changed`. Expected: task documentation and acceptance coverage pass.
+1. Run `bunx vitest run packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts packages/agentplane/src/commands/pr/internal/sync-github.test.ts`. Expected: exact source object, repository identity, lease, refusal, destination-race, and source-race regressions pass.
+2. Run `bunx vitest run packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-*.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts`. Expected: closure compatibility and hosted integration regressions pass.
+3. Run the seven CLI suites that exercise non-git and hosted-fixture roots, then confirm no new `agentplane-cli-test-*`, `agentplane-git-template-*`, or `agentplane-home-*` directories remain. Expected: all affected tests pass and the recent-temp query is empty.
+4. Run `node scripts/checks/run-local-ci.mjs --mode fast --changed-files packages/agentplane/src/commands/pr/branch-publication.ts` and `bun run ci:local:fast`. Expected: the targeted PR route and the full fast suite pass.
+5. Run `bun run typecheck`, `bun run lint:core`, `bun run hotspots:check`, and `bun run format:check`. Expected: code, types, formatting, and repository budgets pass.
+6. Run `agentplane task lint --verify-steps-changed` and `node .agentplane/policy/check-routing.mjs`. Expected: task documentation and policy routing pass.
 
 ## Verification
 
@@ -390,6 +444,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T01:43:58.774Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted verify-routed exposed stale PR-flow fixtures: mandatory evaluator provenance, queue lease identity, and SKIPPED check state must be aligned before integration.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T01:28:05.018Z, excerpt_hash=sha256:e0575c766a7b46b94c022d38e9b17477df476e087e83bbb4d9606eb99abb00f2
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607250036-DFWJM6-force-with-lease-pr-publish/.agentplane/tasks/202607250036-DFWJM6/blueprint/resolved-snapshot.json
+- old_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- current_digest: a255b5654fa8c385f8d0caf83ac4d4b7f92c5d9389483db96ba4d4989c20dc43
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607250036-DFWJM6
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- diagnostic_command: agentplane task next-action 202607250036-DFWJM6 --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -400,17 +484,25 @@ DecisionContextRef:
 ## Findings
 
 - The fallback runs only after a normal task-branch push fails and requires the current branch plus exact `origin/<branch>` upstream.
-- Force publication is authorized only when origin fetch/push URLs resolve to one identical canonical GitHub repository, the linked PR number is OPEN for the exact branch/base, and the provider head equals the observed remote head. The push uses only `--force-with-lease=refs/heads/<branch>:<observed-head>`.
-- Wrong upstream/current branch, mismatched repository/head, closed or missing PR, and a remote race are covered by explicit fail-closed regression tests.
-- Independent safety re-review verdict: PASS with no remaining findings.
-- Full `bun run lint` remains red on unchanged `website/scripts/generate-social-images.mjs:207` (`unicorn/prefer-string-replace-all`); `bun run lint:core` and targeted ESLint pass. This task does not widen into website cleanup.
+- Force publication is authorized only when origin fetch/push URLs resolve to one identical canonical GitHub repository, the linked PR number is OPEN for the exact branch/base, and the provider head equals the observed remote head. The push uses only `--force-with-lease=refs/heads/<branch>:<observed-head>` and the exact observed local object as source.
+- Wrong upstream/current branch, mismatched repository/head, closed or missing PR, a destination race, and a source-side HEAD race are covered by explicit fail-closed regressions.
+- Independent safety re-review of the production publication guard passed with no remaining findings.
+- Full `bun run lint` remains red on the unchanged website baseline; `bun run lint:core` and targeted ESLint are the scoped gates.
 
-- Observation: The lease protected only the destination ref while the source refspec remained HEAD.
-  Impact: A concurrent checkout or amend after observation could publish an unobserved source commit under a valid destination lease.
-  Resolution: Use the observed local object ID as the source refspec and add a deterministic source-race regression.
+- Observation: The hosted routed PR suite initially failed 18 tests because legacy fixtures lacked mandatory evaluator provenance, queue identity, SKIPPED check normalization, exact hosted head, and fresh pre-merge closure.
+  Impact: PR publication could not satisfy the same route enforced by GitHub even though the narrow production publication tests passed.
+  Resolution: A shared hosted fixture now establishes canonical base identity, real local upstream publication, exact fake-provider head, fresh closure, stable projections, and cleanup. The exact route passes 22/22 files and 134/134 tests.
+
+- Observation: Forward-compatible parsing discarded a valid pre_merge_closure marker when a future status value triggered fallback reconstruction.
+  Impact: Integrate incorrectly reported a missing closure for otherwise valid future metadata.
+  Resolution: Preserve only structurally valid raw closure markers through fallback parsing, retaining future nested fields while invalid markers remain fail-closed.
+
+- Observation: Date-based fake GitHub directories could collide across workers and the hosted helper leaked its temporary provider and bare-remote directories.
+  Impact: Parallel CI could become flaky and repeated runs consumed disk.
+  Resolution: Use mkdtemp-backed unique provider directories and awaited lifecycle cleanup for every temporary resource created by the hosted helper.
+
+- Observation: The CLI harness cleared only nested release artifacts and forgot every registered test root; eight direct non-git fixtures also bypassed registration.
+  Impact: A focused integration run left hundreds of agentplane-cli-test directories and hundreds of MiB behind, making repeated verification capable of exhausting disk space.
+  Resolution: Remove registered roots after each scenario, delete the per-file Git template after all tests, and route every direct non-git fixture through mkTempDir.
   Promotion: incident-candidate
   Fixability: repo-fixable
-
-- Observation: GitHub review P1 source-side race is resolved and independently re-reviewed PASS.
-  Impact: Force publication can no longer substitute a concurrent worktree HEAD for the commit that passed local/provider/remote observation.
-  Resolution: The refspec source is the validated observed local object ID; a nondestructive fake-git `update-ref HEAD` immediately before push proves the remote still receives that object rather than the changed HEAD.

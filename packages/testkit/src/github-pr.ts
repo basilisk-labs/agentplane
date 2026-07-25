@@ -1,10 +1,11 @@
-import { chmod, mkdir, writeFile } from "node:fs/promises";
+import { chmod, mkdtemp, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 type FakeGhHandle = {
   fakeBin: string;
   logPath: string;
+  scriptPath: string;
 };
 
 async function writeFakeGhScript(dir: string, body: string): Promise<FakeGhHandle> {
@@ -17,7 +18,7 @@ async function writeFakeGhScript(dir: string, body: string): Promise<FakeGhHandl
     await writeFile(ghPath, '#!/bin/sh\nnode "$(dirname "$0")/fake-gh.mjs" "$@"\n', "utf8");
     await chmod(ghPath, 0o755);
   }
-  return { fakeBin: dir, logPath: path.join(dir, "gh.log") };
+  return { fakeBin: dir, logPath: path.join(dir, "gh.log"), scriptPath };
 }
 
 export async function installFakeGhPrLookup(opts: {
@@ -26,12 +27,13 @@ export async function installFakeGhPrLookup(opts: {
   state?: "open" | "closed";
   mergedAt?: string | null;
   mergeCommitSha?: string | null;
+  headSha?: string;
+  prNumber?: number;
+  protectedBranch?: string;
 }): Promise<FakeGhHandle> {
-  const fakeBin = path.join(
-    os.tmpdir(),
-    `agentplane-gh-pr-lookup-${Date.now()}-${opts.scenarioName}`,
+  const fakeBin = await mkdtemp(
+    path.join(os.tmpdir(), `agentplane-gh-pr-lookup-${opts.scenarioName}-`),
   );
-  await mkdir(fakeBin, { recursive: true });
   return await writeFakeGhScript(
     fakeBin,
     [
@@ -40,25 +42,41 @@ export async function installFakeGhPrLookup(opts: {
       "const logPath = process.env.AGENTPLANE_GH_LOG;",
       "if (logPath) fs.appendFileSync(logPath, `${JSON.stringify(args)}\\n`);",
       'if (args[0] !== "api") { console.error("unexpected gh command"); process.exit(90); }',
+      'if (args[1] === "graphql") {',
+      "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
+      "  process.exit(0);",
+      "}",
       'const endpoint = args[1] ?? "";',
       'const [route, query = ""] = endpoint.split("?", 2);',
       "const params = new URLSearchParams(query);",
       `const expectedHead = ${JSON.stringify(`example:${opts.branch}`)};`,
-      `const response = ${JSON.stringify([
-        {
-          number: 321,
-          html_url: "https://github.com/example/repo/pull/321",
-          state: opts.state ?? "open",
-          merged_at: opts.mergedAt ?? null,
-          merge_commit_sha: opts.mergeCommitSha ?? null,
-          head: { sha: "remote-head-sha" },
-          base: { ref: "main" },
-        },
-      ])};`,
+      `const pr = ${JSON.stringify({
+        number: opts.prNumber ?? 321,
+        html_url: `https://github.com/example/repo/pull/${opts.prNumber ?? 321}`,
+        state: opts.state ?? "open",
+        merged_at: opts.mergedAt ?? null,
+        merge_commit_sha: opts.mergeCommitSha ?? null,
+        head: { ref: opts.branch, sha: opts.headSha ?? "remote-head-sha" },
+        base: { ref: "main" },
+      })};`,
       'if (route === "repos/example/repo/pulls" && params.get("head") === expectedHead) {',
-      "  console.log(JSON.stringify(response));",
+      "  console.log(JSON.stringify([pr]));",
       "  process.exit(0);",
       "}",
+      `if (route === ${JSON.stringify(`repos/example/repo/pulls/${opts.prNumber ?? 321}`)}) {`,
+      "  console.log(JSON.stringify(pr));",
+      "  process.exit(0);",
+      "}",
+      ...(opts.protectedBranch
+        ? [
+            `if (route === ${JSON.stringify(
+              `repos/example/repo/branches/${opts.protectedBranch}/protection`,
+            )}) {`,
+            "  console.log(JSON.stringify({ required_pull_request_reviews: { required_approving_review_count: 0 } }));",
+            "  process.exit(0);",
+            "}",
+          ]
+        : []),
       'console.log("[]");',
       "process.exit(0);",
       "",
@@ -75,8 +93,9 @@ export async function installFakeGhPrApi(opts: {
   rejectEnvKey?: string;
   rejectEnvValue?: string;
 }): Promise<FakeGhHandle> {
-  const fakeBin = path.join(os.tmpdir(), `agentplane-gh-pr-api-${Date.now()}-${opts.scenarioName}`);
-  await mkdir(fakeBin, { recursive: true });
+  const fakeBin = await mkdtemp(
+    path.join(os.tmpdir(), `agentplane-gh-pr-api-${opts.scenarioName}-`),
+  );
   return await writeFakeGhScript(
     fakeBin,
     [
@@ -127,11 +146,9 @@ export async function installFakeGhPrApiRequiringPublishedPacketHead(opts: {
   packetCommitSubject: string;
   publishRemote: string;
 }): Promise<FakeGhHandle> {
-  const fakeBin = path.join(
-    os.tmpdir(),
-    `agentplane-gh-pr-api-head-${Date.now()}-${opts.scenarioName}`,
+  const fakeBin = await mkdtemp(
+    path.join(os.tmpdir(), `agentplane-gh-pr-api-head-${opts.scenarioName}-`),
   );
-  await mkdir(fakeBin, { recursive: true });
   return await writeFakeGhScript(
     fakeBin,
     [

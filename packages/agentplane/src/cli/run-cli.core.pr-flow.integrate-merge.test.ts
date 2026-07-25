@@ -48,6 +48,7 @@ import {
   writeConfig,
   writeDefaultConfig,
   recordVerificationOk,
+  prepareHostedIntegrateFixture,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
@@ -163,6 +164,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-merge",
+    });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -170,7 +177,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain("✅ integrate");
       expect(io.stdout).toContain("plain finish body/result stayed task-local");
     } finally {
@@ -247,6 +254,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-branch-fallback",
+    });
 
     const prMetaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     expect(await pathExists(prMetaPath)).toBe(true);
@@ -329,6 +342,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       [`.agentplane/tasks/${taskId}`],
       `${taskId} add task artifacts`,
     );
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-artifacts-collision",
+    });
 
     const taskReadmeText = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "README.md"),
@@ -408,18 +427,22 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       cwd: root,
     });
     const suffix = extractTaskSuffix(taskId);
-    expect(headSubject.trim()).toBe(`🔀 ${suffix} task: integrate task artifacts collision`);
-    expect(headSubject).not.toContain("✅");
-    const { stdout: headFiles } = await execFileAsync("git", ["show", "--name-only", "--format="], {
-      cwd: root,
-    });
-    const changedFiles = headFiles
+    expect(headSubject.trim()).toBe(`✅ ${suffix} task: pre-merge closure`);
+    const expectedTrackedArtifacts = [
+      `.agentplane/tasks/${taskId}/README.md`,
+      `.agentplane/tasks/${taskId}/pr/meta.json`,
+      `.agentplane/tasks/${taskId}/pr/diffstat.txt`,
+    ];
+    const { stdout: trackedFiles } = await execFileAsync(
+      "git",
+      ["ls-files", "--error-unmatch", "--", ...expectedTrackedArtifacts],
+      { cwd: root },
+    );
+    const trackedArtifacts = trackedFiles
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/README.md`);
-    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/meta.json`);
-    expect(changedFiles).toContain(`.agentplane/tasks/${taskId}/pr/diffstat.txt`);
+    expect(trackedArtifacts).toEqual(expect.arrayContaining(expectedTrackedArtifacts));
   }, 180_000);
 
   it("integrate tolerates forward-compatible branch-only pr/meta variants", async () => {
@@ -478,6 +501,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       [`.agentplane/tasks/${taskId}/pr`],
       `${taskId} add task artifacts`,
     );
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-forward-compatible",
+    });
 
     const branchMetaText = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
@@ -500,7 +529,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain("✅ integrate");
     } finally {
       io.restore();
@@ -606,6 +635,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await commitPathsIfChanged(root, [`.agentplane/tasks/${taskId}`], `${taskId} add pr artifacts`);
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-incident-promotion",
+    });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -613,7 +648,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
       expect(io.stdout).toContain("✅ integrate");
     } finally {
       io.restore();

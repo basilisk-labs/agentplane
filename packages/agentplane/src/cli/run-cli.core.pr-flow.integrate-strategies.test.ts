@@ -48,6 +48,7 @@ import {
   writeConfig,
   writeDefaultConfig,
   recordVerificationOk,
+  prepareHostedIntegrateFixture,
 } from "@agentplane/testkit";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
@@ -134,13 +135,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, ioTask.stderr).toBe(0);
       taskId = ioTask.stdout.trim();
     } finally {
       ioTask.restore();
     }
     await approveTaskPlan(root, taskId);
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
@@ -157,6 +157,18 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
     await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-subject-fallback",
+      finalHeadSubject: "wip",
+    });
+    const { stdout: sourceSubject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(sourceSubject.trim()).toBe("wip");
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -173,7 +185,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code, io.stderr).toBe(0);
     } finally {
       io.restore();
     }
@@ -188,7 +200,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       .filter(Boolean);
     const suffix = extractTaskSuffix(taskId);
     const closeSubject = subjects[0] ?? "";
-    expect(closeSubject).toContain("integrate subject fallback");
+    expect(closeSubject).toBe(`✅ ${suffix} task: pre-merge closure`);
     const mergeSubject = subjects[1] ?? "";
     expect(mergeSubject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
     expect(mergeSubject).toContain("Integrate subject fallback");
@@ -266,6 +278,34 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       [`.agentplane/tasks/${taskId}`],
       `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
     );
+    await prepareHostedIntegrateFixture({
+      root,
+      taskId,
+      branch,
+      scenarioName: "integrate-artifact-tip",
+    });
+    const suffix = extractTaskSuffix(taskId);
+    const { stdout: sourceSubject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(sourceSubject.trim()).toBe(`✅ ${suffix} task: pre-merge closure`);
+    const { stdout: sourcePaths } = await execFileAsync(
+      "git",
+      ["show", "--name-only", "--format=", "HEAD"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    const sourceChangedPaths = sourcePaths
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+    expect(sourceChangedPaths.length).toBeGreaterThan(0);
+    expect(
+      sourceChangedPaths.every((filePath) => filePath.startsWith(`.agentplane/tasks/${taskId}/`)),
+    ).toBe(true);
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
     await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -295,11 +335,10 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    const suffix = extractTaskSuffix(taskId);
     const mergeSubject = subjects[1] ?? "";
     expect(mergeSubject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
     expect(mergeSubject).toContain("Integrate subject ignores artifact tip");
-    expect(mergeSubject).not.toContain("refresh task artifacts after commit");
+    expect(mergeSubject).not.toContain("pre-merge closure");
   }, 180_000);
 
   it(
@@ -361,6 +400,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      await prepareHostedIntegrateFixture({
+        root,
+        taskId,
+        branch,
+        scenarioName: "integrate-dry-run",
+      });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -451,6 +496,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      await prepareHostedIntegrateFixture({
+        root,
+        taskId,
+        branch,
+        scenarioName: "integrate-default-merge",
+      });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);
@@ -536,6 +587,12 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} refresh verification`);
       await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
       await commitPathsIfChanged(root, [".agentplane/tasks"], `${taskId} add pr artifacts`);
+      await prepareHostedIntegrateFixture({
+        root,
+        taskId,
+        branch,
+        scenarioName: "integrate-rebase-strategy",
+      });
 
       await execFileAsync("git", ["checkout", "main"], { cwd: root });
       await runCliSilent(["branch", "base", "set", "main", "--root", root]);

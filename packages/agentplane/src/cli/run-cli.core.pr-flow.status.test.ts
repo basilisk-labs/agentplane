@@ -67,12 +67,12 @@ async function installFakeGh(
       "  console.log(JSON.stringify([",
       '    { name: "unit", state: "SUCCESS" },',
       '    { name: "lint", state: "PENDING" },',
-      '    { name: "static", state: "SKIPPING" }',
+      '    { name: "static", state: "SKIPPED" }',
       "  ]));",
       `  process.exit(${opts.checksExitCode});`,
       "}",
       'if (args[0] === "api" && args[1] === "graphql") {',
-      "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [] } } } } }));",
+      "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
       "  process.exit(0);",
       "}",
       "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
@@ -198,6 +198,9 @@ describe("runCli pr flow status", () => {
             pr_url: null,
             priority: 0,
             status: "handoff",
+            claimed_by: "integrator",
+            claimed_at: "2026-01-01T00:00:00.000Z",
+            lease_expires_at: "2099-01-01T00:30:00.000Z",
             enqueued_at: "2026-01-01T00:00:00.000Z",
             updated_at: "2026-01-01T00:01:00.000Z",
             reason: "protected base handoff recorded",
@@ -510,7 +513,13 @@ describe("runCli pr flow status", () => {
     const queue = JSON.parse(await readFile(queuePath, "utf8")) as {
       entries: Record<string, unknown>[];
     };
-    queue.entries[0] = { ...queue.entries[0], status: "handoff" };
+    queue.entries[0] = {
+      ...queue.entries[0],
+      status: "handoff",
+      claimed_by: "integrator",
+      claimed_at: "2026-01-01T00:00:00.000Z",
+      lease_expires_at: "2099-01-01T00:30:00.000Z",
+    };
     await writeFile(queuePath, `${JSON.stringify(queue)}\n`, "utf8");
 
     const handoffIo = captureStdIO();

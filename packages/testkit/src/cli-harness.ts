@@ -1,14 +1,17 @@
 import { execFile } from "node:child_process";
-import { access, cp, mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterAll, afterEach, beforeAll, beforeEach } from "vitest";
 
 import { defaultConfig, saveConfig } from "@agentplaneorg/core/config";
+import { readTask } from "@agentplaneorg/core/tasks";
 
+import { runCli } from "./agentplane-internal.js";
 import { resetRecipeArchiveCache } from "./cli-harness/recipe-archives.js";
-import { runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
+import { captureStdIO, runCliSilent, silenceStdIO } from "./cli-harness/stdio.js";
+import { installFakeGhPrLookup } from "./github-pr.js";
 import { makeTaskBackendDouble } from "./task.js";
 
 export * from "./cli-harness/recipe-archives.js";
@@ -28,6 +31,22 @@ const originalGitCommitterEmail = process.env.GIT_COMMITTER_EMAIL;
 const originalHookRunner = process.env.AGENTPLANE_HOOK_RUNNER;
 let gitTemplateRoot: string | null = null;
 let gitTemplatePromise: Promise<string> | null = null;
+let harnessLifecycleRegistered = false;
+const testEnvRestorations: (() => void | Promise<void>)[] = [];
+
+function restoreEnvValue(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name];
+  } else {
+    process.env[name] = value;
+  }
+}
+
+function registerTestTempPath(tempPath: string): void {
+  testEnvRestorations.push(async () => {
+    await rm(tempPath, { recursive: true, force: true });
+  });
+}
 
 async function ensureGitTemplateRoot(): Promise<string> {
   if (gitTemplateRoot) return gitTemplateRoot;
@@ -57,7 +76,21 @@ async function copyDirContents(src: string, dest: string): Promise<void> {
   );
 }
 
+afterEach(async () => {
+  const roots = [...testRoots];
+  testRoots.clear();
+  await Promise.all(roots.map((root) => rm(root, { recursive: true, force: true })));
+});
+
+afterAll(async () => {
+  if (!gitTemplateRoot) return;
+  await rm(gitTemplateRoot, { recursive: true, force: true });
+  gitTemplateRoot = null;
+  gitTemplatePromise = null;
+});
+
 export function registerAgentplaneHome(): void {
+  harnessLifecycleRegistered = true;
   beforeAll(async () => {
     agentplaneHome = await mkdtemp(path.join(os.tmpdir(), "agentplane-home-"));
     process.env.AGENTPLANE_HOME = agentplaneHome;
@@ -78,6 +111,7 @@ export function registerAgentplaneHome(): void {
   afterAll(async () => {
     if (agentplaneHome) {
       await rm(agentplaneHome, { recursive: true, force: true });
+      agentplaneHome = null;
     }
     if (originalAgentplaneHome === undefined) {
       delete process.env.AGENTPLANE_HOME;
@@ -102,15 +136,8 @@ export function registerAgentplaneHome(): void {
   });
 
   afterEach(async () => {
+    for (const restore of testEnvRestorations.splice(0).toReversed()) await restore();
     await resetRecipeArchiveCache();
-    const roots = [...testRoots];
-    testRoots.clear();
-    await Promise.all(
-      roots.map(async (root) => {
-        await rm(path.join(root, ".agentplane", ".upgrade"), { recursive: true, force: true });
-        await rm(path.join(root, ".agentplane", ".release"), { recursive: true, force: true });
-      }),
-    );
   });
 }
 
@@ -219,21 +246,331 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
     "--root",
     root,
   ]);
-  await runCliSilent([
-    "evaluator",
-    "run",
-    taskId,
-    "--verdict",
-    "pass",
-    "--summary",
-    "Test harness quality review passed.",
-    "--finding",
-    "Harness fixture reviewed scope, verification state, and integration readiness.",
-    "--evidence",
-    `.agentplane/tasks/${taskId}/README.md`,
+  await recordQualityReviewPass(root, taskId);
+}
+
+export async function recordQualityReviewPass(root: string, taskId: string): Promise<void> {
+  const io = captureStdIO();
+  let code: number;
+  try {
+    code = await runCli([
+      "evaluator",
+      "run",
+      taskId,
+      "--provenance",
+      "evaluator_supplied",
+      "--verdict",
+      "pass",
+      "--summary",
+      "Test harness quality review passed.",
+      "--finding",
+      "Harness fixture reviewed scope, verification state, and integration readiness.",
+      "--evidence",
+      `.agentplane/tasks/${taskId}/README.md`,
+      "--root",
+      root,
+    ]);
+  } finally {
+    io.restore();
+  }
+  if (code !== 0) {
+    throw new Error(
+      `Failed to record quality review for ${taskId} (exit ${code}): ${io.stderr.trim()}`,
+    );
+  }
+}
+
+export async function prepareHostedIntegrateFixture(opts: {
+  root: string;
+  taskId: string;
+  branch: string;
+  scenarioName: string;
+  protectedBase?: boolean;
+  finalHeadSubject?: string;
+}): Promise<{ headSha: string; logPath: string }> {
+  if (!harnessLifecycleRegistered) {
+    throw new Error(
+      "prepareHostedIntegrateFixture requires installRunCliIntegrationHarness() lifecycle hooks",
+    );
+  }
+  const env = cleanGitEnv();
+  const { stdout: currentBranchRaw } = await execFileAsync("git", ["branch", "--show-current"], {
+    cwd: opts.root,
+    env,
+  });
+  const currentBranch = currentBranchRaw.trim();
+  if (currentBranch !== opts.branch) {
+    throw new Error(
+      `prepareHostedIntegrateFixture must run on ${opts.branch} (current: ${currentBranch || "<detached>"})`,
+    );
+  }
+  const { stdout: baselineStatusRaw } = await execFileAsync(
+    "git",
+    ["status", "--short", "--untracked-files=all"],
+    { cwd: opts.root, env },
+  );
+
+  const runFixtureStep = async (label: string, args: string[]): Promise<void> => {
+    const io = captureStdIO();
+    let code: number;
+    try {
+      code = await runCli(args);
+    } finally {
+      io.restore();
+    }
+    if (code !== 0) {
+      throw new Error(`${label} failed for ${opts.taskId} (exit ${code}): ${io.stderr.trim()}`);
+    }
+  };
+  await runFixtureStep("Base branch pin", ["branch", "base", "set", "main", "--root", opts.root]);
+
+  const publishRemote = await mkTempDir();
+  registerTestTempPath(publishRemote);
+  await execFileAsync("git", ["init", "--bare", "--quiet", publishRemote], {
+    cwd: opts.root,
+    env,
+  });
+  const remoteExists = await execFileAsync("git", ["remote", "get-url", "origin"], {
+    cwd: opts.root,
+    env,
+  })
+    .then(() => true)
+    .catch(() => false);
+  await execFileAsync(
+    "git",
+    remoteExists
+      ? ["remote", "set-url", "origin", "https://github.com/example/repo.git"]
+      : ["remote", "add", "origin", "https://github.com/example/repo.git"],
+    { cwd: opts.root, env },
+  );
+  await execFileAsync("git", ["remote", "set-url", "--push", "origin", publishRemote], {
+    cwd: opts.root,
+    env,
+  });
+
+  const previousGhBin = process.env.AGENTPLANE_GH_BIN;
+  const previousGhArgs = process.env.AGENTPLANE_GH_ARGS;
+  const previousGhLog = process.env.AGENTPLANE_GH_LOG;
+  const previousGhToken = process.env.GH_TOKEN;
+  const previousGithubToken = process.env.GITHUB_TOKEN;
+  testEnvRestorations.push(() => {
+    restoreEnvValue("AGENTPLANE_GH_BIN", previousGhBin);
+    restoreEnvValue("AGENTPLANE_GH_ARGS", previousGhArgs);
+    restoreEnvValue("AGENTPLANE_GH_LOG", previousGhLog);
+    restoreEnvValue("GH_TOKEN", previousGhToken);
+    restoreEnvValue("GITHUB_TOKEN", previousGithubToken);
+  });
+  if (opts.protectedBase) {
+    process.env.GH_TOKEN = "";
+    process.env.GITHUB_TOKEN = "";
+  }
+  const activateFakeGh = (fakeGh: Awaited<ReturnType<typeof installFakeGhPrLookup>>): void => {
+    process.env.AGENTPLANE_GH_BIN = process.execPath;
+    process.env.AGENTPLANE_GH_ARGS = JSON.stringify([fakeGh.scriptPath]);
+    process.env.AGENTPLANE_GH_LOG = fakeGh.logPath;
+  };
+
+  const { stdout: initialHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: opts.root,
+    env,
+  });
+  const initialFakeGh = await installFakeGhPrLookup({
+    scenarioName: `${opts.scenarioName}-initial`,
+    branch: opts.branch,
+    headSha: initialHeadRaw.trim(),
+  });
+  registerTestTempPath(initialFakeGh.fakeBin);
+  activateFakeGh(initialFakeGh);
+  await runFixtureStep("Initial PR publication", [
+    "pr",
+    "open",
+    opts.taskId,
+    "--author",
+    "CODER",
+    "--branch",
+    opts.branch,
     "--root",
-    root,
+    opts.root,
   ]);
+  await commitPathsIfChanged(
+    opts.root,
+    [`.agentplane/tasks/${opts.taskId}`],
+    `${opts.taskId} link hosted PR fixture`,
+  );
+  await runFixtureStep("Blueprint snapshot", [
+    "blueprint",
+    "snapshot",
+    opts.taskId,
+    "--root",
+    opts.root,
+  ]);
+  await recordVerificationOk(opts.root, opts.taskId);
+  await commitPathsIfChanged(
+    opts.root,
+    [`.agentplane/tasks/${opts.taskId}`],
+    `${opts.taskId} refresh hosted verification fixture`,
+  );
+
+  const { stdout: implementationHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: opts.root,
+    env,
+  });
+  const implementationHead = implementationHeadRaw.trim();
+  const reviewedSha = async (): Promise<string> => {
+    const task = await readTask({ cwd: opts.root, rootOverride: opts.root, taskId: opts.taskId });
+    const sha = task.frontmatter.quality_review?.evaluated_sha?.trim() ?? "";
+    if (!sha) throw new Error(`Quality review SHA is missing for ${opts.taskId}`);
+    return sha;
+  };
+  const closureArgs = (implementationCommit: string): string[] => [
+    "finish",
+    opts.taskId,
+    "--author",
+    "INTEGRATOR",
+    "--body",
+    "Verified: hosted integration fixture has exact upstream and provider evidence.",
+    "--result",
+    "pre-merge closure",
+    "--commit",
+    implementationHead,
+    "--implementation-commit",
+    implementationCommit,
+    "--pre-merge-closure",
+    "--base",
+    "main",
+    "--quiet",
+    "--root",
+    opts.root,
+  ];
+  await runFixtureStep("Pre-merge closure", closureArgs(await reviewedSha()));
+  await runFixtureStep("Post-closure blueprint snapshot", [
+    "blueprint",
+    "snapshot",
+    opts.taskId,
+    "--root",
+    opts.root,
+  ]);
+  await recordVerificationOk(opts.root, opts.taskId);
+  const postClosurePaths = [`.agentplane/tasks/${opts.taskId}`];
+  if (await pathExists(path.join(opts.root, ".agentplane", "policy", "incidents.md"))) {
+    postClosurePaths.push(".agentplane/policy/incidents.md");
+  }
+  await commitPathsIfChanged(
+    opts.root,
+    postClosurePaths,
+    `${opts.taskId} refresh post-closure quality fixture`,
+  );
+  await runFixtureStep("Fresh pre-merge closure", [
+    ...closureArgs(await reviewedSha()),
+    "--force",
+    "--yes",
+  ]);
+
+  const { stdout: closureHeadRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: opts.root,
+    env,
+  });
+  const publishFakeGh = await installFakeGhPrLookup({
+    scenarioName: `${opts.scenarioName}-publish`,
+    branch: opts.branch,
+    headSha: closureHeadRaw.trim(),
+  });
+  registerTestTempPath(publishFakeGh.fakeBin);
+  activateFakeGh(publishFakeGh);
+  await runFixtureStep("Final PR publication", [
+    "pr",
+    "open",
+    opts.taskId,
+    "--author",
+    "CODER",
+    "--branch",
+    opts.branch,
+    "--root",
+    opts.root,
+  ]);
+  await runFixtureStep("Final PR publication refresh", [
+    "pr",
+    "open",
+    opts.taskId,
+    "--author",
+    "CODER",
+    "--branch",
+    opts.branch,
+    "--root",
+    opts.root,
+  ]);
+  if (opts.finalHeadSubject) {
+    const finalSubjectFixturePath = `.agentplane/tasks/${opts.taskId}/pr/final-head-subject.fixture`;
+    await writeFile(
+      path.join(opts.root, finalSubjectFixturePath),
+      `${opts.finalHeadSubject}\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "--", finalSubjectFixturePath], {
+      cwd: opts.root,
+      env,
+    });
+    await execFileAsync("git", ["commit", "--no-verify", "-m", opts.finalHeadSubject], {
+      cwd: opts.root,
+      env,
+    });
+    await execFileAsync(
+      "git",
+      ["push", "--no-verify", "origin", `HEAD:refs/heads/${opts.branch}`],
+      {
+        cwd: opts.root,
+        env,
+      },
+    );
+  }
+
+  const { stdout: headRaw } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: opts.root,
+    env,
+  });
+  const headSha = headRaw.trim();
+  const { stdout: upstreamRaw } = await execFileAsync(
+    "git",
+    ["rev-parse", `refs/remotes/origin/${opts.branch}`],
+    { cwd: opts.root, env },
+  );
+  if (upstreamRaw.trim() !== headSha) {
+    throw new Error(
+      `Final hosted fixture head is unpublished for ${opts.taskId}: local=${headSha} upstream=${upstreamRaw.trim()}`,
+    );
+  }
+  const { stdout: publishedRaw } = await execFileAsync(
+    "git",
+    ["ls-remote", "--heads", publishRemote, `refs/heads/${opts.branch}`],
+    { cwd: opts.root, env },
+  );
+  const publishedHead = publishedRaw.trim().split(/\s+/, 1)[0] ?? "";
+  if (publishedHead !== headSha) {
+    throw new Error(
+      `Final hosted fixture remote is stale for ${opts.taskId}: local=${headSha} remote=${publishedHead || "<missing>"}`,
+    );
+  }
+  const { stdout: statusRaw } = await execFileAsync(
+    "git",
+    ["status", "--short", "--untracked-files=all"],
+    { cwd: opts.root, env },
+  );
+  if (statusRaw.trim() !== baselineStatusRaw.trim()) {
+    throw new Error(
+      `Final hosted fixture changed unrelated status for ${opts.taskId}: before=${baselineStatusRaw.trim() || "<clean>"} after=${statusRaw.trim() || "<clean>"}`,
+    );
+  }
+
+  const finalFakeGh = await installFakeGhPrLookup({
+    scenarioName: `${opts.scenarioName}-final`,
+    branch: opts.branch,
+    headSha,
+    ...(opts.protectedBase ? { protectedBranch: "main" } : {}),
+  });
+  registerTestTempPath(finalFakeGh.fakeBin);
+  activateFakeGh(finalFakeGh);
+
+  return { headSha, logPath: finalFakeGh.logPath };
 }
 
 export async function writeConfig(
