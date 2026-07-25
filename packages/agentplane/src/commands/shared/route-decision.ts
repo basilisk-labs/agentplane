@@ -1,8 +1,7 @@
 import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
-import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
-import { readTaskPrArtifact } from "../pr/internal/pr-paths.js";
+import { readTaskPrMetaArtifact } from "../pr/internal/pr-paths.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
 import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
 import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
@@ -139,16 +138,9 @@ async function resolveLocalRecordedCloseFlow(opts: {
   onDiagnostic?: (message: string) => void;
 }): Promise<PrFlowStatusReport | null> {
   try {
-    const { content } = await readTaskPrArtifact({
+    const { content } = await readTaskPrMetaArtifact({
       ctx: opts.ctx,
       taskId: opts.task.id,
-      prDir: path.join(
-        opts.ctx.resolvedProject.gitRoot,
-        opts.ctx.config.paths.workflow_dir,
-        opts.task.id,
-        "pr",
-      ),
-      fileName: "meta.json",
       preferBranchSnapshot: opts.ctx.config.workflow_mode === "branch_pr",
     });
     if (content === null) return null;

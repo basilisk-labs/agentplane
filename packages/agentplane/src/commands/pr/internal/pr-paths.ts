@@ -105,6 +105,26 @@ export async function readTaskPrArtifact(opts: {
   }
 }
 
+export async function readTaskPrMetaArtifact(opts: {
+  ctx: CommandContext;
+  taskId: string;
+  preferBranchSnapshot?: boolean;
+}): Promise<{ content: string | null; branch: string | null }> {
+  const prDir = path.join(
+    opts.ctx.resolvedProject.gitRoot,
+    opts.ctx.config.paths.workflow_dir,
+    opts.taskId,
+    "pr",
+  );
+  return readTaskPrArtifact({
+    ctx: opts.ctx,
+    taskId: opts.taskId,
+    prDir,
+    fileName: "meta.json",
+    preferBranchSnapshot: opts.preferBranchSnapshot,
+  });
+}
+
 export async function readPrArtifactFromBranch(opts: {
   resolved: { gitRoot: string };
   prDir: string;

@@ -13,7 +13,7 @@ Created: 2026-07-25T20:53:29.950Z
 ## Verification
 
 - State: ok
-- Note: Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed.
+- Note: CI remediation moves branch-aware metadata-path construction into the PR helper; targeted route and artifact tests, lint, hotspots, typecheck, architecture, guards, lifecycle, policy routing, and critical CLI checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,20 +29,20 @@ Created: 2026-07-25T20:53:29.950Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/cli/run-cli.core.pr-flow.status.test.ts    | 113 +++++++++++++++++++++
- .../run-cli.core.route-decision.pre-merge.test.ts  | 110 +++++++++++++++++++-
- .../src/cli/run-cli.core.task-handoff.test.ts      |  91 ++++++++++++++++-
- packages/agentplane/src/commands/pr/flow-status.ts |  36 ++++---
- .../src/commands/pr/internal/pr-paths.test.ts      |  99 +++++++++++++++++-
- .../src/commands/pr/internal/pr-paths.ts           |  43 +++++++-
- .../src/commands/shared/route-decision-blockers.ts |  30 +++---
- .../src/commands/shared/route-decision.ts          |  25 +++--
- .../shared/task-backend-branch-snapshot.ts         |  51 +++++++++-
+ .../src/cli/run-cli.core.pr-flow.status.test.ts    | 113 +++++++++++++++++++
+ .../run-cli.core.route-decision.pre-merge.test.ts  | 110 ++++++++++++++++++-
+ .../src/cli/run-cli.core.task-handoff.test.ts      |  91 ++++++++++++++-
+ packages/agentplane/src/commands/pr/flow-status.ts |  36 +++---
+ .../src/commands/pr/internal/pr-paths.test.ts      | 122 ++++++++++++++++++++-
+ .../src/commands/pr/internal/pr-paths.ts           |  63 ++++++++++-
+ .../src/commands/shared/route-decision-blockers.ts |  30 +++--
+ .../src/commands/shared/route-decision.ts          |  19 ++--
+ .../shared/task-backend-branch-snapshot.ts         |  51 ++++++++-
  .../src/commands/shared/task-backend.test.ts       |  11 +-
  .../agentplane/src/commands/shared/task-backend.ts |   9 +-
- .../agentplane/src/commands/shared/task-handoff.ts |  41 ++++----
+ .../agentplane/src/commands/shared/task-handoff.ts |  41 +++----
  .../agentplane/src/commands/task/handoff.shared.ts |   6 +-
- 13 files changed, 598 insertions(+), 67 deletions(-)
+ 13 files changed, 634 insertions(+), 68 deletions(-)
 ```
 
 </details>

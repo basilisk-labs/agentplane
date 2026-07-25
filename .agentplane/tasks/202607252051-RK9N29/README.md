@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -22,30 +22,28 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-25T21:33:21.580Z"
+  updated_at: "2026-07-25T21:52:06.091Z"
   updated_by: "TESTER"
-  note: "Security rework replaces dynamic remote Git argv with a constant ref root and post-query filtering; route, PR-flow, resume, origin-only, type, lint, guards, lifecycle, routing, architecture, and diff checks passed."
+  note: "CI remediation moves branch-aware metadata-path construction into the PR helper; targeted route and artifact tests, lint, hotspots, typecheck, architecture, guards, lifecycle, policy routing, and critical CLI checks passed."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-25T21:36:24.814Z"
+  updated_at: "2026-07-25T21:47:49.676Z"
   updated_by: "EVALUATOR"
-  note: "Branch-snapshot routing fix and CodeQL remediation satisfy the approved branch_pr truth contract."
+  note: "Hosted CI found deterministic compliance failures on the current PR head."
   evaluated_sha: "bf6ae520184549e1e43a53005160a7c11873a3d0"
   blueprint_digest: "6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23"
   evidence_refs:
     - ".agentplane/tasks/202607252051-RK9N29/README.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213624814-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213624814-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-213624814-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-214749676-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-214749676-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607252051-RK9N29/quality/20260725-214749676-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/shared/task-backend-branch-snapshot.ts"
-    - "packages/agentplane/src/commands/shared/task-backend.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts"
-    - "packages/agentplane/src/commands/pr/internal/pr-paths.test.ts"
+    - "https://github.com/basilisk-labs/agentplane/actions/runs/30176058282/job/89724927469"
+    - "https://github.com/basilisk-labs/agentplane/actions/runs/30176058282/job/89724927472"
   findings:
-    - "Remote task refs are enumerated from a constant origin root and filtered after Git returns names; branch snapshot remains authoritative over stale base state for route, PR flow, blockers, and resume."
+    - "The route decision module exceeds the 600-line hotspot limit, and two newly added test declarations violate lint rules."
 commit:
   hash: "ec932f0aabd07c0da6b4a88aaa5a406817c925c5"
   message: "🧐 RK9N29 task: record evaluator pass"
@@ -93,8 +91,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-25T21:52:06.091Z"
+    author: "TESTER"
+    state: "ok"
+    note: "CI remediation moves branch-aware metadata-path construction into the PR helper; targeted route and artifact tests, lint, hotspots, typecheck, architecture, guards, lifecycle, policy routing, and critical CLI checks passed."
 doc_version: 3
-doc_updated_at: "2026-07-25T21:37:43.368Z"
+doc_updated_at: "2026-07-25T21:52:06.923Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr control-plane truth: routes, flow status, blockers, and resume must prefer the active task branch snapshot (live worktree, local branch, then origin) for task README and PR metadata, falling back to base only when no branch snapshot exists. Regress stale base TODO versus task-branch DONE/open PR so the CLI selects publication or integration, never a false plan approval. Keep typed route semantics unchanged."
 sections:
@@ -167,6 +171,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T21:52:06.091Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: CI remediation moves branch-aware metadata-path construction into the PR helper; targeted route and artifact tests, lint, hotspots, typecheck, architecture, guards, lifecycle, policy routing, and critical CLI checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T21:37:43.368Z, excerpt_hash=sha256:460fe3fb6bfdef8df9d4ee393a69eddb1a86b2163f03f06d62c83e5a6e6bee8b
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252051-RK9N29-make-branch-pr-route-resolution-branch-snapshot/.agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json
+    - old_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+    - current_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607252051-RK9N29
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert the task PR as one unit. This restores prior base-local route reads without altering task data or hosted PR state."
   Findings: |-
@@ -181,6 +215,10 @@ sections:
     - Observation: GitHub CodeQL flagged dynamic ref arguments in remote task-branch discovery.
       Impact: The PR could not pass its required review gate until the command construction was made constant.
       Resolution: Remote refs are now listed from a constant origin root and filtered in TypeScript; origin-only snapshot coverage remains green.
+
+    - Observation: Hosted CI identified a 607-line route module and two test lint violations on the prior head.
+      Impact: The PR could not satisfy required hosted gates.
+      Resolution: The route module is back below the threshold without semantic changes, and both test declarations are now type-safe.
 extensions:
   implementation_commit:
     hash: "bf6ae520184549e1e43a53005160a7c11873a3d0"
@@ -271,6 +309,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T21:52:06.091Z — VERIFY — ok
+
+By: TESTER
+
+Note: CI remediation moves branch-aware metadata-path construction into the PR helper; targeted route and artifact tests, lint, hotspots, typecheck, architecture, guards, lifecycle, policy routing, and critical CLI checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T21:37:43.368Z, excerpt_hash=sha256:460fe3fb6bfdef8df9d4ee393a69eddb1a86b2163f03f06d62c83e5a6e6bee8b
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252051-RK9N29-make-branch-pr-route-resolution-branch-snapshot/.agentplane/tasks/202607252051-RK9N29/blueprint/resolved-snapshot.json
+- old_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+- current_digest: 6766cd7e139b108d2cee7e6bc3f99d6fa1d0894f3f49f4d36a05ee42a516af23
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607252051-RK9N29
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -290,3 +358,7 @@ Revert the task PR as one unit. This restores prior base-local route reads witho
 - Observation: GitHub CodeQL flagged dynamic ref arguments in remote task-branch discovery.
   Impact: The PR could not pass its required review gate until the command construction was made constant.
   Resolution: Remote refs are now listed from a constant origin root and filtered in TypeScript; origin-only snapshot coverage remains green.
+
+- Observation: Hosted CI identified a 607-line route module and two test lint violations on the prior head.
+  Impact: The PR could not satisfy required hosted gates.
+  Resolution: The route module is back below the threshold without semantic changes, and both test declarations are now type-safe.
