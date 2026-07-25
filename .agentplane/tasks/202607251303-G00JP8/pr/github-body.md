@@ -15,8 +15,13 @@ Remove three v0.7 integration blockers found by RF08 hosted/full-suite verificat
 
 ## Verification
 
-- State: needs_rework
-- Note: Implementation evidence is not present yet; the lifecycle-only PR head cannot satisfy the task Verify Steps.
+- State: ok
+- Note:
+
+```text
+Implementation commit 002c1dce9 satisfies all five Verify Steps; targeted, stress, full, static,
+doctor, routing, and independent reviews pass.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
