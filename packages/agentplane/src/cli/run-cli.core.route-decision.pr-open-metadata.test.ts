@@ -159,18 +159,26 @@ describe("runCli route decision open PR metadata", () => {
         episode: { purpose: "task_worktree_resolution" },
         execution: { semanticMutationAllowed: true },
       });
-      expect(parsed.next_action).toEqual({
+      expect(parsed.next_action).toMatchObject({
         code: "resolve_task_worktree_state",
         command: null,
-        summary: expect.any(String),
         requiresApproval: false,
       });
-      expect(parsed.route_oracle.mutationPathHint).toContain(`${taskId}-bootstrap-existing`);
+      expect(typeof parsed.next_action.summary).toBe("string");
+      const routeMutationPathHint = parsed.route_oracle.mutationPathHint;
+      if (typeof routeMutationPathHint !== "string") {
+        throw new Error("expected a mutation path for an inspectable dirty task worktree");
+      }
+      expect(routeMutationPathHint).toContain(`${taskId}-bootstrap-existing`);
       expect(parsed.execution_packet).toMatchObject({
         safe_to_mutate: true,
-        mutation_path_hint: expect.stringContaining(`${taskId}-bootstrap-existing`),
         exact_argv: null,
       });
+      const packetMutationPathHint = parsed.execution_packet.mutation_path_hint;
+      if (typeof packetMutationPathHint !== "string") {
+        throw new Error("expected an execution-packet mutation path for semantic repair");
+      }
+      expect(packetMutationPathHint).toContain(`${taskId}-bootstrap-existing`);
     } finally {
       dirtyWorktreeRouteIo.restore();
     }

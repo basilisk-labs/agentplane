@@ -57,14 +57,17 @@ async function createApprovedTask(root: string): Promise<string> {
 }
 
 describe("hermes adapter commands", () => {
-  it("allowlists same-task Agentplane task run route actions only", () => {
+  it("allowlists same-task typed Agentplane task run actions only", () => {
     const taskId = "202606010525-5TJNPS";
     const packet = {
       task: { id: taskId, title: "Hermes task run", owner: "CODER" },
       next_action: {
         code: "run_task",
-        command: `agentplane task run ${taskId}`,
         summary: "Launch the configured task runner.",
+      },
+      execution_packet: {
+        actionKind: "local_command" as const,
+        exactArgv: ["agentplane", "task", "run", taskId],
       },
     };
 
@@ -72,18 +75,18 @@ describe("hermes adapter commands", () => {
     expect(
       executableStepFor({
         ...packet,
-        next_action: {
-          ...packet.next_action,
-          command: "agentplane task run 202606010525-OTHER",
+        execution_packet: {
+          ...packet.execution_packet,
+          exactArgv: ["agentplane", "task", "run", "202606010525-OTHER"],
         },
       }).args,
     ).toBeNull();
     expect(
       executableStepFor({
         ...packet,
-        next_action: {
-          ...packet.next_action,
-          command: `agentplane task run ${taskId} --unsafe`,
+        execution_packet: {
+          ...packet.execution_packet,
+          exactArgv: ["agentplane", "task", "run", taskId, "--unsafe"],
         },
       }).args,
     ).toBeNull();
@@ -309,8 +312,11 @@ describe("hermes adapter commands", () => {
       },
       next_action: {
         code: "run",
-        command: "agentplane task run 202606010530-BEYQXA",
         summary: "launch the Agentplane task runner",
+      },
+      execution_packet: {
+        actionKind: "local_command",
+        exactArgv: ["agentplane", "task", "run", "202606010530-BEYQXA"],
       },
     });
 
@@ -318,6 +324,33 @@ describe("hermes adapter commands", () => {
       code: "run",
       args: ["task", "run", "202606010530-BEYQXA"],
       reason: null,
+    });
+  });
+
+  it("does not downgrade a semantic direct continuation to task verify-show", () => {
+    const taskId = "202606010530-BEYQXA";
+
+    const step = executableStepFor({
+      task: {
+        id: taskId,
+        title: "Hermes direct implementation",
+        owner: "CODER",
+      },
+      next_action: {
+        code: "continue_direct",
+        summary: "hand the direct-mode task to CODER for semantic implementation",
+      },
+      execution_packet: {
+        actionKind: "stop",
+        exactArgv: null,
+      },
+    });
+
+    expect(step).toEqual({
+      code: "continue_direct",
+      args: null,
+      reason:
+        "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command",
     });
   });
 
@@ -445,13 +478,16 @@ describe("hermes adapter commands", () => {
       },
       next_action: {
         code: "run",
-        command: "agentplane task run 202606010531-OTHER1",
         summary: "launch another task runner",
+      },
+      execution_packet: {
+        actionKind: "local_command",
+        exactArgv: ["agentplane", "task", "run", "202606010531-OTHER1"],
       },
     });
 
     expect(step.args).toBeNull();
-    expect(step.reason).toContain("unsupported Agentplane Hermes route action");
+    expect(step.reason).toContain("unsupported typed Agentplane Hermes route action");
   });
 
   it("supervise returns the child Agentplane command failure code", async () => {

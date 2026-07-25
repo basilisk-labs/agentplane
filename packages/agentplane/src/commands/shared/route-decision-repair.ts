@@ -1,5 +1,5 @@
 import type { RouteAmbiguity, RouteRepairStep, TaskRouteDecision } from "./route-decision-types.js";
-import { workflowOperationMutatesState, type WorkflowStep } from "./workflow-step.js";
+import { workflowOperationMutatesState } from "./workflow-step.js";
 
 type DecisionForAmbiguity = Omit<
   TaskRouteDecision,

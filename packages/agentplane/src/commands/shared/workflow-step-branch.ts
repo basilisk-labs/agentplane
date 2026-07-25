@@ -372,7 +372,8 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     state.taskWorktree !== undefined &&
     state.taskWorktree.state !== "not_present" &&
     state.taskWorktree.state !== "unavailable" &&
-    state.taskWorktree.branch !== state.resume.base_branch
+    state.taskWorktree.branch !== state.resume.base_branch &&
+    !state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
   ) {
     const body = "Start: continue branch_pr task in the dedicated task worktree.";
     return cliOperationStep({
@@ -412,10 +413,25 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (worktreeBlocker?.code === "task_worktree_state_unavailable") {
+    return worktreeResolutionStep(state, worktreeBlocker);
+  }
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
+  if (state.blockers.some((blocker) => blocker.code === "pr_meta_stale")) {
+    const batchVerificationStep = primaryBatchVerificationStep(state);
+    if (batchVerificationStep) return batchVerificationStep;
+    return cliOperationStep({
+      state,
+      operationId: "pr.artifacts.update",
+      params: { taskId: id, includeTaskIds: primaryIncludeTaskIds(state) },
+      code: "update_pr_artifacts",
+      summary: "refresh stale PR metadata before hosted checks or integration",
+      selectedBlocker: routeBlockerFor(state, "pr_meta_stale"),
+    });
+  }
+  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   if (state.blockers.some((blocker) => blocker.code === "missing_pr_branch")) {
     const slug = workSlug(state.task);
     return cliOperationStep({
@@ -434,16 +450,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   }
   const batchVerificationStep = primaryBatchVerificationStep(state);
   if (batchVerificationStep) return batchVerificationStep;
-  if (state.blockers.some((blocker) => blocker.code === "pr_meta_stale")) {
-    return cliOperationStep({
-      state,
-      operationId: "pr.artifacts.update",
-      params: { taskId: id, includeTaskIds: primaryIncludeTaskIds(state) },
-      code: "update_pr_artifacts",
-      summary: "refresh stale PR metadata before hosted checks or integration",
-      selectedBlocker: routeBlockerFor(state, "pr_meta_stale"),
-    });
-  }
   if (
     state.prFlow?.pr.state === "not_found" &&
     state.prFlow.branch.name &&

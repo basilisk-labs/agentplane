@@ -392,7 +392,7 @@ describe("runCli quality route decisions", () => {
         operatorAction: "stop",
         executorContext: {
           currentAgentMustExecute: true,
-          instruction: "current_agent_performs_semantic_rework",
+          instruction: "current_agent_performs_semantic_work",
         },
       });
       expect(parsed.execution_packet.mustNot.join("\n")).toContain(
