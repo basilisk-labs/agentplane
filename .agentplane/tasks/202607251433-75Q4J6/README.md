@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -43,8 +43,8 @@ quality_review:
   findings:
     - "packages/agentplane/src/context/knowledge-ref.ts imports the canonical isRecord guard and removes only the local duplicate; focused and full contract checks pass on 49e981cc."
 commit:
-  hash: "298f970f74aed1a0a2dc87fd8485d3fb7c77b463"
-  message: "🧪 75Q4J6 task: record final quality review"
+  hash: "b42001106254cc4f203013e00d8affa0976cfa8a"
+  message: "🧪 75Q4J6 task: pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -52,6 +52,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -95,8 +98,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rebased head 49e981cc passes guards:check, 48 focused KnowledgeRef tests, typecheck, full and changed format checks, lint:core, critical CLI 11/11, routing, doctor, knip baseline, and hotspot thresholds."
+  -
+    type: "status"
+    at: "2026-07-25T18:39:25.567Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-25T18:33:50.683Z"
+doc_updated_at: "2026-07-25T18:39:25.568Z"
 doc_updated_by: "CODER"
 description: "Replace the inherited local isRecord helper in KnowledgeRef with the canonical shared guard so guards:check passes on main before RF06b integration."
 sections:
@@ -217,8 +227,8 @@ sections:
       Resolution: Accept the implementation for hosted verification and integration.
 extensions:
   implementation_commit:
-    hash: "bd65aae198086282959f23c9996521df2a3df6a5"
-    message: "🧪 75Q4J6 task: pre-merge closure"
+    hash: "49e981cc1944cf9577b2e95f077f40044e2ac3f2"
+    message: "🧩 75Q4J6 reliability: retain D9 incident registry format"
 id_source: "generated"
 ---
 ## Summary
