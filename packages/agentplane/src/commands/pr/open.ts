@@ -4,11 +4,9 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { createCliEmitter } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv } from "@agentplaneorg/core/git";
-import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
+import { pushTaskBranchUpstreamIfConfigured } from "./branch-publication.js";
 import { maybeAutoCommitTaskPrArtifacts } from "./internal/auto-commit.js";
 import { type PrOpenOutcome, syncPrArtifacts } from "./internal/sync.js";
 
@@ -36,138 +34,6 @@ function summarizePrOpenFailure(err: unknown): string {
       : "";
   const message = err instanceof Error ? err.message.trim() : String(err).trim();
   return stderr || stdout || message || "unknown failure";
-}
-
-async function gitResolveBranchHead(gitRoot: string, branch: string): Promise<string | null> {
-  try {
-    const { stdout } = await execFileAsync("git", ["rev-parse", `refs/heads/${branch}`], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    const trimmed = stdout.trim();
-    return trimmed.length > 0 ? trimmed : null;
-  } catch {
-    return null;
-  }
-}
-
-async function gitResolveRemoteBranchHead(
-  gitRoot: string,
-  remoteTarget: string,
-  branch: string,
-): Promise<string | null> {
-  try {
-    const { stdout } = await execFileAsync(
-      "git",
-      ["ls-remote", "--heads", remoteTarget, `refs/heads/${branch}`],
-      {
-        cwd: gitRoot,
-        env: gitEnv(),
-      },
-    );
-    const trimmed = stdout.trim();
-    if (!trimmed) return null;
-    const [head] = trimmed.split(/\s+/, 1);
-    return head?.trim() || null;
-  } catch {
-    return null;
-  }
-}
-
-async function gitResolveRemotePushTarget(gitRoot: string, remote: string): Promise<string> {
-  try {
-    const { stdout } = await execFileAsync("git", ["remote", "get-url", "--push", remote], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    const trimmed = stdout.trim();
-    return trimmed.length > 0 ? trimmed : remote;
-  } catch {
-    return remote;
-  }
-}
-
-async function gitSetBranchUpstream(opts: {
-  gitRoot: string;
-  branch: string;
-  remote: string;
-  remoteBranch: string;
-}): Promise<void> {
-  await execFileAsync("git", ["config", `branch.${opts.branch}.remote`, opts.remote], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-  });
-  await execFileAsync(
-    "git",
-    ["config", `branch.${opts.branch}.merge`, `refs/heads/${opts.remoteBranch}`],
-    {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    },
-  );
-}
-
-async function canReuseMatchingRemoteHead(opts: {
-  gitRoot: string;
-  branch: string;
-  remote: string;
-  remoteBranch: string;
-}): Promise<boolean> {
-  const remoteTarget = await gitResolveRemotePushTarget(opts.gitRoot, opts.remote);
-  const [localHead, remoteHead] = await Promise.all([
-    gitResolveBranchHead(opts.gitRoot, opts.branch),
-    gitResolveRemoteBranchHead(opts.gitRoot, remoteTarget, opts.remoteBranch),
-  ]);
-  return Boolean(localHead && remoteHead && localHead === remoteHead);
-}
-
-async function pushTaskBranchUpstreamIfConfigured(opts: {
-  gitRoot: string;
-  branch: string;
-}): Promise<boolean> {
-  const currentBranch = await gitCurrentBranch(opts.gitRoot).catch(() => "");
-  if (currentBranch.trim() !== opts.branch.trim()) return false;
-  const upstream = await gitBranchUpstream(opts.gitRoot, opts.branch);
-  const trimmed = upstream?.trim() ?? "";
-  let remote = "origin";
-  if (trimmed) {
-    const slashIndex = trimmed.indexOf("/");
-    if (slashIndex > 0 && slashIndex < trimmed.length - 1) {
-      const upstreamRemote = trimmed.slice(0, slashIndex);
-      const upstreamBranch = trimmed.slice(slashIndex + 1);
-      if (upstreamBranch === opts.branch) remote = upstreamRemote;
-    }
-  }
-
-  try {
-    try {
-      await execFileAsync("git", ["remote", "get-url", remote], {
-        cwd: opts.gitRoot,
-        env: gitEnv(),
-      });
-    } catch {
-      return false;
-    }
-    await execFileAsync("git", ["push", "--no-verify", "-u", remote, `HEAD:${opts.branch}`], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    });
-  } catch (err) {
-    const canReuseRemote = await canReuseMatchingRemoteHead({
-      gitRoot: opts.gitRoot,
-      branch: opts.branch,
-      remote,
-      remoteBranch: opts.branch,
-    });
-    if (!canReuseRemote) throw err;
-    await gitSetBranchUpstream({
-      gitRoot: opts.gitRoot,
-      branch: opts.branch,
-      remote,
-      remoteBranch: opts.branch,
-    });
-  }
-  return true;
 }
 
 export async function cmdPrOpen(opts: {
@@ -222,6 +88,8 @@ export async function cmdPrOpen(opts: {
         await pushTaskBranchUpstreamIfConfigured({
           gitRoot: commandCtx.resolvedProject.gitRoot,
           branch: initialSync.meta.branch,
+          baseBranch: initialSync.meta.base ?? null,
+          prNumber: initialSync.meta.pr_number ?? null,
         });
       } catch (err) {
         const reason = `task branch push failed: ${summarizePrOpenFailure(err)}`;
