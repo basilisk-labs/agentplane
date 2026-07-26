@@ -1,0 +1,485 @@
+import { createHash } from "node:crypto";
+
+import { gitDiffNames, gitMergeBase } from "@agentplaneorg/core/git";
+
+import { mapBackendError } from "../../cli/error-map.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
+import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { gitRevParse } from "../shared/git-ops.js";
+import {
+  inspectTaskWorktreeCleanliness,
+  type TaskWorktreeCleanliness,
+} from "../shared/task-worktree-cleanliness.js";
+import { resolvePrFlowStatus, type PrFlowStatusReport } from "./flow-status.js";
+
+const MAX_CANDIDATE_CONFLICT_PATHS = 32;
+
+type ConflictReworkInvalidReasonCode =
+  | "provider_pr_not_conflicting"
+  | "provider_pr_unavailable"
+  | "provider_pr_missing"
+  | "provider_pr_incomplete"
+  | "provider_mergeability_unknown"
+  | "provider_branch_identity_mismatch"
+  | "provider_head_mismatch"
+  | "provider_base_unavailable"
+  | "provider_base_mismatch"
+  | "merge_base_unavailable"
+  | "candidate_conflict_paths_unavailable"
+  | "task_worktree_missing"
+  | "task_worktree_dirty"
+  | "task_worktree_unavailable";
+
+type ConflictReworkChecks =
+  | {
+      checked: true;
+      total: number;
+      passing: number;
+      pending: number;
+      failing: number;
+      missingRequired: string[];
+      rows: { name: string; state: string }[];
+    }
+  | { checked: false; reason: string };
+
+export type ConflictReworkPacket = {
+  schema_version: 1;
+  task_id: string;
+  provider: {
+    name: "github";
+    pr_number: number;
+    pr_url: string | null;
+    state: "OPEN";
+    branch: string;
+    head_sha: string;
+    base: string;
+    base_sha: string;
+    mergeability: {
+      state: "conflicting";
+      mergeable: boolean | null;
+      provider_state: string | null;
+    };
+  };
+  local: {
+    branch_head_sha: string;
+    base_head_sha: string;
+    merge_base_sha: string;
+  };
+  task_worktree: {
+    path: string;
+    branch: string;
+    state: "clean";
+  };
+  candidate_conflict_paths: {
+    derivation: "paths_modified_on_both_sides_since_merge_base";
+    paths: string[];
+    total: number;
+    truncated: boolean;
+    base_changed_count: number;
+    head_changed_count: number;
+  };
+  checks: ConflictReworkChecks;
+  freshness: {
+    algorithm: "sha256";
+    token: string;
+  };
+  resolution_contract: {
+    role: "CODER";
+    revalidate_command: string;
+    after_resolution: string;
+  };
+  safety: {
+    preparation_mutations: [];
+    cli_must_not: string[];
+  };
+};
+
+export type ConflictReworkPreparation =
+  | { state: "not_conflicting"; reason: string }
+  | { state: "invalid"; reason_code: ConflictReworkInvalidReasonCode; reason: string }
+  | { state: "ready"; packet: ConflictReworkPacket };
+
+function invalid(
+  reason_code: ConflictReworkInvalidReasonCode,
+  reason: string,
+): ConflictReworkPreparation {
+  return { state: "invalid", reason_code, reason };
+}
+
+function trimmed(value: string | null | undefined): string | null {
+  const normalized = value?.trim() ?? "";
+  return normalized.length > 0 ? normalized : null;
+}
+
+function normalizeChecks(report: PrFlowStatusReport): ConflictReworkChecks {
+  if (!report.hostedChecks.checked) {
+    return { checked: false, reason: report.hostedChecks.reason };
+  }
+  const rows = report.hostedChecks.rows
+    .map((row) => ({
+      name: row.name?.trim() || "<unnamed>",
+      state: row.state?.trim() || "UNKNOWN",
+    }))
+    .sort(
+      (left, right) => left.name.localeCompare(right.name) || left.state.localeCompare(right.state),
+    );
+  return {
+    checked: true,
+    total: report.hostedChecks.total,
+    passing: report.hostedChecks.passing,
+    pending: report.hostedChecks.pending,
+    failing: report.hostedChecks.failing,
+    missingRequired: [...report.hostedChecks.missingRequired].sort((left, right) =>
+      left.localeCompare(right),
+    ),
+    rows,
+  };
+}
+
+function tokenFor(value: unknown): string {
+  return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
+}
+
+function providerConflict(report: PrFlowStatusReport): boolean {
+  return (
+    report.pr.state === "OPEN" &&
+    report.providerObservation?.state === "found" &&
+    report.providerObservation.pr.status === "OPEN" &&
+    report.providerObservation.pr.mergeability?.state === "conflicting"
+  );
+}
+
+export function hasProviderReportedMergeConflict(report: PrFlowStatusReport | null): boolean {
+  return report !== null && providerConflict(report);
+}
+
+export function needsProviderConflictReworkPreparation(report: PrFlowStatusReport | null): boolean {
+  if (
+    report?.pr.state !== "OPEN" ||
+    report.providerObservation?.state !== "found" ||
+    report.providerObservation.pr.status !== "OPEN"
+  ) {
+    return false;
+  }
+  const state = report.providerObservation.pr.mergeability?.state;
+  return state === "conflicting" || state === "pending" || state === "unknown";
+}
+
+async function resolveLocalRef(opts: {
+  gitRoot: string;
+  ref: string;
+  reasonCode: "provider_base_unavailable" | "merge_base_unavailable";
+  label: string;
+}): Promise<{ ok: true; value: string } | { ok: false; preparation: ConflictReworkPreparation }> {
+  try {
+    return { ok: true, value: await gitRevParse(opts.gitRoot, [opts.ref]) };
+  } catch (err) {
+    return {
+      ok: false,
+      preparation: invalid(
+        opts.reasonCode,
+        `${opts.label} cannot be resolved locally: ${err instanceof Error ? err.message : String(err)}`,
+      ),
+    };
+  }
+}
+
+export async function prepareConflictReworkPacket(opts: {
+  gitRoot: string;
+  taskId: string;
+  report: PrFlowStatusReport;
+  taskWorktree: TaskWorktreeCleanliness;
+}): Promise<ConflictReworkPreparation> {
+  if (opts.report.providerObservation?.state === "unavailable") {
+    return invalid(
+      "provider_pr_unavailable",
+      `GitHub PR state is unavailable: ${opts.report.providerObservation.reason}`,
+    );
+  }
+  if (
+    opts.report.providerObservation?.state === "not_found" ||
+    opts.report.pr.state === "not_found"
+  ) {
+    return invalid("provider_pr_missing", "GitHub PR is not available for conflict preparation.");
+  }
+  if (
+    opts.report.pr.state === "OPEN" &&
+    opts.report.providerObservation?.state === "found" &&
+    opts.report.providerObservation.pr.status === "OPEN" &&
+    opts.report.providerObservation.pr.mergeability !== undefined &&
+    opts.report.providerObservation.pr.mergeability.state !== "conflicting" &&
+    opts.report.providerObservation.pr.mergeability.state !== "not_conflicting"
+  ) {
+    const mergeability = opts.report.providerObservation.pr.mergeability;
+    return invalid(
+      "provider_mergeability_unknown",
+      `GitHub mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
+    );
+  }
+  if (!providerConflict(opts.report)) {
+    return {
+      state: "not_conflicting",
+      reason: "provider does not currently report an OPEN PR with merge conflicts",
+    };
+  }
+
+  const observation = opts.report.providerObservation;
+  if (!observation || observation.state !== "found") {
+    return invalid("provider_pr_unavailable", "provider conflict observation is unavailable");
+  }
+  const observed = observation.pr;
+  const taskBranch = trimmed(opts.report.branch.name);
+  const localHead = trimmed(opts.report.branch.headSha);
+  const providerHead = trimmed(observed.headSha);
+  const providerHeadRef = trimmed(observed.headRef);
+  const base = trimmed(opts.report.pr.base ?? observed.base);
+  const providerBase = trimmed(observed.baseSha);
+  const prNumber = opts.report.pr.prNumber ?? observed.prNumber;
+  if (
+    !taskBranch ||
+    !localHead ||
+    !providerHead ||
+    !providerHeadRef ||
+    !base ||
+    !providerBase ||
+    !prNumber
+  ) {
+    return invalid(
+      "provider_pr_incomplete",
+      "provider conflict observation is missing task branch, base/head identity, or PR number",
+    );
+  }
+  if (providerHeadRef !== taskBranch) {
+    return invalid(
+      "provider_branch_identity_mismatch",
+      `provider head branch differs from task branch: provider=${providerHeadRef} task=${taskBranch}`,
+    );
+  }
+  if (providerHead !== localHead) {
+    return invalid(
+      "provider_head_mismatch",
+      `provider head differs from local task branch: provider=${providerHead} local=${localHead}`,
+    );
+  }
+  if (opts.taskWorktree.state === "not_present") {
+    return invalid(
+      "task_worktree_missing",
+      `dedicated task worktree is missing for ${taskBranch}; conflict context cannot grant semantic resolution authority`,
+    );
+  }
+  if (opts.taskWorktree.state === "dirty") {
+    return invalid(
+      "task_worktree_dirty",
+      `task worktree has uncommitted or foreign artifacts: ${opts.taskWorktree.changedPaths.slice(0, 3).join(", ")}${opts.taskWorktree.changedPaths.length > 3 ? ` +${opts.taskWorktree.changedPaths.length - 3} more` : ""}`,
+    );
+  }
+  if (opts.taskWorktree.state === "unavailable") {
+    return invalid(
+      "task_worktree_unavailable",
+      `task worktree cannot be inspected: ${opts.taskWorktree.reason}`,
+    );
+  }
+
+  const localBase = await resolveLocalRef({
+    gitRoot: opts.gitRoot,
+    ref: base,
+    reasonCode: "provider_base_unavailable",
+    label: `base ${base}`,
+  });
+  if (!localBase.ok) return localBase.preparation;
+  if (localBase.value !== providerBase) {
+    return invalid(
+      "provider_base_mismatch",
+      `provider base differs from local ${base}: provider=${providerBase} local=${localBase.value}`,
+    );
+  }
+
+  let mergeBase: string;
+  try {
+    mergeBase = await gitMergeBase(opts.gitRoot, providerBase, providerHead);
+  } catch (err) {
+    return invalid(
+      "merge_base_unavailable",
+      `merge base cannot be resolved for provider base/head: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+
+  let baseChanged: string[];
+  let headChanged: string[];
+  try {
+    [baseChanged, headChanged] = await Promise.all([
+      gitDiffNames(opts.gitRoot, mergeBase, providerBase),
+      gitDiffNames(opts.gitRoot, mergeBase, providerHead),
+    ]);
+  } catch (err) {
+    return invalid(
+      "candidate_conflict_paths_unavailable",
+      `candidate conflict paths cannot be derived without mutation: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+  const basePaths = [...new Set(baseChanged)].sort((left, right) => left.localeCompare(right));
+  const headPaths = [...new Set(headChanged)].sort((left, right) => left.localeCompare(right));
+  const basePathSet = new Set(basePaths);
+  const candidatePaths = headPaths.filter((candidate) => basePathSet.has(candidate));
+  const checks = normalizeChecks(opts.report);
+  const snapshot = {
+    schema_version: 1 as const,
+    task_id: opts.taskId,
+    provider: {
+      name: "github" as const,
+      pr_number: prNumber,
+      pr_url: opts.report.pr.prUrl,
+      state: "OPEN" as const,
+      branch: taskBranch,
+      head_sha: providerHead,
+      base,
+      base_sha: providerBase,
+      mergeability: {
+        state: "conflicting" as const,
+        mergeable: observed.mergeability?.mergeable ?? null,
+        provider_state: observed.mergeability?.providerState ?? null,
+      },
+    },
+    local: {
+      branch_head_sha: localHead,
+      base_head_sha: localBase.value,
+      merge_base_sha: mergeBase,
+    },
+    task_worktree: {
+      path: opts.taskWorktree.worktreePath,
+      branch: taskBranch,
+      state: "clean" as const,
+    },
+    candidate_conflict_paths: {
+      derivation: "paths_modified_on_both_sides_since_merge_base" as const,
+      paths: candidatePaths.slice(0, MAX_CANDIDATE_CONFLICT_PATHS),
+      total: candidatePaths.length,
+      truncated: candidatePaths.length > MAX_CANDIDATE_CONFLICT_PATHS,
+      base_changed_count: basePaths.length,
+      head_changed_count: headPaths.length,
+    },
+    checks,
+  };
+  const token = tokenFor(snapshot);
+  return {
+    state: "ready",
+    packet: {
+      ...snapshot,
+      freshness: { algorithm: "sha256", token },
+      resolution_contract: {
+        role: "CODER",
+        revalidate_command: `agentplane pr conflict-rework ${opts.taskId} --expect-freshness-token ${token}`,
+        after_resolution:
+          "after a CODER records a new resolution commit, refresh provider truth, rerun normal verification, then use the ordinary lease-safe PR publication and integration route",
+      },
+      safety: {
+        preparation_mutations: [],
+        cli_must_not: [
+          "do not choose conflict hunks or semantic resolution",
+          "do not auto-rebase, auto-merge, force-push, or rewrite the task branch",
+          "do not publish, enqueue, clean up, or merge while this packet is stale",
+        ],
+      },
+    },
+  };
+}
+
+function packetFailure(
+  taskId: string,
+  preparation: Exclude<ConflictReworkPreparation, { state: "ready" }>,
+): CliError {
+  const reasonCode =
+    preparation.state === "invalid" ? preparation.reason_code : "provider_pr_not_conflicting";
+  return new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message:
+      `Cannot prepare semantic conflict rework for ${taskId}: ${preparation.reason}. ` +
+      "No branch, worktree, PR, provider, queue, or task-state mutation was performed.",
+    context: { reason_code: reasonCode, task_id: taskId },
+  });
+}
+
+export async function cmdPrConflictRework(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  expectedFreshnessToken?: string | null;
+  json: boolean;
+}): Promise<number> {
+  try {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const report = await resolvePrFlowStatus({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+    });
+    const branch = trimmed(report.branch.name) ?? "";
+    const taskWorktree: TaskWorktreeCleanliness = branch
+      ? await inspectTaskWorktreeCleanliness({
+          gitRoot: ctx.resolvedProject.gitRoot,
+          branch,
+        })
+      : { state: "not_present", branch: "", worktreePath: null, changedPaths: [] };
+    const preparation = await prepareConflictReworkPacket({
+      gitRoot: ctx.resolvedProject.gitRoot,
+      taskId: opts.taskId,
+      report,
+      taskWorktree,
+    });
+    if (preparation.state !== "ready") throw packetFailure(opts.taskId, preparation);
+    if (
+      opts.expectedFreshnessToken &&
+      opts.expectedFreshnessToken !== preparation.packet.freshness.token
+    ) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message:
+          `Conflict rework packet is stale for ${opts.taskId}: expected=${opts.expectedFreshnessToken} ` +
+          `current=${preparation.packet.freshness.token}. Recompute the route before semantic resolution.`,
+        context: {
+          reason_code: "conflict_rework_packet_stale",
+          task_id: opts.taskId,
+          expected_freshness_token: opts.expectedFreshnessToken,
+          current_freshness_token: preparation.packet.freshness.token,
+        },
+      });
+    }
+    const output = createCliEmitter();
+    if (opts.json) {
+      output.json(preparation.packet);
+      return 0;
+    }
+    output.report(
+      [
+        { label: "task", value: preparation.packet.task_id },
+        { label: "pr", value: `#${preparation.packet.provider.pr_number}` },
+        { label: "branch", value: preparation.packet.provider.branch },
+        { label: "provider_head", value: preparation.packet.provider.head_sha },
+        { label: "provider_base", value: preparation.packet.provider.base_sha },
+        { label: "merge_base", value: preparation.packet.local.merge_base_sha },
+        {
+          label: "candidate_conflict_paths",
+          value:
+            `${preparation.packet.candidate_conflict_paths.total} ` +
+            `(shown=${preparation.packet.candidate_conflict_paths.paths.length})`,
+        },
+        { label: "freshness_token", value: preparation.packet.freshness.token },
+        { label: "revalidate", value: preparation.packet.resolution_contract.revalidate_command },
+        { label: "mutations", value: "none" },
+      ],
+      { header: infoMessage(`PR conflict rework: ${opts.taskId}`) },
+    );
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "pr conflict-rework", root: opts.rootOverride ?? null });
+  }
+}

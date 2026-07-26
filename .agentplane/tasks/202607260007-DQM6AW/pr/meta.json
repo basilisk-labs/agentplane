@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes",
+  "created_at": "2026-07-26T00:55:55.843Z",
+  "diffstat_sha256": "sha256:6756d8446e87cc0b20e5a613b8bc5fd957b986b6c3f7c8dea1cbe3884dd0f1d5",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607260007-DQM6AW",
+  "updated_at": "2026-07-26T00:55:55.843Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

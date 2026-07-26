@@ -16,6 +16,8 @@ export type RouteBlockerCode =
   | "pr_head_unpublished"
   | "pr_meta_stale"
   | "provider_pr_unavailable"
+  | "provider_merge_conflict"
+  | "provider_conflict_context_invalid"
   | "hosted_pr_head_mismatch"
   | "pre_merge_closure_missing"
   | "pre_merge_closure_stale"

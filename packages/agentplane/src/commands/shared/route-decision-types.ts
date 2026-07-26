@@ -1,5 +1,6 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
+import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { RouteBatchNextAction, RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { SourceConfidence as RouteSourceConfidence } from "./source-confidence.js";
@@ -60,6 +61,7 @@ export type TaskRouteDecision = {
   };
   batchOwnership: RouteBatchOwnership;
   prFlow: PrFlowStatusReport | null;
+  conflictRework: ConflictReworkPreparation | null;
   cleanupProbe: RouteCleanupProbe;
   cleanupCandidateCount: number | null;
   blockers: RouteBlocker[];

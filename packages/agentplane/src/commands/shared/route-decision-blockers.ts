@@ -1,5 +1,6 @@
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
+import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe } from "./route-decision-types.js";
@@ -66,6 +67,26 @@ function addCloseTailProviderBlocker(
     blockers,
     "provider_pr_unavailable",
     `GitHub close-tail PR state could not be confirmed: ${prFlow.closeTail.reason}`,
+  );
+}
+
+function addConflictReworkBlockers(
+  blockers: RouteBlocker[],
+  preparation: ConflictReworkPreparation | null,
+): void {
+  if (!preparation || preparation.state === "not_conflicting") return;
+  if (preparation.state === "ready") {
+    addBlocker(
+      blockers,
+      "provider_merge_conflict",
+      "provider reports a current protected PR merge conflict; a CODER must make the semantic resolution from a fresh bounded context packet",
+    );
+    return;
+  }
+  addBlocker(
+    blockers,
+    "provider_conflict_context_invalid",
+    `provider conflict or mergeability context is incomplete: ${preparation.reason}`,
   );
 }
 
@@ -232,6 +253,7 @@ export async function deriveBlockers(opts: {
   batchOwnership: RouteBatchOwnership;
   cleanupProbe: RouteCleanupProbe;
   taskWorktreeCleanliness: TaskWorktreeCleanliness;
+  conflictRework: ConflictReworkPreparation | null;
 }): Promise<RouteBlocker[]> {
   const blockers: RouteBlocker[] = [];
   const normalizedTaskStatus = String(opts.task.status).toUpperCase();
@@ -248,6 +270,9 @@ export async function deriveBlockers(opts: {
       tasksPath: opts.ctx.config.paths.tasks_path,
       requireAllChanges: normalizedTaskStatus === "DONE",
     });
+  }
+  if (opts.workflowMode === "branch_pr") {
+    addConflictReworkBlockers(blockers, opts.conflictRework);
   }
   if (opts.workflowMode === "branch_pr" && opts.task.status === "DONE") {
     addPublicationBlockers(blockers, opts.prFlow);

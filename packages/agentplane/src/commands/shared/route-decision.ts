@@ -3,6 +3,11 @@ import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
 import { CliError } from "../../shared/errors.js";
 import { readTaskPrMetaArtifact } from "../pr/internal/pr-paths.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
+import {
+  needsProviderConflictReworkPreparation,
+  prepareConflictReworkPacket,
+  type ConflictReworkPreparation,
+} from "../pr/conflict-rework.js";
 import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
 import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
@@ -78,7 +83,9 @@ function routeGatePriority(code: string): number {
     code === "human_input_required" ||
     code === "missing_pr_branch" ||
     code === "runner_alive" ||
-    code === "implementation_rework_required"
+    code === "implementation_rework_required" ||
+    code === "provider_merge_conflict" ||
+    code === "provider_conflict_context_invalid"
   ) {
     return 0;
   }
@@ -459,6 +466,15 @@ export async function buildTaskRouteDecision(opts: {
         worktreePath: null,
         changedPaths: [],
       };
+  const conflictRework: ConflictReworkPreparation | null =
+    prFlow && needsProviderConflictReworkPreparation(prFlow)
+      ? await prepareConflictReworkPacket({
+          gitRoot: ctx.resolvedProject.gitRoot,
+          taskId: task.id,
+          report: prFlow,
+          taskWorktree: taskWorktreeCleanliness,
+        })
+      : null;
   const cleanupProbe = await resolveDoneCleanupProbe({
     ctx,
     resume,
@@ -475,6 +491,7 @@ export async function buildTaskRouteDecision(opts: {
     batchOwnership,
     cleanupProbe,
     taskWorktreeCleanliness,
+    conflictRework,
   });
   const routeStateInput: WorkflowRouteStateInput = {
     task,
@@ -485,6 +502,7 @@ export async function buildTaskRouteDecision(opts: {
     blockers,
     batchOwnership,
     taskWorktree: taskWorktreeCleanliness,
+    conflictRework,
   };
   const provisionalWorkflowStep = reduceRouteState(
     withBootstrapWorkflowFingerprint(routeStateInput),
@@ -572,6 +590,7 @@ export async function buildTaskRouteDecision(opts: {
     approval: deriveApprovalContract(ctx, workflowStep),
     batchOwnership,
     prFlow,
+    conflictRework,
     cleanupProbe,
     cleanupCandidateCount:
       cleanupProbe.state === "candidate"

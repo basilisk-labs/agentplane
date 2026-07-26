@@ -11,6 +11,7 @@ import {
   type PrCheckParsed,
   type PrCloseParsed,
   type PrCloseSupersededParsed,
+  type PrConflictReworkParsed,
   type PrFlowStatusParsed,
   type PrNoteParsed,
   type PrOpenParsed,
@@ -18,6 +19,7 @@ import {
 } from "./pr.spec.js";
 
 import { cmdPrCheck } from "./check.js";
+import { cmdPrConflictRework } from "./conflict-rework.js";
 import { cmdPrCloseSuperseded } from "./close-superseded.js";
 import { cmdPrClose } from "./close.js";
 import { cmdPrFlowStatus } from "./flow-status.js";
@@ -29,6 +31,7 @@ export {
   prCheckSpec,
   prCloseSpec,
   prCloseSupersededSpec,
+  prConflictReworkSpec,
   prFlowStatusSpec,
   prNoteSpec,
   prOpenSpec,
@@ -91,6 +94,19 @@ export function makeRunPrCheckHandler(getCtx: (cmd: string) => Promise<CommandCo
       pollIntervalMs: p.pollIntervalMs ?? undefined,
       timeoutMs: p.timeoutMs ?? undefined,
       requiredChecks: p.requiredChecks,
+    });
+  };
+}
+
+export function makeRunPrConflictReworkHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (ctx: CommandCtx, p: PrConflictReworkParsed): Promise<number> => {
+    return await cmdPrConflictRework({
+      ctx: await getCtx("pr conflict-rework"),
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      taskId: p.taskId,
+      expectedFreshnessToken: p.expectedFreshnessToken,
+      json: p.json,
     });
   };
 }
