@@ -4,7 +4,7 @@ title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -39,6 +39,28 @@ verification:
   updated_by: "CODER"
   note: "Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-26T12:14:45.368Z"
+  updated_by: "EVALUATOR"
+  note: "Rework required: production Hermes supervise prepares a remote work order while brief, next-action, and runner prepare local work orders, violating the required shared remote policy."
+  evaluated_sha: "cd59e4d7b8536ff89ee2f442037fe3b008633cde"
+  blueprint_digest: "50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b"
+  evidence_refs:
+    - ".agentplane/tasks/202607221848-VC4VVS/README.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-121445368-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-121445368-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-121445368-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/hermes/hermes.command.ts:126-132"
+    - "packages/agentplane/src/commands/task/brief.command.ts:39-43"
+    - "packages/agentplane/src/commands/task/next-action.command.ts:50-54"
+    - "packages/agentplane/src/runner/usecases/task-run.ts:157-169"
+    - "packages/agentplane/src/runner/usecases/agent-work-order-projection.ts:115-134"
+    - "bunx vitest run packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts (3 passed; equality fixture uses routePacket includeRemote=false at lines 163-169)"
+  findings:
+    - "Hermes supervise hard-codes includeRemote=true; brief and next-action default --remote=false and runner hard-codes include_remote=false. Preparation serializes that choice into remote_policy, so the surfaces cannot share the required canonical signature."
 commit: null
 comments:
   -
