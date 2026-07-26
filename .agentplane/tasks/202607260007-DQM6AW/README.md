@@ -4,7 +4,7 @@ title: "Prepare semantic conflict rework routes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +35,35 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-26T01:35:03.710Z"
+  state: "ok"
+  updated_at: "2026-07-26T02:19:48.873Z"
   updated_by: "TESTER"
-  note: "Rework: full lint is not clean, and stale queue or handoff identity can still unlock the semantic conflict route."
-  attempts: 2
+  note: "Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-26T02:26:43.517Z"
+  updated_by: "EVALUATOR"
+  note: "Current SHA 1e13a7cc fails closed for absent, null, pending, unknown, and contradictory GitHub mergeability; only coherent settled states route."
+  evaluated_sha: "1e13a7cc69658057f45f29c44f11e8b105681065"
+  blueprint_digest: "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6"
+  evidence_refs:
+    - ".agentplane/tasks/202607260007-DQM6AW/README.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-022643517-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-022643517-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-022643517-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
+    - "packages/agentplane/src/commands/pr/conflict-rework.ts"
+    - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
+    - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
+    - "command: focused unit route tests 29 passed; CLI route tests 4 passed; workflow-step tests 20 passed; route-decision tests 19 passed"
+    - "command: independent matrix: 10 unsettled or contradictory states terminal with zero Git calls; true+clean ordinary; false+dirty/conflicting ready"
+    - "command: git diff --check HEAD^ HEAD passed"
+  findings:
+    - "Audited normalizer and route end to end: unsettled or internally contradictory observations yield provider_mergeability_unknown, a terminal stop packet, and zero preparation Git operations; false plus dirty/conflicting alone prepares the bounded semantic packet, while true plus clean remains on the ordinary route."
+    - "Rechecked semantic-route eligibility: task verification, queue or protected-base handoff, branch, base, head SHA, base SHA, PR number, current claim lease, base protection, and clean task worktree are all validated before packet construction."
 commit: null
 comments:
   -
@@ -65,8 +89,20 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: full lint is not clean, and stale queue or handoff identity can still unlock the semantic conflict route."
+  -
+    type: "verify"
+    at: "2026-07-26T01:50:11.962Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified at 7f9588e: full declared gates, strict active route identity, bounded deterministic packet behavior, and read-only conflict routing pass."
+  -
+    type: "verify"
+    at: "2026-07-26T02:19:48.873Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed."
 doc_version: 3
-doc_updated_at: "2026-07-26T01:42:34.041Z"
+doc_updated_at: "2026-07-26T02:19:49.618Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -153,6 +189,70 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T01:50:11.962Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified at 7f9588e: full declared gates, strict active route identity, bounded deterministic packet behavior, and read-only conflict routing pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T01:42:34.041Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+    Details:
+
+    Focused Vitest suites: 43 passed. Claimed leases reject missing, malformed, expired, and boundary timestamps while accepting a future lease. Live THDN flow projection exposes leaseExpiresAt and routePrNumber; live conflict preparation fails closed on provider/local base mismatch without mutation.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+    - old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T02:19:48.873Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:14:25.799Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+    Details:
+
+    Focused suites: 61 passed. Independent matrix: omitted, null, pending, unknown, and contradictory mergeability all returned provider_mergeability_unknown with zero preparation git calls; only false+dirty/conflicting became ready and true+clean stayed non-conflicting. Full declared gates pass. Live THDN reports coherent false+dirty and conflict preparation still refuses provider/local base mismatch without mutation.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+    - old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607260007-DQM6AW --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert only the bounded preparation and route change in a new normal branch_pr task or follow-up. Preserve any existing fail-closed conflict block and task-local packet evidence. Never compensate by rebasing, merging, force-pushing, deleting, or recreating a branch. If current truth cannot be reconfirmed, stop with the diagnostic route and leave all refs/worktrees unchanged."
   Findings: |-
@@ -164,9 +264,11 @@ sections:
 
     Second rework resolution: full lint is clean. Flow status now projects the queue lease expiry and protected-base handoff route PR number. A claimed queue entry is eligible only with a parseable, unexpired lease; missing, malformed, or expired lease data fails closed. A protected-base handoff must carry the current provider PR number in route.pr_number, in addition to matching branch, base, and head.
 
+    Third rework resolution: GitHub mergeability is now conservative and total. Only false with dirty or conflicting provider state is a settled conflict, and only true with clean provider state is a settled non-conflict. Omitted fields, pending or unknown data, and contradictory boolean/state combinations become invalid context. The route independently rechecks that normalized truth, so malformed input cannot reach ordinary queue work or a semantic CODER episode.
+
     Packet bounds: candidate paths are capped at 32; hosted-check rows at 64; unique missing required checks at 32. Each capped collection carries total and truncated metadata, and normalized order is deterministic for freshness hashing.
 
-    Regression evidence: direct packet tests cover expired and current claimed leases, mismatched protected-base handoff PR numbers, oversized checks, missing requirements, nonqueued and DOING tasks, handoff eligibility, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. The local CLI fixture proves an eligible protected queued conflict emits the CODER route without mutating the task worktree. Focused agentplane tests (77), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
+    Regression evidence: direct normalization tests cover omitted fields, false plus unknown, pending unknown, settled clean, and settled conflict. Direct packet tests prove absent, pending, and contradictory mergeability fail closed. CLI route tests prove each uncertain provider payload returns terminal provider_conflict_context_invalid without a cli operation, semantic episode, or worktree mutation; settled clean fixtures retain ordinary routes and settled conflicts retain the bounded CODER packet. Existing regressions cover expired and current claimed leases, mismatched protected-base handoff PR numbers, oversized checks, missing requirements, nonqueued and DOING tasks, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. Focused agentplane tests (85), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
 
     Residual risk: live THDN provider and protection state remain time-sensitive and must be refreshed before any later publication or integration decision. No PR, push, merge, rebase, force-push, or integration was performed during this rework.
 extensions:
@@ -269,6 +371,70 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T01:50:11.962Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified at 7f9588e: full declared gates, strict active route identity, bounded deterministic packet behavior, and read-only conflict routing pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T01:42:34.041Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+Details:
+
+Focused Vitest suites: 43 passed. Claimed leases reject missing, malformed, expired, and boundary timestamps while accepting a future lease. Live THDN flow projection exposes leaseExpiresAt and routePrNumber; live conflict preparation fails closed on provider/local base mismatch without mutation.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+- old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T02:19:48.873Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:14:25.799Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+Details:
+
+Focused suites: 61 passed. Independent matrix: omitted, null, pending, unknown, and contradictory mergeability all returned provider_mergeability_unknown with zero preparation git calls; only false+dirty/conflicting became ready and true+clean stayed non-conflicting. Full declared gates pass. Live THDN reports coherent false+dirty and conflict preparation still refuses provider/local base mismatch without mutation.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+- old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607260007-DQM6AW --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -285,8 +451,10 @@ Rework resolution: conflict rework requires a DONE task with verification=ok and
 
 Second rework resolution: full lint is clean. Flow status now projects the queue lease expiry and protected-base handoff route PR number. A claimed queue entry is eligible only with a parseable, unexpired lease; missing, malformed, or expired lease data fails closed. A protected-base handoff must carry the current provider PR number in route.pr_number, in addition to matching branch, base, and head.
 
+Third rework resolution: GitHub mergeability is now conservative and total. Only false with dirty or conflicting provider state is a settled conflict, and only true with clean provider state is a settled non-conflict. Omitted fields, pending or unknown data, and contradictory boolean/state combinations become invalid context. The route independently rechecks that normalized truth, so malformed input cannot reach ordinary queue work or a semantic CODER episode.
+
 Packet bounds: candidate paths are capped at 32; hosted-check rows at 64; unique missing required checks at 32. Each capped collection carries total and truncated metadata, and normalized order is deterministic for freshness hashing.
 
-Regression evidence: direct packet tests cover expired and current claimed leases, mismatched protected-base handoff PR numbers, oversized checks, missing requirements, nonqueued and DOING tasks, handoff eligibility, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. The local CLI fixture proves an eligible protected queued conflict emits the CODER route without mutating the task worktree. Focused agentplane tests (77), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
+Regression evidence: direct normalization tests cover omitted fields, false plus unknown, pending unknown, settled clean, and settled conflict. Direct packet tests prove absent, pending, and contradictory mergeability fail closed. CLI route tests prove each uncertain provider payload returns terminal provider_conflict_context_invalid without a cli operation, semantic episode, or worktree mutation; settled clean fixtures retain ordinary routes and settled conflicts retain the bounded CODER packet. Existing regressions cover expired and current claimed leases, mismatched protected-base handoff PR numbers, oversized checks, missing requirements, nonqueued and DOING tasks, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. Focused agentplane tests (85), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
 
 Residual risk: live THDN provider and protection state remain time-sensitive and must be refreshed before any later publication or integration decision. No PR, push, merge, rebase, force-push, or integration was performed during this rework.

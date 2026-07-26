@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { TaskWorktreeCleanliness } from "../shared/task-worktree-cleanliness.js";
 import type { GithubBasePullRequestProtection } from "./integrate/internal/github-protection.js";
+import type { GithubPrMergeability } from "./internal/sync-github.js";
 import {
   hasProviderReportedMergeConflict,
   needsProviderConflictReworkPreparation,
@@ -147,7 +148,10 @@ function prepare(opts: {
 describe("provider conflict rework packet", () => {
   it("prepares a bounded THDN-shaped packet without selecting conflict semantics", async () => {
     const git = primeGit();
-    const prepared = await prepare({ git });
+    const conflicting = report();
+    expect(hasProviderReportedMergeConflict(conflicting)).toBe(true);
+    expect(needsProviderConflictReworkPreparation(conflicting)).toBe(true);
+    const prepared = await prepare({ git, report: conflicting });
 
     expect(prepared).toMatchObject({
       state: "ready",
@@ -263,7 +267,7 @@ describe("provider conflict rework packet", () => {
     ).resolves.toMatchObject({ state: "invalid", reason_code: "provider_base_mismatch" });
   });
 
-  it("keeps clean PRs on the ordinary route but fails closed for unknown provider mergeability", async () => {
+  it("keeps a coherently clean PR on the ordinary route", async () => {
     const clean = report();
     if (clean.providerObservation?.state !== "found") throw new Error("fixture error");
     clean.providerObservation.pr.mergeability = {
@@ -274,17 +278,31 @@ describe("provider conflict rework packet", () => {
     expect(hasProviderReportedMergeConflict(clean)).toBe(false);
     expect(needsProviderConflictReworkPreparation(clean)).toBe(false);
     await expect(prepare({ report: clean })).resolves.toMatchObject({ state: "not_conflicting" });
+  });
 
-    const pending = report();
-    if (pending.providerObservation?.state !== "found") throw new Error("fixture error");
-    pending.providerObservation.pr.mergeability = {
-      state: "pending",
-      mergeable: null,
-      providerState: "unknown",
-    };
-    expect(hasProviderReportedMergeConflict(pending)).toBe(false);
-    expect(needsProviderConflictReworkPreparation(pending)).toBe(true);
-    await expect(prepare({ report: pending })).resolves.toMatchObject({
+  it.each([
+    ["absent mergeability", undefined],
+    [
+      "pending mergeability",
+      { state: "pending", mergeable: null, providerState: "unknown" } satisfies GithubPrMergeability,
+    ],
+    [
+      "contradictory conflict mergeability",
+      {
+        state: "conflicting",
+        mergeable: false,
+        providerState: "unknown",
+      } satisfies GithubPrMergeability,
+    ],
+  ] as const)("fails closed for %s", async (_label, mergeability) => {
+    const uncertain = report();
+    if (uncertain.providerObservation?.state !== "found") throw new Error("fixture error");
+    if (mergeability === undefined) delete uncertain.providerObservation.pr.mergeability;
+    else uncertain.providerObservation.pr.mergeability = mergeability;
+
+    expect(hasProviderReportedMergeConflict(uncertain)).toBe(false);
+    expect(needsProviderConflictReworkPreparation(uncertain)).toBe(true);
+    await expect(prepare({ report: uncertain })).resolves.toMatchObject({
       state: "invalid",
       reason_code: "provider_mergeability_unknown",
     });
