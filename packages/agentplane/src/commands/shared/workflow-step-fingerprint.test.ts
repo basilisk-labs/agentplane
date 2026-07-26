@@ -24,10 +24,12 @@ import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { CommandContext } from "./task-backend.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
+import type { WorkflowStep } from "./workflow-step.js";
 import {
   captureWorkflowStepFingerprint,
   withBootstrapWorkflowFingerprint,
   WORKFLOW_STATE_FINGERPRINT_POLICY,
+  workflowStepFingerprintCheckout,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
 import { reduceRouteState } from "./workflow-step-reducer.js";
@@ -35,6 +37,15 @@ import { reduceRouteState } from "./workflow-step-reducer.js";
 const execFileAsync = promisify(execFile);
 const TASK_ID = "202607250100-LIVEFP";
 const BRANCH = `task/${TASK_ID}/live-fingerprint`;
+
+it("binds a side-effect approval to its target checkout, not its persistence checkout", () => {
+  const approval = {
+    kind: "approval",
+    authoritativeCheckout: "task_worktree",
+    request: { type: "side_effect", operationId: "route.remote.refresh" },
+  } as WorkflowStep;
+  expect(workflowStepFingerprintCheckout(approval)).toBe("base_checkout");
+});
 
 function digest(text: string): string {
   return `sha256:${createHash("sha256").update(text).digest("hex")}`;
