@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age",
   "created_at": "2026-07-26T10:53:22.624Z",
-  "diffstat_sha256": "sha256:7e819c10e3f85e0539faf50e72925c4809f8951445ab93f75f82c6561eb6a7ce",
+  "diffstat_sha256": "sha256:b4ccfd1acaef45002a340df71b8c062e6999a1c22422e662121fd7c23f94bf7c",
   "last_verified_at": "2026-07-26T12:07:59.217Z",
   "last_verified_diffstat_sha256": "sha256:32f544bd16043bc05df615b4ec669e964622015284dee5e1979f3bfb1b8bdaea",
   "pr_number": 4632,
