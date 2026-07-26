@@ -1,10 +1,11 @@
 ---
 id: "202607221848-VC4VVS"
 title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -61,11 +62,16 @@ quality_review:
   findings:
     - "Omitted include_remote now resolves to false in both direct and branch_pr; the real four-surface integration covers local default parity and explicit --remote parity."
     - "The pre-existing local-first contract is restored: task brief does not perform a default gh lookup, while compiler-error and stale-fingerprint gates remain covered."
-commit: null
+commit:
+  hash: "64cc762797ccbdd832d1ca6a8424913ca97982ed"
+  message: "🧪 VC4VVS task: record evaluator pass"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -86,8 +92,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks."
+  -
+    type: "status"
+    at: "2026-07-26T12:47:47.162Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T12:07:59.914Z"
+doc_updated_at: "2026-07-26T12:47:47.163Z"
 doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
@@ -186,6 +199,9 @@ sections:
       Impact: The initial needs_rework finding is resolved: the branch now contains source implementation plus cross-surface integration coverage.
       Resolution: Record CODER verification and return route to TESTER; no PR or provider action performed.
 extensions:
+  implementation_commit:
+    hash: "771a7bf513bf73de1899adf0ddf73599df66f414"
+    message: "🐛 VC4VVS task: restore local-first remote work-order policy"
   workflow_route_baseline:
     start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"
     version: 1
