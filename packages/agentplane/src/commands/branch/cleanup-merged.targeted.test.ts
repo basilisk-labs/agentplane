@@ -16,6 +16,7 @@ import {
   gitBranchExists,
   installRunCliIntegrationHarness,
   mkGitRepoRootWithBranch,
+  mkTempDir,
   pathExists,
   runCliSilent,
   writeConfig,
@@ -41,6 +42,7 @@ type TargetedFixture = {
   worktreePath: string;
   unrelatedBranch: string;
   unrelatedWorktreePath: string;
+  siblingBaseWorktreePath: string | null;
 };
 
 async function createTask(root: string, title: string): Promise<string> {
@@ -78,7 +80,9 @@ function markDone(readme: string, commitHash: string): string {
     : done.replace("comments:", `${commitBlock}\ncomments:`);
 }
 
-async function createTargetedFixture(): Promise<TargetedFixture> {
+async function createTargetedFixture(
+  opts: { directExternalWorktree?: boolean; nestedSiblingWorktree?: boolean } = {},
+): Promise<TargetedFixture> {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
   const config = defaultConfig();
@@ -98,7 +102,22 @@ async function createTargetedFixture(): Promise<TargetedFixture> {
   const scaffoldCommit = scaffoldCommitResult.stdout.trim();
 
   const branch = `task/${taskId}/targeted-rebase-cleanup`;
-  const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-targeted`);
+  const siblingBaseWorktreePath = opts.nestedSiblingWorktree
+    ? path.join(await mkTempDir(), "base-main")
+    : null;
+  const directExternalWorktreeRoot = opts.directExternalWorktree ? await mkTempDir() : null;
+  if (siblingBaseWorktreePath) {
+    await execFileAsync("git", ["worktree", "add", "--force", siblingBaseWorktreePath, "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+  }
+  const worktreePath = siblingBaseWorktreePath
+    ? path.join(siblingBaseWorktreePath, ".agentplane", "worktrees", `${taskId}-targeted`)
+    : directExternalWorktreeRoot
+      ? path.join(directExternalWorktreeRoot, `${taskId}-targeted`)
+      : path.join(root, ".agentplane", "worktrees", `${taskId}-targeted`);
+  await mkdir(path.dirname(worktreePath), { recursive: true });
   await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
     cwd: root,
     env: cleanGitEnv(),
@@ -191,6 +210,7 @@ async function createTargetedFixture(): Promise<TargetedFixture> {
     worktreePath,
     unrelatedBranch,
     unrelatedWorktreePath,
+    siblingBaseWorktreePath,
   };
 }
 
@@ -242,6 +262,69 @@ async function installFakeGh(opts: {
   return fakeBin;
 }
 
+async function configureFinalizationRemote(fixture: TargetedFixture): Promise<void> {
+  const remoteRoot = path.join(await mkTempDir(), "origin.git");
+  await execFileAsync("git", ["init", "--bare", remoteRoot], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["remote", "set-url", "origin", remoteRoot], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["push", "-u", "origin", "main"], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["push", "-u", "origin", fixture.branch], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+}
+
+async function installFakeGithubOriginLookup(fakeBin: string): Promise<void> {
+  const locator = process.platform === "win32" ? "where" : "which";
+  const { stdout } = await execFileAsync(locator, ["git"], { env: cleanGitEnv() });
+  const actualGit = stdout
+    .split(/\r?\n/)
+    .find((line) => line.trim().length > 0)
+    ?.trim();
+  if (!actualGit) throw new Error("Could not resolve the real git executable for the test fixture");
+
+  const gitPath = path.join(fakeBin, process.platform === "win32" ? "git.cmd" : "git");
+  if (process.platform === "win32") {
+    await writeFile(
+      gitPath,
+      [
+        "@echo off",
+        'if "%~1"=="remote" if "%~2"=="get-url" if "%~3"=="origin" (',
+        "  echo https://github.com/example/repo.git",
+        "  exit /b 0",
+        ")",
+        `"${actualGit}" %*`,
+        "",
+      ].join("\r\n"),
+      "utf8",
+    );
+    return;
+  }
+
+  await writeFile(
+    gitPath,
+    [
+      "#!/bin/sh",
+      'if [ "$1" = "remote" ] && [ "$2" = "get-url" ] && [ "$3" = "origin" ]; then',
+      "  printf '%s\\n' 'https://github.com/example/repo.git'",
+      "  exit 0",
+      "fi",
+      `exec ${JSON.stringify(actualGit)} "$@"`,
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await chmod(gitPath, 0o755);
+}
+
 async function runWithFakeGh(fakeBin: string, argv: string[]) {
   const previous = process.env.PATH;
   process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
@@ -289,6 +372,123 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     ]);
     expect(second.code).toBe(0);
     expect(second.stdout).toContain(`already clean: task=${fixture.taskId}`);
+  });
+
+  it("allows a clean registered sibling worktree only for targeted finalization", async () => {
+    const fixture = await createTargetedFixture({ nestedSiblingWorktree: true });
+    expect(fixture.siblingBaseWorktreePath).not.toBeNull();
+    await configureFinalizationRemote(fixture);
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    await installFakeGithubOriginLookup(fakeBin);
+
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--finalize",
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("proof=provider_merge");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
+    expect(await pathExists(fixture.worktreePath)).toBe(false);
+    expect(await pathExists(fixture.siblingBaseWorktreePath!)).toBe(true);
+    expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
+    expect(await pathExists(fixture.unrelatedWorktreePath)).toBe(true);
+  });
+
+  it("keeps a directly registered /tmp worktree even for targeted finalization", async () => {
+    const fixture = await createTargetedFixture({ directExternalWorktree: true });
+    await configureFinalizationRemote(fixture);
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    await installFakeGithubOriginLookup(fakeBin);
+
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--finalize",
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("Refusing to remove worktree outside repo");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
+  it("keeps a registered sibling worktree when targeted cleanup omits --finalize", async () => {
+    const fixture = await createTargetedFixture({ nestedSiblingWorktree: true });
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("Refusing to remove worktree outside repo");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
+  it("keeps a registered sibling worktree when broad finalization omits --task-id", async () => {
+    const fixture = await createTargetedFixture({ nestedSiblingWorktree: true });
+    await configureFinalizationRemote(fixture);
+
+    const io = captureStdIO();
+    try {
+      expect(
+        await runCli(["cleanup", "merged", "--finalize", "--yes", "--root", fixture.root]),
+      ).toBe(5);
+      expect(io.stderr).toContain("Refusing to remove worktree outside repo");
+    } finally {
+      io.restore();
+    }
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
+  it("rejects a dirty registered sibling before archiving its PR artifacts", async () => {
+    const fixture = await createTargetedFixture({ nestedSiblingWorktree: true });
+    await configureFinalizationRemote(fixture);
+    await writeFile(path.join(fixture.worktreePath, "uncommitted.txt"), "preserve me\n", "utf8");
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    await installFakeGithubOriginLookup(fakeBin);
+
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--finalize",
+      "--archive",
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("Refusing to remove dirty worktree");
+    expect(
+      await pathExists(
+        path.join(fixture.root, ".agentplane", "tasks", fixture.taskId, "pr", "meta.json"),
+      ),
+    ).toBe(true);
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
   });
 
   it("fails closed on provider head mismatch before deleting any candidate", async () => {
