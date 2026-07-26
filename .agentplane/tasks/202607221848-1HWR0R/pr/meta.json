@@ -8,10 +8,10 @@
   "pr_number": 4631,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4631",
   "pre_merge_closure": {
-    "basis_commit": "92a1057524cd9382a1043946973afc85959d6068",
+    "basis_commit": "6b4d58d8515f64aa565bd7c0f7633ef030f41711",
     "branch": "task/202607221848-1HWR0R/return-typed-task-mutation-results",
     "pr_number": 4631,
-    "recorded_at": "2026-07-26T09:57:05.737Z",
+    "recorded_at": "2026-07-26T10:30:55.059Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
