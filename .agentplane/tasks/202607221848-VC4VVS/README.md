@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
     - "Production integration covers both local default and explicit remote parity across task brief, next-action, task run, and Hermes supervise; all compared work-order signatures match."
     - "The sole source-file edit is a Prettier-compatible projection formatting repair; no behavioral baseline weakening was introduced."
 commit:
-  hash: "64cc762797ccbdd832d1ca6a8424913ca97982ed"
-  message: "🧪 VC4VVS task: record evaluator pass"
+  hash: "da1dbe84d88ee61be532fbc514c224371c3ae441"
+  message: "🧪 VC4VVS task: record independent evaluator pass"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -101,8 +104,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-26T13:28:32.871Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T12:47:47.163Z"
+doc_updated_at: "2026-07-26T13:28:32.872Z"
 doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
@@ -202,8 +212,8 @@ sections:
       Resolution: Record CODER verification and return route to TESTER; no PR or provider action performed.
 extensions:
   implementation_commit:
-    hash: "771a7bf513bf73de1899adf0ddf73599df66f414"
-    message: "🐛 VC4VVS task: restore local-first remote work-order policy"
+    hash: "a6c34e0a4510c78ad0e72493d3c5b0172a89e328"
+    message: "🐛 VC4VVS task: ratchet explicit remote CLI options"
   workflow_route_baseline:
     start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"
     version: 1
