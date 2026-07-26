@@ -1,176 +1,30 @@
-import { createHash } from "node:crypto";
-
-import type { StateFingerprint } from "@agentplaneorg/core/schemas";
-import { canonicalizeJson } from "@agentplaneorg/core/tasks";
-
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
-import { projectWorkflowOperationCommand } from "./workflow-operation-projection.js";
-import type { RouteBlocker, RouteExecutionPacket } from "./route-oracle.js";
+import type { RouteBlocker } from "./route-oracle.js";
+import { cliOperationStep } from "./workflow-step-authority.js";
 import {
-  evaluateWorkflowOperationAuthority,
-  workflowAuthorityStateScopeDigest,
-  workflowOperationAuthorityDigest,
-} from "./side-effect-authority.js";
+  authorityRef,
+  commonExecution,
+  routeBlockerFor,
+  routeBlockerSnapshot,
+  selectedRouteBlocker,
+  workSlug,
+} from "./workflow-step-common.js";
 import {
-  WORKFLOW_OPERATION_REGISTRY,
-  type WorkflowOperation,
   type WorkflowCheckout,
-  type WorkflowOperationId,
   type WorkflowOperationParams,
   type WorkflowRole,
   type WorkflowRouteState,
   type WorkflowStep,
 } from "./workflow-step.js";
-
-export function routeBlockerSnapshot(state: WorkflowRouteState): readonly RouteBlocker[] {
-  return state.blockers.map((blocker) => ({ ...blocker }));
-}
-
-export function routeBlockerFor(
-  state: WorkflowRouteState,
-  ...codes: readonly RouteBlocker["code"][]
-): RouteBlocker | null {
-  return state.blockers.find((blocker) => codes.includes(blocker.code)) ?? null;
-}
-
-function selectedRouteBlocker(
-  _state: WorkflowRouteState,
-  selected: RouteBlocker | null | undefined,
-): RouteBlocker | null {
-  return selected ? { ...selected } : null;
-}
-
-function authorityRef(fingerprint: StateFingerprint): string {
-  return `route:${fingerprint.task_id}:${fingerprint.digest}`;
-}
-
-function operationPayloadDigest(payload: {
-  id: WorkflowOperationId;
-  type: WorkflowOperation["type"];
-  params: WorkflowOperation["params"];
-}): string {
-  return createHash("sha256")
-    .update(JSON.stringify(canonicalizeJson(payload)), "utf8")
-    .digest("hex");
-}
-
-export function workSlug(task: Pick<TaskData, "id" | "title">): string {
-  const fromTitle = task.title
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, "-")
-    .replaceAll(/^-+|-+$/g, "")
-    .replaceAll(/-{2,}/g, "-")
-    .slice(0, 48)
-    .replaceAll(/-+$/g, "");
-  if (fromTitle) return fromTitle;
-  const suffix =
-    task.id
-      .split("-")
-      .pop()
-      ?.toLowerCase()
-      .replaceAll(/[^a-z0-9]+/g, "-") ?? "";
-  return suffix || "work";
-}
-
-export function commonExecution(opts: {
-  actionKind: RouteExecutionPacket["actionKind"];
-  role: WorkflowRole;
-  semanticMutationAllowed?: boolean;
-  mustNot?: readonly string[];
-  returnControlWhen?: string;
-  verificationCandidate?: string | null;
-  evidenceMissing?: readonly string[];
-  needsVerificationRecord?: boolean;
-}): WorkflowStep["execution"] {
-  return {
-    actionKind: opts.actionKind,
-    recommendedRole: opts.role,
-    semanticMutationAllowed: opts.semanticMutationAllowed === true,
-    mustNot: opts.mustNot ?? [],
-    returnControlWhen:
-      opts.returnControlWhen ??
-      (opts.actionKind === "local_command"
-        ? "after the exact command exits; recompute task next-action before any further step"
-        : opts.actionKind === "provider_action"
-          ? "after the provider or human action completes; recompute task next-action with remote truth when relevant"
-          : opts.actionKind === "wait"
-            ? "after the waited condition changes or the parent supervisor grants reclaim/escalation"
-            : "recompute task next-action after the blocking condition changes"),
-    verificationCandidate: opts.verificationCandidate ?? null,
-    evidenceMissing: opts.evidenceMissing ?? [],
-    needsVerificationRecord: opts.needsVerificationRecord === true,
-  };
-}
-
-export function cliOperationStep<Id extends WorkflowOperationId>(opts: {
-  state: WorkflowRouteState;
-  operationId: Id;
-  params: WorkflowOperationParams[Id];
-  code: string;
-  summary: string;
-  selectedBlocker?: RouteBlocker | null;
-}): WorkflowStep {
-  const fingerprint = opts.state.preconditionFingerprint;
-  const spec = WORKFLOW_OPERATION_REGISTRY[opts.operationId];
-  const payload = {
-    id: opts.operationId,
-    type: spec.type,
-    params: opts.params,
-  } as const;
-  const operation = {
-    ...payload,
-    preconditionFingerprint: fingerprint,
-    authorityRef: authorityRef(fingerprint),
-    idempotencyKey: `${opts.operationId}:${opts.state.task.id}:${fingerprint.digest}:${operationPayloadDigest(
-      payload as Pick<WorkflowOperation, "id" | "type" | "params">,
-    )}`,
-    expectedPostconditions: spec.expectedPostconditions,
-    triggersGitHooks: spec.triggersGitHooks,
-  } as WorkflowOperation;
-  const authority = evaluateWorkflowOperationAuthority({
-    task: opts.state.task,
-    operation,
-    fingerprint,
-  });
-  if (authority.state !== "allowed") {
-    return sideEffectApprovalStep({
-      state: opts.state,
-      operation,
-      code: opts.code,
-      summary: opts.summary,
-      reason: authority.reason,
-      policyRule: authority.requirement.policyRule,
-      selectedBlocker: opts.selectedBlocker,
-    });
-  }
-  operation.authorityRef = authority.authorityRef;
-  return {
-    schemaVersion: 1,
-    id: opts.operationId,
-    kind: "cli_operation",
-    phase: spec.phase,
-    authoritativeCheckout: spec.checkout,
-    summary: opts.summary,
-    blockers: routeBlockerSnapshot(opts.state),
-    selectedBlocker: selectedRouteBlocker(opts.state, opts.selectedBlocker),
-    compatibility: {
-      code: opts.code,
-      command: projectWorkflowOperationCommand(operation),
-      summary: opts.summary,
-      requiresApproval: false,
-    },
-    preconditionFingerprint: fingerprint,
-    operation,
-    execution: commonExecution({
-      actionKind: "local_command",
-      role: spec.role,
-      mustNot: spec.mustNot,
-      verificationCandidate: spec.verificationCandidate,
-      needsVerificationRecord: spec.needsVerificationRecord,
-    }),
-  };
-}
+export { cliOperationStep } from "./workflow-step-authority.js";
+export {
+  authorityRef,
+  commonExecution,
+  routeBlockerFor,
+  routeBlockerSnapshot,
+  workSlug,
+} from "./workflow-step-common.js";
 
 export function agentEpisodeStep(opts: {
   state: WorkflowRouteState;
@@ -304,80 +158,6 @@ export function approvalStep(opts: {
       authorityRef: authorityRef(fingerprint),
     },
     execution: commonExecution({ actionKind: "provider_action", role: "USER" }),
-  };
-}
-
-function sideEffectApprovalStep(opts: {
-  state: WorkflowRouteState;
-  operation: WorkflowOperation;
-  code: string;
-  summary: string;
-  reason: string;
-  policyRule: string;
-  selectedBlocker?: RouteBlocker | null;
-}): WorkflowStep {
-  const fingerprint = opts.operation.preconditionFingerprint;
-  const operationDigest = workflowOperationAuthorityDigest(opts.operation);
-  const stateScopeDigest = workflowAuthorityStateScopeDigest(fingerprint);
-  const command = [
-    "agentplane",
-    "task",
-    "authority",
-    "grant",
-    opts.state.task.id,
-    ...(opts.state.remoteEnabled ? ["--remote"] : []),
-    "--operation",
-    opts.operation.id,
-    "--operation-digest",
-    operationDigest,
-    "--state-fingerprint",
-    fingerprint.digest,
-    "--state-scope-digest",
-    stateScopeDigest,
-    "--by",
-    "USER",
-  ].join(" ");
-  return {
-    schemaVersion: 1,
-    id: `approval.${opts.operation.id}`,
-    kind: "approval",
-    phase: "side_effect_authority_required",
-    authoritativeCheckout:
-      opts.state.workflowMode === "branch_pr" ? "task_worktree" : "current_checkout",
-    summary: `${opts.summary}; approval required: ${opts.reason}`,
-    blockers: routeBlockerSnapshot(opts.state),
-    selectedBlocker: selectedRouteBlocker(opts.state, opts.selectedBlocker),
-    compatibility: {
-      code: opts.code,
-      command,
-      summary: opts.summary,
-      requiresApproval: true,
-    },
-    preconditionFingerprint: fingerprint,
-    request: {
-      type: "side_effect",
-      taskId: opts.state.task.id,
-      authorityRef: authorityRef(fingerprint),
-      operationId: opts.operation.id,
-      operation: {
-        id: opts.operation.id,
-        type: opts.operation.type,
-        params: opts.operation.params,
-      },
-      operationDigest,
-      stateFingerprintDigest: fingerprint.digest,
-      stateScopeDigest,
-      policyRule: opts.policyRule,
-    },
-    execution: commonExecution({
-      actionKind: "provider_action",
-      role: "USER",
-      mustNot: [
-        "do not execute the protected operation before a matching authority record is persisted",
-      ],
-      returnControlWhen:
-        "after the authority record is persisted; recompute task next-action before any side effect",
-    }),
   };
 }
 

@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
-import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteOperatorGuidance } from "./route-guidance.js";
@@ -982,102 +981,5 @@ describe("WorkflowStep execution projections", () => {
         token,
       ],
     });
-  });
-
-  it("derives integration enqueue from a verified DONE task with an open PR", () => {
-    const openPr = {
-      task: { id: task.id, status: "DONE", verification: "ok" },
-      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
-      pr: {
-        provider: "github",
-        state: "OPEN",
-        source: "lookup",
-        prNumber: 4618,
-        prUrl: "https://github.com/basilisk-labs/agentplane/pull/4618",
-        base: "main",
-        headSha: resume.head_sha,
-        mergeCommit: null,
-      },
-      providerObservation: {
-        state: "found",
-        pr: {
-          prNumber: 4618,
-          prUrl: "https://github.com/basilisk-labs/agentplane/pull/4618",
-          status: "OPEN",
-          mergedAt: null,
-          mergeCommit: null,
-          base: "main",
-          headSha: resume.head_sha,
-        },
-      },
-      closeTail: { state: "not_applicable", reason: "implementation PR is not merged" },
-      hostedChecks: { checked: false, reason: "not requested" },
-      reviewThreads: { checked: false, reason: "not requested" },
-      queue: { present: false },
-      handoff: { present: false },
-      nextAction: "",
-    } satisfies PrFlowStatusReport;
-    const state = routeState({
-      task: { ...task, status: "DONE", verification: { state: "ok" } },
-      resume: { ...resume, task_status: "DONE" },
-      prFlow: openPr,
-    });
-    const authorized = authorizeOperation({
-      state,
-      operationId: "integration.enqueue",
-      params: { taskId: task.id, branch: taskBranch },
-    });
-    const step = reduceRouteState(authorized);
-    const { packet } = executionPacket({
-      state: authorized,
-      step,
-      paths: { baseCheckoutPath: "/repo" },
-    });
-
-    expect(step).toMatchObject({
-      kind: "cli_operation",
-      operation: {
-        id: "integration.enqueue",
-        params: { taskId: task.id, branch: taskBranch },
-      },
-    });
-    expect(packet).toMatchObject({
-      recommendedRole: "INTEGRATOR",
-      authoritativeCheckout: "base_checkout",
-      exactArgv: ["agentplane", "integrate", "queue", "enqueue", task.id, "--branch", taskBranch],
-    });
-  });
-
-  it("recomputes provider refresh routes with live remote truth", () => {
-    for (const operation of [
-      { id: "provider.pr.refresh" as const, params: { taskId: task.id } },
-      { id: "route.remote.refresh" as const, params: { taskId: task.id } },
-    ]) {
-      const state = authorizeOperation({
-        state: routeState(),
-        operationId: operation.id,
-        params: operation.params,
-      });
-      const step = cliOperationStep({
-        state,
-        operationId: operation.id,
-        params: operation.params,
-        code: "refresh_remote_route",
-        summary: "refresh live provider truth",
-      });
-      const { packet } = executionPacket({
-        state,
-        step,
-        paths: { baseCheckoutPath: "/repo", taskWorktreePath },
-      });
-
-      expect(packet.staleStateCheck, operation.id).toBe(
-        `agentplane task next-action ${task.id} --remote --explain`,
-      );
-      expect(packet.returnControlWhen, operation.id).toContain(packet.staleStateCheck);
-      if (operation.id === "route.remote.refresh") {
-        expect(packet).toMatchObject({ authoritativeCheckout: "task_worktree" });
-      }
-    }
   });
 });

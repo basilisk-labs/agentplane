@@ -1,6 +1,4 @@
 import { findWorktreeForBranch, gitRevParse } from "@agentplaneorg/core/git";
-import type { StateFingerprint } from "@agentplaneorg/core/schemas";
-
 import { CliError } from "../../shared/errors.js";
 import { readTaskPrMetaArtifact } from "../pr/internal/pr-paths.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "../pr/flow-status.js";
@@ -24,12 +22,12 @@ import {
   projectWorkflowStepNextAction,
   projectWorkflowStepOracle,
 } from "./workflow-step-projections.js";
-import { reduceRouteState } from "./workflow-step-reducer.js";
 import {
   captureWorkflowStepFingerprint,
   withBootstrapWorkflowFingerprint,
   type WorkflowRouteStateInput,
 } from "./workflow-step-fingerprint.js";
+import { reduceRouteState } from "./workflow-step-reducer.js";
 import {
   taskSummary,
   type RouteCleanupProbe,
@@ -50,6 +48,8 @@ import {
   inspectTaskWorktreeCleanliness,
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
+import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
@@ -60,52 +60,6 @@ function deriveCheckoutRole(
 ): TaskRouteDecision["workspace"]["checkoutRole"] {
   if (!resume.branch || !resume.base_branch) return "unknown";
   return resume.branch === resume.base_branch ? "base" : "task_worktree";
-}
-
-function hasSameWorkflowStepClassification(left: WorkflowStep, right: WorkflowStep): boolean {
-  return (
-    left.kind === right.kind &&
-    left.id === right.id &&
-    left.authoritativeCheckout === right.authoritativeCheckout
-  );
-}
-
-function isResolvedSideEffectAuthority(draft: WorkflowStep, resolved: WorkflowStep): boolean {
-  return (
-    draft.kind === "approval" &&
-    draft.request.type === "side_effect" &&
-    resolved.kind === "cli_operation" &&
-    draft.request.operationId === resolved.operation.id
-  );
-}
-
-/**
- * A durable authority is scoped to the fully observed fingerprint, while the
- * first route reduction uses a cheap bootstrap fingerprint. A matching grant
- * may therefore turn the provisional approval into its protected CLI step
- * once the full fingerprint is attached. Re-capture exactly once so the final
- * step carries a fingerprint for its own classification, not the approval.
- */
-export async function stabilizeWorkflowStepAfterFingerprint(opts: {
-  state: WorkflowRouteStateInput;
-  draft: WorkflowStep;
-  capture: (step: WorkflowStep) => Promise<StateFingerprint>;
-}): Promise<WorkflowStep> {
-  const firstFingerprint = await opts.capture(opts.draft);
-  const resolved = reduceRouteState({ ...opts.state, preconditionFingerprint: firstFingerprint });
-  if (hasSameWorkflowStepClassification(resolved, opts.draft)) return resolved;
-  if (!isResolvedSideEffectAuthority(opts.draft, resolved)) {
-    throw new Error("WorkflowStep classification changed while attaching StateFingerprint.");
-  }
-  const stabilizedFingerprint = await opts.capture(resolved);
-  const stabilized = reduceRouteState({
-    ...opts.state,
-    preconditionFingerprint: stabilizedFingerprint,
-  });
-  if (!hasSameWorkflowStepClassification(stabilized, resolved)) {
-    throw new Error("WorkflowStep classification changed while stabilizing side-effect authority.");
-  }
-  return stabilized;
 }
 
 async function findWorktreePath(cwd: string, branch: string | null): Promise<string | null> {
