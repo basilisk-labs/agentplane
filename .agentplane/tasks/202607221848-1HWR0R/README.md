@@ -4,7 +4,7 @@ title: "Return typed task mutation results"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -30,11 +30,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-26T09:27:22.592Z"
+  updated_by: "TESTER"
+  note: "Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base."
+  attempts: 1
 commit: null
 comments:
   -
@@ -48,8 +48,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-07-26T09:27:22.592Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base."
 doc_version: 3
-doc_updated_at: "2026-07-26T08:11:00.044Z"
+doc_updated_at: "2026-07-26T09:27:23.237Z"
 doc_updated_by: "CODER"
 description: "RF-07: make create and mutation use cases return exact task id, revision, backend identity, artifact paths, and recovery data instead of list-before/list-after discovery."
 sections:
@@ -73,12 +79,45 @@ sections:
     4. Run focused task/context tests, `bun run task-state:check`, and `bun run typecheck`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-26T09:27:22.592Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T08:11:00.044Z, excerpt_hash=sha256:24b7588594a0696e478a1d5286da60f890bb48f975d108aaa0de78276b89a81e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-1HWR0R-return-typed-task-mutation-results/.agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json
+    - old_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+    - current_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-1HWR0R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221848-1HWR0R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: bun run bench:compatibility:check failed: candidate surface digest drift; the current branch changes agent_facing_context_contracts while the candidate omits task 202607221848-1HWR0R.
+      Impact: Passing verification and integration would be unsupported while the branch is behind main and the cumulative candidate lacks exact provenance and receipt evidence.
+      Resolution: Rebase on current main, update only the reviewed cumulative candidate/checker/critical assertions with post-rebase surface digests, then rerun focused and critical checks.
 extensions:
   workflow_route_baseline:
     start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
@@ -114,6 +153,36 @@ RF-07: make create and mutation use cases return exact task id, revision, backen
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-26T09:27:22.592Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T08:11:00.044Z, excerpt_hash=sha256:24b7588594a0696e478a1d5286da60f890bb48f975d108aaa0de78276b89a81e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-1HWR0R-return-typed-task-mutation-results/.agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json
+- old_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+- current_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-1HWR0R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221848-1HWR0R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -123,3 +192,7 @@ RF-07: make create and mutation use cases return exact task id, revision, backen
 - Re-run focused contract, migration, and type checks.
 
 ## Findings
+
+- Observation: bun run bench:compatibility:check failed: candidate surface digest drift; the current branch changes agent_facing_context_contracts while the candidate omits task 202607221848-1HWR0R.
+  Impact: Passing verification and integration would be unsupported while the branch is behind main and the cumulative candidate lacks exact provenance and receipt evidence.
+  Resolution: Rebase on current main, update only the reviewed cumulative candidate/checker/critical assertions with post-rebase surface digests, then rerun focused and critical checks.

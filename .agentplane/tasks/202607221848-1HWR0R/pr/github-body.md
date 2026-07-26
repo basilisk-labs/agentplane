@@ -15,8 +15,8 @@ RF-07: make create and mutation use cases return exact task id, revision, backen
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base.
 - Canonical workflow state lives in the task README.
 
 <details>
