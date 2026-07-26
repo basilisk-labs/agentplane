@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -40,22 +40,27 @@ verification:
   note: "Implementation rework verified: route authority now forces the runner read-only when the canonical work order has no writable roots."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T22:38:50.288Z"
+  updated_at: "2026-07-26T22:55:35.642Z"
   updated_by: "EVALUATOR"
-  note: "Runner work-order parity is not met on the current head."
-  evaluated_sha: "e8e889efc1075a1ff5663de5a451019b91eea2b6"
+  note: "The implementation rework restores runner parity without widening side-effect authority."
+  evaluated_sha: "128118ae0d2382f1244e618df4e91a844a7a324c"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-223850288-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-223850288-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-223850288-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225535642-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225535642-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225535642-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
-    - "bunx vitest run packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts --reporter=verbose (2 failed, 3 passed)"
+    - "packages/agentplane/src/runner/sandbox-policy.ts"
+    - "packages/agentplane/src/runner/usecases/task-run.ts"
+    - "packages/agentplane/src/runner/state-fingerprint-observation.ts"
+    - "bun run test:fast (468 files, 3255 tests passed)"
+    - "bun run test:critical (11 chunks, 72 tests passed)"
   findings:
-    - "The public task run --dry-run surface exits with code 3 in both direct and branch_pr canonical-work-order fixtures, while brief, next-action, and Hermes succeed; therefore the claimed unified preparation contract is broken."
+    - "When branch_pr is blocked on the typed pr.open approval, the canonical work order exposes no writable roots. task run now derives a read-only sandbox with explicit route_authority provenance instead of retaining the CODER role default; a CLI workspace-write override cannot bypass that route decision."
+    - "State-fingerprint observation reconstructs the same route-derived sandbox policy, so a prepared bundle cannot pass preparation with one authority and execute under another."
 commit:
   hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
   message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
