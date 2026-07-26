@@ -3,7 +3,8 @@
   "branch": "task/202607261646-DX3SFQ/allow-targeted-cleanup-of-registered-sibling-tas",
   "created_at": "2026-07-26T16:48:58.285Z",
   "diffstat_sha256": "sha256:80de7a2d93da69610b466f43097c436a58e99a8fd8a56e318e68b10cd45f0149",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-26T18:12:40.400Z",
+  "last_verified_diffstat_sha256": "sha256:80de7a2d93da69610b466f43097c436a58e99a8fd8a56e318e68b10cd45f0149",
   "pr_number": 4634,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4634",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607261646-DX3SFQ",
   "updated_at": "2026-07-26T16:52:00.020Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

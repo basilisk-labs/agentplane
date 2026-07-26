@@ -15,8 +15,13 @@ Fix branch_pr post-merge cleanup when a clean base checkout shares the Git commo
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Published HEAD 32359412: focused DX3SFQ matrix (52/52), typecheck, lifecycle, guards, and routing
+pass; ci:local:fast fails with 9 task-run lifecycle/claim/replay failures and 6 unhandled errors.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
