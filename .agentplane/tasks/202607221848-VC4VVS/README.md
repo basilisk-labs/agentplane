@@ -2,10 +2,10 @@
 id: "202607221848-VC4VVS"
 title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -35,35 +35,35 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-26T16:12:27.894Z"
+  state: "ok"
+  updated_at: "2026-07-26T16:21:53.406Z"
   updated_by: "TESTER"
-  note: "Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication."
-  attempts: 1
+  note: "TESTER confirmed 70e456c: fast CI 466 files/3232 tests, critical CLI 11/11, Knip 546/546, trust ratchet 12, focused 37/37, typecheck, lifecycle, guards, and docs checks passed."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T15:25:39.640Z"
+  updated_at: "2026-07-26T16:25:11.809Z"
   updated_by: "EVALUATOR"
-  note: "Independent review of 81570066 passes: no P0/P1/P2 found; canonical work-order parity, local-first policy, stale and prompt refusal, legacy binding, fixtures, and generated CLI reference are consistent."
-  evaluated_sha: "81570066ad26ea54a89ba2da43fdae5553c57818"
+  note: "Independent review of 70e456c passes: the Knip public API ratchet removes only stale facade debt, preserves private TaskBrief trust-boundary coverage, and has fresh deterministic evidence."
+  evaluated_sha: "70e456c70ebf6b95e8892401795661c73f0d247d"
   blueprint_digest: "50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b"
   evidence_refs:
     - ".agentplane/tasks/202607221848-VC4VVS/README.md"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-152539640-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-152539640-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-152539640-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-162511809-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-162511809-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-162511809-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json"
-    - "git show 81570066ad26ea54a89ba2da43fdae5553c57818"
-    - "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
-    - "packages/agentplane/src/runner/adapters/execute-supervised.ts"
-    - "bun run ci:local:fast: pass (466 files / 3232 tests)"
-    - "bun run test:critical: pass (11/11 chunks)"
-    - "RF05b focused test matrix: pass (88/88)"
+    - "git show --check 70e456c70ebf6b95e8892401795661c73f0d247d"
+    - "bun run ci:local:fast: pass (466 files / 3232 tests; critical CLI 11/11)"
+    - "focused RF05b Vitest: pass (4 files / 37 tests)"
+    - "bun run knip:check; bun run trust:ratchet:check; bun run typecheck: pass"
   findings:
-    - "Brief, next-action, Hermes, and runner use the prepared AgentWorkOrder v2 projection; local default and explicit remote parity are covered without duplicate v2 aliases."
-    - "Legacy v1 manifest identity is bound only from the supervised invocation while v2 work-order mismatches remain rejected."
-commit: null
+    - "TaskBrief is private but used by the legacy projection and remains indexed by the ratchet; removed facade exports are not reintroduced, while SourceManifest remains exported only from its required internal projection module."
+    - "Knip semantic delta removes only PromptModuleDiagnostic; no entries were added, and the 178/367/546 baseline matches the current checker."
+commit:
+  hash: "70e456c70ebf6b95e8892401795661c73f0d247d"
+  message: "🐛 VC4VVS task: repair Knip public API ratchet"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -136,8 +139,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication."
+  -
+    type: "verify"
+    at: "2026-07-26T16:21:53.406Z"
+    author: "TESTER"
+    state: "ok"
+    note: "TESTER confirmed 70e456c: fast CI 466 files/3232 tests, critical CLI 11/11, Knip 546/546, trust ratchet 12, focused 37/37, typecheck, lifecycle, guards, and docs checks passed."
+  -
+    type: "status"
+    at: "2026-07-26T16:26:15.753Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T16:12:28.643Z"
+doc_updated_at: "2026-07-26T16:26:15.753Z"
 doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
@@ -294,6 +310,36 @@ sections:
     Details:
 
     GitHub PR #4632, head 57610db86c9ff62e4d816d5f157b6bee9a30ecd2. Local corrective diff is independently reviewed and uncommitted; this record captures the completed hosted failure, not a new test result.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+    - old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T16:21:53.406Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: TESTER confirmed 70e456c: fast CI 466 files/3232 tests, critical CLI 11/11, Knip 546/546, trust ratchet 12, focused 37/37, typecheck, lifecycle, guards, and docs checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T16:12:28.643Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+    Details:
 
     BlueprintSnapshotRef:
     - state: current
@@ -506,6 +552,36 @@ VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T15:26:41.305Z, excerpt_
 Details:
 
 GitHub PR #4632, head 57610db86c9ff62e4d816d5f157b6bee9a30ecd2. Local corrective diff is independently reviewed and uncommitted; this record captures the completed hosted failure, not a new test result.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+- old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T16:21:53.406Z — VERIFY — ok
+
+By: TESTER
+
+Note: TESTER confirmed 70e456c: fast CI 466 files/3232 tests, critical CLI 11/11, Knip 546/546, trust ratchet 12, focused 37/37, typecheck, lifecycle, guards, and docs checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T16:12:28.643Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current
