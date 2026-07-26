@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607260532-9M7RNH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T07:29:47.024Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Independent review found no P0/P1: the legacy protected-conflict path requires an exact token-bound adoption receipt before any semantic CODER route, and the additive CLI surface is fully registered in the v0.7 compatibility ledger.",
+  "evaluated_sha": "0ee793bb7dd331ac5c4bd1ef27e3f7f3d607de49",
+  "blueprint_digest": "62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f",
+  "findings": [
+    "The adoption command recomputes live route state under the queue mutex, binds provider, handoff, queue, base topology, and token, and fails closed when any input changes.",
+    "The v0.6.24 immutable baseline remains unchanged; the v0.7 candidate records the exact new command, option, counts, digests, and 9M7RNH provenance."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607260532-9M7RNH/README.md",
+    "bun run bench:compatibility:check",
+    "bun run test:critical",
+    "bunx vitest --config vitest.workspace.ts run --project agentplane targeted-conflict-workflow",
+    "bun run typecheck",
+    "bun run lint:core",
+    "bun run knip:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "INTEGRATOR is an existing lifecycle role rather than cryptographic caller authentication; this rework preserves that authority model and does not expand it."
+  ]
+}

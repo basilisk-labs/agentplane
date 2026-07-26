@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -43,24 +43,26 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T07:09:36.990Z"
+  updated_at: "2026-07-26T07:29:47.024Z"
   updated_by: "EVALUATOR"
-  note: "Independent EVALUATOR review passed for the current legacy protected-conflict adoption route."
-  evaluated_sha: "345f4a03941095055c2f26a85bcfaa9abb650033"
+  note: "Independent review found no P0/P1: the legacy protected-conflict path requires an exact token-bound adoption receipt before any semantic CODER route, and the additive CLI surface is fully registered in the v0.7 compatibility ledger."
+  evaluated_sha: "0ee793bb7dd331ac5c4bd1ef27e3f7f3d607de49"
   blueprint_digest: "62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f"
   evidence_refs:
     - ".agentplane/tasks/202607260532-9M7RNH/README.md"
-    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-070936990-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-070936990-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-070936990-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-072947024-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-072947024-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-072947024-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260532-9M7RNH/blueprint/resolved-snapshot.json"
-    - "HEAD 345f4a039 independent code review"
-    - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
-    - "packages/agentplane/src/commands/pr/integrate/queue-state.ts"
-    - "packages/agentplane/src/commands/integrate-queue.command.ts"
+    - "bun run bench:compatibility:check"
+    - "bun run test:critical"
+    - "bunx vitest --config vitest.workspace.ts run --project agentplane targeted-conflict-workflow"
+    - "bun run typecheck"
+    - "bun run lint:core"
+    - "bun run knip:check"
   findings:
-    - "Receipt and token bind task, provider PR, queue snapshot, protected handoff identity, and observed base topology; normal queue transitions clear the receipt."
-    - "The current parser delta rejects non-string tokens instead of coercing them and preserves exact validated token comparison."
+    - "The adoption command recomputes live route state under the queue mutex, binds provider, handoff, queue, base topology, and token, and fails closed when any input changes."
+    - "The v0.6.24 immutable baseline remains unchanged; the v0.7 candidate records the exact new command, option, counts, digests, and 9M7RNH provenance."
 commit:
   hash: "345f4a03941095055c2f26a85bcfaa9abb650033"
   message: "🐛 9M7RNH conflict-rework: validate typed adoption token"
