@@ -120,7 +120,11 @@ const ctx = {
   },
 } as unknown as CommandContext;
 
-async function blockersFor(targetSha: string | null, batchOwnership?: RouteBatchOwnership) {
+async function blockersFor(
+  targetSha: string | null,
+  batchOwnership?: RouteBatchOwnership,
+  prFlow: PrFlowStatusReport = openPrFlow(),
+) {
   mocks.readFile.mockResolvedValue("{}");
   mocks.parsePrMeta.mockReturnValue({});
   mocks.assessPreMergeClosureFreshness.mockResolvedValue({
@@ -134,7 +138,7 @@ async function blockersFor(targetSha: string | null, batchOwnership?: RouteBatch
     task: reviewedTask(),
     resume,
     workflowMode: "branch_pr",
-    prFlow: openPrFlow(),
+    prFlow,
     batchOwnership: batchOwnership ?? { role: "none" },
     cleanupProbe: { state: "not_requested" },
     taskWorktreeCleanliness: {
@@ -189,6 +193,23 @@ describe("DONE route quality-review target", () => {
         taskId: "T-1",
         taskIds: ["T-1", "T-2"],
       }),
+    );
+  });
+
+  it("routes current hosted check failures on a DONE open PR back to implementation rework", async () => {
+    const failingPrFlow = openPrFlow();
+    failingPrFlow.hostedChecks = {
+      checked: true,
+      total: 2,
+      pending: 0,
+      failing: 1,
+      passing: 1,
+      missingRequired: [],
+      rows: [{ name: "verify-contract", state: "FAILURE" }],
+    };
+
+    await expect(blockersFor(reviewedSha, undefined, failingPrFlow)).resolves.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
   });
 });

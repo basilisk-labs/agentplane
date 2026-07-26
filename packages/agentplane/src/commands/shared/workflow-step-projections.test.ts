@@ -369,6 +369,88 @@ describe("WorkflowStep execution projections", () => {
     });
   });
 
+  it("returns a DONE open PR with current hosted failures to CODER rework instead of enqueue", () => {
+    const failedPrFlow = {
+      task: { id: task.id, status: "DONE", verification: "ok" },
+      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+      pr: {
+        provider: "github",
+        state: "OPEN",
+        source: "lookup",
+        prNumber: 4626,
+        prUrl: "https://github.example/acme/agentplane/pull/4626",
+        base: "main",
+        headSha: resume.head_sha,
+        mergeCommit: null,
+      },
+      providerObservation: {
+        state: "found",
+        pr: {
+          prNumber: 4626,
+          prUrl: "https://github.example/acme/agentplane/pull/4626",
+          status: "OPEN",
+          mergedAt: null,
+          mergeCommit: null,
+          base: "main",
+          headSha: resume.head_sha,
+          mergeability: { state: "not_conflicting", mergeable: true, providerState: "blocked" },
+        },
+      },
+      publication: {
+        state: "aligned",
+        branch: taskBranch,
+        localHeadSha: resume.head_sha,
+        upstreamHeadSha: resume.head_sha,
+      },
+      closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
+      hostedChecks: {
+        checked: true,
+        total: 1,
+        pending: 0,
+        failing: 1,
+        passing: 0,
+        missingRequired: [],
+        rows: [{ name: "verify-contract", state: "FAILURE" }],
+      },
+      reviewThreads: { checked: true, unresolved: 0 },
+      queue: { present: false },
+      handoff: { present: false },
+      nextAction: "hosted checks are failing",
+    } satisfies PrFlowStatusReport;
+    const state = routeState({
+      task: { ...task, status: "DONE", verification: { state: "ok" } },
+      resume: { ...resume, task_status: "DONE" },
+      prFlow: failedPrFlow,
+      conflictRework: null,
+      blockers: [
+        {
+          code: "implementation_rework_required",
+          summary: "current hosted checks are failing",
+        },
+      ],
+    });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      id: "agent.implementation_rework",
+      compatibility: { code: "implementation_rework_required", command: null },
+    });
+    expect(step.id).not.toBe("integration.enqueue");
+    expect(oracle).toMatchObject({
+      phase: "implementation_rework_required",
+      authoritativeCheckout: "task_worktree",
+      nextCommand: null,
+    });
+    expect(packet).toMatchObject({
+      actionKind: "stop",
+      safeToMutate: true,
+      recommendedRole: "CODER",
+      exactArgv: null,
+    });
+  });
+
   it("projects runner wait without a mutation path or executable argv", () => {
     const blocker = { code: "runner_alive" as const, summary: "runner is active" };
     const state = routeState({
