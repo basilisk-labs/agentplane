@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -39,24 +39,24 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T10:29:58.246Z"
+  updated_at: "2026-07-26T10:38:33.910Z"
   updated_by: "EVALUATOR"
-  note: "The hosted rework removes only dead export surface and makes legacy-backend fixtures return the exact persisted task; typed mutation receipt semantics and no-discovery guarantees remain intact."
-  evaluated_sha: "7155466b6e84a550e86fb92e2476322dc15ddafd"
+  note: "The formatting-only correction restores Prettier compliance without changing callback behavior; typed mutation receipts, exact legacy getTask fallback, and no-discovery guarantees remain unchanged."
+  evaluated_sha: "6eeff394bf6ffab4daf12595c257765043f6ed33"
   blueprint_digest: "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d"
   evidence_refs:
     - ".agentplane/tasks/202607221848-1HWR0R/README.md"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-102958246-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-102958246-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-102958246-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-103833910-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-103833910-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-103833910-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json"
+    - "bun run format:check"
     - "bun run test:fast"
-    - "bun run knip:check"
-    - "bun run hotspots:check"
+    - "packages/agentplane/src/commands/task/doc.unit.test.ts"
     - "packages/agentplane/src/commands/shared/task-mutation.ts"
-    - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
+    - "https://github.com/basilisk-labs/agentplane/actions/runs/30198437374/job/89784101301"
   findings:
-    - "No blocking semantic defect found in the current hosted rework."
+    - "No blocking semantic defect found; the hosted failure was a scoped formatting defect now corrected."
 commit:
   hash: "6b4d58d8515f64aa565bd7c0f7633ef030f41711"
   message: "🧪 1HWR0R task: record hosted rework quality"
