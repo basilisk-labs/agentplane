@@ -15,8 +15,8 @@ RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projec
 
 ## Verification
 
-- State: ok
-- Note: Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks.
+- State: needs_rework
+- Note: Generated CLI reference is stale after adding explicit remote options.
 - Canonical workflow state lives in the task README.
 
 <details>

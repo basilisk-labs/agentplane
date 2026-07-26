@@ -2,10 +2,10 @@
 id: "202607221848-VC4VVS"
 title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -35,11 +35,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-26T12:07:59.217Z"
-  updated_by: "CODER"
-  note: "Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks."
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-26T13:34:57.281Z"
+  updated_by: "TESTER"
+  note: "Generated CLI reference is stale after adding explicit remote options."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -64,9 +64,7 @@ quality_review:
     - "The candidate checker fixes the full additive CLI surface at 247 commands, 168 positional arguments, and 783 options; it rejects removed or mutated commands/options and requires exact source-task provenance."
     - "Production integration covers both local default and explicit remote parity across task brief, next-action, task run, and Hermes supervise; all compared work-order signatures match."
     - "The sole source-file edit is a Prettier-compatible projection formatting repair; no behavioral baseline weakening was introduced."
-commit:
-  hash: "da1dbe84d88ee61be532fbc514c224371c3ae441"
-  message: "🧪 VC4VVS task: record independent evaluator pass"
+commit: null
 comments:
   -
     author: "CODER"
@@ -111,8 +109,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-26T13:34:57.281Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Generated CLI reference is stale after adding explicit remote options."
 doc_version: 3
-doc_updated_at: "2026-07-26T13:28:32.872Z"
+doc_updated_at: "2026-07-26T13:34:58.093Z"
 doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
@@ -197,6 +201,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T13:34:57.281Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Generated CLI reference is stale after adding explicit remote options.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T13:28:32.872Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+    - old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607221848-VC4VVS --remote --explain
+    - diagnostic_command: agentplane task next-action 202607221848-VC4VVS --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -210,6 +244,10 @@ sections:
     - Observation: Clean task worktree at cd59e4d7; guards:check, lifecycle:invariants, test:critical (11 files/72 tests), typecheck, and agent-work-order.integration.test.ts (3 tests) passed.
       Impact: The initial needs_rework finding is resolved: the branch now contains source implementation plus cross-surface integration coverage.
       Resolution: Record CODER verification and return route to TESTER; no PR or provider action performed.
+
+    - Observation: ci:local:fast failed docs:cli:check
+      Impact: PR cannot be safely published
+      Resolution: Regenerate and review CLI reference, then rerun full-fast.
 extensions:
   implementation_commit:
     hash: "a6c34e0a4510c78ad0e72493d3c5b0172a89e328"
@@ -309,6 +347,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T13:34:57.281Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Generated CLI reference is stale after adding explicit remote options.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T13:28:32.872Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+- old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607221848-VC4VVS --remote --explain
+- diagnostic_command: agentplane task next-action 202607221848-VC4VVS --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -326,3 +394,7 @@ DecisionContextRef:
 - Observation: Clean task worktree at cd59e4d7; guards:check, lifecycle:invariants, test:critical (11 files/72 tests), typecheck, and agent-work-order.integration.test.ts (3 tests) passed.
   Impact: The initial needs_rework finding is resolved: the branch now contains source implementation plus cross-surface integration coverage.
   Resolution: Record CODER verification and return route to TESTER; no PR or provider action performed.
+
+- Observation: ci:local:fast failed docs:cli:check
+  Impact: PR cannot be safely published
+  Resolution: Regenerate and review CLI reference, then rerun full-fast.
