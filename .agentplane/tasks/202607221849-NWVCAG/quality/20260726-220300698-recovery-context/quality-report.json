@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T22:03:00.698Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "RF-13 authority routing is complete for the formal workflow: protected effects require an exact scoped record, full-fingerprint resolution is stabilized before emitting the CLI operation, and semantic verdict values remain outside router synthesis.",
+  "evaluated_sha": "c3af98022fa7c79e891761b14e2b2ca715c7b238",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "The route permits only a same-operation transition from side-effect approval to CLI operation after full-fingerprint capture, then re-captures the final operation fingerprint.",
+    "Scoped authority tests cover missing, stale, tampered, exact-match, and remote-observation cases; critical and fast suites passed after the stabilization fix."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts",
+    "packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+    "bun run test:fast",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run guards:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The formal task route is the authority boundary; direct legacy command invocation is compatibility surface, not a second authorization protocol."
+  ],
+  "residual_risks": [
+    "The local hash-chain journal is tamper-evident but not protected by a separate signing principal; beta.1 must add the external verifier/signer boundary."
+  ]
+}
