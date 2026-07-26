@@ -84,6 +84,20 @@ describe("runner sandbox policy", () => {
     });
   });
 
+  it("lets the canonical route remove role-derived write authority", () => {
+    const sandbox = resolveRunnerSandboxPolicy({
+      task: task(),
+      requested_sandbox: RUNNER_WORKSPACE_WRITE_SANDBOX,
+      route_allows_workspace_write: false,
+    });
+
+    expect(sandbox).toMatchObject({
+      requested: RUNNER_READ_ONLY_SANDBOX,
+      source: "route_authority",
+      role: "CODER",
+    });
+  });
+
   it("derives narrow context roots while keeping protected paths separate", () => {
     const contextTask = task({
       owner: "CURATOR",

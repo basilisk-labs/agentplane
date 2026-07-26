@@ -383,7 +383,7 @@ const EXECUTION_RECEIPT_SANDBOX_POLICY_ZOD_SCHEMA = z
   .object({
     requested: EXECUTION_RECEIPT_SANDBOX_ZOD_SCHEMA,
     effective: EXECUTION_RECEIPT_SANDBOX_ZOD_SCHEMA.nullable(),
-    source: z.enum(["role_default", "recipe_run_profile", "cli_override"]),
+    source: z.enum(["role_default", "recipe_run_profile", "cli_override", "route_authority"]),
     role: NON_EMPTY_STRING,
     enforcement: z.enum(["enforced", "advisory", "unsupported"]),
     capability_level: z.enum(["native", "wrapper", "advisory", "unsupported"]),

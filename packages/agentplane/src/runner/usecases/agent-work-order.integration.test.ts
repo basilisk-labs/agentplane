@@ -39,6 +39,15 @@ type WorkOrderView = {
     route: unknown;
     source_manifest: unknown;
   };
+  execution?: {
+    sandbox_policy?: {
+      requested?: unknown;
+      source?: unknown;
+    };
+    write_scope?: {
+      writable_roots?: unknown;
+    };
+  };
 };
 
 async function captureRunnerWorkOrder(opts: {
@@ -60,6 +69,7 @@ async function captureRunnerWorkOrder(opts: {
   return {
     work_order: bundle.work_order,
     work_order_preparation: bundle.work_order_preparation,
+    execution: bundle.execution,
   };
 }
 
@@ -224,6 +234,12 @@ describe("AgentWorkOrder v2 surface integration", () => {
       expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
       expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
       expect(canonicalWorkOrderSignature(runnerView)).toEqual(expected);
+      if (workflowMode === "branch_pr") {
+        expect(runnerView.execution).toMatchObject({
+          sandbox_policy: { requested: "read-only", source: "route_authority" },
+          write_scope: { writable_roots: [] },
+        });
+      }
       for (const view of [brief, nextAction, hermes, runnerView]) {
         expect(view.work_order_preparation.remote_policy).toMatchObject({
           mode: "local",

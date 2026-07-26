@@ -401,6 +401,10 @@ export async function observeLiveRunnerStateComponents(opts: {
   const sandboxSource = opts.bundle.execution.sandbox_policy?.source;
   const requestedSandbox =
     sandboxSource === "cli_override" ? opts.bundle.execution.sandbox_policy?.requested : undefined;
+  const routeAllowsWorkspaceWrite =
+    sandboxSource === "route_authority"
+      ? (opts.bundle.work_order?.authority.writable_roots.length ?? 0) > 0
+      : undefined;
   const sandbox =
     live.task && live.protected_path_groups
       ? resolveRunnerSandboxPolicy({
@@ -409,6 +413,7 @@ export async function observeLiveRunnerStateComponents(opts: {
           danger_authority: dangerAuthorityFromBundle(opts.bundle),
           execution_role: opts.bundle.execution.sandbox_policy?.role,
           requested_sandbox: requestedSandbox,
+          route_allows_workspace_write: routeAllowsWorkspaceWrite,
         })
       : null;
   const writeScope =
