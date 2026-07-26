@@ -1,10 +1,11 @@
 ---
 id: "202607221849-NWVCAG"
 title: "Bind side effects to explicit authority records"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -41,30 +42,36 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T21:55:55.787Z"
+  updated_at: "2026-07-26T22:03:00.698Z"
   updated_by: "EVALUATOR"
-  note: "RF-13 meets the formal workflow authority contract: protected external and high-risk operations require an exact scoped record, local reversible operations remain automatic, and semantic verdict values remain outside router synthesis."
-  evaluated_sha: "1a5e1b672a6ed9de4403dc30bc84fab1574be4db"
+  note: "RF-13 authority routing is complete for the formal workflow: protected effects require an exact scoped record, full-fingerprint resolution is stabilized before emitting the CLI operation, and semantic verdict values remain outside router synthesis."
+  evaluated_sha: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-215555787-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-215555787-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-215555787-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-220300698-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-220300698-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-220300698-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts"
     - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
     - "bun run test:fast"
     - "bun run test:critical"
     - "bun run typecheck"
     - "bun run guards:check"
   findings:
-    - "Typed approval is emitted without a matching record; an exact operation/state-scope/expiry match restores only the projected workflow operation."
-    - "Authority audit fixtures cover actor, policy rule, operation digest, state fingerprint, authority digest, outcome, and hash-chain tamper failure."
-commit: null
+    - "The route permits only a same-operation transition from side-effect approval to CLI operation after full-fingerprint capture, then re-captures the final operation fingerprint."
+    - "Scoped authority tests cover missing, stale, tampered, exact-match, and remote-observation cases; critical and fast suites passed after the stabilization fix."
+commit:
+  hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
+  message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -85,8 +92,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified RF-13 authority policy: scoped records gate external and high-risk workflow operations; stale/tampered records fail closed; local reversible operations remain available. Passed focused authority/workflow tests, test:fast, test:critical, typecheck, format:changed, lint:core, compatibility ratchet, guards, and lifecycle invariants."
+  -
+    type: "status"
+    at: "2026-07-26T22:03:49.067Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T21:55:05.952Z"
+doc_updated_at: "2026-07-26T22:03:49.068Z"
 doc_updated_by: "CODER"
 description: "RF-13: classify local, external reversible, external high-risk, and semantic operations; require typed authority/approval records and audit actor, policy rule, digest, and scope."
 sections:
@@ -196,6 +210,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:e89927e05b92757a1c2361e38bebe010ef6d958c4a07c4a4c4b01e02ed233b6b"
+      -
+        actor: "USER"
+        at: "2026-07-26T22:03:26.828Z"
+        authorityDigest: "sha256:1451915d5b69301a926d1909e7a45e807aecd239b0c7151dc393fac90ee96e91"
+        digest: "sha256:089940203a6e9ad4cb926f06496fc15bda5693b132f0d136ec485e8fba610266"
+        operationDigest: "sha256:c49dea0559584b3f9a3fba9c934149d9ba8fa59f49c84f41ca5561bc226f334b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:b918d0412cba0f2afffe25ccff3b76cbe4a019a08e0d26cd3c0b01007eec8613"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:c3eb1ae6d2f6df94f5077e56720907da8684989289cf53fec4c88bf06948766f"
     grants:
       -
         actor: "USER"
@@ -210,6 +237,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:e89927e05b92757a1c2361e38bebe010ef6d958c4a07c4a4c4b01e02ed233b6b"
         stateScopeDigest: "sha256:677d6af9d70d48b270888a999907524d75c35864931005a9361efc4595efd658"
+      -
+        actor: "USER"
+        digest: "sha256:1451915d5b69301a926d1909e7a45e807aecd239b0c7151dc393fac90ee96e91"
+        expiresAt: "2026-07-26T22:18:26.828Z"
+        id: "authority-5399bb9b-6dfc-4e2b-99b6-f0e64496ee98"
+        issuedAt: "2026-07-26T22:03:26.828Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:c49dea0559584b3f9a3fba9c934149d9ba8fa59f49c84f41ca5561bc226f334b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:c3eb1ae6d2f6df94f5077e56720907da8684989289cf53fec4c88bf06948766f"
+        stateScopeDigest: "sha256:281f3bbe4bb31d60f1a4320ac5fb8c6bc476ee6fe6531d774aab9d172bc8199d"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"

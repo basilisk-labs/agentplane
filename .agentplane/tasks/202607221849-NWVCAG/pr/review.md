@@ -6,7 +6,7 @@ Created: 2026-07-26T10:58:46.358Z
 
 - Task: `202607221849-NWVCAG`
 - Title: Bind side effects to explicit authority records
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records`
 - Canonical task record: `.agentplane/tasks/202607221849-NWVCAG/README.md`
 
@@ -33,6 +33,7 @@ Created: 2026-07-26T10:58:46.358Z
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../shared/route-decision-next-action.test.ts      |   2 +-
+ .../src/commands/shared/route-decision.ts          |  71 +++-
  .../commands/shared/side-effect-authority.test.ts  | 190 ++++++++++
  .../src/commands/shared/side-effect-authority.ts   | 413 +++++++++++++++++++++
  .../workflow-operation-projection.registry.test.ts |  43 ++-
@@ -40,13 +41,13 @@ Created: 2026-07-26T10:58:46.358Z
  .../shared/workflow-step-fingerprint.test.ts       |   4 +-
  .../commands/shared/workflow-step-fingerprint.ts   |  17 +-
  ...rkflow-step-projections.conflict-rework.test.ts |  52 ++-
- .../shared/workflow-step-projections.test.ts       | 129 ++++++-
+ .../shared/workflow-step-projections.test.ts       | 191 +++++++++-
  .../src/commands/shared/workflow-step.test.ts      |  93 ++++-
  .../src/commands/shared/workflow-step.ts           |  25 +-
  .../src/commands/task/authority-grant.command.ts   | 199 ++++++++++
  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++++-
  .../check-compatibility-contract-baseline.mjs      | 106 ++++++
- 17 files changed, 1467 insertions(+), 69 deletions(-)
+ 18 files changed, 1585 insertions(+), 84 deletions(-)
 ```
 
 </details>
