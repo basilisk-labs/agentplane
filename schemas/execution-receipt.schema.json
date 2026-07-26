@@ -1344,7 +1344,12 @@
                     },
                     "source": {
                       "type": "string",
-                      "enum": ["role_default", "recipe_run_profile", "cli_override"]
+                      "enum": [
+                        "role_default",
+                        "recipe_run_profile",
+                        "cli_override",
+                        "route_authority"
+                      ]
                     },
                     "role": {
                       "type": "string",
@@ -1505,7 +1510,12 @@
                     },
                     "source": {
                       "type": "string",
-                      "enum": ["role_default", "recipe_run_profile", "cli_override"]
+                      "enum": [
+                        "role_default",
+                        "recipe_run_profile",
+                        "cli_override",
+                        "route_authority"
+                      ]
                     },
                     "role": {
                       "type": "string",
@@ -1663,7 +1673,12 @@
                     },
                     "source": {
                       "type": "string",
-                      "enum": ["role_default", "recipe_run_profile", "cli_override"]
+                      "enum": [
+                        "role_default",
+                        "recipe_run_profile",
+                        "cli_override",
+                        "route_authority"
+                      ]
                     },
                     "role": {
                       "type": "string",
