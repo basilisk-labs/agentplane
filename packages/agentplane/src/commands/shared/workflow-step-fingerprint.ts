@@ -19,7 +19,12 @@ import {
   observeWorkflowPolicyScope,
   type WorkflowPolicyScopeObservation,
 } from "./workflow-step-policy-scope.js";
-import type { WorkflowCheckout, WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
+import {
+  WORKFLOW_OPERATION_REGISTRY,
+  type WorkflowCheckout,
+  type WorkflowRouteState,
+  type WorkflowStep,
+} from "./workflow-step.js";
 
 export type WorkflowRouteStateInput = Omit<WorkflowRouteState, "preconditionFingerprint">;
 
@@ -124,6 +129,17 @@ function checkoutPath(checkout: WorkflowCheckout, paths: WorkflowFingerprintPath
   }
   if (checkout === "current_checkout") return paths.currentCheckoutPath ?? null;
   return paths.baseCheckoutPath ?? paths.currentCheckoutPath ?? null;
+}
+
+/**
+ * A side-effect approval persists a record in the task worktree, but must bind
+ * that record to the checkout where the approved operation will actually run.
+ */
+export function workflowStepFingerprintCheckout(step: WorkflowStep): WorkflowCheckout {
+  if (step.kind === "approval" && step.request.type === "side_effect") {
+    return WORKFLOW_OPERATION_REGISTRY[step.request.operationId].checkout;
+  }
+  return step.authoritativeCheckout;
 }
 
 function sha256(value: string | Buffer): string {
@@ -384,8 +400,9 @@ export async function captureWorkflowStepFingerprint(opts: {
   step: WorkflowStep;
   paths: WorkflowFingerprintPaths;
 }): Promise<StateFingerprint> {
-  const authoritativePath = checkoutPath(opts.step.authoritativeCheckout, opts.paths);
-  const fallbackWorktree = `unavailable:${opts.step.authoritativeCheckout}`;
+  const fingerprintCheckout = workflowStepFingerprintCheckout(opts.step);
+  const authoritativePath = checkoutPath(fingerprintCheckout, opts.paths);
+  const fallbackWorktree = `unavailable:${fingerprintCheckout}`;
   const repositoryRoot = authoritativePath;
   const blueprintPath = path.join(
     opts.ctx.config.paths.workflow_dir,
@@ -417,7 +434,7 @@ export async function captureWorkflowStepFingerprint(opts: {
     : {
         state: "unavailable" as const,
         reason: "authoritative_checkout_unavailable",
-        evidence: { checkout: opts.step.authoritativeCheckout },
+        evidence: { checkout: fingerprintCheckout },
       };
   const selectedPolicyPaths = workflowPolicyPaths(
     opts.ctx.config.workflow_mode,
@@ -472,7 +489,7 @@ export async function captureWorkflowStepFingerprint(opts: {
           excludedPaths: git.excluded_paths,
         })
       : unavailableComponent("workflow_route_git", "authoritative_checkout_unavailable", {
-          checkout: opts.step.authoritativeCheckout,
+          checkout: fingerprintCheckout,
           path: authoritativePath,
           errors: git?.errors ?? [],
         });
