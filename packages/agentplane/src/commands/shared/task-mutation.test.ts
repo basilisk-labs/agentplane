@@ -46,6 +46,46 @@ function mkCtx(taskBackend: TaskBackend): CommandContext {
   });
 }
 
+describe("writeTaskMutation", () => {
+  afterEach(() => {
+    vi.resetModules();
+    vi.restoreAllMocks();
+  });
+
+  it("reads the exact persisted receipt from a legacy backend without listing tasks", async () => {
+    const requested = mkTask({ id: "T-1", revision: 7 });
+    const persisted = { ...requested, revision: 8 };
+    const writeTask = vi.fn(() => Promise.resolve());
+    const getTask = vi.fn(() => Promise.resolve(persisted));
+    const listTasks = vi.fn(() => Promise.resolve([persisted]));
+    const ctx = mkCtx(mkBackend({ writeTask, getTask, listTasks }));
+    const { writeTaskMutation } = await import("./task-mutation.js");
+
+    const receipt = await writeTaskMutation({ ctx, task: requested });
+
+    expect(writeTask).toHaveBeenCalledWith(requested, undefined);
+    expect(getTask).toHaveBeenCalledWith("T-1");
+    expect(listTasks).not.toHaveBeenCalled();
+    expect(receipt).toMatchObject({
+      task_id: "T-1",
+      revision: 8,
+      backend_id: ctx.taskBackend.id,
+    });
+  });
+
+  it("rejects a legacy write that cannot return an exact persisted task", async () => {
+    const requested = mkTask({ id: "T-1", revision: 7 });
+    const writeTask = vi.fn(() => Promise.resolve());
+    const getTask = vi.fn(() => Promise.resolve(null));
+    const ctx = mkCtx(mkBackend({ writeTask, getTask }));
+    const { writeTaskMutation } = await import("./task-mutation.js");
+
+    await expect(writeTaskMutation({ ctx, task: requested })).rejects.toThrow(
+      /did not return T-1 after a legacy writeTask\(\) mutation/u,
+    );
+  });
+});
+
 describe("applyTaskMutation", () => {
   afterEach(() => {
     vi.resetModules();
@@ -141,8 +181,13 @@ describe("applyTaskMutation", () => {
 
   it("applies intents and writes through the backend when the backend is not local", async () => {
     const currentTask = mkTask();
-    const writeTask = vi.fn(() => Promise.resolve());
-    const ctx = mkCtx(mkBackend({ writeTask }));
+    let persistedTask = cloneTask(currentTask);
+    const writeTask = vi.fn((task: TaskData) => {
+      persistedTask = cloneTask(task);
+      return Promise.resolve();
+    });
+    const getTask = vi.fn(() => Promise.resolve(cloneTask(persistedTask)));
+    const ctx = mkCtx(mkBackend({ writeTask, getTask }));
     const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
 
     vi.doMock("./task-backend.js", async () => {

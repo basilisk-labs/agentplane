@@ -61,6 +61,7 @@ describe("context ingest task creation", () => {
     expect(task.description.length).toBeLessThan(1500);
     expect(context.prompt_modules?.[0]?.content.length).toBeLessThan(6500);
     expect(context.prompt_modules?.[0]?.content).toContain("extraction-contract.json");
+    expect(task.description).toContain("CLI-owned `task-creation.json`");
     expect(context.allowed_outputs).toContain(
       ".agentplane/tasks/${taskId}/extraction-contract.json",
     );

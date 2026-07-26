@@ -3,9 +3,12 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { runTaskNewParsed } from "../task/new.js";
+import { runTaskNewParsed, type TaskCreationResult } from "../task/new.js";
 import { fileExists, isRecord } from "./context-utils.js";
-import { writeContextExtractionContract } from "../../context/ingest-task-pack.js";
+import {
+  writeContextExtractionContract,
+  writeContextTaskCreationReceipt,
+} from "../../context/ingest-task-pack.js";
 import {
   buildOutput,
   renderText,
@@ -79,8 +82,6 @@ async function createExtractionTasks(opts: {
   sourceFingerprints: ReadonlyMap<string, TaskSourceFingerprint>;
   createTask?: typeof runTaskNewParsed;
 }) {
-  const beforeTasks = await opts.ctx.taskBackend.listTasks();
-  const knownTaskIds = new Set(beforeTasks.map((task) => task.id));
   const plans = buildExtractionTaskPlans(
     opts.output.selected,
     opts.parsed,
@@ -88,26 +89,27 @@ async function createExtractionTasks(opts: {
   );
   const createTask = opts.createTask ?? runTaskNewParsed;
   const createdTaskIds: string[] = [];
+  const recoveryPaths: string[] = [];
   for (const plan of plans) {
-    await createTask({
+    const created: TaskCreationResult = await createTask({
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       parsed: plan.parsed,
       printTaskId: false,
     });
-    const afterPlan = await opts.ctx.taskBackend.listTasks();
-    const createdForPlan = afterPlan
-      .filter((task) => !knownTaskIds.has(task.id))
-      .toSorted((a, b) => a.id.localeCompare(b.id));
-    const createdTaskId = createdForPlan[0]?.id;
-    if (!createdTaskId) continue;
+    const createdTaskId = created.task_id;
+    recoveryPaths.push(
+      await writeContextTaskCreationReceipt({
+        root: opts.ctx.resolvedProject.gitRoot,
+        result: created,
+      }),
+    );
     await writeContextExtractionContract({
       root: opts.ctx.resolvedProject.gitRoot,
       taskId: createdTaskId,
     });
     createdTaskIds.push(createdTaskId);
-    for (const task of createdForPlan) knownTaskIds.add(task.id);
   }
   const sourceChangedPaths: string[] = [];
   const queuedAt = new Date().toISOString();
@@ -159,6 +161,7 @@ async function createExtractionTasks(opts: {
     taskIds: createdTaskIds,
     changedPaths: [
       ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
+      ...recoveryPaths,
       ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/extraction-contract.json`),
       ...sourceChangedPaths,
     ],

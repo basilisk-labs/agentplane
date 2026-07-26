@@ -41,8 +41,9 @@ vi.mock("node:fs/promises", async (importOriginal) => {
 });
 
 import type { CommandContext } from "../commands/shared/task-backend.js";
+import { writeTaskMutation } from "../commands/shared/task-mutation.js";
 import { TaskStore } from "../commands/shared/task-store.js";
-import { CloudBackend, LocalBackend, type TaskData } from "./task-backend.js";
+import { CloudBackend, LocalBackend, type TaskBackend, type TaskData } from "./task-backend.js";
 import { applyCloudCacheEffects } from "./task-backend/cloud-cache-effects.js";
 import { cloudProjectionIdentitySha256 } from "./task-backend/cloud-projection-identity.js";
 
@@ -89,7 +90,7 @@ async function makeRoot(): Promise<string> {
   return root;
 }
 
-function taskStoreContext(root: string, backend: LocalBackend): CommandContext {
+function taskStoreContext(root: string, backend: TaskBackend): CommandContext {
   return {
     resolvedProject: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") } as never,
     config: defaultConfig() as never,
@@ -111,6 +112,57 @@ afterEach(async () => {
 });
 
 describe("task backend revision CAS", () => {
+  it("returns backend-neutral receipts from exact local and cloud write results", async () => {
+    const root = await makeRoot();
+    const tasksDir = path.join(root, ".agentplane", "tasks");
+    const local = new LocalBackend({ dir: tasksDir });
+    const localResult = await writeTaskMutation({
+      ctx: taskStoreContext(root, local),
+      task: task({ id: "202607240700-REC1", title: "local receipt" }),
+    });
+    const statePath = path.join(root, ".agentplane", "backends", "cloud", "state.json");
+    await mkdir(path.dirname(statePath), { recursive: true });
+    await writeFile(
+      statePath,
+      `${JSON.stringify({
+        last_checked_at: new Date().toISOString(),
+        projection_identity_sha256: cloudProjectionIdentitySha256({
+          endpoint: "https://cloud.example",
+          projectId: "project-1",
+          provider: null,
+        }),
+      })}\n`,
+      "utf8",
+    );
+
+    const cloud = new CloudBackend(
+      {
+        endpoint: "https://cloud.example",
+        token: "token",
+        project_id: "project-1",
+        autosync_enabled: false,
+      },
+      { root, cache: local },
+    );
+    const cloudResult = await writeTaskMutation({
+      ctx: { ...taskStoreContext(root, cloud), backendId: "cloud" },
+      task: task({ id: "202607240700-REC2", title: "cloud receipt" }),
+    });
+
+    expect(localResult).toMatchObject({
+      task_id: "202607240700-REC1",
+      revision: 1,
+      backend_id: "local",
+      artifact_paths: [".agentplane/tasks/202607240700-REC1/README.md"],
+    });
+    expect(cloudResult).toMatchObject({
+      task_id: "202607240700-REC2",
+      revision: 1,
+      backend_id: "cloud",
+      artifact_paths: [".agentplane/tasks/202607240700-REC2/README.md"],
+    });
+  });
+
   it("allows exactly one LocalBackend creator guarded by expected absence", async () => {
     const root = await makeRoot();
     const backend = new LocalBackend({ dir: path.join(root, ".agentplane", "tasks") });

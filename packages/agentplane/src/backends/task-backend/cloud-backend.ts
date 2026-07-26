@@ -15,6 +15,7 @@ import {
   type TaskBackendProjectionTransitionHooks,
   type TaskData,
   type TaskSummary,
+  type TaskWriteResult,
   type TaskWriteOptions,
 } from "./shared.js";
 import {
@@ -232,8 +233,11 @@ export class CloudBackend implements TaskBackend {
     });
   }
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
-    await this.withProjectionOperation("write-task", async () => {
-      await this.writeTaskUnlocked(task, opts);
+    await this.writeTaskWithResult(task, opts);
+  }
+  async writeTaskWithResult(task: TaskData, opts?: TaskWriteOptions): Promise<TaskWriteResult> {
+    return await this.withProjectionOperation("write-task", async () => {
+      return await this.writeTaskUnlocked(task, opts);
     });
   }
   async writeTaskWithProjectionTransition<T>(
@@ -471,11 +475,15 @@ export class CloudBackend implements TaskBackend {
       opts,
     );
   }
-  private async writeTaskUnlocked(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
+  private async writeTaskUnlocked(
+    task: TaskData,
+    opts?: TaskWriteOptions,
+  ): Promise<TaskWriteResult> {
     await this.ensureProjectionFreshForLocalMutation({ reason: "write_task" });
     await this.markLocalProjectionDirty("write_task");
-    await this.cache.writeTask(task, opts);
+    const result = await this.cache.writeTaskWithResult(task, opts);
     await this.maybeAutoPushUnlocked();
+    return result;
   }
   private async maybeAutoPullUnlocked(opts: {
     mode: "read" | "write";

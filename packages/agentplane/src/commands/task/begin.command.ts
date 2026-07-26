@@ -163,17 +163,6 @@ async function captureStdout(fn: () => Promise<number>): Promise<{ code: number;
   }
 }
 
-function extractTaskId(stdout: string): string {
-  const match = /\b\d{12}-[A-Z0-9]{6}\b/.exec(stdout);
-  if (!match) {
-    throw usageError({
-      spec: taskBeginSpec,
-      message: "task begin could not determine the task id created by task new.",
-    });
-  }
-  return match[0];
-}
-
 export function makeRunTaskBeginHandler(
   getCtx: (cmd: string) => Promise<CommandContext>,
 ): CommandHandler<TaskBeginParsed> {
@@ -186,30 +175,28 @@ export function makeRunTaskBeginHandler(
         ? trimmedDescription
         : p.title.trim();
     const tags = p.tags.length > 0 ? p.tags : ["code"];
-    const created = await captureStdout(() =>
-      runTaskNewParsed({
-        ctx: command,
-        cwd: ctx.cwd,
-        rootOverride: ctx.rootOverride,
-        parsed: {
-          title: p.title,
-          description,
-          owner: p.owner,
-          priority: p.priority,
-          tags,
-          taskKind: p.taskKind,
-          mutationScope: p.mutationScope,
-          riskFlags: [],
-          blueprintRequest: p.blueprintRequest,
-          dependsOn: [],
-          verify: p.verify,
-          showBlueprint: false,
-          allowDuplicate: false,
-        },
-      }),
-    );
-    if (created.code !== 0) return created.code;
-    const taskId = extractTaskId(created.stdout);
+    const created = await runTaskNewParsed({
+      ctx: command,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      printTaskId: false,
+      parsed: {
+        title: p.title,
+        description,
+        owner: p.owner,
+        priority: p.priority,
+        tags,
+        taskKind: p.taskKind,
+        mutationScope: p.mutationScope,
+        riskFlags: [],
+        blueprintRequest: p.blueprintRequest,
+        dependsOn: [],
+        verify: p.verify,
+        showBlueprint: false,
+        allowDuplicate: false,
+      },
+    });
+    const taskId = created.task_id;
     await captureStdout(() =>
       cmdTaskPlanSet({
         ctx: command,

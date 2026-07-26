@@ -1,10 +1,10 @@
 import { mapBackendError } from "../cli/error-map.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
-import { runTaskNewParsed } from "../commands/task/new.js";
+import { runTaskNewParsed, type TaskCreationResult } from "../commands/task/new.js";
 import { CliError } from "../shared/errors.js";
 
 import { createTaskNewParsed } from "./ingest-task.js";
-import { writeContextTaskPack } from "./ingest-task-pack.js";
+import { writeContextTaskCreationReceipt, writeContextTaskPack } from "./ingest-task-pack.js";
 import {
   buildTaskIdHint,
   defaultWorkspaceHash,
@@ -32,6 +32,7 @@ export async function cmdContextIngest(opts: {
   rootOverride?: string;
   parsed: ContextIngestParsed;
   createTask?: typeof runTaskNewParsed;
+  writeTaskPack?: typeof writeContextTaskPack;
 }): Promise<number> {
   const ctx =
     opts.ctx ??
@@ -93,38 +94,25 @@ export async function cmdContextIngest(opts: {
     }
 
     const workspaceMode = await readContextWorkspaceMode(root);
-    const beforeTasks = await ctx.taskBackend.listTasks();
-    const before = new Set(beforeTasks.map((task) => task.id));
     const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows, workspaceMode);
     const createTask = opts.createTask ?? runTaskNewParsed;
-    await createTask({
+    const contextCreated: TaskCreationResult = await createTask({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       parsed: taskParsed,
     });
-    const after = await ctx.taskBackend.listTasks();
-    const created = after
-      .filter((task) => !before.has(task.id) && task.owner === "CURATOR")
-      .toSorted((left, right) =>
-        String(right.doc_updated_at ?? "").localeCompare(String(left.doc_updated_at ?? "")),
-      );
-    const contextCreated = created[0];
-    if (!contextCreated) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: "context ingest created no task; cannot continue to run.",
-      });
-    }
-    const pack = await writeContextTaskPack({
+    await writeContextTaskCreationReceipt({ root, result: contextCreated });
+    const writeTaskPack = opts.writeTaskPack ?? writeContextTaskPack;
+    const pack = await writeTaskPack({
       root,
-      taskId: contextCreated.id,
+      taskId: contextCreated.task_id,
       sources: indexModeRows,
+      creation: contextCreated,
     });
 
     process.stdout.write(
-      `context ingestion task created: ${contextCreated.id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${pack.spanCount})\n`,
+      `context ingestion task created: ${contextCreated.task_id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${pack.spanCount})\n`,
     );
 
     return 0;

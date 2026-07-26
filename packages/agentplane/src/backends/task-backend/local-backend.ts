@@ -17,6 +17,7 @@ import {
   type TaskBackend,
   type TaskData,
   type TaskSummary,
+  type TaskWriteResult,
   type TaskWriteOptions,
 } from "./shared.js";
 import { setLocalTaskDoc, touchLocalTaskDocMetadata } from "./local-backend-doc.js";
@@ -29,7 +30,6 @@ import {
 import {
   generateLocalTaskId,
   normalizeLocalTasks,
-  writeLocalTask,
   writeLocalTaskWithReceipt,
   writeLocalTasks,
   type LocalTaskWriteReceipt,
@@ -154,7 +154,15 @@ export class LocalBackend implements TaskBackend {
   }
 
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
-    await writeLocalTask(this.backendContext(), task, opts);
+    await this.writeTaskWithResult(task, opts);
+  }
+
+  async writeTaskWithResult(task: TaskData, opts?: TaskWriteOptions): Promise<TaskWriteResult> {
+    const receipt = await writeLocalTaskWithReceipt(this.backendContext(), task, opts);
+    return {
+      ...receipt,
+      artifact_paths: [taskReadmePath(this.root, receipt.task.id)],
+    };
   }
 
   async writeTaskWithReceipt(

@@ -4,11 +4,13 @@ import path from "node:path";
 
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { CONTEXT_EXTRACTION_CONTRACT } from "../runtime/sgr/index.js";
+import type { TaskCreationResult } from "../commands/task/new.js";
 
 import type { ManifestEntry } from "./ingest-manifest.js";
 import { buildSourceSpanSkeleton } from "./source-spans.js";
 
 const CONTEXT_TASK_PACK_FILES = [
+  "task-creation.json",
   "context-pack.md",
   "extraction-contract.json",
   "canonical-snapshot.json",
@@ -366,6 +368,22 @@ function taskRel(taskId: string, fileName: (typeof CONTEXT_TASK_PACK_FILES)[numb
   return `.agentplane/tasks/${taskId}/${fileName}`;
 }
 
+export async function writeContextTaskCreationReceipt(opts: {
+  root: string;
+  result: TaskCreationResult;
+}): Promise<string> {
+  const relativePath = taskRel(opts.result.task_id, "task-creation.json");
+  await mkdir(path.dirname(path.join(opts.root, relativePath)), { recursive: true });
+  await writeJsonStableIfChanged(path.join(opts.root, relativePath), {
+    version: 1,
+    task_id: opts.result.task_id,
+    revision: opts.result.revision,
+    backend_id: opts.result.backend_id,
+    artifact_paths: opts.result.artifact_paths,
+  });
+  return relativePath;
+}
+
 export async function writeContextExtractionContract(opts: {
   root: string;
   taskId: string;
@@ -426,6 +444,7 @@ function buildContextPackMarkdown(opts: {
     "",
     "## Required Inputs",
     "",
+    "- `task-creation.json`: CLI-owned receipt containing the exact created task identity, revision, backend, and recovery artifact paths; treat it as immutable during semantic work.",
     "- `source-set.lock.json`: selected source identity, hashes, status, type, and size.",
     "- `extraction-contract.json`: exact SGR v2 payload requirements plus a valid example.",
     "- `canonical-snapshot.json`: current surface counts, digests, and bounded page/entity candidates for reconciliation.",
@@ -462,11 +481,18 @@ export async function writeContextTaskPack(opts: {
   root: string;
   taskId: string;
   sources: ManifestEntry[];
+  creation: TaskCreationResult;
   generatedAt?: string;
 }): Promise<{ taskDir: string; spanCount: number }> {
   const generatedAt = opts.generatedAt ?? new Date().toISOString();
+  if (opts.creation.task_id !== opts.taskId) {
+    throw new Error(
+      `Context task creation receipt id ${opts.creation.task_id} does not match ${opts.taskId}.`,
+    );
+  }
   const taskDir = path.join(opts.root, ".agentplane", "tasks", opts.taskId);
   await mkdir(taskDir, { recursive: true });
+  await writeContextTaskCreationReceipt({ root: opts.root, result: opts.creation });
 
   const spans = await buildSourceSpanSkeleton({ root: opts.root, sources: opts.sources });
   const canonicalSnapshot = await buildCanonicalSnapshot({

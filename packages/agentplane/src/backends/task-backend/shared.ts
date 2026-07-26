@@ -32,6 +32,7 @@ export type {
   TaskRunnerTarget,
   TaskProjectionRefreshOptions,
   TaskSummary,
+  TaskWriteResult,
   TaskWriteOptions,
   VerificationResult,
   VerificationState,

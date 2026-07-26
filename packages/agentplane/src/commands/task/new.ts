@@ -11,6 +11,7 @@ import {
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { writeTaskMutation, type TaskMutationResult } from "../shared/task-mutation.js";
 import type { TaskData } from "../../backends/task-backend/shared/types.js";
 import {
   BLUEPRINT_REQUEST_VALUES,
@@ -53,6 +54,8 @@ export type TaskNewParsed = {
   showBlueprint: boolean;
   allowDuplicate: boolean;
 };
+
+export type TaskCreationResult = TaskMutationResult;
 
 function dedupeTrimmed(values: string[]): string[] {
   const seen = new Set<string>();
@@ -162,7 +165,7 @@ export async function runTaskNewParsed(opts: {
   rootOverride?: string;
   parsed: TaskNewParsed;
   printTaskId?: boolean;
-}): Promise<number> {
+}): Promise<TaskCreationResult> {
   const p = sanitizeTaskNewParsed(opts.parsed);
   try {
     const ctx =
@@ -307,17 +310,26 @@ export async function runTaskNewParsed(opts: {
       });
     }
 
-    await ctx.taskBackend.writeTask(task);
-    if (opts.printTaskId !== false) process.stdout.write(`${taskId}\n`);
+    const created = await writeTaskMutation({
+      ctx,
+      task,
+      writeOptions: { expectedRevision: 0 },
+    });
+    if (opts.printTaskId !== false) process.stdout.write(`${created.task_id}\n`);
     if (p.showBlueprint) {
       const summary = await resolveTaskBlueprintLifecycleSummary({
-        task,
+        task: created.task,
         config: ctx.config,
         projectRoot: ctx.resolvedProject.gitRoot,
       });
       process.stderr.write(formatTaskBlueprintCreationPreview(summary));
     }
-    return 0;
+    return {
+      task_id: created.task_id,
+      revision: created.revision,
+      backend_id: created.backend_id,
+      artifact_paths: created.artifact_paths,
+    };
   } catch (err) {
     throw mapBackendError(err, { command: "task new", root: opts.rootOverride ?? null });
   }

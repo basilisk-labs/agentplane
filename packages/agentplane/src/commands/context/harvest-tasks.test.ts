@@ -101,6 +101,15 @@ function ctx(root: string, tasks: TaskData[]): CommandContext {
   } as unknown as CommandContext;
 }
 
+function taskCreationResult(taskId: string) {
+  return {
+    task_id: taskId,
+    revision: 1,
+    backend_id: "local",
+    artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+  };
+}
+
 describe("context harvest tasks", () => {
   it("previews oldest completed tasks without writing proposal artifacts", async () => {
     const root = await tempRoot();
@@ -302,6 +311,7 @@ describe("context harvest tasks", () => {
       task({ id: "202604020900-SECOND", title: "Second context task", tags: ["workflow"] }),
     ];
     const commandCtx = ctx(root, tasks);
+    const listTasks = vi.spyOn(commandCtx.taskBackend, "listTasks");
     let createdCount = 0;
 
     await cmdContextHarvestTasks({
@@ -326,11 +336,12 @@ describe("context harvest tasks", () => {
           description: parsed.description,
           extensions: parsed.extensions,
         } as TaskData);
-        return 0;
+        return taskCreationResult(`202604040900-CURAT${createdCount}`);
       },
     });
 
     expect(createdParsed).toHaveLength(2);
+    expect(listTasks).toHaveBeenCalledTimes(2);
     expect(createdParsed[0]).toMatchObject({
       owner: "CURATOR",
       tags: ["context", "assimilation", "task-harvest"],
@@ -431,6 +442,9 @@ describe("context harvest tasks", () => {
         "coverage",
       ]),
     );
+    await expect(
+      readFile(path.join(root, ".agentplane/tasks/202604040900-CURAT1/task-creation.json"), "utf8"),
+    ).resolves.toContain("202604040900-CURAT1");
     expect(tasks.find((row) => row.id === "202604010900-FIRST1")?.extensions).toMatchObject({
       context_task_extraction: {
         pipeline: "context.harvest.tasks",
@@ -480,7 +494,7 @@ describe("context harvest tasks", () => {
           description: parsed.description,
           extensions: parsed.extensions,
         } as TaskData);
-        return 0;
+        return taskCreationResult("202604040900-CURAT1");
       },
     });
 
@@ -565,7 +579,7 @@ describe("context harvest tasks", () => {
           description: parsed.description,
           extensions: parsed.extensions,
         } as TaskData);
-        return 0;
+        return taskCreationResult("202604040900-CURAT1");
       },
     });
 

@@ -77,7 +77,7 @@ function buildIngestMetadata(
     `Owner: CURATOR; prompt: ${promptRef}; blueprint: ${blueprintId}.`,
     ...deprecatedModeNote(workspaceMode),
     "",
-    "Read the task-bound `context-pack.md`, `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
+    "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
     "Execute semantic entity reconciliation -> SGR extraction -> atomic formal+wiki compilation -> coverage/reports -> verification. CURATOR owns every identity decision; deterministic code only prepares evidence, validates the decision record, and applies canonical identifiers. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
   ].join("\n");
   return {
@@ -107,7 +107,7 @@ function buildContextTaskDocSections(): NonNullable<TaskNewParsed["taskDocSectio
       "5. Refresh reports/indexes, prove curated-only retrieval and raw-deletion resilience, obtain a separate semantic review, record its explicit provenance, run task verification, and record residual uncertainty.",
     ].join("\n"),
     "Verify Steps": [
-      "1. Inspect `context-pack.md`, `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
+      "1. Inspect `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
       "2. Validate the SGR extraction before apply. Expected: every entity-bearing term has exactly one supported semantic resolution with candidates checked, comparison dimensions, evidence for and against, rationale, and explicit unresolved questions where needed; same_as/alias_of reuse an existing canonical ID and add no duplicate graph entity.",
       "3. Run `agentplane context extraction apply <sgr-json> --task-id <task-id> --synthesize-wiki`. Expected: formal and Wiki artifacts commit atomically and stay within allowed_outputs.",
       "4. Run `agentplane context reindex --include-raw`, `agentplane context wiki report context/wiki`, `agentplane context wiki index context/wiki`, `agentplane context wiki lint context/wiki`, and `agentplane context graph validate`. Expected: indexes, topology, links, entity references, and reports are valid.",
