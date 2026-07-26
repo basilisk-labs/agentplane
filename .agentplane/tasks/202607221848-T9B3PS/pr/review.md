@@ -6,7 +6,7 @@ Created: 2026-07-26T08:07:55.572Z
 
 - Task: `202607221848-T9B3PS`
 - Title: Publish AgentWorkOrder v2 schema and migrations
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221848-T9B3PS/publish-agentworkorder-v2-schema-and-migrations`
 - Canonical task record: `.agentplane/tasks/202607221848-T9B3PS/README.md`
 
