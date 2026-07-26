@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -63,8 +63,8 @@ quality_review:
     - "The generated reference contains the canonical command id, task-id argument, and exact adoption-token option; docs freshness and full contract checks pass."
     - "The v0.7 compatibility candidate remains exact-locked to the additive 247-command surface, and the immutable v0.6.24 anchor is unchanged."
 commit:
-  hash: "64f14f70470f48a2997abe566ff560a1044f35a3"
-  message: "🧐 9M7RNH task: refresh quality review"
+  hash: "f2cfe1c8b38c443d5f18d52db0431c8c5e16b04c"
+  message: "🧐 9M7RNH task: refresh docs quality review"
 comments:
   -
     author: "CODER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -103,8 +106,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-26T07:38:45.424Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T07:30:48.591Z"
+doc_updated_at: "2026-07-26T07:38:45.424Z"
 doc_updated_by: "CODER"
 description: "Close the liveness gap for legacy protected PR conflicts whose provider-reported conflict base is an ancestor of current main. Prepare a bounded read-only reconciliation packet carrying provider conflict-base, current base, ancestry, local conflict probe, and freshness; preserve fail-closed behavior and prohibit CLI rebase, merge, push, queue, or cleanup mutations."
 sections:
@@ -170,8 +180,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "0ee793bb7dd331ac5c4bd1ef27e3f7f3d607de49"
-    message: "🧩 9M7RNH conflict-rework: register adoption surface"
+    hash: "e84f13ddb070ad29dd4b0875b375df820f623e84"
+    message: "📝 9M7RNH task: refresh CLI reference"
   workflow_route_baseline:
     start_head_sha: "0434d56b52cf40b9f2d8c1f4d35319d23261ffbb"
     version: 1
