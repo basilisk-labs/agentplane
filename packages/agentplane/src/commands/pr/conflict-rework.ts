@@ -14,7 +14,7 @@ import {
 } from "../shared/task-worktree-cleanliness.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "./flow-status.js";
 import {
-  hasSettledGithubPrMergeability,
+  hasCoherentGithubPrMergeability,
   isSettledGithubPrConflict,
 } from "./internal/sync-github.js";
 import {
@@ -212,7 +212,7 @@ export function needsProviderConflictReworkPreparation(report: PrFlowStatusRepor
     return false;
   }
   const mergeability = report.providerObservation.pr.mergeability;
-  return !hasSettledGithubPrMergeability(mergeability) || isSettledGithubPrConflict(mergeability);
+  return !hasCoherentGithubPrMergeability(mergeability) || isSettledGithubPrConflict(mergeability);
 }
 
 type ConflictRouteIdentity = {
@@ -269,7 +269,8 @@ function hasEligibleProtectedBaseHandoff(
     report.handoff.prBranch === identity.taskBranch &&
     report.handoff.baseBranch === identity.base &&
     report.handoff.headSha === identity.providerHead &&
-    report.handoff.routePrNumber === identity.prNumber
+    report.handoff.routePrNumber === identity.prNumber &&
+    report.handoff.routeProviderBaseSha === identity.providerBase
   );
 }
 
@@ -344,7 +345,7 @@ export async function prepareConflictReworkPacket(opts: {
     opts.report.providerObservation.pr.status === "OPEN"
   ) {
     const mergeability = opts.report.providerObservation.pr.mergeability;
-    if (!hasSettledGithubPrMergeability(mergeability)) {
+    if (!hasCoherentGithubPrMergeability(mergeability)) {
       return invalid(
         "provider_mergeability_unknown",
         `GitHub mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
@@ -396,13 +397,17 @@ export async function prepareConflictReworkPacket(opts: {
       `provider head differs from local task branch: provider=${providerHead} local=${localHead}`,
     );
   }
-  const routeEligibility = validateConflictRouteEligibility(opts.report, {
-    taskBranch,
-    providerHead,
-    base,
-    providerBase,
-    prNumber,
-  }, opts.now ?? new Date());
+  const routeEligibility = validateConflictRouteEligibility(
+    opts.report,
+    {
+      taskBranch,
+      providerHead,
+      base,
+      providerBase,
+      prNumber,
+    },
+    opts.now ?? new Date(),
+  );
   if (routeEligibility) return routeEligibility;
   const baseProtection =
     opts.baseProtection ??

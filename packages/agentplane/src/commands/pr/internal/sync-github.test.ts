@@ -172,11 +172,7 @@ describe("sync-github", () => {
   });
 
   it.each([
-    [
-      "omitted mergeability fields",
-      {},
-      { state: "unknown", mergeable: null, providerState: null },
-    ],
+    ["omitted mergeability fields", {}, { state: "unknown", mergeable: null, providerState: null }],
     [
       "contradictory false and unknown mergeability",
       { mergeable: false, mergeable_state: "unknown" },
@@ -188,9 +184,39 @@ describe("sync-github", () => {
       { state: "pending", mergeable: null, providerState: "unknown" },
     ],
     [
-      "settled clean mergeability",
+      "unsettled null and pending mergeability",
+      { mergeable: null, mergeable_state: "pending" },
+      { state: "unknown", mergeable: null, providerState: "pending" },
+    ],
+    [
+      "coherent clean mergeability",
       { mergeable: true, mergeable_state: "clean" },
       { state: "not_conflicting", mergeable: true, providerState: "clean" },
+    ],
+    [
+      "coherent behind mergeability",
+      { mergeable: true, mergeable_state: "behind" },
+      { state: "not_conflicting", mergeable: true, providerState: "behind" },
+    ],
+    [
+      "coherent unstable mergeability",
+      { mergeable: true, mergeable_state: "unstable" },
+      { state: "not_conflicting", mergeable: true, providerState: "unstable" },
+    ],
+    [
+      "coherent blocked mergeability",
+      { mergeable: true, mergeable_state: "blocked" },
+      { state: "not_conflicting", mergeable: true, providerState: "blocked" },
+    ],
+    [
+      "contradictory true and dirty mergeability",
+      { mergeable: true, mergeable_state: "dirty" },
+      { state: "unknown", mergeable: true, providerState: "dirty" },
+    ],
+    [
+      "contradictory true and conflicting mergeability",
+      { mergeable: true, mergeable_state: "conflicting" },
+      { state: "unknown", mergeable: true, providerState: "conflicting" },
     ],
     [
       "settled conflicting mergeability",

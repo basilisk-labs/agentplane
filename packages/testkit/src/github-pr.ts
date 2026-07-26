@@ -28,6 +28,7 @@ export async function installFakeGhPrLookup(opts: {
   mergedAt?: string | null;
   mergeCommitSha?: string | null;
   headSha?: string;
+  baseSha?: string;
   prNumber?: number;
   protectedBranch?: string;
 }): Promise<FakeGhHandle> {
@@ -57,7 +58,7 @@ export async function installFakeGhPrLookup(opts: {
         merged_at: opts.mergedAt ?? null,
         merge_commit_sha: opts.mergeCommitSha ?? null,
         head: { ref: opts.branch, sha: opts.headSha ?? "remote-head-sha" },
-        base: { ref: "main" },
+        base: { ref: "main", sha: opts.baseSha ?? "provider-base-sha" },
       })};`,
       'if (route === "repos/example/repo/pulls" && params.get("head") === expectedHead) {',
       "  console.log(JSON.stringify([pr]));",
@@ -124,6 +125,14 @@ export async function installFakeGhPrApi(opts: {
       'if (route === "repos/example/repo/pulls" && method === "GET" && params.get("head") === expectedHead) {',
       "  console.log(JSON.stringify(existingResponse));",
       "  process.exit(0);",
+      "}",
+      'if (route.startsWith("repos/example/repo/pulls/") && method === "GET") {',
+      '  const prNumber = Number(route.split("/").at(-1));',
+      "  const matching = existingResponse.find((candidate) => candidate && candidate.number === prNumber);",
+      "  if (matching) {",
+      "    console.log(JSON.stringify(matching));",
+      "    process.exit(0);",
+      "  }",
       "}",
       'if (route === "repos/example/repo/pulls" && method === "POST") {',
       "  if (createError) {",

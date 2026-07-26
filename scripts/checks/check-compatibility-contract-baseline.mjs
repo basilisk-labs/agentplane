@@ -315,6 +315,7 @@ function validateReviewedCandidate({
     "202607230554-YFYT83",
     "202607221846-9XC1H0",
     "202607221848-0ZAB1F",
+    "202607260007-DQM6AW",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -324,6 +325,7 @@ function validateReviewedCandidate({
     "202607221848-ABG7SD",
     "202607221848-0ZAB1F",
     "202607221848-ER5H6N",
+    "202607260007-DQM6AW",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -590,6 +592,23 @@ function validateReviewedCandidate({
   );
   const expectedAddedCommandDescriptors = [
     {
+      id: ["pr", "conflict-rework"],
+      visibility: "user",
+      group: "PR",
+      args: [
+        {
+          name: "task-id",
+          required: true,
+          variadic: false,
+          valueHint: "<task-id>",
+        },
+      ],
+      options: [
+        { name: "expect-freshness-token", kind: "string", valueHint: "<sha256-token>" },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
       id: ["task", "run", "reconcile"],
       visibility: "internal",
       group: "Task",
@@ -644,6 +663,19 @@ function validateReviewedCandidate({
       choices: ["human_supplied", "evaluator_supplied"],
     },
     {
+      command: "pr conflict-rework",
+      name: "expect-freshness-token",
+      kind: "string",
+      valueHint: "<sha256-token>",
+    },
+    {
+      command: "pr conflict-rework",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "sync",
       name: "adopt-projection-identity",
       kind: "boolean",
@@ -695,6 +727,11 @@ function validateReviewedCandidate({
   const expectedAdditionSources = [
     {
       kind: "command",
+      command: "pr conflict-rework",
+      source_task: "202607260007-DQM6AW",
+    },
+    {
+      kind: "command",
       command: "task run reconcile",
       source_task: "202607221846-9XC1H0",
     },
@@ -722,6 +759,18 @@ function validateReviewedCandidate({
       command: "evaluator run",
       name: "provenance",
       source_task: "202607221846-YGWMA2",
+    },
+    {
+      kind: "option",
+      command: "pr conflict-rework",
+      name: "expect-freshness-token",
+      source_task: "202607260007-DQM6AW",
+    },
+    {
+      kind: "option",
+      command: "pr conflict-rework",
+      name: "json",
+      source_task: "202607260007-DQM6AW",
     },
     {
       kind: "option",
@@ -795,7 +844,8 @@ function validateReviewedCandidate({
     "CLI candidate evidence drift",
   );
   assert(
-    hashJson(addedCommands) === hashJson(["task run reconcile", "workflow migrate"]),
+    hashJson(addedCommands) ===
+      hashJson(["pr conflict-rework", "task run reconcile", "workflow migrate"]),
     "unexpected CLI addition",
   );
   assert(

@@ -1,0 +1,31 @@
+# Semantic quality review: rework
+
+Provenance: evaluator_supplied
+
+REWORK on current task branch 9acc5a1207c72b649c05aae6b4df954b96ee2725: the implementation source is equivalent to unreachable 1e13a7c, but two live semantic findings and required contract failures prevent promotion.
+
+## Findings
+- P1: mergeable=true with provider state behind or unstable normalizes to unknown, so a coherently non-conflicting PR is terminally invalid instead of preserving its ordinary route (sync-github.ts:110-128; Verify Step 5).
+- P2: protected-base handoff eligibility compares branch/base/head/PR number but has no observed base SHA, so a base advance is not invalidated on that path (conflict-rework.ts:263-273; flow-status.ts:108-120; Verify Step 4).
+- Required contract checks are not clean: format:check reports five changed DQM files, and bench:compatibility:check requires a reviewed candidate surface digest update.
+- branch-publication.test.ts has 3 failing force-lease regressions; its source tree is unchanged from main, so it is not attributed to DQM but still blocks hosted verification.
+
+## Evidence
+- .agentplane/tasks/202607260007-DQM6AW/README.md
+- packages/agentplane/src/commands/pr/internal/sync-github.ts
+- packages/agentplane/src/commands/pr/conflict-rework.ts
+- packages/agentplane/src/commands/pr/flow-status.ts
+- bun x vitest --config vitest.workspace.ts run --project agentplane DQM focused suites: 70 passed
+- bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check: passed
+- bun run format:check: failed (5 DQM files)
+- bun run bench:compatibility:check: failed (candidate digest drift)
+- bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/branch-publication.test.ts: 3 failed
+
+## Missing Tests
+- none recorded
+
+## Hidden Assumptions
+- A GitHub mergeable=true observation with provider state behind or unstable is treated as unresolved rather than as a non-conflicting PR subject to ordinary base-staleness handling.
+
+## Residual Risks
+- PR #4627 remains on 9acc5a1; hosted checks and review threads must be refreshed after a corrective implementation and normal PR update route.

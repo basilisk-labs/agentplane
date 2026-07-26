@@ -88,6 +88,7 @@ function report(overrides: Partial<PrFlowStatusReport> = {}): PrFlowStatusReport
       headSha,
       prBranch: branch,
       routePrNumber: 4626,
+      routeProviderBaseSha: baseSha,
       nextActions: [],
     },
     nextAction: "wait hosted checks, then merge remote PR 4626 through the configured provider API",
@@ -102,11 +103,13 @@ const cleanWorktree = {
   changedPaths: [],
 } as const satisfies TaskWorktreeCleanliness;
 
-function primeGit(opts: {
-  baseChanged?: string[];
-  headChanged?: string[];
-  localBase?: string;
-} = {}) {
+function primeGit(
+  opts: {
+    baseChanged?: string[];
+    headChanged?: string[];
+    localBase?: string;
+  } = {},
+) {
   const calls = { diffNames: 0, mergeBase: [] as string[][] };
   const gitOps: ConflictReworkGitOps = {
     resolveRef: () => Promise.resolve(opts.localBase ?? baseSha),
@@ -126,13 +129,15 @@ function primeGit(opts: {
   return { calls, gitOps };
 }
 
-function prepare(opts: {
-  report?: PrFlowStatusReport;
-  taskWorktree?: TaskWorktreeCleanliness;
-  baseProtection?: GithubBasePullRequestProtection;
-  git?: ReturnType<typeof primeGit>;
-  now?: Date;
-} = {}) {
+function prepare(
+  opts: {
+    report?: PrFlowStatusReport;
+    taskWorktree?: TaskWorktreeCleanliness;
+    baseProtection?: GithubBasePullRequestProtection;
+    git?: ReturnType<typeof primeGit>;
+    now?: Date;
+  } = {},
+) {
   const git = opts.git ?? primeGit();
   return prepareConflictReworkPacket({
     gitRoot: "/repo",
@@ -230,7 +235,12 @@ describe("provider conflict rework packet", () => {
   it.each([
     [
       "missing worktree",
-      { state: "not_present", branch, worktreePath: null, changedPaths: [] } satisfies TaskWorktreeCleanliness,
+      {
+        state: "not_present",
+        branch,
+        worktreePath: null,
+        changedPaths: [],
+      } satisfies TaskWorktreeCleanliness,
       "task_worktree_missing",
     ],
     [
@@ -267,24 +277,46 @@ describe("provider conflict rework packet", () => {
     ).resolves.toMatchObject({ state: "invalid", reason_code: "provider_base_mismatch" });
   });
 
-  it("keeps a coherently clean PR on the ordinary route", async () => {
-    const clean = report();
-    if (clean.providerObservation?.state !== "found") throw new Error("fixture error");
-    clean.providerObservation.pr.mergeability = {
-      state: "not_conflicting",
-      mergeable: true,
-      providerState: "clean",
-    };
-    expect(hasProviderReportedMergeConflict(clean)).toBe(false);
-    expect(needsProviderConflictReworkPreparation(clean)).toBe(false);
-    await expect(prepare({ report: clean })).resolves.toMatchObject({ state: "not_conflicting" });
-  });
+  it.each(["clean", "behind", "unstable", "blocked"] as const)(
+    "keeps coherent mergeable=true/%s provider truth on the ordinary route without claiming readiness",
+    async (providerState) => {
+      const git = primeGit();
+      const nonConflicting = report();
+      if (nonConflicting.providerObservation?.state !== "found") {
+        throw new Error("fixture error");
+      }
+      nonConflicting.providerObservation.pr.mergeability = {
+        state: "not_conflicting",
+        mergeable: true,
+        providerState,
+      };
+      expect(hasProviderReportedMergeConflict(nonConflicting)).toBe(false);
+      expect(needsProviderConflictReworkPreparation(nonConflicting)).toBe(false);
+      await expect(prepare({ git, report: nonConflicting })).resolves.toMatchObject({
+        state: "not_conflicting",
+      });
+      expect(git.calls.mergeBase).toEqual([]);
+      expect(git.calls.diffNames).toBe(0);
+    },
+  );
 
   it.each([
     ["absent mergeability", undefined],
     [
       "pending mergeability",
-      { state: "pending", mergeable: null, providerState: "unknown" } satisfies GithubPrMergeability,
+      {
+        state: "pending",
+        mergeable: null,
+        providerState: "unknown",
+      } satisfies GithubPrMergeability,
+    ],
+    [
+      "unsettled null and pending mergeability",
+      {
+        state: "unknown",
+        mergeable: null,
+        providerState: "pending",
+      } satisfies GithubPrMergeability,
     ],
     [
       "contradictory conflict mergeability",
@@ -292,6 +324,22 @@ describe("provider conflict rework packet", () => {
         state: "conflicting",
         mergeable: false,
         providerState: "unknown",
+      } satisfies GithubPrMergeability,
+    ],
+    [
+      "contradictory true and dirty mergeability",
+      {
+        state: "not_conflicting",
+        mergeable: true,
+        providerState: "dirty",
+      } satisfies GithubPrMergeability,
+    ],
+    [
+      "contradictory true and conflicting mergeability",
+      {
+        state: "not_conflicting",
+        mergeable: true,
+        providerState: "conflicting",
       } satisfies GithubPrMergeability,
     ],
   ] as const)("fails closed for %s", async (_label, mergeability) => {
@@ -313,10 +361,10 @@ describe("provider conflict rework packet", () => {
       { length: 34 },
       (_, index) => `shared-${String(index).padStart(2, "0")}.ts`,
     );
-    const checkRows = Array.from(
-      { length: 68 },
-      (_, index) => ({ name: `check-${String(67 - index).padStart(2, "0")}`, state: "SUCCESS" }),
-    );
+    const checkRows = Array.from({ length: 68 }, (_, index) => ({
+      name: `check-${String(67 - index).padStart(2, "0")}`,
+      state: "SUCCESS",
+    }));
     const missingRequired = Array.from(
       { length: 36 },
       (_, index) => `required-${String(35 - index).padStart(2, "0")}`,
@@ -353,6 +401,20 @@ describe("provider conflict rework packet", () => {
     const viaHandoff = report({ queue: { present: false } });
 
     await expect(prepare({ report: viaHandoff })).resolves.toMatchObject({ state: "ready" });
+  });
+
+  it("invalidates semantic rework when the protected-base handoff observed a stale provider base", async () => {
+    const viaHandoff = report({ queue: { present: false } });
+    if (!viaHandoff.handoff.present) throw new Error("fixture error");
+    viaHandoff.handoff.routeProviderBaseSha = "3333333333333333333333333333333333333333";
+    const git = primeGit();
+
+    await expect(prepare({ git, report: viaHandoff })).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "conflict_rework_route_ineligible",
+    });
+    expect(git.calls.mergeBase).toEqual([]);
+    expect(git.calls.diffNames).toBe(0);
   });
 
   it("rejects an expired claimed lease but accepts a current claimed lease", async () => {
@@ -416,7 +478,10 @@ describe("provider conflict rework packet", () => {
           reason: "GitHub protection lookup timed out",
         },
       }),
-    ).resolves.toMatchObject({ state: "invalid", reason_code: "provider_base_protection_unavailable" });
+    ).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "provider_base_protection_unavailable",
+    });
     await expect(
       prepare({ baseProtection: { state: "protected", baseBranch: "release/0.7" } }),
     ).resolves.toMatchObject({

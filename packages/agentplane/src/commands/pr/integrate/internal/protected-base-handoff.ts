@@ -25,6 +25,7 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
   branchHeadSha: string | null;
   prNumber: number | null;
   prUrl: string | null;
+  providerBaseSha: string;
 }): Promise<void> {
   const paths = resolveTaskHandoffPaths({
     git_root: opts.ctx.resolvedProject.gitRoot,
@@ -62,6 +63,7 @@ async function recordProtectedBaseIntegrateHandoff(opts: {
         finalize_via: "github_task_pr_merge_then_hosted_close",
         pr_number: opts.prNumber,
         pr_url: prUrl.length > 0 ? prUrl : null,
+        provider_base_sha: opts.providerBaseSha,
         handoff_show_command: handoffShowCommand,
         base_pull_command: "git pull --ff-only",
       },
@@ -108,6 +110,16 @@ export async function handleProtectedBaseIntegrate(opts: {
   });
   const prNumber = observedPr.prNumber;
   const prUrl = observedPr.prUrl;
+  const providerBaseSha = observedPr.baseSha?.trim() ?? "";
+  if (!providerBaseSha) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Cannot record protected-base handoff for ${opts.taskId}: ` +
+        "GitHub PR base SHA is unavailable",
+    });
+  }
   const prUrlTarget = prUrl?.trim() ?? "";
   const prTarget = prUrlTarget.length > 0 ? prUrlTarget : prNumber === null ? "" : String(prNumber);
   const prHint =
@@ -122,7 +134,12 @@ export async function handleProtectedBaseIntegrate(opts: {
         expectedHeadSha,
         preMutationGuard: opts.preMutationGuard,
       });
-      await recordProtectedBaseIntegrateHandoff({ ...opts, prNumber, prUrl });
+      await recordProtectedBaseIntegrateHandoff({
+        ...opts,
+        prNumber,
+        prUrl,
+        providerBaseSha,
+      });
       if (githubMerge.status === "merged") {
         throw new CliError({
           exitCode: exitCodeForError("E_HANDOFF"),
@@ -183,7 +200,12 @@ export async function handleProtectedBaseIntegrate(opts: {
     }
   }
 
-  await recordProtectedBaseIntegrateHandoff({ ...opts, prNumber, prUrl });
+  await recordProtectedBaseIntegrateHandoff({
+    ...opts,
+    prNumber,
+    prUrl,
+    providerBaseSha,
+  });
   throw new CliError({
     exitCode: exitCodeForError("E_HANDOFF"),
     code: "E_HANDOFF",

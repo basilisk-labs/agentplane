@@ -2,12 +2,15 @@
   "base": "main",
   "branch": "task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes",
   "created_at": "2026-07-26T00:55:55.843Z",
-  "diffstat_sha256": "sha256:55f828906bbc880eae4309389dbeed73f17b6ef16838c53183f8f1746a09ac10",
+  "diffstat_sha256": "sha256:dce0c172fef67be16b90565ecd4ac36b39802695621ea0ca8699320831f30885",
   "last_verified_at": "2026-07-26T02:19:48.873Z",
   "last_verified_diffstat_sha256": "sha256:55f828906bbc880eae4309389dbeed73f17b6ef16838c53183f8f1746a09ac10",
+  "pr_number": 4627,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4627",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607260007-DQM6AW",
-  "updated_at": "2026-07-26T00:55:55.843Z",
+  "updated_at": "2026-07-26T02:29:18.327Z",
   "verify": {
     "status": "pass"
   }

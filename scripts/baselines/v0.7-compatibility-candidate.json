@@ -8,7 +8,8 @@
     "202607221846-9XC1H0",
     "202607221848-ABG7SD",
     "202607221848-0ZAB1F",
-    "202607221848-ER5H6N"
+    "202607221848-ER5H6N",
+    "202607260007-DQM6AW"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -17,9 +18,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "1fc32280809fc2a3b91910478eb9c51b678d1a8d4323f5badc21d4b7d7216b7d",
+    "surface_sha256": "35aefe91a91ea4716384cf49ed42481d7167e2f41e812e0e14041e56b7129cf4",
     "section_digests": {
-      "cli_topology": "afcc9c0ce680834c9d9f058822a2bc46f1cc9e035784878e21462896f06fe8c1",
+      "cli_topology": "44d94ba92bc8635ab5e117d5e85452fd594cc22f17487e9c42d970952e3ac97c",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -220,19 +221,46 @@
         "202607221846-YGWMA2",
         "202607230554-YFYT83",
         "202607221846-9XC1H0",
-        "202607221848-0ZAB1F"
+        "202607221848-0ZAB1F",
+        "202607260007-DQM6AW"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "afcc9c0ce680834c9d9f058822a2bc46f1cc9e035784878e21462896f06fe8c1",
+      "to_sha256": "44d94ba92bc8635ab5e117d5e85452fd594cc22f17487e9c42d970952e3ac97c",
       "classification": "additive",
-      "summary": "Adds safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, and explicit cloud projection bootstrap/adoption controls on both sync routes; no command or option is removed or mutated.",
+      "summary": "Adds a read-only provider-conflict context packet, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, and explicit cloud projection bootstrap/adoption controls on both sync routes; no command or option is removed or mutated.",
       "evidence": {
-        "command_count": { "from": 243, "to": 245 },
-        "positional_count": { "from": 165, "to": 166 },
-        "option_count": { "from": 767, "to": 778 },
-        "added_commands": ["task run reconcile", "workflow migrate"],
+        "command_count": { "from": 243, "to": 246 },
+        "positional_count": { "from": 165, "to": 167 },
+        "option_count": { "from": 767, "to": 780 },
+        "added_commands": ["pr conflict-rework", "task run reconcile", "workflow migrate"],
         "removed_commands": [],
         "added_command_descriptors": [
+          {
+            "id": ["pr", "conflict-rework"],
+            "visibility": "user",
+            "group": "PR",
+            "args": [
+              {
+                "name": "task-id",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "expect-freshness-token",
+                "kind": "string",
+                "valueHint": "<sha256-token>"
+              },
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
           {
             "id": ["task", "run", "reconcile"],
             "visibility": "internal",
@@ -306,6 +334,19 @@
             "choices": ["human_supplied", "evaluator_supplied"]
           },
           {
+            "command": "pr conflict-rework",
+            "name": "expect-freshness-token",
+            "kind": "string",
+            "valueHint": "<sha256-token>"
+          },
+          {
+            "command": "pr conflict-rework",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
             "command": "sync",
             "name": "adopt-projection-identity",
             "kind": "boolean",
@@ -359,6 +400,11 @@
         "addition_sources": [
           {
             "kind": "command",
+            "command": "pr conflict-rework",
+            "source_task": "202607260007-DQM6AW"
+          },
+          {
+            "kind": "command",
             "command": "task run reconcile",
             "source_task": "202607221846-9XC1H0"
           },
@@ -390,6 +436,18 @@
             "command": "evaluator run",
             "name": "provenance",
             "source_task": "202607221846-YGWMA2"
+          },
+          {
+            "kind": "option",
+            "command": "pr conflict-rework",
+            "name": "expect-freshness-token",
+            "source_task": "202607260007-DQM6AW"
+          },
+          {
+            "kind": "option",
+            "command": "pr conflict-rework",
+            "name": "json",
+            "source_task": "202607260007-DQM6AW"
           },
           {
             "kind": "option",

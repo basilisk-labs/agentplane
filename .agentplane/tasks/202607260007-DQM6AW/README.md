@@ -4,7 +4,7 @@ title: "Prepare semantic conflict rework routes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -41,29 +41,32 @@ verification:
   note: "Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T02:26:43.517Z"
+  updated_at: "2026-07-26T02:59:44.254Z"
   updated_by: "EVALUATOR"
-  note: "Current SHA 1e13a7cc fails closed for absent, null, pending, unknown, and contradictory GitHub mergeability; only coherent settled states route."
-  evaluated_sha: "1e13a7cc69658057f45f29c44f11e8b105681065"
+  note: "REWORK on current task branch 9acc5a1207c72b649c05aae6b4df954b96ee2725: the implementation source is equivalent to unreachable 1e13a7c, but two live semantic findings and required contract failures prevent promotion."
+  evaluated_sha: "9acc5a1207c72b649c05aae6b4df954b96ee2725"
   blueprint_digest: "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6"
   evidence_refs:
     - ".agentplane/tasks/202607260007-DQM6AW/README.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-022643517-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-022643517-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-022643517-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-025944254-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-025944254-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-025944254-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
     - "packages/agentplane/src/commands/pr/conflict-rework.ts"
-    - "packages/agentplane/src/commands/pr/conflict-rework.test.ts"
-    - "packages/agentplane/src/cli/run-cli.core.pr-conflict-rework.test.ts"
-    - "command: focused unit route tests 29 passed; CLI route tests 4 passed; workflow-step tests 20 passed; route-decision tests 19 passed"
-    - "command: independent matrix: 10 unsettled or contradictory states terminal with zero Git calls; true+clean ordinary; false+dirty/conflicting ready"
-    - "command: git diff --check HEAD^ HEAD passed"
+    - "packages/agentplane/src/commands/pr/flow-status.ts"
+    - "bun x vitest --config vitest.workspace.ts run --project agentplane DQM focused suites: 70 passed"
+    - "bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check: passed"
+    - "bun run format:check: failed (5 DQM files)"
+    - "bun run bench:compatibility:check: failed (candidate digest drift)"
+    - "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/branch-publication.test.ts: 3 failed"
   findings:
-    - "Audited normalizer and route end to end: unsettled or internally contradictory observations yield provider_mergeability_unknown, a terminal stop packet, and zero preparation Git operations; false plus dirty/conflicting alone prepares the bounded semantic packet, while true plus clean remains on the ordinary route."
-    - "Rechecked semantic-route eligibility: task verification, queue or protected-base handoff, branch, base, head SHA, base SHA, PR number, current claim lease, base protection, and clean task worktree are all validated before packet construction."
+    - "P1: mergeable=true with provider state behind or unstable normalizes to unknown, so a coherently non-conflicting PR is terminally invalid instead of preserving its ordinary route (sync-github.ts:110-128; Verify Step 5)."
+    - "P2: protected-base handoff eligibility compares branch/base/head/PR number but has no observed base SHA, so a base advance is not invalidated on that path (conflict-rework.ts:263-273; flow-status.ts:108-120; Verify Step 4)."
+    - "Required contract checks are not clean: format:check reports five changed DQM files, and bench:compatibility:check requires a reviewed candidate surface digest update."
+    - "branch-publication.test.ts has 3 failing force-lease regressions; its source tree is unchanged from main, so it is not attributed to DQM but still blocks hosted verification."
 commit: null
 comments:
   -

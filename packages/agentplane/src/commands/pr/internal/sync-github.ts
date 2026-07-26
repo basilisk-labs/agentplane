@@ -53,14 +53,21 @@ export type GithubPrLookupResult =
   | { state: "not_found" }
   | { state: "unavailable"; reason: string };
 
+const COHERENT_NON_CONFLICT_PROVIDER_STATES = new Set(["clean", "behind", "unstable", "blocked"]);
+
+const PENDING_GITHUB_MERGEABILITY_PROVIDER_STATES = new Set([
+  "unknown",
+  "behind",
+  "unstable",
+  "blocked",
+]);
+
 function normalizedGithubMergeabilityState(value: string | null | undefined): string | null {
   const normalized = value?.trim().toLowerCase() ?? "";
   return normalized.length > 0 ? normalized : null;
 }
 
-export function isSettledGithubPrConflict(
-  mergeability: GithubPrMergeability | undefined,
-): boolean {
+export function isSettledGithubPrConflict(mergeability: GithubPrMergeability | undefined): boolean {
   const providerState = normalizedGithubMergeabilityState(mergeability?.providerState);
   return (
     mergeability?.state === "conflicting" &&
@@ -69,20 +76,26 @@ export function isSettledGithubPrConflict(
   );
 }
 
-export function isSettledGithubPrNonConflict(
-  mergeability: GithubPrMergeability | undefined,
-): boolean {
+function isCoherentGithubPrNonConflict(mergeability: GithubPrMergeability | undefined): boolean {
+  const providerState = normalizedGithubMergeabilityState(mergeability?.providerState);
   return (
     mergeability?.state === "not_conflicting" &&
     mergeability.mergeable === true &&
-    normalizedGithubMergeabilityState(mergeability.providerState) === "clean"
+    providerState !== null &&
+    COHERENT_NON_CONFLICT_PROVIDER_STATES.has(providerState)
   );
 }
 
-export function hasSettledGithubPrMergeability(
+/**
+ * Confirms only that GitHub gave internally coherent conflict information.
+ * A `true` value with `behind`, `unstable`, or `blocked` is non-conflicting,
+ * but remains subject to the ordinary update/check route rather than claiming
+ * that the PR is currently merge-ready.
+ */
+export function hasCoherentGithubPrMergeability(
   mergeability: GithubPrMergeability | undefined,
 ): boolean {
-  return isSettledGithubPrConflict(mergeability) || isSettledGithubPrNonConflict(mergeability);
+  return isSettledGithubPrConflict(mergeability) || isCoherentGithubPrNonConflict(mergeability);
 }
 
 export function parseGithubRepoFromRemoteUrl(remoteUrl: string): string | null {
@@ -107,20 +120,23 @@ async function resolveGithubRepoFromOrigin(gitRoot: string): Promise<string | nu
   }
 }
 
-function normalizeGithubPrMergeability(
-  record: GithubPullLookupRecord,
-): GithubPrMergeability {
+function normalizeGithubPrMergeability(record: GithubPullLookupRecord): GithubPrMergeability {
   const providerState = normalizedGithubMergeabilityState(record.mergeable_state);
   const mergeable = typeof record.mergeable === "boolean" ? record.mergeable : null;
   if (mergeable === false && (providerState === "dirty" || providerState === "conflicting")) {
     return { state: "conflicting", mergeable, providerState };
   }
-  if (mergeable === true && providerState === "clean") {
+  if (
+    mergeable === true &&
+    providerState !== null &&
+    COHERENT_NON_CONFLICT_PROVIDER_STATES.has(providerState)
+  ) {
     return { state: "not_conflicting", mergeable, providerState };
   }
   if (
     mergeable === null &&
-    (providerState === "unknown" || providerState === "behind" || providerState === "unstable")
+    providerState &&
+    PENDING_GITHUB_MERGEABILITY_PROVIDER_STATES.has(providerState)
   ) {
     return { state: "pending", mergeable, providerState };
   }
