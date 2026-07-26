@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -42,25 +42,24 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T22:55:35.642Z"
+  updated_at: "2026-07-26T22:56:53.058Z"
   updated_by: "EVALUATOR"
-  note: "The implementation rework restores runner parity without widening side-effect authority."
-  evaluated_sha: "128118ae0d2382f1244e618df4e91a844a7a324c"
+  note: "The current head preserves the reviewed route-bound sandbox fix and adds only the explicit remote-refresh authority record."
+  evaluated_sha: "d187f3fbbee9dd708eda74a2c96a60446c4efded"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225535642-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225535642-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225535642-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225653058-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225653058-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225653058-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/runner/sandbox-policy.ts"
-    - "packages/agentplane/src/runner/usecases/task-run.ts"
-    - "packages/agentplane/src/runner/state-fingerprint-observation.ts"
+    - "git log --oneline 128118ae0..d187f3fbb"
     - "bun run test:fast (468 files, 3255 tests passed)"
     - "bun run test:critical (11 chunks, 72 tests passed)"
+    - "agentplane task next-action 202607221849-NWVCAG --remote --explain (PR #4633 open, not merged)"
   findings:
-    - "When branch_pr is blocked on the typed pr.open approval, the canonical work order exposes no writable roots. task run now derives a read-only sandbox with explicit route_authority provenance instead of retaining the CODER role default; a CLI workspace-write override cannot bypass that route decision."
-    - "State-fingerprint observation reconstructs the same route-derived sandbox policy, so a prepared bundle cannot pass preparation with one authority and execute under another."
+    - "The implementation diff remains limited to deriving runner sandbox and write scope from canonical route authority; the subsequent authority commit records actor, policy rule, operation digest, state scope, expiry, and audit-chain linkage for the read-only remote refresh."
+    - "The live refresh reports PR #4633 open and unmerged, so no merge, enqueue, or publication has been inferred from local metadata."
 commit:
   hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
   message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
