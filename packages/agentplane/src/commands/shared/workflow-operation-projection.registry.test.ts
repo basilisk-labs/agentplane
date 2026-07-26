@@ -4,6 +4,8 @@ import { projectWorkflowOperationArgv, renderCliArgv } from "./workflow-operatio
 import { cliOperationStep } from "./workflow-step-factory.js";
 import {
   WORKFLOW_OPERATION_REGISTRY,
+  WORKFLOW_OPERATION_AUTHORITY_POLICY,
+  type WorkflowOperation,
   type WorkflowOperationId,
   type WorkflowOperationParams,
   type WorkflowRouteState,
@@ -20,6 +22,32 @@ const state = {
   preconditionFingerprint: {
     task_id: taskId,
     digest: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    schema_version: 1,
+    kind: "state_fingerprint",
+    observed_by: "agentplane",
+    task_revision: 1,
+    git_head: taskHead,
+    worktree: "/repo",
+    components: Object.fromEntries(
+      [
+        "task",
+        "git",
+        "backend_projection",
+        "policy",
+        "blueprint",
+        "knowledge",
+        "provider",
+        "authority",
+      ].map((name) => [
+        name,
+        {
+          state: "present",
+          source: "fixture",
+          digest: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          reason_code: null,
+        },
+      ]),
+    ),
   },
 } as WorkflowRouteState;
 
@@ -211,8 +239,19 @@ describe("Workflow operation projection registry", () => {
         code: "test_projection",
         summary: "test exact operation projection",
       });
-      if (step.kind !== "cli_operation") throw new Error("expected CLI operation");
-      expect(projectWorkflowOperationArgv(step.operation), id).toEqual(fixture.argv);
+      const operation =
+        step.kind === "cli_operation"
+          ? step.operation
+          : step.kind === "approval" && step.request.type === "side_effect"
+            ? (step.request.operation as WorkflowOperation)
+            : null;
+      if (!operation) throw new Error(`expected a projected operation for ${id}`);
+      expect(projectWorkflowOperationArgv(operation), id).toEqual(fixture.argv);
+      if (WORKFLOW_OPERATION_AUTHORITY_POLICY[id].requiresAuthority) {
+        expect(step).toMatchObject({ kind: "approval", request: { type: "side_effect" } });
+        continue;
+      }
+      if (step.kind !== "cli_operation") throw new Error(`expected CLI operation for ${id}`);
       expect(step.compatibility.command, id).toBe(renderCliArgv(fixture.argv));
       expect(step.operation.triggersGitHooks, id).toBe(
         WORKFLOW_OPERATION_REGISTRY[id].triggersGitHooks,

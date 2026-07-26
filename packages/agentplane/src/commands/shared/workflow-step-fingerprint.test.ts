@@ -213,8 +213,8 @@ async function capture(opts: {
   const state = opts.state ?? routeState(opts.worktree);
   const step = reduceRouteState(withBootstrapWorkflowFingerprint(state));
   expect(step).toMatchObject({
-    kind: "cli_operation",
-    operation: { id: "pr.open" },
+    kind: "approval",
+    request: { type: "side_effect", operationId: "pr.open" },
     authoritativeCheckout: "task_worktree",
   });
   return captureWorkflowStepFingerprint({

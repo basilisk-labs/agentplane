@@ -51,6 +51,10 @@ export const loadTaskAnswerSpec = (deps: RunDeps) =>
   import("../../../commands/task/answer.command.js").then((m) =>
     m.makeRunTaskAnswerHandler(deps.getCtx),
   );
+export const loadTaskAuthorityGrantSpec = (deps: RunDeps) =>
+  import("../../../commands/task/authority-grant.command.js").then((m) =>
+    m.makeRunTaskAuthorityGrantHandler(deps.getCtx),
+  );
 export const loadTaskListSpec = (deps: RunDeps) =>
   import("../../../commands/task/list.run.js").then((m) => m.makeRunTaskListHandler(deps.getCtx));
 export const loadTaskNextSpec = (deps: RunDeps) =>

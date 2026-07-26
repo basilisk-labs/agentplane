@@ -12,6 +12,7 @@
     "202607221848-T9B3PS",
     "202607221848-1HWR0R",
     "202607221848-VC4VVS",
+    "202607221849-NWVCAG",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH"
   ],
@@ -22,9 +23,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "7952b5b77874a5931b31278409d53a19ec2d1d112daffed8c45939629509cc0b",
+    "surface_sha256": "5856ca2163a4973ffcf393fc70a0f34ec8b68b6c8079a64a0cb1cf9b534efaa4",
     "section_digests": {
-      "cli_topology": "e4fc7a5af4eedd0e3e1edd0e6d0351ea50e596d467dae064847fd2a9e3f1aa0a",
+      "cli_topology": "74de8a5f8645c4daa8e214d61d6cce60b56a1266d5c668d66c2fca5be1eeb541",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -353,20 +354,22 @@
         "202607221846-9XC1H0",
         "202607221848-0ZAB1F",
         "202607221848-VC4VVS",
+        "202607221849-NWVCAG",
         "202607260007-DQM6AW",
         "202607260532-9M7RNH"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "e4fc7a5af4eedd0e3e1edd0e6d0351ea50e596d467dae064847fd2a9e3f1aa0a",
+      "to_sha256": "74de8a5f8645c4daa8e214d61d6cce60b56a1266d5c668d66c2fca5be1eeb541",
       "classification": "additive",
-      "summary": "Adds a read-only provider-conflict context packet, an explicit legacy protected-conflict adoption receipt command, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, explicit cloud projection bootstrap/adoption controls on both sync routes, and explicit --remote opt-ins for task run and Hermes supervise so provider context remains request-scoped and local-first by default; no command or option is removed or mutated.",
+      "summary": "Adds a read-only provider-conflict context packet, an explicit legacy protected-conflict adoption receipt command, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, a scoped side-effect authority grant with exact operation and state fingerprints, explicit cloud projection bootstrap/adoption controls on both sync routes, and explicit --remote opt-ins for task run and Hermes supervise so provider context remains request-scoped and local-first by default; no command or option is removed or mutated.",
       "evidence": {
-        "command_count": { "from": 243, "to": 247 },
-        "positional_count": { "from": 165, "to": 168 },
-        "option_count": { "from": 767, "to": 783 },
+        "command_count": { "from": 243, "to": 248 },
+        "positional_count": { "from": 165, "to": 169 },
+        "option_count": { "from": 767, "to": 789 },
         "added_commands": [
           "integrate queue adopt-legacy-protected-conflict",
           "pr conflict-rework",
+          "task authority grant",
           "task run reconcile",
           "workflow migrate"
         ],
@@ -415,6 +418,56 @@
                 "kind": "boolean",
                 "valueHint": null,
                 "default": false
+              }
+            ]
+          },
+          {
+            "id": ["task", "authority", "grant"],
+            "visibility": "advanced",
+            "group": "Task",
+            "args": [
+              {
+                "name": "task-id",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "operation",
+                "kind": "string",
+                "valueHint": "<operation-id>",
+                "required": true
+              },
+              {
+                "name": "operation-digest",
+                "kind": "string",
+                "valueHint": "<sha256>",
+                "required": true
+              },
+              {
+                "name": "state-fingerprint",
+                "kind": "string",
+                "valueHint": "<sha256>",
+                "required": true
+              },
+              {
+                "name": "state-scope-digest",
+                "kind": "string",
+                "valueHint": "<sha256>",
+                "required": true
+              },
+              {
+                "name": "by",
+                "kind": "string",
+                "valueHint": "<actor>",
+                "required": true
+              },
+              {
+                "name": "ttl-minutes",
+                "kind": "string",
+                "valueHint": "<1-60>"
               }
             ]
           },
@@ -531,6 +584,47 @@
             "default": false
           },
           {
+            "command": "task authority grant",
+            "name": "by",
+            "kind": "string",
+            "valueHint": "<actor>",
+            "required": true
+          },
+          {
+            "command": "task authority grant",
+            "name": "operation",
+            "kind": "string",
+            "valueHint": "<operation-id>",
+            "required": true
+          },
+          {
+            "command": "task authority grant",
+            "name": "operation-digest",
+            "kind": "string",
+            "valueHint": "<sha256>",
+            "required": true
+          },
+          {
+            "command": "task authority grant",
+            "name": "state-fingerprint",
+            "kind": "string",
+            "valueHint": "<sha256>",
+            "required": true
+          },
+          {
+            "command": "task authority grant",
+            "name": "state-scope-digest",
+            "kind": "string",
+            "valueHint": "<sha256>",
+            "required": true
+          },
+          {
+            "command": "task authority grant",
+            "name": "ttl-minutes",
+            "kind": "string",
+            "valueHint": "<1-60>"
+          },
+          {
             "command": "task run",
             "name": "allow-danger-full-access",
             "kind": "boolean",
@@ -584,6 +678,11 @@
             "kind": "command",
             "command": "pr conflict-rework",
             "source_task": "202607260007-DQM6AW"
+          },
+          {
+            "kind": "command",
+            "command": "task authority grant",
+            "source_task": "202607221849-NWVCAG"
           },
           {
             "kind": "command",
@@ -654,6 +753,42 @@
             "command": "sync",
             "name": "bootstrap-projection",
             "source_task": "202607221848-0ZAB1F"
+          },
+          {
+            "kind": "option",
+            "command": "task authority grant",
+            "name": "by",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "kind": "option",
+            "command": "task authority grant",
+            "name": "operation",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "kind": "option",
+            "command": "task authority grant",
+            "name": "operation-digest",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "kind": "option",
+            "command": "task authority grant",
+            "name": "state-fingerprint",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "kind": "option",
+            "command": "task authority grant",
+            "name": "state-scope-digest",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "kind": "option",
+            "command": "task authority grant",
+            "name": "ttl-minutes",
+            "source_task": "202607221849-NWVCAG"
           },
           {
             "kind": "option",

@@ -459,10 +459,23 @@ export type WorkflowStep =
   | (WorkflowStepBase & {
       kind: "approval";
       request: {
-        type: "plan_approval" | "provider_merge";
+        type: "plan_approval" | "provider_merge" | "side_effect";
         taskId: string;
         authorityRef: string;
-      };
+      } & (
+        | {
+            type: "plan_approval" | "provider_merge";
+          }
+        | {
+            type: "side_effect";
+            operationId: WorkflowOperationId;
+            operation: Pick<WorkflowOperation, "id" | "type" | "params">;
+            operationDigest: string;
+            stateFingerprintDigest: string;
+            stateScopeDigest: string;
+            policyRule: string;
+          }
+      );
     })
   | (WorkflowStepBase & {
       kind: "human_input";
@@ -497,4 +510,12 @@ export {
   WORKFLOW_OPERATION_EFFECTS,
   workflowOperationMutatesState,
 } from "./workflow-operation-effects.js";
+export {
+  SIDE_EFFECT_AUTHORITY_EXTENSION_KEY,
+  WORKFLOW_OPERATION_AUTHORITY_POLICY,
+  evaluateWorkflowOperationAuthority,
+  workflowAuthorityStateScopeDigest,
+  workflowOperationAuthorityDigest,
+  workflowOperationAuthorityRequirement,
+} from "./side-effect-authority.js";
 export { WORKFLOW_OPERATION_ARGV_PREFIX } from "./workflow-operation-prefix.js";

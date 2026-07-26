@@ -316,6 +316,7 @@ function validateReviewedCandidate({
     "202607221846-9XC1H0",
     "202607221848-0ZAB1F",
     "202607221848-VC4VVS",
+    "202607221849-NWVCAG",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -330,6 +331,7 @@ function validateReviewedCandidate({
     "202607221848-T9B3PS",
     "202607221848-1HWR0R",
     "202607221848-VC4VVS",
+    "202607221849-NWVCAG",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -848,6 +850,27 @@ function validateReviewedCandidate({
       ],
     },
     {
+      id: ["task", "authority", "grant"],
+      visibility: "advanced",
+      group: "Task",
+      args: [
+        {
+          name: "task-id",
+          required: true,
+          variadic: false,
+          valueHint: "<task-id>",
+        },
+      ],
+      options: [
+        { name: "operation", kind: "string", valueHint: "<operation-id>", required: true },
+        { name: "operation-digest", kind: "string", valueHint: "<sha256>", required: true },
+        { name: "state-fingerprint", kind: "string", valueHint: "<sha256>", required: true },
+        { name: "state-scope-digest", kind: "string", valueHint: "<sha256>", required: true },
+        { name: "by", kind: "string", valueHint: "<actor>", required: true },
+        { name: "ttl-minutes", kind: "string", valueHint: "<1-60>" },
+      ],
+    },
+    {
       id: ["task", "run", "reconcile"],
       visibility: "internal",
       group: "Task",
@@ -942,6 +965,47 @@ function validateReviewedCandidate({
       default: false,
     },
     {
+      command: "task authority grant",
+      name: "by",
+      kind: "string",
+      valueHint: "<actor>",
+      required: true,
+    },
+    {
+      command: "task authority grant",
+      name: "operation",
+      kind: "string",
+      valueHint: "<operation-id>",
+      required: true,
+    },
+    {
+      command: "task authority grant",
+      name: "operation-digest",
+      kind: "string",
+      valueHint: "<sha256>",
+      required: true,
+    },
+    {
+      command: "task authority grant",
+      name: "state-fingerprint",
+      kind: "string",
+      valueHint: "<sha256>",
+      required: true,
+    },
+    {
+      command: "task authority grant",
+      name: "state-scope-digest",
+      kind: "string",
+      valueHint: "<sha256>",
+      required: true,
+    },
+    {
+      command: "task authority grant",
+      name: "ttl-minutes",
+      kind: "string",
+      valueHint: "<1-60>",
+    },
+    {
       command: "task run",
       name: "allow-danger-full-access",
       kind: "boolean",
@@ -993,6 +1057,11 @@ function validateReviewedCandidate({
       kind: "command",
       command: "pr conflict-rework",
       source_task: "202607260007-DQM6AW",
+    },
+    {
+      kind: "command",
+      command: "task authority grant",
+      source_task: "202607221849-NWVCAG",
     },
     {
       kind: "command",
@@ -1059,6 +1128,42 @@ function validateReviewedCandidate({
       command: "sync",
       name: "bootstrap-projection",
       source_task: "202607221848-0ZAB1F",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
+      name: "by",
+      source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
+      name: "operation",
+      source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
+      name: "operation-digest",
+      source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
+      name: "state-fingerprint",
+      source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
+      name: "state-scope-digest",
+      source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
+      name: "ttl-minutes",
+      source_task: "202607221849-NWVCAG",
     },
     {
       kind: "option",
@@ -1130,6 +1235,7 @@ function validateReviewedCandidate({
       hashJson([
         "integrate queue adopt-legacy-protected-conflict",
         "pr conflict-rework",
+        "task authority grant",
         "task run reconcile",
         "workflow migrate",
       ]),

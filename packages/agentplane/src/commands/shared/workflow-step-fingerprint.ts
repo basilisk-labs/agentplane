@@ -13,6 +13,7 @@ import { observeBackendProjection } from "../../runner/state-fingerprint-backend
 import { observeKnowledgeProjection } from "../../runner/state-fingerprint-knowledge.js";
 import { readContainedStableTextNoFollow } from "../../shared/contained-stable-file.js";
 import type { CommandContext } from "./task-backend.js";
+import { SIDE_EFFECT_AUTHORITY_EXTENSION_KEY } from "./side-effect-authority.js";
 import { observeWorkflowBlueprint } from "./workflow-step-fingerprint-blueprint.js";
 import {
   observeWorkflowPolicyScope,
@@ -162,6 +163,12 @@ async function observeRepositoryFile(
 function semanticTaskComponent(state: WorkflowRouteStateInput): StateFingerprintComponentInput {
   const task = structuredClone(state.task);
   Reflect.deleteProperty(task, "revision");
+  if (task.extensions) {
+    Reflect.deleteProperty(task.extensions, SIDE_EFFECT_AUTHORITY_EXTENSION_KEY);
+    if (Object.keys(task.extensions).length === 0) {
+      Reflect.deleteProperty(task, "extensions");
+    }
+  }
   if (task.sync) {
     Reflect.deleteProperty(task.sync, "freshness");
     task.sync.external_refs = task.sync.external_refs.map((externalRef) => {
@@ -307,6 +314,14 @@ function workflowAuthority(step: WorkflowStep): Record<string, unknown> {
         request: {
           type: step.request.type,
           taskId: step.request.taskId,
+          ...(step.request.type === "side_effect"
+            ? {
+                operationId: step.request.operationId,
+                operation: step.request.operation,
+                operationDigest: step.request.operationDigest,
+                policyRule: step.request.policyRule,
+              }
+            : {}),
         },
       };
     }
@@ -334,7 +349,7 @@ function bootstrapFingerprint(state: WorkflowRouteStateInput): StateFingerprint 
     git_head: state.resume.head_sha,
     worktree,
     components: {
-      task: presentComponent("workflow_route_bootstrap", state.task),
+      task: semanticTaskComponent(state),
       git: presentComponent("workflow_route_bootstrap", projection.workspace),
       backend_projection: presentComponent("workflow_route_bootstrap", {
         sync: state.task.sync ?? null,
