@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T22:55:35.642Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The implementation rework restores runner parity without widening side-effect authority.",
+  "evaluated_sha": "128118ae0d2382f1244e618df4e91a844a7a324c",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "When branch_pr is blocked on the typed pr.open approval, the canonical work order exposes no writable roots. task run now derives a read-only sandbox with explicit route_authority provenance instead of retaining the CODER role default; a CLI workspace-write override cannot bypass that route decision.",
+    "State-fingerprint observation reconstructs the same route-derived sandbox policy, so a prepared bundle cannot pass preparation with one authority and execute under another."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "packages/agentplane/src/runner/sandbox-policy.ts",
+    "packages/agentplane/src/runner/usecases/task-run.ts",
+    "packages/agentplane/src/runner/state-fingerprint-observation.ts",
+    "bun run test:fast (468 files, 3255 tests passed)",
+    "bun run test:critical (11 chunks, 72 tests passed)"
+  ],
+  "missing_tests": [
+    "No live provider operation was exercised; this review concerns local preparation and authority projection, while the typed PR operation remains separately gated."
+  ],
+  "hidden_assumptions": [
+    "The route's canonical work order is the sole source for semantic workspace-write authority; runner-internal artifact storage remains outside the executor write scope."
+  ],
+  "residual_risks": [
+    "A future adapter that ignores the declared read-only sandbox still relies on existing adapter-capability and execution-receipt enforcement; this change does not broaden that adapter trust boundary."
+  ]
+}
