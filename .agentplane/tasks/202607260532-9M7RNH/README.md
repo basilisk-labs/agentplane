@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -43,26 +43,25 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T07:29:47.024Z"
+  updated_at: "2026-07-26T07:37:55.887Z"
   updated_by: "EVALUATOR"
-  note: "Independent review found no P0/P1: the legacy protected-conflict path requires an exact token-bound adoption receipt before any semantic CODER route, and the additive CLI surface is fully registered in the v0.7 compatibility ledger."
-  evaluated_sha: "0ee793bb7dd331ac5c4bd1ef27e3f7f3d607de49"
+  note: "Independent delta review found no P0/P1: the generated CLI reference exactly documents the explicit legacy protected-conflict adoption command and token while leaving runtime authority and behavior unchanged."
+  evaluated_sha: "e84f13ddb070ad29dd4b0875b375df820f623e84"
   blueprint_digest: "62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f"
   evidence_refs:
     - ".agentplane/tasks/202607260532-9M7RNH/README.md"
-    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-072947024-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-072947024-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-072947024-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-073755887-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-073755887-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-073755887-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260532-9M7RNH/blueprint/resolved-snapshot.json"
-    - "bun run bench:compatibility:check"
+    - "docs/user/cli-reference.generated.mdx"
+    - "bun run docs:cli:check"
+    - "bun run ci:contract"
     - "bun run test:critical"
-    - "bunx vitest --config vitest.workspace.ts run --project agentplane targeted-conflict-workflow"
-    - "bun run typecheck"
-    - "bun run lint:core"
-    - "bun run knip:check"
+    - "bunx vitest --config vitest.workspace.ts run --project cli-core run-cli.core.pr-conflict-rework.test.ts"
   findings:
-    - "The adoption command recomputes live route state under the queue mutex, binds provider, handoff, queue, base topology, and token, and fails closed when any input changes."
-    - "The v0.6.24 immutable baseline remains unchanged; the v0.7 candidate records the exact new command, option, counts, digests, and 9M7RNH provenance."
+    - "The generated reference contains the canonical command id, task-id argument, and exact adoption-token option; docs freshness and full contract checks pass."
+    - "The v0.7 compatibility candidate remains exact-locked to the additive 247-command surface, and the immutable v0.6.24 anchor is unchanged."
 commit:
   hash: "64f14f70470f48a2997abe566ff560a1044f35a3"
   message: "🧐 9M7RNH task: refresh quality review"

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607260532-9M7RNH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T07:37:55.887Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Independent delta review found no P0/P1: the generated CLI reference exactly documents the explicit legacy protected-conflict adoption command and token while leaving runtime authority and behavior unchanged.",
+  "evaluated_sha": "e84f13ddb070ad29dd4b0875b375df820f623e84",
+  "blueprint_digest": "62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f",
+  "findings": [
+    "The generated reference contains the canonical command id, task-id argument, and exact adoption-token option; docs freshness and full contract checks pass.",
+    "The v0.7 compatibility candidate remains exact-locked to the additive 247-command surface, and the immutable v0.6.24 anchor is unchanged."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607260532-9M7RNH/README.md",
+    "docs/user/cli-reference.generated.mdx",
+    "bun run docs:cli:check",
+    "bun run ci:contract",
+    "bun run test:critical",
+    "bunx vitest --config vitest.workspace.ts run --project cli-core run-cli.core.pr-conflict-rework.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The generic generated usage shows [options], while the option description says Exact token and runtime validation requires it; this is documentation phrasing only and does not alter authority or safety."
+  ]
+}
