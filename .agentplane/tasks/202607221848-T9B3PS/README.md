@@ -1,10 +1,10 @@
 ---
 id: "202607221848-T9B3PS"
 title: "Publish AgentWorkOrder v2 schema and migrations"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -30,9 +30,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-26T08:06:58.881Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -41,11 +41,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-26T08:07:55.477Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:48:57.586Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-26T08:07:55.477Z"
+doc_updated_by: "CODER"
 description: "RF-05a: evolve agentplane.agent_work_context into one versioned AgentWorkOrder v2 schema containing objective, acceptance, role, fingerprint, authority, prepared evidence, knowledge refs, verification intent, required outputs, and semantic-result contract."
 sections:
   Summary: |-
@@ -75,6 +85,10 @@ sections:
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
