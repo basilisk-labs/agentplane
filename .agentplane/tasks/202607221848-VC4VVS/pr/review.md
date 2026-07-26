@@ -6,7 +6,7 @@ Created: 2026-07-26T10:53:22.624Z
 
 - Task: `202607221848-VC4VVS`
 - Title: Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age`
 - Canonical task record: `.agentplane/tasks/202607221848-VC4VVS/README.md`
 
@@ -29,10 +29,14 @@ Created: 2026-07-26T10:53:22.624Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/hermes/hermes-runtime.ts          |  33 +-
+ .../src/cli/run-cli.core.task-run.test.ts          |   1 +
+ .../src/commands/hermes/hermes-runtime.ts          |  35 +-
+ .../agentplane/src/commands/hermes/hermes-specs.ts |   8 +
+ .../src/commands/hermes/hermes.command.ts          |   4 +-
  .../agentplane/src/commands/task/brief-model.ts    | 129 +++----
  .../agentplane/src/commands/task/brief-render.ts   |   6 +-
  .../src/commands/task/next-action.command.ts       |  25 +-
+ .../agentplane/src/commands/task/run.command.ts    |  10 +
  .../src/runner/adapters/codex-preparation.ts       |   3 +-
  .../src/runner/adapters/custom-preparation.ts      |   3 +-
  .../agentplane/src/runner/context/base-prompts.ts  |   1 +
@@ -40,15 +44,15 @@ Created: 2026-07-26T10:53:22.624Z
  .../src/runner/state-fingerprint-authority.ts      |  43 +--
  .../src/runner/state-fingerprint-observation.ts    |   4 +-
  packages/agentplane/src/runner/types/context.ts    |  10 +-
- .../src/runner/usecases/agent-work-order-build.ts  | 382 +++++++++++++++++++++
- .../runner/usecases/agent-work-order-projection.ts | 183 ++++++++++
- .../usecases/agent-work-order.integration.test.ts  | 300 ++++++++++++++++
- .../src/runner/usecases/agent-work-order.ts        | 312 +++++++++++++++++
+ .../src/runner/usecases/agent-work-order-build.ts  | 382 ++++++++++++++++++++
+ .../runner/usecases/agent-work-order-projection.ts | 182 ++++++++++
+ .../usecases/agent-work-order.integration.test.ts  | 392 +++++++++++++++++++++
+ .../src/runner/usecases/agent-work-order.ts        | 330 +++++++++++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  72 +---
  .../usecases/task-run-context.integration.test.ts  |  24 +-
- .../agentplane/src/runner/usecases/task-run.ts     |  76 ++--
+ .../agentplane/src/runner/usecases/task-run.ts     |  79 +++--
  scripts/baselines/trust-boundary-violations.json   |  36 --
- 19 files changed, 1421 insertions(+), 255 deletions(-)
+ 23 files changed, 1554 insertions(+), 259 deletions(-)
 ```
 
 </details>
