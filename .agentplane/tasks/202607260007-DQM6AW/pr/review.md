@@ -6,7 +6,7 @@ Created: 2026-07-26T00:55:55.843Z
 
 - Task: `202607260007-DQM6AW`
 - Title: Prepare semantic conflict rework routes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes`
 - Canonical task record: `.agentplane/tasks/202607260007-DQM6AW/README.md`
 
