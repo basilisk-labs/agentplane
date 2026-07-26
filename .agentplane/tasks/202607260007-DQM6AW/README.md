@@ -1,10 +1,11 @@
 ---
 id: "202607260007-DQM6AW"
 title: "Prepare semantic conflict rework routes"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -41,37 +42,41 @@ verification:
   note: "Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T02:59:44.254Z"
+  updated_at: "2026-07-26T03:33:49.198Z"
   updated_by: "EVALUATOR"
-  note: "REWORK on current task branch 9acc5a1207c72b649c05aae6b4df954b96ee2725: the implementation source is equivalent to unreachable 1e13a7c, but two live semantic findings and required contract failures prevent promotion."
-  evaluated_sha: "9acc5a1207c72b649c05aae6b4df954b96ee2725"
+  note: "Independent review of 61318ea confirms the P1/P2 rework meets the semantic conflict-routing contract."
+  evaluated_sha: "61318ea295e251c0e19892344b28c30a1b2328ea"
   blueprint_digest: "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6"
   evidence_refs:
     - ".agentplane/tasks/202607260007-DQM6AW/README.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-025944254-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-025944254-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-025944254-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-033349198-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-033349198-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-033349198-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
     - "packages/agentplane/src/commands/pr/conflict-rework.ts"
-    - "packages/agentplane/src/commands/pr/flow-status.ts"
-    - "bun x vitest --config vitest.workspace.ts run --project agentplane DQM focused suites: 70 passed"
-    - "bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check: passed"
-    - "bun run format:check: failed (5 DQM files)"
-    - "bun run bench:compatibility:check: failed (candidate digest drift)"
-    - "bun x vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/pr/branch-publication.test.ts: 3 failed"
+    - "packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts"
+    - "bun x vitest --config vitest.workspace.ts run --project agentplane P1/P2/branch suites: 67 passed"
+    - "bun x vitest --config vitest.workspace.ts run --project cli-core P1/P2 CLI suites: 12 passed"
+    - "bun run format:check; bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check: passed"
+    - "bun run bench:compatibility:check: approved candidate 35aefe91 with exact-main baseline verified"
+    - "bun run test:critical: 11 critical files passed"
   findings:
-    - "P1: mergeable=true with provider state behind or unstable normalizes to unknown, so a coherently non-conflicting PR is terminally invalid instead of preserving its ordinary route (sync-github.ts:110-128; Verify Step 5)."
-    - "P2: protected-base handoff eligibility compares branch/base/head/PR number but has no observed base SHA, so a base advance is not invalidated on that path (conflict-rework.ts:263-273; flow-status.ts:108-120; Verify Step 4)."
-    - "Required contract checks are not clean: format:check reports five changed DQM files, and bench:compatibility:check requires a reviewed candidate surface digest update."
-    - "branch-publication.test.ts has 3 failing force-lease regressions; its source tree is unchanged from main, so it is not attributed to DQM but still blocks hosted verification."
-commit: null
+    - "P1: mergeable=true with clean, behind, unstable, or blocked is coherently non-conflicting and remains on the ordinary quality-review route; null/pending and contradictory values fail closed before conflict preparation and do not claim merge readiness."
+    - "P2: protected-base handoff now persists the observed provider base SHA, rejects a missing SHA, and invalidates semantic rework when that stored SHA differs from current provider truth before merge-base or diff operations."
+    - "The repaired force-lease fixtures model exact GitHub PR lookup and fetch/push remote identity; all branch-publication regressions pass without changing publication source behavior."
+commit:
+  hash: "61318ea295e251c0e19892344b28c30a1b2328ea"
+  message: "🧩 DQM6AW conflict: normalize provider rework safety"
 comments:
   -
     author: "CODER"
     body: "Start: implement only the approved conflict-rework preparation contract; no worktree, code, or PR is created by this planning checkpoint."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -104,8 +109,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed."
+  -
+    type: "status"
+    at: "2026-07-26T03:35:05.354Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T02:19:49.618Z"
+doc_updated_at: "2026-07-26T03:35:05.354Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
