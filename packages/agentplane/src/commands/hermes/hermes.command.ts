@@ -66,7 +66,6 @@ export function makeRunHermesEnqueueHandler(
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
-      includeRemote: false,
     });
     const payload = {
       idempotency_key: `agentplane:${commandCtx.resolvedProject.gitRoot}:${parsed.taskId}:${parsed.role}`,
@@ -128,7 +127,6 @@ export function makeRunHermesSuperviseHandler(
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
-      includeRemote: true,
     });
     const step = executableStepFor(packet);
     const lifecycleRecommendation = buildHermesLifecycleRecommendation(packet);
@@ -195,7 +193,6 @@ export function makeRunHermesReconcileHandler(
           cwd: ctx.cwd,
           rootOverride: ctx.rootOverride ?? null,
           taskId: parsed.taskId,
-          includeRemote: false,
         })
       : null;
     const hermesStateCards = parsed.hermesState

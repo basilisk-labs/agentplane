@@ -113,7 +113,6 @@ function remoteObserved(decision: TaskRouteDecision): boolean {
 }
 
 export function buildAgentWorkOrderRemotePolicy(opts: {
-  include_remote: boolean | undefined;
   remote_enabled: boolean;
   decision: TaskRouteDecision;
 }): AgentWorkOrderRemotePolicy {
@@ -121,16 +120,16 @@ export function buildAgentWorkOrderRemotePolicy(opts: {
   return {
     schema_version: 1,
     mode: opts.remote_enabled ? "remote" : "local",
-    requested: opts.include_remote === true,
+    // This is the resolved policy of the prepared work order, rather than a
+    // per-surface CLI flag. All projections must render this one value.
+    requested: opts.remote_enabled,
     observed,
     note:
-      opts.include_remote === true
+      opts.remote_enabled
         ? observed
           ? "remote lifecycle evidence was observed during preparation"
-          : "remote lookup was requested but did not yield provider evidence"
-        : opts.include_remote === false
-          ? "remote lookup was not requested for this preparation"
-          : "remote lookup follows the route default for the active workflow mode",
+          : "remote lifecycle policy was resolved during preparation without provider evidence"
+        : "remote lookup is disabled by the canonical AgentWorkOrder preparation policy",
   };
 }
 

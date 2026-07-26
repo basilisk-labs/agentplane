@@ -160,7 +160,6 @@ export async function prepareTaskRunnerExecution(opts: {
       cwd: opts.cwd,
       root_override: opts.rootOverride ?? null,
       task_id: opts.task_id,
-      include_remote: false,
       include_runner_state: opts.include_route_runner_state ?? false,
       recipe: opts.recipe,
       runner_command: runnerCommand,

@@ -368,7 +368,7 @@ export async function buildTaskBrief(opts: {
         cwd: opts.cwd,
         root_override: opts.rootOverride ?? null,
         task_id: opts.parsed.taskId,
-        include_remote: opts.parsed.remote,
+        ...(opts.parsed.remote ? { include_remote: true } : {}),
       }),
     ),
   );
