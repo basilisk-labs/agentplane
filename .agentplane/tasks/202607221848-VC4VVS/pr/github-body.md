@@ -15,13 +15,8 @@ RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projec
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation
-paths for the approved AgentWorkOrder v2 scope.
-```
+- State: ok
+- Note: Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -32,7 +27,26 @@ paths for the approved AgentWorkOrder v2 scope.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/hermes/hermes-runtime.ts          |  33 +-
+ .../agentplane/src/commands/task/brief-model.ts    | 129 +++----
+ .../agentplane/src/commands/task/brief-render.ts   |   6 +-
+ .../src/commands/task/next-action.command.ts       |  25 +-
+ .../src/runner/adapters/codex-preparation.ts       |   3 +-
+ .../src/runner/adapters/custom-preparation.ts      |   3 +-
+ .../agentplane/src/runner/context/base-prompts.ts  |   1 +
+ .../src/runner/context/prompt-module-bridge.ts     |  34 +-
+ .../src/runner/state-fingerprint-authority.ts      |  43 +--
+ .../src/runner/state-fingerprint-observation.ts    |   4 +-
+ packages/agentplane/src/runner/types/context.ts    |  10 +-
+ .../src/runner/usecases/agent-work-order-build.ts  | 382 +++++++++++++++++++++
+ .../runner/usecases/agent-work-order-projection.ts | 183 ++++++++++
+ .../usecases/agent-work-order.integration.test.ts  | 300 ++++++++++++++++
+ .../src/runner/usecases/agent-work-order.ts        | 312 +++++++++++++++++
+ .../src/runner/usecases/task-run-bootstrap.ts      |  72 +---
+ .../usecases/task-run-context.integration.test.ts  |  24 +-
+ .../agentplane/src/runner/usecases/task-run.ts     |  76 ++--
+ scripts/baselines/trust-boundary-violations.json   |  36 --
+ 19 files changed, 1421 insertions(+), 255 deletions(-)
 ```
 
 </details>

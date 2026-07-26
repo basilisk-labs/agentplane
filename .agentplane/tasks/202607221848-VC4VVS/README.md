@@ -4,7 +4,7 @@ title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -34,11 +34,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-26T10:57:41.946Z"
-  updated_by: "TESTER"
-  note: "Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation paths for the approved AgentWorkOrder v2 scope."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-07-26T12:07:59.217Z"
+  updated_by: "CODER"
+  note: "Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks."
+  attempts: 0
 commit: null
 comments:
   -
@@ -58,8 +58,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation paths for the approved AgentWorkOrder v2 scope."
+  -
+    type: "verify"
+    at: "2026-07-26T12:07:59.217Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks."
 doc_version: 3
-doc_updated_at: "2026-07-26T10:57:42.605Z"
+doc_updated_at: "2026-07-26T12:07:59.914Z"
 doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
@@ -114,6 +120,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T12:07:59.217Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T10:57:42.605Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+    - old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -123,6 +159,10 @@ sections:
     - Observation: Compared with main, changed paths are limited to .agentplane/tasks/202607221848-VC4VVS artifacts.
       Impact: The declared behavioral Verify Steps cannot be satisfied without a source implementation.
       Resolution: Return the task to CODER for the approved implementation, then run the declared focused and contract checks.
+
+    - Observation: Clean task worktree at cd59e4d7; guards:check, lifecycle:invariants, test:critical (11 files/72 tests), typecheck, and agent-work-order.integration.test.ts (3 tests) passed.
+      Impact: The initial needs_rework finding is resolved: the branch now contains source implementation plus cross-surface integration coverage.
+      Resolution: Record CODER verification and return route to TESTER; no PR or provider action performed.
 extensions:
   workflow_route_baseline:
     start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"
@@ -189,6 +229,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T12:07:59.217Z — VERIFY — ok
+
+By: CODER
+
+Note: Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T10:57:42.605Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+- old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -202,3 +272,7 @@ DecisionContextRef:
 - Observation: Compared with main, changed paths are limited to .agentplane/tasks/202607221848-VC4VVS artifacts.
   Impact: The declared behavioral Verify Steps cannot be satisfied without a source implementation.
   Resolution: Return the task to CODER for the approved implementation, then run the declared focused and contract checks.
+
+- Observation: Clean task worktree at cd59e4d7; guards:check, lifecycle:invariants, test:critical (11 files/72 tests), typecheck, and agent-work-order.integration.test.ts (3 tests) passed.
+  Impact: The initial needs_rework finding is resolved: the branch now contains source implementation plus cross-surface integration coverage.
+  Resolution: Record CODER verification and return route to TESTER; no PR or provider action performed.
