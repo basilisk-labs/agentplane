@@ -8,10 +8,10 @@
   "pr_number": 4627,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4627",
   "pre_merge_closure": {
-    "basis_commit": "bb61f9121dadffa527cb3961d20926aba00fa0de",
+    "basis_commit": "f47b8f0ca50280441e45bf42b1ecc7275ee5a190",
     "branch": "task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes",
     "pr_number": 4627,
-    "recorded_at": "2026-07-26T04:16:31.708Z",
+    "recorded_at": "2026-07-26T04:20:24.970Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

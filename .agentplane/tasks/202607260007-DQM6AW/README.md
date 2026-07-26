@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -67,8 +67,8 @@ quality_review:
     - "The closure delta appends exactly one INC-20260726-01 record to incidents.md. It contains the required id/date/scope/failure/rule/evidence/enforcement/state fields, is explicitly fixability=repo-fixable and state=open, and its evidence points to task 202607260007-DQM6AW and the repaired implementation commit bb61f9121dad."
     - "The rule is correctly limited to analogous task-handoff schema generation: review the recorded advice, run schemas:sync, commit generated schemas with the source change, then rerun checks. No semantic conflict, branch, PR, queue, or integration action is prescribed. The packaged policy mirror is byte-identical to the repository registry."
 commit:
-  hash: "bb61f9121dadffa527cb3961d20926aba00fa0de"
-  message: "🧩 DQM6AW rework: sync handoff schemas and gate failed checks"
+  hash: "f47b8f0ca50280441e45bf42b1ecc7275ee5a190"
+  message: "🧪 DQM6AW task: refresh closure quality evidence"
 comments:
   -
     author: "CODER"
@@ -79,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -137,8 +140,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-26T04:20:24.920Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T04:16:31.629Z"
+doc_updated_at: "2026-07-26T04:20:24.920Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -376,6 +386,9 @@ sections:
       IncidentScope: task-handoff schema generation
       IncidentTags: generated-schemas
 extensions:
+  implementation_commit:
+    hash: "fffee8b0d158c7dbf2f850a5cdfc4c0d17b11121"
+    message: "🧩 DQM6AW task: pre-merge closure"
   workflow_route_baseline:
     start_head_sha: "e27c938698668ce242243d166f8c7c1b64cce88f"
     version: 1
