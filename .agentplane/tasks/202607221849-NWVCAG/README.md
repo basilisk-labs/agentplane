@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
     - "The authority digest ignores commit only for task.pre_merge_close, while taskId, author, body, result, force, policy, and state scope remain exact-match bound."
     - "The regression test proves a technical authority-only head advance is allowed and a changed closure result is denied."
 commit:
-  hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
-  message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
+  hash: "e3ad5bc54772c6da8dcd2c0f0f1ef7dd4b01641f"
+  message: "🔐 NWVCAG task: authorize remote pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -117,8 +120,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified remote authority-grant context preservation: approvals emitted from hosted routes now rebuild the same remote route before validating their exact scope. Passed focused authority-grant and workflow-step tests, compatibility ratchet, test:fast (469 files, 3259 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed."
+  -
+    type: "status"
+    at: "2026-07-26T23:36:23.830Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T23:17:51.425Z"
+doc_updated_at: "2026-07-26T23:36:23.831Z"
 doc_updated_by: "CODER"
 description: "RF-13: classify local, external reversible, external high-risk, and semantic operations; require typed authority/approval records and audit actor, policy rule, digest, and scope."
 sections:
@@ -649,6 +659,9 @@ extensions:
         stateFingerprintDigest: "sha256:c1b9253a0a0e107bbf69b32ecb6b46d66be771afe7e6213322d80c02f74860e3"
         stateScopeDigest: "sha256:c99e096d4920b538055442f7c549a9b9e9c065eac130aaab20dde2b6b213ef53"
     schemaVersion: 1
+  implementation_commit:
+    hash: "e8e2c315fef1194a3f10fc29fb4481346427fdec"
+    message: "🐛 NWVCAG task: stabilize pre-merge authority digest"
   workflow_route_baseline:
     start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"
     version: 1
