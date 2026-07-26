@@ -73,7 +73,7 @@ type TaskBriefVerifySteps = {
 };
 
 type TaskBriefLegacyProjection = {
-  contract: AgentWorkContextContract;
+  contract: TaskBrief;
   /** Canonical V2, snake_case work order; legacy fields below remain V1 projections. */
   work_order: AgentWorkOrderV2;
   work_order_preparation: AgentWorkOrderPreparationView;
@@ -138,7 +138,7 @@ type TaskBriefLegacyProjection = {
  * The named durable contract is intentionally only the shared V2 bridge.
  * Existing V1 fields are composed at the rendering edge below.
  */
-export type TaskBrief = AgentWorkContextContract;
+type TaskBrief = AgentWorkContextContract;
 
 export type TaskBriefWithWorkflowStep = TaskBriefLegacyProjection & {
   workflow_step: WorkflowStep;

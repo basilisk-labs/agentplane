@@ -3,7 +3,7 @@ import type { AgentWorkOrderV2, StateFingerprint } from "@agentplaneorg/core/sch
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
 
-export type AgentWorkOrderRemotePolicy = {
+type AgentWorkOrderRemotePolicy = {
   schema_version: 1;
   mode: "local" | "remote";
   requested: boolean;
@@ -11,7 +11,7 @@ export type AgentWorkOrderRemotePolicy = {
   note: string;
 };
 
-export type AgentWorkOrderRouteProjection = {
+type AgentWorkOrderRouteProjection = {
   schema_version: 1;
   workflow_mode: string;
   workflow_step: {

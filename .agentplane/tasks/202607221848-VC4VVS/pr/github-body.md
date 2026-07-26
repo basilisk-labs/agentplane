@@ -15,8 +15,13 @@ RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projec
 
 ## Verification
 
-- State: ok
-- Note: TESTER confirmed 81570066: clean worktree; fast CI 466 files/3232 tests, critical 11/11, focused 88/88 passed.
+- State: needs_rework
+- Note:
+
+```text
+Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale
+PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
