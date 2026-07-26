@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -39,23 +39,24 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T09:56:15.012Z"
+  updated_at: "2026-07-26T10:29:58.246Z"
   updated_by: "EVALUATOR"
-  note: "The hotspot rework removes only redundant async and await wrappers while preserving the cloud write lock and typed-result boundary; RF-07 receipt semantics remain unchanged."
-  evaluated_sha: "13816364eb35292e49294a92cabb41f702dd9a75"
+  note: "The hosted rework removes only dead export surface and makes legacy-backend fixtures return the exact persisted task; typed mutation receipt semantics and no-discovery guarantees remain intact."
+  evaluated_sha: "7155466b6e84a550e86fb92e2476322dc15ddafd"
   blueprint_digest: "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d"
   evidence_refs:
     - ".agentplane/tasks/202607221848-1HWR0R/README.md"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-095615012-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-095615012-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-095615012-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-102958246-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-102958246-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-102958246-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json"
+    - "bun run test:fast"
+    - "bun run knip:check"
     - "bun run hotspots:check"
-    - "packages/agentplane/src/backends/task-backend.revision-cas.test.ts"
-    - "bun run typecheck"
-    - "git diff --check"
+    - "packages/agentplane/src/commands/shared/task-mutation.ts"
+    - "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
   findings:
-    - "No blocking semantic defect found in the post-review hotspot delta."
+    - "No blocking semantic defect found in the current hosted rework."
 commit:
   hash: "92a1057524cd9382a1043946973afc85959d6068"
   message: "🧪 1HWR0R task: refresh hotspot quality review"
