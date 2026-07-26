@@ -6,14 +6,14 @@ Created: 2026-07-26T00:55:55.843Z
 
 - Task: `202607260007-DQM6AW`
 - Title: Prepare semantic conflict rework routes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes`
 - Canonical task record: `.agentplane/tasks/202607260007-DQM6AW/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: hosted failures must return control to CODER only when they cover the same aligned published task head; the observed failures belong to provider head 23e while the newer closure head 666 is unpublished.
+- State: ok
+- Note: Independent verification at a9340067: aligned failed hosted head routes to CODER rework; stale failed provider head with newer unpublished local head routes only to publish_pr_head via agentplane pr open. Focused agentplane 86, CLI 12, and critical 11-file suites passed; schemas check, typecheck, lint, guards, lifecycle invariants, policy routing, doctor, and diff check passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
