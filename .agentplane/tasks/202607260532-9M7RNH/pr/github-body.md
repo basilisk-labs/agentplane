@@ -36,7 +36,7 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
  .../src/commands/integrate-queue.command.test.ts   | 120 ++++++
  .../src/commands/integrate-queue.command.ts        |  92 ++++
  .../src/commands/integrate-queue.spec.test.ts      |  27 +-
- .../src/commands/integrate-queue.spec.ts           |  46 +-
+ .../src/commands/integrate-queue.spec.ts           |  49 ++-
  .../src/commands/pr/conflict-rework-checks.ts      |  63 +++
  .../src/commands/pr/conflict-rework-legacy.ts      | 101 +++++
  .../pr/conflict-rework-route-eligibility.ts        | 310 ++++++++++++++
@@ -66,7 +66,7 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
  .../commands/shared/workflow-step-projections.ts   |   6 +-
  .../src/commands/shared/workflow-step.test.ts      | 207 +--------
  .../src/commands/shared/workflow-step.ts           | 133 +-----
- 39 files changed, 2976 insertions(+), 599 deletions(-)
+ 39 files changed, 2979 insertions(+), 599 deletions(-)
 ```
 
 </details>
