@@ -4,7 +4,7 @@ title: "Reconcile provider-rebased protected PR heads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -42,31 +42,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T03:25:03.809Z"
+  updated_at: "2026-07-26T03:32:27.820Z"
   updated_by: "EVALUATOR"
-  note: "Pass at 9a3cb50: immutable proof routes disable refs/replace for every cleanup authority decision; both replacement topologies fail closed while the ZMV provider-rebase proof remains valid."
-  evaluated_sha: "9a3cb50eafa51ebbf5d20e059bd7e1111d7498a7"
+  note: "Pass at 64aa121: bounded evidence refresh. The complete packages tree is byte-identical to independently reviewed 9a3cb50, and the sibling commit changes only reconciled task artifacts; prior replacement-ref and ZMV evidence therefore remains applicable."
+  evaluated_sha: "64aa121ff3af76767ea7b6f812e26b305d27cbf4"
   blueprint_digest: "6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137"
   evidence_refs:
     - ".agentplane/tasks/202607260005-EMP7RC/README.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-032503809-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-032503809-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-032503809-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-033227820-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-033227820-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-033227820-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json"
-    - "packages/core/src/git/git-client.ts"
-    - "packages/core/src/git/git-diff.ts"
-    - "packages/agentplane/src/commands/shared/git-ops.ts"
-    - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
-    - "packages/agentplane/src/commands/branch/cleanup-merged-proof.ts"
-    - "packages/agentplane/src/commands/task/close-tail-state.ts"
-    - "bunx vitest targeted provider receipt, cleanup, route, close-tail: 41 passed"
-    - "bunx vitest replacement ref regressions: 2 passed"
-    - "bunx vitest core git client and diff: 8 passed"
-    - "bun run typecheck; lint:core; guards:check; lifecycle:invariants; routing; doctor; git diff --check: pass"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-032503809-recovery-context/quality-report.json"
+    - "git rev-parse 9a3cb50:packages = git rev-parse 64aa121:packages = c9367218c6ad8019e29a73526d6681ca5812a307"
+    - "git diff --exit-code 9a3cb50..64aa121 -- packages: pass"
+    - "git diff --name-status 9a3cb50..64aa121: only five EMP7RC task-artifact files"
+    - "git diff --check main...64aa121: pass"
+    - ".agentplane/tasks/202607260005-EMP7RC/pr/meta.json"
   findings:
-    - "gitProofEnv sets GIT_NO_REPLACE_OBJECTS=1 and is used for commit object type, ancestry, cherry and rev-list, proof diff and rev-parse, and close-tail evidence; ordinary gitEnv, gitIsAncestor, and gitDiffNames remain unchanged."
-    - "The annotated-tag-to-commit and raw-unmerged-head-to-merge replacement fixtures each return cleanup_blocked with next_command none and retain the branch and worktree."
-    - "Independent live-repository reconciliation of ZMV 651d161 -> d61ab0f against provider 2a6d152 merged as e27c938 returned provider_rebase_equivalent."
+    - "git rev-parse reports the same packages tree c9367218c6ad8019e29a73526d6681ca5812a307 at 9a3cb50 and 64aa121, and git diff --exit-code 9a3cb50..64aa121 -- packages passes."
+    - "The complete 9a3cb50..64aa121 diff contains only README and PR artifact refreshes for EMP7RC; it introduces no implementation, test, policy, or configuration change."
+    - "Current artifacts consistently retain TESTER verification at 9a3cb50, the prior evaluator PASS evidence, and a diffstat hash matching pr/diffstat.txt; the designated prior 032503 evaluator reports remain preserved untracked."
 commit: null
 comments:
   -
