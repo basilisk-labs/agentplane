@@ -709,16 +709,16 @@ describe("WorkflowStep execution projections", () => {
     const provider = executionPacket({
       state: providerState,
       step: providerStep,
-      paths: { baseCheckoutPath: "/repo" },
+      paths: { baseCheckoutPath: "/repo", taskWorktreePath },
     });
     expect(provider.oracle).toMatchObject({
-      authoritativeCheckoutPath: "/repo",
+      authoritativeCheckoutPath: taskWorktreePath,
       mutationPathHint: null,
     });
     expect(provider.packet).toMatchObject({
       actionKind: "provider_action",
       safeToMutate: false,
-      mustRunFrom: "/repo",
+      mustRunFrom: taskWorktreePath,
       exactArgv: null,
     });
     expect(
@@ -754,7 +754,7 @@ describe("WorkflowStep execution projections", () => {
     const authorizedProvider = executionPacket({
       state: authorizedProviderState,
       step: authorizedProviderStep,
-      paths: { baseCheckoutPath: "/repo" },
+      paths: { baseCheckoutPath: "/repo", taskWorktreePath },
     });
     expect(authorizedProvider.packet).toMatchObject({
       actionKind: "local_command",
