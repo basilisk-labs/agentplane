@@ -24,7 +24,7 @@ Created: 2026-07-26T10:58:46.358Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-26T10:58:46.358Z
+- Updated: 2026-07-26T10:59:30.476Z
 - Branch: task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
