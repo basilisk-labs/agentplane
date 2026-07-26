@@ -31,6 +31,7 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
  .../run-cli.core.help-snap.test.ts.snap            |   3 +
  packages/agentplane/src/cli/reason-codes.ts        |  22 +
  .../cli/run-cli.core.pr-conflict-rework.test.ts    | 224 ++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   5 +
  .../src/cli/run-cli/command-loaders/project.ts     |   4 +
  .../src/commands/integrate-queue.command.test.ts   | 120 ++++++
@@ -66,7 +67,9 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
  .../commands/shared/workflow-step-projections.ts   |   6 +-
  .../src/commands/shared/workflow-step.test.ts      | 207 +--------
  .../src/commands/shared/workflow-step.ts           | 133 +-----
- 39 files changed, 2979 insertions(+), 599 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  64 ++-
+ .../check-compatibility-contract-baseline.mjs      |  46 +-
+ 42 files changed, 3082 insertions(+), 613 deletions(-)
 ```
 
 </details>
