@@ -15,12 +15,12 @@ RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projec
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale
-PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication.
+TESTER confirmed 70e456c: fast CI 466 files/3232 tests, critical CLI 11/11, Knip 546/546, trust
+ratchet 12, focused 37/37, typecheck, lifecycle, guards, and docs checks passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -38,7 +38,7 @@ PromptModuleDiagnostic); PR verification consequently failed. Rework required be
  .../src/commands/hermes/hermes-runtime.ts          |  35 +-
  .../agentplane/src/commands/hermes/hermes-specs.ts |   8 +
  .../src/commands/hermes/hermes.command.ts          |   4 +-
- .../agentplane/src/commands/task/brief-model.ts    | 129 +++---
+ .../agentplane/src/commands/task/brief-model.ts    | 131 ++++---
  .../agentplane/src/commands/task/brief-render.ts   |   6 +-
  .../src/commands/task/next-action.command.ts       |  25 +-
  .../agentplane/src/commands/task/run.command.ts    |  10 +
@@ -58,16 +58,17 @@ PromptModuleDiagnostic); PR verification consequently failed. Rework required be
  .../src/runner/usecases/agent-work-order-build.ts  | 382 ++++++++++++++++++
  .../runner/usecases/agent-work-order-projection.ts | 181 +++++++++
  .../usecases/agent-work-order.integration.test.ts  | 436 +++++++++++++++++++++
- .../src/runner/usecases/agent-work-order.ts        | 330 ++++++++++++++++
+ .../src/runner/usecases/agent-work-order.ts        | 326 +++++++++++++++
  .../usecases/scenario-materialize-task.test.ts     |  40 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  72 +---
  .../usecases/task-run-context.integration.test.ts  |  24 +-
  .../src/runner/usecases/task-run-work-order.ts     |  24 ++
  .../agentplane/src/runner/usecases/task-run.ts     |  68 ++--
+ scripts/baselines/knip-baseline.json               |  47 +--
  scripts/baselines/trust-boundary-violations.json   |  36 --
  .../baselines/v0.7-compatibility-candidate.json    |  38 +-
  .../check-compatibility-contract-baseline.mjs      |  28 ++
- 35 files changed, 1927 insertions(+), 270 deletions(-)
+ 36 files changed, 1945 insertions(+), 297 deletions(-)
 ```
 
 </details>

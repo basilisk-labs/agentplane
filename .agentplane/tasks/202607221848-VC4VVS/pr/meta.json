@@ -2,16 +2,23 @@
   "base": "main",
   "branch": "task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age",
   "created_at": "2026-07-26T10:53:22.624Z",
-  "diffstat_sha256": "sha256:9329bdec243ea813eb7c78e39f7a3961a19183831538d224e5939a5604894e8c",
-  "last_verified_at": "2026-07-26T16:12:27.894Z",
-  "last_verified_diffstat_sha256": "sha256:9329bdec243ea813eb7c78e39f7a3961a19183831538d224e5939a5604894e8c",
+  "diffstat_sha256": "sha256:4b8de53cdb0e73432f568fc1052a6e3d626ee92d43e58920cde3bbe887f02d94",
+  "last_verified_at": "2026-07-26T16:21:53.406Z",
+  "last_verified_diffstat_sha256": "sha256:4b8de53cdb0e73432f568fc1052a6e3d626ee92d43e58920cde3bbe887f02d94",
   "pr_number": 4632,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4632",
+  "pre_merge_closure": {
+    "basis_commit": "70e456c70ebf6b95e8892401795661c73f0d247d",
+    "branch": "task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age",
+    "pr_number": 4632,
+    "recorded_at": "2026-07-26T16:26:15.808Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221848-VC4VVS",
   "updated_at": "2026-07-26T10:55:35.062Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
