@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records",
   "created_at": "2026-07-26T10:58:46.358Z",
-  "diffstat_sha256": "sha256:0d3b9baf2c9f851e5443269c0ccfe2d4816cdbddad7e087586a4ccd71e882ad1",
-  "last_verified_at": "2026-07-26T23:05:16.603Z",
-  "last_verified_diffstat_sha256": "sha256:0d3b9baf2c9f851e5443269c0ccfe2d4816cdbddad7e087586a4ccd71e882ad1",
+  "diffstat_sha256": "sha256:73a1c9166f7747e00380adf3a0da7b7cd1a44bf75cf4d9538f1334119d1d51d1",
+  "last_verified_at": "2026-07-26T23:17:50.537Z",
+  "last_verified_diffstat_sha256": "sha256:73a1c9166f7747e00380adf3a0da7b7cd1a44bf75cf4d9538f1334119d1d51d1",
   "pr_number": 4633,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4633",
   "pre_merge_closure": {
