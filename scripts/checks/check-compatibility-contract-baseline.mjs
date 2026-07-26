@@ -315,6 +315,7 @@ function validateReviewedCandidate({
     "202607230554-YFYT83",
     "202607221846-9XC1H0",
     "202607221848-0ZAB1F",
+    "202607221848-VC4VVS",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -328,6 +329,7 @@ function validateReviewedCandidate({
     "202607221848-ER5H6N",
     "202607221848-T9B3PS",
     "202607221848-1HWR0R",
+    "202607221848-VC4VVS",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -900,6 +902,13 @@ function validateReviewedCandidate({
       choices: ["human_supplied", "evaluator_supplied"],
     },
     {
+      command: "hermes supervise",
+      name: "remote",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
       command: "integrate queue adopt-legacy-protected-conflict",
       name: "expect-adoption-token",
       kind: "string",
@@ -935,6 +944,13 @@ function validateReviewedCandidate({
     {
       command: "task run",
       name: "allow-danger-full-access",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task run",
+      name: "remote",
       kind: "boolean",
       valueHint: null,
       default: false,
@@ -1010,6 +1026,12 @@ function validateReviewedCandidate({
     },
     {
       kind: "option",
+      command: "hermes supervise",
+      name: "remote",
+      source_task: "202607221848-VC4VVS",
+    },
+    {
+      kind: "option",
       command: "integrate queue adopt-legacy-protected-conflict",
       name: "expect-adoption-token",
       source_task: "202607260532-9M7RNH",
@@ -1043,6 +1065,12 @@ function validateReviewedCandidate({
       command: "task run",
       name: "allow-danger-full-access",
       source_task: "202607221846-9XC1H0",
+    },
+    {
+      kind: "option",
+      command: "task run",
+      name: "remote",
+      source_task: "202607221848-VC4VVS",
     },
     {
       kind: "option",
