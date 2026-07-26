@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-1HWR0R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T10:38:33.910Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The formatting-only correction restores Prettier compliance without changing callback behavior; typed mutation receipts, exact legacy getTask fallback, and no-discovery guarantees remain unchanged.",
+  "evaluated_sha": "6eeff394bf6ffab4daf12595c257765043f6ed33",
+  "blueprint_digest": "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d",
+  "findings": [
+    "No blocking semantic defect found; the hosted failure was a scoped formatting defect now corrected."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-1HWR0R/README.md",
+    "bun run format:check",
+    "bun run test:fast",
+    "packages/agentplane/src/commands/task/doc.unit.test.ts",
+    "packages/agentplane/src/commands/shared/task-mutation.ts",
+    "https://github.com/basilisk-labs/agentplane/actions/runs/30198437374/job/89784101301"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Fresh hosted CI must evaluate 6eeff394 after PR head publication."
+  ]
+}
