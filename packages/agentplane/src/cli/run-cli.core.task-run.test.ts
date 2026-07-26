@@ -149,6 +149,7 @@ describe("runCli task run", () => {
     const parsed = {
       taskId: "202607241200-DEGRADED",
       dryRun: false,
+      remote: false,
       allowDangerFullAccess: false,
       json: true,
     };

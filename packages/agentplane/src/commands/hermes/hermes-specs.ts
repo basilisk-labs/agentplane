@@ -13,6 +13,7 @@ export type HermesEnqueueParsed = {
 export type HermesSuperviseParsed = {
   taskId: string;
   json: boolean;
+  remote: boolean;
   executeStep: boolean;
   dryRun: boolean;
 };
@@ -113,6 +114,12 @@ export const hermesSuperviseSpec: CommandSpec<HermesSuperviseParsed> = {
     { kind: "boolean", name: "json", default: false, description: "Emit machine-readable result." },
     {
       kind: "boolean",
+      name: "remote",
+      default: false,
+      description: "Include hosted PR/check/review state in the supervisor work order.",
+    },
+    {
+      kind: "boolean",
       name: "execute-step",
       default: false,
       description: "Execute one allowlisted Agentplane route step for this Hermes claim.",
@@ -133,6 +140,7 @@ export const hermesSuperviseSpec: CommandSpec<HermesSuperviseParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     json: raw.opts.json === true,
+    remote: raw.opts.remote === true,
     executeStep: raw.opts["execute-step"] === true,
     dryRun: raw.opts["dry-run"] === true,
   }),

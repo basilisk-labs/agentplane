@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -40,6 +40,28 @@ type WorkOrderView = {
     source_manifest: unknown;
   };
 };
+
+async function captureRunnerWorkOrder(opts: {
+  taskId: string;
+  root: string;
+  remote?: boolean;
+}): Promise<WorkOrderView> {
+  const prepared = (await captureJsonRun([
+    "task",
+    "run",
+    opts.taskId,
+    "--dry-run",
+    "--json",
+    ...(opts.remote ? ["--remote"] : []),
+    "--root",
+    opts.root,
+  ])) as { bundle_path: string };
+  const bundle = JSON.parse(await readFile(prepared.bundle_path, "utf8")) as WorkOrderView;
+  return {
+    work_order: bundle.work_order,
+    work_order_preparation: bundle.work_order_preparation,
+  };
+}
 
 async function captureJsonRun(argv: string[]): Promise<unknown> {
   const io = captureStdIO();
@@ -169,8 +191,6 @@ describe("AgentWorkOrder v2 surface integration", () => {
       const taskId = await createPreparedTask(root, workflowMode);
       const worktree =
         workflowMode === "branch_pr" ? await createBranchPrTaskWorktree(root, taskId) : root;
-      const commandCtx = await loadCommandContext({ cwd: worktree, rootOverride: worktree });
-
       const brief = (await captureJsonRun([
         "task",
         "brief",
@@ -195,23 +215,21 @@ describe("AgentWorkOrder v2 surface integration", () => {
         "--root",
         worktree,
       ])) as WorkOrderView;
-      const runner = await prepareTaskRunnerExecution({
-        ctx: commandCtx,
-        cwd: worktree,
-        rootOverride: worktree,
-        task_id: taskId,
-        mode: "dry_run",
-        run_id: `work-order-surface-${workflowMode}`,
+      const runnerView = await captureRunnerWorkOrder({
+        taskId,
+        root: worktree,
       });
-      const runnerView: WorkOrderView = {
-        work_order: runner.bundle.work_order!,
-        work_order_preparation: runner.bundle.work_order_preparation!,
-      };
 
       const expected = canonicalWorkOrderSignature(brief);
       expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
       expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
       expect(canonicalWorkOrderSignature(runnerView)).toEqual(expected);
+      for (const view of [brief, nextAction, hermes, runnerView]) {
+        expect(view.work_order_preparation.remote_policy).toMatchObject({
+          mode: "local",
+          requested: false,
+        });
+      }
 
       // V1 remains an explicit outer compatibility view; the embedded V2 surface has one casing.
       expect(brief.contract).toBeTruthy();
@@ -220,6 +238,52 @@ describe("AgentWorkOrder v2 surface integration", () => {
         expectSnakeCaseOnly(view.work_order);
         expectSnakeCaseOnly(view.work_order_preparation);
       }
+    }
+  });
+
+  it("uses one explicit remote opt-in through every comparable work-order surface", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root, "branch_pr");
+    const worktree = await createBranchPrTaskWorktree(root, taskId);
+
+    const brief = (await captureJsonRun([
+      "task",
+      "brief",
+      taskId,
+      "--json",
+      "--remote",
+      "--root",
+      worktree,
+    ])) as WorkOrderView;
+    const nextAction = (await captureJsonRun([
+      "task",
+      "next-action",
+      taskId,
+      "--json",
+      "--remote",
+      "--root",
+      worktree,
+    ])) as WorkOrderView;
+    const hermes = (await captureJsonRun([
+      "hermes",
+      "supervise",
+      taskId,
+      "--json",
+      "--remote",
+      "--root",
+      worktree,
+    ])) as WorkOrderView;
+    const runner = await captureRunnerWorkOrder({ taskId, root: worktree, remote: true });
+
+    const expected = canonicalWorkOrderSignature(brief);
+    expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
+    expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
+    expect(canonicalWorkOrderSignature(runner)).toEqual(expected);
+    for (const view of [brief, nextAction, hermes, runner]) {
+      expect(view.work_order_preparation.remote_policy).toMatchObject({
+        mode: "remote",
+        requested: true,
+      });
     }
   });
 

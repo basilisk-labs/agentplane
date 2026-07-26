@@ -127,6 +127,7 @@ export function makeRunHermesSuperviseHandler(
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
+      ...(parsed.remote ? { includeRemote: true } : {}),
     });
     const step = executableStepFor(packet);
     const lifecycleRecommendation = buildHermesLifecycleRecommendation(packet);
