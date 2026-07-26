@@ -2,10 +2,10 @@
 id: "202607260007-DQM6AW"
 title: "Prepare semantic conflict rework routes"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on: []
@@ -36,39 +36,24 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-26T04:12:19.232Z"
-  updated_by: "TESTER"
-  note: "Independent verification at bb61f912: focused agentplane 93, cli-core 12, core schema 27, and critical 7 tests passed; schemas check, typecheck, lint, guards, lifecycle invariants, policy routing, doctor, and diff check passed. Doctor reported only historical archive warnings."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T04:19:02.369Z"
+  state: "needs_rework"
+  updated_at: "2026-07-26T04:22:04.544Z"
   updated_by: "EVALUATOR"
-  note: "Independent closure review of fffee8b0 confirms the repo-fixable schema-generation finding was promoted as a bounded append-only incident record with an exact packaged mirror."
-  evaluated_sha: "fffee8b0d158c7dbf2f850a5cdfc4c0d17b11121"
+  note: "Rework: hosted failures must return control to CODER only when they cover the same aligned published task head; the observed failures belong to provider head 23e while the newer closure head 666 is unpublished."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-07-26T04:22:04.544Z"
+  updated_by: "EVALUATOR"
+  note: "Rework: hosted failures must return control to CODER only when they cover the same aligned published task head; the observed failures belong to provider head 23e while the newer closure head 666 is unpublished."
+  evaluated_sha: "22c2cfac4083075f2868a542907c4af6ce1b6e84"
   blueprint_digest: "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6"
   evidence_refs:
     - ".agentplane/tasks/202607260007-DQM6AW/README.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-041902369-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-041902369-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-041902369-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
-    - ".agentplane/policy/incidents.md"
-    - "packages/agentplane/assets/policy/incidents.md"
-    - "commit: fffee8b0d158c7dbf2f850a5cdfc4c0d17b11121 closure; incident evidence references bb61f9121dad"
-    - "command: git diff --name-status bb61f912..fffee8b0 (only closure artifacts plus two incident mirrors)"
-    - "command: cmp -s .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md (passed)"
-    - "command: node .agentplane/policy/check-routing.mjs (policy routing OK)"
-    - "command: agentplane doctor (OK; only historical archive warnings)"
-    - "command: git diff --check bb61f912..fffee8b0 (passed)"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
   findings:
-    - "The closure delta appends exactly one INC-20260726-01 record to incidents.md. It contains the required id/date/scope/failure/rule/evidence/enforcement/state fields, is explicitly fixability=repo-fixable and state=open, and its evidence points to task 202607260007-DQM6AW and the repaired implementation commit bb61f9121dad."
-    - "The rule is correctly limited to analogous task-handoff schema generation: review the recorded advice, run schemas:sync, commit generated schemas with the source change, then rerun checks. No semantic conflict, branch, PR, queue, or integration action is prescribed. The packaged policy mirror is byte-identical to the repository registry."
-commit:
-  hash: "f47b8f0ca50280441e45bf42b1ecc7275ee5a190"
-  message: "🧪 DQM6AW task: refresh closure quality evidence"
+    - "Observation: the remote PR still reports failed hosted checks for provider head 23e, while the local closure head 666 has not been published.\nImpact: an unconditional hosted-check failure blocker selects implementation_rework_required before the CLI can publish the newer head and obtain current hosted evidence, creating a lifecycle deadlock.\nResolution: gate implementation_rework_required on equality between the failed provider PR head and the current aligned published task head. When the local head is unpublished or differs from the provider head, preserve pr_head_unpublished as a publishable route; after publication, use the refreshed checks for that head.\nScope: task-local lifecycle finding only; no incident promotion requested."
+commit: null
 comments:
   -
     author: "CODER"
@@ -147,8 +132,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-26T04:22:04.544Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Rework: hosted failures must return control to CODER only when they cover the same aligned published task head; the observed failures belong to provider head 23e while the newer closure head 666 is unpublished."
 doc_version: 3
-doc_updated_at: "2026-07-26T04:20:24.920Z"
+doc_updated_at: "2026-07-26T04:22:05.363Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -356,6 +347,41 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T04:22:04.544Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Rework: hosted failures must return control to CODER only when they cover the same aligned published task head; the observed failures belong to provider head 23e while the newer closure head 666 is unpublished.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T04:20:24.920Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+    Details:
+
+    Observation: the remote PR still reports failed hosted checks for provider head 23e, while the local closure head 666 has not been published.
+    Impact: an unconditional hosted-check failure blocker selects implementation_rework_required before the CLI can publish the newer head and obtain current hosted evidence, creating a lifecycle deadlock.
+    Resolution: gate implementation_rework_required on equality between the failed provider PR head and the current aligned published task head. When the local head is unpublished or differs from the provider head, preserve pr_head_unpublished as a publishable route; after publication, use the refreshed checks for that head.
+    Scope: task-local lifecycle finding only; no incident promotion requested.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+    - old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+    - diagnostic_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -609,6 +635,41 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T04:22:04.544Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Rework: hosted failures must return control to CODER only when they cover the same aligned published task head; the observed failures belong to provider head 23e while the newer closure head 666 is unpublished.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T04:20:24.920Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+Details:
+
+Observation: the remote PR still reports failed hosted checks for provider head 23e, while the local closure head 666 has not been published.
+Impact: an unconditional hosted-check failure blocker selects implementation_rework_required before the CLI can publish the newer head and obtain current hosted evidence, creating a lifecycle deadlock.
+Resolution: gate implementation_rework_required on equality between the failed provider PR head and the current aligned published task head. When the local head is unpublished or differs from the provider head, preserve pr_head_unpublished as a publishable route; after publication, use the refreshed checks for that head.
+Scope: task-local lifecycle finding only; no incident promotion requested.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+- old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+- diagnostic_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 

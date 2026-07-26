@@ -94,8 +94,18 @@ function addHostedCheckFailureReworkBlocker(
   blockers: RouteBlocker[],
   prFlow: PrFlowStatusReport | null,
 ): void {
+  if (prFlow?.pr.state !== "OPEN") return;
+  const localHeadSha = prFlow.branch.headSha;
+  const providerHeadSha = prFlow.pr.headSha;
+  const publication = prFlow.publication;
   if (
-    prFlow?.pr.state !== "OPEN" ||
+    prFlow.pr.source !== "lookup" ||
+    publication?.state !== "aligned" ||
+    !localHeadSha ||
+    providerHeadSha !== localHeadSha ||
+    publication.localHeadSha !== localHeadSha ||
+    publication.upstreamHeadSha !== localHeadSha ||
+    publication.hostedHeadSha !== localHeadSha ||
     !prFlow.hostedChecks.checked ||
     prFlow.hostedChecks.failing <= 0
   ) {
