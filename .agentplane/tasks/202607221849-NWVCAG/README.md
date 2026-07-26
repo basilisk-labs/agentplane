@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-26T23:05:16.603Z"
+  updated_at: "2026-07-26T23:17:50.537Z"
   updated_by: "TESTER"
-  note: "Verified the authority-only review-target repair: a committed authority grant no longer invalidates the prior quality target, while substantive README changes remain reviewable. Passed targeted quality/route tests, test:fast (468 files, 3257 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed."
+  note: "Verified remote authority-grant context preservation: approvals emitted from hosted routes now rebuild the same remote route before validating their exact scope. Passed focused authority-grant and workflow-step tests, compatibility ratchet, test:fast (469 files, 3259 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -111,8 +111,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified the authority-only review-target repair: a committed authority grant no longer invalidates the prior quality target, while substantive README changes remain reviewable. Passed targeted quality/route tests, test:fast (468 files, 3257 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed."
+  -
+    type: "verify"
+    at: "2026-07-26T23:17:50.537Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified remote authority-grant context preservation: approvals emitted from hosted routes now rebuild the same remote route before validating their exact scope. Passed focused authority-grant and workflow-step tests, compatibility ratchet, test:fast (469 files, 3259 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed."
 doc_version: 3
-doc_updated_at: "2026-07-26T23:05:17.286Z"
+doc_updated_at: "2026-07-26T23:17:51.425Z"
 doc_updated_by: "CODER"
 description: "RF-13: classify local, external reversible, external high-risk, and semantic operations; require typed authority/approval records and audit actor, policy rule, digest, and scope."
 sections:
@@ -248,6 +254,36 @@ sections:
 
     DecisionContextRef:
     - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T23:17:50.537Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified remote authority-grant context preservation: approvals emitted from hosted routes now rebuild the same remote route before validating their exact scope. Passed focused authority-grant and workflow-step tests, compatibility ratchet, test:fast (469 files, 3259 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T23:05:17.286Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+    - old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+    DecisionContextRef:
+    - operator_action: provider_action
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
@@ -655,6 +691,36 @@ BlueprintSnapshotRef:
 
 DecisionContextRef:
 - operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T23:17:50.537Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified remote authority-grant context preservation: approvals emitted from hosted routes now rebuild the same remote route before validating their exact scope. Passed focused authority-grant and workflow-step tests, compatibility ratchet, test:fast (469 files, 3259 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T23:05:17.286Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+- old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+DecisionContextRef:
+- operator_action: provider_action
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none

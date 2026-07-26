@@ -19,10 +19,10 @@ RF-13: classify local, external reversible, external high-risk, and semantic ope
 - Note:
 
 ```text
-Verified the authority-only review-target repair: a committed authority grant no longer invalidates
-the prior quality target, while substantive README changes remain reviewable. Passed targeted
-quality/route tests, test:fast (468 files, 3257 tests), test:critical (11 chunks, 72 tests),
-typecheck, and format:changed.
+Verified remote authority-grant context preservation: approvals emitted from hosted routes now
+rebuild the same remote route before validating their exact scope. Passed focused authority-grant
+and workflow-step tests, compatibility ratchet, test:fast (469 files, 3259 tests), test:critical (11
+chunks, 72 tests), typecheck, and format:changed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -40,18 +40,19 @@ typecheck, and format:changed.
  .../commands/shared/quality-review-target.test.ts  |  71 ++++
  .../src/commands/shared/quality-review-target.ts   |  72 +++-
  .../shared/route-decision-next-action.test.ts      |   2 +-
- .../src/commands/shared/route-decision.ts          |  71 +++-
+ .../src/commands/shared/route-decision.ts          |  72 +++-
  .../commands/shared/side-effect-authority.test.ts  | 221 +++++++++++
  .../src/commands/shared/side-effect-authority.ts   | 415 +++++++++++++++++++++
  .../workflow-operation-projection.registry.test.ts |  43 ++-
- .../src/commands/shared/workflow-step-factory.ts   |  97 ++++-
+ .../src/commands/shared/workflow-step-factory.ts   |  98 ++++-
  .../shared/workflow-step-fingerprint.test.ts       |  29 +-
  .../commands/shared/workflow-step-fingerprint.ts   |  50 ++-
  ...rkflow-step-projections.conflict-rework.test.ts |  54 ++-
  .../shared/workflow-step-projections.test.ts       | 200 +++++++++-
- .../src/commands/shared/workflow-step.test.ts      |  93 ++++-
- .../src/commands/shared/workflow-step.ts           |  27 +-
- .../src/commands/task/authority-grant.command.ts   | 199 ++++++++++
+ .../src/commands/shared/workflow-step.test.ts      | 107 +++++-
+ .../src/commands/shared/workflow-step.ts           |  33 +-
+ .../commands/task/authority-grant.command.test.ts  |  32 ++
+ .../src/commands/task/authority-grant.command.ts   | 207 ++++++++++
  .../agentplane/src/runner/sandbox-policy.test.ts   |  14 +
  packages/agentplane/src/runner/sandbox-policy.ts   |  13 +-
  .../src/runner/state-fingerprint-observation.ts    |   5 +
@@ -59,9 +60,9 @@ typecheck, and format:changed.
  .../usecases/agent-work-order.integration.test.ts  |  16 +
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  packages/core/src/runner/execution-receipt.ts      |   2 +-
- .../baselines/v0.7-compatibility-candidate.json    | 149 +++++++-
- .../check-compatibility-contract-baseline.mjs      | 106 ++++++
- 27 files changed, 1867 insertions(+), 103 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    | 168 ++++++++-
+ .../check-compatibility-contract-baseline.mjs      | 120 ++++++
+ 28 files changed, 1962 insertions(+), 103 deletions(-)
 ```
 
 </details>
