@@ -4,7 +4,7 @@ title: "Allow targeted cleanup of registered sibling task worktrees"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -36,7 +36,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-26T16:48:58.198Z"
+doc_updated_at: "2026-07-26T17:29:08.860Z"
 doc_updated_by: "CODER"
 description: "Fix branch_pr post-merge cleanup when a clean base checkout shares the Git common directory with a task worktree located below another registered base checkout. Accept only a canonical Git-registered worktree with the same common directory in the explicit targeted/finalize lane; retain fail-closed rejection for arbitrary external paths, foreign repositories, current worktrees, and dirty worktrees. Add regression and negative tests."
 sections:
@@ -53,11 +53,11 @@ sections:
     3. Add regression coverage for the clean sibling-base finalization route and retain negative security coverage.
     4. Run focused cleanup tests, typecheck, lifecycle invariants, guards, routing validation, and relevant full CI.
   Verify Steps: |-
-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+    1. Run the targeted finalize regression from a clean sibling base checkout. Expected: an exact branch-to-canonical-path registration under a separately registered base worktree with the same Git common directory is removed only for `cleanup merged --task-id <id> --finalize`.
+    2. Exercise the negative matrix. Expected: broad cleanup, targeted non-finalize cleanup, foreign or arbitrary external hints, discovery-path mismatch, current checkout, dirty worktree, and changed expected head do not remove a worktree, branch, or external directory.
+    3. Run the focused matrix exactly: `bunx --no-install vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.remote.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts --no-file-parallelism --reporter=dot`. Expected: registered sibling acceptance and all fail-closed cases pass.
+    4. Run `bun run typecheck`, `bun run lifecycle:invariants`, `bun run guards:check`, and `node .agentplane/policy/check-routing.mjs`. Expected: the focused security fix preserves repository contracts.
+    5. Run `AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:fast`. Expected: the capacity-normalized fast suite passes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -91,11 +91,11 @@ Fix branch_pr post-merge cleanup when a clean base checkout shares the Git commo
 
 ## Verify Steps
 
-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Run the targeted finalize regression from a clean sibling base checkout. Expected: an exact branch-to-canonical-path registration under a separately registered base worktree with the same Git common directory is removed only for `cleanup merged --task-id <id> --finalize`.
+2. Exercise the negative matrix. Expected: broad cleanup, targeted non-finalize cleanup, foreign or arbitrary external hints, discovery-path mismatch, current checkout, dirty worktree, and changed expected head do not remove a worktree, branch, or external directory.
+3. Run the focused matrix exactly: `bunx --no-install vitest --config vitest.workspace.ts run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.remote.test.ts packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts --no-file-parallelism --reporter=dot`. Expected: registered sibling acceptance and all fail-closed cases pass.
+4. Run `bun run typecheck`, `bun run lifecycle:invariants`, `bun run guards:check`, and `node .agentplane/policy/check-routing.mjs`. Expected: the focused security fix preserves repository contracts.
+5. Run `AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:fast`. Expected: the capacity-normalized fast suite passes.
 
 ## Verification
 

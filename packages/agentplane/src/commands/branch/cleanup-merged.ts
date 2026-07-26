@@ -9,7 +9,11 @@ import { createCliEmitter, unknownEntityMessage, workflowModeMessage } from "../
 import { CliError } from "../../shared/errors.js";
 import { ensureGitClean } from "../guard/index.js";
 import { gitBranchExists, gitCurrentBranch } from "../shared/git-ops.js";
-import { cleanupMergedLocalBranch } from "../shared/merged-branch-cleanup.js";
+import {
+  cleanupMergedLocalBranch,
+  resolveFreshRegisteredSiblingWorktree,
+  type RegisteredSiblingWorktreeAuthorization,
+} from "../shared/merged-branch-cleanup.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
@@ -156,6 +160,7 @@ export async function cmdCleanupMerged(opts: {
     const repoRoot = await resolvePathFallback(resolved.gitRoot);
     const requestedTaskIds = normalizeRequestedTaskIds(opts.taskIds);
     const targeted = requestedTaskIds.length > 0;
+    const allowRegisteredSiblingWorktree = targeted && opts.finalize === true;
     const resolution = await resolveCleanupPlan({
       ctx,
       gitRoot: resolved.gitRoot,
@@ -238,19 +243,44 @@ export async function cmdCleanupMerged(opts: {
     const preparedCandidates: {
       item: CleanupCandidate;
       worktreePath: string | null;
+      registeredSiblingWorktree?: RegisteredSiblingWorktreeAuthorization;
     }[] = [];
     let skippedUnsafe = 0;
     for (const item of sortedCandidates) {
       const worktreePath = item.worktreePath ? await resolvePathFallback(item.worktreePath) : null;
       let unsafeMessage: string | null = null;
+      let registeredSiblingWorktree: RegisteredSiblingWorktreeAuthorization | undefined;
       if (worktreePath) {
         const outsideRepo = !isPathWithin(repoRoot, worktreePath);
         const currentWorktree = worktreePath === repoRoot;
         if (outsideRepo) {
-          unsafeMessage = `Refusing to remove worktree outside repo: ${worktreePath}`;
-        } else if (currentWorktree) {
+          const authorization = allowRegisteredSiblingWorktree
+            ? {
+                baseBranch,
+                expectedWorktreePath: worktreePath,
+                worktreesDir: config.paths.worktrees_dir,
+              }
+            : null;
+          const registeredSiblingPath = authorization
+            ? await resolveFreshRegisteredSiblingWorktree({
+                gitRoot: resolved.gitRoot,
+                branch: item.branch,
+                authorization,
+              })
+            : null;
+          if (registeredSiblingPath === worktreePath) {
+            registeredSiblingWorktree = authorization ?? undefined;
+          } else {
+            unsafeMessage = `Refusing to remove worktree outside repo: ${worktreePath}`;
+          }
+        }
+        if (!unsafeMessage && currentWorktree) {
           unsafeMessage = "Refusing to remove the current worktree";
-        } else if (opts.preserveDirty !== true && (await worktreeIsDirty(worktreePath))) {
+        } else if (
+          !unsafeMessage &&
+          opts.preserveDirty !== true &&
+          (await worktreeIsDirty(worktreePath))
+        ) {
           unsafeMessage =
             `Refusing to remove dirty worktree: ${worktreePath}. ` +
             "Commit its changes or rerun with --preserve-dirty.";
@@ -266,23 +296,32 @@ export async function cmdCleanupMerged(opts: {
         }
         throw new CliError({ exitCode: 5, code: "E_GIT", message: unsafeMessage });
       }
-      preparedCandidates.push({ item, worktreePath });
+      preparedCandidates.push({ item, worktreePath, registeredSiblingWorktree });
     }
 
     let deletedRemoteBranches = 0;
-    for (const { item, worktreePath } of preparedCandidates) {
-      if (opts.archive) {
-        const taskDir = path.join(resolved.gitRoot, config.paths.workflow_dir, item.taskId);
-        await archivePrArtifacts(taskDir);
-      }
-
+    for (const { item, worktreePath, registeredSiblingWorktree } of preparedCandidates) {
       const cleanup = await cleanupMergedLocalBranch({
         gitRoot: resolved.gitRoot,
         branch: item.branch,
         worktreePathHint: worktreePath,
         preserveDirty: opts.preserveDirty === true,
         expectedHeadSha: item.expectedHeadSha,
+        registeredSiblingWorktree,
       });
+      if (!cleanup.removedBranch && !cleanup.removedWorktree) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message:
+            `Refusing cleanup because registered worktree state changed during removal: ` +
+            `${worktreePath ?? item.branch}`,
+        });
+      }
+      if (opts.archive) {
+        const taskDir = path.join(resolved.gitRoot, config.paths.workflow_dir, item.taskId);
+        await archivePrArtifacts(taskDir);
+      }
       reportRows.push(
         `deleted task=${item.taskId} branch=${item.branch} worktree=${worktreePath ?? "-"} preserve_dirty=${cleanup.preservedDirtyState ? "yes" : "no"} stash=${cleanup.stashMessage ?? "-"}`,
       );
