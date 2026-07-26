@@ -462,7 +462,6 @@ export async function captureWorkflowStepFingerprint(opts: {
     git?.state === "available"
       ? presentComponent("workflow_route_git", {
           repositoryRoot: git.repository_root,
-          snapshotSha256: git.snapshot_sha256,
           dirtyPaths: git.dirty_paths,
           statusEntries: git.status_entries,
           indexEntries: git.index_entries,
