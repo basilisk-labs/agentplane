@@ -284,7 +284,7 @@ export const WORKFLOW_OPERATION_REGISTRY = {
   "route.remote.refresh": {
     type: "provider_refresh",
     phase: "remote_route_refresh_needed",
-    checkout: "base_checkout",
+    checkout: "task_worktree",
     role: "INTEGRATOR",
     expectedPostconditions: [POSTCONDITION.providerObserved, POSTCONDITION.routeRecomputed],
     mustNot: [

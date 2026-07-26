@@ -1068,13 +1068,16 @@ describe("WorkflowStep execution projections", () => {
       const { packet } = executionPacket({
         state,
         step,
-        paths: { baseCheckoutPath: "/repo" },
+        paths: { baseCheckoutPath: "/repo", taskWorktreePath },
       });
 
       expect(packet.staleStateCheck, operation.id).toBe(
         `agentplane task next-action ${task.id} --remote --explain`,
       );
       expect(packet.returnControlWhen, operation.id).toContain(packet.staleStateCheck);
+      if (operation.id === "route.remote.refresh") {
+        expect(packet).toMatchObject({ authoritativeCheckout: "task_worktree" });
+      }
     }
   });
 });
