@@ -9,7 +9,8 @@
     "202607221848-ABG7SD",
     "202607221848-0ZAB1F",
     "202607221848-ER5H6N",
-    "202607260007-DQM6AW"
+    "202607260007-DQM6AW",
+    "202607260532-9M7RNH"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -18,9 +19,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "35aefe91a91ea4716384cf49ed42481d7167e2f41e812e0e14041e56b7129cf4",
+    "surface_sha256": "074f9be449f58704bfee575b4f3ffce764a94a722fc78c3e9567e6176e74d4ae",
     "section_digests": {
-      "cli_topology": "44d94ba92bc8635ab5e117d5e85452fd594cc22f17487e9c42d970952e3ac97c",
+      "cli_topology": "ab04b9bfc6a7b72c29fce2df09592ef14148af6b41aa83611a059ba7912227bd",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -222,19 +223,45 @@
         "202607230554-YFYT83",
         "202607221846-9XC1H0",
         "202607221848-0ZAB1F",
-        "202607260007-DQM6AW"
+        "202607260007-DQM6AW",
+        "202607260532-9M7RNH"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "44d94ba92bc8635ab5e117d5e85452fd594cc22f17487e9c42d970952e3ac97c",
+      "to_sha256": "ab04b9bfc6a7b72c29fce2df09592ef14148af6b41aa83611a059ba7912227bd",
       "classification": "additive",
-      "summary": "Adds a read-only provider-conflict context packet, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, and explicit cloud projection bootstrap/adoption controls on both sync routes; no command or option is removed or mutated.",
+      "summary": "Adds a read-only provider-conflict context packet, an explicit legacy protected-conflict adoption receipt command, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, and explicit cloud projection bootstrap/adoption controls on both sync routes; no command or option is removed or mutated.",
       "evidence": {
-        "command_count": { "from": 243, "to": 246 },
-        "positional_count": { "from": 165, "to": 167 },
-        "option_count": { "from": 767, "to": 780 },
-        "added_commands": ["pr conflict-rework", "task run reconcile", "workflow migrate"],
+        "command_count": { "from": 243, "to": 247 },
+        "positional_count": { "from": 165, "to": 168 },
+        "option_count": { "from": 767, "to": 781 },
+        "added_commands": [
+          "integrate queue adopt-legacy-protected-conflict",
+          "pr conflict-rework",
+          "task run reconcile",
+          "workflow migrate"
+        ],
         "removed_commands": [],
         "added_command_descriptors": [
+          {
+            "id": ["integrate", "queue", "adopt-legacy-protected-conflict"],
+            "visibility": "user",
+            "group": "PR",
+            "args": [
+              {
+                "name": "task-id",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "expect-adoption-token",
+                "kind": "string",
+                "valueHint": "<sha256:...>"
+              }
+            ]
+          },
           {
             "id": ["pr", "conflict-rework"],
             "visibility": "user",
@@ -334,6 +361,12 @@
             "choices": ["human_supplied", "evaluator_supplied"]
           },
           {
+            "command": "integrate queue adopt-legacy-protected-conflict",
+            "name": "expect-adoption-token",
+            "kind": "string",
+            "valueHint": "<sha256:...>"
+          },
+          {
             "command": "pr conflict-rework",
             "name": "expect-freshness-token",
             "kind": "string",
@@ -400,6 +433,11 @@
         "addition_sources": [
           {
             "kind": "command",
+            "command": "integrate queue adopt-legacy-protected-conflict",
+            "source_task": "202607260532-9M7RNH"
+          },
+          {
+            "kind": "command",
             "command": "pr conflict-rework",
             "source_task": "202607260007-DQM6AW"
           },
@@ -436,6 +474,12 @@
             "command": "evaluator run",
             "name": "provenance",
             "source_task": "202607221846-YGWMA2"
+          },
+          {
+            "kind": "option",
+            "command": "integrate queue adopt-legacy-protected-conflict",
+            "name": "expect-adoption-token",
+            "source_task": "202607260532-9M7RNH"
           },
           {
             "kind": "option",

@@ -316,6 +316,7 @@ function validateReviewedCandidate({
     "202607221846-9XC1H0",
     "202607221848-0ZAB1F",
     "202607260007-DQM6AW",
+    "202607260532-9M7RNH",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -326,6 +327,7 @@ function validateReviewedCandidate({
     "202607221848-0ZAB1F",
     "202607221848-ER5H6N",
     "202607260007-DQM6AW",
+    "202607260532-9M7RNH",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -592,6 +594,26 @@ function validateReviewedCandidate({
   );
   const expectedAddedCommandDescriptors = [
     {
+      id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
+      visibility: "user",
+      group: "PR",
+      args: [
+        {
+          name: "task-id",
+          required: true,
+          variadic: false,
+          valueHint: "<task-id>",
+        },
+      ],
+      options: [
+        {
+          name: "expect-adoption-token",
+          kind: "string",
+          valueHint: "<sha256:...>",
+        },
+      ],
+    },
+    {
       id: ["pr", "conflict-rework"],
       visibility: "user",
       group: "PR",
@@ -663,6 +685,12 @@ function validateReviewedCandidate({
       choices: ["human_supplied", "evaluator_supplied"],
     },
     {
+      command: "integrate queue adopt-legacy-protected-conflict",
+      name: "expect-adoption-token",
+      kind: "string",
+      valueHint: "<sha256:...>",
+    },
+    {
       command: "pr conflict-rework",
       name: "expect-freshness-token",
       kind: "string",
@@ -727,6 +755,11 @@ function validateReviewedCandidate({
   const expectedAdditionSources = [
     {
       kind: "command",
+      command: "integrate queue adopt-legacy-protected-conflict",
+      source_task: "202607260532-9M7RNH",
+    },
+    {
+      kind: "command",
       command: "pr conflict-rework",
       source_task: "202607260007-DQM6AW",
     },
@@ -759,6 +792,12 @@ function validateReviewedCandidate({
       command: "evaluator run",
       name: "provenance",
       source_task: "202607221846-YGWMA2",
+    },
+    {
+      kind: "option",
+      command: "integrate queue adopt-legacy-protected-conflict",
+      name: "expect-adoption-token",
+      source_task: "202607260532-9M7RNH",
     },
     {
       kind: "option",
@@ -845,7 +884,12 @@ function validateReviewedCandidate({
   );
   assert(
     hashJson(addedCommands) ===
-      hashJson(["pr conflict-rework", "task run reconcile", "workflow migrate"]),
+      hashJson([
+        "integrate queue adopt-legacy-protected-conflict",
+        "pr conflict-rework",
+        "task run reconcile",
+        "workflow migrate",
+      ]),
     "unexpected CLI addition",
   );
   assert(

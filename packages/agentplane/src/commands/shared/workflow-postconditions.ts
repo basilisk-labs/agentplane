@@ -1,4 +1,4 @@
-export type WorkflowPostconditionId =
+type WorkflowPostconditionId =
   | "base_checkout_synced"
   | "hosted_close_pr_open"
   | "included_batch_closure_reconciled"
