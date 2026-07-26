@@ -54,7 +54,7 @@ Created: 2026-07-26T08:11:00.143Z
  packages/agentplane/src/context/ingest.ts          |  32 ++---
  .../baselines/v0.7-compatibility-candidate.json    |  39 +++++-
  .../check-compatibility-contract-baseline.mjs      | 138 +++++++++++++++++++++
- 25 files changed, 705 insertions(+), 106 deletions(-)
+ 25 files changed, 704 insertions(+), 107 deletions(-)
 ```
 
 </details>
