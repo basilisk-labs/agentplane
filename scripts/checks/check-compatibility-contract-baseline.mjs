@@ -868,6 +868,7 @@ function validateReviewedCandidate({
         { name: "state-scope-digest", kind: "string", valueHint: "<sha256>", required: true },
         { name: "by", kind: "string", valueHint: "<actor>", required: true },
         { name: "ttl-minutes", kind: "string", valueHint: "<1-60>" },
+        { name: "remote", kind: "boolean", valueHint: null, default: false },
       ],
     },
     {
@@ -984,6 +985,13 @@ function validateReviewedCandidate({
       kind: "string",
       valueHint: "<sha256>",
       required: true,
+    },
+    {
+      command: "task authority grant",
+      name: "remote",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
     },
     {
       command: "task authority grant",
@@ -1145,6 +1153,12 @@ function validateReviewedCandidate({
       kind: "option",
       command: "task authority grant",
       name: "operation-digest",
+      source_task: "202607221849-NWVCAG",
+    },
+    {
+      kind: "option",
+      command: "task authority grant",
+      name: "remote",
       source_task: "202607221849-NWVCAG",
     },
     {

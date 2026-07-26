@@ -23,9 +23,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "5856ca2163a4973ffcf393fc70a0f34ec8b68b6c8079a64a0cb1cf9b534efaa4",
+    "surface_sha256": "ad0d45e920d24af843a41f490e7b142f4418a24c71c2b66ead0f0f660bf7aadd",
     "section_digests": {
-      "cli_topology": "74de8a5f8645c4daa8e214d61d6cce60b56a1266d5c668d66c2fca5be1eeb541",
+      "cli_topology": "8606be181fb1d7d39a3eda0cf7d9eb805089b512f1ae5756339f0917e1c805c5",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -359,13 +359,13 @@
         "202607260532-9M7RNH"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "74de8a5f8645c4daa8e214d61d6cce60b56a1266d5c668d66c2fca5be1eeb541",
+      "to_sha256": "8606be181fb1d7d39a3eda0cf7d9eb805089b512f1ae5756339f0917e1c805c5",
       "classification": "additive",
-      "summary": "Adds a read-only provider-conflict context packet, an explicit legacy protected-conflict adoption receipt command, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, a scoped side-effect authority grant with exact operation and state fingerprints, explicit cloud projection bootstrap/adoption controls on both sync routes, and explicit --remote opt-ins for task run and Hermes supervise so provider context remains request-scoped and local-first by default; no command or option is removed or mutated.",
+      "summary": "Adds a read-only provider-conflict context packet, an explicit legacy protected-conflict adoption receipt command, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, a scoped side-effect authority grant with exact operation and state fingerprints, and explicit --remote context preservation for grants derived from hosted routes, while keeping provider context request-scoped and local-first by default; no command or option is removed or mutated.",
       "evidence": {
         "command_count": { "from": 243, "to": 248 },
         "positional_count": { "from": 165, "to": 169 },
-        "option_count": { "from": 767, "to": 789 },
+        "option_count": { "from": 767, "to": 790 },
         "added_commands": [
           "integrate queue adopt-legacy-protected-conflict",
           "pr conflict-rework",
@@ -468,6 +468,12 @@
                 "name": "ttl-minutes",
                 "kind": "string",
                 "valueHint": "<1-60>"
+              },
+              {
+                "name": "remote",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
               }
             ]
           },
@@ -603,6 +609,13 @@
             "kind": "string",
             "valueHint": "<sha256>",
             "required": true
+          },
+          {
+            "command": "task authority grant",
+            "name": "remote",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
           },
           {
             "command": "task authority grant",
@@ -770,6 +783,12 @@
             "kind": "option",
             "command": "task authority grant",
             "name": "operation-digest",
+            "source_task": "202607221849-NWVCAG"
+          },
+          {
+            "kind": "option",
+            "command": "task authority grant",
+            "name": "remote",
             "source_task": "202607221849-NWVCAG"
           },
           {
