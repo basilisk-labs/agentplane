@@ -11,7 +11,7 @@ import {
 import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { renderTaskReadme } from "@agentplaneorg/core/tasks";
+import { parseTaskReadme, renderTaskReadme } from "@agentplaneorg/core/tasks";
 import {
   cleanGitEnv,
   captureStdIO,
@@ -33,9 +33,14 @@ import {
 
 const ACTIVE_TASK_ID = "202607260101-ABCD";
 const FOREIGN_TASK_ID = "202607260102-BCDE";
+const OTHER_TASK_ID = "202607260103-CDEF";
 const TODO_UPDATED_AT = "2026-07-26T00:00:00.000Z";
 const STARTED_AT = "2026-07-26T00:01:00.000Z";
 const START_COMMENT = "Start: preserve the foreign task lifecycle replica for guarded repair.";
+const VERIFIED_AT = "2026-07-26T00:02:00.000Z";
+const VERIFIED_NOTE = "Verified fixture checks for the guarded repair history.";
+const DONE_AT = "2026-07-26T00:03:00.000Z";
+const DONE_COMMENT = "Verified: close the guarded repair history fixture.";
 
 type ReplicaMode =
   | "start_ready"
@@ -48,15 +53,17 @@ type ReplicaMode =
 
 function taskReadme(opts: {
   taskId: string;
-  status: "TODO" | "DOING";
+  status: "TODO" | "DOING" | "DONE";
   revision: number;
   title?: string;
 }): string {
-  const started = opts.status === "DOING";
+  const started = opts.status !== "TODO";
+  const completed = opts.status === "DONE";
   return renderTaskReadme(
     {
       id: opts.taskId,
       title: opts.title ?? "Foreign task lifecycle replica",
+      result_summary: completed ? "Guarded fixture closure" : undefined,
       status: opts.status,
       priority: "med",
       owner: "CODER",
@@ -70,22 +77,62 @@ function taskReadme(opts: {
         updated_by: "ORCHESTRATOR",
         note: null,
       },
-      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
-      comments: started ? [{ author: "CODER", body: START_COMMENT }] : [],
+      verification: completed
+        ? {
+            state: "ok",
+            updated_at: VERIFIED_AT,
+            updated_by: "TESTER",
+            note: VERIFIED_NOTE,
+          }
+        : { state: "pending", updated_at: null, updated_by: null, note: null },
+      comments: started
+        ? completed
+          ? [
+              { author: "CODER", body: START_COMMENT },
+              { author: "CODER", body: DONE_COMMENT },
+            ]
+          : [{ author: "CODER", body: START_COMMENT }]
+        : [],
       events: started
-        ? [
-            {
-              type: "status",
-              at: STARTED_AT,
-              author: "CODER",
-              from: "TODO",
-              to: "DOING",
-              note: START_COMMENT,
-            },
-          ]
+        ? completed
+          ? [
+              {
+                type: "status",
+                at: STARTED_AT,
+                author: "CODER",
+                from: "TODO",
+                to: "DOING",
+                note: START_COMMENT,
+              },
+              {
+                type: "verify",
+                at: VERIFIED_AT,
+                author: "TESTER",
+                state: "ok",
+                note: VERIFIED_NOTE,
+              },
+              {
+                type: "status",
+                at: DONE_AT,
+                author: "CODER",
+                from: "DOING",
+                to: "DONE",
+                note: DONE_COMMENT,
+              },
+            ]
+          : [
+              {
+                type: "status",
+                at: STARTED_AT,
+                author: "CODER",
+                from: "TODO",
+                to: "DOING",
+                note: START_COMMENT,
+              },
+            ]
         : [],
       doc_version: 3,
-      doc_updated_at: started ? STARTED_AT : TODO_UPDATED_AT,
+      doc_updated_at: completed ? DONE_AT : started ? STARTED_AT : TODO_UPDATED_AT,
       doc_updated_by: started ? "CODER" : "ORCHESTRATOR",
       description: "Exercise guarded removal of a stale foreign lifecycle replica.",
       extensions: started
@@ -97,8 +144,40 @@ function taskReadme(opts: {
   );
 }
 
+function taskReadmeWithLifecycleSections(opts: {
+  taskId: string;
+  status: "TODO" | "DOING" | "DONE";
+  revision: number;
+  scope?: string;
+}): string {
+  const parsed = parseTaskReadme(taskReadme(opts));
+  const completed = opts.status === "DONE";
+  return renderTaskReadme(
+    {
+      ...parsed.frontmatter,
+      sections: {
+        Summary: "Stable historical task identity.",
+        Scope: opts.scope ?? "Stable guarded-repair scope.",
+        Plan: "Preserve the bounded historical repair contract.",
+        "Verify Steps": "Run the guarded repair fixture.",
+        Verification: completed
+          ? "Verified lifecycle evidence for the completed fixture."
+          : "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+        "Rollback Plan": "Restore the replica if the proof is not exact.",
+        Findings: completed ? "Completion finding may evolve." : "",
+      },
+    },
+    parsed.body,
+  );
+}
+
 async function git(root: string, args: string[]): Promise<void> {
   await execFileAsync("git", args, { cwd: root, env: cleanGitEnv() });
+}
+
+async function gitOutput(root: string, args: string[]): Promise<string> {
+  const { stdout } = await execFileAsync("git", args, { cwd: root, env: cleanGitEnv() });
+  return String(stdout).trim();
 }
 
 async function createFixture(mode: ReplicaMode): Promise<{
@@ -207,6 +286,62 @@ async function createFixture(mode: ReplicaMode): Promise<{
 
 type ForeignTaskReadmeReplicaFixture = Awaited<ReturnType<typeof createFixture>>;
 
+async function commitForeignReadme(
+  fixture: ForeignTaskReadmeReplicaFixture,
+  text: string,
+  message: string,
+): Promise<void> {
+  await mkdir(path.dirname(fixture.sourcePath), { recursive: true });
+  await writeFile(fixture.sourcePath, text, "utf8");
+  const relativePath = path.relative(fixture.foreignWorktree, fixture.sourcePath);
+  await git(fixture.foreignWorktree, ["add", "--", relativePath]);
+  await git(fixture.foreignWorktree, ["commit", "--no-verify", "-m", message]);
+}
+
+async function removeForeignReadme(
+  fixture: ForeignTaskReadmeReplicaFixture,
+  message: string,
+): Promise<void> {
+  const relativePath = path.relative(fixture.foreignWorktree, fixture.sourcePath);
+  await git(fixture.foreignWorktree, ["rm", "--", relativePath]);
+  await git(fixture.foreignWorktree, ["commit", "--no-verify", "-m", message]);
+}
+
+async function createHistoricalFixture(opts?: {
+  initialSnapshot?: "todo" | "missing";
+  sourceTaskId?: string;
+  lifecycleSections?: boolean;
+}): Promise<ForeignTaskReadmeReplicaFixture> {
+  const fixture = await createFixture("start_ready");
+  const sourceTaskId = opts?.sourceTaskId ?? FOREIGN_TASK_ID;
+  const createReadme = opts?.lifecycleSections ? taskReadmeWithLifecycleSections : taskReadme;
+  if (opts?.initialSnapshot !== "missing") {
+    await commitForeignReadme(
+      fixture,
+      createReadme({ taskId: sourceTaskId, status: "TODO", revision: 6 }),
+      "test: record foreign TODO snapshot",
+    );
+  }
+  await commitForeignReadme(
+    fixture,
+    createReadme({ taskId: sourceTaskId, status: "DOING", revision: 7 }),
+    "test: record foreign Start transition",
+  );
+  await commitForeignReadme(
+    fixture,
+    createReadme({ taskId: sourceTaskId, status: "DONE", revision: 9 }),
+    "test: record verified foreign completion",
+  );
+  if (opts?.lifecycleSections) {
+    await writeFile(
+      fixture.replicaPath,
+      createReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
+      "utf8",
+    );
+  }
+  return fixture;
+}
+
 async function replaceRegularFile(filePath: string, text: string): Promise<void> {
   const replacementPath = `${filePath}.replacement`;
   await writeFile(replacementPath, text, "utf8");
@@ -279,6 +414,28 @@ async function mutateReplicaAfterSourceRevalidation(opts: {
 
 async function targetContext(baseRoot: string, targetWorktree: string) {
   return loadCommandContext({ cwd: baseRoot, rootOverride: targetWorktree });
+}
+
+async function expectHistoricalRepairRejected(
+  fixture: ForeignTaskReadmeReplicaFixture,
+): Promise<void> {
+  const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+  await expect(
+    inspectForeignTaskReadmeReplicaRepair({
+      ctx,
+      activeTaskId: ACTIVE_TASK_ID,
+      taskWorktreePath: fixture.targetWorktree,
+      baseBranch: "main",
+    }),
+  ).resolves.toMatchObject({ state: "not_applicable" });
+  await expect(
+    applyForeignTaskReadmeReplicaRepair({
+      ctx,
+      activeTaskId: ACTIVE_TASK_ID,
+      baseBranch: "main",
+    }),
+  ).resolves.toMatchObject({ state: "skipped" });
+  await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
 }
 
 async function withUnavailableGh<T>(baseRoot: string, fn: () => Promise<T>): Promise<T> {
@@ -366,6 +523,223 @@ describe("foreign task README replica repair", () => {
   );
 
   it.each([
+    ["recorded TODO snapshot", undefined],
+    ["initial branch Start snapshot", "missing"],
+  ] as const)(
+    "removes a proven historical replica with a %s",
+    async (_description, initialSnapshot) => {
+      const fixture = await createHistoricalFixture({ initialSnapshot });
+      const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+
+      await expect(
+        inspectForeignTaskReadmeReplicaRepair({
+          ctx,
+          activeTaskId: ACTIVE_TASK_ID,
+          taskWorktreePath: fixture.targetWorktree,
+          baseBranch: "main",
+        }),
+      ).resolves.toMatchObject({
+        state: "eligible",
+        foreignTaskId: FOREIGN_TASK_ID,
+        proof: "historical_start_ready_replica",
+      });
+
+      await expect(
+        applyForeignTaskReadmeReplicaRepair({
+          ctx,
+          activeTaskId: ACTIVE_TASK_ID,
+          baseBranch: "main",
+        }),
+      ).resolves.toEqual({
+        state: "applied",
+        foreignTaskId: FOREIGN_TASK_ID,
+        proof: "historical_start_ready_replica",
+      });
+      await expect(readFile(fixture.replicaPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+      await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain('status: "DONE"');
+    },
+  );
+
+  it("accepts only lifecycle evidence changes between the historical Start and DONE bodies", async () => {
+    const fixture = await createHistoricalFixture({ lifecycleSections: true });
+    const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+
+    await expect(
+      applyForeignTaskReadmeReplicaRepair({
+        ctx,
+        activeTaskId: ACTIVE_TASK_ID,
+        baseBranch: "main",
+      }),
+    ).resolves.toMatchObject({
+      state: "applied",
+      proof: "historical_start_ready_replica",
+    });
+    await expect(readFile(fixture.replicaPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("fails closed when the historical TODO replica has altered semantic fields", async () => {
+    const fixture = await createHistoricalFixture();
+    await writeFile(
+      fixture.replicaPath,
+      taskReadme({
+        taskId: FOREIGN_TASK_ID,
+        status: "TODO",
+        revision: 6,
+        title: "Altered foreign task semantics",
+      }),
+      "utf8",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when the historical TODO replica body is altered", async () => {
+    const fixture = await createHistoricalFixture();
+    await writeFile(
+      fixture.replicaPath,
+      `${taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 })}\nChanged body.\n`,
+      "utf8",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when a later DONE README changes an immutable task body section", async () => {
+    const fixture = await createHistoricalFixture({ lifecycleSections: true });
+    await commitForeignReadme(
+      fixture,
+      taskReadmeWithLifecycleSections({
+        taskId: FOREIGN_TASK_ID,
+        status: "DONE",
+        revision: 10,
+        scope: "Changed semantic scope after Start.",
+      }),
+      "test: change immutable historical task scope",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when no exact historical TODO revision matches the replica", async () => {
+    const fixture = await createHistoricalFixture();
+    await writeFile(
+      fixture.replicaPath,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 5 }),
+      "utf8",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when the branch skipped the TODO-to-DOING Start transition", async () => {
+    const fixture = await createFixture("start_ready");
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
+      "test: record foreign TODO snapshot",
+    );
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DONE", revision: 9 }),
+      "test: skip foreign Start transition",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when the recorded Start transition is forged", async () => {
+    const fixture = await createFixture("start_ready");
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
+      "test: record foreign TODO snapshot",
+    );
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 }).replaceAll(
+        START_COMMENT,
+        "Forged lifecycle transition.",
+      ),
+      "test: record forged foreign Start transition",
+    );
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DONE", revision: 9 }),
+      "test: record verified foreign completion",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed for ambiguous historical Start transitions", async () => {
+    const fixture = await createFixture("start_ready");
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
+      "test: record foreign TODO snapshot",
+    );
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 }),
+      "test: record first foreign Start transition",
+    );
+    await removeForeignReadme(fixture, "test: remove foreign task history path");
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 }),
+      "test: record second foreign Start transition",
+    );
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DONE", revision: 9 }),
+      "test: record verified foreign completion",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when a valid transition exists only on an unrelated rebased history", async () => {
+    const fixture = await createFixture("start_ready");
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
+      "test: record old foreign TODO snapshot",
+    );
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 }),
+      "test: record old foreign Start transition",
+    );
+    await git(fixture.foreignWorktree, ["branch", "scratch-valid-foreign-history"]);
+    await git(fixture.foreignWorktree, ["reset", "--hard", "main"]);
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 8 }),
+      "test: record rebased foreign lifecycle",
+    );
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DONE", revision: 10 }),
+      "test: record rebased foreign completion",
+    );
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when the authoritative branch path contains a different task", async () => {
+    const fixture = await createHistoricalFixture({ sourceTaskId: OTHER_TASK_ID });
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it("fails closed when multiple task branches claim the foreign task", async () => {
+    const fixture = await createHistoricalFixture();
+    await git(fixture.foreignWorktree, ["branch", `task/${FOREIGN_TASK_ID}/ambiguous-history`]);
+
+    await expectHistoricalRepairRejected(fixture);
+  });
+
+  it.each([
     ["contents change", "contents"],
     ["regular file replacement", "replacement"],
     ["removal", "missing"],
@@ -373,7 +747,7 @@ describe("foreign task README replica repair", () => {
   ] as const)(
     "leaves the replica intact when the authoritative source has a %s after proof",
     async (_description, mutation) => {
-      const fixture = await createFixture("start_ready");
+      const fixture = await createHistoricalFixture();
       const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
 
       await expect(
@@ -394,7 +768,8 @@ describe("foreign task README replica repair", () => {
       if (mutation === "missing") {
         await expect(lstat(fixture.sourcePath)).rejects.toMatchObject({ code: "ENOENT" });
       } else if (mutation === "symlink") {
-        expect((await lstat(fixture.sourcePath)).isSymbolicLink()).toBe(true);
+        const sourceStats = await lstat(fixture.sourcePath);
+        expect(sourceStats.isSymbolicLink()).toBe(true);
       } else {
         await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain("Source");
       }
@@ -409,7 +784,7 @@ describe("foreign task README replica repair", () => {
   ] as const)(
     "does not unlink the replica when it has a %s after source revalidation",
     async (_description, mutation) => {
-      const fixture = await createFixture("start_ready");
+      const fixture = await createHistoricalFixture();
       const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
 
       await expect(
@@ -429,15 +804,49 @@ describe("foreign task README replica repair", () => {
       if (mutation === "missing") {
         await expect(lstat(fixture.replicaPath)).rejects.toMatchObject({ code: "ENOENT" });
       } else if (mutation === "symlink") {
-        expect((await lstat(fixture.replicaPath)).isSymbolicLink()).toBe(true);
+        const replicaStats = await lstat(fixture.replicaPath);
+        expect(replicaStats.isSymbolicLink()).toBe(true);
       } else {
         await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
       }
     },
   );
 
-  it("lets the current CLI repair an older task worktree selected by --root", async () => {
-    const fixture = await createFixture("start_ready");
+  it("does not unlink a historical replica after the authoritative branch head advances", async () => {
+    const fixture = await createHistoricalFixture();
+    const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+
+    await expect(
+      applyForeignTaskReadmeReplicaRepair({
+        ctx,
+        activeTaskId: ACTIVE_TASK_ID,
+        baseBranch: "main",
+        after_source_revalidation: async () => {
+          const advancedHead = await gitOutput(fixture.foreignWorktree, [
+            "commit-tree",
+            "HEAD^{tree}",
+            "-p",
+            "HEAD",
+            "-m",
+            "test: advance authoritative branch after proof",
+          ]);
+          await git(fixture.foreignWorktree, [
+            "update-ref",
+            `refs/heads/task/${FOREIGN_TASK_ID}/foreign`,
+            advancedHead,
+            "HEAD",
+          ]);
+        },
+      }),
+    ).resolves.toEqual({
+      state: "skipped",
+      reason: "authoritative_branch_changed_before_remove",
+    });
+    await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
+  });
+
+  it("dry-runs and then repairs a proven historical worktree selected by --root", async () => {
+    const fixture = await createHistoricalFixture();
     const routeIo = captureStdIO();
     try {
       const routeCode = await runCli([
@@ -492,6 +901,30 @@ describe("foreign task README replica repair", () => {
         ]);
       } finally {
         wrongRootIo.restore();
+      }
+      await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
+
+      const dryRunIo = captureStdIO();
+      try {
+        expect(
+          await runCli([
+            "flow",
+            "repair",
+            ACTIVE_TASK_ID,
+            "--dry-run",
+            "--json",
+            "--root",
+            fixture.targetWorktree,
+          ]),
+        ).toBe(0);
+        const dryRun = JSON.parse(dryRunIo.stdout) as {
+          repair_plan: { code: string }[];
+          applied: unknown[];
+        };
+        expect(dryRun.repair_plan).toMatchObject([{ code: "repair_foreign_task_readme_replica" }]);
+        expect(dryRun.applied).toEqual([]);
+      } finally {
+        dryRunIo.restore();
       }
       await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
 

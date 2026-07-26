@@ -1,9 +1,7 @@
-import { createHash } from "node:crypto";
 import { unlink } from "node:fs/promises";
 import path from "node:path";
 
-import { findWorktreeForBranch, GitContext } from "@agentplaneorg/core/git";
-import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
+import { findWorktreeForBranch, GitContext, toGitPath } from "@agentplaneorg/core/git";
 
 import { validateTaskId } from "../../backends/task-backend/shared/id.js";
 import {
@@ -12,12 +10,23 @@ import {
   readContainedStableTextNoFollow,
   type ContainedPathChainIdentity,
 } from "../../shared/contained-stable-file.js";
-import { isRecord } from "../../shared/guards.js";
 import { resolveTaskBranchFromContext, type CommandContext } from "./task-backend.js";
+import {
+  assertHistoricalProofUnchanged,
+  proveHistoricalStartReadyReplica,
+  type HistoricalForeignTaskReadmeReplicaProof,
+} from "./task-worktree-foreign-artifact-history-proof.js";
+import {
+  contentSha256,
+  validStartReadyTransition,
+} from "./task-worktree-foreign-artifact-lifecycle-proof.js";
 
 const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
 
-export type ForeignTaskReadmeReplicaProof = "byte_identical" | "start_ready_replica";
+export type ForeignTaskReadmeReplicaProof =
+  | "byte_identical"
+  | "start_ready_replica"
+  | "historical_start_ready_replica";
 
 type StableTextProof = {
   path: string;
@@ -27,6 +36,11 @@ type StableTextProof = {
 
 type AuthoritativeSourceProof = StableTextProof;
 type ForeignTaskReadmeReplicaPathProof = StableTextProof;
+
+type ResolvedAuthoritativeSource = {
+  worktreePath: string;
+  branch: string | null;
+};
 
 type ForeignTaskReadmeReplicaRepairEligible = {
   state: "eligible";
@@ -50,6 +64,7 @@ type InspectedForeignTaskReadmeReplicaRepair =
   | (ForeignTaskReadmeReplicaRepairEligible & {
       authoritativeSource: AuthoritativeSourceProof;
       replica: ForeignTaskReadmeReplicaPathProof;
+      historicalProof: HistoricalForeignTaskReadmeReplicaProof | null;
     })
   | {
       state: "not_applicable";
@@ -66,14 +81,6 @@ export type ForeignTaskReadmeReplicaApplyResult =
       state: "skipped";
       reason: string;
     };
-
-function canonicalEqual(left: unknown, right: unknown): boolean {
-  return JSON.stringify(canonicalizeJson(left)) === JSON.stringify(canonicalizeJson(right));
-}
-
-function contentSha256(value: string): string {
-  return createHash("sha256").update(value, "utf8").digest("hex");
-}
 
 function sameContainedPathChain(
   left: ContainedPathChainIdentity,
@@ -123,153 +130,6 @@ function foreignTaskIdFromReplicaPath(opts: {
   }
 }
 
-function recordArray(value: unknown): Record<string, unknown>[] | null {
-  if (!Array.isArray(value) || !value.every(isRecord)) return null;
-  return value;
-}
-
-function requiredString(value: unknown): string | null {
-  return typeof value === "string" && value.trim().length > 0 ? value : null;
-}
-
-function exactKeys(value: Record<string, unknown>, keys: readonly string[]): boolean {
-  const actual = Object.keys(value).toSorted((left, right) => left.localeCompare(right));
-  const expected = [...keys].toSorted((left, right) => left.localeCompare(right));
-  return actual.length === expected.length && actual.every((key, index) => key === expected[index]);
-}
-
-function isWorkflowRouteBaseline(value: unknown): boolean {
-  return (
-    isRecord(value) &&
-    exactKeys(value, ["version", "start_head_sha"]) &&
-    value.version === 1 &&
-    (value.start_head_sha === null || requiredString(value.start_head_sha) !== null)
-  );
-}
-
-function withoutStartTransitionFields(
-  frontmatter: Record<string, unknown>,
-): Record<string, unknown> {
-  const result = { ...frontmatter };
-  delete result.status;
-  delete result.revision;
-  delete result.comments;
-  delete result.events;
-  delete result.doc_updated_at;
-  delete result.doc_updated_by;
-  delete result.extensions;
-  return result;
-}
-
-function extensionFieldsWithoutBaseline(value: unknown): Record<string, unknown> | null {
-  if (value === undefined) return {};
-  if (!isRecord(value)) return null;
-  const result = { ...value };
-  delete result.workflow_route_baseline;
-  return result;
-}
-
-function validStartReadyTransition(opts: {
-  foreignTaskId: string;
-  replicaText: string;
-  sourceText: string;
-}): boolean {
-  let replica;
-  let source;
-  try {
-    replica = parseTaskReadme(opts.replicaText);
-    source = parseTaskReadme(opts.sourceText);
-  } catch {
-    return false;
-  }
-  if (replica.body !== source.body) return false;
-
-  const replicaFrontmatter = replica.frontmatter;
-  const sourceFrontmatter = source.frontmatter;
-  if (
-    replicaFrontmatter.id !== opts.foreignTaskId ||
-    sourceFrontmatter.id !== opts.foreignTaskId ||
-    replicaFrontmatter.status !== "TODO" ||
-    sourceFrontmatter.status !== "DOING" ||
-    typeof replicaFrontmatter.revision !== "number" ||
-    typeof sourceFrontmatter.revision !== "number" ||
-    sourceFrontmatter.revision !== replicaFrontmatter.revision + 1
-  ) {
-    return false;
-  }
-
-  if (
-    !canonicalEqual(
-      withoutStartTransitionFields(replicaFrontmatter),
-      withoutStartTransitionFields(sourceFrontmatter),
-    )
-  ) {
-    return false;
-  }
-
-  const replicaExtensions = extensionFieldsWithoutBaseline(replicaFrontmatter.extensions);
-  const sourceExtensions = extensionFieldsWithoutBaseline(sourceFrontmatter.extensions);
-  if (
-    !replicaExtensions ||
-    !sourceExtensions ||
-    !canonicalEqual(replicaExtensions, sourceExtensions)
-  ) {
-    return false;
-  }
-  const replicaBaseline = isRecord(replicaFrontmatter.extensions)
-    ? replicaFrontmatter.extensions.workflow_route_baseline
-    : undefined;
-  const sourceBaseline = isRecord(sourceFrontmatter.extensions)
-    ? sourceFrontmatter.extensions.workflow_route_baseline
-    : undefined;
-  if (
-    !isWorkflowRouteBaseline(sourceBaseline) ||
-    (replicaBaseline !== undefined && !canonicalEqual(replicaBaseline, sourceBaseline))
-  ) {
-    return false;
-  }
-
-  const replicaComments = recordArray(replicaFrontmatter.comments);
-  const sourceComments = recordArray(sourceFrontmatter.comments);
-  const replicaEvents = recordArray(replicaFrontmatter.events);
-  const sourceEvents = recordArray(sourceFrontmatter.events);
-  if (!replicaComments || !sourceComments || !replicaEvents || !sourceEvents) return false;
-  if (
-    sourceComments.length !== replicaComments.length + 1 ||
-    sourceEvents.length !== replicaEvents.length + 1 ||
-    !canonicalEqual(replicaComments, sourceComments.slice(0, -1)) ||
-    !canonicalEqual(replicaEvents, sourceEvents.slice(0, -1))
-  ) {
-    return false;
-  }
-
-  const comment = sourceComments.at(-1);
-  const event = sourceEvents.at(-1);
-  const eventAt = event && requiredString(event.at);
-  const eventAuthor = event && requiredString(event.author);
-  const commentBody = comment && requiredString(comment.body);
-  if (
-    !comment ||
-    !event ||
-    !exactKeys(comment, ["author", "body"]) ||
-    !exactKeys(event, ["type", "at", "author", "from", "to", "note"]) ||
-    !requiredString(comment.author) ||
-    !commentBody ||
-    !commentBody.startsWith("Start:") ||
-    event.type !== "status" ||
-    event.from !== "TODO" ||
-    event.to !== "DOING" ||
-    event.note !== commentBody ||
-    !eventAt ||
-    !eventAuthor ||
-    sourceFrontmatter.doc_updated_at !== eventAt ||
-    sourceFrontmatter.doc_updated_by !== eventAuthor
-  ) {
-    return false;
-  }
-  return true;
-}
-
 export function classifyForeignTaskReadmeReplicaText(opts: {
   foreignTaskId: string;
   replicaText: string;
@@ -284,7 +144,7 @@ async function resolveAuthoritativeSource(opts: {
   foreignTaskId: string;
   worktreePath: string;
   baseBranch: string | null;
-}): Promise<string | null> {
+}): Promise<ResolvedAuthoritativeSource | null> {
   const foreignBranch = await resolveTaskBranchFromContext({
     ctx: opts.ctx,
     taskId: opts.foreignTaskId,
@@ -298,7 +158,7 @@ async function resolveAuthoritativeSource(opts: {
       : null;
   if (!sourceWorktree || path.resolve(sourceWorktree) === path.resolve(opts.worktreePath))
     return null;
-  return sourceWorktree;
+  return { worktreePath: sourceWorktree, branch: foreignBranch };
 }
 
 function onlyForeignReplicaPath(opts: {
@@ -361,18 +221,20 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
     return { state: "not_applicable", reason: "foreign_replica_not_regular" };
   }
 
-  const sourceWorktree = await resolveAuthoritativeSource({
+  const authoritativeSource = await resolveAuthoritativeSource({
     ctx: opts.ctx,
     foreignTaskId: candidate.foreignTaskId,
     worktreePath,
     baseBranch: opts.baseBranch,
   });
-  if (!sourceWorktree)
+  if (!authoritativeSource)
     return { state: "not_applicable", reason: "authoritative_source_unavailable" };
 
+  const workflowDir = normalizedRelativePath(opts.ctx.config.paths.workflow_dir);
+  const gitPath = toGitPath(`${workflowDir}/${candidate.foreignTaskId}/README.md`);
   const sourcePath = path.join(
-    sourceWorktree,
-    ...normalizedRelativePath(opts.ctx.config.paths.workflow_dir).split("/"),
+    authoritativeSource.worktreePath,
+    ...workflowDir.split("/"),
     candidate.foreignTaskId,
     "README.md",
   );
@@ -380,7 +242,7 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
   let sourceText: string;
   try {
     sourceIdentity = await captureContainedPathChainIdentity({
-      repository_root: sourceWorktree,
+      repository_root: authoritativeSource.worktreePath,
       file_path: sourcePath,
       label: "authoritative foreign task README",
     });
@@ -388,7 +250,7 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
       return { state: "not_applicable", reason: "authoritative_source_missing" };
     }
     sourceText = await readContainedStableTextNoFollow({
-      repository_root: sourceWorktree,
+      repository_root: authoritativeSource.worktreePath,
       file_path: sourcePath,
       label: "authoritative foreign task README",
       max_bytes: TASK_README_MAX_BYTES,
@@ -397,11 +259,23 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
     return { state: "not_applicable", reason: "authoritative_source_not_regular" };
   }
 
-  const proof = classifyForeignTaskReadmeReplicaText({
+  let proof = classifyForeignTaskReadmeReplicaText({
     foreignTaskId: candidate.foreignTaskId,
     replicaText,
     sourceText,
   });
+  let historicalProof: HistoricalForeignTaskReadmeReplicaProof | null = null;
+  if (!proof) {
+    historicalProof = await proveHistoricalStartReadyReplica({
+      ctx: opts.ctx,
+      foreignTaskId: candidate.foreignTaskId,
+      foreignBranch: authoritativeSource.branch,
+      gitPath,
+      replicaText,
+      sourceText,
+    });
+    if (historicalProof) proof = "historical_start_ready_replica";
+  }
   if (!proof) return { state: "not_applicable", reason: "foreign_replica_proof_failed" };
 
   const afterStatus = new GitContext({ gitRoot: worktreePath });
@@ -426,6 +300,13 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
   } catch {
     return { state: "not_applicable", reason: "foreign_replica_changed" };
   }
+  if (historicalProof) {
+    try {
+      await assertHistoricalProofUnchanged(historicalProof, opts.ctx.resolvedProject.gitRoot);
+    } catch {
+      return { state: "not_applicable", reason: "foreign_replica_proof_failed" };
+    }
+  }
   return {
     state: "eligible",
     activeTaskId: opts.activeTaskId,
@@ -433,6 +314,7 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
     worktreePath,
     replicaPath,
     proof,
+    historicalProof,
     replica: {
       path: replicaIdentity.file_path,
       identity: replicaIdentity,
@@ -457,6 +339,7 @@ export async function inspectForeignTaskReadmeReplicaRepair(opts: {
   const {
     authoritativeSource: _authoritativeSource,
     replica: _replica,
+    historicalProof: _historicalProof,
     ...publicInspection
   } = inspection;
   return publicInspection;
@@ -534,7 +417,32 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
   } catch {
     return { state: "skipped", reason: "authoritative_source_changed_before_remove" };
   }
+  if (inspection.historicalProof) {
+    try {
+      await assertHistoricalProofUnchanged(
+        inspection.historicalProof,
+        opts.ctx.resolvedProject.gitRoot,
+      );
+    } catch {
+      return { state: "skipped", reason: "authoritative_branch_changed_before_remove" };
+    }
+  }
   await opts.after_source_revalidation?.();
+  try {
+    await assertAuthoritativeSourceProofUnchanged(inspection.authoritativeSource);
+  } catch {
+    return { state: "skipped", reason: "authoritative_source_changed_before_remove" };
+  }
+  if (inspection.historicalProof) {
+    try {
+      await assertHistoricalProofUnchanged(
+        inspection.historicalProof,
+        opts.ctx.resolvedProject.gitRoot,
+      );
+    } catch {
+      return { state: "skipped", reason: "authoritative_branch_changed_before_remove" };
+    }
+  }
   try {
     await assertForeignTaskReadmeReplicaProofUnchanged(inspection.replica);
   } catch {

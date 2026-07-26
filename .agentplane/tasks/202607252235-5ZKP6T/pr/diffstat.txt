@@ -7,8 +7,10 @@
  .../src/commands/shared/route-decision-blockers.ts |  41 +-
  .../route-decision-blockers.worktree.test.ts       |  15 +
  .../src/commands/shared/route-decision.ts          |  15 +
- .../task-worktree-foreign-artifact-repair.test.ts  | 557 +++++++++++++++++++++
- .../task-worktree-foreign-artifact-repair.ts       | 553 ++++++++++++++++++++
+ ...task-worktree-foreign-artifact-history-proof.ts | 205 +++++
+ ...sk-worktree-foreign-artifact-lifecycle-proof.ts | 286 ++++++
+ .../task-worktree-foreign-artifact-repair.test.ts  | 990 +++++++++++++++++++++
+ .../task-worktree-foreign-artifact-repair.ts       | 461 ++++++++++
  .../commands/shared/workflow-operation-effects.ts  |   1 +
  .../commands/shared/workflow-operation-prefix.ts   |   1 +
  .../shared/workflow-operation-projection.ts        |   3 +
@@ -17,4 +19,4 @@
  .../commands/shared/workflow-step-fingerprint.ts   |   1 +
  .../src/commands/shared/workflow-step.test.ts      |   4 +
  .../src/commands/shared/workflow-step.ts           |  19 +
- 19 files changed, 1333 insertions(+), 42 deletions(-)
+ 21 files changed, 2165 insertions(+), 42 deletions(-)

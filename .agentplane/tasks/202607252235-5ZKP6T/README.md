@@ -4,7 +4,7 @@ title: "Prevent foreign task artifacts in branch_pr worktrees"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ verify:
   - "git diff --check"
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-25T22:41:52.446Z"
+  updated_at: "2026-07-26T00:20:57.688Z"
   updated_by: "ORCHESTRATOR"
-  note: null
+  note: "Re-approved under the user's persistent corrective-scope authorization: bounded historical foreign-README proof and expanded fail-closed verification for the observed XBHBE5 to THDN0G lifecycle shape."
 verification:
   state: "needs_rework"
   updated_at: "2026-07-26T00:08:51.298Z"
@@ -84,7 +84,7 @@ events:
     state: "needs_rework"
     note: "Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a sibling README to be materialized; that contradicts the active-task-only contract and would fail CI."
 doc_version: 3
-doc_updated_at: "2026-07-26T00:08:52.105Z"
+doc_updated_at: "2026-07-26T00:20:40.587Z"
 doc_updated_by: "CODER"
 description: "Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion."
 sections:
@@ -95,12 +95,8 @@ sections:
   Scope: |-
     - In scope: Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion.
     - Out of scope: unrelated refactors not required for "Prevent foreign task artifacts in branch_pr worktrees".
-  Plan: "1. Trace branch_pr work-start materialization and the task-worktree-dirty route with an isolated fixture. 2. Make work start materialize and hand off only the active task artifact; preserve backend/branch-snapshot resolution for other tasks. 3. Extend the formal flow-repair route with a deterministic, guarded repair for a foreign untracked task README replica. Permit removal only when the path is a regular untracked README under a foreign valid task ID, there are no other dirty paths, and it is proven either byte-identical to the authoritative source or a recognized lifecycle replica: immutable and semantic task fields match, and the only delta is the exact allowed start-ready transition. Reject missing, modified, symlinked, active-task, unknown, or mixed artifacts. 4. Add focused regression tests for prevention, safe repair, lifecycle-replica repair, and fail-closed cases; keep all user and unrelated artifacts untouched. 5. Add this corrective task to the alpha.2 fan-in and v0.7 roadmap, preserving existing SNV and THDN fan-in changes, then run focused tests, typecheck, lint, lifecycle invariants, routing check, and diff check. 6. Complete branch_pr verification, quality review, hosted checks, and integration."
-  Verify Steps: |-
-    1. Run the focused work-start and foreign-replica test files. Expected: only the active task artifact is materialized, byte-identical and exact start-ready replicas are removable, and modified, missing, symlinked, active-task, mixed, and wrong-root cases fail closed.
-    2. Run task next-action and flow repair from a current checkout with --root pointing to the older target worktree. Expected: the route emits flow repair and safe-apply removes only the proven foreign README.
-    3. Confirm the alpha.2 gate depends on SNV847, THDN0G, and 5ZKP6T, and the v0.7 roadmap lists both corrective leaves.
-    4. Run typecheck, core lint, lifecycle invariants, policy routing, and diff checks. Expected: all pass without unrelated artifacts.
+  Plan: "1. Preserve active-task-only work-start materialization and all existing TOCTOU protections. 2. Extend deterministic repair only for exactly one regular untracked foreign README in an otherwise clean task worktree; preserve the existing byte-identical and immediate start-ready proofs. 3. Add a fail-closed historical proof that reads only authoritative task branch history: the replica must exactly match a known same-task TODO revision N snapshot; its immediately succeeding authoritative README must be the exact TODO-to-DOING revision N+1 Start transition; the current source must be a later same-task lifecycle state with the same immutable identity and body. Revalidate authoritative branch head, source path-chain identity and content, and replica identity and content immediately before unlink. 4. Model the observed XBHBE5 and THDN0G TODO-to-DOING-to-DONE shape without hardcoding workspace-specific paths; reject ambiguous, missing, or rebased history, changed semantic fields or body, skipped or forged transitions, source or replica race, replacement or symlink, active-task or mixed worktree, and wrong root. 5. Ensure dry-run emits no mutation and safe-apply deletes only the proven replica. 6. Keep alpha.2 and roadmap evidence, run focused and CLI-core safety checks, then repeat independent verification, EVALUATOR review, hosted checks, and normal branch_pr integration."
+  Verify Steps: "1. Run the focused work-start, foreign-replica, and CLI-core worktree-runtime suites. Expected: only the active task README is materialized and sibling task queries still work. 2. Add an authoritative-branch-history fixture matching the observed shape: foreign TODO revision N, direct valid Start transition to DOING revision N+1, then current verified or DONE README for the same immutable task/body. Expected: flow repair dry-run with --root emits the repair without mutation, and safe-apply deletes only that proven replica. 3. Prove fail-closed behavior for modified semantic fields or body, no matching historical blob, no direct TODO-to-DOING Start transition, skipped, forged, ambiguous, or rebased history, unavailable or non-regular current source, active-task or mixed worktree, wrong root, and source or replica mutation, replacement, removal, or symlink substitution after inspection. Expected: no deletion. 4. Run the focused suites, bun run typecheck, bun run lint:core, bun run lifecycle:invariants, node .agentplane/policy/check-routing.mjs, agentplane doctor, and git diff --check. 5. Confirm the alpha.2 gate depends on SNV847, THDN0G, and 5ZKP6T and the v0.7 roadmap lists both corrective leaves."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-25T23:29:57.587Z — VERIFY — needs_rework
@@ -209,6 +205,10 @@ sections:
     - Observation: packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts:210 asserts the sibling task README exists after work start, although this task intentionally stops foreign task artifact materialization.
       Impact: The relevant cli-core suite fails 1/16 and leaves the new safety invariant without a matching runtime regression assertion.
       Resolution: Update the runtime test to assert the sibling README is absent while sibling task queries still work; rerun the focused and cli-core suites.
+
+    - Observation: The real XBHBE5 contamination is an exact historical THDN0G TODO README while the authoritative THDN0G worktree has advanced through DOING to DONE; the current immediate-replica classifier returns no proof.
+      Impact: The repair remains fail-closed but cannot restore the actual blocked XBH worktree, so the approved recovery objective is incomplete.
+      Resolution: Re-approved a bounded historical proof contract: accept only an exact branch-history TODO snapshot with an immediate valid Start transition and a later same-task authoritative lifecycle state; cover the real shape and adversarial negative cases before any safe apply.
 extensions:
   workflow_route_baseline:
     start_head_sha: "220c7f110c07a14b2b055003cd338ad4c1c3503e"
@@ -228,14 +228,11 @@ Stop work start from materializing foreign untracked task artifacts into a task 
 
 ## Plan
 
-1. Trace branch_pr work-start materialization and the task-worktree-dirty route with an isolated fixture. 2. Make work start materialize and hand off only the active task artifact; preserve backend/branch-snapshot resolution for other tasks. 3. Extend the formal flow-repair route with a deterministic, guarded repair for a foreign untracked task README replica. Permit removal only when the path is a regular untracked README under a foreign valid task ID, there are no other dirty paths, and it is proven either byte-identical to the authoritative source or a recognized lifecycle replica: immutable and semantic task fields match, and the only delta is the exact allowed start-ready transition. Reject missing, modified, symlinked, active-task, unknown, or mixed artifacts. 4. Add focused regression tests for prevention, safe repair, lifecycle-replica repair, and fail-closed cases; keep all user and unrelated artifacts untouched. 5. Add this corrective task to the alpha.2 fan-in and v0.7 roadmap, preserving existing SNV and THDN fan-in changes, then run focused tests, typecheck, lint, lifecycle invariants, routing check, and diff check. 6. Complete branch_pr verification, quality review, hosted checks, and integration.
+1. Preserve active-task-only work-start materialization and all existing TOCTOU protections. 2. Extend deterministic repair only for exactly one regular untracked foreign README in an otherwise clean task worktree; preserve the existing byte-identical and immediate start-ready proofs. 3. Add a fail-closed historical proof that reads only authoritative task branch history: the replica must exactly match a known same-task TODO revision N snapshot; its immediately succeeding authoritative README must be the exact TODO-to-DOING revision N+1 Start transition; the current source must be a later same-task lifecycle state with the same immutable identity and body. Revalidate authoritative branch head, source path-chain identity and content, and replica identity and content immediately before unlink. 4. Model the observed XBHBE5 and THDN0G TODO-to-DOING-to-DONE shape without hardcoding workspace-specific paths; reject ambiguous, missing, or rebased history, changed semantic fields or body, skipped or forged transitions, source or replica race, replacement or symlink, active-task or mixed worktree, and wrong root. 5. Ensure dry-run emits no mutation and safe-apply deletes only the proven replica. 6. Keep alpha.2 and roadmap evidence, run focused and CLI-core safety checks, then repeat independent verification, EVALUATOR review, hosted checks, and normal branch_pr integration.
 
 ## Verify Steps
 
-1. Run the focused work-start and foreign-replica test files. Expected: only the active task artifact is materialized, byte-identical and exact start-ready replicas are removable, and modified, missing, symlinked, active-task, mixed, and wrong-root cases fail closed.
-2. Run task next-action and flow repair from a current checkout with --root pointing to the older target worktree. Expected: the route emits flow repair and safe-apply removes only the proven foreign README.
-3. Confirm the alpha.2 gate depends on SNV847, THDN0G, and 5ZKP6T, and the v0.7 roadmap lists both corrective leaves.
-4. Run typecheck, core lint, lifecycle invariants, policy routing, and diff checks. Expected: all pass without unrelated artifacts.
+1. Run the focused work-start, foreign-replica, and CLI-core worktree-runtime suites. Expected: only the active task README is materialized and sibling task queries still work. 2. Add an authoritative-branch-history fixture matching the observed shape: foreign TODO revision N, direct valid Start transition to DOING revision N+1, then current verified or DONE README for the same immutable task/body. Expected: flow repair dry-run with --root emits the repair without mutation, and safe-apply deletes only that proven replica. 3. Prove fail-closed behavior for modified semantic fields or body, no matching historical blob, no direct TODO-to-DOING Start transition, skipped, forged, ambiguous, or rebased history, unavailable or non-regular current source, active-task or mixed worktree, wrong root, and source or replica mutation, replacement, removal, or symlink substitution after inspection. Expected: no deletion. 4. Run the focused suites, bun run typecheck, bun run lint:core, bun run lifecycle:invariants, node .agentplane/policy/check-routing.mjs, agentplane doctor, and git diff --check. 5. Confirm the alpha.2 gate depends on SNV847, THDN0G, and 5ZKP6T and the v0.7 roadmap lists both corrective leaves.
 
 ## Verification
 
@@ -350,3 +347,7 @@ DecisionContextRef:
 - Observation: packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts:210 asserts the sibling task README exists after work start, although this task intentionally stops foreign task artifact materialization.
   Impact: The relevant cli-core suite fails 1/16 and leaves the new safety invariant without a matching runtime regression assertion.
   Resolution: Update the runtime test to assert the sibling README is absent while sibling task queries still work; rerun the focused and cli-core suites.
+
+- Observation: The real XBHBE5 contamination is an exact historical THDN0G TODO README while the authoritative THDN0G worktree has advanced through DOING to DONE; the current immediate-replica classifier returns no proof.
+  Impact: The repair remains fail-closed but cannot restore the actual blocked XBH worktree, so the approved recovery objective is incomplete.
+  Resolution: Re-approved a bounded historical proof contract: accept only an exact branch-history TODO snapshot with an immediate valid Start transition and a later same-task authoritative lifecycle state; cover the real shape and adversarial negative cases before any safe apply.
