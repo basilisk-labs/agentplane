@@ -2,13 +2,17 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
+import {
+  prepareAgentWorkOrder,
+  requirePreparedAgentWorkOrder,
+} from "../../runner/usecases/agent-work-order.js";
 import {
   deriveRouteOperatorGuidance,
   routeRunnerContextIsRelevant,
 } from "../shared/route-guidance.js";
+import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { RouteExecutionPacket } from "../shared/route-oracle.js";
-import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import type { CommandContext } from "../shared/task-backend.js";
 
 import { currentAgentplaneCommand } from "./hermes-environment.js";
 export {
@@ -106,9 +110,7 @@ async function runnerVisibilityPacket(opts: {
   }
 }
 
-export function routeNeedsRunnerProjection(
-  decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
-): boolean {
+export function routeNeedsRunnerProjection(decision: TaskRouteDecision): boolean {
   return routeRunnerContextIsRelevant(deriveRouteOperatorGuidance(decision));
 }
 
@@ -119,14 +121,17 @@ export async function routePacket(opts: {
   taskId: string;
   includeRemote: boolean;
 }) {
-  const fullTask = await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.taskId });
-  const decision = await buildTaskRouteDecision({
-    ctx: opts.ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    taskId: opts.taskId,
-    includeRemote: opts.includeRemote,
-  });
+  const preparedWorkOrder = requirePreparedAgentWorkOrder(
+    await prepareAgentWorkOrder({
+      command_ctx: opts.ctx,
+      cwd: opts.cwd,
+      root_override: opts.rootOverride,
+      task_id: opts.taskId,
+      include_remote: opts.includeRemote,
+    }),
+  );
+  const fullTask = preparedWorkOrder.task_envelope.task.data;
+  const decision = preparedWorkOrder.route_decision;
   const shouldProjectRunner = routeNeedsRunnerProjection(decision) || Boolean(fullTask.runner);
   const runner = shouldProjectRunner
     ? await runnerVisibilityPacket({
@@ -162,6 +167,8 @@ export async function routePacket(opts: {
     runner,
     terminal,
     projection_boundary: projectionBoundary,
+    work_order: preparedWorkOrder.work_order,
+    work_order_preparation: preparedWorkOrder.preparation,
     hermes_comment_projection: {
       schema: "agentplane.hermes.lifecycle-comment.v1",
       agentplane_task_id: decision.task.id,

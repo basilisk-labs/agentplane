@@ -4,7 +4,6 @@ import {
   type StateFingerprintPreconditionDiagnostic,
 } from "@agentplaneorg/core/schemas";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
-import { buildTaskRouteDecision } from "../../commands/shared/route-decision.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
@@ -17,8 +16,6 @@ import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { createRunnerAdapter } from "../adapters/index.js";
 import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
-import { collectRunnerBasePrompts } from "../context/base-prompts.js";
-import { assembleRunnerTaskContext } from "../context/task-context.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { RunnerRunRepository } from "../run-repository.js";
@@ -54,9 +51,14 @@ export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { assertRunnerBlueprintPolicyModuleBudget } from "./task-run-blueprint-plan.js";
 import {
   assertRunnerBlueprintPolicyModuleBudget,
-  resolveRunnerBlueprintPlan,
   writeTaskBlueprintSnapshot,
 } from "./task-run-blueprint-plan.js";
+import {
+  evaluatePreparedAgentWorkOrderReadiness,
+  prepareAgentWorkOrder,
+  requireAgentWorkOrderInvocationReadiness,
+  requirePreparedAgentWorkOrder,
+} from "./agent-work-order.js";
 import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
 import {
   executeStateBoundRunnerInvocation,
@@ -150,41 +152,27 @@ export async function prepareTaskRunnerExecution(opts: {
     taskId: opts.task_id,
     git: { stagedPaths: [] },
   });
-  let executionProfile = consumeExecutionProfileBudget({
-    runtime: executionContext.executionProfile,
-    phase: "discovery",
-  });
-  const taskEnvelope = await assembleRunnerTaskContext({
-    ctx: executionContext.command,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-    task_id: opts.task_id,
-  });
+  let executionProfile = executionContext.executionProfile;
   const runnerCommand = target.kind === "recipe_scenario" ? "recipes scenario execute" : "task run";
-  const base_prompts = await collectRunnerBasePrompts({
-    git_root: executionContext.repo.git_root,
-    owner_id: taskEnvelope.task.data.owner,
-    agents_dir: executionContext.harness.workflow.paths.agents_dir,
-    task: taskEnvelope.task,
-    command: runnerCommand,
-    recipe: opts.recipe,
-    harness: executionContext.harness,
-    execution_profile: executionProfile,
-  });
-  const blueprint = await resolveRunnerBlueprintPlan({
-    taskEnvelope,
-    config: executionContext.config,
-    projectRoot: executionContext.repo.git_root,
-    recipe: opts.recipe,
-    basePrompts: base_prompts,
-  });
-  const route_decision = await buildTaskRouteDecision({
-    ctx: executionContext.command,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-    includeRunnerState: opts.include_route_runner_state ?? false,
-    taskId: opts.task_id,
-  });
+  const preparedWorkOrder = requirePreparedAgentWorkOrder(
+    await prepareAgentWorkOrder({
+      command_ctx: command,
+      cwd: opts.cwd,
+      root_override: opts.rootOverride ?? null,
+      task_id: opts.task_id,
+      include_remote: false,
+      include_runner_state: opts.include_route_runner_state ?? false,
+      recipe: opts.recipe,
+      runner_command: runnerCommand,
+      execution_context: executionContext,
+      execution_profile: executionProfile,
+    }),
+  );
+  executionProfile = preparedWorkOrder.execution_profile;
+  const taskEnvelope = preparedWorkOrder.task_envelope;
+  const base_prompts = preparedWorkOrder.base_prompts;
+  const blueprint = preparedWorkOrder.blueprint;
+  const route_decision = preparedWorkOrder.route_decision;
   const framework_explain = appendFrameworkExplainBehaviorInputs(
     executionContext.frameworkExplain,
     collectFrameworkExplainBehaviorInputs(base_prompts),
@@ -229,7 +217,9 @@ export async function prepareTaskRunnerExecution(opts: {
     task: taskEnvelope.task,
     recipe: opts.recipe,
     blueprint,
-    route_decision: route_decision as unknown as Record<string, unknown>,
+    work_order: preparedWorkOrder.work_order,
+    work_order_preparation: preparedWorkOrder.preparation,
+    route_decision,
     execution: {
       adapter_id: configured_adapter_id,
       mode: opts.mode,
@@ -281,6 +271,14 @@ export async function prepareTaskRunnerExecution(opts: {
   const precondition_policy = resolveRunnerStateFingerprintPolicy(command);
   bundle.state_fingerprint = precondition_fingerprint;
   bundle.state_fingerprint_policy = precondition_policy;
+  requireAgentWorkOrderInvocationReadiness(
+    await evaluatePreparedAgentWorkOrderReadiness({
+      command_ctx: command,
+      cwd: opts.cwd,
+      root_override: opts.rootOverride ?? null,
+      prepared: preparedWorkOrder,
+    }),
+  );
   const repository = RunnerRunRepository.fromBundle(bundle);
   await repository.createFreshDirectory({
     run_id: bundle.execution.run_id,

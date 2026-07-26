@@ -3,6 +3,7 @@ import { isDeepStrictEqual } from "node:util";
 import type { AgentplaneConfig } from "@agentplaneorg/core/config";
 import type { StateFingerprintComponentInput } from "@agentplaneorg/core/schemas";
 
+import type { TaskRouteDecision } from "../commands/shared/route-decision-types.js";
 import { isRecord } from "../shared/guards.js";
 import { RUNNER_DANGER_FULL_ACCESS_SANDBOX } from "./types.js";
 import type {
@@ -58,31 +59,31 @@ function selectedRunnerEnv(config: AgentplaneConfig["runner"]): Record<string, s
     : {};
 }
 
-function routeEvidenceProjection(routeDecision: Record<string, unknown>): Record<string, unknown> {
-  const prFlow = isRecord(routeDecision.prFlow) ? structuredClone(routeDecision.prFlow) : null;
-  if (prFlow && isRecord(prFlow.task)) Reflect.deleteProperty(prFlow, "task");
-  if (prFlow && isRecord(prFlow.branch)) Reflect.deleteProperty(prFlow.branch, "headSha");
-  const workspace = isRecord(routeDecision.workspace)
-    ? structuredClone(routeDecision.workspace)
-    : {};
-  Reflect.deleteProperty(workspace, "root");
-  Reflect.deleteProperty(workspace, "headSha");
+function routeEvidenceProjection(routeDecision: TaskRouteDecision): Record<string, unknown> {
+  const prFlow = routeDecision.prFlow
+    ? (() => {
+        const { task: _task, branch, ...rest } = structuredClone(routeDecision.prFlow);
+        const { headSha: _headSha, ...branchProjection } = branch;
+        return { ...rest, branch: branchProjection };
+      })()
+    : null;
+  const { root: _root, headSha: _headSha, ...workspace } = routeDecision.workspace;
   return {
-    workflow_mode: routeDecision.workflowMode ?? null,
+    workflow_mode: routeDecision.workflowMode,
     agent_contract: {
       workspace,
-      approval: structuredClone(routeDecision.approval ?? null),
-      blockers: structuredClone(routeDecision.blockers ?? null),
-      ambiguities: structuredClone(routeDecision.ambiguities ?? null),
-      next_action: structuredClone(routeDecision.nextAction ?? null),
-      oracle: structuredClone(routeDecision.oracle ?? null),
-      execution_packet: structuredClone(routeDecision.executionPacket ?? null),
-      repair_plan: structuredClone(routeDecision.repairPlan ?? null),
+      approval: structuredClone(routeDecision.approval),
+      blockers: structuredClone(routeDecision.blockers),
+      ambiguities: structuredClone(routeDecision.ambiguities),
+      next_action: structuredClone(routeDecision.nextAction),
+      oracle: structuredClone(routeDecision.oracle),
+      execution_packet: structuredClone(routeDecision.executionPacket),
+      repair_plan: structuredClone(routeDecision.repairPlan),
     },
     pr_flow: prFlow,
-    batch_ownership: structuredClone(routeDecision.batchOwnership ?? null),
-    cleanup_probe: structuredClone(routeDecision.cleanupProbe ?? null),
-    source_confidence: structuredClone(routeDecision.sourceConfidence ?? null),
+    batch_ownership: structuredClone(routeDecision.batchOwnership),
+    cleanup_probe: structuredClone(routeDecision.cleanupProbe),
+    source_confidence: structuredClone(routeDecision.sourceConfidence),
   };
 }
 
@@ -92,7 +93,7 @@ function runnerExecutionConfigProjection(opts: {
   prepared: boolean;
   route_decision: RunnerContextBundle["route_decision"];
 }): RunnerExecutionConfigProjection | null {
-  if (!isRecord(opts.route_decision)) return null;
+  if (!opts.route_decision) return null;
   const currentEnv = selectedRunnerEnv(opts.config.runner);
   const currentAmbientEnv = ambientEnvironment();
   if (opts.prepared) {

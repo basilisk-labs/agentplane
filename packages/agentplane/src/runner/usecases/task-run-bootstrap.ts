@@ -63,37 +63,6 @@ function renderEvaluatorSkepticismLines(level: EvaluatorSkepticismLevel): string
   ];
 }
 
-function objectField(
-  source: Record<string, unknown> | undefined,
-  field: string,
-): Record<string, unknown> | undefined {
-  const value = source?.[field];
-  return typeof value === "object" && value !== null && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : undefined;
-}
-
-function stringField(
-  source: Record<string, unknown> | undefined,
-  field: string,
-): string | undefined {
-  const value = source?.[field];
-  return typeof value === "string" ? value : undefined;
-}
-
-function booleanField(
-  source: Record<string, unknown> | undefined,
-  field: string,
-): boolean | undefined {
-  const value = source?.[field];
-  return typeof value === "boolean" ? value : undefined;
-}
-
-function stringArrayField(source: Record<string, unknown> | undefined, field: string): string[] {
-  const value = source?.[field];
-  return Array.isArray(value) && value.every((entry) => typeof entry === "string") ? value : [];
-}
-
 function renderRunnerResultManifestExampleLines(workOrderId: string): string[] {
   const fixtures = buildAgentSemanticResultV2ValidFixtures(workOrderId);
   return AGENT_SEMANTIC_RESULT_STATUS_VALUES.map(
@@ -115,13 +84,10 @@ export function renderTaskRunnerBootstrap(
   const verifierChecks = bundle.playbook?.final_verifier.checks ?? [];
   const evaluatorSkepticismLevel =
     bundle.execution.evaluator_skepticism_level ?? ("standard" satisfies EvaluatorSkepticismLevel);
-  const routeDecision = bundle.route_decision;
-  const routeOracle = objectField(routeDecision, "oracle");
-  const routeExecutionPacket = objectField(routeDecision, "executionPacket");
-  const routeWorkspace = objectField(routeDecision, "workspace");
-  const workflowStep = objectField(routeDecision, "workflowStep");
-  const workflowOperation = objectField(workflowStep, "operation");
-  const routeMustNot = stringArrayField(routeExecutionPacket, "mustNot");
+  const route = bundle.route_decision;
+  const workflowOperation =
+    route?.workflowStep.kind === "cli_operation" ? route.workflowStep.operation : undefined;
+  const routeMustNot = route?.executionPacket.mustNot ?? [];
   const sandboxPolicy = bundle.execution.sandbox_policy;
   const supervisorOwnsSemanticResult =
     bundle.execution.adapter_id === "codex" &&
@@ -144,6 +110,7 @@ export function renderTaskRunnerBootstrap(
     `- adapter: ${bundle.execution.adapter_id}`,
     `- mode: ${bundle.execution.mode}`,
     `- run_id: ${bundle.execution.run_id}`,
+    `- work_order_id: ${bundle.work_order?.work_order_id ?? invocation?.work_order_id ?? bundle.execution.run_id}`,
     `- bundle_path: ${bundle.execution.artifact_paths.bundle_path}`,
     `- result_path: ${bundle.execution.artifact_paths.result_path}`,
     `- receipt_path: ${bundle.execution.artifact_paths.receipt_path}`,
@@ -154,25 +121,18 @@ export function renderTaskRunnerBootstrap(
     `- sandbox_enforcement: ${sandboxDecision?.status ?? "unknown"}`,
     `- writable_roots: ${JSON.stringify(writeScope?.writable_roots ?? [])}`,
     `- protected_paths: ${JSON.stringify(writeScope?.protected_paths ?? [])}`,
-    ...(routeDecision
+    ...(route
       ? [
-          `- checkout_role: ${stringField(routeWorkspace, "checkoutRole") ?? "unknown"}`,
-          `- route_phase: ${stringField(routeOracle, "phase") ?? "unknown"}`,
-          `- workflow_step_kind: ${stringField(workflowStep, "kind") ?? "unknown"}`,
-          `- workflow_step_id: ${stringField(workflowStep, "id") ?? "unknown"}`,
-          `- workflow_operation_id: ${stringField(workflowOperation, "id") ?? "none"}`,
-          `- route_mutation_path_hint: ${stringField(routeOracle, "mutationPathHint") ?? "none"}`,
-          `- route_safe_to_mutate: ${String(
-            booleanField(routeExecutionPacket, "safeToMutate") ?? false,
-          )}`,
-          `- route_recommended_role: ${
-            stringField(routeExecutionPacket, "recommendedRole") ?? "unknown"
-          }`,
-          `- route_must_run_from: ${stringField(routeExecutionPacket, "mustRunFrom") ?? "unknown"}`,
-          `- route_return_control_when: ${
-            stringField(routeExecutionPacket, "returnControlWhen") ??
-            "after this run completes; return control to the parent supervisor"
-          }`,
+          `- checkout_role: ${route.workspace.checkoutRole}`,
+          `- route_phase: ${route.oracle.phase}`,
+          `- workflow_step_kind: ${route.workflowStep.kind}`,
+          `- workflow_step_id: ${route.workflowStep.id}`,
+          `- workflow_operation_id: ${workflowOperation?.id ?? "none"}`,
+          `- route_mutation_path_hint: ${route.oracle.mutationPathHint ?? "none"}`,
+          `- route_safe_to_mutate: ${String(route.executionPacket.safeToMutate)}`,
+          `- route_recommended_role: ${route.executionPacket.recommendedRole}`,
+          `- route_must_run_from: ${route.executionPacket.mustRunFrom ?? "unknown"}`,
+          `- route_return_control_when: ${route.executionPacket.returnControlWhen}`,
         ]
       : []),
     "",
