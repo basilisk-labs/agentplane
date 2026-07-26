@@ -1,10 +1,11 @@
 ---
 id: "202607221848-T9B3PS"
 title: "Publish AgentWorkOrder v2 schema and migrations"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -62,11 +63,16 @@ quality_review:
   findings:
     - "Verify Step 2 is satisfied: runner reads route_decision.executionPacket.recommendedRole, Hermes uses camelCase RouteExecutionPacket fields and owner:null, and migration requires explicit work_order_id and semantic role."
     - "Verify Steps 1, 3, 4, and 5 are evidenced by generated fixtures/schema checks, focused contract tests, critical CLI 11/11, typecheck, formatting, guards, routing, and compatibility baseline."
-commit: null
+commit:
+  hash: "ed85c918fb82f3f2aed8ba7ddab18ffd5c006908"
+  message: "✅ T9B3PS task: record verification and quality review"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -87,8 +93,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified corrected v1 migration compatibility: explicit work_order_id and role omission receipts, lifecycle-role separation, representative runner/Hermes packets, and Hermes owner:null parsing."
+  -
+    type: "status"
+    at: "2026-07-26T09:10:49.433Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T09:09:05.393Z"
+doc_updated_at: "2026-07-26T09:10:49.434Z"
 doc_updated_by: "CODER"
 description: "RF-05a: evolve agentplane.agent_work_context into one versioned AgentWorkOrder v2 schema containing objective, acceptance, role, fingerprint, authority, prepared evidence, knowledge refs, verification intent, required outputs, and semantic-result contract."
 sections:
@@ -187,6 +200,9 @@ sections:
       Impact: Verify Steps 1-5 are evidenced; v1 migration no longer invents semantic role or rejects the Hermes nullable owner projection.
       Resolution: Published v2 schema and compatibility candidate remain unchanged; this commit hardens only reader, fixtures, and generator formatting.
 extensions:
+  implementation_commit:
+    hash: "36eb7f509bd849cc051349e211a0326342edbb2b"
+    message: "🩹 T9B3PS schema: harden v1 migration compatibility"
   workflow_route_baseline:
     start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
     version: 1
