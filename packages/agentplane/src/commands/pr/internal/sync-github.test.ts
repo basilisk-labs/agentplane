@@ -110,6 +110,67 @@ describe("sync-github", () => {
     );
   });
 
+  it("refreshes a branch lookup through the exact PR endpoint before reporting mergeability", async () => {
+    mocks.execFileAsync
+      .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
+      .mockResolvedValueOnce({
+        stdout: JSON.stringify([
+          {
+            number: 123,
+            state: "open",
+            head: { ref: "task/T-1/work", sha: "head-from-list" },
+            base: { ref: "main" },
+          },
+        ]),
+      })
+      .mockResolvedValueOnce({
+        stdout: JSON.stringify({
+          number: 123,
+          html_url: "https://github.com/example/repo/pull/123",
+          state: "open",
+          merged_at: null,
+          mergeable: false,
+          mergeable_state: "dirty",
+          head: { ref: "task/T-1/work", sha: "head-from-detail" },
+          base: { ref: "main", sha: "base-from-detail" },
+        }),
+      });
+
+    await expect(
+      observeExistingGithubPrByBranch({
+        gitRoot: "/repo",
+        branch: "task/T-1/work",
+        baseBranch: "main",
+      }),
+    ).resolves.toMatchObject({
+      state: "found",
+      pr: {
+        prNumber: 123,
+        headSha: "head-from-detail",
+        baseSha: "base-from-detail",
+        mergeability: { state: "conflicting", mergeable: false, providerState: "dirty" },
+      },
+    });
+    expect(mocks.resolveGhCommand).toHaveBeenCalledTimes(2);
+    expect(mocks.ghEnv).toHaveBeenCalledTimes(2);
+    expect(mocks.withGhTransportRetry).toHaveBeenNthCalledWith(1, expect.any(Function), {
+      label:
+        "running gh api repos/example/repo/pulls?state=all&head=example%3Atask%2FT-1%2Fwork&base=main",
+    });
+    expect(mocks.withGhTransportRetry).toHaveBeenNthCalledWith(2, expect.any(Function), {
+      label: "running gh api repos/example/repo/pulls/123",
+    });
+    expect(mocks.execFileAsync).toHaveBeenLastCalledWith(
+      "gh-wrapper",
+      ["--hostname", "github.example", "api", "repos/example/repo/pulls/123"],
+      {
+        cwd: "/repo",
+        env: { GH_CONFIG_DIR: "/gh-config" },
+        maxBuffer: 10 * 1024 * 1024,
+      },
+    );
+  });
+
   it("keeps a valid successful identity mismatch as authoritative absence", async () => {
     mocks.execFileAsync
       .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
@@ -151,8 +212,10 @@ describe("sync-github", () => {
             html_url: "https://github.com/example/repo/pull/123",
             state: "open",
             merged_at: null,
+            mergeable: false,
+            mergeable_state: "dirty",
             head: { ref: "task/T-1/work", sha: "head" },
-            base: { ref: "main" },
+            base: { ref: "main", sha: "base-head" },
           },
         ]),
       });
@@ -168,6 +231,9 @@ describe("sync-github", () => {
       status: "OPEN",
       base: "main",
       headSha: "head",
+      baseSha: "base-head",
+      headRef: "task/T-1/work",
+      mergeability: { state: "conflicting", mergeable: false, providerState: "dirty" },
     });
     expectGithubApiTransport("repos/example/repo/pulls?state=all&per_page=100&base=main");
   });

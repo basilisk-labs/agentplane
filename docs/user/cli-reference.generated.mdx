@@ -103,6 +103,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [pr check](#pr-check)
   - [pr close](#pr-close)
   - [pr close-superseded](#pr-close-superseded)
+  - [pr conflict-rework](#pr-conflict-rework)
   - [pr flow status](#pr-flow-status)
   - [pr note](#pr-note)
   - [pr open](#pr-open)
@@ -1588,6 +1589,29 @@ agentplane pr close-superseded 202604072308-A1XE27 --delete-remote-branch
 ```
 
 - Repair a stale task PR after the task has already been merged to main.
+
+### pr conflict-rework
+
+Prepare a bounded read-only semantic rework packet for a provider-reported merge conflict.
+
+Usage:
+
+```text
+agentplane pr conflict-rework <task-id> [options]
+```
+
+Options:
+
+- `--expect-freshness-token <sha256-token>`: Fail closed unless the newly observed conflict packet matches this token.
+- `--json`: Emit the conflict packet as JSON. (default=false)
+
+Examples:
+
+```sh
+agentplane pr conflict-rework 202602030608-F1Q8AB --json
+```
+
+- Read current provider conflict truth without changing any branch, worktree, PR, or queue state.
 
 ### pr flow status
 

@@ -23,7 +23,16 @@ type GithubPullLookupRecord = {
   } | null;
   base?: {
     ref?: string | null;
+    sha?: string | null;
   } | null;
+  mergeable?: boolean | null;
+  mergeable_state?: string | null;
+};
+
+export type GithubPrMergeability = {
+  state: "conflicting" | "not_conflicting" | "pending" | "unknown";
+  mergeable: boolean | null;
+  providerState: string | null;
 };
 
 export type ObservedGithubPr = {
@@ -34,6 +43,9 @@ export type ObservedGithubPr = {
   mergeCommit: string | null;
   base: string | null;
   headSha: string | null;
+  baseSha?: string | null;
+  headRef?: string | null;
+  mergeability?: GithubPrMergeability;
 };
 
 export type GithubPrLookupResult =
@@ -63,6 +75,24 @@ async function resolveGithubRepoFromOrigin(gitRoot: string): Promise<string | nu
   }
 }
 
+function normalizeGithubPrMergeability(
+  record: GithubPullLookupRecord,
+): GithubPrMergeability | undefined {
+  if (record.mergeable === undefined && record.mergeable_state === undefined) return undefined;
+  const providerState = record.mergeable_state?.trim().toLowerCase() ?? null;
+  const mergeable = typeof record.mergeable === "boolean" ? record.mergeable : null;
+  if (mergeable === false || providerState === "dirty" || providerState === "conflicting") {
+    return { state: "conflicting", mergeable, providerState };
+  }
+  if (mergeable === true || providerState === "clean" || providerState === "unstable") {
+    return { state: "not_conflicting", mergeable, providerState };
+  }
+  if (providerState === "unknown" || providerState === "behind") {
+    return { state: "pending", mergeable, providerState };
+  }
+  return { state: "unknown", mergeable, providerState };
+}
+
 function normalizeObservedGithubPr(record: GithubPullLookupRecord): ObservedGithubPr | null {
   const number = Number(record.number);
   if (!Number.isInteger(number) || number <= 0) return null;
@@ -80,7 +110,10 @@ function normalizeObservedGithubPr(record: GithubPullLookupRecord): ObservedGith
   const prUrl = record.html_url?.trim() ?? null;
   const mergeCommit = record.merge_commit_sha?.trim() ?? null;
   const base = record.base?.ref?.trim() ?? null;
+  const baseSha = record.base?.sha?.trim() ?? null;
   const headSha = record.head?.sha?.trim() ?? null;
+  const headRef = record.head?.ref?.trim() ?? null;
+  const mergeability = normalizeGithubPrMergeability(record);
   return {
     prNumber: number,
     prUrl,
@@ -89,6 +122,9 @@ function normalizeObservedGithubPr(record: GithubPullLookupRecord): ObservedGith
     mergeCommit,
     base,
     headSha,
+    baseSha,
+    headRef,
+    ...(mergeability ? { mergeability } : {}),
   };
 }
 
@@ -115,6 +151,42 @@ async function runGithubApiJson(gitRoot: string, endpoint: string): Promise<unkn
     { label: `running gh api ${endpoint}` },
   );
   return JSON.parse(stdout) as unknown;
+}
+
+async function observeGithubPrByNumberInRepo(opts: {
+  gitRoot: string;
+  repo: string;
+  prNumber: number;
+  branch?: string | null;
+  baseBranch?: string | null;
+}): Promise<GithubPrLookupResult> {
+  const endpoint = `repos/${opts.repo}/pulls/${opts.prNumber}`;
+  try {
+    const parsed = await runGithubApiJson(opts.gitRoot, endpoint);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return { state: "unavailable", reason: "GitHub PR lookup returned an invalid payload" };
+    }
+    const record = parsed as GithubPullLookupRecord;
+    const observed = normalizeObservedGithubPr(record);
+    if (!observed) {
+      return { state: "unavailable", reason: "GitHub PR lookup returned an invalid PR record" };
+    }
+    const expectedBranch = opts.branch?.trim() ?? "";
+    const observedBranch = record.head?.ref?.trim() ?? "";
+    if (expectedBranch && !observedBranch) {
+      return { state: "unavailable", reason: "GitHub PR lookup omitted the head branch" };
+    }
+    if (expectedBranch && observedBranch !== expectedBranch) return { state: "not_found" };
+    const expectedBase = opts.baseBranch?.trim() ?? "";
+    const observedBase = record.base?.ref?.trim() ?? "";
+    if (expectedBase && !observedBase) {
+      return { state: "unavailable", reason: "GitHub PR lookup omitted the base branch" };
+    }
+    if (expectedBase && observedBase !== expectedBase) return { state: "not_found" };
+    return { state: "found", pr: observed };
+  } catch (err) {
+    return githubLookupUnavailable(err);
+  }
 }
 
 export async function observeExistingGithubPrByBranch(opts: {
@@ -147,7 +219,15 @@ export async function observeExistingGithubPrByBranch(opts: {
     if (parsed.length === 0) return { state: "not_found" };
     for (const record of parsed) {
       const observed = normalizeObservedGithubPr(record);
-      if (observed) return { state: "found", pr: observed };
+      if (observed) {
+        return await observeGithubPrByNumberInRepo({
+          gitRoot: opts.gitRoot,
+          repo,
+          prNumber: observed.prNumber,
+          branch: opts.branch,
+          baseBranch,
+        });
+      }
     }
     return {
       state: "unavailable",
@@ -183,34 +263,7 @@ export async function observeExistingGithubPrByNumber(opts: {
       reason: "origin is unavailable or is not a GitHub repository",
     };
   }
-  const endpoint = `repos/${repo}/pulls/${opts.prNumber}`;
-
-  try {
-    const parsed = await runGithubApiJson(opts.gitRoot, endpoint);
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      return { state: "unavailable", reason: "GitHub PR lookup returned an invalid payload" };
-    }
-    const record = parsed as GithubPullLookupRecord;
-    const observed = normalizeObservedGithubPr(record);
-    if (!observed) {
-      return { state: "unavailable", reason: "GitHub PR lookup returned an invalid PR record" };
-    }
-    const expectedBranch = opts.branch?.trim() ?? "";
-    const observedBranch = record.head?.ref?.trim() ?? "";
-    if (expectedBranch && !observedBranch) {
-      return { state: "unavailable", reason: "GitHub PR lookup omitted the head branch" };
-    }
-    if (expectedBranch && observedBranch !== expectedBranch) return { state: "not_found" };
-    const expectedBase = opts.baseBranch?.trim() ?? "";
-    const observedBase = record.base?.ref?.trim() ?? "";
-    if (expectedBase && !observedBase) {
-      return { state: "unavailable", reason: "GitHub PR lookup omitted the base branch" };
-    }
-    if (expectedBase && observedBase !== expectedBase) return { state: "not_found" };
-    return { state: "found", pr: observed };
-  } catch (err) {
-    return githubLookupUnavailable(err);
-  }
+  return await observeGithubPrByNumberInRepo({ ...opts, repo });
 }
 
 export async function tryLookupExistingGithubPrByNumber(opts: {

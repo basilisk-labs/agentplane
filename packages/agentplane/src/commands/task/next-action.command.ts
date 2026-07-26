@@ -166,6 +166,7 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         workflow_step: decision.workflowStep,
         workflowStep: decision.workflowStep,
         route_oracle: decision.oracle,
+        conflict_rework: decision.conflictRework,
         execution_packet: executionPacketJson(decision.executionPacket),
         operator_guidance: operatorGuidanceJson(operatorGuidance),
         approval: {
@@ -285,6 +286,27 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
           label: "human_provider_action",
           value: decision.executionPacket.humanProviderAction ?? "none",
         },
+        ...(decision.conflictRework?.state === "ready"
+          ? [
+              { label: "conflict_rework", value: "ready" },
+              {
+                label: "conflict_freshness_token",
+                value: decision.conflictRework.packet.freshness.token,
+              },
+              {
+                label: "conflict_packet_command",
+                value: decision.conflictRework.packet.resolution_contract.revalidate_command,
+              },
+            ]
+          : decision.conflictRework?.state === "invalid"
+            ? [
+                { label: "conflict_rework", value: "invalid" },
+                {
+                  label: "conflict_rework_reason",
+                  value: `${decision.conflictRework.reason_code}: ${decision.conflictRework.reason}`,
+                },
+              ]
+            : []),
         {
           label: "primary_blocker",
           value: decision.oracle.blocker

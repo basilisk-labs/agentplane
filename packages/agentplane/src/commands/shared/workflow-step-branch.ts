@@ -4,9 +4,11 @@ import {
   approvalStep,
   cliOperationStep,
   commonExecution,
+  conflictReworkContextInvalidStep,
   implementationReworkStep,
   includedBatchStep,
   qualityReviewStep,
+  providerConflictReworkStep,
   routeBlockerFor,
   routeBlockerSnapshot,
   taskWorktreeBlocker,
@@ -187,6 +189,12 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   const worktreeBlocker = taskWorktreeBlocker(state);
   if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
   if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (state.blockers.some((blocker) => blocker.code === "provider_conflict_context_invalid")) {
+    return conflictReworkContextInvalidStep(state);
+  }
+  if (state.blockers.some((blocker) => blocker.code === "provider_merge_conflict")) {
+    return providerConflictReworkStep(state);
+  }
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
@@ -427,6 +435,13 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (worktreeBlocker?.code === "task_worktree_state_unavailable") {
     return worktreeResolutionStep(state, worktreeBlocker);
   }
+  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (state.blockers.some((blocker) => blocker.code === "provider_conflict_context_invalid")) {
+    return conflictReworkContextInvalidStep(state);
+  }
+  if (state.blockers.some((blocker) => blocker.code === "provider_merge_conflict")) {
+    return providerConflictReworkStep(state);
+  }
   if (
     state.taskWorktree?.state === "not_present" &&
     state.blockers.some((blocker) => blocker.code === "pr_meta_stale")
@@ -444,7 +459,6 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
-  if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   const batchVerificationStep = primaryBatchVerificationStep(state);
   if (batchVerificationStep) return batchVerificationStep;
   if (

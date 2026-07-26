@@ -11,7 +11,7 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
   summary:
     "Manage local PR review and GitHub publication artifacts for a task (branch_pr workflow).",
   synopsis: [
-    "agentplane pr <open|update|check|flow status|note|close|close-superseded> <task-id|pr-number> [options]",
+    "agentplane pr <open|update|check|flow status|conflict-rework|note|close|close-superseded> <task-id|pr-number> [options]",
   ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
@@ -24,6 +24,10 @@ export const prSpec: CommandSpec<PrGroupParsed> = {
     {
       cmd: "agentplane pr flow status 202602030608-F1Q8AB",
       why: "Show task branch, remote PR, close-tail, and next-action state.",
+    },
+    {
+      cmd: "agentplane pr conflict-rework 202602030608-F1Q8AB --json",
+      why: "Prepare a fresh read-only packet for a provider-reported merge conflict.",
     },
     {
       cmd: 'agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "Looks good"',
@@ -236,6 +240,58 @@ export const prFlowStatusSpec: CommandSpec<PrFlowStatusParsed> = {
     },
   ],
   parse: (raw) => ({ taskId: String(raw.args["task-id"]), json: raw.opts.json === true }),
+};
+
+export type PrConflictReworkParsed = {
+  taskId: string;
+  expectedFreshnessToken: string | null;
+  json: boolean;
+};
+
+export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
+  id: ["pr", "conflict-rework"],
+  group: "PR",
+  summary:
+    "Prepare a bounded read-only semantic rework packet for a provider-reported merge conflict.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [
+    {
+      kind: "string",
+      name: "expect-freshness-token",
+      valueHint: "<sha256-token>",
+      description: "Fail closed unless the newly observed conflict packet matches this token.",
+    },
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit the conflict packet as JSON.",
+    },
+  ],
+  examples: [
+    {
+      cmd: "agentplane pr conflict-rework 202602030608-F1Q8AB --json",
+      why: "Read current provider conflict truth without changing any branch, worktree, PR, or queue state.",
+    },
+  ],
+  validateRaw: (raw) => {
+    const token = raw.opts["expect-freshness-token"];
+    if (typeof token === "string" && token.trim().length === 0) {
+      throw usageError({
+        spec: prConflictReworkSpec,
+        command: "pr conflict-rework",
+        message: "Invalid value for --expect-freshness-token: empty.",
+      });
+    }
+  },
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    expectedFreshnessToken:
+      typeof raw.opts["expect-freshness-token"] === "string"
+        ? raw.opts["expect-freshness-token"].trim()
+        : null,
+    json: raw.opts.json === true,
+  }),
 };
 
 export type PrNoteParsed = { taskId: string; author: string; body?: string; bodyFile?: string };

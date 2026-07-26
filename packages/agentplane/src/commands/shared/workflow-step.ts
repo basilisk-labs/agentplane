@@ -2,6 +2,7 @@ import type { StateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
+import type { ConflictReworkPreparation } from "../pr/conflict-rework.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { RouteBatchOwnership } from "./route-batch-ownership.js";
 import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.js";
@@ -20,6 +21,7 @@ export type WorkflowRouteState = {
   blockers: readonly RouteBlocker[];
   batchOwnership: RouteBatchOwnership;
   taskWorktree?: TaskWorktreeCleanliness;
+  conflictRework?: ConflictReworkPreparation | null;
   preconditionFingerprint: StateFingerprint;
 };
 
