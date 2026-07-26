@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -58,8 +58,8 @@ quality_review:
   findings:
     - "No blocking semantic defect found; the hosted failure was a scoped formatting defect now corrected."
 commit:
-  hash: "6b4d58d8515f64aa565bd7c0f7633ef030f41711"
-  message: "🧪 1HWR0R task: record hosted rework quality"
+  hash: "12ef5b90f9ccca8cf751b5a690cfc2de0fad741f"
+  message: "🧪 1HWR0R task: refresh formatting quality review"
 comments:
   -
     author: "CODER"
@@ -67,6 +67,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -114,8 +117,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-26T10:39:23.921Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T10:30:55.010Z"
+doc_updated_at: "2026-07-26T10:39:23.922Z"
 doc_updated_by: "CODER"
 description: "RF-07: make create and mutation use cases return exact task id, revision, backend identity, artifact paths, and recovery data instead of list-before/list-after discovery."
 sections:
@@ -214,8 +224,8 @@ sections:
       Resolution: Verified one changed context contract, receipt ordering and immutability, then refreshed candidate and regression coverage.
 extensions:
   implementation_commit:
-    hash: "7155466b6e84a550e86fb92e2476322dc15ddafd"
-    message: "🧩 1HWR0R task: close hosted rework"
+    hash: "6eeff394bf6ffab4daf12595c257765043f6ed33"
+    message: "🎨 1HWR0R task: restore contract formatting"
   workflow_route_baseline:
     start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
     version: 1
