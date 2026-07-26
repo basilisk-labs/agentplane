@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T23:06:05.994Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "RF-13 now enforces explicit, scoped authority records for classified side effects without authorizing semantic values. The rework closes the route-authority sandbox gap and prevents authority-only task metadata from causing a non-convergent quality-review loop.",
+  "evaluated_sha": "dcbe0bba607e22b30e17135de5c509c03bcdd933",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "The authority-only review-target exception removes only README revision and agentplane.side_effect_authority records, and is guarded by a changed-files check; ordinary README semantic metadata changes remain reviewable."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+    "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts",
+    "packages/agentplane/src/commands/shared/quality-review-target.test.ts",
+    "bun run test:fast (468 files, 3257 tests)",
+    "bun run test:critical (11 chunks, 72 tests)",
+    "bun run typecheck",
+    "bun run format:changed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The authority audit chain is tamper-evident local task state, not independently immutable storage; alpha2 does not introduce a separate cryptographic signer."
+  ]
+}
