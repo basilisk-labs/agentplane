@@ -1,4 +1,11 @@
-import { gitDiffNames, gitIsAncestor, gitRevParse } from "@agentplaneorg/core/git";
+import { gitDiffNames, gitIsAncestor, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
+import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
+
+const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
 function normalizeWorkflowDir(value: string): string {
   return value.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
@@ -11,6 +18,57 @@ function isManagedTaskArtifact(relativePath: string): boolean {
     relativePath.startsWith("pr/") ||
     relativePath.startsWith("blueprint/")
   );
+}
+
+/**
+ * Side-effect authority is formal lifecycle evidence. It is intentionally
+ * excluded from semantic review freshness: otherwise a required authority
+ * grant changes HEAD, invalidates the review, and creates a review/grant loop.
+ */
+function authorityComparableTaskReadme(markdown: string): string | null {
+  try {
+    const parsed = parseTaskReadme(markdown);
+    const frontmatter = structuredClone(parsed.frontmatter);
+    Reflect.deleteProperty(frontmatter, "revision");
+    if (isRecord(frontmatter.extensions)) {
+      const extensions = { ...frontmatter.extensions };
+      Reflect.deleteProperty(extensions, SIDE_EFFECT_AUTHORITY_EXTENSION_KEY);
+      if (Object.keys(extensions).length === 0) {
+        Reflect.deleteProperty(frontmatter, "extensions");
+      } else {
+        frontmatter.extensions = extensions;
+      }
+    }
+    return JSON.stringify(canonicalizeJson({ frontmatter, body: parsed.body }));
+  } catch {
+    return null;
+  }
+}
+
+async function isAuthorityOnlyTaskReadmeAdvance(opts: {
+  gitRoot: string;
+  parent: string;
+  current: string;
+  changed: readonly string[];
+  taskRelativePath: (name: string) => string | null;
+}): Promise<boolean> {
+  if (
+    opts.changed.length === 0 ||
+    opts.changed.some((name) => opts.taskRelativePath(name) !== "README.md")
+  ) {
+    return false;
+  }
+  for (const name of opts.changed) {
+    const [before, after] = await Promise.all([
+      gitShowFile(opts.gitRoot, opts.parent, name).catch(() => null),
+      gitShowFile(opts.gitRoot, opts.current, name).catch(() => null),
+    ]);
+    if (before === null || after === null || before === after) return false;
+    const beforeComparable = authorityComparableTaskReadme(before);
+    const afterComparable = authorityComparableTaskReadme(after);
+    if (!beforeComparable || beforeComparable !== afterComparable) return false;
+  }
+  return true;
 }
 
 /**
@@ -83,6 +141,18 @@ export async function resolveQualityReviewTargetSha(opts: {
     }
 
     if (touchesOnlyCurrentTaskSet) {
+      if (
+        await isAuthorityOnlyTaskReadmeAdvance({
+          gitRoot: opts.gitRoot,
+          parent,
+          current,
+          changed,
+          taskRelativePath,
+        })
+      ) {
+        current = parent;
+        continue;
+      }
       const taskRelativePaths = changed.flatMap((name) => {
         const relativePath = taskRelativePath(name);
         return relativePath === null ? [] : [relativePath];
