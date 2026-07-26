@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607260007-DQM6AW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T05:10:01.734Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Independent review confirms the hotspot correction preserves CLI behavior, public route-confidence imports, and conflict-route coverage without weakening thresholds.",
+  "evaluated_sha": "323dab78e7fdacbe246523fededbbc9059afac2a",
+  "blueprint_digest": "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6",
+  "findings": [
+    "Command adapter and source-confidence extraction preserve their prior public contracts; split suites retain every prior test title without duplicates."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607260007-DQM6AW/README.md",
+    "packages/agentplane/src/commands/pr/conflict-rework.command.ts",
+    "packages/agentplane/src/commands/shared/route-decision-source-confidence.ts",
+    "command: 63 focused tests passed; lint, TypeScript build, format, hotspots, and architecture cycle checks passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted Core CI must rerun on the newly published PR head before integration."
+  ]
+}
