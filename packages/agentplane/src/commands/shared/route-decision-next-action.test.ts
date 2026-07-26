@@ -218,6 +218,35 @@ describe("DONE branch_pr route cleanup boundary", () => {
     expect(action.summary).toContain("provider head mismatch");
   });
 
+  it("gives a blocked merged provider proof priority over a stale closure mutation", () => {
+    const action = deriveNextAction({
+      task,
+      resume,
+      workflowMode: "branch_pr",
+      prFlow: report("MERGED"),
+      cleanupProbe: {
+        state: "blocked",
+        reasons: ["branch=task/T-1/work: provider merge is unavailable locally"],
+      },
+      blockers: [
+        {
+          code: "cleanup_blocked",
+          summary: "provider cleanup proof is blocked",
+        },
+        {
+          code: "pre_merge_closure_stale",
+          summary: "closure would otherwise be refreshed",
+        },
+      ],
+      batchOwnership: { role: "none" },
+    });
+
+    expect(action).toMatchObject({
+      code: "cleanup_blocked",
+      command: null,
+    });
+  });
+
   it("does not advertise hosted-close cleanup mutation while merged provider proof is blocked", () => {
     const action = nextAction(
       {

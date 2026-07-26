@@ -208,7 +208,8 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
   if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
   if (
-    (state.prFlow?.closeTail.state === "merged" ||
+    (state.prFlow?.pr.state === "MERGED" ||
+      state.prFlow?.closeTail.state === "merged" ||
       state.prFlow?.closeTail.state === "recorded_on_base") &&
     state.cleanupProbe.state === "blocked"
   ) {

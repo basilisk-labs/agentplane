@@ -28,10 +28,10 @@ In scope: provider snapshot and lineage proof, route and integration reconciliat
  .../cleanup-merged-provider-reconciliation.ts      | 261 +++++++++++++++++++++
  .../branch/cleanup-merged.targeted.test.ts         | 180 +++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
- .../shared/route-decision-next-action.test.ts      |  20 ++
+ .../shared/route-decision-next-action.test.ts      |  49 ++++
  .../src/commands/shared/route-decision.ts          |   3 +-
- .../src/commands/shared/workflow-step-branch.ts    |  45 ++--
- 7 files changed, 624 insertions(+), 117 deletions(-)
+ .../src/commands/shared/workflow-step-branch.ts    |  46 ++--
+ 7 files changed, 654 insertions(+), 117 deletions(-)
 ```
 
 </details>
