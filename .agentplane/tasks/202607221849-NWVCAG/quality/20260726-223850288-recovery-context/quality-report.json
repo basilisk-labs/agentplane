@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T22:38:50.288Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Runner work-order parity is not met on the current head.",
+  "evaluated_sha": "e8e889efc1075a1ff5663de5a451019b91eea2b6",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "The public task run --dry-run surface exits with code 3 in both direct and branch_pr canonical-work-order fixtures, while brief, next-action, and Hermes succeed; therefore the claimed unified preparation contract is broken."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "bunx vitest run packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts --reporter=verbose (2 failed, 3 passed)"
+  ],
+  "missing_tests": [
+    "The failure output does not yet expose the runner rejection payload; add or preserve an assertion that identifies the rejected precondition after fixing the contract."
+  ],
+  "hidden_assumptions": [
+    "A successful prepared work order on read-only surfaces was assumed to imply runner preparation succeeds; runner has additional authority/checkout validation."
+  ],
+  "residual_risks": [
+    "No remote side effect was attempted; publication remains blocked by this rework verdict."
+  ]
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -40,28 +40,22 @@ verification:
   note: "Verified RF-13 authority policy: scoped records gate external and high-risk workflow operations; stale/tampered records fail closed; local reversible operations remain available. Passed focused authority/workflow tests, test:fast, test:critical, typecheck, format:changed, lint:core, compatibility ratchet, guards, and lifecycle invariants."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T22:03:00.698Z"
+  updated_at: "2026-07-26T22:38:50.288Z"
   updated_by: "EVALUATOR"
-  note: "RF-13 authority routing is complete for the formal workflow: protected effects require an exact scoped record, full-fingerprint resolution is stabilized before emitting the CLI operation, and semantic verdict values remain outside router synthesis."
-  evaluated_sha: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
+  note: "Runner work-order parity is not met on the current head."
+  evaluated_sha: "e8e889efc1075a1ff5663de5a451019b91eea2b6"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-220300698-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-220300698-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-220300698-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-223850288-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-223850288-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-223850288-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts"
-    - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
-    - "bun run test:fast"
-    - "bun run test:critical"
-    - "bun run typecheck"
-    - "bun run guards:check"
+    - "bunx vitest run packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts --reporter=verbose (2 failed, 3 passed)"
   findings:
-    - "The route permits only a same-operation transition from side-effect approval to CLI operation after full-fingerprint capture, then re-captures the final operation fingerprint."
-    - "Scoped authority tests cover missing, stale, tampered, exact-match, and remote-observation cases; critical and fast suites passed after the stabilization fix."
+    - "The public task run --dry-run surface exits with code 3 in both direct and branch_pr canonical-work-order fixtures, while brief, next-action, and Hermes succeed; therefore the claimed unified preparation contract is broken."
 commit:
   hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
   message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
