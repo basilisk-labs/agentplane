@@ -37,6 +37,8 @@ type TargetedFixture = {
   taskId: string;
   branch: string;
   branchHead: string;
+  providerHead: string;
+  providerBaseHead: string;
   mergeCommit: string;
   worktreePath: string;
   unrelatedBranch: string;
@@ -78,7 +80,9 @@ function markDone(readme: string, commitHash: string): string {
     : done.replace("comments:", `${commitBlock}\ncomments:`);
 }
 
-async function createTargetedFixture(): Promise<TargetedFixture> {
+async function createTargetedFixture(
+  opts: { providerRebased?: boolean } = {},
+): Promise<TargetedFixture> {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
   const config = defaultConfig();
@@ -149,7 +153,40 @@ async function createTargetedFixture(): Promise<TargetedFixture> {
 
   await writeFile(path.join(root, "base-only.txt"), "forces rewritten commit identity\n", "utf8");
   await commitAll(root, "chore advance base before rebase merge");
-  await execFileAsync("git", ["cherry-pick", branchHead], { cwd: root, env: cleanGitEnv() });
+  const providerBaseHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  const providerBaseHead = providerBaseHeadResult.stdout.trim();
+  let providerHead = branchHead;
+  if (opts.providerRebased) {
+    const providerBranch = `provider-rebased/${taskId}`;
+    await execFileAsync("git", ["checkout", "-b", providerBranch], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["cherry-pick", branchHead], { cwd: root, env: cleanGitEnv() });
+    const providerHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    providerHead = providerHeadResult.stdout.trim();
+    await execFileAsync("git", ["checkout", "main"], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync(
+      "git",
+      ["merge", "--no-ff", providerBranch, "-m", "merge rebased provider head"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    await execFileAsync("git", ["branch", "-D", providerBranch], { cwd: root, env: cleanGitEnv() });
+  } else {
+    await execFileAsync("git", ["merge", "--no-ff", branch, "-m", "merge provider task head"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+  }
   const mergeCommitResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
     cwd: root,
     env: cleanGitEnv(),
@@ -187,6 +224,8 @@ async function createTargetedFixture(): Promise<TargetedFixture> {
     taskId,
     branch,
     branchHead,
+    providerHead,
+    providerBaseHead,
     mergeCommit,
     worktreePath,
     unrelatedBranch,
@@ -198,28 +237,40 @@ async function installFakeGh(opts: {
   kind: "found" | "not_found" | "unavailable";
   fixture: TargetedFixture;
   headSha?: string;
+  headShaSequence?: string[];
   baseRef?: string;
   mergeCommitSha?: string;
+  prNumber?: number;
 }): Promise<string> {
   const fakeBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-gh-"));
   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+  const counterPath = path.join(fakeBin, "provider-call-count.txt");
   const ghPath = path.join(fakeBin, process.platform === "win32" ? "gh.cmd" : "gh");
   const payload = {
-    number: 123,
+    number: opts.prNumber ?? 123,
     state: "closed",
     merged_at: "2026-07-23T00:01:00.000Z",
     merge_commit_sha: opts.mergeCommitSha ?? opts.fixture.mergeCommit,
     html_url: "https://github.com/example/repo/pull/123",
-    head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
+    head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.providerHead },
     base: { ref: opts.baseRef ?? "main" },
   };
   await writeFile(
     scriptPath,
     [
+      'import fs from "node:fs";',
       "const args = process.argv.slice(2);",
       'if (args[0] !== "api") process.exit(90);',
+      `const counterPath = ${JSON.stringify(counterPath)};`,
+      `const headShaSequence = ${JSON.stringify(opts.headShaSequence ?? [])};`,
+      'const count = Number(fs.existsSync(counterPath) ? fs.readFileSync(counterPath, "utf8") : "0") || 0;',
+      "fs.writeFileSync(counterPath, String(count + 1));",
       opts.kind === "found"
-        ? `console.log(${JSON.stringify(JSON.stringify(payload))});`
+        ? `console.log(JSON.stringify({ ...${JSON.stringify(payload)}, head: { ...${JSON.stringify(
+            payload.head,
+          )}, sha: headShaSequence[Math.min(count, headShaSequence.length - 1)] || ${JSON.stringify(
+            payload.head.sha,
+          )} } }));`
         : opts.kind === "not_found"
           ? `console.log(${JSON.stringify(
               JSON.stringify({
@@ -259,7 +310,7 @@ async function runWithFakeGh(fakeBin: string, argv: string[]) {
 }
 
 describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS }, () => {
-  it("deletes only the requested rebase-merged task and is idempotent", async () => {
+  it("deletes only the requested exact-head provider task and is idempotent", async () => {
     const fixture = await createTargetedFixture();
     const fakeBin = await installFakeGh({ kind: "found", fixture });
     const first = await runWithFakeGh(fakeBin, [
@@ -291,9 +342,33 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(second.stdout).toContain(`already clean: task=${fixture.taskId}`);
   });
 
-  it("fails closed on provider head mismatch before deleting any candidate", async () => {
-    const fixture = await createTargetedFixture();
-    const fakeBin = await installFakeGh({ kind: "found", fixture, headSha: "0".repeat(40) });
+  it("reconciles a provider-rebased head only when its complete closure lineage is patch-equivalent", async () => {
+    const fixture = await createTargetedFixture({ providerRebased: true });
+    expect(fixture.providerHead).not.toBe(fixture.branchHead);
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("proof=provider_rebase");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
+    expect(await pathExists(fixture.worktreePath)).toBe(false);
+    expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
+  });
+
+  it("fails closed when a provider-rebased head is not patch-equivalent", async () => {
+    const fixture = await createTargetedFixture({ providerRebased: true });
+    const fakeBin = await installFakeGh({
+      kind: "found",
+      fixture,
+      headSha: fixture.providerBaseHead,
+    });
     const result = await runWithFakeGh(fakeBin, [
       "cleanup",
       "merged",
@@ -304,7 +379,69 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       fixture.root,
     ]);
     expect(result.code).toBe(5);
-    expect(result.stderr).toContain("provider head mismatch");
+    expect(result.stderr).toContain("provider rebase is not patch-equivalent");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
+  it("fails closed when the provider-rebased head object is unavailable locally", async () => {
+    const fixture = await createTargetedFixture({ providerRebased: true });
+    const fakeBin = await installFakeGh({ kind: "found", fixture, headSha: "f".repeat(40) });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider rebase head object is unavailable locally");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
+  it("revalidates the provider snapshot before deletion and preserves the task on a head race", async () => {
+    const fixture = await createTargetedFixture({ providerRebased: true });
+    const fakeBin = await installFakeGh({
+      kind: "found",
+      fixture,
+      headShaSequence: [fixture.providerHead, fixture.branchHead],
+    });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider head changed after reconciliation proof");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
+  it("fails closed when the provider head does not cover the local task changes", async () => {
+    const fixture = await createTargetedFixture();
+    const fakeBin = await installFakeGh({
+      kind: "found",
+      fixture,
+      headSha: fixture.providerBaseHead,
+    });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider rebase is not patch-equivalent");
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
     expect(await pathExists(fixture.worktreePath)).toBe(true);
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
@@ -328,12 +465,35 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await pathExists(fixture.worktreePath)).toBe(true);
   });
 
+  it("fails closed when the provider PR identity differs from the recorded closure", async () => {
+    const fixture = await createTargetedFixture();
+    const fakeBin = await installFakeGh({ kind: "found", fixture, prNumber: 124 });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider PR identity mismatch");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
   it("fails closed when the provider merge commit is not on base", async () => {
     const fixture = await createTargetedFixture();
+    const { stdout: detachedCommit } = await execFileAsync(
+      "git",
+      ["commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "provider merge outside base"],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
     const fakeBin = await installFakeGh({
       kind: "found",
       fixture,
-      mergeCommitSha: fixture.branchHead,
+      mergeCommitSha: detachedCommit.trim(),
     });
     const result = await runWithFakeGh(fakeBin, [
       "cleanup",

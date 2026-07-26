@@ -217,6 +217,26 @@ describe("DONE branch_pr route cleanup boundary", () => {
     });
     expect(action.summary).toContain("provider head mismatch");
   });
+
+  it("does not advertise hosted-close cleanup mutation while merged provider proof is blocked", () => {
+    const action = nextAction(
+      {
+        ...report("MERGED"),
+        pr: { provider: "github", state: "not_found", source: "lookup" },
+        providerObservation: { state: "not_found" },
+        closeTail: { state: "recorded_on_base", base: "main" },
+      },
+      {
+        state: "blocked",
+        reasons: ["branch=task/T-1/work: provider rebase is not patch-equivalent"],
+      },
+    );
+    expect(action).toMatchObject({
+      code: "cleanup_blocked",
+      command: null,
+    });
+    expect(action.summary).toContain("provider rebase is not patch-equivalent");
+  });
 });
 
 describe("branch_pr pre-integration safety gates", () => {

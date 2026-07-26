@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607260005-EMP7RC/reconcile-provider-rebased-protected-pr-heads",
+  "created_at": "2026-07-26T00:39:19.677Z",
+  "diffstat_sha256": "sha256:be4703e0a57ea67e1334baae117a4d19620b0279cf538fe4cdc6c9006acde91e",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607260005-EMP7RC",
+  "updated_at": "2026-07-26T00:39:19.677Z",
+  "verify": {
+    "status": "skipped"
+  }
+}

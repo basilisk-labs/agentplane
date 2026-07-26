@@ -14,7 +14,11 @@ import { isPathWithin, resolvePathFallback } from "../shared/path.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import { archivePrArtifacts } from "./internal/archive-pr.js";
-import { resolveCleanupPlan, type CleanupCandidate } from "./cleanup-merged-proof.js";
+import {
+  revalidateCleanupCandidate,
+  resolveCleanupPlan,
+  type CleanupCandidate,
+} from "./cleanup-merged-proof.js";
 
 const output = createCliEmitter();
 
@@ -267,6 +271,24 @@ export async function cmdCleanupMerged(opts: {
         throw new CliError({ exitCode: 5, code: "E_GIT", message: unsafeMessage });
       }
       preparedCandidates.push({ item, worktreePath });
+    }
+
+    for (const { item } of preparedCandidates) {
+      const reconciliationError = await revalidateCleanupCandidate({
+        gitRoot: resolved.gitRoot,
+        workflowDir: config.paths.workflow_dir,
+        baseBranch,
+        candidate: item,
+      });
+      if (reconciliationError) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT_RACE",
+          message:
+            "Refusing cleanup because provider reconciliation changed before deletion: " +
+            reconciliationError,
+        });
+      }
     }
 
     let deletedRemoteBranches = 0;

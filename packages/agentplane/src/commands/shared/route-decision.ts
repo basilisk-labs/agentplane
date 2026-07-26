@@ -78,7 +78,8 @@ function routeGatePriority(code: string): number {
     code === "human_input_required" ||
     code === "missing_pr_branch" ||
     code === "runner_alive" ||
-    code === "implementation_rework_required"
+    code === "implementation_rework_required" ||
+    code === "cleanup_blocked"
   ) {
     return 0;
   }

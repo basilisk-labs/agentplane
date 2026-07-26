@@ -14,17 +14,22 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import { gitIsAncestor } from "../shared/git-ops.js";
-import { parsePrMeta } from "../shared/pr-meta.js";
-import {
-  observeExistingGithubPrByBranch,
-  observeExistingGithubPrByNumber,
-  type GithubPrLookupResult,
-} from "../pr/internal/sync-github.js";
+import { parsePrMeta, readPreMergeClosureMarker } from "../shared/pr-meta.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   taskCloseAlreadyRecordedOnBase,
   taskPreMergeClosureRecordedOnBase,
 } from "../task/close-tail-state.js";
+
+import {
+  observeProviderPr,
+  resolveProviderReconciliation,
+  validateMergedProviderReceipt,
+  type ProviderReconciliationProof,
+} from "./cleanup-merged-provider-reconciliation.js";
+import type { GithubPrLookupResult } from "../pr/internal/sync-github.js";
+
+export type { ProviderReconciliationProof } from "./cleanup-merged-provider-reconciliation.js";
 
 type CleanupBranchKind = "task" | "task-close";
 
@@ -39,7 +44,9 @@ export type CleanupCandidate = {
     | "merged_meta_on_base"
     | "tree_equivalent"
     | "patch_equivalent"
-    | "provider_merge";
+    | "provider_merge"
+    | "provider_rebase";
+  providerReconciliation?: ProviderReconciliationProof;
 };
 
 type CleanupBlockedCandidate = {
@@ -140,26 +147,6 @@ async function gitLinearPatchsetEquivalent(opts: {
     .every((line) => line.startsWith("- "));
 }
 
-async function observeProviderPr(opts: {
-  gitRoot: string;
-  branch: string;
-  baseBranch: string;
-  prNumber: number | null;
-}): Promise<GithubPrLookupResult> {
-  return opts.prNumber
-    ? await observeExistingGithubPrByNumber({
-        gitRoot: opts.gitRoot,
-        branch: opts.branch,
-        baseBranch: opts.baseBranch,
-        prNumber: opts.prNumber,
-      })
-    : await observeExistingGithubPrByBranch({
-        gitRoot: opts.gitRoot,
-        branch: opts.branch,
-        baseBranch: opts.baseBranch,
-      });
-}
-
 function providerUnavailableBecauseRepositoryIsLocal(result: GithubPrLookupResult): boolean {
   return (
     result.state === "unavailable" &&
@@ -167,71 +154,35 @@ function providerUnavailableBecauseRepositoryIsLocal(result: GithubPrLookupResul
   );
 }
 
-async function validateMergedProviderReceipt(opts: {
-  gitRoot: string;
-  baseBranch: string;
-  branchHead: string;
-  result: GithubPrLookupResult;
-}): Promise<{ prNumber: number | null; reason: string | null }> {
-  if (opts.result.state === "not_found") {
-    return { prNumber: null, reason: "provider PR was not found for the exact branch and base" };
-  }
-  if (opts.result.state === "unavailable") {
-    return {
-      prNumber: null,
-      reason: `provider lookup is unavailable: ${opts.result.reason}`,
-    };
-  }
-  const observed = opts.result.pr;
-  if (observed.status !== "MERGED") {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider PR #${observed.prNumber} is ${observed.status.toLowerCase()}, not merged`,
-    };
-  }
-  if ((observed.base?.trim() ?? "") !== opts.baseBranch) {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider base mismatch: expected=${opts.baseBranch} observed=${observed.base ?? "-"}`,
-    };
-  }
-  if (!observed.headSha?.trim() || observed.headSha.trim() !== opts.branchHead) {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider head mismatch: local=${opts.branchHead} observed=${observed.headSha ?? "-"}`,
-    };
-  }
-  const mergeCommit = observed.mergeCommit?.trim() ?? "";
-  if (!mergeCommit || !(await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))) {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider merge commit is not on ${opts.baseBranch}: ${mergeCommit || "-"}`,
-    };
-  }
-  return { prNumber: observed.prNumber, reason: null };
-}
-
 async function targetedCleanupProof(opts: {
   gitRoot: string;
   workflowDir: string;
   baseBranch: string;
   taskId: string;
+  taskCommitSha: string;
   branch: string;
   kind: CleanupBranchKind;
+  expectedReconciliation?: ProviderReconciliationProof;
 }): Promise<{
   proof: CleanupCandidate["proof"] | null;
   reason: string | null;
   expectedHeadSha: string;
+  providerReconciliation: ProviderReconciliationProof | null;
 }> {
   const branchHeadResult = await execFileAsync("git", ["rev-parse", opts.branch], {
     cwd: opts.gitRoot,
     env: gitEnv(),
   });
   const branchHead = branchHeadResult.stdout.trim();
-  const result = (proof: CleanupCandidate["proof"] | null, reason: string | null) => ({
+  const result = (
+    proof: CleanupCandidate["proof"] | null,
+    reason: string | null,
+    providerReconciliation: ProviderReconciliationProof | null = null,
+  ) => ({
     proof,
     reason,
     expectedHeadSha: branchHead,
+    providerReconciliation,
   });
   const meta = await readCleanupPrMetaIfPresent(opts);
   const metaBranch = meta?.branch?.trim() ?? "";
@@ -255,25 +206,49 @@ async function targetedCleanupProof(opts: {
   const providerReceipt = await validateMergedProviderReceipt({
     gitRoot: opts.gitRoot,
     baseBranch: opts.baseBranch,
-    branchHead,
+    expectedPrNumber: recordedPrNumber,
+    expectedReconciliation: opts.expectedReconciliation,
     result: providerResult,
   });
 
   if (opts.kind === "task") {
-    if (providerReceipt.reason) return result(null, providerReceipt.reason);
-    const closureRecorded =
-      providerReceipt.prNumber !== null &&
-      (await taskPreMergeClosureRecordedOnBase({
-        gitRoot: opts.gitRoot,
-        workflowDir: opts.workflowDir,
-        taskId: opts.taskId,
-        baseBranch: opts.baseBranch,
-        branch: opts.branch,
-        prNumber: providerReceipt.prNumber,
-      }));
-    return closureRecorded
-      ? result("provider_merge", null)
-      : result(null, "exact pre-merge closure evidence is not recorded on base");
+    if (recordedPrNumber === null) {
+      return result(null, "exact task PR identity is unavailable from metadata");
+    }
+    if (providerReceipt.reason || !providerReceipt.receipt) {
+      return result(null, providerReceipt.reason ?? "provider merge receipt is unavailable");
+    }
+    const marker = readPreMergeClosureMarker(meta);
+    if (!marker) return result(null, "exact pre-merge closure marker is unavailable");
+    const closureRecorded = await taskPreMergeClosureRecordedOnBase({
+      gitRoot: opts.gitRoot,
+      workflowDir: opts.workflowDir,
+      taskId: opts.taskId,
+      baseBranch: opts.baseBranch,
+      branch: opts.branch,
+      prNumber: providerReceipt.receipt.prNumber,
+    });
+    if (!closureRecorded) {
+      return result(null, "exact pre-merge closure evidence is not recorded on base");
+    }
+    const reconciliation = await resolveProviderReconciliation({
+      gitRoot: opts.gitRoot,
+      taskId: opts.taskId,
+      branch: opts.branch,
+      baseBranch: opts.baseBranch,
+      taskCommitSha: opts.taskCommitSha,
+      branchHead,
+      closureBasisCommit: marker.basisCommit,
+      receipt: providerReceipt.receipt,
+    });
+    if (!reconciliation.proof) {
+      return result(null, reconciliation.reason ?? "provider reconciliation proof is unavailable");
+    }
+    return result(
+      reconciliation.proof.kind === "exact_head" ? "provider_merge" : "provider_rebase",
+      null,
+      reconciliation.proof,
+    );
   }
 
   const closeRecorded = await taskCloseAlreadyRecordedOnBase({
@@ -284,7 +259,7 @@ async function targetedCleanupProof(opts: {
   });
   if (!closeRecorded) return result(null, "task-close evidence is not recorded on base");
   if (providerResult.state === "found") {
-    return providerReceipt.reason
+    return providerReceipt.reason || !providerReceipt.receipt
       ? result(null, providerReceipt.reason)
       : result("provider_merge", null);
   }
@@ -300,6 +275,59 @@ async function targetedCleanupProof(opts: {
     return result("patch_equivalent", null);
   }
   return result(null, "provider-less task-close branch is not tree/patch equivalent to base");
+}
+
+function sameProviderReconciliation(
+  left: ProviderReconciliationProof,
+  right: ProviderReconciliationProof,
+): boolean {
+  return (
+    left.kind === right.kind &&
+    left.taskId === right.taskId &&
+    left.branch === right.branch &&
+    left.baseBranch === right.baseBranch &&
+    left.prNumber === right.prNumber &&
+    left.taskCommitSha === right.taskCommitSha &&
+    left.localHeadSha === right.localHeadSha &&
+    left.providerHeadSha === right.providerHeadSha &&
+    left.mergeCommit === right.mergeCommit &&
+    left.closureBasisCommit === right.closureBasisCommit
+  );
+}
+
+export async function revalidateCleanupCandidate(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  baseBranch: string;
+  candidate: CleanupCandidate;
+}): Promise<string | null> {
+  const expected = opts.candidate.providerReconciliation;
+  if (!expected) return null;
+  const proof = await targetedCleanupProof({
+    gitRoot: opts.gitRoot,
+    workflowDir: opts.workflowDir,
+    baseBranch: opts.baseBranch,
+    taskId: opts.candidate.taskId,
+    taskCommitSha: expected.taskCommitSha,
+    branch: opts.candidate.branch,
+    kind: "task",
+    expectedReconciliation: expected,
+  });
+  if (!proof.proof || !proof.providerReconciliation) {
+    return (
+      proof.reason ?? "provider reconciliation proof is unavailable during cleanup revalidation"
+    );
+  }
+  if (!sameProviderReconciliation(expected, proof.providerReconciliation)) {
+    return "provider reconciliation changed after proof";
+  }
+  if (proof.expectedHeadSha !== opts.candidate.expectedHeadSha) {
+    return (
+      "local task branch head changed after provider reconciliation proof: " +
+      `expected=${opts.candidate.expectedHeadSha ?? "-"} observed=${proof.expectedHeadSha}`
+    );
+  }
+  return null;
 }
 
 export async function resolveCleanupPlan(opts: {
@@ -365,6 +393,7 @@ export async function resolveCleanupPlan(opts: {
         workflowDir: opts.workflowDir,
         baseBranch: opts.baseBranch,
         taskId: target.taskId,
+        taskCommitSha: task.commit?.hash?.trim() ?? "",
         branch,
         kind: target.kind,
       });
@@ -375,6 +404,9 @@ export async function resolveCleanupPlan(opts: {
           worktreePath,
           expectedHeadSha: proof.expectedHeadSha,
           proof: proof.proof,
+          ...(proof.providerReconciliation
+            ? { providerReconciliation: proof.providerReconciliation }
+            : {}),
         });
       } else {
         blocked.push({

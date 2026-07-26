@@ -182,11 +182,38 @@ function unavailableWorktreeBlocker(state: WorkflowRouteState): RouteBlocker {
   };
 }
 
+function cleanupBlockedStep(state: WorkflowRouteState): WorkflowStep {
+  return terminalStep({
+    state,
+    id: "terminal.cleanup_blocked",
+    code: "cleanup_blocked",
+    phase: "cleanup_blocked",
+    checkout: "base_checkout",
+    role: "INTEGRATOR",
+    outcome: "cleanup_blocked",
+    summary:
+      "targeted cleanup is blocked because merged identity is not proven: " +
+      (state.cleanupProbe.state === "blocked" ? state.cleanupProbe.reasons.join("; ") : "-"),
+    mustNot: [
+      "do not publish, update, rebase, or delete task branches/worktrees while exact merged identity or closure proof is blocked",
+    ],
+    evidenceMissing: ["proven_merged_cleanup_identity"],
+    selectedBlocker: routeBlockerFor(state, "cleanup_blocked"),
+  });
+}
+
 export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
   const id = state.task.id;
   const worktreeBlocker = taskWorktreeBlocker(state);
   if (state.resume.runner.next_action === "wait") return runnerWaitStep(state);
   if (worktreeBlocker) return worktreeResolutionStep(state, worktreeBlocker);
+  if (
+    (state.prFlow?.closeTail.state === "merged" ||
+      state.prFlow?.closeTail.state === "recorded_on_base") &&
+    state.cleanupProbe.state === "blocked"
+  ) {
+    return cleanupBlockedStep(state);
+  }
   if (state.blockers.some((blocker) => blocker.code === "implementation_rework_required")) {
     return implementationReworkStep(state);
   }
@@ -308,23 +335,7 @@ export function doneBranchStep(state: WorkflowRouteState): WorkflowStep {
     });
   }
   if (state.cleanupProbe.state === "blocked") {
-    return terminalStep({
-      state,
-      id: "terminal.cleanup_blocked",
-      code: "cleanup_blocked",
-      phase: "cleanup_blocked",
-      checkout: "base_checkout",
-      role: "INTEGRATOR",
-      outcome: "cleanup_blocked",
-      summary:
-        "targeted cleanup is blocked because merged identity is not proven: " +
-        state.cleanupProbe.reasons.join("; "),
-      mustNot: [
-        "do not delete task branches/worktrees while exact merged identity or closure proof is blocked",
-      ],
-      evidenceMissing: ["proven_merged_cleanup_identity"],
-      selectedBlocker: routeBlockerFor(state, "cleanup_blocked"),
-    });
+    return cleanupBlockedStep(state);
   }
   if (state.cleanupProbe.state === "already_clean") {
     return terminalStep({
