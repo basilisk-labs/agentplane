@@ -68,67 +68,6 @@ describe("task-run lifecycle cancellation", () => {
     ).resolves.toBe("unverified");
   });
 
-  it("waits for the running-state publication before finalizing a fast successful child", async () => {
-    const root = await mkGitRepoRoot();
-    await configureCustomRunner(root, [
-      "#!/bin/sh",
-      'touch "$AGENTPLANE_RUNNER_RUN_DIR/provider-exited"',
-      "exit 0",
-    ]);
-    const taskId = await createDoingTask(root, "Serialize fast child finalization");
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
-    const runId = "run-running-state-barrier";
-    const runnerPaths = await resolveTestRunnerPaths(root, taskId, runId);
-    const originalReadIdentity = processSupervision.readObservedProcessIdentity;
-    let childIdentityEntered!: () => void;
-    let releaseChildIdentity!: () => void;
-    const childIdentityEnteredPromise = new Promise<void>((resolve) => {
-      childIdentityEntered = resolve;
-    });
-    const releaseChildIdentityPromise = new Promise<void>((resolve) => {
-      releaseChildIdentity = resolve;
-    });
-    vi.spyOn(processSupervision, "readObservedProcessIdentity").mockImplementation(async (pid) => {
-      if (pid === process.pid) return await originalReadIdentity(pid);
-      childIdentityEntered();
-      await releaseChildIdentityPromise;
-      return await originalReadIdentity(pid);
-    });
-    const executionPromise = executeTaskRunnerExecution({
-      ctx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      run_id: runId,
-    });
-    try {
-      await childIdentityEnteredPromise;
-      await waitForCondition({
-        description: "fast provider exit marker",
-        timeoutMs: 5000,
-        read: async () =>
-          await access(path.join(runnerPaths.run_dir, "provider-exited")).then(
-            () => true,
-            () => false,
-          ),
-        predicate: Boolean,
-      });
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      const stateBeforeBarrier = await readRunnerRunState(runnerPaths.state_path);
-      expect(stateBeforeBarrier?.status).toBe("prepared");
-      releaseChildIdentity();
-
-      const executed = await executionPromise;
-      const finalState = await readRunnerRunState(runnerPaths.state_path);
-      expect(executed.result.status).toBe("success");
-      expect(finalState?.status).toBe("success");
-      expect(finalState?.result?.status).toBe("success");
-    } finally {
-      releaseChildIdentity();
-      await executionPromise.catch(() => null);
-    }
-  });
-
   it("terminalizes a spawned child error instead of leaving running state wedged", async () => {
     const root = await mkGitRepoRoot();
     const config = defaultConfig();
@@ -365,41 +304,48 @@ describe("task-run lifecycle cancellation", () => {
       task_id: taskId,
       run_id: runId,
     });
-    const runningState = await waitForState(
-      runnerPaths.state_path,
-      (state) =>
-        state?.status === "running" &&
-        typeof state.supervision?.pid === "number" &&
-        Boolean(state.supervision.process_identity),
-    );
-    const pid = runningState!.supervision!.pid!;
-    const processKillSpy = vi.spyOn(process, "kill");
+    try {
+      const runningState = await waitForState(
+        runnerPaths.state_path,
+        (state) => state?.status === "running" && typeof state.supervision?.pid === "number",
+      );
+      const pid = runningState!.supervision!.pid!;
+      const observedIdentity = runningState?.supervision?.process_identity;
+      expect(observedIdentity === null || observedIdentity?.pid === pid).toBe(true);
+      const processKillSpy = vi.spyOn(process, "kill");
 
-    await writeFile(path.join(runnerPaths.run_dir, "release-finalizer"), "", "utf8");
-    const executed = await executionPromise;
-    expect(executed.result.status).toBe("success");
+      await writeFile(path.join(runnerPaths.run_dir, "release-finalizer"), "", "utf8");
+      const executed = await executionPromise;
+      expect(executed.result.status).toBe("success");
 
-    await expect(
-      cancelTaskRunnerExecution({
-        ctx,
-        cwd: root,
-        rootOverride: root,
-        task_id: taskId,
-        run_id: runId,
-      }),
-    ).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-    const finalState = await readRunnerRunState(runnerPaths.state_path);
-    const directCancelSignals = processKillSpy.mock.calls.filter(
-      ([signalPid, signal]) => signalPid === pid && (signal === "SIGTERM" || signal === "SIGKILL"),
-    );
-    expect(finalState?.status).toBe("success");
-    expect(finalState?.result?.status).toBe("success");
-    expect(directCancelSignals).toEqual([]);
-    expect(await readFile(runnerPaths.events_path, "utf8")).not.toContain(
-      "runner_cancel_requested",
-    );
+      await expect(
+        cancelTaskRunnerExecution({
+          ctx,
+          cwd: root,
+          rootOverride: root,
+          task_id: taskId,
+          run_id: runId,
+        }),
+      ).rejects.toMatchObject({
+        code: "E_USAGE",
+      });
+      const finalState = await readRunnerRunState(runnerPaths.state_path);
+      const directCancelSignals = processKillSpy.mock.calls.filter(
+        ([signalPid, signal]) =>
+          signalPid === pid && (signal === "SIGTERM" || signal === "SIGKILL"),
+      );
+      expect(finalState?.status).toBe("success");
+      expect(finalState?.result?.status).toBe("success");
+      expect(directCancelSignals).toEqual([]);
+      expect(await readFile(runnerPaths.events_path, "utf8")).not.toContain(
+        "runner_cancel_requested",
+      );
+    } finally {
+      await writeFile(path.join(runnerPaths.run_dir, "release-finalizer"), "", "utf8").catch(
+        () => null,
+      );
+      await executionPromise.catch(() => null);
+    }
   });
 
   it("keeps a failed terminal state immutable when cancellation arrives later", async () => {

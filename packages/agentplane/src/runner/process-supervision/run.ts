@@ -186,7 +186,7 @@ export async function runSupervisedProcess(opts: {
       });
       return processGroupCleanupPromise;
     };
-    const updateRunningState = async () => {
+    const publishRunningState = async () => {
       await opts.assert_artifact_boundary?.("before recording process start");
       const initialState = await readRunnerRunState(opts.invocation.state_path);
       if (!initialState) return;
@@ -197,23 +197,12 @@ export async function runSupervisedProcess(opts: {
         );
       }
       clock.advanceToIso(initialState.updated_at);
-      const observedIdentity =
-        pid === null ? null : await readObservedProcessIdentity(pid).catch(() => null);
-      const processIdentity =
-        observedIdentity?.command && observedIdentity.started_at
-          ? {
-              pid: observedIdentity.pid,
-              command: observedIdentity.command,
-              started_at: observedIdentity.started_at,
-              observed_at: clock.nowIso(),
-            }
-          : null;
       const runningStateAt = clock.nowIso();
       const supervision = mergeSupervisionState(initialState.supervision, {
         pid,
         command: renderInvocationCommand(opts.invocation),
         started_at,
-        process_identity: processIdentity,
+        process_identity: null,
         heartbeat_at,
         exit_signal: null,
         timeout_reason: null,
@@ -238,7 +227,45 @@ export async function runSupervisedProcess(opts: {
       });
       await opts.assert_artifact_boundary?.("after recording process start");
     };
-
+    const enrichRunningProcessIdentity = async (): Promise<void> => {
+      if (!acceptsSupervisionPatches) return;
+      try {
+        const observedIdentity =
+          pid === null ? null : await readObservedProcessIdentity(pid).catch(() => null);
+        const { command, started_at } = observedIdentity ?? {};
+        if (!observedIdentity || !command || !started_at) return;
+        await serializeStateWrite(async () => {
+          if (!acceptsSupervisionPatches) return;
+          await opts.assert_artifact_boundary?.("before recording process identity");
+          if (!acceptsSupervisionPatches) return;
+          const currentState = await readRunnerRunState(opts.invocation.state_path);
+          const canWriteIdentity =
+            acceptsSupervisionPatches &&
+            currentState?.status === "running" &&
+            currentState.supervision?.pid === pid;
+          if (!canWriteIdentity) return;
+          await writeRunnerRunState({
+            state_path: opts.invocation.state_path,
+            state: evolveRunnerRunState({
+              state: currentState,
+              status: "running",
+              updated_at: clock.nowIso(),
+              supervision: mergeSupervisionState(currentState.supervision, {
+                process_identity: {
+                  pid: observedIdentity.pid,
+                  command,
+                  started_at,
+                  observed_at: clock.nowIso(),
+                },
+              }),
+            }),
+          });
+          await opts.assert_artifact_boundary?.("after recording process identity");
+        });
+      } catch {
+        // Process identity is optional safety evidence; its bounded probe cannot rewrite terminal state.
+      }
+    };
     const finishWithError = (err: unknown) => {
       if (settled) return;
       acceptsSupervisionPatches = false;
@@ -247,7 +274,6 @@ export async function runSupervisedProcess(opts: {
       settled = true;
       void rejectAfterBufferedFlush(err);
     };
-
     const rejectAfterBufferedFlush = async (err: unknown) => {
       const primaryError = errorFromUnknown(err);
       try {
@@ -457,10 +483,11 @@ export async function runSupervisedProcess(opts: {
       now_iso: clock.nowIso,
       advance_to_iso: clock.advanceToIso,
     });
-
-    runningStateReady = serializeStateWrite(updateRunningState);
+    runningStateReady = serializeStateWrite(publishRunningState);
     void runningStateReady.catch(finishWithError);
-
+    void runningStateReady
+      .then(() => acceptsSupervisionPatches && trackControlEffect(enrichRunningProcessIdentity()))
+      .catch(() => null);
     child.stdout?.on("data", (chunk: Buffer | string) => {
       traceSession.onStdoutData(chunk);
       ({ stdout_tail, stderr_tail, stdout_bytes, stderr_bytes } = traceSession.getResult());

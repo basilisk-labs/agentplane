@@ -3,7 +3,8 @@
   "branch": "task/202607261825-M57HKS/stabilize-task-run-launch-under-concurrent-activ",
   "created_at": "2026-07-26T18:27:35.535Z",
   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-26T18:42:29.060Z",
+  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "pr_number": 4635,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4635",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607261825-M57HKS",
   "updated_at": "2026-07-26T18:29:17.808Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }
