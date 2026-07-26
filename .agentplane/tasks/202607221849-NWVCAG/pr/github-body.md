@@ -19,8 +19,10 @@ RF-13: classify local, external reversible, external high-risk, and semantic ope
 - Note:
 
 ```text
-Implementation rework verified: route authority now forces the runner read-only when the canonical
-work order has no writable roots.
+Verified the authority-only review-target repair: a committed authority grant no longer invalidates
+the prior quality target, while substantive README changes remain reviewable. Passed targeted
+quality/route tests, test:fast (468 files, 3257 tests), test:critical (11 chunks, 72 tests),
+typecheck, and format:changed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -35,6 +37,8 @@ work order has no writable roots.
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
+ .../commands/shared/quality-review-target.test.ts  |  71 ++++
+ .../src/commands/shared/quality-review-target.ts   |  72 +++-
  .../shared/route-decision-next-action.test.ts      |   2 +-
  .../src/commands/shared/route-decision.ts          |  71 +++-
  .../commands/shared/side-effect-authority.test.ts  | 221 +++++++++++
@@ -57,7 +61,7 @@ work order has no writable roots.
  packages/core/src/runner/execution-receipt.ts      |   2 +-
  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++++-
  .../check-compatibility-contract-baseline.mjs      | 106 ++++++
- 25 files changed, 1725 insertions(+), 102 deletions(-)
+ 27 files changed, 1867 insertions(+), 103 deletions(-)
 ```
 
 </details>
