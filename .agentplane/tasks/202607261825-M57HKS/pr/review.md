@@ -6,14 +6,14 @@ Created: 2026-07-26T18:27:35.535Z
 
 - Task: `202607261825-M57HKS`
 - Title: Stabilize task-run launch under concurrent active claims
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607261825-M57HKS/stabilize-task-run-launch-under-concurrent-activ`
 - Canonical task record: `.agentplane/tasks/202607261825-M57HKS/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: REWORK: full fast CI passed, but the branch has no runner implementation or regression-coverage change. This classifies the prior failure as schedule-sensitive only; it does not prove the prepared-to-running gate or fixture-cleanup ownership is repaired.
+- State: ok
+- Note: PASS: M57 publishes running state before bounded process-identity enrichment; identity observation cannot rewrite terminal state; active claims remain fail-closed while identity is absent.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,13 @@ Created: 2026-07-26T18:27:35.535Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/runner/process-supervision/run.ts          |  63 +++++--
+ .../src/runner/process-supervision/signals.test.ts |  17 +-
+ .../src/runner/process-supervision/signals.ts      |   7 +-
+ .../task-run-active-claim-concurrency.test.ts      | 201 +++++++++++++++++++--
+ .../usecases/task-run-lifecycle-cancel.test.ts     | 136 +++++---------
+ ...task-run-process-identity-serialization.test.ts | 123 +++++++++++++
+ 6 files changed, 412 insertions(+), 135 deletions(-)
 ```
 
 </details>

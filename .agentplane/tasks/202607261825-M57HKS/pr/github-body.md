@@ -15,13 +15,12 @@ Repair the reproducible runner lifecycle failure where active-claim concurrency 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-REWORK: full fast CI passed, but the branch has no runner implementation or regression-coverage
-change. This classifies the prior failure as schedule-sensitive only; it does not prove the
-prepared-to-running gate or fixture-cleanup ownership is repaired.
+PASS: M57 publishes running state before bounded process-identity enrichment; identity observation
+cannot rewrite terminal state; active claims remain fail-closed while identity is absent.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,7 +32,13 @@ prepared-to-running gate or fixture-cleanup ownership is repaired.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/runner/process-supervision/run.ts          |  63 +++++--
+ .../src/runner/process-supervision/signals.test.ts |  17 +-
+ .../src/runner/process-supervision/signals.ts      |   7 +-
+ .../task-run-active-claim-concurrency.test.ts      | 201 +++++++++++++++++++--
+ .../usecases/task-run-lifecycle-cancel.test.ts     | 136 +++++---------
+ ...task-run-process-identity-serialization.test.ts | 123 +++++++++++++
+ 6 files changed, 412 insertions(+), 135 deletions(-)
 ```
 
 </details>

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607261825-M57HKS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T20:38:49.287Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "PASS: the reviewed commit replaces an unbounded pre-running ps observation with a bounded, post-publication enrichment while preserving fail-closed active-claim and terminal-state authority.",
+  "evaluated_sha": "2501edb21e1c9f33840a6d9d132d061f78f2e313",
+  "blueprint_digest": "81f6962516c9051bf46d270961671e2a36c6c9fd92195c13d3fff99f20d74c84",
+  "findings": [
+    "Running state and runner_execute_start publish before process identity observation; a 500 ms observation timeout degrades only optional identity evidence to null.",
+    "Terminalization sets acceptsSupervisionPatches=false before draining the tracked enrichment effect, so a late observation cannot recreate running state after success, failure, or cancellation.",
+    "Regression coverage proves running-without-identity rejects a competing retry with running_child_unverified and that only one provider run starts."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607261825-M57HKS/README.md",
+    "commit:2501edb21 semantic review of runner supervision ordering",
+    "packages/agentplane/src/runner/usecases/task-run-process-identity-serialization.test.ts",
+    "packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts",
+    "AGENTPLANE_LOCAL_VITEST_SUITE_TIMEOUT_MS=1200000 bun run ci:local:fast: pass (467 files / 3234 tests; 11 critical CLI chunks)"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "@agentplaneorg/core/process.runProcess enforces timeoutMs and exposes timedOut on deadline; the direct signal test asserts this call contract."
+  ],
+  "residual_risks": [
+    "Finalization may wait up to the 500 ms identity-probe bound, trading a small bounded delay for serialized terminal-state safety."
+  ]
+}
