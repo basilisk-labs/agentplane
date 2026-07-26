@@ -12,8 +12,8 @@ Created: 2026-07-26T10:53:22.624Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation paths for the approved AgentWorkOrder v2 scope.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
