@@ -30,7 +30,9 @@ routing, doctor, and diff check passed. Doctor reported only historical archive 
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
  docs/user/cli-reference.generated.mdx              |  24 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../cli/run-cli.core.pr-conflict-rework.test.ts    | 506 ++++++++++++++++
  ...n-cli.core.pr-flow.integrate-validation.test.ts |   2 +
  .../run-cli.core.route-decision.pre-merge.test.ts  |   4 +
@@ -67,7 +69,7 @@ routing, doctor, and diff check passed. Doctor reported only historical archive 
  schemas/task-handoff.schema.json                   |  11 +
  .../baselines/v0.7-compatibility-candidate.json    |  78 ++-
  .../check-compatibility-contract-baseline.mjs      |  52 +-
- 37 files changed, 2878 insertions(+), 65 deletions(-)
+ 39 files changed, 2880 insertions(+), 65 deletions(-)
 ```
 
 </details>
