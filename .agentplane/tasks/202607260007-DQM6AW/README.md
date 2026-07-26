@@ -2,10 +2,10 @@
 id: "202607260007-DQM6AW"
 title: "Prepare semantic conflict rework routes"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -36,40 +36,23 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-26T02:19:48.873Z"
-  updated_by: "TESTER"
-  note: "Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T03:33:49.198Z"
+  state: "needs_rework"
+  updated_at: "2026-07-26T03:49:18.189Z"
   updated_by: "EVALUATOR"
-  note: "Independent review of 61318ea confirms the P1/P2 rework meets the semantic conflict-routing contract."
-  evaluated_sha: "61318ea295e251c0e19892344b28c30a1b2328ea"
+  note: "Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-07-26T03:49:18.189Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha."
+  evaluated_sha: "23e9125344b95c4d1691ded2ac9aa4bc60db60c9"
   blueprint_digest: "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6"
   evidence_refs:
     - ".agentplane/tasks/202607260007-DQM6AW/README.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-033349198-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-033349198-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-033349198-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/pr/internal/sync-github.ts"
-    - "packages/agentplane/src/commands/pr/conflict-rework.ts"
-    - "packages/agentplane/src/commands/pr/integrate/internal/protected-base-handoff.ts"
-    - "bun x vitest --config vitest.workspace.ts run --project agentplane P1/P2/branch suites: 67 passed"
-    - "bun x vitest --config vitest.workspace.ts run --project cli-core P1/P2 CLI suites: 12 passed"
-    - "bun run format:check; bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; agentplane doctor; git diff --check: passed"
-    - "bun run bench:compatibility:check: approved candidate 35aefe91 with exact-main baseline verified"
-    - "bun run test:critical: 11 critical files passed"
-  findings:
-    - "P1: mergeable=true with clean, behind, unstable, or blocked is coherently non-conflicting and remains on the ordinary quality-review route; null/pending and contradictory values fail closed before conflict preparation and do not claim merge readiness."
-    - "P2: protected-base handoff now persists the observed provider base SHA, rejects a missing SHA, and invalidates semantic rework when that stored SHA differs from current provider truth before merge-base or diff operations."
-    - "The repaired force-lease fixtures model exact GitHub PR lookup and fetch/push remote identity; all branch-publication regressions pass without changing publication source behavior."
-commit:
-  hash: "61318ea295e251c0e19892344b28c30a1b2328ea"
-  message: "🧩 DQM6AW conflict: normalize provider rework safety"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
+  findings: []
+commit: null
 comments:
   -
     author: "CODER"
@@ -116,8 +99,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-26T03:49:18.189Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha."
 doc_version: 3
-doc_updated_at: "2026-07-26T03:35:05.354Z"
+doc_updated_at: "2026-07-26T03:49:19.003Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -268,6 +257,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-26T03:49:18.189Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T03:35:05.354Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+    - old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+    - diagnostic_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert only the bounded preparation and route change in a new normal branch_pr task or follow-up. Preserve any existing fail-closed conflict block and task-local packet evidence. Never compensate by rebasing, merging, force-pushing, deleting, or recreating a branch. If current truth cannot be reconfirmed, stop with the diagnostic route and leave all refs/worktrees unchanged."
   Findings: |-
@@ -286,6 +305,14 @@ sections:
     Regression evidence: direct normalization tests cover omitted fields, false plus unknown, pending unknown, settled clean, and settled conflict. Direct packet tests prove absent, pending, and contradictory mergeability fail closed. CLI route tests prove each uncertain provider payload returns terminal provider_conflict_context_invalid without a cli operation, semantic episode, or worktree mutation; settled clean fixtures retain ordinary routes and settled conflicts retain the bounded CODER packet. Existing regressions cover expired and current claimed leases, mismatched protected-base handoff PR numbers, oversized checks, missing requirements, nonqueued and DOING tasks, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. Focused agentplane tests (85), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
 
     Residual risk: live THDN provider and protection state remain time-sensitive and must be refreshed before any later publication or integration decision. No PR, push, merge, rebase, force-push, or integration was performed during this rework.
+
+    - Observation: Hosted CI requires bun run schemas:sync; generated task-handoff schemas omit provider_base_sha.
+      Impact: verify-contract, test-windows, and verify-unit fail before integration.
+      Resolution: Run bun run schemas:sync in the DQM task worktree, commit the generated schemas with the source change, then rerun focused and hosted checks.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
+      IncidentScope: task-handoff schema generation
+      IncidentTags: generated-schemas
 extensions:
   workflow_route_baseline:
     start_head_sha: "e27c938698668ce242243d166f8c7c1b64cce88f"
@@ -450,6 +477,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-26T03:49:18.189Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T03:35:05.354Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+- old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+- diagnostic_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -473,3 +530,11 @@ Packet bounds: candidate paths are capped at 32; hosted-check rows at 64; unique
 Regression evidence: direct normalization tests cover omitted fields, false plus unknown, pending unknown, settled clean, and settled conflict. Direct packet tests prove absent, pending, and contradictory mergeability fail closed. CLI route tests prove each uncertain provider payload returns terminal provider_conflict_context_invalid without a cli operation, semantic episode, or worktree mutation; settled clean fixtures retain ordinary routes and settled conflicts retain the bounded CODER packet. Existing regressions cover expired and current claimed leases, mismatched protected-base handoff PR numbers, oversized checks, missing requirements, nonqueued and DOING tasks, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. Focused agentplane tests (85), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
 
 Residual risk: live THDN provider and protection state remain time-sensitive and must be refreshed before any later publication or integration decision. No PR, push, merge, rebase, force-push, or integration was performed during this rework.
+
+- Observation: Hosted CI requires bun run schemas:sync; generated task-handoff schemas omit provider_base_sha.
+  Impact: verify-contract, test-windows, and verify-unit fail before integration.
+  Resolution: Run bun run schemas:sync in the DQM task worktree, commit the generated schemas with the source change, then rerun focused and hosted checks.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+  IncidentScope: task-handoff schema generation
+  IncidentTags: generated-schemas

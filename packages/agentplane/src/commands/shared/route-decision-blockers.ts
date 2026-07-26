@@ -90,6 +90,24 @@ function addConflictReworkBlockers(
   );
 }
 
+function addHostedCheckFailureReworkBlocker(
+  blockers: RouteBlocker[],
+  prFlow: PrFlowStatusReport | null,
+): void {
+  if (
+    prFlow?.pr.state !== "OPEN" ||
+    !prFlow.hostedChecks.checked ||
+    prFlow.hostedChecks.failing <= 0
+  ) {
+    return;
+  }
+  addBlocker(
+    blockers,
+    "implementation_rework_required",
+    "current hosted checks are failing; return the task to CODER implementation rework before PR publication or integration",
+  );
+}
+
 async function isPrMetaOnlyTaskLocalAdvance(opts: {
   ctx: CommandContext;
   taskIds: readonly string[];
@@ -277,6 +295,7 @@ export async function deriveBlockers(opts: {
   if (opts.workflowMode === "branch_pr" && opts.task.status === "DONE") {
     addPublicationBlockers(blockers, opts.prFlow);
     addCloseTailProviderBlocker(blockers, opts.prFlow);
+    addHostedCheckFailureReworkBlocker(blockers, opts.prFlow);
   }
   if (
     opts.workflowMode === "branch_pr" &&

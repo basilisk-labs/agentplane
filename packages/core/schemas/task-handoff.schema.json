@@ -261,6 +261,17 @@
             }
           ]
         },
+        "provider_base_sha": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "handoff_show_command": {
           "anyOf": [
             {

@@ -12,13 +12,8 @@ In scope: branch_pr queue conflict detection, provider-backed freshness and prov
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and
-contradictory truth fails closed.
-```
+- State: needs_rework
+- Note: Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -6,14 +6,14 @@ Created: 2026-07-26T00:55:55.843Z
 
 - Task: `202607260007-DQM6AW`
 - Title: Prepare semantic conflict rework routes
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes`
 - Canonical task record: `.agentplane/tasks/202607260007-DQM6AW/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and contradictory truth fails closed.
+- State: needs_rework
+- Note: Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
