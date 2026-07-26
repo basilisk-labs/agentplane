@@ -90,8 +90,11 @@ describe("AgentWorkOrder v2 contract", () => {
 
       expect(compatibility.source_version).toBe(1);
       expect(compatibility.task.id).toBe(AGENT_WORK_ORDER_V2_VALID_FIXTURE.task.id);
+      expect(compatibility.legacy_recommended_role).toBe("CODER");
       expect(compatibility.omissions).toEqual(
         expect.arrayContaining([
+          expect.objectContaining({ field: "work_order_id" }),
+          expect.objectContaining({ field: "role" }),
           expect.objectContaining({
             field: "authority",
             reason_code: "legacy_v1_field_not_carried",
@@ -100,8 +103,30 @@ describe("AgentWorkOrder v2 contract", () => {
           expect.objectContaining({ field: "prepared_evidence" }),
         ]),
       );
+      // CODER is lifecycle routing guidance, while the migration override supplies
+      // the independently chosen AgentWorkOrder semantic role.
+      expect(migration.work_order.role).toBe("EXECUTOR");
       expect(migration.work_order).toEqual(AGENT_WORK_ORDER_V2_VALID_FIXTURE);
     }
+  });
+
+  it("accepts the nullable task projection emitted by Hermes", () => {
+    const compatibility = readAgentWorkOrderV1CompatibilityView({
+      source_surface: "hermes",
+      payload: {
+        ...AGENT_WORK_ORDER_V1_COMPATIBILITY_FIXTURES.hermes,
+        task: {
+          ...AGENT_WORK_ORDER_V1_COMPATIBILITY_FIXTURES.hermes.task,
+          title: null,
+        },
+      },
+    });
+
+    expect(compatibility.task).toMatchObject({
+      id: "task-example-001",
+      title: null,
+      owner: null,
+    });
   });
 
   it("centralizes camelCase parsing and rejects duplicate aliases", () => {

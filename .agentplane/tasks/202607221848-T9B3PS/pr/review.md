@@ -12,8 +12,8 @@ Created: 2026-07-26T08:07:55.572Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet shapes including owner:null, and avoid synthetic recommended_role fixtures.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -124,13 +124,23 @@ const main = defineScript({
           path.join(repoRoot, "schemas", "examples", "agent-work-order-v2.camel-case.compat.json"),
         ],
       },
-      ...["brief", "runner", "hermes"].map((surface) => ({
-        label: `AgentWorkOrder v1 ${surface} compatibility example`,
-        rendered: renderAgentWorkOrderV1CompatibilityFixtureJson(surface),
-        targets: [
-          path.join(repoRoot, "schemas", "examples", `agent-work-order-v1.${surface}.legacy.json`),
-        ],
-      })),
+      ...(await Promise.all(
+        ["brief", "runner", "hermes"].map(async (surface) => ({
+          label: `AgentWorkOrder v1 ${surface} compatibility example`,
+          rendered: await format(renderAgentWorkOrderV1CompatibilityFixtureJson(surface), {
+            parser: "json",
+            printWidth: 100,
+          }),
+          targets: [
+            path.join(
+              repoRoot,
+              "schemas",
+              "examples",
+              `agent-work-order-v1.${surface}.legacy.json`,
+            ),
+          ],
+        })),
+      )),
       {
         label: "config schema",
         rendered: renderAgentplaneConfigSchemaJson(),

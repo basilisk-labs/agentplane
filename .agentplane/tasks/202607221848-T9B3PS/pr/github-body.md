@@ -15,8 +15,13 @@ RF-05a: evolve agentplane.agent_work_context into one versioned AgentWorkOrder v
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet
+shapes including owner:null, and avoid synthetic recommended_role fixtures.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
