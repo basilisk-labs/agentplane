@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -39,23 +39,23 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T09:46:40.891Z"
+  updated_at: "2026-07-26T09:56:15.012Z"
   updated_by: "EVALUATOR"
-  note: "RF-07 returns persisted task identities and records a CLI-owned task-creation receipt before downstream context-pack work; the cumulative compatibility candidate now proves the bounded context-contract delta."
-  evaluated_sha: "2e50c9252fa2408d3c37c26dd02a4e20385ea167"
+  note: "The hotspot rework removes only redundant async and await wrappers while preserving the cloud write lock and typed-result boundary; RF-07 receipt semantics remain unchanged."
+  evaluated_sha: "13816364eb35292e49294a92cabb41f702dd9a75"
   blueprint_digest: "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d"
   evidence_refs:
     - ".agentplane/tasks/202607221848-1HWR0R/README.md"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-094640891-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-094640891-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-094640891-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-095615012-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-095615012-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-095615012-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json"
-    - "bun run bench:compatibility:check"
+    - "bun run hotspots:check"
+    - "packages/agentplane/src/backends/task-backend.revision-cas.test.ts"
     - "bun run typecheck"
-    - "packages/agentplane/src/commands/shared/task-mutation.ts"
-    - "packages/agentplane/src/context/ingest-task-pack.ts"
+    - "git diff --check"
   findings:
-    - "No blocking semantic defect found."
+    - "No blocking semantic defect found in the post-review hotspot delta."
 commit:
   hash: "2e50c9252fa2408d3c37c26dd02a4e20385ea167"
   message: "🧩 1HWR0R task: ratchet typed mutation receipts"
