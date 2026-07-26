@@ -243,7 +243,10 @@ const main = defineScript({
       },
       {
         label: "execution receipt schema",
-        rendered: renderExecutionReceiptSchemaJson(),
+        rendered: await format(renderExecutionReceiptSchemaJson(), {
+          parser: "json",
+          printWidth: 100,
+        }),
         targets: [path.join(repoRoot, "schemas", "execution-receipt.schema.json")],
       },
       {
