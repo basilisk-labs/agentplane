@@ -44,7 +44,7 @@ it("binds a side-effect approval to its target checkout, not its persistence che
     authoritativeCheckout: "task_worktree",
     request: { type: "side_effect", operationId: "route.remote.refresh" },
   } as WorkflowStep;
-  expect(workflowStepFingerprintCheckout(approval)).toBe("base_checkout");
+  expect(workflowStepFingerprintCheckout(approval)).toBe("task_worktree");
 });
 
 function digest(text: string): string {
