@@ -94,6 +94,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [work start](#work-start)
 - PR
   - [integrate](#integrate)
+  - [integrate queue adopt-legacy-protected-conflict](#integrate-queue-adopt-legacy-protected-conflict)
   - [integrate queue claim](#integrate-queue-claim)
   - [integrate queue doctor](#integrate-queue-doctor)
   - [integrate queue enqueue](#integrate-queue-enqueue)
@@ -1406,6 +1407,20 @@ agentplane integrate 202602030608-F1Q8AB --run-verify
 ```
 
 - Integrate with verify.
+
+### integrate queue adopt-legacy-protected-conflict
+
+Record an explicit recovery receipt for a verified legacy protected-PR conflict.
+
+Usage:
+
+```text
+agentplane integrate queue adopt-legacy-protected-conflict <task-id> [options]
+```
+
+Options:
+
+- `--expect-adoption-token <sha256:...>`: Exact token from task next-action or pr conflict-rework.
 
 ### integrate queue claim
 
