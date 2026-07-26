@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T21:55:55.787Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "RF-13 meets the formal workflow authority contract: protected external and high-risk operations require an exact scoped record, local reversible operations remain automatic, and semantic verdict values remain outside router synthesis.",
+  "evaluated_sha": "1a5e1b672a6ed9de4403dc30bc84fab1574be4db",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "Typed approval is emitted without a matching record; an exact operation/state-scope/expiry match restores only the projected workflow operation.",
+    "Authority audit fixtures cover actor, policy rule, operation digest, state fingerprint, authority digest, outcome, and hash-chain tamper failure."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "packages/agentplane/src/commands/shared/side-effect-authority.test.ts",
+    "bun run test:fast",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run guards:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The formal task route is the authority boundary; direct legacy command invocation is compatibility surface, not a separate authorization protocol."
+  ],
+  "residual_risks": [
+    "The local hash-chain journal is tamper-evident but is not protected by a separate signing principal; beta.1 must add the external verifier/signer boundary."
+  ]
+}
