@@ -116,6 +116,10 @@ function createBackend(overrides: Partial<TaskBackend> = {}): TaskBackend {
   return makeTaskBackendDouble(overrides);
 }
 
+function persistedTaskReader(getCurrent: () => TaskData): () => Promise<TaskData> {
+  return () => Promise.resolve(cloneTask(getCurrent()));
+}
+
 async function runCommentScenario(mode: BackendMode) {
   vi.resetModules();
   let currentTask = mkTask();
@@ -130,7 +134,10 @@ async function runCommentScenario(mode: BackendMode) {
     }),
   };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
-  const backend = createBackend({ writeTask });
+  const backend = createBackend({
+    getTask: persistedTaskReader(() => currentTask),
+    writeTask,
+  });
   const ctx = mkCtx(backend);
 
   vi.doMock("../shared/task-backend.js", () => ({
@@ -180,7 +187,10 @@ async function runBlockScenario(mode: BackendMode) {
     }),
   };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
-  const backend = createBackend({ writeTask });
+  const backend = createBackend({
+    getTask: persistedTaskReader(() => currentTask),
+    writeTask,
+  });
   const ctx = mkCtx(backend);
 
   vi.doMock("../guard/impl/comment-commit.js", () => ({
@@ -255,7 +265,10 @@ async function runStartScenario(mode: BackendMode) {
     }),
   };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
-  const backend = createBackend({ writeTask });
+  const backend = createBackend({
+    getTask: persistedTaskReader(() => currentTask),
+    writeTask,
+  });
   const ctx = mkCtx(backend);
 
   vi.doMock("../guard/impl/comment-commit.js", () => ({
@@ -322,7 +335,10 @@ async function runSetStatusScenario(mode: BackendMode) {
     }),
   };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
-  const backend = createBackend({ writeTask });
+  const backend = createBackend({
+    getTask: persistedTaskReader(() => currentTask),
+    writeTask,
+  });
   const ctx = mkCtx(backend);
 
   vi.doMock("../guard/impl/comment-commit.js", () => ({
@@ -416,6 +432,7 @@ async function runPlanSetScenario(mode: BackendMode) {
   };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
   const backend = createBackend({
+    getTask: persistedTaskReader(() => currentTask),
     writeTask,
     getTaskDoc: vi.fn(() => Promise.resolve(baseDoc)),
   });
@@ -485,6 +502,7 @@ async function runVerifyRecordScenario(mode: BackendMode) {
   };
   const loadTaskFromContext = vi.fn(() => Promise.resolve(cloneTask(currentTask)));
   const backend = createBackend({
+    getTask: persistedTaskReader(() => currentTask),
     writeTask,
     getTaskDoc: vi.fn(() => Promise.resolve(baseDoc)),
   });
@@ -549,6 +567,7 @@ async function runDocSetScenario(mode: BackendMode) {
   let remoteDoc = baseDoc;
   let remoteUpdatedBy: string | undefined;
   const writeTask = vi.fn((task: TaskData) => {
+    currentTask = cloneTask(task);
     remoteDoc = String(task.doc ?? "");
     remoteUpdatedBy = task.doc_updated_by;
     return Promise.resolve();
@@ -560,6 +579,7 @@ async function runDocSetScenario(mode: BackendMode) {
     }),
   };
   const backend = createBackend({
+    getTask: persistedTaskReader(() => currentTask),
     getTaskDoc: vi.fn(() => Promise.resolve(baseDoc)),
     writeTask,
   });

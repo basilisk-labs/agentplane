@@ -358,11 +358,15 @@ describe("task plan commands (unit)", () => {
     });
 
     const getTaskDoc = vi.fn<() => Promise<string>>(() => Promise.resolve("## Summary\nx\n"));
-    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
+    let persisted: TaskData | null = null;
+    const writeTask = vi.fn<(task: TaskData) => Promise<void>>((task) => {
+      persisted = structuredClone(task);
+      return Promise.resolve();
+    });
     const backend: TaskBackend = {
       id: "mock",
       listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+      getTask: () => Promise.resolve(persisted && structuredClone(persisted)),
       writeTask,
       getTaskDoc,
     };

@@ -1,4 +1,4 @@
-export type { TaskCreationResult, TaskNewParsed } from "./new.js";
+export type { TaskNewParsed } from "./new.js";
 export { runTaskNewParsed } from "./new.js";
 export { cmdTaskAdd } from "./add.js";
 export { cmdTaskUpdate } from "./update.js";

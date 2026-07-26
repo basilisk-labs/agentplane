@@ -87,6 +87,21 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   });
 }
 
+function makeWriteThroughBackend(opts: {
+  getTaskDoc: () => Promise<string>;
+  writeTask: TaskBackend["writeTask"];
+}): TaskBackend {
+  let persisted: TaskData | null = null;
+  return makeTaskBackendDouble({
+    getTask: () => Promise.resolve(persisted && structuredClone(persisted)),
+    getTaskDoc: opts.getTaskDoc,
+    writeTask: async (task, writeOptions) => {
+      await opts.writeTask(task, writeOptions);
+      persisted = structuredClone(task);
+    },
+  });
+}
+
 describe("task verify record (unit)", () => {
   beforeEach(() => {
     mocks.readFile.mockReset();
@@ -135,10 +150,7 @@ describe("task verify record (unit)", () => {
       writes.push(String(chunk));
       return true;
     });
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask: () => Promise.resolve(),
       getTaskDoc: () =>
         Promise.resolve(
@@ -157,7 +169,7 @@ describe("task verify record (unit)", () => {
             "",
           ].join("\n"),
         ),
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     ctx.config.workflow_mode = "branch_pr";
     mocks.loadTaskFromContext.mockResolvedValue(
@@ -361,13 +373,10 @@ describe("task verify record (unit)", () => {
       ),
     );
 
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask,
       getTaskDoc,
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
@@ -454,13 +463,10 @@ describe("task verify record (unit)", () => {
       ),
     );
 
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask,
       getTaskDoc,
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
@@ -512,10 +518,7 @@ describe("task verify record (unit)", () => {
 
   it("cmdTaskVerifyOk normalizes doc_version=3 verification to results-only layout", async () => {
     const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask,
       getTaskDoc: () =>
         Promise.resolve(
@@ -538,7 +541,7 @@ describe("task verify record (unit)", () => {
             "",
           ].join("\n"),
         ),
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
@@ -572,10 +575,7 @@ describe("task verify record (unit)", () => {
 
   it("cmdTaskVerifyOk decodes escaped newlines in verification details", async () => {
     const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask,
       getTaskDoc: () =>
         Promise.resolve(
@@ -592,7 +592,7 @@ describe("task verify record (unit)", () => {
             "",
           ].join("\n"),
         ),
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
@@ -624,10 +624,7 @@ describe("task verify record (unit)", () => {
   it("cmdTaskVerifyOk normalizes note-file content to a single verification line", async () => {
     mocks.readFile.mockResolvedValue("Looks\\n\\n good   from file\n");
     const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask,
       getTaskDoc: () =>
         Promise.resolve(
@@ -644,7 +641,7 @@ describe("task verify record (unit)", () => {
             "",
           ].join("\n"),
         ),
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
@@ -677,10 +674,7 @@ describe("task verify record (unit)", () => {
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 
     const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask,
       getTaskDoc: () =>
         Promise.resolve(
@@ -696,7 +690,7 @@ describe("task verify record (unit)", () => {
             "<!-- END VERIFICATION RESULTS -->",
           ].join("\n"),
         ),
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
@@ -733,10 +727,7 @@ describe("task verify record (unit)", () => {
     });
 
     const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
-    const backend: TaskBackend = {
-      id: "mock",
-      listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+    const backend = makeWriteThroughBackend({
       writeTask,
       getTaskDoc: () =>
         Promise.resolve(
@@ -752,7 +743,7 @@ describe("task verify record (unit)", () => {
             "<!-- END VERIFICATION RESULTS -->",
           ].join("\n"),
         ),
-    };
+    });
     const ctx = mkCtx({ taskBackend: backend, backend });
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
