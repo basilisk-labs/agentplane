@@ -12,8 +12,8 @@ Created: 2026-07-26T08:11:00.143Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
