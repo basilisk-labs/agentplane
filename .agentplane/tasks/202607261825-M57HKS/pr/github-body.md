@@ -22,7 +22,7 @@ Repair the reproducible runner lifecycle failure where active-claim concurrency 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-26T18:27:35.535Z
+- Updated: 2026-07-26T18:29:17.808Z
 - Branch: task/202607261825-M57HKS/stabilize-task-run-launch-under-concurrent-activ
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
