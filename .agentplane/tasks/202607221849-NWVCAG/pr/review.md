@@ -36,15 +36,15 @@ Created: 2026-07-26T10:58:46.358Z
  .../src/commands/shared/quality-review-target.ts   |  72 +++-
  .../shared/route-decision-next-action.test.ts      |   2 +-
  .../src/commands/shared/route-decision.ts          |  72 +++-
- .../commands/shared/side-effect-authority.test.ts  | 221 +++++++++++
- .../src/commands/shared/side-effect-authority.ts   | 415 +++++++++++++++++++++
- .../workflow-operation-projection.registry.test.ts |  43 ++-
+ .../commands/shared/side-effect-authority.test.ts  | 273 +++++++++++++
+ .../src/commands/shared/side-effect-authority.ts   | 433 +++++++++++++++++++++
+ .../workflow-operation-projection.registry.test.ts |  43 +-
  .../src/commands/shared/workflow-step-factory.ts   |  98 ++++-
  .../shared/workflow-step-fingerprint.test.ts       |  29 +-
  .../commands/shared/workflow-step-fingerprint.ts   |  50 ++-
  ...rkflow-step-projections.conflict-rework.test.ts |  54 ++-
  .../shared/workflow-step-projections.test.ts       | 200 +++++++++-
- .../src/commands/shared/workflow-step.test.ts      | 107 +++++-
+ .../src/commands/shared/workflow-step.test.ts      | 107 ++++-
  .../src/commands/shared/workflow-step.ts           |  33 +-
  .../commands/task/authority-grant.command.test.ts  |  32 ++
  .../src/commands/task/authority-grant.command.ts   | 207 ++++++++++
@@ -55,9 +55,9 @@ Created: 2026-07-26T10:58:46.358Z
  .../usecases/agent-work-order.integration.test.ts  |  16 +
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  packages/core/src/runner/execution-receipt.ts      |   2 +-
- .../baselines/v0.7-compatibility-candidate.json    | 168 ++++++++-
+ .../baselines/v0.7-compatibility-candidate.json    | 168 +++++++-
  .../check-compatibility-contract-baseline.mjs      | 120 ++++++
- 28 files changed, 1962 insertions(+), 103 deletions(-)
+ 28 files changed, 2032 insertions(+), 103 deletions(-)
 ```
 
 </details>
