@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T23:18:29.080Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "RF-13 now preserves the authoritative route source across a requested approval: a hosted-state authority command carries --remote and validates the same live provider route rather than silently substituting a local-only decision.",
+  "evaluated_sha": "8b04809fda197ca162335eb1cf0c080b28398e73",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "The new --remote flag is default-false, appears only when a route was computed with hosted state, and the reviewed compatibility candidate records the exact additive CLI delta; no pre-existing command or option is mutated."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "packages/agentplane/src/commands/task/authority-grant.command.ts",
+    "packages/agentplane/src/commands/shared/workflow-step-factory.ts",
+    "packages/agentplane/src/commands/task/authority-grant.command.test.ts",
+    "packages/agentplane/src/commands/shared/workflow-step.test.ts",
+    "bun run bench:compatibility:check",
+    "bun run test:fast (469 files, 3259 tests)",
+    "bun run test:critical (11 chunks, 72 tests)",
+    "bun run typecheck"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The authority audit remains tamper-evident local task state rather than independently immutable storage; this alpha2 scope does not add a separate signer."
+  ]
+}
