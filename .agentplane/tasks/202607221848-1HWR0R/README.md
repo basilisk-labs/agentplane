@@ -1,10 +1,10 @@
 ---
 id: "202607221848-1HWR0R"
 title: "Return typed task mutation results"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -25,9 +25,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-26T08:10:29.107Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -36,11 +36,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-26T08:11:00.044Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:48:51.555Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-26T08:11:00.044Z"
+doc_updated_by: "CODER"
 description: "RF-07: make create and mutation use cases return exact task id, revision, backend identity, artifact paths, and recovery data instead of list-before/list-after discovery."
 sections:
   Summary: |-
@@ -69,6 +79,10 @@ sections:
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
