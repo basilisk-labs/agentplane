@@ -146,7 +146,7 @@ describe("commands/workflow", () => {
     const io = captureStdIO();
     try {
       const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
-      const code = await runTaskNewParsed({
+      const created = await runTaskNewParsed({
         ctx,
         cwd: root,
         rootOverride: undefined,
@@ -160,7 +160,12 @@ describe("commands/workflow", () => {
           verify: [],
         },
       });
-      expect(code).toBe(0);
+      expect(created).toMatchObject({
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [expect.stringMatching(/^\.agentplane\/tasks\/.+\/README\.md$/u)],
+      });
+      expect(created.task_id).toMatch(/^\d{12}-[A-Z0-9]{4,}$/);
       expect(io.stdout.trim()).toMatch(/^\d{12}-[A-Z0-9]{4,}$/);
     } finally {
       io.restore();
@@ -178,6 +183,36 @@ describe("commands/workflow", () => {
     expect(readme).toContain("## Verify Steps");
     expect(doc).toContain("## Verify Steps");
     expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+  });
+
+  it("returns exact receipts for concurrent task creation without list-after discovery", async () => {
+    const root = await makeRepo();
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const listTasks = vi.spyOn(ctx.taskBackend, "listTasks");
+    const create = (title: string) =>
+      runTaskNewParsed({
+        ctx,
+        cwd: root,
+        printTaskId: false,
+        parsed: {
+          title,
+          description: `${title} description`,
+          owner: "CODER",
+          priority: "med",
+          tags: ["backend"],
+          dependsOn: [],
+          verify: [],
+        },
+      });
+
+    const created = await Promise.all([create("Concurrent A"), create("Concurrent B")]);
+
+    expect(listTasks).toHaveBeenCalledTimes(2);
+    expect(new Set(created.map((result) => result.task_id)).size).toBe(2);
+    for (const result of created) {
+      expect(result).toMatchObject({ revision: 1, backend_id: "local" });
+      expect(result.artifact_paths).toEqual([`.agentplane/tasks/${result.task_id}/README.md`]);
+    }
   });
 
   it("task new rejects empty required fields after trimming", async () => {

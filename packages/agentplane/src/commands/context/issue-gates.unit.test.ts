@@ -45,11 +45,18 @@ describe("context GitHub issue regression gates", () => {
     let counter = 0;
     const createTask = vi.fn(async () => {
       counter += 1;
+      const taskId = `202605210000-CTX${counter}`;
       tasks.push({
-        id: `202605210000-CTX${counter}`,
+        id: taskId,
         owner: "CURATOR",
         doc_updated_at: `2026-05-21T00:00:0${counter}.000Z`,
       });
+      return {
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      };
     });
     const ctx = {
       resolvedProject: { gitRoot: root },

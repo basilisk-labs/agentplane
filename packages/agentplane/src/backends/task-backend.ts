@@ -37,6 +37,7 @@ export {
   type TaskRunnerTarget,
   type TaskProjectionRefreshOptions,
   type TaskSummary,
+  type TaskWriteResult,
   type TaskWriteOptions,
   type VerificationResult,
   type VerificationState,

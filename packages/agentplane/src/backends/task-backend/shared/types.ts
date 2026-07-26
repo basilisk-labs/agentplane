@@ -239,6 +239,11 @@ export type TaskBackendProjectionPort = {
 export type TaskBackendMutationPort = {
   assertLocalMutationReady?(): Promise<void>;
   writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void>;
+  /**
+   * Returns the persisted task for callers that need an exact mutation receipt.
+   * Legacy third-party backends may omit this while they migrate from writeTask().
+   */
+  writeTaskWithResult?(task: TaskData, opts?: TaskWriteOptions): Promise<TaskWriteResult>;
   writeTaskWithProjectionTransition?<T>(
     task: TaskData,
     opts: TaskWriteOptions | undefined,
@@ -279,6 +284,13 @@ export type TaskBackendDocPort = {
 
 export type TaskBackendIdentityPort = {
   generateTaskId?(opts: { length: number; attempts: number }): Promise<string>;
+};
+
+export type TaskWriteResult = {
+  task: TaskData;
+  changed: boolean;
+  /** Physical task artifacts written by the active backend projection. */
+  artifact_paths?: string[];
 };
 
 export type TaskBackend = TaskBackendBase &

@@ -24,11 +24,12 @@ export function makeRunTaskNewHandler(
       }),
     );
 
-    return await runTaskNewParsed({
+    await runTaskNewParsed({
       ctx: execution.command,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       parsed: p,
     });
+    return 0;
   };
 }

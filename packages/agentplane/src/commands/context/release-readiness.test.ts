@@ -187,7 +187,14 @@ describe("context release readiness guards", () => {
     let taskCounter = 0;
     const createTask = vi.fn(async () => {
       taskCounter += 1;
-      tasks.push({ id: `202605130501-CTXSCA-${taskCounter}`, owner: "CURATOR" });
+      const taskId = `202605130501-CTXSCA-${taskCounter}`;
+      tasks.push({ id: taskId, owner: "CURATOR" });
+      return {
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      };
     });
     const ctx = {
       resolvedProject: { gitRoot: root },
@@ -225,7 +232,14 @@ describe("context release readiness guards", () => {
     vi.spyOn(process.stdout, "write").mockImplementation(() => true);
     const tasks: { id: string; owner: string }[] = [];
     const createTask = vi.fn(async () => {
-      tasks.push({ id: "202605130501-CTXMAX-SCAFFOLD", owner: "CURATOR" });
+      const taskId = "202605130501-CTXMAX-SCAFFOLD";
+      tasks.push({ id: taskId, owner: "CURATOR" });
+      return {
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      };
     });
     const ctx = {
       resolvedProject: { gitRoot: root },
@@ -681,7 +695,14 @@ describe("context release readiness guards", () => {
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
     const tasks: { id: string; owner: string }[] = [];
     const createTask = vi.fn(async () => {
-      tasks.push({ id: "202605130501-CTXRUN", owner: "CURATOR" });
+      const taskId = "202605130501-CTXRUN";
+      tasks.push({ id: taskId, owner: "CURATOR" });
+      return {
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      };
     });
     const ctx = {
       resolvedProject: { gitRoot: root },
@@ -785,7 +806,14 @@ describe("context release readiness guards", () => {
     await write(root, "context/raw/research/product-notes.md", "# Product Notes\n\nKey source.\n");
     const tasks: { id: string; owner: string }[] = [];
     const createTask = vi.fn(async () => {
-      tasks.push({ id: "202605130501-CTXMAX", owner: "CURATOR" });
+      const taskId = "202605130501-CTXMAX";
+      tasks.push({ id: taskId, owner: "CURATOR" });
+      return {
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      };
     });
     const ctx = {
       resolvedProject: { gitRoot: root },

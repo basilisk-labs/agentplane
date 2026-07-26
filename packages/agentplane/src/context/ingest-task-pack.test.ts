@@ -95,12 +95,20 @@ describe("context ingest task pack", () => {
         | undefined;
       parsedAllowedOutputs = contextExtension?.allowed_outputs ?? [];
       parsedTaskDocSections = parsed.taskDocSections;
-      tasks.push({ id: "202607021200-CTXPACK", owner: "CURATOR" });
+      const taskId = "202607021200-CTXPACK";
+      tasks.push({ id: taskId, owner: "CURATOR" });
+      return {
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      };
     });
+    const listTasks = vi.fn(() => Promise.resolve([...tasks]));
     const ctx = {
       resolvedProject: { gitRoot: root },
       config: { paths: { workflow_dir: ".agentplane/tasks" } },
-      taskBackend: { listTasks: () => Promise.resolve([...tasks]) },
+      taskBackend: { listTasks },
       backendId: "local",
       backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
       memo: {},
@@ -112,6 +120,7 @@ describe("context ingest task pack", () => {
       parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
       createTask,
     });
+    expect(listTasks).not.toHaveBeenCalled();
 
     const taskRoot = ".agentplane/tasks/202607021200-CTXPACK";
     const sourceLock = await readJson<{ files: { path: string }[] }>(
@@ -122,6 +131,12 @@ describe("context ingest task pack", () => {
       root,
       `${taskRoot}/expected-artifacts.json`,
     );
+    const creationReceipt = await readJson<{
+      task_id: string;
+      revision: number | null;
+      backend_id: string;
+      artifact_paths: string[];
+    }>(root, `${taskRoot}/task-creation.json`);
     const extractionContract = await readJson<{
       version: number;
       sgr_schema_version: number;
@@ -165,9 +180,17 @@ describe("context ingest task pack", () => {
     const contextPack = await readFile(path.join(root, taskRoot, "context-pack.md"), "utf8");
 
     expect(sourceLock.files).toMatchObject([{ path: "context/raw/specs/payment-api.md" }]);
+    expect(creationReceipt).toEqual({
+      task_id: "202607021200-CTXPACK",
+      revision: 1,
+      backend_id: "local",
+      artifact_paths: [".agentplane/tasks/202607021200-CTXPACK/README.md"],
+      version: 1,
+    });
     expect(spans[0]).toMatchObject({ source_path: "context/raw/specs/payment-api.md" });
     expect(spans[0]?.span_id).toMatch(/^span\.[a-f0-9]{12}\.[a-f0-9]{12}\.1$/u);
     expect(contextPack).toContain("Generated spans: 1.");
+    expect(contextPack).toContain("CLI-owned receipt");
     expect(contextPack).toContain("exact SGR v2 payload requirements");
     expect(contextPack).toContain("CURATOR must decide meaning");
     expect(contextPack).toContain("stable ID equality");
@@ -231,6 +254,7 @@ describe("context ingest task pack", () => {
     });
     expect(canonicalEntityCatalog.catalog_sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/source-spans.skeleton.jsonl`);
+    expect(expectedArtifacts.required).toContain(`${taskRoot}/task-creation.json`);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/extraction-contract.json`);
     expect(expectedArtifacts.required).toContain(`${taskRoot}/canonical-entity-catalog.json`);
     expect(expectedArtifacts.required).toEqual(
@@ -264,10 +288,56 @@ describe("context ingest task pack", () => {
         ".agentplane/tasks/${taskId}/expected-artifacts.json",
       ]),
     );
+    expect(parsedAllowedOutputs).not.toContain(".agentplane/tasks/${taskId}/task-creation.json");
     expect(parsedTaskDocSections?.Plan).toContain("Let CURATOR reconcile");
+    expect(parsedTaskDocSections?.["Verify Steps"]).toContain("CLI-owned `task-creation.json`");
     expect(parsedTaskDocSections?.["Verify Steps"]).toContain(
       "same_as/alias_of reuse an existing canonical ID",
     );
     expect(parsedTaskDocSections?.Findings).toContain("Semantic identity is agent-owned");
+  });
+
+  it("persists the exact creation receipt before a later task-pack failure", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/partial.md", "# Partial\n\nKeep the task identity.\n");
+    const taskId = "202607021201-RECOVR";
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
+        createTask: () =>
+          Promise.resolve({
+            task_id: taskId,
+            revision: 1,
+            backend_id: "local",
+            artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+          }),
+        writeTaskPack: () => Promise.reject(new Error("forced task-pack failure")),
+      }),
+    ).rejects.toThrow(/forced task-pack failure/u);
+
+    await expect(
+      readJson<{
+        task_id: string;
+        revision: number | null;
+        backend_id: string;
+        artifact_paths: string[];
+      }>(root, `.agentplane/tasks/${taskId}/task-creation.json`),
+    ).resolves.toMatchObject({
+      task_id: taskId,
+      revision: 1,
+      backend_id: "local",
+      artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+    });
   });
 });
