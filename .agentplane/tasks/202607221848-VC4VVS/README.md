@@ -4,7 +4,7 @@ title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -42,25 +42,24 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T12:14:45.368Z"
+  updated_at: "2026-07-26T12:32:37.748Z"
   updated_by: "EVALUATOR"
-  note: "Rework required: production Hermes supervise prepares a remote work order while brief, next-action, and runner prepare local work orders, violating the required shared remote policy."
-  evaluated_sha: "cd59e4d7b8536ff89ee2f442037fe3b008633cde"
+  note: "Rework required: the real Hermes regression is fixed, but canonical preparation now changes branch_pr default task brief and next-action from local-first to remote without explicit --remote."
+  evaluated_sha: "9c8c8da35f45aea771ea0be6feaf37afb820b3a0"
   blueprint_digest: "50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b"
   evidence_refs:
     - ".agentplane/tasks/202607221848-VC4VVS/README.md"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-121445368-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-121445368-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-121445368-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-123237748-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-123237748-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-123237748-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/hermes/hermes.command.ts:126-132"
-    - "packages/agentplane/src/commands/task/brief.command.ts:39-43"
-    - "packages/agentplane/src/commands/task/next-action.command.ts:50-54"
-    - "packages/agentplane/src/runner/usecases/task-run.ts:157-169"
-    - "packages/agentplane/src/runner/usecases/agent-work-order-projection.ts:115-134"
-    - "bunx vitest run packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts (3 passed; equality fixture uses routePacket includeRemote=false at lines 163-169)"
+    - "bunx --no-install vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts --no-file-parallelism (3 passed)"
+    - "bunx --no-install vitest --config vitest.workspace.ts run --project cli-core packages/agentplane/src/cli/run-cli.core.route-decision.test.ts --no-file-parallelism (1 failed, 9 passed: local-first task brief expectation)"
+    - "packages/agentplane/src/runner/usecases/agent-work-order.ts:83-101"
+    - "packages/agentplane/src/commands/task/brief.command.ts:10-32"
   findings:
-    - "Hermes supervise hard-codes includeRemote=true; brief and next-action default --remote=false and runner hard-codes include_remote=false. Preparation serializes that choice into remote_policy, so the surfaces cannot share the required canonical signature."
+    - "The central resolver maps an omitted include_remote value to branch_pr remote=true, while public task brief documentation and CLI tests require no default GitHub lookup."
+    - "Production brief, next-action, Hermes, and runner now share a remote signature, but only by broadening remote behavior outside the approved local-first command contract."
 commit: null
 comments:
   -
