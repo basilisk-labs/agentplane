@@ -124,12 +124,11 @@ export function buildAgentWorkOrderRemotePolicy(opts: {
     // per-surface CLI flag. All projections must render this one value.
     requested: opts.remote_enabled,
     observed,
-    note:
-      opts.remote_enabled
-        ? observed
-          ? "remote lifecycle evidence was observed during preparation"
-          : "remote lifecycle policy was resolved during preparation without provider evidence"
-        : "remote lookup is disabled by the canonical AgentWorkOrder preparation policy",
+    note: opts.remote_enabled
+      ? observed
+        ? "remote lifecycle evidence was observed during preparation"
+        : "remote lifecycle policy was resolved during preparation without provider evidence"
+      : "remote lookup is disabled by the canonical AgentWorkOrder preparation policy",
   };
 }
 
