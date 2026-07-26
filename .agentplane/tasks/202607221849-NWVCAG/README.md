@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on:
@@ -42,26 +42,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T23:06:05.994Z"
+  updated_at: "2026-07-26T23:18:29.080Z"
   updated_by: "EVALUATOR"
-  note: "RF-13 now enforces explicit, scoped authority records for classified side effects without authorizing semantic values. The rework closes the route-authority sandbox gap and prevents authority-only task metadata from causing a non-convergent quality-review loop."
-  evaluated_sha: "dcbe0bba607e22b30e17135de5c509c03bcdd933"
+  note: "RF-13 now preserves the authoritative route source across a requested approval: a hosted-state authority command carries --remote and validates the same live provider route rather than silently substituting a local-only decision."
+  evaluated_sha: "8b04809fda197ca162335eb1cf0c080b28398e73"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-230605994-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-230605994-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-230605994-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-231829080-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-231829080-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-231829080-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
-    - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
-    - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
-    - "bun run test:fast (468 files, 3257 tests)"
+    - "packages/agentplane/src/commands/task/authority-grant.command.ts"
+    - "packages/agentplane/src/commands/shared/workflow-step-factory.ts"
+    - "packages/agentplane/src/commands/task/authority-grant.command.test.ts"
+    - "packages/agentplane/src/commands/shared/workflow-step.test.ts"
+    - "bun run bench:compatibility:check"
+    - "bun run test:fast (469 files, 3259 tests)"
     - "bun run test:critical (11 chunks, 72 tests)"
     - "bun run typecheck"
-    - "bun run format:changed"
   findings:
-    - "The authority-only review-target exception removes only README revision and agentplane.side_effect_authority records, and is guarded by a changed-files check; ordinary README semantic metadata changes remain reviewable."
+    - "The new --remote flag is default-false, appears only when a route was computed with hosted state, and the reviewed compatibility candidate records the exact additive CLI delta; no pre-existing command or option is mutated."
 commit:
   hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
   message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
