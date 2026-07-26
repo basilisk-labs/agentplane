@@ -164,6 +164,11 @@ describe("WorkflowStep execution projections", () => {
         base_sha: "2222222222222222222222222222222222222222",
         mergeability: { state: "conflicting", mergeable: false, provider_state: "dirty" },
       },
+      base_protection: {
+        provider: "github",
+        base: "main",
+        state: "protected_pull_request_merge",
+      },
       local: {
         branch_head_sha: resume.head_sha,
         base_head_sha: "2222222222222222222222222222222222222222",
@@ -184,8 +189,8 @@ describe("WorkflowStep execution projections", () => {
         passing: 2,
         pending: 0,
         failing: 0,
-        missingRequired: [],
-        rows: [],
+        missingRequired: { names: [], total: 0, truncated: false },
+        rows: { entries: [], total: 0, truncated: false },
       },
       freshness: { algorithm: "sha256", token: "sha256:conflict-packet" },
       resolution_contract: {
@@ -231,12 +236,8 @@ describe("WorkflowStep execution projections", () => {
       exactArgv: null,
       staleStateCheck: `agentplane task next-action ${task.id} --remote --explain`,
     });
-    expect(execution.mustNot).toEqual(
-      expect.arrayContaining([
-        expect.stringMatching(/auto-rebase/u),
-        expect.stringMatching(/force-push/u),
-      ]),
-    );
+    expect(execution.mustNot.some((rule) => rule.includes("auto-rebase"))).toBe(true);
+    expect(execution.mustNot.some((rule) => rule.includes("force-push"))).toBe(true);
     expect(
       deriveRouteOperatorGuidance(routeDecision({ state, step, oracle, packet: execution })),
     ).toMatchObject({

@@ -13,8 +13,14 @@ import {
   type TaskWorktreeCleanliness,
 } from "../shared/task-worktree-cleanliness.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "./flow-status.js";
+import {
+  resolveGithubBasePullRequestProtection,
+  type GithubBasePullRequestProtection,
+} from "./integrate/internal/github-protection.js";
 
 const MAX_CANDIDATE_CONFLICT_PATHS = 32;
+const MAX_HOSTED_CHECK_ROWS = 64;
+const MAX_MISSING_REQUIRED_CHECKS = 32;
 
 type ConflictReworkInvalidReasonCode =
   | "provider_pr_not_conflicting"
@@ -26,6 +32,10 @@ type ConflictReworkInvalidReasonCode =
   | "provider_head_mismatch"
   | "provider_base_unavailable"
   | "provider_base_mismatch"
+  | "provider_base_protection_mismatch"
+  | "provider_base_unprotected"
+  | "provider_base_protection_unavailable"
+  | "conflict_rework_route_ineligible"
   | "merge_base_unavailable"
   | "candidate_conflict_paths_unavailable"
   | "task_worktree_missing"
@@ -39,8 +49,16 @@ type ConflictReworkChecks =
       passing: number;
       pending: number;
       failing: number;
-      missingRequired: string[];
-      rows: { name: string; state: string }[];
+      missingRequired: {
+        names: string[];
+        total: number;
+        truncated: boolean;
+      };
+      rows: {
+        entries: { name: string; state: string }[];
+        total: number;
+        truncated: boolean;
+      };
     }
   | { checked: false; reason: string };
 
@@ -61,6 +79,11 @@ export type ConflictReworkPacket = {
       mergeable: boolean | null;
       provider_state: string | null;
     };
+  };
+  base_protection: {
+    provider: "github";
+    base: string;
+    state: "protected_pull_request_merge";
   };
   local: {
     branch_head_sha: string;
@@ -113,28 +136,49 @@ function trimmed(value: string | null | undefined): string | null {
   return normalized.length > 0 ? normalized : null;
 }
 
+export type ConflictReworkGitOps = {
+  resolveRef: typeof gitRevParse;
+  mergeBase: typeof gitMergeBase;
+  diffNames: typeof gitDiffNames;
+};
+
+const DEFAULT_GIT_OPS: ConflictReworkGitOps = {
+  resolveRef: gitRevParse,
+  mergeBase: gitMergeBase,
+  diffNames: gitDiffNames,
+};
+
 function normalizeChecks(report: PrFlowStatusReport): ConflictReworkChecks {
   if (!report.hostedChecks.checked) {
     return { checked: false, reason: report.hostedChecks.reason };
   }
   const rows = report.hostedChecks.rows
     .map((row) => ({
-      name: row.name?.trim() || "<unnamed>",
-      state: row.state?.trim() || "UNKNOWN",
+      name: trimmed(row.name) ?? "<unnamed>",
+      state: trimmed(row.state) ?? "UNKNOWN",
     }))
-    .sort(
+    .toSorted(
       (left, right) => left.name.localeCompare(right.name) || left.state.localeCompare(right.state),
     );
+  const missingRequired = [
+    ...new Set(report.hostedChecks.missingRequired.map((name) => trimmed(name) ?? "<unnamed>")),
+  ].toSorted((left, right) => left.localeCompare(right));
   return {
     checked: true,
     total: report.hostedChecks.total,
     passing: report.hostedChecks.passing,
     pending: report.hostedChecks.pending,
     failing: report.hostedChecks.failing,
-    missingRequired: [...report.hostedChecks.missingRequired].sort((left, right) =>
-      left.localeCompare(right),
-    ),
-    rows,
+    missingRequired: {
+      names: missingRequired.slice(0, MAX_MISSING_REQUIRED_CHECKS),
+      total: missingRequired.length,
+      truncated: missingRequired.length > MAX_MISSING_REQUIRED_CHECKS,
+    },
+    rows: {
+      entries: rows.slice(0, MAX_HOSTED_CHECK_ROWS),
+      total: rows.length,
+      truncated: rows.length > MAX_HOSTED_CHECK_ROWS,
+    },
   };
 }
 
@@ -167,14 +211,75 @@ export function needsProviderConflictReworkPreparation(report: PrFlowStatusRepor
   return state === "conflicting" || state === "pending" || state === "unknown";
 }
 
+type ConflictRouteIdentity = {
+  taskBranch: string;
+  providerHead: string;
+  base: string;
+  providerBase: string;
+  prNumber: number;
+};
+
+function hasEligibleQueueEntry(report: PrFlowStatusReport, identity: ConflictRouteIdentity): boolean {
+  if (!report.queue.present) return false;
+  if (
+    report.queue.status !== "queued" &&
+    report.queue.status !== "claimed" &&
+    report.queue.status !== "handoff"
+  ) {
+    return false;
+  }
+  return (
+    report.queue.branch === identity.taskBranch &&
+    report.queue.base === identity.base &&
+    report.queue.headSha === identity.providerHead &&
+    report.queue.baseSha === identity.providerBase &&
+    report.queue.prNumber === identity.prNumber
+  );
+}
+
+function hasEligibleProtectedBaseHandoff(
+  report: PrFlowStatusReport,
+  identity: ConflictRouteIdentity,
+): boolean {
+  if (!report.handoff.present) return false;
+  return (
+    report.handoff.routeKind === "protected_base_integrate" &&
+    report.handoff.routeStatus === "awaiting_github_merge" &&
+    report.handoff.branch === identity.taskBranch &&
+    report.handoff.prBranch === identity.taskBranch &&
+    report.handoff.baseBranch === identity.base &&
+    report.handoff.headSha === identity.providerHead
+  );
+}
+
+function validateConflictRouteEligibility(
+  report: PrFlowStatusReport,
+  identity: ConflictRouteIdentity,
+): ConflictReworkPreparation | null {
+  if (report.task.status.trim().toUpperCase() !== "DONE" || report.task.verification !== "ok") {
+    return invalid(
+      "conflict_rework_route_ineligible",
+      "semantic conflict rework requires a DONE task with a current passing verification record",
+    );
+  }
+  if (hasEligibleQueueEntry(report, identity) || hasEligibleProtectedBaseHandoff(report, identity)) {
+    return null;
+  }
+  return invalid(
+    "conflict_rework_route_ineligible",
+    "semantic conflict rework requires a current queued, claimed, or protected-base handoff record that matches the provider PR branch, head, base, base SHA, and PR number",
+  );
+}
+
 async function resolveLocalRef(opts: {
   gitRoot: string;
+  gitOps: ConflictReworkGitOps;
   ref: string;
   reasonCode: "provider_base_unavailable" | "merge_base_unavailable";
   label: string;
 }): Promise<{ ok: true; value: string } | { ok: false; preparation: ConflictReworkPreparation }> {
   try {
-    return { ok: true, value: await gitRevParse(opts.gitRoot, [opts.ref]) };
+    return { ok: true, value: await opts.gitOps.resolveRef(opts.gitRoot, [opts.ref]) };
   } catch (err) {
     return {
       ok: false,
@@ -191,7 +296,10 @@ export async function prepareConflictReworkPacket(opts: {
   taskId: string;
   report: PrFlowStatusReport;
   taskWorktree: TaskWorktreeCleanliness;
+  gitOps?: ConflictReworkGitOps;
+  baseProtection?: GithubBasePullRequestProtection;
 }): Promise<ConflictReworkPreparation> {
+  const gitOps = opts.gitOps ?? DEFAULT_GIT_OPS;
   if (opts.report.providerObservation?.state === "unavailable") {
     return invalid(
       "provider_pr_unavailable",
@@ -226,7 +334,7 @@ export async function prepareConflictReworkPacket(opts: {
   }
 
   const observation = opts.report.providerObservation;
-  if (!observation || observation.state !== "found") {
+  if (observation?.state !== "found") {
     return invalid("provider_pr_unavailable", "provider conflict observation is unavailable");
   }
   const observed = observation.pr;
@@ -263,6 +371,35 @@ export async function prepareConflictReworkPacket(opts: {
       `provider head differs from local task branch: provider=${providerHead} local=${localHead}`,
     );
   }
+  const routeEligibility = validateConflictRouteEligibility(opts.report, {
+    taskBranch,
+    providerHead,
+    base,
+    providerBase,
+    prNumber,
+  });
+  if (routeEligibility) return routeEligibility;
+  const baseProtection =
+    opts.baseProtection ??
+    (await resolveGithubBasePullRequestProtection({ gitRoot: opts.gitRoot, baseBranch: base }));
+  if (baseProtection.baseBranch !== base) {
+    return invalid(
+      "provider_base_protection_mismatch",
+      `base protection was observed for ${baseProtection.baseBranch}, not provider base ${base}`,
+    );
+  }
+  if (baseProtection.state === "unavailable") {
+    return invalid(
+      "provider_base_protection_unavailable",
+      `GitHub base protection cannot be confirmed for ${base}: ${baseProtection.reason}`,
+    );
+  }
+  if (baseProtection.state !== "protected") {
+    return invalid(
+      "provider_base_unprotected",
+      `GitHub does not currently confirm ${base} requires the protected pull-request merge path`,
+    );
+  }
   if (opts.taskWorktree.state === "not_present") {
     return invalid(
       "task_worktree_missing",
@@ -284,6 +421,7 @@ export async function prepareConflictReworkPacket(opts: {
 
   const localBase = await resolveLocalRef({
     gitRoot: opts.gitRoot,
+    gitOps,
     ref: base,
     reasonCode: "provider_base_unavailable",
     label: `base ${base}`,
@@ -298,7 +436,7 @@ export async function prepareConflictReworkPacket(opts: {
 
   let mergeBase: string;
   try {
-    mergeBase = await gitMergeBase(opts.gitRoot, providerBase, providerHead);
+    mergeBase = await gitOps.mergeBase(opts.gitRoot, providerBase, providerHead);
   } catch (err) {
     return invalid(
       "merge_base_unavailable",
@@ -310,8 +448,8 @@ export async function prepareConflictReworkPacket(opts: {
   let headChanged: string[];
   try {
     [baseChanged, headChanged] = await Promise.all([
-      gitDiffNames(opts.gitRoot, mergeBase, providerBase),
-      gitDiffNames(opts.gitRoot, mergeBase, providerHead),
+      gitOps.diffNames(opts.gitRoot, mergeBase, providerBase),
+      gitOps.diffNames(opts.gitRoot, mergeBase, providerHead),
     ]);
   } catch (err) {
     return invalid(
@@ -319,8 +457,8 @@ export async function prepareConflictReworkPacket(opts: {
       `candidate conflict paths cannot be derived without mutation: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
-  const basePaths = [...new Set(baseChanged)].sort((left, right) => left.localeCompare(right));
-  const headPaths = [...new Set(headChanged)].sort((left, right) => left.localeCompare(right));
+  const basePaths = [...new Set(baseChanged)].toSorted((left, right) => left.localeCompare(right));
+  const headPaths = [...new Set(headChanged)].toSorted((left, right) => left.localeCompare(right));
   const basePathSet = new Set(basePaths);
   const candidatePaths = headPaths.filter((candidate) => basePathSet.has(candidate));
   const checks = normalizeChecks(opts.report);
@@ -341,6 +479,11 @@ export async function prepareConflictReworkPacket(opts: {
         mergeable: observed.mergeability?.mergeable ?? null,
         provider_state: observed.mergeability?.providerState ?? null,
       },
+    },
+    base_protection: {
+      provider: "github" as const,
+      base,
+      state: "protected_pull_request_merge" as const,
     },
     local: {
       branch_head_sha: localHead,

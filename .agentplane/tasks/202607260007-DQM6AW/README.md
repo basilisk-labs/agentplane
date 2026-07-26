@@ -4,7 +4,7 @@ title: "Prepare semantic conflict rework routes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -35,11 +35,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-26T01:05:46.183Z"
+  updated_by: "TESTER"
+  note: "Rework: c343fb09 fails declared lint and misses bounded queued-protected conflict-route guarantees."
+  attempts: 1
 commit: null
 comments:
   -
@@ -53,8 +53,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement only the approved conflict-rework preparation contract; no worktree, code, or PR is created by this planning checkpoint."
+  -
+    type: "verify"
+    at: "2026-07-26T01:05:46.183Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: c343fb09 fails declared lint and misses bounded queued-protected conflict-route guarantees."
 doc_version: 3
-doc_updated_at: "2026-07-26T00:53:05.897Z"
+doc_updated_at: "2026-07-26T01:26:56.904Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -77,14 +83,54 @@ sections:
     6. Prove after a CODER-resolved new commit the task must refresh provider truth and rerun normal verification before lease-safe publication and queue handoff.
     7. Run focused queue and route regressions; bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; agentplane doctor; and git diff --check.
     8. Record independent TESTER and EVALUATOR evidence, wait for stable hosted checks, and use only normal branch_pr integration.
-  Verification: "Required evidence: fixture or provider-snapshot proof of the THDN conflict state; emitted preparation packet and exact route; proof that preparation contains no branch mutation command; invalidation evidence for base/head/provider drift; clean-PR non-regression evidence; focused test, static, lifecycle, and routing output; independent TESTER and EVALUATOR review; stable hosted checks. Refresh all evidence after every provider/base snapshot change."
+  Verification: |-
+    Required evidence: fixture or provider-snapshot proof of the THDN conflict state; emitted preparation packet and exact route; proof that preparation contains no branch mutation command; invalidation evidence for base/head/provider drift; clean-PR non-regression evidence; focused test, static, lifecycle, and routing output; independent TESTER and EVALUATOR review; stable hosted checks. Refresh all evidence after every provider/base snapshot change.
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-26T01:05:46.183Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: c343fb09 fails declared lint and misses bounded queued-protected conflict-route guarantees.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:53:05.897Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+    - old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607260007-DQM6AW --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert only the bounded preparation and route change in a new normal branch_pr task or follow-up. Preserve any existing fail-closed conflict block and task-local packet evidence. Never compensate by rebasing, merging, force-pushing, deleting, or recreating a branch. If current truth cannot be reconfirmed, stop with the diagnostic route and leave all refs/worktrees unchanged."
   Findings: |-
     Current incident rule: remote truth for THDN 202607252223-THDN0G PR #4626 reports mergeStateStatus DIRTY and mergeable CONFLICTING, with head 040d8df0eaf431e2292eb161efe80e1466ffbd8e, after main advanced to e27c938698668ce242243d166f8c7c1b64cce88f. A queue route must not relabel this as ordinary wait-for-checks work or offer unbounded manual rebase. It must package fresh nonsemantic context and hand the semantic decision to the assigned CODER.
 
-    Implementation evidence: the CLI obtains exact PR detail after a branch lookup, emits a deterministic read-only packet with task, head/base, merge base, bounded overlapping paths, checks, and SHA-256 freshness token. It routes only a current conflict to a CODER semantic episode. Explicit pending or unknown mergeability, stale head/base, missing provider truth, and missing or dirty worktrees stop the route. Candidate paths are not selected hunks. No packet path performs rebase, merge, force-push, rewrite, publication, queue mutation, or provider mutation.
+    Implementation evidence: the CLI obtains exact PR detail after a branch lookup, emits a deterministic read-only packet with task, head/base, merge base, bounded overlapping paths, bounded hosted-check summaries, base-protection provenance, and a SHA-256 freshness token. Candidate paths are not selected hunks. No packet path performs rebase, merge, force-push, rewrite, publication, queue mutation, or provider mutation.
 
-    Checks: focused packet and route tests, live CLI fixture, typecheck, lint, guards, lifecycle invariants, policy routing, CLI docs freshness, and doctor passed before independent review.
+    Rework resolution: conflict rework now requires a DONE task with verification=ok and a matching active queue reservation (queued, claimed, or handoff) or protected-base handoff. The reservation/handoff must match provider PR branch, head, base, base SHA, and PR number. GitHub must freshly confirm that the exact provider base requires the protected PR merge path; unprotected, unavailable, or wrong-base protection evidence fails closed. Provider head/base mismatches, missing provider truth, unresolved mergeability, and missing or dirty worktrees still fail closed.
+
+    Packet bounds: candidate paths are capped at 32; hosted-check rows at 64; unique missing required checks at 32. Each capped collection carries total and truncated metadata, and normalized order is deterministic for freshness hashing.
+
+    Regression evidence: direct packet tests cover oversized checks, missing requirements, nonqueued and DOING tasks, handoff eligibility, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. The local CLI fixture proves an eligible protected queued conflict emits the CODER route without mutating the task worktree. Focused agentplane tests (75), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
+
+    Residual risk: live THDN provider and protection state remain time-sensitive and must be refreshed before any later publication or integration decision. No PR, push, merge, rebase, force-push, or integration was performed during this rework.
 extensions:
   workflow_route_baseline:
     start_head_sha: "e27c938698668ce242243d166f8c7c1b64cce88f"
@@ -124,6 +170,39 @@ In scope: branch_pr queue conflict detection, provider-backed freshness and prov
 
 Required evidence: fixture or provider-snapshot proof of the THDN conflict state; emitted preparation packet and exact route; proof that preparation contains no branch mutation command; invalidation evidence for base/head/provider drift; clean-PR non-regression evidence; focused test, static, lifecycle, and routing output; independent TESTER and EVALUATOR review; stable hosted checks. Refresh all evidence after every provider/base snapshot change.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-26T01:05:46.183Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: c343fb09 fails declared lint and misses bounded queued-protected conflict-route guarantees.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:53:05.897Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+- old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607260007-DQM6AW --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert only the bounded preparation and route change in a new normal branch_pr task or follow-up. Preserve any existing fail-closed conflict block and task-local packet evidence. Never compensate by rebasing, merging, force-pushing, deleting, or recreating a branch. If current truth cannot be reconfirmed, stop with the diagnostic route and leave all refs/worktrees unchanged.
@@ -132,6 +211,12 @@ Revert only the bounded preparation and route change in a new normal branch_pr t
 
 Current incident rule: remote truth for THDN 202607252223-THDN0G PR #4626 reports mergeStateStatus DIRTY and mergeable CONFLICTING, with head 040d8df0eaf431e2292eb161efe80e1466ffbd8e, after main advanced to e27c938698668ce242243d166f8c7c1b64cce88f. A queue route must not relabel this as ordinary wait-for-checks work or offer unbounded manual rebase. It must package fresh nonsemantic context and hand the semantic decision to the assigned CODER.
 
-Implementation evidence: the CLI obtains exact PR detail after a branch lookup, emits a deterministic read-only packet with task, head/base, merge base, bounded overlapping paths, checks, and SHA-256 freshness token. It routes only a current conflict to a CODER semantic episode. Explicit pending or unknown mergeability, stale head/base, missing provider truth, and missing or dirty worktrees stop the route. Candidate paths are not selected hunks. No packet path performs rebase, merge, force-push, rewrite, publication, queue mutation, or provider mutation.
+Implementation evidence: the CLI obtains exact PR detail after a branch lookup, emits a deterministic read-only packet with task, head/base, merge base, bounded overlapping paths, bounded hosted-check summaries, base-protection provenance, and a SHA-256 freshness token. Candidate paths are not selected hunks. No packet path performs rebase, merge, force-push, rewrite, publication, queue mutation, or provider mutation.
 
-Checks: focused packet and route tests, live CLI fixture, typecheck, lint, guards, lifecycle invariants, policy routing, CLI docs freshness, and doctor passed before independent review.
+Rework resolution: conflict rework now requires a DONE task with verification=ok and a matching active queue reservation (queued, claimed, or handoff) or protected-base handoff. The reservation/handoff must match provider PR branch, head, base, base SHA, and PR number. GitHub must freshly confirm that the exact provider base requires the protected PR merge path; unprotected, unavailable, or wrong-base protection evidence fails closed. Provider head/base mismatches, missing provider truth, unresolved mergeability, and missing or dirty worktrees still fail closed.
+
+Packet bounds: candidate paths are capped at 32; hosted-check rows at 64; unique missing required checks at 32. Each capped collection carries total and truncated metadata, and normalized order is deterministic for freshness hashing.
+
+Regression evidence: direct packet tests cover oversized checks, missing requirements, nonqueued and DOING tasks, handoff eligibility, unprotected/unavailable/stale protection, stale local base, and provider head mismatch. The local CLI fixture proves an eligible protected queued conflict emits the CODER route without mutating the task worktree. Focused agentplane tests (75), focused cli-core route tests (19), typecheck, full core lint, guards, lifecycle invariants, Vitest project routing, CLI docs freshness, policy routing, doctor, and diff check pass locally.
+
+Residual risk: live THDN provider and protection state remain time-sensitive and must be refreshed before any later publication or integration decision. No PR, push, merge, rebase, force-push, or integration was performed during this rework.

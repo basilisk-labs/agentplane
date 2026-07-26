@@ -97,6 +97,11 @@ type QueueStatus =
       status: IntegrationQueueEntry["status"];
       reason: string | null;
       updatedAt: string | null;
+      branch?: string | null;
+      base?: string | null;
+      headSha?: string | null;
+      baseSha?: string | null;
+      prNumber?: number | null;
     };
 
 type HandoffStatus =
@@ -104,7 +109,12 @@ type HandoffStatus =
   | {
       present: true;
       reason: string;
+      routeKind: "protected_base_integrate" | null;
       routeStatus: string | null;
+      branch?: string | null;
+      baseBranch?: string | null;
+      headSha?: string | null;
+      prBranch?: string | null;
       nextActions: string[];
     };
 
@@ -222,7 +232,12 @@ async function resolveHandoffStatus(opts: {
   return {
     present: true,
     reason: handoff.reason,
+    routeKind: handoff.route?.kind ?? null,
     routeStatus: handoff.route?.status ?? null,
+    branch: handoff.branch ?? null,
+    baseBranch: handoff.base_branch ?? null,
+    headSha: handoff.head_sha ?? null,
+    prBranch: handoff.pr_branch ?? null,
     nextActions: handoff.next_actions ?? [],
   };
 }
@@ -486,6 +501,11 @@ export async function resolvePrFlowStatus(opts: {
           status: queueEntry.status,
           reason: queueEntry.reason ?? null,
           updatedAt: queueEntry.updated_at ?? null,
+          branch: queueEntry.branch,
+          base: queueEntry.base,
+          headSha: queueEntry.head_sha,
+          baseSha: queueEntry.base_sha,
+          prNumber: queueEntry.pr_number,
         }
       : { present: false },
     handoff,

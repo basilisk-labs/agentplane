@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -163,6 +163,20 @@ describe("provider conflict rework CLI", () => {
       cwd: worktree,
     });
 
+    const taskReadmePath = path.join(worktree, ".agentplane", "tasks", taskId, "README.md");
+    const taskReadme = await readFile(taskReadmePath, "utf8");
+    await writeFile(
+      taskReadmePath,
+      taskReadme
+        .replace('status: "DOING"', 'status: "DONE"')
+        .replace('verification:\n  state: "pending"', 'verification:\n  state: "ok"'),
+      "utf8",
+    );
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: worktree });
+    await execFileAsync("git", ["commit", "-m", "test: mark task verified for queue handoff"], {
+      cwd: worktree,
+    });
+
     await writeFile(path.join(root, "conflict.txt"), "main branch\n", "utf8");
     await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: base side of conflict fixture"], {
@@ -177,6 +191,35 @@ describe("provider conflict rework CLI", () => {
     await execFileAsync("git", ["remote", "add", "origin", "https://github.com/example/repo.git"], {
       cwd: root,
     });
+    const queuePath = path.join(root, ".agentplane", "cache", "integration-queue.json");
+    await mkdir(path.dirname(queuePath), { recursive: true });
+    await writeFile(
+      queuePath,
+      `${JSON.stringify({
+        schema_version: 1,
+        entries: [
+          {
+            task_id: taskId,
+            branch,
+            base: "main",
+            head_sha: headSha,
+            base_sha: baseSha,
+            changed_paths: ["conflict.txt"],
+            pr_number: 4626,
+            pr_url: "https://github.example/acme/agentplane/pull/4626",
+            priority: 0,
+            status: "handoff",
+            enqueued_at: "2026-07-26T00:00:00.000Z",
+            updated_at: "2026-07-26T00:01:00.000Z",
+            claimed_by: "integrator",
+            claimed_at: "2026-07-26T00:00:00.000Z",
+            lease_expires_at: "2099-07-26T00:00:00.000Z",
+            reason: "provider conflict",
+          },
+        ],
+      })}\n`,
+      "utf8",
+    );
 
     const fakeGhSource = [
       "const args = process.argv.slice(2);",
@@ -191,6 +234,10 @@ describe("provider conflict rework CLI", () => {
         head: { ref: branch, sha: headSha },
         base: { ref: "main", sha: baseSha },
       })};`,
+      'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
+      '  console.log(JSON.stringify({ required_pull_request_reviews: {} }));',
+      "  process.exit(0);",
+      "}",
       'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
       "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
       "  process.exit(0);",
@@ -264,10 +311,12 @@ describe("provider conflict rework CLI", () => {
           candidate_conflict_paths: { paths: ["conflict.txt"], total: 1 },
           safety: {
             preparation_mutations: [],
-            cli_must_not: expect.arrayContaining([expect.stringMatching(/auto-rebase/u)]),
           },
         },
       });
+      expect(
+        route.conflict_rework.packet.safety.cli_must_not.some((rule) => rule.includes("auto-rebase")),
+      ).toBe(true);
 
       const packetIo = captureStdIO();
       try {
