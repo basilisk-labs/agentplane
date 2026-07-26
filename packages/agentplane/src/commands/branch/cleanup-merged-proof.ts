@@ -4,8 +4,8 @@ import path from "node:path";
 import type { TaskData } from "../../backends/task-backend.js";
 import {
   findWorktreeForBranch,
-  gitDiffNames,
-  gitEnv,
+  gitProofDiffNames,
+  gitProofEnv,
   gitListBranchesByPrefixes,
   parseTaskIdFromBranch,
   parseTaskIdFromCloseBranch,
@@ -15,7 +15,7 @@ import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
 import {
   gitCommitObjectExists,
-  gitIsAncestor,
+  gitProofIsAncestor,
   isCanonicalFullCommitOid,
 } from "../shared/git-ops.js";
 import { parsePrMeta, readPreMergeClosureMarker } from "../shared/pr-meta.js";
@@ -101,7 +101,7 @@ async function taskLifecycleProofOnBase(opts: {
   if (
     isCanonicalFullCommitOid(taskCommitHash) &&
     (await gitCommitObjectExists(opts.gitRoot, taskCommitHash)) &&
-    (await gitIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))
+    (await gitProofIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))
   ) {
     return "task_commit_on_base";
   }
@@ -109,7 +109,7 @@ async function taskLifecycleProofOnBase(opts: {
   const mergeCommit = meta?.status === "MERGED" ? (meta.merge_commit?.trim() ?? "") : "";
   return isCanonicalFullCommitOid(mergeCommit) &&
     (await gitCommitObjectExists(opts.gitRoot, mergeCommit)) &&
-    (await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
+    (await gitProofIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
     ? "merged_meta_on_base"
     : null;
 }
@@ -126,7 +126,7 @@ async function gitTreesEquivalent(opts: {
   try {
     await execFileAsync("git", ["diff", "--quiet", opts.baseBranch, opts.branch, "--"], {
       cwd: opts.gitRoot,
-      env: gitEnv(),
+      env: gitProofEnv(),
     });
     return true;
   } catch (error) {
@@ -143,18 +143,27 @@ async function gitLinearPatchsetEquivalent(opts: {
   const { stdout: mergeCommits } = await execFileAsync(
     "git",
     ["rev-list", "--merges", `${opts.baseBranch}..${opts.branch}`],
-    { cwd: opts.gitRoot, env: gitEnv() },
+    { cwd: opts.gitRoot, env: gitProofEnv() },
   );
   if (mergeCommits.trim()) return false;
   const { stdout } = await execFileAsync("git", ["cherry", opts.baseBranch, opts.branch], {
     cwd: opts.gitRoot,
-    env: gitEnv(),
+    env: gitProofEnv(),
   });
   return stdout
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
     .every((line) => line.startsWith("- "));
+}
+
+function blockedCleanupProof(reason: string) {
+  return {
+    proof: null,
+    reason,
+    expectedHeadSha: "",
+    providerReconciliation: null,
+  };
 }
 
 function providerUnavailableBecauseRepositoryIsLocal(result: GithubPrLookupResult): boolean {
@@ -189,30 +198,26 @@ async function targetedCleanupProof(opts: {
     opts.kind === "task" && marker && !isCanonicalFullCommitOid(marker.basisCommit)
       ? `pre-merge closure basis must be a canonical full commit OID: ${marker.basisCommit || "-"}`
       : null;
-  const blocked = (reason: string) => ({
-    proof: null,
-    reason,
-    expectedHeadSha: "",
-    providerReconciliation: null,
-  });
-  if (taskCommitIdentityReason) return blocked(taskCommitIdentityReason);
+  if (taskCommitIdentityReason) return blockedCleanupProof(taskCommitIdentityReason);
   if (opts.kind === "task" && !marker) {
-    return blocked("exact pre-merge closure marker is unavailable");
+    return blockedCleanupProof("exact pre-merge closure marker is unavailable");
   }
-  if (closureBasisIdentityReason) return blocked(closureBasisIdentityReason);
+  if (closureBasisIdentityReason) return blockedCleanupProof(closureBasisIdentityReason);
   if (opts.kind === "task") {
     if (!(await gitCommitObjectExists(opts.gitRoot, opts.taskCommitSha))) {
-      return blocked(`task commit object is unavailable locally: ${opts.taskCommitSha}`);
+      return blockedCleanupProof(
+        `task commit object is unavailable locally: ${opts.taskCommitSha}`,
+      );
     }
     if (!(await gitCommitObjectExists(opts.gitRoot, marker?.basisCommit ?? ""))) {
-      return blocked(
+      return blockedCleanupProof(
         `pre-merge closure basis object is unavailable locally: ${marker?.basisCommit ?? "-"}`,
       );
     }
   }
   const branchHeadResult = await execFileAsync("git", ["rev-parse", opts.branch], {
     cwd: opts.gitRoot,
-    env: gitEnv(),
+    env: gitProofEnv(),
   });
   const branchHead = branchHeadResult.stdout.trim();
   const result = (
@@ -456,7 +461,7 @@ export async function resolveCleanupPlan(opts: {
       }
       continue;
     }
-    const diff = await gitDiffNames(opts.gitRoot, opts.baseBranch, branch);
+    const diff = await gitProofDiffNames(opts.gitRoot, opts.baseBranch, branch);
     const lifecycleProof = await taskLifecycleProofOnBase({
       gitRoot: opts.gitRoot,
       workflowDir: opts.workflowDir,

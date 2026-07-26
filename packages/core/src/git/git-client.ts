@@ -16,6 +16,13 @@ export function gitEnv(): NodeJS.ProcessEnv {
   return env;
 }
 
+// Proof routes must inspect the repository's immutable object graph. Local
+// refs/replace entries intentionally rewrite graph traversal, so they are not
+// valid input when an ancestry or object-type result authorizes cleanup.
+export function gitProofEnv(): NodeJS.ProcessEnv {
+  return { ...gitEnv(), GIT_NO_REPLACE_OBJECTS: "1" };
+}
+
 function uniqSorted(paths: string[]): string[] {
   return [...new Set(paths)].toSorted((a, b) => a.localeCompare(b));
 }
@@ -139,15 +146,16 @@ export async function gitBranchExists(cwd: string, branch: string): Promise<bool
   return branches.includes(branch);
 }
 
-export async function gitIsAncestor(
+async function gitIsAncestorInEnv(
   cwd: string,
   maybeAncestor: string,
   descendant: string,
+  env: NodeJS.ProcessEnv,
 ): Promise<boolean> {
   try {
     await execFileAsync("git", ["merge-base", "--is-ancestor", maybeAncestor, descendant], {
       cwd,
-      env: gitEnv(),
+      env,
     });
     return true;
   } catch (err) {
@@ -161,6 +169,22 @@ export async function gitIsAncestor(
     }
     throw err;
   }
+}
+
+export async function gitIsAncestor(
+  cwd: string,
+  maybeAncestor: string,
+  descendant: string,
+): Promise<boolean> {
+  return await gitIsAncestorInEnv(cwd, maybeAncestor, descendant, gitEnv());
+}
+
+export async function gitProofIsAncestor(
+  cwd: string,
+  maybeAncestor: string,
+  descendant: string,
+): Promise<boolean> {
+  return await gitIsAncestorInEnv(cwd, maybeAncestor, descendant, gitProofEnv());
 }
 
 export async function gitBranchUpstream(cwd: string, branch: string): Promise<string | null> {

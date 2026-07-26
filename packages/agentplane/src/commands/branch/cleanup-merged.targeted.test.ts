@@ -312,7 +312,7 @@ async function corruptBaseProofIdentity(opts: {
   if (opts.identity === "task_commit") {
     const readmePath = path.join(taskDir, "README.md");
     const before = await readFile(readmePath, "utf8");
-    const after = before.replace(/(^commit:\n  hash: ")[^"]+("$)/mu, `$1${opts.value}$2`);
+    const after = before.replace(/(^commit:\n {2}hash: ")[^"]+("$)/mu, `$1${opts.value}$2`);
     expect(after).not.toBe(before);
     await writeFile(readmePath, after, "utf8");
   } else {
@@ -398,10 +398,97 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
   });
 
+  it("fails closed when a replacement ref makes an unmerged task head look contained by the provider merge", async () => {
+    const fixture = await createTargetedFixture({ providerRebased: true });
+    const replacement = await execFileAsync(
+      "git",
+      [
+        "commit-tree",
+        `${fixture.mergeCommit}^{tree}`,
+        "-p",
+        fixture.branchHead,
+        "-m",
+        "replacement merge topology",
+      ],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    await execFileAsync(
+      "git",
+      ["update-ref", `refs/replace/${fixture.mergeCommit}`, replacement.stdout.trim()],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+
+    await expect(
+      execFileAsync(
+        "git",
+        ["merge-base", "--is-ancestor", fixture.branchHead, fixture.mergeCommit],
+        {
+          cwd: fixture.root,
+          env: cleanGitEnv(),
+        },
+      ),
+    ).resolves.toBeDefined();
+    await expect(
+      execFileAsync(
+        "git",
+        ["merge-base", "--is-ancestor", fixture.branchHead, fixture.mergeCommit],
+        {
+          cwd: fixture.root,
+          env: { ...cleanGitEnv(), GIT_NO_REPLACE_OBJECTS: "1" },
+        },
+      ),
+    ).rejects.toMatchObject({ code: 1 });
+
+    const fakeBin = await installFakeGh({
+      kind: "found",
+      fixture,
+      headSha: fixture.branchHead,
+    });
+    const cleanup = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(cleanup.code).toBe(5);
+    expect(cleanup.stderr).toContain(
+      "provider merged head is not contained by the recorded merge commit",
+    );
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+
+    const route = await runWithFakeGh(fakeBin, [
+      "task",
+      "next-action",
+      fixture.taskId,
+      "--remote",
+      "--explain",
+      "--root",
+      fixture.root,
+    ]);
+    expect(route.code).toBe(0);
+    expect(route.stdout).toMatch(/code:\s+cleanup_blocked/u);
+    expect(route.stdout).toMatch(/next_command:\s+none/u);
+    expect(route.stdout).toContain(
+      "provider merged head is not contained by the recorded merge commit",
+    );
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
   it(
     "fails closed and advertises no mutating route for symbolic or malformed provider revisions on a ZMV-shaped rebase topology",
     async () => {
-      const cases = [
+      const cases: {
+        name: string;
+        headSha?: string;
+        mergeCommitSha?: string;
+        expectedReason: string;
+      }[] = [
         {
           name: "symbolic provider head",
           headSha: "main",
@@ -422,7 +509,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
           mergeCommitSha: "refs/heads/main",
           expectedReason: "provider merge commit must be a canonical full commit OID",
         },
-      ] as const;
+      ];
 
       for (const testCase of cases) {
         const fixture = await createTargetedFixture({ providerRebased: true });

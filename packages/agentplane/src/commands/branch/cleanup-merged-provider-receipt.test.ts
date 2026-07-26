@@ -176,7 +176,7 @@ async function installTaskCloseFakeGh(opts: {
   await writeFile(
     scriptPath,
     [
-      'const args = process.argv.slice(2);',
+      "const args = process.argv.slice(2);",
       'if (args[0] !== "api" || !String(args[1] ?? "").includes("pulls?")) process.exit(90);',
       `console.log(JSON.stringify([${JSON.stringify(payload)}]));`,
       "",
@@ -211,7 +211,12 @@ async function runWithFakeGh(fakeBin: string, argv: string[]) {
 describe("cleanup merged provider receipt type guard", () => {
   it("fails closed for noncommit task-close receipt identities and preserves branch and worktree", async () => {
     const fixture = await createTaskCloseReceiptFixture();
-    const cases = [
+    const cases: {
+      name: string;
+      headSha: string;
+      mergeCommit?: string;
+      expectedReason: string;
+    }[] = [
       {
         name: "provider head blob",
         headSha: fixture.providerHeadBlob,
@@ -226,10 +231,9 @@ describe("cleanup merged provider receipt type guard", () => {
         name: "provider merge annotated tag",
         headSha: fixture.mergeCommit,
         mergeCommit: fixture.providerHeadTag,
-        expectedReason:
-          `provider merge commit object is unavailable locally: ${fixture.providerHeadTag}`,
+        expectedReason: `provider merge commit object is unavailable locally: ${fixture.providerHeadTag}`,
       },
-    ] as const;
+    ];
 
     for (const testCase of cases) {
       const fakeBin = await installTaskCloseFakeGh({
@@ -270,6 +274,59 @@ describe("cleanup merged provider receipt type guard", () => {
     }
   });
 
+  it("rejects a replacement ref that makes an annotated provider head look like a commit", async () => {
+    const fixture = await createTaskCloseReceiptFixture();
+    await execFileAsync(
+      "git",
+      ["update-ref", `refs/replace/${fixture.providerHeadTag}`, fixture.mergeCommit],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    const replacedType = await execFileAsync("git", ["cat-file", "-t", fixture.providerHeadTag], {
+      cwd: fixture.root,
+      env: cleanGitEnv(),
+    });
+    expect(replacedType.stdout.trim()).toBe("commit");
+
+    const fakeBin = await installTaskCloseFakeGh({
+      fixture,
+      headSha: fixture.providerHeadTag,
+    });
+    const cleanup = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+
+    expect(cleanup.code).toBe(5);
+    expect(cleanup.stderr).toContain(
+      `provider head object is unavailable locally: ${fixture.providerHeadTag}`,
+    );
+    expect(await gitBranchExists(fixture.root, fixture.closeBranch)).toBe(true);
+    expect(await pathExists(fixture.closeWorktreePath)).toBe(true);
+
+    const route = await runWithFakeGh(fakeBin, [
+      "task",
+      "next-action",
+      fixture.taskId,
+      "--remote",
+      "--explain",
+      "--root",
+      fixture.root,
+    ]);
+    expect(route.code).toBe(0);
+    expect(route.stdout).toMatch(/code:\s+cleanup_blocked/u);
+    expect(route.stdout).toMatch(/next_command:\s+none/u);
+    expect(route.stdout).toContain(
+      `provider head object is unavailable locally: ${fixture.providerHeadTag}`,
+    );
+    expect(await gitBranchExists(fixture.root, fixture.closeBranch)).toBe(true);
+    expect(await pathExists(fixture.closeWorktreePath)).toBe(true);
+  });
+
   it("requires every persisted reconciliation identity to resolve to a commit before accepting a receipt", async () => {
     const fixture = await createTaskCloseReceiptFixture();
     const proof: ProviderReconciliationProof = {
@@ -284,16 +341,19 @@ describe("cleanup merged provider receipt type guard", () => {
       mergeCommit: fixture.mergeCommit,
       closureBasisCommit: fixture.mergeCommit,
     };
-    const identities: Array<{
+    const identities: {
       label: string;
       withValue: (value: string) => ProviderReconciliationProof;
-    }> = [
+    }[] = [
       { label: "recorded task commit", withValue: (value) => ({ ...proof, taskCommitSha: value }) },
       {
         label: "recorded local task head",
         withValue: (value) => ({ ...proof, localHeadSha: value }),
       },
-      { label: "recorded provider head", withValue: (value) => ({ ...proof, providerHeadSha: value }) },
+      {
+        label: "recorded provider head",
+        withValue: (value) => ({ ...proof, providerHeadSha: value }),
+      },
       {
         label: "recorded provider merge commit",
         withValue: (value) => ({ ...proof, mergeCommit: value }),
@@ -391,8 +451,7 @@ describe("cleanup merged provider receipt type guard", () => {
       {
         name: "pre-merge closure basis",
         input: { ...input, closureBasisCommit: fixture.providerHeadTag },
-        expectedReason:
-          `pre-merge closure basis object is unavailable locally: ${fixture.providerHeadTag}`,
+        expectedReason: `pre-merge closure basis object is unavailable locally: ${fixture.providerHeadTag}`,
       },
       {
         name: "provider head",
@@ -408,8 +467,7 @@ describe("cleanup merged provider receipt type guard", () => {
           ...input,
           receipt: { ...input.receipt, mergeCommit: fixture.providerHeadTag },
         },
-        expectedReason:
-          `provider merge commit object is unavailable locally: ${fixture.providerHeadTag}`,
+        expectedReason: `provider merge commit object is unavailable locally: ${fixture.providerHeadTag}`,
       },
     ] as const;
 

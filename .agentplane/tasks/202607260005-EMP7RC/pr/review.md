@@ -13,7 +13,7 @@ Created: 2026-07-26T00:39:19.677Z
 ## Verification
 
 - State: ok
-- Note: Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged.
+- Note: Independent verification at 9a3cb50: replacement refs cannot authorize receipt, ancestry, patch, base, or cleanup proof; targeted and declared local checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,18 +29,21 @@ Created: 2026-07-26T00:39:19.677Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/branch/cleanup-merged-proof.ts    | 252 +++++++-----
- .../branch/cleanup-merged-provider-receipt.test.ts | 422 ++++++++++++++++++++
- .../cleanup-merged-provider-reconciliation.ts      | 435 +++++++++++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         | 404 ++++++++++++++++++-
+ .../src/commands/branch/cleanup-merged-proof.ts    | 267 +++++++----
+ .../branch/cleanup-merged-provider-receipt.test.ts | 480 ++++++++++++++++++++
+ .../cleanup-merged-provider-reconciliation.ts      | 439 ++++++++++++++++++
+ .../branch/cleanup-merged.targeted.test.ts         | 491 ++++++++++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
- packages/agentplane/src/commands/shared/git-ops.ts |  19 +
- .../shared/route-decision-next-action.test.ts      |  49 +++
+ packages/agentplane/src/commands/shared/git-ops.ts |  21 +
+ .../shared/route-decision-next-action.test.ts      |  49 ++
  .../src/commands/shared/route-decision.ts          |   3 +-
- .../src/commands/shared/workflow-step-branch.ts    |  46 ++-
- .../src/commands/task/close-tail-state.test.ts     |  22 +-
- .../src/commands/task/close-tail-state.ts          |  12 +-
- 11 files changed, 1563 insertions(+), 125 deletions(-)
+ .../src/commands/shared/workflow-step-branch.ts    |  46 +-
+ .../src/commands/task/close-tail-state.test.ts     |  24 +-
+ .../src/commands/task/close-tail-state.ts          |  18 +-
+ packages/core/src/git/git-client.ts                |  28 +-
+ packages/core/src/git/git-diff.ts                  |  32 +-
+ packages/core/src/git/index.ts                     |   3 +
+ 14 files changed, 1783 insertions(+), 142 deletions(-)
 ```
 
 </details>

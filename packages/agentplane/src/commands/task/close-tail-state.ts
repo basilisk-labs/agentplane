@@ -4,7 +4,7 @@ import { extractTaskSuffix } from "@agentplaneorg/core/commit";
 import { normalizeTaskStatus, parseTaskReadme } from "@agentplaneorg/core/tasks";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv } from "@agentplaneorg/core/git";
+import { gitProofEnv } from "@agentplaneorg/core/git";
 import { gitCommitObjectExists, isCanonicalFullCommitOid } from "../shared/git-ops.js";
 import { parsePrMeta, readPreMergeClosureMarker } from "../shared/pr-meta.js";
 
@@ -16,7 +16,7 @@ async function gitShowText(opts: {
   try {
     const { stdout } = await execFileAsync("git", ["show", `${opts.baseBranch}:${opts.repoPath}`], {
       cwd: opts.gitRoot,
-      env: gitEnv(),
+      env: gitProofEnv(),
       maxBuffer: 10 * 1024 * 1024,
     });
     return stdout;
@@ -83,7 +83,7 @@ export async function taskCloseAlreadyRecordedOnBase(opts: {
     ["log", opts.baseBranch, "--format=%s", "--", readmePath],
     {
       cwd: opts.gitRoot,
-      env: gitEnv(),
+      env: gitProofEnv(),
       maxBuffer: 10 * 1024 * 1024,
     },
   );

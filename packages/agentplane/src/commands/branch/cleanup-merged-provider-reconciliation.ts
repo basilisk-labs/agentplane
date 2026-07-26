@@ -1,9 +1,9 @@
-import { gitEnv } from "@agentplaneorg/core/git";
+import { gitProofEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
 import {
   gitCommitObjectExists,
-  gitIsAncestor,
+  gitProofIsAncestor,
   isCanonicalFullCommitOid,
 } from "../shared/git-ops.js";
 import {
@@ -82,7 +82,7 @@ async function gitCherryLines(opts: {
   try {
     const { stdout } = await execFileAsync("git", ["cherry", opts.upstream, opts.head], {
       cwd: opts.gitRoot,
-      env: gitEnv(),
+      env: gitProofEnv(),
     });
     const rawLines = stdout
       .split("\n")
@@ -117,7 +117,7 @@ async function gitMergeBaseParent(opts: {
     const { stdout } = await execFileAsync(
       "git",
       ["rev-list", "--parents", "-n", "1", opts.mergeCommit],
-      { cwd: opts.gitRoot, env: gitEnv() },
+      { cwd: opts.gitRoot, env: gitProofEnv() },
     );
     const [, ...parents] = stdout.trim().split(/\s+/u);
     return parents.length >= 2 ? (parents[0] ?? null) : null;
@@ -139,7 +139,7 @@ async function gitProviderPatchesEquivalentToLocal(opts: {
   });
   if (lines === null || lines.length === 0) return false;
   for (const line of lines) {
-    if (await gitIsAncestor(opts.gitRoot, line.sha, opts.providerBase)) continue;
+    if (await gitProofIsAncestor(opts.gitRoot, line.sha, opts.providerBase)) continue;
     if (line.marker !== "-") return false;
   }
   return true;
@@ -247,7 +247,7 @@ export async function validateMergedProviderReceipt(opts: {
       reason: `provider merge commit object is unavailable locally: ${mergeCommit}`,
     };
   }
-  if (!(await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))) {
+  if (!(await gitProofIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))) {
     return {
       receipt: null,
       reason: `provider merge commit is not on ${opts.baseBranch}: ${mergeCommit}`,
@@ -345,20 +345,24 @@ export async function resolveProviderReconciliation(opts: {
       reason: `pre-merge closure basis object is unavailable locally: ${opts.closureBasisCommit}`,
     };
   }
-  if (!(await gitIsAncestor(opts.gitRoot, opts.taskCommitSha, opts.closureBasisCommit))) {
+  if (!(await gitProofIsAncestor(opts.gitRoot, opts.taskCommitSha, opts.closureBasisCommit))) {
     return {
       proof: null,
       reason: "task commit is not covered by the pre-merge closure basis",
     };
   }
-  if (!(await gitIsAncestor(opts.gitRoot, opts.closureBasisCommit, opts.branchHead))) {
+  if (!(await gitProofIsAncestor(opts.gitRoot, opts.closureBasisCommit, opts.branchHead))) {
     return {
       proof: null,
       reason: "pre-merge closure basis is not an ancestor of the stale local task head",
     };
   }
   if (
-    !(await gitIsAncestor(opts.gitRoot, opts.receipt.providerHeadSha, opts.receipt.mergeCommit))
+    !(await gitProofIsAncestor(
+      opts.gitRoot,
+      opts.receipt.providerHeadSha,
+      opts.receipt.mergeCommit,
+    ))
   ) {
     return {
       proof: null,
@@ -385,7 +389,7 @@ export async function resolveProviderReconciliation(opts: {
       upstream: opts.receipt.providerHeadSha,
       head: opts.branchHead,
     }),
-    gitIsAncestor(opts.gitRoot, opts.closureBasisCommit, opts.receipt.providerHeadSha).catch(
+    gitProofIsAncestor(opts.gitRoot, opts.closureBasisCommit, opts.receipt.providerHeadSha).catch(
       () => false,
     ),
   ]);

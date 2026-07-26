@@ -15,8 +15,10 @@ export {
   gitCommit,
   gitCurrentBranch,
   gitEnv,
+  gitProofEnv,
   gitInitRepo,
   gitIsAncestor,
+  gitProofIsAncestor,
   gitListBranches,
   gitMergeBase,
   gitRevParse,
@@ -27,6 +29,7 @@ export {
 export {
   gitAheadBehind,
   gitDiffNames,
+  gitProofDiffNames,
   gitDiffNameStatus,
   gitDiffNumstat,
   gitDiffStat,

@@ -1,12 +1,15 @@
- .../src/commands/branch/cleanup-merged-proof.ts    | 252 +++++++-----
- .../branch/cleanup-merged-provider-receipt.test.ts | 422 ++++++++++++++++++++
- .../cleanup-merged-provider-reconciliation.ts      | 435 +++++++++++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         | 404 ++++++++++++++++++-
+ .../src/commands/branch/cleanup-merged-proof.ts    | 267 +++++++----
+ .../branch/cleanup-merged-provider-receipt.test.ts | 480 ++++++++++++++++++++
+ .../cleanup-merged-provider-reconciliation.ts      | 439 ++++++++++++++++++
+ .../branch/cleanup-merged.targeted.test.ts         | 491 ++++++++++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
- packages/agentplane/src/commands/shared/git-ops.ts |  19 +
- .../shared/route-decision-next-action.test.ts      |  49 +++
+ packages/agentplane/src/commands/shared/git-ops.ts |  21 +
+ .../shared/route-decision-next-action.test.ts      |  49 ++
  .../src/commands/shared/route-decision.ts          |   3 +-
- .../src/commands/shared/workflow-step-branch.ts    |  46 ++-
- .../src/commands/task/close-tail-state.test.ts     |  22 +-
- .../src/commands/task/close-tail-state.ts          |  12 +-
- 11 files changed, 1563 insertions(+), 125 deletions(-)
+ .../src/commands/shared/workflow-step-branch.ts    |  46 +-
+ .../src/commands/task/close-tail-state.test.ts     |  24 +-
+ .../src/commands/task/close-tail-state.ts          |  18 +-
+ packages/core/src/git/git-client.ts                |  28 +-
+ packages/core/src/git/git-diff.ts                  |  32 +-
+ packages/core/src/git/index.ts                     |   3 +
+ 14 files changed, 1783 insertions(+), 142 deletions(-)

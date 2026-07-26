@@ -6,6 +6,7 @@ import {
   gitCommit,
   gitListBranches,
   gitEnv,
+  gitProofEnv,
   gitStagedPaths,
   setPinnedBaseBranch,
 } from "@agentplaneorg/core/git";
@@ -18,6 +19,7 @@ export {
   gitBranchUpstream,
   gitCurrentBranch,
   gitIsAncestor,
+  gitProofIsAncestor,
   gitListBranches,
   gitRevParse,
   gitAddPaths,
@@ -38,7 +40,7 @@ export async function gitCommitObjectExists(gitRoot: string, oid: string): Promi
   try {
     const { stdout } = await execFileAsync("git", ["cat-file", "-t", oid], {
       cwd: gitRoot,
-      env: gitEnv(),
+      env: gitProofEnv(),
     });
     return stdout.trim() === "commit";
   } catch {

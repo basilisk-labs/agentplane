@@ -4,7 +4,7 @@ title: "Reconcile provider-rebased protected PR heads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -35,36 +35,38 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-26T02:23:53.873Z"
+  updated_at: "2026-07-26T03:15:51.602Z"
   updated_by: "TESTER"
-  note: "Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged."
+  note: "Independent verification at 9a3cb50: replacement refs cannot authorize receipt, ancestry, patch, base, or cleanup proof; targeted and declared local checks pass."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T02:28:54.278Z"
+  updated_at: "2026-07-26T03:25:03.809Z"
   updated_by: "EVALUATOR"
-  note: "Reject at 5da3b9b: blob receipts are blocked, but annotated tag object IDs still satisfy the commit guard and can authorize provider cleanup."
-  evaluated_sha: "5da3b9b7b3d3bcc7279e3a0d9237abd46eac958f"
+  note: "Pass at 9a3cb50: immutable proof routes disable refs/replace for every cleanup authority decision; both replacement topologies fail closed while the ZMV provider-rebase proof remains valid."
+  evaluated_sha: "9a3cb50eafa51ebbf5d20e059bd7e1111d7498a7"
   blueprint_digest: "6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137"
   evidence_refs:
     - ".agentplane/tasks/202607260005-EMP7RC/README.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-022854278-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-022854278-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-022854278-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-032503809-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-032503809-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-032503809-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json"
+    - "packages/core/src/git/git-client.ts"
+    - "packages/core/src/git/git-diff.ts"
     - "packages/agentplane/src/commands/shared/git-ops.ts"
     - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
     - "packages/agentplane/src/commands/branch/cleanup-merged-proof.ts"
-    - "git probe: object 383ffa926ec48012d532cc7b918ddfc3b912dab4 type=tag; cat-file -e oid^{commit}=0; dereferenced commit 58eee6d8e2fc8a3410d79165946bd14b9f36cae6 is ancestor of main"
-    - "bun -e ZMV matrix: tag provider head and merge receipts accepted; tag taskCommitSha yielded provider_rebase_equivalent; blob/tree/ref/ref-expression rejected; normal ZMV positive remained"
-    - "bunx vitest provider-receipt, cleanup-targeted, route-decision, close-tail: 37 passed"
-    - "git diff --check main...HEAD: pass"
+    - "packages/agentplane/src/commands/task/close-tail-state.ts"
+    - "bunx vitest targeted provider receipt, cleanup, route, close-tail: 41 passed"
+    - "bunx vitest replacement ref regressions: 2 passed"
+    - "bunx vitest core git client and diff: 8 passed"
+    - "bun run typecheck; lint:core; guards:check; lifecycle:invariants; routing; doctor; git diff --check: pass"
   findings:
-    - "gitCommitObjectExists uses git cat-file -e <oid>^{commit}, which dereferences annotated tags rather than proving that the supplied canonical OID itself is a commit object."
-    - "Real repository tag object 383ffa926ec48012d532cc7b918ddfc3b912dab4 (refs/tags/v0.1.1) has type tag, yet the receipt validator accepts it as both providerHeadSha and mergeCommit. The task-close found-provider fast path therefore receives a valid receipt and returns provider_merge without reconciliation."
-    - "On the real ZMV d61ab0f->2a6d152->e27c938 topology, substituting that tag OID only for taskCommitSha returns provider_rebase_equivalent; the expected-reconciliation receipt also accepts it. Thus the shared guard fails the immutable commit-object contract in both reconciliation and receipt paths."
-    - "Canonical refs and expressions, absent hashes, blobs, and trees reject correctly; normal ZMV receipt and provider_rebase_equivalent remain positive. The remaining unsafe object type is an annotated tag that resolves to a commit."
+    - "gitProofEnv sets GIT_NO_REPLACE_OBJECTS=1 and is used for commit object type, ancestry, cherry and rev-list, proof diff and rev-parse, and close-tail evidence; ordinary gitEnv, gitIsAncestor, and gitDiffNames remain unchanged."
+    - "The annotated-tag-to-commit and raw-unmerged-head-to-merge replacement fixtures each return cleanup_blocked with next_command none and retain the branch and worktree."
+    - "Independent live-repository reconciliation of ZMV 651d161 -> d61ab0f against provider 2a6d152 merged as e27c938 returned provider_rebase_equivalent."
 commit: null
 comments:
   -
@@ -108,8 +110,26 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged."
+  -
+    type: "verify"
+    at: "2026-07-26T02:42:45.162Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent TESTER PASS at fe825864: 39 focused and 23 cli-core tests pass; raw exact object-type gate accepts commit and rejects a real annotated tag and blob; receipt matrix 10/10, five persisted identities 25/25, and reconciliation matrix 25/25 reject tag/blob/ref/short/malformed values; task-close tag/blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged."
+  -
+    type: "verify"
+    at: "2026-07-26T03:08:49.538Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified immutable proof rework: replacement refs cannot alter commit type, ancestry, patch, base, or cleanup evidence; focused and declared local checks pass."
+  -
+    type: "verify"
+    at: "2026-07-26T03:15:51.602Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent verification at 9a3cb50: replacement refs cannot authorize receipt, ancestry, patch, base, or cleanup proof; targeted and declared local checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-26T02:23:54.797Z"
+doc_updated_at: "2026-07-26T03:15:52.510Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr reconciliation after a protected provider rebases a verified PR: reconcile remote provider truth with a stale local task head without publishing or deleting from uncertain lineage. Current incident: ZMV 202607252051-ZMVZRZ local d61ab0f55d1c122e5acbaf2a296e2ff508e87b55 versus provider-rebased 2a6d152b87666912d189304c4a6084eccaaff262, merged as main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -284,6 +304,96 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: git_hook_side_effect
 
+    ### 2026-07-26T02:42:45.162Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent TESTER PASS at fe825864: 39 focused and 23 cli-core tests pass; raw exact object-type gate accepts commit and rejects a real annotated tag and blob; receipt matrix 10/10, five persisted identities 25/25, and reconciliation matrix 25/25 reject tag/blob/ref/short/malformed values; task-close tag/blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:23:54.797Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+    - old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-26T03:08:49.538Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified immutable proof rework: replacement refs cannot alter commit type, ancestry, patch, base, or cleanup evidence; focused and declared local checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:42:45.991Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+    - old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T03:15:51.602Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent verification at 9a3cb50: replacement refs cannot authorize receipt, ancestry, patch, base, or cleanup proof; targeted and declared local checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T03:08:50.231Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+    - old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert only the bounded reconciliation change in a new normal branch_pr task or follow-up, preserving task artifacts and the pre-existing fail-closed route. Never restore or align a remote branch with a raw force-push. If provider truth changes, proof is incomplete, or cleanup reports dirty or identity mismatch, stop, preserve all state, and return the diagnostic route for human or agent rework."
   Findings: |-
@@ -292,6 +402,14 @@ sections:
     - Observation: resolveProviderReconciliation calls git cherry with providerHead as upstream and stale local head as head; it confirms only that local patches occur in provider history.
       Impact: A merged PR whose provider head contains the local task patch plus an unrelated extra patch is classified provider_rebase_equivalent, so changed provider truth does not fail closed before cleanup routing.
       Resolution: Require symmetric patch-set equivalence or an equally strict provider-only patch rejection; add a regression fixture with one extra provider-only commit and preserve the branch/worktree on refusal.
+
+    - Observation: Two integration regressions cover tag-to-commit and unmerged-task-to-merge replacement topologies; both return cleanup_blocked with no command and preserve state.
+      Impact: A local refs/replace entry can no longer authorize provider reconciliation or cleanup from rewritten topology.
+      Resolution: Use GIT_NO_REPLACE_OBJECTS=1 only through the bounded proof environment; TESTER and EVALUATOR evidence still require refresh.
+
+    - Observation: 41 cleanup/reconciliation plus 8 core Git and 9 CLI/route tests pass, including raw tag-to-commit and raw ancestry-bypass fixtures that return cleanup_blocked with next_command none and preserve worktree.
+      Impact: No stale local head, replacement ref, non-commit identity, or altered ancestry can open a cleanup/publication route through the tested proof paths.
+      Resolution: Use gitProofEnv only for authority proofs; ordinary Git operations retain gitEnv. Await fresh EVALUATOR review before PR publication.
 extensions:
   workflow_route_baseline:
     start_head_sha: "e27c938698668ce242243d166f8c7c1b64cce88f"
@@ -480,6 +598,96 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: git_hook_side_effect
 
+### 2026-07-26T02:42:45.162Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent TESTER PASS at fe825864: 39 focused and 23 cli-core tests pass; raw exact object-type gate accepts commit and rejects a real annotated tag and blob; receipt matrix 10/10, five persisted identities 25/25, and reconciliation matrix 25/25 reject tag/blob/ref/short/malformed values; task-close tag/blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:23:54.797Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+- old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-26T03:08:49.538Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified immutable proof rework: replacement refs cannot alter commit type, ancestry, patch, base, or cleanup evidence; focused and declared local checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:42:45.991Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+- old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T03:15:51.602Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent verification at 9a3cb50: replacement refs cannot authorize receipt, ancestry, patch, base, or cleanup proof; targeted and declared local checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T03:08:50.231Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+- old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -493,3 +701,11 @@ Current incident rule: ZMV 202607252051-ZMVZRZ reached a verified provider-rebas
 - Observation: resolveProviderReconciliation calls git cherry with providerHead as upstream and stale local head as head; it confirms only that local patches occur in provider history.
   Impact: A merged PR whose provider head contains the local task patch plus an unrelated extra patch is classified provider_rebase_equivalent, so changed provider truth does not fail closed before cleanup routing.
   Resolution: Require symmetric patch-set equivalence or an equally strict provider-only patch rejection; add a regression fixture with one extra provider-only commit and preserve the branch/worktree on refusal.
+
+- Observation: Two integration regressions cover tag-to-commit and unmerged-task-to-merge replacement topologies; both return cleanup_blocked with no command and preserve state.
+  Impact: A local refs/replace entry can no longer authorize provider reconciliation or cleanup from rewritten topology.
+  Resolution: Use GIT_NO_REPLACE_OBJECTS=1 only through the bounded proof environment; TESTER and EVALUATOR evidence still require refresh.
+
+- Observation: 41 cleanup/reconciliation plus 8 core Git and 9 CLI/route tests pass, including raw tag-to-commit and raw ancestry-bypass fixtures that return cleanup_blocked with next_command none and preserve worktree.
+  Impact: No stale local head, replacement ref, non-commit identity, or altered ancestry can open a cleanup/publication route through the tested proof paths.
+  Resolution: Use gitProofEnv only for authority proofs; ordinary Git operations retain gitEnv. Await fresh EVALUATOR review before PR publication.

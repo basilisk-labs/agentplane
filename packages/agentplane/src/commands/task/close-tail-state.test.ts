@@ -8,7 +8,7 @@ vi.mock("@agentplaneorg/core/process", () => ({
   execFileAsync: mocks.execFileAsync,
 }));
 vi.mock("@agentplaneorg/core/git", () => ({
-  gitEnv: () => ({}),
+  gitProofEnv: () => ({}),
 }));
 
 describe("taskCloseAlreadyRecordedOnBase", () => {
