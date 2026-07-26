@@ -4,7 +4,7 @@ title: "Prevent foreign task artifacts in branch_pr worktrees"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-25T23:48:22.803Z"
+  state: "needs_rework"
+  updated_at: "2026-07-26T00:08:51.298Z"
   updated_by: "TESTER"
-  note: "Verified rework SHA bc47bcd3: 42 focused tests passed; mutation, replacement, missing, and symlinked authoritative-source races each skipped with authoritative_source_changed_before_remove and retained the foreign replica; typecheck, lint, lifecycle, routing, diff, and doctor passed."
-  attempts: 0
+  note: "Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a sibling README to be materialized; that contradicts the active-task-only contract and would fail CI."
+  attempts: 1
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -77,8 +77,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified rework SHA bc47bcd3: 42 focused tests passed; mutation, replacement, missing, and symlinked authoritative-source races each skipped with authoritative_source_changed_before_remove and retained the foreign replica; typecheck, lint, lifecycle, routing, diff, and doctor passed."
+  -
+    type: "verify"
+    at: "2026-07-26T00:08:51.298Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a sibling README to be materialized; that contradicts the active-task-only contract and would fail CI."
 doc_version: 3
-doc_updated_at: "2026-07-25T23:48:23.473Z"
+doc_updated_at: "2026-07-26T00:08:52.105Z"
 doc_updated_by: "CODER"
 description: "Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion."
 sections:
@@ -157,6 +163,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T00:08:51.298Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a sibling README to be materialized; that contradicts the active-task-only contract and would fail CI.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T23:48:23.473Z, excerpt_hash=sha256:e861d2f2fe43755547db6bee543bf231d306135ebb7898f1a924c06b90c65dc8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+    - old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -169,6 +205,10 @@ sections:
     - Observation: Independent TOCTOU probe exercised source mutation, inode replacement, removal, and symlink substitution after proof.
       Impact: A stale proof cannot delete the foreign README after authoritative-source drift.
       Resolution: Source identity and content are revalidated immediately before unlink; all required local checks passed.
+
+    - Observation: packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts:210 asserts the sibling task README exists after work start, although this task intentionally stops foreign task artifact materialization.
+      Impact: The relevant cli-core suite fails 1/16 and leaves the new safety invariant without a matching runtime regression assertion.
+      Resolution: Update the runtime test to assert the sibling README is absent while sibling task queries still work; rerun the focused and cli-core suites.
 extensions:
   workflow_route_baseline:
     start_head_sha: "220c7f110c07a14b2b055003cd338ad4c1c3503e"
@@ -260,6 +300,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T00:08:51.298Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a sibling README to be materialized; that contradicts the active-task-only contract and would fail CI.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T23:48:23.473Z, excerpt_hash=sha256:e861d2f2fe43755547db6bee543bf231d306135ebb7898f1a924c06b90c65dc8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+- old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -276,3 +346,7 @@ DecisionContextRef:
 - Observation: Independent TOCTOU probe exercised source mutation, inode replacement, removal, and symlink substitution after proof.
   Impact: A stale proof cannot delete the foreign README after authoritative-source drift.
   Resolution: Source identity and content are revalidated immediately before unlink; all required local checks passed.
+
+- Observation: packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts:210 asserts the sibling task README exists after work start, although this task intentionally stops foreign task artifact materialization.
+  Impact: The relevant cli-core suite fails 1/16 and leaves the new safety invariant without a matching runtime regression assertion.
+  Resolution: Update the runtime test to assert the sibling README is absent while sibling task queries still work; rerun the focused and cli-core suites.

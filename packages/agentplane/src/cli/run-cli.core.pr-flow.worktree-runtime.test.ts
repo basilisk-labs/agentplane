@@ -127,7 +127,7 @@ describe(
   { timeout: WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS },
   () => {
     it(
-      "work start seeds local-backend task READMEs into a fresh worktree",
+      "work start seeds only the active local-backend task README and keeps siblings queryable",
       async () => {
         const root = await mkGitRepoRootWithBranch("main");
         const config = defaultConfig();
@@ -170,11 +170,11 @@ describe(
 
         const taskId = await createTask(
           "Seeded worktree task",
-          "Fresh branch_pr worktree should inherit local backend task README files.",
+          "Fresh branch_pr worktree should inherit only its active local backend task README.",
         );
         const siblingTaskId = await createTask(
           "Sibling task for worktree snapshot",
-          "A sibling task proves the local backend snapshot is broader than the active task.",
+          "A sibling task remains queryable without materializing its README in the active worktree.",
         );
         await approveTaskPlan(root, taskId);
         await approveTaskPlan(root, siblingTaskId);
@@ -207,7 +207,7 @@ describe(
           "README.md",
         );
         expect(await pathExists(taskReadmePath)).toBe(true);
-        expect(await pathExists(siblingReadmePath)).toBe(true);
+        expect(await pathExists(siblingReadmePath)).toBe(false);
         expect(await pathExists(path.join(root, ".agentplane", "tasks", taskId, "README.md"))).toBe(
           false,
         );
@@ -238,12 +238,13 @@ describe(
 
         const showIo = captureStdIO();
         try {
-          const code = await runCli(["task", "show", siblingTaskId, "--root", worktreePath]);
+          const code = await runCli(["task", "show", siblingTaskId, "--root", root]);
           expect(code).toBe(0);
           expect(showIo.stdout).toContain(siblingTaskId);
         } finally {
           showIo.restore();
         }
+        expect(await pathExists(siblingReadmePath)).toBe(false);
 
         const seededReadme = await readFile(taskReadmePath, "utf8");
         expect(seededReadme).toContain('status: "TODO"');
