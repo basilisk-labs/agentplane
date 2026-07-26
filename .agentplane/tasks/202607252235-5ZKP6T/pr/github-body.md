@@ -15,13 +15,14 @@ Stop work start from materializing foreign untracked task artifacts into a task 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Rework: c587 passes the focused and CLI-core gates, but historical proof accepts an unrecorded TODO
-replica when the first authoritative path snapshot is DOING. This violates the approved strict
-requirement for a known TODO revision and allows an unknown replica to be deleted.
+PASS at 35656c7f992fc4e0cda0771bcbaba91109b17f88: strict divergent proof now requires the exact
+direct first-parent TODO predecessor, a valid TODO-to-DOING Start transition, and verified DONE
+source; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, and diff
+check passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -41,22 +42,25 @@ requirement for a known TODO revision and allows an unknown replica to be delete
  .../agentplane/src/commands/flow/repair.command.ts |  23 +
  .../src/commands/shared/route-decision-blockers.ts |  41 +-
  .../route-decision-blockers.worktree.test.ts       |  15 +
- .../src/commands/shared/route-decision.ts          |  15 +
+ .../src/commands/shared/route-decision.ts          |  31 +-
  ...task-worktree-foreign-artifact-history-proof.ts | 235 +++++
  ...sk-worktree-foreign-artifact-lifecycle-proof.ts | 286 ++++++
  ...sk-worktree-foreign-artifact-provenance.test.ts | 152 ++++
  .../task-worktree-foreign-artifact-repair.test.ts  | 965 +++++++++++++++++++++
  .../task-worktree-foreign-artifact-repair.ts       | 474 ++++++++++
+ .../shared/task-worktree-foreign-artifact-route.ts |  26 +
  .../commands/shared/workflow-operation-effects.ts  |   1 +
  .../commands/shared/workflow-operation-prefix.ts   |   1 +
+ .../shared/workflow-operation-projection.test.ts   | 267 ++++++
  .../shared/workflow-operation-projection.ts        |   3 +
  .../src/commands/shared/workflow-step-branch.ts    |  15 +-
  .../src/commands/shared/workflow-step-factory.ts   |  21 +
  .../commands/shared/workflow-step-fingerprint.ts   |   1 +
- .../src/commands/shared/workflow-step.test.ts      |   4 +
- .../src/commands/shared/workflow-step.ts           |  19 +
+ .../workflow-step-foreign-task-readme-repair.ts    |  22 +
+ .../src/commands/shared/workflow-step.test.ts      | 198 -----
+ .../src/commands/shared/workflow-step.ts           |  11 +-
  ...ask-worktree-foreign-artifact-repair-fixture.ts | 459 ++++++++++
- 23 files changed, 2794 insertions(+), 42 deletions(-)
+ 26 files changed, 3096 insertions(+), 257 deletions(-)
 ```
 
 </details>

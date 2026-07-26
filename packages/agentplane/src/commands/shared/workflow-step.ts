@@ -8,6 +8,7 @@ import type { RouteCleanupProbe, RouteNextAction } from "./route-decision-types.
 import type { RouteBlocker, RouteExecutionPacket, RouteOracle } from "./route-oracle.js";
 import type { TaskWorktreeCleanliness } from "./task-worktree-cleanliness.js";
 import type { ForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
+import { foreignTaskReadmeReplicaRepairOperation } from "./workflow-step-foreign-task-readme-repair.js";
 
 export type WorkflowRole = RouteExecutionPacket["recommendedRole"];
 export type WorkflowCheckout = RouteOracle["authoritativeCheckout"];
@@ -44,7 +45,7 @@ type WorkflowPostconditionId =
   | "task_worktree_present"
   | "pre_merge_closure_recorded";
 
-type WorkflowPostcondition = {
+export type WorkflowPostcondition = {
   id: WorkflowPostconditionId;
   subject: "base" | "provider" | "route" | "runner" | "task";
   expected: string;
@@ -126,7 +127,7 @@ export type WorkflowOperationParams = {
   "worktree.prepare": { taskId: string; agent: string; slug: string };
 };
 
-type WorkflowOperationSpec = {
+export type WorkflowOperationSpec = {
   type: WorkflowOperationType;
   phase: string;
   checkout: WorkflowCheckout;
@@ -403,20 +404,7 @@ export const WORKFLOW_OPERATION_REGISTRY = {
     verificationCandidate: "agentplane task next-action <task-id> --remote --explain",
     needsVerificationRecord: false,
   },
-  "flow.repair.foreign_task_readme": {
-    type: "workflow_repair",
-    phase: "task_worktree_foreign_artifact_repair",
-    checkout: "task_worktree",
-    role: "CODER",
-    expectedPostconditions: [POSTCONDITION.routeRecomputed],
-    mustNot: [
-      "do not remove any path unless flow repair re-proves one foreign untracked README replica immediately before removal",
-      "do not apply this repair to active-task, modified, symlinked, unknown, or mixed worktree artifacts",
-    ],
-    triggersGitHooks: false,
-    verificationCandidate: null,
-    needsVerificationRecord: false,
-  },
+  ...foreignTaskReadmeReplicaRepairOperation(POSTCONDITION.routeRecomputed),
   "task.pre_merge_close": {
     type: "task_record_result",
     phase: "pre_merge_closure_needed",

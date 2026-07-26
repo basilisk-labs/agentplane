@@ -43,15 +43,14 @@ import {
   inspectTaskWorktreeCleanliness,
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
-import { inspectForeignTaskReadmeReplicaRepair } from "./task-worktree-foreign-artifact-repair.js";
+import { inspectForeignTaskReadmeReplicaRepairForRoute } from "./task-worktree-foreign-artifact-route.js";
 
+type CheckoutRole = TaskRouteDecision["workspace"]["checkoutRole"];
 function isCliUsageOrIo(err: unknown): boolean {
   return err instanceof CliError && (err.code === "E_USAGE" || err.code === "E_IO");
 }
 
-function deriveCheckoutRole(
-  resume: TaskResumeContext,
-): TaskRouteDecision["workspace"]["checkoutRole"] {
+function deriveCheckoutRole(resume: TaskResumeContext): CheckoutRole {
   if (!resume.branch || !resume.base_branch) return "unknown";
   return resume.branch === resume.base_branch ? "base" : "task_worktree";
 }
@@ -104,16 +103,6 @@ function deriveApprovalContract(
     effectiveMutationApprovalRequired: routeRequiresApproval,
     routeRequiresApproval,
   };
-}
-
-function deriveAmbiguities(opts: {
-  decision: Omit<TaskRouteDecision, "ambiguities" | "repairPlan" | "sourceConfidence">;
-}) {
-  return deriveRouteAmbiguities(opts);
-}
-
-function deriveRepairPlan(decision: Omit<TaskRouteDecision, "repairPlan" | "sourceConfidence">) {
-  return deriveRouteRepairPlan(decision);
 }
 
 function hasRemoteProviderEvidence(prFlow: PrFlowStatusReport | null): boolean {
@@ -460,18 +449,12 @@ export async function buildTaskRouteDecision(opts: {
         worktreePath: null,
         changedPaths: [],
       };
-  const foreignTaskReadmeReplicaRepair =
-    taskWorktreeCleanliness.state === "dirty" && taskWorktreeCleanliness.worktreePath
-      ? await inspectForeignTaskReadmeReplicaRepair({
-          ctx,
-          activeTaskId: task.id,
-          taskWorktreePath: taskWorktreeCleanliness.worktreePath,
-          baseBranch: resume.base_branch,
-        }).catch(() => ({
-          state: "not_applicable" as const,
-          reason: "foreign_replica_inspection_failed",
-        }))
-      : { state: "not_applicable" as const, reason: "task_worktree_not_dirty" };
+  const foreignTaskReadmeReplicaRepair = await inspectForeignTaskReadmeReplicaRepairForRoute(
+    ctx,
+    task.id,
+    resume.base_branch,
+    taskWorktreeCleanliness,
+  );
   const cleanupProbe = await resolveDoneCleanupProbe({
     ctx,
     resume,
@@ -600,10 +583,13 @@ export async function buildTaskRouteDecision(opts: {
     oracle,
     executionPacket,
   };
-  const withAmbiguities = { ...partial, ambiguities: deriveAmbiguities({ decision: partial }) };
+  const withAmbiguities = {
+    ...partial,
+    ambiguities: deriveRouteAmbiguities({ decision: partial }),
+  };
   return {
     ...withAmbiguities,
-    repairPlan: deriveRepairPlan(withAmbiguities),
+    repairPlan: deriveRouteRepairPlan(withAmbiguities),
     sourceConfidence: buildRouteSourceConfidence({
       remoteEnabled,
       remoteResolved: hasRemoteProviderEvidence(prFlow),
