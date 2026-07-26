@@ -12,13 +12,14 @@ In scope: branch_pr queue conflict detection, provider-backed freshness and prov
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Rework: hosted failures must return control to CODER only when they cover the same aligned published
-task head; the observed failures belong to provider head 23e while the newer closure head 666 is
-unpublished.
+Independent verification at a9340067: aligned failed hosted head routes to CODER rework; stale
+failed provider head with newer unpublished local head routes only to publish_pr_head via agentplane
+pr open. Focused agentplane 86, CLI 12, and critical 11-file suites passed; schemas check,
+typecheck, lint, guards, lifecycle invariants, policy routing, doctor, and diff check passed.
 ```
 - Canonical workflow state lives in the task README.
 
