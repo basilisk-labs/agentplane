@@ -1,10 +1,10 @@
 ---
 id: "202607221848-VC4VVS"
 title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-26T08:57:43.713Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -40,11 +40,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-26T10:53:22.520Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:49:00.587Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-26T10:53:22.520Z"
+doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
   Summary: |-
@@ -74,6 +84,10 @@ sections:
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
