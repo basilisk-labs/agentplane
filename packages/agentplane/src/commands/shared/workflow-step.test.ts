@@ -428,6 +428,20 @@ describe("typed WorkflowStep reducer", () => {
     );
   });
 
+  it("preserves hosted route context in the emitted authority grant", () => {
+    const approval = reduceRouteState(routeState({ remoteEnabled: true }));
+
+    expect(approval).toMatchObject({
+      kind: "approval",
+      request: { type: "side_effect", operationId: "pr.open" },
+      compatibility: {
+        command: expect.stringContaining(
+          `agentplane task authority grant ${task.id} --remote --operation pr.open`,
+        ),
+      },
+    });
+  });
+
   it("starts an approved TODO task in its existing branch worktree before PR publication", () => {
     const step = reduceRouteState(
       routeStateWithAuthority({
