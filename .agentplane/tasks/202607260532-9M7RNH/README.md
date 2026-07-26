@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -36,9 +36,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-26T07:08:32.159Z"
+  updated_at: "2026-07-26T07:53:35.348Z"
   updated_by: "TESTER"
-  note: "Independent TESTER passed the declared legacy protected-conflict recovery contract."
+  note: "Refreshed verification after generated CLI-reference update; implementation diff and hosted evidence remain passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -113,8 +113,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-26T07:53:35.348Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Refreshed verification after generated CLI-reference update; implementation diff and hosted evidence remain passed."
 doc_version: 3
-doc_updated_at: "2026-07-26T07:38:45.424Z"
+doc_updated_at: "2026-07-26T07:53:36.195Z"
 doc_updated_by: "CODER"
 description: "Close the liveness gap for legacy protected PR conflicts whose provider-reported conflict base is an ancestor of current main. Prepare a bounded read-only reconciliation packet carrying provider conflict-base, current base, ancestry, local conflict probe, and freshness; preserve fail-closed behavior and prohibit CLI rebase, merge, push, queue, or cleanup mutations."
 sections:
@@ -170,6 +176,38 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T07:53:35.348Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Refreshed verification after generated CLI-reference update; implementation diff and hosted evidence remain passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T07:38:45.424Z, excerpt_hash=sha256:296eb060c734854adbc8cb278bd598618ac578b91157115e668b46ee6aca3c75
+
+    Details:
+
+    Command: bun run ci:contract. Result: pass. Evidence: contract suite and stable required hosted checks for PR #4629 passed after the generated CLI-reference update. Scope: implementation at e84f13ddb070ad29dd4b0875b375df820f623e84 plus task-local artifact refresh through e6fef78bdf8d6b56cde5a74c8381a439109d10ac.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260532-9M7RNH-recover-stale-protected-pr-conflict-base-context/.agentplane/tasks/202607260532-9M7RNH/blueprint/resolved-snapshot.json
+    - old_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+    - current_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260532-9M7RNH
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607260532-9M7RNH --remote --explain
+    - diagnostic_command: agentplane task next-action 202607260532-9M7RNH --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -248,6 +286,38 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T07:53:35.348Z — VERIFY — ok
+
+By: TESTER
+
+Note: Refreshed verification after generated CLI-reference update; implementation diff and hosted evidence remain passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T07:38:45.424Z, excerpt_hash=sha256:296eb060c734854adbc8cb278bd598618ac578b91157115e668b46ee6aca3c75
+
+Details:
+
+Command: bun run ci:contract. Result: pass. Evidence: contract suite and stable required hosted checks for PR #4629 passed after the generated CLI-reference update. Scope: implementation at e84f13ddb070ad29dd4b0875b375df820f623e84 plus task-local artifact refresh through e6fef78bdf8d6b56cde5a74c8381a439109d10ac.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260532-9M7RNH-recover-stale-protected-pr-conflict-base-context/.agentplane/tasks/202607260532-9M7RNH/blueprint/resolved-snapshot.json
+- old_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+- current_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260532-9M7RNH
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607260532-9M7RNH --remote --explain
+- diagnostic_command: agentplane task next-action 202607260532-9M7RNH --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 

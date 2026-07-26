@@ -16,7 +16,12 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
 ## Verification
 
 - State: ok
-- Note: Independent TESTER passed the declared legacy protected-conflict recovery contract.
+- Note:
+
+```text
+Refreshed verification after generated CLI-reference update; implementation diff and hosted evidence
+remain passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,6 +33,7 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
 
 ```text
  .agentplane/tasks/202607221908-9M2FBQ/README.md    |   3 +-
+ docs/user/cli-reference.generated.mdx              |  15 +
  .../run-cli.core.help-snap.test.ts.snap            |   3 +
  packages/agentplane/src/cli/reason-codes.ts        |  22 +
  .../cli/run-cli.core.pr-conflict-rework.test.ts    | 224 ++++++++++
@@ -69,7 +75,7 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
  .../src/commands/shared/workflow-step.ts           | 133 +-----
  .../baselines/v0.7-compatibility-candidate.json    |  64 ++-
  .../check-compatibility-contract-baseline.mjs      |  46 +-
- 42 files changed, 3082 insertions(+), 613 deletions(-)
+ 43 files changed, 3097 insertions(+), 613 deletions(-)
 ```
 
 </details>

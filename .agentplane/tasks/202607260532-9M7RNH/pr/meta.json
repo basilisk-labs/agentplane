@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202607260532-9M7RNH/recover-stale-protected-pr-conflict-base-context",
   "created_at": "2026-07-26T05:34:29.033Z",
-  "diffstat_sha256": "sha256:a4a9cf930dd0aa0b9377c5ef30d7f45fa3d9ee24f993cf40688850b92ebea608",
-  "last_verified_at": "2026-07-26T07:08:32.159Z",
-  "last_verified_diffstat_sha256": "sha256:f01d8ad02eb76c5b6250a0e8a7b0c2808e70915cd3b56bf7b28a5ae950fddbbf",
+  "diffstat_sha256": "sha256:109a30387ebeceb1018d74a423f0753b94e3d04231fcb4e9193c29a7ebcfd2db",
+  "last_verified_at": "2026-07-26T07:53:35.348Z",
+  "last_verified_diffstat_sha256": "sha256:109a30387ebeceb1018d74a423f0753b94e3d04231fcb4e9193c29a7ebcfd2db",
   "pr_number": 4629,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4629",
   "pre_merge_closure": {

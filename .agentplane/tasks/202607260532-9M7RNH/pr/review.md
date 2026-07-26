@@ -13,7 +13,7 @@ Created: 2026-07-26T05:34:29.033Z
 ## Verification
 
 - State: ok
-- Note: Independent TESTER passed the declared legacy protected-conflict recovery contract.
+- Note: Refreshed verification after generated CLI-reference update; implementation diff and hosted evidence remain passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,6 +30,7 @@ Created: 2026-07-26T05:34:29.033Z
 
 ```text
  .agentplane/tasks/202607221908-9M2FBQ/README.md    |   3 +-
+ docs/user/cli-reference.generated.mdx              |  15 +
  .../run-cli.core.help-snap.test.ts.snap            |   3 +
  packages/agentplane/src/cli/reason-codes.ts        |  22 +
  .../cli/run-cli.core.pr-conflict-rework.test.ts    | 224 ++++++++++
@@ -71,7 +72,7 @@ Created: 2026-07-26T05:34:29.033Z
  .../src/commands/shared/workflow-step.ts           | 133 +-----
  .../baselines/v0.7-compatibility-candidate.json    |  64 ++-
  .../check-compatibility-contract-baseline.mjs      |  46 +-
- 42 files changed, 3082 insertions(+), 613 deletions(-)
+ 43 files changed, 3097 insertions(+), 613 deletions(-)
 ```
 
 </details>
