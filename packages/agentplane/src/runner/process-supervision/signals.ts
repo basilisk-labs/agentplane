@@ -3,6 +3,8 @@ import { runProcess } from "@agentplaneorg/core/process";
 import type { RunnerProcessSignal } from "../types.js";
 import { monotonicNowMs } from "./clock.js";
 
+const OBSERVED_PROCESS_IDENTITY_TIMEOUT_MS = 500;
+
 export type ObservedProcessIdentity = {
   pid: number;
   command: string | null;
@@ -43,6 +45,7 @@ export async function readObservedProcessIdentity(
       args: ["-o", "lstart=,command=", "-p", String(pid)],
       env: { ...process.env, LANG: "C", LC_ALL: "C" },
       encoding: "utf8",
+      timeoutMs: OBSERVED_PROCESS_IDENTITY_TIMEOUT_MS,
     });
     const line = String(stdout)
       .split("\n")
@@ -64,9 +67,11 @@ export async function readObservedProcessIdentity(
     };
   } catch (err) {
     const errno = (err as NodeJS.ErrnoException | null)?.code;
-    const exitCode = (err as { code?: number } | null)?.code;
+    const details = err as { code?: number; timedOut?: boolean } | null;
+    const exitCode = details?.code;
     const message = err instanceof Error ? err.message : "";
     if (errno === "ESRCH" || exitCode === 1) return null;
+    if (details?.timedOut === true) return null;
     if (message.includes("process id too large")) return null;
     throw err;
   }

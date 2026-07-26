@@ -15,8 +15,14 @@ Repair the reproducible runner lifecycle failure where active-claim concurrency 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+REWORK: full fast CI passed, but the branch has no runner implementation or regression-coverage
+change. This classifies the prior failure as schedule-sensitive only; it does not prove the
+prepared-to-running gate or fixture-cleanup ownership is repaired.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
