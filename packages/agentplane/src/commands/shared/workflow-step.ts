@@ -21,6 +21,12 @@ export type WorkflowRouteState = {
   cleanupProbe: RouteCleanupProbe;
   blockers: readonly RouteBlocker[];
   batchOwnership: RouteBatchOwnership;
+  /**
+   * The route was computed with hosted-provider state. Approval grants must
+   * rebuild the same route context instead of silently falling back to a
+   * local-only decision.
+   */
+  remoteEnabled?: boolean;
   taskWorktree?: TaskWorktreeCleanliness;
   conflictRework?: ConflictReworkPreparation | null;
   preconditionFingerprint: StateFingerprint;

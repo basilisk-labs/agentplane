@@ -19,6 +19,7 @@ export type TaskAuthorityGrantParsed = {
   stateScopeDigest: string;
   by: string;
   ttlMinutes: number;
+  remote: boolean;
 };
 
 export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
@@ -68,6 +69,12 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
       valueHint: "<1-60>",
       description: "Authority lifetime in minutes (default: 15).",
     },
+    {
+      kind: "boolean",
+      name: "remote",
+      default: false,
+      description: "Rebuild the authority request from live hosted PR/check/review state.",
+    },
   ],
   examples: [
     {
@@ -103,6 +110,7 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
     stateScopeDigest: String(raw.opts["state-scope-digest"]).trim(),
     by: String(raw.opts.by).trim(),
     ttlMinutes: raw.opts["ttl-minutes"] === undefined ? 15 : Number(raw.opts["ttl-minutes"]),
+    remote: raw.opts.remote === true,
   }),
 };
 
@@ -125,7 +133,7 @@ export function makeRunTaskAuthorityGrantHandler(getCtx: (cmd: string) => Promis
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
-      includeRemote: false,
+      includeRemote: parsed.remote,
     });
     const request = requestedOperation(decision);
     if (

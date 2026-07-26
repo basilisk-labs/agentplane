@@ -523,6 +523,7 @@ export async function buildTaskRouteDecision(opts: {
     cleanupProbe,
     blockers,
     batchOwnership,
+    remoteEnabled,
     taskWorktree: taskWorktreeCleanliness,
     conflictRework,
   };

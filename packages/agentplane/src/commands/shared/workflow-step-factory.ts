@@ -325,6 +325,7 @@ function sideEffectApprovalStep(opts: {
     "authority",
     "grant",
     opts.state.task.id,
+    ...(opts.state.remoteEnabled ? ["--remote"] : []),
     "--operation",
     opts.operation.id,
     "--operation-digest",
