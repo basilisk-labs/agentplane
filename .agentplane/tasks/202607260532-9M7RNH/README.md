@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -64,8 +64,8 @@ quality_review:
     - "The adoption command recomputes live route state under the queue mutex, binds provider, handoff, queue, base topology, and token, and fails closed when any input changes."
     - "The v0.6.24 immutable baseline remains unchanged; the v0.7 candidate records the exact new command, option, counts, digests, and 9M7RNH provenance."
 commit:
-  hash: "345f4a03941095055c2f26a85bcfaa9abb650033"
-  message: "🐛 9M7RNH conflict-rework: validate typed adoption token"
+  hash: "64f14f70470f48a2997abe566ff560a1044f35a3"
+  message: "🧐 9M7RNH task: refresh quality review"
 comments:
   -
     author: "CODER"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -94,8 +97,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-26T07:30:48.590Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T07:09:58.898Z"
+doc_updated_at: "2026-07-26T07:30:48.591Z"
 doc_updated_by: "CODER"
 description: "Close the liveness gap for legacy protected PR conflicts whose provider-reported conflict base is an ancestor of current main. Prepare a bounded read-only reconciliation packet carrying provider conflict-base, current base, ancestry, local conflict probe, and freshness; preserve fail-closed behavior and prohibit CLI rebase, merge, push, queue, or cleanup mutations."
 sections:
@@ -160,6 +170,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "0ee793bb7dd331ac5c4bd1ef27e3f7f3d607de49"
+    message: "🧩 9M7RNH conflict-rework: register adoption surface"
   workflow_route_baseline:
     start_head_sha: "0434d56b52cf40b9f2d8c1f4d35319d23261ffbb"
     version: 1
