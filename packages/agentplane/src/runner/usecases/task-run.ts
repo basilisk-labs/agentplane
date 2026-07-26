@@ -197,6 +197,7 @@ export async function prepareTaskRunnerExecution(opts: {
       route_decision.executionPacket.recommendedRole ??
       undefined,
     requested_sandbox: opts.sandbox_override,
+    route_allows_workspace_write: preparedWorkOrder.work_order.authority.writable_roots.length > 0,
   });
   const write_scope = resolveRunnerWriteScopePolicy({
     sandbox: sandbox_policy,

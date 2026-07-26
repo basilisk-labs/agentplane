@@ -29,7 +29,7 @@ export type RunnerSandboxAuthority = {
 
 export type RunnerSandboxPolicy = {
   requested: string;
-  source: "role_default" | "recipe_run_profile" | "cli_override";
+  source: "role_default" | "recipe_run_profile" | "cli_override" | "route_authority";
   role: string;
   authority: RunnerSandboxAuthority;
 };

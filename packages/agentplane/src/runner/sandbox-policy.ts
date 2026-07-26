@@ -54,12 +54,16 @@ export function resolveRunnerSandboxPolicy(opts: {
   danger_authority?: RunnerDangerFullAccessAuthority | null;
   execution_role?: string;
   requested_sandbox?: string;
+  /** The canonical route owns semantic write authority, independently of role defaults. */
+  route_allows_workspace_write?: boolean;
 }): RunnerSandboxPolicy {
   const executionRole = normalizedRole(opts.execution_role ?? opts.task?.owner);
   const explicitSandbox = readRecipeRunProfile(opts.recipe)?.sandbox?.trim();
   const requestedSandbox = opts.requested_sandbox?.trim();
-  const requested =
-    requestedSandbox && requestedSandbox.length > 0
+  const routeForcesReadOnly = opts.route_allows_workspace_write === false;
+  const requested = routeForcesReadOnly
+    ? RUNNER_READ_ONLY_SANDBOX
+    : requestedSandbox && requestedSandbox.length > 0
       ? requestedSandbox
       : explicitSandbox && explicitSandbox.length > 0
         ? explicitSandbox
@@ -71,8 +75,9 @@ export function resolveRunnerSandboxPolicy(opts: {
     hasExplicitRunnerDangerFullAccessAuthority(opts.danger_authority);
   return {
     requested,
-    source:
-      requestedSandbox && requestedSandbox.length > 0
+    source: routeForcesReadOnly
+      ? "route_authority"
+      : requestedSandbox && requestedSandbox.length > 0
         ? "cli_override"
         : explicitSandbox
           ? "recipe_run_profile"
