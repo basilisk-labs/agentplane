@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -35,9 +35,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-26T21:55:05.292Z"
+  updated_at: "2026-07-26T22:54:30.707Z"
   updated_by: "TESTER"
-  note: "Verified RF-13 authority policy: scoped records gate external and high-risk workflow operations; stale/tampered records fail closed; local reversible operations remain available. Passed focused authority/workflow tests, test:fast, test:critical, typecheck, format:changed, lint:core, compatibility ratchet, guards, and lifecycle invariants."
+  note: "Implementation rework verified: route authority now forces the runner read-only when the canonical work order has no writable roots."
   attempts: 0
 quality_review:
   state: "rework"
@@ -93,8 +93,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-26T22:54:30.707Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Implementation rework verified: route authority now forces the runner read-only when the canonical work order has no writable roots."
 doc_version: 3
-doc_updated_at: "2026-07-26T22:03:49.068Z"
+doc_updated_at: "2026-07-26T22:54:31.400Z"
 doc_updated_by: "CODER"
 description: "RF-13: classify local, external reversible, external high-risk, and semantic operations; require typed authority/approval records and audit actor, policy rule, digest, and scope."
 sections:
@@ -179,6 +185,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T22:54:30.707Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Implementation rework verified: route authority now forces the runner read-only when the canonical work order has no writable roots.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T22:03:49.068Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+    - old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -188,6 +224,10 @@ sections:
     - Observation: Compared with main, changed paths are limited to .agentplane/tasks/202607221849-NWVCAG artifacts.
       Impact: The declared authority, stale-record, semantic-input, and audit Verify Steps cannot be satisfied without a source implementation.
       Resolution: Return the task to CODER for the approved implementation, then run the declared focused policy/lifecycle checks.
+
+    - Observation: bun run test:fast passed (468 files, 3255 tests); bun run test:critical passed (11 chunks, 72 tests); bun run typecheck and bun run format:changed passed.
+      Impact: task run --dry-run again shares the canonical work-order path with brief, next-action, and Hermes without granting an unapproved write-capable sandbox.
+      Resolution: Added route_authority sandbox provenance plus focused policy and cross-surface regressions.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -470,6 +510,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T22:54:30.707Z — VERIFY — ok
+
+By: TESTER
+
+Note: Implementation rework verified: route authority now forces the runner read-only when the canonical work order has no writable roots.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T22:03:49.068Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+- old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -483,3 +553,7 @@ DecisionContextRef:
 - Observation: Compared with main, changed paths are limited to .agentplane/tasks/202607221849-NWVCAG artifacts.
   Impact: The declared authority, stale-record, semantic-input, and audit Verify Steps cannot be satisfied without a source implementation.
   Resolution: Return the task to CODER for the approved implementation, then run the declared focused policy/lifecycle checks.
+
+- Observation: bun run test:fast passed (468 files, 3255 tests); bun run test:critical passed (11 chunks, 72 tests); bun run typecheck and bun run format:changed passed.
+  Impact: task run --dry-run again shares the canonical work-order path with brief, next-action, and Hermes without granting an unapproved write-capable sandbox.
+  Resolution: Added route_authority sandbox provenance plus focused policy and cross-surface regressions.

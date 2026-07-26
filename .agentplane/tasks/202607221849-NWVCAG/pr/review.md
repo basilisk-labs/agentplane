@@ -13,7 +13,7 @@ Created: 2026-07-26T10:58:46.358Z
 ## Verification
 
 - State: ok
-- Note: Verified RF-13 authority policy: scoped records gate external and high-risk workflow operations; stale/tampered records fail closed; local reversible operations remain available. Passed focused authority/workflow tests, test:fast, test:critical, typecheck, format:changed, lint:core, compatibility ratchet, guards, and lifecycle invariants.
+- Note: Implementation rework verified: route authority now forces the runner read-only when the canonical work order has no writable roots.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -34,20 +34,27 @@ Created: 2026-07-26T10:58:46.358Z
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
  .../shared/route-decision-next-action.test.ts      |   2 +-
  .../src/commands/shared/route-decision.ts          |  71 +++-
- .../commands/shared/side-effect-authority.test.ts  | 190 ++++++++++
- .../src/commands/shared/side-effect-authority.ts   | 413 +++++++++++++++++++++
+ .../commands/shared/side-effect-authority.test.ts  | 221 +++++++++++
+ .../src/commands/shared/side-effect-authority.ts   | 415 +++++++++++++++++++++
  .../workflow-operation-projection.registry.test.ts |  43 ++-
- .../src/commands/shared/workflow-step-factory.ts   |  96 ++++-
- .../shared/workflow-step-fingerprint.test.ts       |   4 +-
- .../commands/shared/workflow-step-fingerprint.ts   |  17 +-
- ...rkflow-step-projections.conflict-rework.test.ts |  52 ++-
- .../shared/workflow-step-projections.test.ts       | 191 +++++++++-
+ .../src/commands/shared/workflow-step-factory.ts   |  97 ++++-
+ .../shared/workflow-step-fingerprint.test.ts       |  29 +-
+ .../commands/shared/workflow-step-fingerprint.ts   |  50 ++-
+ ...rkflow-step-projections.conflict-rework.test.ts |  54 ++-
+ .../shared/workflow-step-projections.test.ts       | 200 +++++++++-
  .../src/commands/shared/workflow-step.test.ts      |  93 ++++-
- .../src/commands/shared/workflow-step.ts           |  25 +-
+ .../src/commands/shared/workflow-step.ts           |  27 +-
  .../src/commands/task/authority-grant.command.ts   | 199 ++++++++++
+ .../agentplane/src/runner/sandbox-policy.test.ts   |  14 +
+ packages/agentplane/src/runner/sandbox-policy.ts   |  13 +-
+ .../src/runner/state-fingerprint-observation.ts    |   5 +
+ packages/agentplane/src/runner/types/policy.ts     |   2 +-
+ .../usecases/agent-work-order.integration.test.ts  |  16 +
+ .../agentplane/src/runner/usecases/task-run.ts     |   1 +
+ packages/core/src/runner/execution-receipt.ts      |   2 +-
  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++++-
  .../check-compatibility-contract-baseline.mjs      | 106 ++++++
- 18 files changed, 1585 insertions(+), 84 deletions(-)
+ 25 files changed, 1725 insertions(+), 102 deletions(-)
 ```
 
 </details>
