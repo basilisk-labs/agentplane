@@ -7,12 +7,12 @@
       "exports": [
         {
           "name": "normalizeDependsOn",
-          "line": 48,
+          "line": 52,
           "col": 3
         },
         {
           "name": "normalizeTaskRunnerOutcome",
-          "line": 44,
+          "line": 48,
           "col": 3
         }
       ]
@@ -861,12 +861,12 @@
       "types": [
         {
           "name": "CloseTailStatus",
-          "line": 57,
+          "line": 59,
           "col": 13
         },
         {
           "name": "RemotePrStatus",
-          "line": 44,
+          "line": 46,
           "col": 13
         }
       ]
@@ -1388,7 +1388,7 @@
       "exports": [
         {
           "name": "readTaskPrBranch",
-          "line": 153,
+          "line": 155,
           "col": 23
         }
       ]
@@ -1961,7 +1961,7 @@
       "exports": [
         {
           "name": "loadFrameworkRunnerPrompt",
-          "line": 268,
+          "line": 229,
           "col": 10
         }
       ]
@@ -1976,7 +1976,7 @@
         },
         {
           "name": "runnerPromptBlockToModule",
-          "line": 25,
+          "line": 26,
           "col": 3
         }
       ]
@@ -2001,19 +2001,19 @@
       "exports": [
         {
           "name": "runnerPromptBlockToModule",
-          "line": 125,
+          "line": 148,
           "col": 17
         }
       ],
       "types": [
         {
           "name": "RunnerPromptBlockModuleContent",
-          "line": 17,
+          "line": 21,
           "col": 13
         },
         {
           "name": "RunnerPromptModule",
-          "line": 29,
+          "line": 33,
           "col": 13
         }
       ]
@@ -2023,7 +2023,7 @@
       "types": [
         {
           "name": "TraceSession",
-          "line": 8,
+          "line": 9,
           "col": 13
         }
       ]
@@ -2043,8 +2043,8 @@
       "exports": [
         {
           "name": "parseRunnerEventsText",
-          "line": 52,
-          "col": 3
+          "line": 53,
+          "col": 10
         }
       ]
     },
@@ -2053,12 +2053,12 @@
       "exports": [
         {
           "name": "normalizeRunnerOutcomeSection",
-          "line": 27,
+          "line": 31,
           "col": 17
         },
         {
           "name": "stripRunnerHistory",
-          "line": 133,
+          "line": 137,
           "col": 17
         }
       ]
@@ -2078,7 +2078,7 @@
       "types": [
         {
           "name": "RunnerTimeoutPolicy",
-          "line": 104,
+          "line": 113,
           "col": 13
         }
       ]
@@ -2641,11 +2641,6 @@
         {
           "name": "PromptModuleDependency",
           "line": 25,
-          "col": 8
-        },
-        {
-          "name": "PromptModuleDiagnostic",
-          "line": 9,
           "col": 8
         },
         {
@@ -3251,7 +3246,7 @@
       "exports": [
         {
           "name": "HandoffError",
-          "line": 116,
+          "line": 168,
           "col": 14
         }
       ]
@@ -3450,7 +3445,7 @@
         },
         {
           "name": "TASK_HANDOFF_RUNNER_STATE_ZOD_SCHEMA",
-          "line": 55,
+          "line": 56,
           "col": 14
         }
       ]
@@ -3513,10 +3508,10 @@
   ],
   "counts": {
     "files": 1,
-    "exports": 179,
-    "types": 368,
+    "exports": 178,
+    "types": 367,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 548
+    "total": 546
   }
 }

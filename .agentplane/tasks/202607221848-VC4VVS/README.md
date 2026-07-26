@@ -2,10 +2,10 @@
 id: "202607221848-VC4VVS"
 title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -35,11 +35,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-26T15:24:04.065Z"
+  state: "needs_rework"
+  updated_at: "2026-07-26T16:12:27.894Z"
   updated_by: "TESTER"
-  note: "TESTER confirmed 81570066: clean worktree; fast CI 466 files/3232 tests, critical 11/11, focused 88/88 passed."
-  attempts: 0
+  note: "Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -63,9 +63,7 @@ quality_review:
   findings:
     - "Brief, next-action, Hermes, and runner use the prepared AgentWorkOrder v2 projection; local default and explicit remote parity are covered without duplicate v2 aliases."
     - "Legacy v1 manifest identity is bound only from the supervised invocation while v2 work-order mismatches remain rejected."
-commit:
-  hash: "81570066ad26ea54a89ba2da43fdae5553c57818"
-  message: "🐛 VC4VVS task: bind legacy results to supervised work order"
+commit: null
 comments:
   -
     author: "CODER"
@@ -132,8 +130,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-26T16:12:27.894Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication."
 doc_version: 3
-doc_updated_at: "2026-07-26T15:26:41.305Z"
+doc_updated_at: "2026-07-26T16:12:28.643Z"
 doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
@@ -258,6 +262,38 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T13:34:58.093Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+    - old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T16:12:27.894Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T15:26:41.305Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+    Details:
+
+    GitHub PR #4632, head 57610db86c9ff62e4d816d5f157b6bee9a30ecd2. Local corrective diff is independently reviewed and uncommitted; this record captures the completed hosted failure, not a new test result.
 
     BlueprintSnapshotRef:
     - state: current
@@ -438,6 +474,38 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T13:34:58.093Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+- old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T16:12:27.894Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T15:26:41.305Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+Details:
+
+GitHub PR #4632, head 57610db86c9ff62e4d816d5f157b6bee9a30ecd2. Local corrective diff is independently reviewed and uncommitted; this record captures the completed hosted failure, not a new test result.
 
 BlueprintSnapshotRef:
 - state: current

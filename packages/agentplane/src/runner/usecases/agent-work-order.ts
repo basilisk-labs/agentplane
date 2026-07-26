@@ -43,12 +43,8 @@ import {
 import { resolveRunnerBlueprintPlan } from "./task-run-blueprint-plan.js";
 
 export {
-  projectAgentWorkOrderRoute,
   type AgentWorkOrderLegacyBriefProjection,
   type AgentWorkOrderPreparationView,
-  type AgentWorkOrderRemotePolicy,
-  type AgentWorkOrderRouteProjection,
-  type AgentWorkOrderSourceManifest,
 } from "./agent-work-order-projection.js";
 
 export type PreparedAgentWorkOrder = {
@@ -68,7 +64,7 @@ export type PreparedAgentWorkOrder = {
   };
 };
 
-export type AgentWorkOrderPreparationRejection = {
+type AgentWorkOrderPreparationRejection = {
   code: "prompt_compile_failed" | "work_order_invalid" | "work_order_stale";
   message: string;
   precondition?: StateFingerprintPreconditionDiagnostic;

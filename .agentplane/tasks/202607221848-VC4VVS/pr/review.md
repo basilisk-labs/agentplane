@@ -6,14 +6,14 @@ Created: 2026-07-26T10:53:22.624Z
 
 - Task: `202607221848-VC4VVS`
 - Title: Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age`
 - Canonical task record: `.agentplane/tasks/202607221848-VC4VVS/README.md`
 
 ## Verification
 
-- State: ok
-- Note: TESTER confirmed 81570066: clean worktree; fast CI 466 files/3232 tests, critical 11/11, focused 88/88 passed.
+- State: needs_rework
+- Note: Hosted Core CI run 30208318242 failed verify-static (Knip new unused VC4 exports/types and stale PromptModuleDiagnostic); PR verification consequently failed. Rework required before publication.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
