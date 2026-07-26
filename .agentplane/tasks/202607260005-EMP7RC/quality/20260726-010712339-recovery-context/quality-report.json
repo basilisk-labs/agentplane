@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607260005-EMP7RC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T01:07:12.339Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Reject: provider reconciliation accepts symbolic Git refs as immutable provider identities, so a malformed provider head or merge value can produce a cleanup-authorizing proof.",
+  "evaluated_sha": "811a7a85860c4b1665ba5aa9d5f301d59666dd38",
+  "blueprint_digest": "6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137",
+  "findings": [
+    "At HEAD 811a7a85860c4b1665ba5aa9d5f301d59666dd38, provider headSha=main and mergeCommit=main are accepted by validateMergedProviderReceipt and resolveProviderReconciliation on the real ZMV topology; both yield provider_rebase_equivalent instead of refusal.",
+    "The proof contract requires immutable task, provider-head, and merge identities. Non-empty strings are passed to git cat-file, gitIsAncestor, git cherry, and rev-list, which resolve refs rather than only commit object IDs."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607260005-EMP7RC/README.md",
+    "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts",
+    "bun -e provider identity probe: symbolic_head and symbolic_merge each receiptAccepted=true proofAccepted=true on ZMV d61ab0f -> 2a6d152 -> e27c938"
+  ],
+  "missing_tests": [
+    "Provider headSha=main and mergeCommit=main must fail closed before any Git revision lookup and leave branch/worktree untouched.",
+    "Malformed or non-full provider object IDs must return cleanup_blocked with no mutation command."
+  ],
+  "hidden_assumptions": [
+    "GitHub API fields typed as string are always canonical immutable commit IDs; the current code does not enforce that boundary."
+  ],
+  "residual_risks": [
+    "Do not publish, integrate, or run ZMV cleanup using this task branch until provider identity fields are validated as canonical commit object IDs."
+  ]
+}

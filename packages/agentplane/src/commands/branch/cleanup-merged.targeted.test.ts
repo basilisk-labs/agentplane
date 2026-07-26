@@ -371,6 +371,72 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
   });
 
+  it("fails closed and advertises no mutating route for symbolic or malformed provider revisions on a ZMV-shaped rebase topology", async () => {
+    const cases = [
+      {
+        name: "symbolic provider head",
+        headSha: "main",
+        expectedReason: "provider head must be a canonical full commit OID",
+      },
+      {
+        name: "symbolic provider merge commit",
+        mergeCommitSha: "main",
+        expectedReason: "provider merge commit must be a canonical full commit OID",
+      },
+      {
+        name: "short provider head",
+        headSha: "short",
+        expectedReason: "provider head must be a canonical full commit OID",
+      },
+      {
+        name: "ref-expression provider merge commit",
+        mergeCommitSha: "refs/heads/main",
+        expectedReason: "provider merge commit must be a canonical full commit OID",
+      },
+    ] as const;
+
+    for (const testCase of cases) {
+      const fixture = await createTargetedFixture({ providerRebased: true });
+      const fakeBin = await installFakeGh({
+        kind: "found",
+        fixture,
+        headSha:
+          testCase.headSha === "short" ? fixture.providerHead.slice(0, 12) : testCase.headSha,
+        mergeCommitSha: testCase.mergeCommitSha,
+      });
+      const cleanup = await runWithFakeGh(fakeBin, [
+        "cleanup",
+        "merged",
+        "--task-id",
+        fixture.taskId,
+        "--yes",
+        "--root",
+        fixture.root,
+      ]);
+
+      expect(cleanup.code, testCase.name).toBe(5);
+      expect(cleanup.stderr, testCase.name).toContain(testCase.expectedReason);
+      expect(await gitBranchExists(fixture.root, fixture.branch), testCase.name).toBe(true);
+      expect(await pathExists(fixture.worktreePath), testCase.name).toBe(true);
+
+      const route = await runWithFakeGh(fakeBin, [
+        "task",
+        "next-action",
+        fixture.taskId,
+        "--remote",
+        "--explain",
+        "--root",
+        fixture.root,
+      ]);
+      expect(route.code, testCase.name).toBe(0);
+      expect(route.stdout, testCase.name).toMatch(/code:\s+cleanup_blocked/u);
+      expect(route.stdout, testCase.name).toMatch(/next_command:\s+none/u);
+      expect(route.stdout, testCase.name).toContain(testCase.expectedReason);
+      expect(await gitBranchExists(fixture.root, fixture.branch), testCase.name).toBe(true);
+      expect(await pathExists(fixture.worktreePath), testCase.name).toBe(true);
+    }
+  });
+
   it("fails closed when a provider-rebased head is not patch-equivalent", async () => {
     const fixture = await createTargetedFixture({ providerRebased: true });
     const fakeBin = await installFakeGh({

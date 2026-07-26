@@ -27,6 +27,18 @@ type ProviderMergeReceipt = {
   mergeCommit: string;
 };
 
+const CANONICAL_FULL_COMMIT_OID = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u;
+
+export function isCanonicalFullCommitOid(value: string): boolean {
+  return CANONICAL_FULL_COMMIT_OID.test(value);
+}
+
+function canonicalProviderRevisionReason(label: string, value: string): string | null {
+  return isCanonicalFullCommitOid(value)
+    ? null
+    : `provider ${label} must be a canonical full commit OID: ${value || "-"}`;
+}
+
 async function gitCommitExists(gitRoot: string, sha: string): Promise<boolean> {
   try {
     await execFileAsync("git", ["cat-file", "-e", `${sha}^{commit}`], {
@@ -167,18 +179,39 @@ export async function validateMergedProviderReceipt(opts: {
       reason: `provider base mismatch: expected=${opts.baseBranch} observed=${observed.base ?? "-"}`,
     };
   }
-  const providerHeadSha = observed.headSha?.trim() ?? "";
-  if (!providerHeadSha) {
+  const rawProviderHeadSha = observed.headSha ?? "";
+  const providerHeadSha = rawProviderHeadSha.trim();
+  const providerHeadReason = canonicalProviderRevisionReason("head", providerHeadSha);
+  if (rawProviderHeadSha !== providerHeadSha || providerHeadReason) {
     return {
       receipt: null,
-      reason: "provider merged PR head is unavailable",
+      reason: providerHeadReason ?? "provider head must be a canonical full commit OID",
     };
   }
-  const mergeCommit = observed.mergeCommit?.trim() ?? "";
-  if (!mergeCommit || !(await gitCommitExists(opts.gitRoot, mergeCommit))) {
+  const rawMergeCommit = observed.mergeCommit ?? "";
+  const mergeCommit = rawMergeCommit.trim();
+  const mergeCommitReason = canonicalProviderRevisionReason("merge commit", mergeCommit);
+  if (rawMergeCommit !== mergeCommit || mergeCommitReason) {
     return {
       receipt: null,
-      reason: `provider merge commit object is unavailable locally: ${mergeCommit || "-"}`,
+      reason: mergeCommitReason ?? "provider merge commit must be a canonical full commit OID",
+    };
+  }
+  const expected = opts.expectedReconciliation;
+  if (
+    expected &&
+    (!isCanonicalFullCommitOid(expected.providerHeadSha) ||
+      !isCanonicalFullCommitOid(expected.mergeCommit))
+  ) {
+    return {
+      receipt: null,
+      reason: "recorded provider reconciliation identities are not canonical full commit OIDs",
+    };
+  }
+  if (!(await gitCommitExists(opts.gitRoot, mergeCommit))) {
+    return {
+      receipt: null,
+      reason: `provider merge commit object is unavailable locally: ${mergeCommit}`,
     };
   }
   if (!(await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))) {
@@ -188,7 +221,6 @@ export async function validateMergedProviderReceipt(opts: {
     };
   }
   const receipt = { prNumber: observed.prNumber, providerHeadSha, mergeCommit };
-  const expected = opts.expectedReconciliation;
   if (!expected) return { receipt, reason: null };
   if (expected.prNumber !== receipt.prNumber) {
     return {
@@ -235,6 +267,15 @@ export async function resolveProviderReconciliation(opts: {
   closureBasisCommit: string;
   receipt: ProviderMergeReceipt;
 }): Promise<{ proof: ProviderReconciliationProof | null; reason: string | null }> {
+  if (
+    !isCanonicalFullCommitOid(opts.receipt.providerHeadSha) ||
+    !isCanonicalFullCommitOid(opts.receipt.mergeCommit)
+  ) {
+    return {
+      proof: null,
+      reason: "provider reconciliation identities are not canonical full commit OIDs",
+    };
+  }
   if (!(await gitCommitExists(opts.gitRoot, opts.receipt.providerHeadSha))) {
     return {
       proof: null,

@@ -25,6 +25,7 @@ import {
   observeProviderPr,
   resolveProviderReconciliation,
   validateMergedProviderReceipt,
+  isCanonicalFullCommitOid,
   type ProviderReconciliationProof,
 } from "./cleanup-merged-provider-reconciliation.js";
 import type { GithubPrLookupResult } from "../pr/internal/sync-github.js";
@@ -99,7 +100,8 @@ async function taskLifecycleProofOnBase(opts: {
   }
   const meta = await readCleanupPrMetaIfPresent(opts);
   const mergeCommit = meta?.status === "MERGED" ? (meta.merge_commit?.trim() ?? "") : "";
-  return mergeCommit && (await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
+  return isCanonicalFullCommitOid(mergeCommit) &&
+    (await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
     ? "merged_meta_on_base"
     : null;
 }
