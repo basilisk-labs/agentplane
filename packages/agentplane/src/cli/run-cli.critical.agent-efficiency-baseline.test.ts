@@ -157,6 +157,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
         candidate_id: string;
         source_tasks: string[];
         candidate: { surface_sha256: string; section_digests: Record<string, string> };
+        deltas: unknown[];
       }>(COMPATIBILITY_CANDIDATE);
       expect(compatibilityCandidate).toMatchObject({
         schema_version: 2,
@@ -170,12 +171,15 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607221848-0ZAB1F",
           "202607221848-ER5H6N",
           "202607221848-T9B3PS",
+          "202607221848-1HWR0R",
           "202607260007-DQM6AW",
           "202607260532-9M7RNH",
         ],
         candidate: {
-          surface_sha256: "d6ae13cfa64ee5bb0747211212c1d6d313d0af4b56ef0f9b71402de30fd62ab3",
+          surface_sha256: "812aa9df6d04cec6621f92b3b3f4b7cd67e84618c501fa2f4274bf630371fbdc",
           section_digests: {
+            agent_facing_context_contracts:
+              "5e5cf440852bb118c3771115090399a4e4ab46caf5a856ff57742884749dafec",
             cli_topology: "ab04b9bfc6a7b72c29fce2df09592ef14148af6b41aa83611a059ba7912227bd",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
@@ -288,6 +292,41 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
                 ]) as unknown,
               }),
             ]) as unknown,
+          },
+        },
+      });
+      expect(compatibilityCandidate.deltas).toContainEqual({
+        section: "agent_facing_context_contracts",
+        source_tasks: ["202607221848-1HWR0R"],
+        from_sha256: "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
+        to_sha256: "5e5cf440852bb118c3771115090399a4e4ab46caf5a856ff57742884749dafec",
+        classification: "additive",
+        summary:
+          "Adds a CLI-owned immutable task-creation receipt before context task-pack generation.",
+        evidence: {
+          contract_count: 4,
+          unchanged_contract_paths: [
+            "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+            "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
+            "packages/agentplane/src/runtime/sgr/contract-types.ts",
+          ],
+          source_contract: {
+            path: "packages/agentplane/src/context/ingest-task-pack.ts",
+            before: {
+              normalized_bytes: 19_492,
+              normalized_sha256: "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
+            },
+            after: {
+              normalized_bytes: 20_630,
+              normalized_sha256: "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77",
+            },
+          },
+          task_creation_receipt: {
+            path: ".agentplane/tasks/<task-id>/task-creation.json",
+            version: 1,
+            required_fields: ["task_id", "revision", "backend_id", "artifact_paths"],
+            written_before_task_pack: true,
+            agent_mutability: "cli_owned_read_only",
           },
         },
       });

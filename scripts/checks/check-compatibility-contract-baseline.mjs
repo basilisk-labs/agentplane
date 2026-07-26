@@ -327,6 +327,7 @@ function validateReviewedCandidate({
     "202607221848-0ZAB1F",
     "202607221848-ER5H6N",
     "202607221848-T9B3PS",
+    "202607221848-1HWR0R",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -649,6 +650,7 @@ function validateReviewedCandidate({
     );
   }
   const expectedDeltaSources = {
+    agent_facing_context_contracts: ["202607221848-1HWR0R"],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
     workflow_schema: ["202607221846-4VB97J"],
@@ -660,6 +662,142 @@ function validateReviewedCandidate({
       `${delta.section}: source task provenance drift`,
     );
   }
+
+  const contextDelta = candidate.deltas.find(
+    (delta) => delta.section === "agent_facing_context_contracts",
+  );
+  assert(contextDelta, "context task-creation receipt candidate delta missing");
+  const beforeContextContracts = exactMainSurface.agent_facing_context_contracts.contracts;
+  const afterContextContracts = currentSurface.agent_facing_context_contracts.contracts;
+  const expectedContextContractPaths = [
+    "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+    "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
+    "packages/agentplane/src/runtime/sgr/contract-types.ts",
+    "packages/agentplane/src/context/ingest-task-pack.ts",
+  ];
+  assert(
+    hashJson(beforeContextContracts.map((contract) => contract.path)) ===
+      hashJson(expectedContextContractPaths),
+    "baseline context contract paths drift",
+  );
+  assert(
+    hashJson(afterContextContracts.map((contract) => contract.path)) ===
+      hashJson(expectedContextContractPaths),
+    "candidate context contract paths drift",
+  );
+  const beforeContextByPath = new Map(
+    beforeContextContracts.map((contract) => [contract.path, contract]),
+  );
+  const changedContextContracts = afterContextContracts.filter((contract) => {
+    const beforeContract = beforeContextByPath.get(contract.path);
+    return (
+      !beforeContract ||
+      beforeContract.normalized_bytes !== contract.normalized_bytes ||
+      beforeContract.normalized_sha256 !== contract.normalized_sha256
+    );
+  });
+  assert(
+    hashJson(changedContextContracts.map((contract) => contract.path)) ===
+      hashJson(["packages/agentplane/src/context/ingest-task-pack.ts"]),
+    "task-creation receipt must be the only changed context source contract",
+  );
+  const unchangedContextPaths = expectedContextContractPaths.filter(
+    (contractPath) => contractPath !== "packages/agentplane/src/context/ingest-task-pack.ts",
+  );
+  for (const contractPath of unchangedContextPaths) {
+    const beforeContract = beforeContextByPath.get(contractPath);
+    const afterContract = afterContextContracts.find((contract) => contract.path === contractPath);
+    assert(beforeContract && afterContract, `${contractPath}: context contract is missing`);
+    assert(
+      hashJson(beforeContract) === hashJson(afterContract),
+      `${contractPath}: unrelated context contract drift`,
+    );
+  }
+  const beforeContextSource = beforeContextByPath.get(
+    "packages/agentplane/src/context/ingest-task-pack.ts",
+  );
+  const afterContextSource = afterContextContracts.find(
+    (contract) => contract.path === "packages/agentplane/src/context/ingest-task-pack.ts",
+  );
+  assert(beforeContextSource && afterContextSource, "task-pack context source contract missing");
+  const expectedContextReceiptEvidence = {
+    contract_count: expectedContextContractPaths.length,
+    unchanged_contract_paths: unchangedContextPaths,
+    source_contract: {
+      path: afterContextSource.path,
+      before: {
+        normalized_bytes: beforeContextSource.normalized_bytes,
+        normalized_sha256: beforeContextSource.normalized_sha256,
+      },
+      after: {
+        normalized_bytes: afterContextSource.normalized_bytes,
+        normalized_sha256: afterContextSource.normalized_sha256,
+      },
+    },
+    task_creation_receipt: {
+      path: ".agentplane/tasks/<task-id>/task-creation.json",
+      version: 1,
+      required_fields: ["task_id", "revision", "backend_id", "artifact_paths"],
+      written_before_task_pack: true,
+      agent_mutability: "cli_owned_read_only",
+    },
+  };
+  assert(
+    contextDelta.classification === "additive",
+    "task-creation receipt candidate classification drift",
+  );
+  assert(
+    hashJson(contextDelta.evidence) === hashJson(expectedContextReceiptEvidence),
+    "task-creation receipt candidate evidence drift",
+  );
+  const taskPackSource = readFileSync(
+    path.join(repoRoot, "packages/agentplane/src/context/ingest-task-pack.ts"),
+    "utf8",
+  );
+  const receiptWrite =
+    "await writeContextTaskCreationReceipt({ root: opts.root, result: opts.creation });";
+  const sourceSpanBuild =
+    "const spans = await buildSourceSpanSkeleton({ root: opts.root, sources: opts.sources });";
+  assert(
+    /const CONTEXT_TASK_PACK_FILES = \[[\s\S]*?"task-creation\.json",/u.test(taskPackSource),
+    "task-creation receipt is not part of the generated task-pack file set",
+  );
+  for (const requiredField of [
+    "version: 1,",
+    "task_id: opts.result.task_id",
+    "revision: opts.result.revision",
+    "backend_id: opts.result.backend_id",
+    "artifact_paths: opts.result.artifact_paths",
+  ]) {
+    assert(
+      taskPackSource.includes(requiredField),
+      `task-creation receipt field missing: ${requiredField}`,
+    );
+  }
+  assert(taskPackSource.includes(receiptWrite), "task-creation receipt write is missing");
+  assert(
+    taskPackSource.includes(sourceSpanBuild),
+    "context task-pack source-span build is missing",
+  );
+  assert(
+    taskPackSource.indexOf(receiptWrite) < taskPackSource.indexOf(sourceSpanBuild),
+    "task-creation receipt must be written before task-pack generation",
+  );
+  const ingestTaskSource = readFileSync(
+    path.join(repoRoot, "packages/agentplane/src/context/ingest-task.ts"),
+    "utf8",
+  );
+  const immutableReceipt = "CLI-owned `task-creation.json` (treat it as immutable)";
+  assert(
+    ingestTaskSource.split(immutableReceipt).length - 1 === 2,
+    "executor task contract must identify the immutable CLI-owned receipt twice",
+  );
+  const allowedOutputs =
+    /const allowedOutputs = \[([\s\S]*?)\];/u.exec(ingestTaskSource)?.[1] ?? "";
+  assert(
+    !allowedOutputs.includes("task-creation.json"),
+    "task-creation receipt must not become an executor writable output",
+  );
 
   const cliDelta = candidate.deltas.find((delta) => delta.section === "cli_topology");
   const cliTopologyDelta = diffCliTopology(exactMainSurface, currentSurface);
