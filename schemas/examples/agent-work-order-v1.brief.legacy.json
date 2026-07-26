@@ -1,0 +1,23 @@
+{
+  "contract": {
+    "kind": "agentplane.agent_work_context",
+    "version": 1
+  },
+  "task": {
+    "id": "task-example-001",
+    "title": "Publish one bounded schema change with observed verification evidence.",
+    "owner": "EXECUTOR"
+  },
+  "workflow": {
+    "mode": "branch_pr"
+  },
+  "route": {
+    "phase": "agent_episode"
+  },
+  "execution_packet": {
+    "recommended_role": "EXECUTOR"
+  },
+  "verify_steps": {
+    "text": "Run the schema synchronization check."
+  }
+}

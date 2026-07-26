@@ -1,0 +1,13 @@
+{
+  "task": {
+    "id": "task-example-001",
+    "title": "Publish one bounded schema change with observed verification evidence.",
+    "owner": "EXECUTOR"
+  },
+  "execution_packet": {
+    "recommended_role": "EXECUTOR"
+  },
+  "route_oracle": {
+    "phase": "agent_episode"
+  }
+}

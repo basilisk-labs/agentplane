@@ -7,6 +7,10 @@ import { defineScript, parseCheckSyncMode, runScriptMain } from "../lib/script-r
 import {
   renderAgentSemanticResultSchemaJson,
   renderAgentSemanticResultV2ValidFixtureJson,
+  renderAgentWorkOrderV1CompatibilityFixtureJson,
+  renderAgentWorkOrderV2CamelCaseFixtureJson,
+  renderAgentWorkOrderV2SchemaJson,
+  renderAgentWorkOrderV2ValidFixtureJson,
   renderAcrSchemaJson,
   renderAgentPlaneRunnerHandoffSchemaJson,
   renderAgentplaneConfigSchemaJson,
@@ -28,6 +32,7 @@ import {
 
 const GENERATED_RUNTIME_SCHEMAS = [
   "acr-v0.1.schema.json",
+  "agent-work-order-v2.schema.json",
   "config.schema.json",
   "workflow.schema.json",
   "task-readme-frontmatter.schema.json",
@@ -55,6 +60,11 @@ const ROOT_ONLY_PUBLIC_SCHEMAS = [
 ];
 
 const ROOT_ONLY_PUBLIC_EXAMPLES = [
+  "agent-work-order-v1.brief.legacy.json",
+  "agent-work-order-v1.hermes.legacy.json",
+  "agent-work-order-v1.runner.legacy.json",
+  "agent-work-order-v2.camel-case.compat.json",
+  "agent-work-order-v2.valid.json",
   "agent-semantic-result-v2.blocked.valid.json",
   "agent-semantic-result-v2.failed.valid.json",
   "agent-semantic-result-v2.needs-context.valid.json",
@@ -88,6 +98,39 @@ const main = defineScript({
         rendered: renderAcrSchemaJson(),
         targets: schemaTargets("acr-v0.1.schema.json"),
       },
+      {
+        label: "AgentWorkOrder v2 schema",
+        rendered: await format(renderAgentWorkOrderV2SchemaJson(), {
+          parser: "json",
+          printWidth: 100,
+        }),
+        targets: schemaTargets("agent-work-order-v2.schema.json"),
+      },
+      {
+        label: "AgentWorkOrder v2 valid example",
+        rendered: await format(renderAgentWorkOrderV2ValidFixtureJson(), {
+          parser: "json",
+          printWidth: 100,
+        }),
+        targets: [path.join(repoRoot, "schemas", "examples", "agent-work-order-v2.valid.json")],
+      },
+      {
+        label: "AgentWorkOrder v2 camelCase compatibility example",
+        rendered: await format(renderAgentWorkOrderV2CamelCaseFixtureJson(), {
+          parser: "json",
+          printWidth: 100,
+        }),
+        targets: [
+          path.join(repoRoot, "schemas", "examples", "agent-work-order-v2.camel-case.compat.json"),
+        ],
+      },
+      ...["brief", "runner", "hermes"].map((surface) => ({
+        label: `AgentWorkOrder v1 ${surface} compatibility example`,
+        rendered: renderAgentWorkOrderV1CompatibilityFixtureJson(surface),
+        targets: [
+          path.join(repoRoot, "schemas", "examples", `agent-work-order-v1.${surface}.legacy.json`),
+        ],
+      })),
       {
         label: "config schema",
         rendered: renderAgentplaneConfigSchemaJson(),

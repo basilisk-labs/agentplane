@@ -326,6 +326,7 @@ function validateReviewedCandidate({
     "202607221848-ABG7SD",
     "202607221848-0ZAB1F",
     "202607221848-ER5H6N",
+    "202607221848-T9B3PS",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -370,6 +371,8 @@ function validateReviewedCandidate({
       "core_execution_receipt_exports",
       "knowledge_ref_schema",
       "core_knowledge_ref_exports",
+      "agent_work_order_schema",
+      "core_agent_work_order_exports",
     ],
     [],
     "compatibility candidate contract artifacts",
@@ -515,6 +518,80 @@ function validateReviewedCandidate({
     }
   }
 
+  const agentWorkOrderArtifact = candidate.contract_artifacts.agent_work_order_schema;
+  assertOnlyKeys(
+    agentWorkOrderArtifact,
+    ["path", "sha256", "comparison", "source_task"],
+    [],
+    "AgentWorkOrder contract artifact",
+  );
+  assert(
+    agentWorkOrderArtifact.path === "schemas/agent-work-order-v2.schema.json",
+    "AgentWorkOrder contract artifact path drift",
+  );
+  assert(
+    agentWorkOrderArtifact.comparison === "canonical_json_exact",
+    "AgentWorkOrder contract artifact comparison drift",
+  );
+  assert(
+    agentWorkOrderArtifact.source_task === "202607221848-T9B3PS",
+    "AgentWorkOrder contract artifact source task drift",
+  );
+  const agentWorkOrderSchema = JSON.parse(
+    readFileSync(path.join(repoRoot, agentWorkOrderArtifact.path), "utf8"),
+  );
+  assert(
+    agentWorkOrderArtifact.sha256 === hashJson(agentWorkOrderSchema),
+    "AgentWorkOrder contract artifact digest drift",
+  );
+  assert(
+    agentWorkOrderSchema.$id === "https://agentplane.org/schemas/agent-work-order-v2.schema.json" &&
+      agentWorkOrderSchema.additionalProperties === false,
+    "AgentWorkOrder public schema identity or strictness drift",
+  );
+  const agentWorkOrderExports = candidate.contract_artifacts.core_agent_work_order_exports;
+  assertOnlyKeys(
+    agentWorkOrderExports,
+    ["comparison", "source_task", "entrypoints"],
+    [],
+    "core AgentWorkOrder export contract",
+  );
+  assert(
+    agentWorkOrderExports.comparison === "required_named_reexports",
+    "core AgentWorkOrder export comparison drift",
+  );
+  assert(
+    agentWorkOrderExports.source_task === "202607221848-T9B3PS",
+    "core AgentWorkOrder export source task drift",
+  );
+  assert(
+    Array.isArray(agentWorkOrderExports.entrypoints) &&
+      agentWorkOrderExports.entrypoints.length === 4,
+    "core AgentWorkOrder export entrypoints drift",
+  );
+  for (const [index, entrypoint] of agentWorkOrderExports.entrypoints.entries()) {
+    assertOnlyKeys(
+      entrypoint,
+      ["path", "module", "required_symbols"],
+      [],
+      `core AgentWorkOrder export entrypoint ${index}`,
+    );
+    assert(
+      Array.isArray(entrypoint.required_symbols) &&
+        entrypoint.required_symbols.length > 0 &&
+        hashJson(entrypoint.required_symbols) ===
+          hashJson([...new Set(entrypoint.required_symbols)].toSorted()),
+      `core AgentWorkOrder export entrypoint ${index} symbols must be unique and sorted`,
+    );
+    const exported = new Set(collectNamedReexports(entrypoint));
+    for (const symbol of entrypoint.required_symbols) {
+      assert(
+        exported.has(symbol),
+        `${entrypoint.path}: required AgentWorkOrder export missing: ${symbol}`,
+      );
+    }
+  }
+
   assertOnlyKeys(
     candidate.review,
     ["state", "reviewed_by", "scope", "conditions"],
@@ -575,7 +652,7 @@ function validateReviewedCandidate({
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
     workflow_schema: ["202607221846-4VB97J"],
-    tarball_policy: ["202607221846-4VB97J", "202607221848-ER5H6N"],
+    tarball_policy: ["202607221846-4VB97J", "202607221848-ER5H6N", "202607221848-T9B3PS"],
   };
   for (const delta of candidate.deltas) {
     assert(
@@ -1009,7 +1086,11 @@ function validateReviewedCandidate({
   );
   assert(
     hashJson(addedSourceFiles) ===
-      hashJson(["schemas/knowledge-ref.schema.json", "schemas/workflow.schema.json"]),
+      hashJson([
+        "schemas/agent-work-order-v2.schema.json",
+        "schemas/knowledge-ref.schema.json",
+        "schemas/workflow.schema.json",
+      ]),
     "unexpected core tarball source-file addition",
   );
   assert(removedSourceFiles.length === 0, "candidate removes a core tarball source file");

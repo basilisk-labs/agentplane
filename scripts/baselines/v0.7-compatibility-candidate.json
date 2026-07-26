@@ -9,6 +9,7 @@
     "202607221848-ABG7SD",
     "202607221848-0ZAB1F",
     "202607221848-ER5H6N",
+    "202607221848-T9B3PS",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH"
   ],
@@ -19,7 +20,7 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "074f9be449f58704bfee575b4f3ffce764a94a722fc78c3e9567e6176e74d4ae",
+    "surface_sha256": "d6ae13cfa64ee5bb0747211212c1d6d313d0af4b56ef0f9b71402de30fd62ab3",
     "section_digests": {
       "cli_topology": "ab04b9bfc6a7b72c29fce2df09592ef14148af6b41aa83611a059ba7912227bd",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
@@ -27,10 +28,136 @@
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
       "agent_facing_context_contracts": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
       "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-      "tarball_policy": "7f4bfe0ddb1be5cf45770e97265c37998c7a3372f5ce23d4c5931ecf71330396"
+      "tarball_policy": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091"
     }
   },
   "contract_artifacts": {
+    "agent_work_order_schema": {
+      "path": "schemas/agent-work-order-v2.schema.json",
+      "sha256": "a6d6fe52093b89d72ac08c16c9932cf41044bfa1e9ec4604f06f498c025d8249",
+      "comparison": "canonical_json_exact",
+      "source_task": "202607221848-T9B3PS"
+    },
+    "core_agent_work_order_exports": {
+      "comparison": "required_named_reexports",
+      "source_task": "202607221848-T9B3PS",
+      "entrypoints": [
+        {
+          "path": "packages/core/src/index.ts",
+          "module": "./schemas/index.js",
+          "required_symbols": [
+            "AGENT_WORK_CONTEXT_V1_KIND",
+            "AGENT_WORK_CONTEXT_V1_VERSION",
+            "AGENT_WORK_ORDER_KIND",
+            "AGENT_WORK_ORDER_NETWORK_POLICY_VALUES",
+            "AGENT_WORK_ORDER_ROLE_VALUES",
+            "AGENT_WORK_ORDER_SANDBOX_VALUES",
+            "AGENT_WORK_ORDER_SCHEMA_VERSION",
+            "AGENT_WORK_ORDER_SEMANTIC_RESULT_SCHEMA",
+            "AGENT_WORK_ORDER_TOOL_CLASS_VALUES",
+            "AGENT_WORK_ORDER_V1_COMPATIBILITY_FIXTURES",
+            "AGENT_WORK_ORDER_V1_SURFACE_VALUES",
+            "AGENT_WORK_ORDER_V2_VALID_FIXTURE",
+            "AGENT_WORK_ORDER_V2_ZOD_SCHEMA",
+            "AgentWorkContextV1Contract",
+            "AgentWorkOrderArtifactContract",
+            "AgentWorkOrderArtifactRef",
+            "AgentWorkOrderAuthority",
+            "AgentWorkOrderCasingDiagnostic",
+            "AgentWorkOrderCasingError",
+            "AgentWorkOrderContextIntent",
+            "AgentWorkOrderPreparationDiagnostic",
+            "AgentWorkOrderPreparationError",
+            "AgentWorkOrderPreparedEvidence",
+            "AgentWorkOrderRole",
+            "AgentWorkOrderV1CompatibilityView",
+            "AgentWorkOrderV1MigrationResult",
+            "AgentWorkOrderV1OmissionReceipt",
+            "AgentWorkOrderV1Surface",
+            "AgentWorkOrderV2",
+            "AgentWorkOrderV2MigrationOverrides",
+            "AgentWorkOrderVerificationIntent",
+            "assertAgentWorkOrderReadyForInvocation",
+            "buildAgentWorkOrderV1MigrationFixture",
+            "buildAgentWorkOrderV2ValidFixture",
+            "listAgentWorkOrderV2SchemaErrors",
+            "migrateAgentWorkOrderV1ToV2",
+            "parseAgentWorkOrderV2",
+            "readAgentWorkOrderV1CompatibilityView",
+            "renderAgentWorkOrderV1CompatibilityFixtureJson",
+            "renderAgentWorkOrderV2CamelCaseFixtureJson",
+            "renderAgentWorkOrderV2SchemaJson",
+            "renderAgentWorkOrderV2ValidFixtureJson",
+            "toAgentWorkOrderV2CamelCase",
+            "validateAgentSemanticResultForWorkOrder",
+            "validateAgentWorkOrderV2"
+          ]
+        },
+        {
+          "path": "packages/core/src/schemas/index.ts",
+          "module": "../runner/agent-work-order.js",
+          "required_symbols": [
+            "AGENT_WORK_ORDER_KIND",
+            "AGENT_WORK_ORDER_NETWORK_POLICY_VALUES",
+            "AGENT_WORK_ORDER_ROLE_VALUES",
+            "AGENT_WORK_ORDER_SANDBOX_VALUES",
+            "AGENT_WORK_ORDER_SCHEMA_VERSION",
+            "AGENT_WORK_ORDER_SEMANTIC_RESULT_SCHEMA",
+            "AGENT_WORK_ORDER_TOOL_CLASS_VALUES",
+            "AGENT_WORK_ORDER_V2_ZOD_SCHEMA",
+            "AgentWorkOrderArtifactContract",
+            "AgentWorkOrderArtifactRef",
+            "AgentWorkOrderAuthority",
+            "AgentWorkOrderContextIntent",
+            "AgentWorkOrderPreparationDiagnostic",
+            "AgentWorkOrderPreparationError",
+            "AgentWorkOrderPreparedEvidence",
+            "AgentWorkOrderRole",
+            "AgentWorkOrderV2",
+            "AgentWorkOrderVerificationIntent",
+            "assertAgentWorkOrderReadyForInvocation",
+            "listAgentWorkOrderV2SchemaErrors",
+            "renderAgentWorkOrderV2SchemaJson",
+            "validateAgentSemanticResultForWorkOrder",
+            "validateAgentWorkOrderV2"
+          ]
+        },
+        {
+          "path": "packages/core/src/schemas/index.ts",
+          "module": "../runner/agent-work-order-fixtures.js",
+          "required_symbols": [
+            "AGENT_WORK_ORDER_V2_VALID_FIXTURE",
+            "buildAgentWorkOrderV2ValidFixture",
+            "renderAgentWorkOrderV2ValidFixtureJson"
+          ]
+        },
+        {
+          "path": "packages/core/src/schemas/index.ts",
+          "module": "../runner/agent-work-order-compat.js",
+          "required_symbols": [
+            "AGENT_WORK_CONTEXT_V1_KIND",
+            "AGENT_WORK_CONTEXT_V1_VERSION",
+            "AGENT_WORK_ORDER_V1_COMPATIBILITY_FIXTURES",
+            "AGENT_WORK_ORDER_V1_SURFACE_VALUES",
+            "AgentWorkContextV1Contract",
+            "AgentWorkOrderCasingDiagnostic",
+            "AgentWorkOrderCasingError",
+            "AgentWorkOrderV1CompatibilityView",
+            "AgentWorkOrderV1MigrationResult",
+            "AgentWorkOrderV1OmissionReceipt",
+            "AgentWorkOrderV1Surface",
+            "AgentWorkOrderV2MigrationOverrides",
+            "buildAgentWorkOrderV1MigrationFixture",
+            "migrateAgentWorkOrderV1ToV2",
+            "parseAgentWorkOrderV2",
+            "readAgentWorkOrderV1CompatibilityView",
+            "renderAgentWorkOrderV1CompatibilityFixtureJson",
+            "renderAgentWorkOrderV2CamelCaseFixtureJson",
+            "toAgentWorkOrderV2CamelCase"
+          ]
+        }
+      ]
+    },
     "execution_receipt_schema": {
       "path": "schemas/execution-receipt.schema.json",
       "sha256": "2182ce7788ff3cffea246a15864c27350b6787555588ba1444fbc3fc5b0f3db9",
@@ -574,15 +701,19 @@
     },
     {
       "section": "tarball_policy",
-      "source_tasks": ["202607221846-4VB97J", "202607221848-ER5H6N"],
+      "source_tasks": ["202607221846-4VB97J", "202607221848-ER5H6N", "202607221848-T9B3PS"],
       "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
-      "to_sha256": "7f4bfe0ddb1be5cf45770e97265c37998c7a3372f5ce23d4c5931ecf71330396",
+      "to_sha256": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
       "classification": "additive",
-      "summary": "Publishes the generated workflow and KnowledgeRef schemas from the core package; no package source file is removed.",
+      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package; no package source file is removed.",
       "evidence": {
         "package": "@agentplaneorg/core",
-        "source_file_count": { "from": 17, "to": 19 },
-        "added_source_files": ["schemas/knowledge-ref.schema.json", "schemas/workflow.schema.json"],
+        "source_file_count": { "from": 17, "to": 20 },
+        "added_source_files": [
+          "schemas/agent-work-order-v2.schema.json",
+          "schemas/knowledge-ref.schema.json",
+          "schemas/workflow.schema.json"
+        ],
         "removed_source_files": []
       }
     }

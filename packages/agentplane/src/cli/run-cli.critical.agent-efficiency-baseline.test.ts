@@ -169,17 +169,18 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607221848-ABG7SD",
           "202607221848-0ZAB1F",
           "202607221848-ER5H6N",
+          "202607221848-T9B3PS",
           "202607260007-DQM6AW",
           "202607260532-9M7RNH",
         ],
         candidate: {
-          surface_sha256: "074f9be449f58704bfee575b4f3ffce764a94a722fc78c3e9567e6176e74d4ae",
+          surface_sha256: "d6ae13cfa64ee5bb0747211212c1d6d313d0af4b56ef0f9b71402de30fd62ab3",
           section_digests: {
             cli_topology: "ab04b9bfc6a7b72c29fce2df09592ef14148af6b41aa83611a059ba7912227bd",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
-            tarball_policy: "7f4bfe0ddb1be5cf45770e97265c37998c7a3372f5ce23d4c5931ecf71330396",
+            tarball_policy: "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
           },
         },
         contract_artifacts: {
@@ -254,6 +255,39 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
                 ]) as unknown,
               },
             ],
+          },
+          agent_work_order_schema: {
+            path: "schemas/agent-work-order-v2.schema.json",
+            sha256: "a6d6fe52093b89d72ac08c16c9932cf41044bfa1e9ec4604f06f498c025d8249",
+            comparison: "canonical_json_exact",
+            source_task: "202607221848-T9B3PS",
+          },
+          core_agent_work_order_exports: {
+            comparison: "required_named_reexports",
+            source_task: "202607221848-T9B3PS",
+            entrypoints: expect.arrayContaining([
+              expect.objectContaining({
+                path: "packages/core/src/index.ts",
+                module: "./schemas/index.js",
+                required_symbols: expect.arrayContaining([
+                  "AGENT_WORK_ORDER_V2_ZOD_SCHEMA",
+                  "AgentWorkOrderV2",
+                  "validateAgentWorkOrderV2",
+                  "renderAgentWorkOrderV2SchemaJson",
+                  "migrateAgentWorkOrderV1ToV2",
+                ]) as unknown,
+              }),
+              expect.objectContaining({
+                path: "packages/core/src/schemas/index.ts",
+                module: "../runner/agent-work-order-compat.js",
+                required_symbols: expect.arrayContaining([
+                  "AGENT_WORK_CONTEXT_V1_KIND",
+                  "readAgentWorkOrderV1CompatibilityView",
+                  "parseAgentWorkOrderV2",
+                  "toAgentWorkOrderV2CamelCase",
+                ]) as unknown,
+              }),
+            ]) as unknown,
           },
         },
       });
