@@ -4,7 +4,7 @@ title: "Reconcile provider-rebased protected PR heads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +34,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-26T00:48:39.908Z"
+  updated_by: "TESTER"
+  note: "Provider rebase proof is directional and accepts provider-only patches."
+  attempts: 1
 commit: null
 comments:
   -
@@ -52,8 +52,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement only the approved provider-rebase reconciliation contract; no worktree, code, or PR is created by this planning checkpoint."
+  -
+    type: "verify"
+    at: "2026-07-26T00:48:39.908Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Provider rebase proof is directional and accepts provider-only patches."
 doc_version: 3
-doc_updated_at: "2026-07-26T00:07:17.694Z"
+doc_updated_at: "2026-07-26T00:48:40.630Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr reconciliation after a protected provider rebases a verified PR: reconcile remote provider truth with a stale local task head without publishing or deleting from uncertain lineage. Current incident: ZMV 202607252051-ZMVZRZ local d61ab0f55d1c122e5acbaf2a296e2ff508e87b55 versus provider-rebased 2a6d152b87666912d189304c4a6084eccaaff262, merged as main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -74,9 +80,48 @@ sections:
     4. Prove cleanup after a proven provider merge still enforces task identity plus dirty, current-worktree, outside-root, expected-head, and provider-head guards.
     5. Run focused reconciliation and cleanup regressions; bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; agentplane doctor; and git diff --check.
     6. Record independent TESTER and EVALUATOR evidence, wait for stable hosted checks, and use only the normal branch_pr integration route.
-  Verification: "Required evidence: focused test names and results; before and after route packets; immutable task, PR, local-head, provider-head, base or merge, and closure identities; static and lifecycle check output; independent TESTER verdict; EVALUATOR review of provenance and refusal behavior; stable hosted PR checks. Any provider snapshot change invalidates prior evidence and requires recomputation."
+  Verification: |-
+    Required evidence: focused test names and results; before and after route packets; immutable task, PR, local-head, provider-head, base or merge, and closure identities; static and lifecycle check output; independent TESTER verdict; EVALUATOR review of provenance and refusal behavior; stable hosted PR checks. Any provider snapshot change invalidates prior evidence and requires recomputation.
+
+    <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-26T00:48:39.908Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Provider rebase proof is directional and accepts provider-only patches.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:07:17.694Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+    - old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert only the bounded reconciliation change in a new normal branch_pr task or follow-up, preserving task artifacts and the pre-existing fail-closed route. Never restore or align a remote branch with a raw force-push. If provider truth changes, proof is incomplete, or cleanup reports dirty or identity mismatch, stop, preserve all state, and return the diagnostic route for human or agent rework."
-  Findings: "Current incident rule: ZMV 202607252051-ZMVZRZ reached a verified provider-rebased head 2a6d152b87666912d189304c4a6084eccaaff262 while its local task worktree remained at d61ab0f55d1c122e5acbaf2a296e2ff508e87b55. The provider merged that PR as main e27c938698668ce242243d166f8c7c1b64cce88f. A stale local-versus-provider mismatch is not permission to republish, force-push, delete, or clean; only current immutable lineage proof may advance reconciliation."
+  Findings: |-
+    Current incident rule: ZMV 202607252051-ZMVZRZ reached a verified provider-rebased head 2a6d152b87666912d189304c4a6084eccaaff262 while its local task worktree remained at d61ab0f55d1c122e5acbaf2a296e2ff508e87b55. The provider merged that PR as main e27c938698668ce242243d166f8c7c1b64cce88f. A stale local-versus-provider mismatch is not permission to republish, force-push, delete, or clean; only current immutable lineage proof may advance reconciliation.
+
+    - Observation: resolveProviderReconciliation calls git cherry with providerHead as upstream and stale local head as head; it confirms only that local patches occur in provider history.
+      Impact: A merged PR whose provider head contains the local task patch plus an unrelated extra patch is classified provider_rebase_equivalent, so changed provider truth does not fail closed before cleanup routing.
+      Resolution: Require symmetric patch-set equivalence or an equally strict provider-only patch rejection; add a regression fixture with one extra provider-only commit and preserve the branch/worktree on refusal.
 extensions:
   workflow_route_baseline:
     start_head_sha: "e27c938698668ce242243d166f8c7c1b64cce88f"
@@ -114,6 +159,39 @@ In scope: provider snapshot and lineage proof, route and integration reconciliat
 
 Required evidence: focused test names and results; before and after route packets; immutable task, PR, local-head, provider-head, base or merge, and closure identities; static and lifecycle check output; independent TESTER verdict; EVALUATOR review of provenance and refusal behavior; stable hosted PR checks. Any provider snapshot change invalidates prior evidence and requires recomputation.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-26T00:48:39.908Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Provider rebase proof is directional and accepts provider-only patches.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:07:17.694Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+- old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert only the bounded reconciliation change in a new normal branch_pr task or follow-up, preserving task artifacts and the pre-existing fail-closed route. Never restore or align a remote branch with a raw force-push. If provider truth changes, proof is incomplete, or cleanup reports dirty or identity mismatch, stop, preserve all state, and return the diagnostic route for human or agent rework.
@@ -121,3 +199,7 @@ Revert only the bounded reconciliation change in a new normal branch_pr task or 
 ## Findings
 
 Current incident rule: ZMV 202607252051-ZMVZRZ reached a verified provider-rebased head 2a6d152b87666912d189304c4a6084eccaaff262 while its local task worktree remained at d61ab0f55d1c122e5acbaf2a296e2ff508e87b55. The provider merged that PR as main e27c938698668ce242243d166f8c7c1b64cce88f. A stale local-versus-provider mismatch is not permission to republish, force-push, delete, or clean; only current immutable lineage proof may advance reconciliation.
+
+- Observation: resolveProviderReconciliation calls git cherry with providerHead as upstream and stale local head as head; it confirms only that local patches occur in provider history.
+  Impact: A merged PR whose provider head contains the local task patch plus an unrelated extra patch is classified provider_rebase_equivalent, so changed provider truth does not fail closed before cleanup routing.
+  Resolution: Require symmetric patch-set equivalence or an equally strict provider-only patch rejection; add a regression fixture with one extra provider-only commit and preserve the branch/worktree on refusal.

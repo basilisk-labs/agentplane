@@ -12,8 +12,8 @@ In scope: provider snapshot and lineage proof, route and integration reconciliat
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Provider rebase proof is directional and accepts provider-only patches.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -24,14 +24,14 @@ In scope: provider snapshot and lineage proof, route and integration reconciliat
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/branch/cleanup-merged-proof.ts    | 208 +++++++++-------
- .../cleanup-merged-provider-reconciliation.ts      | 261 +++++++++++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         | 180 +++++++++++++-
+ .../src/commands/branch/cleanup-merged-proof.ts    | 208 +++++++------
+ .../cleanup-merged-provider-reconciliation.ts      | 337 +++++++++++++++++++++
+ .../branch/cleanup-merged.targeted.test.ts         | 211 ++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
- .../shared/route-decision-next-action.test.ts      |  49 ++++
+ .../shared/route-decision-next-action.test.ts      |  49 +++
  .../src/commands/shared/route-decision.ts          |   3 +-
- .../src/commands/shared/workflow-step-branch.ts    |  46 ++--
- 7 files changed, 654 insertions(+), 117 deletions(-)
+ .../src/commands/shared/workflow-step-branch.ts    |  46 +--
+ 7 files changed, 761 insertions(+), 117 deletions(-)
 ```
 
 </details>

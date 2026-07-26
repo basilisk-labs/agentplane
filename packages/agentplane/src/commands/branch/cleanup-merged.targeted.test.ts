@@ -81,7 +81,7 @@ function markDone(readme: string, commitHash: string): string {
 }
 
 async function createTargetedFixture(
-  opts: { providerRebased?: boolean } = {},
+  opts: { providerRebased?: boolean; providerExtraPatch?: boolean } = {},
 ): Promise<TargetedFixture> {
   const root = await mkGitRepoRootWithBranch("main");
   await configureGitUser(root);
@@ -171,6 +171,15 @@ async function createTargetedFixture(
       env: cleanGitEnv(),
     });
     providerHead = providerHeadResult.stdout.trim();
+    if (opts.providerExtraPatch) {
+      await writeFile(path.join(root, "provider-only-change.txt"), "must fail closed\n", "utf8");
+      await commitAll(root, `chore ${taskId} provider-only patch`);
+      const providerExtraHeadResult = await execFileAsync("git", ["rev-parse", "HEAD"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      providerHead = providerExtraHeadResult.stdout.trim();
+    }
     await execFileAsync("git", ["checkout", "main"], { cwd: root, env: cleanGitEnv() });
     await execFileAsync(
       "git",
@@ -382,6 +391,28 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(result.stderr).toContain("provider rebase is not patch-equivalent");
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
     expect(await pathExists(fixture.worktreePath)).toBe(true);
+  });
+
+  it("fails closed when a provider-rebased head contains an unrelated provider-only patch", async () => {
+    const fixture = await createTargetedFixture({
+      providerRebased: true,
+      providerExtraPatch: true,
+    });
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider rebase contains provider-only patches");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
+    expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
   });
 
   it("fails closed when the provider-rebased head object is unavailable locally", async () => {

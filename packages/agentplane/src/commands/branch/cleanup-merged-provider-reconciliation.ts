@@ -39,24 +39,77 @@ async function gitCommitExists(gitRoot: string, sha: string): Promise<boolean> {
   }
 }
 
-async function gitCherryEquivalent(opts: {
+type GitCherryLine = { marker: "+" | "-"; sha: string };
+
+async function gitCherryLines(opts: {
   gitRoot: string;
   upstream: string;
   head: string;
-}): Promise<boolean> {
+}): Promise<GitCherryLine[] | null> {
   try {
     const { stdout } = await execFileAsync("git", ["cherry", opts.upstream, opts.head], {
       cwd: opts.gitRoot,
       env: gitEnv(),
     });
-    const lines = stdout
+    const rawLines = stdout
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
-    return lines.length > 0 && lines.every((line) => line.startsWith("- "));
+    const lines: GitCherryLine[] = [];
+    for (const rawLine of rawLines) {
+      const match = /^([+-])\s+([0-9a-f]+)$/u.exec(rawLine);
+      if (!match) return null;
+      lines.push({ marker: match[1] as "+" | "-", sha: match[2] });
+    }
+    return lines;
   } catch {
-    return false;
+    return null;
   }
+}
+
+async function gitCherryEquivalent(opts: {
+  gitRoot: string;
+  upstream: string;
+  head: string;
+}): Promise<boolean> {
+  const lines = await gitCherryLines(opts);
+  return lines !== null && lines.length > 0 && lines.every((line) => line.marker === "-");
+}
+
+async function gitMergeBaseParent(opts: {
+  gitRoot: string;
+  mergeCommit: string;
+}): Promise<string | null> {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["rev-list", "--parents", "-n", "1", opts.mergeCommit],
+      { cwd: opts.gitRoot, env: gitEnv() },
+    );
+    const [, ...parents] = stdout.trim().split(/\s+/u);
+    return parents.length >= 2 ? (parents[0] ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
+async function gitProviderPatchesEquivalentToLocal(opts: {
+  gitRoot: string;
+  localHead: string;
+  providerHead: string;
+  providerBase: string;
+}): Promise<boolean> {
+  const lines = await gitCherryLines({
+    gitRoot: opts.gitRoot,
+    upstream: opts.localHead,
+    head: opts.providerHead,
+  });
+  if (lines === null || lines.length === 0) return false;
+  for (const line of lines) {
+    if (await gitIsAncestor(opts.gitRoot, line.sha, opts.providerBase)) continue;
+    if (line.marker !== "-") return false;
+  }
+  return true;
 }
 
 export async function observeProviderPr(opts: {
@@ -242,6 +295,29 @@ export async function resolveProviderReconciliation(opts: {
     return {
       proof: null,
       reason: "provider rebase is not patch-equivalent to the stale local task head",
+    };
+  }
+  const providerBase = await gitMergeBaseParent({
+    gitRoot: opts.gitRoot,
+    mergeCommit: opts.receipt.mergeCommit,
+  });
+  if (!providerBase) {
+    return {
+      proof: null,
+      reason: "provider merge does not expose a base parent for symmetric patch proof",
+    };
+  }
+  if (
+    !(await gitProviderPatchesEquivalentToLocal({
+      gitRoot: opts.gitRoot,
+      localHead: opts.branchHead,
+      providerHead: opts.receipt.providerHeadSha,
+      providerBase,
+    }))
+  ) {
+    return {
+      proof: null,
+      reason: "provider rebase contains provider-only patches beyond the merged base",
     };
   }
   if (

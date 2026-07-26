@@ -2,12 +2,13 @@
   "base": "main",
   "branch": "task/202607260005-EMP7RC/reconcile-provider-rebased-protected-pr-heads",
   "created_at": "2026-07-26T00:39:19.677Z",
-  "diffstat_sha256": "sha256:72201a7adf51bab4d3c5cea58445a264a78803d8884e8fb7b041fa5e9122d66c",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:b244220e9496d0a9c7dc292c2accba0a5bf86115d9fee37176936d3b6d7b912c",
+  "last_verified_at": "2026-07-26T00:48:39.908Z",
+  "last_verified_diffstat_sha256": "sha256:72201a7adf51bab4d3c5cea58445a264a78803d8884e8fb7b041fa5e9122d66c",
   "schema_version": 1,
   "task_id": "202607260005-EMP7RC",
   "updated_at": "2026-07-26T00:39:19.677Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }
