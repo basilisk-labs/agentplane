@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+
 import type { TaskData } from "../../backends/task-backend.js";
 import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
@@ -8,9 +10,11 @@ import { deriveRouteOperatorGuidance } from "./route-guidance.js";
 import {
   appendSideEffectAuthorityAudit,
   createSideEffectAuthorityRecord,
+  evaluateWorkflowOperationAuthority,
   withSideEffectAuthorityState,
 } from "./side-effect-authority.js";
 import { cliOperationStep } from "./workflow-step-factory.js";
+import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision.js";
 import {
   WORKFLOW_OPERATION_EFFECTS,
   WORKFLOW_OPERATION_REGISTRY,
@@ -839,6 +843,64 @@ describe("WorkflowStep execution projections", () => {
         executor: "current_agent",
         currentAgentMustExecute: true,
       },
+    });
+  });
+
+  it("stabilizes a protected step when the full fingerprint resolves bootstrap approval", async () => {
+    const state = routeState();
+    const initial = reduceRouteState(state);
+    if (initial.kind !== "approval" || initial.request.type !== "side_effect") {
+      throw new Error("expected a bootstrap side-effect approval");
+    }
+    const operation = initial.request.operation;
+    const fullFingerprint = buildStateFingerprint({
+      task_id: task.id,
+      task_revision: task.revision,
+      git_head: "f".repeat(40),
+      worktree: taskWorktreePath,
+      components: {
+        task: { state: "present", source: "fixture", value: { fingerprint: "full" } },
+        git: { state: "present", source: "fixture", value: { head: "full" } },
+        backend_projection: { state: "present", source: "fixture", value: { backend: "full" } },
+        policy: { state: "present", source: "fixture", value: { policy: "full" } },
+        blueprint: { state: "present", source: "fixture", value: { blueprint: "full" } },
+        knowledge: { state: "present", source: "fixture", value: { knowledge: "full" } },
+        provider: { state: "present", source: "fixture", value: { provider: "full" } },
+        authority: { state: "present", source: "fixture", value: { authority: "full" } },
+      },
+    });
+    const authorized = authorizeOperation({
+      state: { ...state, preconditionFingerprint: fullFingerprint },
+      operationId: operation.id,
+      params: operation.params,
+    });
+    const grantedState = { ...state, task: authorized.task };
+    const draft = reduceRouteState(grantedState);
+    expect(draft).toMatchObject({
+      kind: "approval",
+      request: { type: "side_effect", operationId: operation.id },
+    });
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task: grantedState.task,
+        operation: {
+          id: operation.id,
+          type: operation.type,
+          params: operation.params,
+        },
+        fingerprint: fullFingerprint,
+      }),
+    ).toMatchObject({ state: "allowed" });
+
+    const step = await stabilizeWorkflowStepAfterFingerprint({
+      state: grantedState,
+      draft,
+      capture: async () => fullFingerprint,
+    });
+    expect(step).toMatchObject({
+      kind: "cli_operation",
+      operation: { id: operation.id, authorityRef: expect.stringContaining("authority:") },
+      preconditionFingerprint: { digest: fullFingerprint.digest },
     });
   });
 
