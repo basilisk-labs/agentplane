@@ -1,1 +1,1 @@
-🚧 T9B3PS task: Publish AgentWorkOrder v2 schema and migrations [202607221848-T9B3PS]
+✅ T9B3PS task: Publish AgentWorkOrder v2 schema and migrations [202607221848-T9B3PS]
