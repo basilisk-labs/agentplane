@@ -463,6 +463,20 @@ it("captures every live route component from the authoritative task worktree", a
   });
   expect(changedComponents(changedGit, changedTask)).toEqual(["task"]);
 
+  const localHeadBefore = routeState(worktree);
+  localHeadBefore.prFlow = {
+    ...prFlow(),
+    branch: { name: BRANCH, headSha: "before-local-head", metaHeadSha: "before-meta-head" },
+  };
+  const localHeadAfter = routeState(worktree);
+  localHeadAfter.prFlow = {
+    ...prFlow(),
+    branch: { name: BRANCH, headSha: "after-local-head", metaHeadSha: "after-meta-head" },
+  };
+  const providerBefore = await capture({ ctx, root, worktree, state: localHeadBefore });
+  const providerAfter = await capture({ ctx, root, worktree, state: localHeadAfter });
+  expect(changedComponents(providerBefore, providerAfter)).toEqual([]);
+
   const conditionalPolicyState = routeState(worktree);
   conditionalPolicyState.taskWorktree = {
     ...conditionalPolicyState.taskWorktree!,

@@ -93,7 +93,10 @@ function providerComponent(state: WorkflowRouteStateInput): StateFingerprintComp
   const evidence = {
     observation: flow.providerObservation ?? null,
     pr: flow.pr,
-    branch: flow.branch,
+    // The local branch heads are already bound by the Git component. Keeping
+    // them here would make an authority record invalidate itself when its
+    // persisted task-state commit advances the local branch.
+    branch: { name: flow.branch.name },
     closeTail: flow.closeTail,
     hostedChecks: flow.hostedChecks,
     reviewThreads: flow.reviewThreads,
