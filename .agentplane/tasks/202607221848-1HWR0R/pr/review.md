@@ -44,7 +44,7 @@ Created: 2026-07-26T08:11:00.143Z
  .../src/commands/shared/task-mutation.test.ts      |  49 +++++++-
  .../src/commands/shared/task-mutation.ts           |  94 +++++++++++++-
  .../agentplane/src/commands/task/begin.command.ts  |  57 ++++-----
- .../agentplane/src/commands/task/doc.unit.test.ts  |  20 +--
+ .../agentplane/src/commands/task/doc.unit.test.ts  |  20 ++-
  .../src/commands/task/mutation-parity.unit.test.ts |  28 ++++-
  .../agentplane/src/commands/task/new.command.ts    |   3 +-
  packages/agentplane/src/commands/task/new.ts       |  22 +++-
@@ -58,7 +58,7 @@ Created: 2026-07-26T08:11:00.143Z
  packages/agentplane/src/context/ingest.ts          |  32 ++---
  .../baselines/v0.7-compatibility-candidate.json    |  39 +++++-
  .../check-compatibility-contract-baseline.mjs      | 138 +++++++++++++++++++++
- 29 files changed, 777 insertions(+), 161 deletions(-)
+ 29 files changed, 779 insertions(+), 159 deletions(-)
 ```
 
 </details>
