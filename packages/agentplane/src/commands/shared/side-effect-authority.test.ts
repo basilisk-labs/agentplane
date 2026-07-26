@@ -9,6 +9,7 @@ import {
   readSideEffectAuthorityState,
   withSideEffectAuthorityState,
   WORKFLOW_OPERATION_AUTHORITY_POLICY,
+  workflowOperationAuthorityDigest,
   workflowAuthorityStateScopeDigest,
 } from "./side-effect-authority.js";
 import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
@@ -45,12 +46,33 @@ function fingerprint(gitHead = "a".repeat(40), trackedContent = gitHead): StateF
   });
 }
 
-function approvedTask(at = "2026-07-26T12:00:00.000Z") {
+function preMergeOperation(
+  commit: string,
+  result = "pre-merge closure",
+): Pick<WorkflowOperation, "id" | "type" | "params"> {
+  return {
+    id: "task.pre_merge_close",
+    type: "task_record_result",
+    params: {
+      taskId,
+      author: "CODER",
+      body: "Verified: pre-merge closure packet is ready for the task PR.",
+      result,
+      commit,
+      force: true,
+    },
+  };
+}
+
+function approvedTask(
+  approvedOperation: Pick<WorkflowOperation, "id" | "type" | "params"> = operation,
+  at = "2026-07-26T12:00:00.000Z",
+) {
   const state = { schemaVersion: 1 as const, grants: [], audit: [] };
   const grant = createSideEffectAuthorityRecord({
     id: "authority-fixture",
     actor: "USER",
-    operation,
+    operation: approvedOperation,
     fingerprint: fingerprint(),
     issuedAt: at,
     expiresAt: "2026-07-26T12:15:00.000Z",
@@ -59,7 +81,7 @@ function approvedTask(at = "2026-07-26T12:00:00.000Z") {
     state: { ...state, grants: [grant] },
     at,
     actor: "USER",
-    operation,
+    operation: approvedOperation,
     fingerprint: fingerprint(),
     authority: grant,
     outcome: "approved",
@@ -181,6 +203,36 @@ describe("side-effect authority", () => {
         task,
         operation,
         fingerprint: fingerprint("b".repeat(40), "changed-source"),
+        now: new Date("2026-07-26T12:01:00.000Z"),
+      }),
+    ).toMatchObject({ state: "approval_required" });
+  });
+
+  it("keeps pre-merge authority valid after its own branch-head advance only", () => {
+    const initial = preMergeOperation("a".repeat(40));
+    const authorityCommit = preMergeOperation("b".repeat(40));
+    const task = approvedTask(initial);
+    const technicalAuthorityCommit = fingerprint("b".repeat(40), "a".repeat(40));
+
+    expect(workflowOperationAuthorityDigest(authorityCommit)).toBe(
+      workflowOperationAuthorityDigest(initial),
+    );
+    expect(workflowAuthorityStateScopeDigest(technicalAuthorityCommit)).toBe(
+      workflowAuthorityStateScopeDigest(fingerprint()),
+    );
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation: authorityCommit,
+        fingerprint: technicalAuthorityCommit,
+        now: new Date("2026-07-26T12:01:00.000Z"),
+      }),
+    ).toMatchObject({ state: "allowed", authorityRef: "authority:authority-fixture" });
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation: preMergeOperation("b".repeat(40), "different result"),
+        fingerprint: technicalAuthorityCommit,
         now: new Date("2026-07-26T12:01:00.000Z"),
       }),
     ).toMatchObject({ state: "approval_required" });

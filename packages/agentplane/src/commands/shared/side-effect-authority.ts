@@ -5,7 +5,11 @@ import type { StateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { isRecord } from "../../shared/guards.js";
-import type { WorkflowOperation, WorkflowOperationId } from "./workflow-step.js";
+import type {
+  WorkflowOperation,
+  WorkflowOperationId,
+  WorkflowOperationParams,
+} from "./workflow-step.js";
 
 /** Durable task extension owned by the formal workflow control plane. */
 export const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
@@ -257,6 +261,20 @@ export function workflowOperationAuthorityRequirement(
 export function workflowOperationAuthorityDigest(
   operation: Pick<WorkflowOperation, "id" | "type" | "params">,
 ): string {
+  if (operation.id === "task.pre_merge_close") {
+    const { commit: _commit, ...params } =
+      operation.params as WorkflowOperationParams["task.pre_merge_close"];
+    /**
+     * A durable grant writes the authority record to the task branch, which
+     * necessarily advances the branch head before the pre-merge closure is
+     * recorded. That head is already bound by the state-scope digest (whose
+     * Git component excludes only the task record), so including `commit`
+     * here would make a grant invalidate itself without any semantic drift.
+     * The concrete closure commit remains part of the command and task
+     * record; all other closure parameters stay exact-match bound.
+     */
+    return sha256({ id: operation.id, type: operation.type, params });
+  }
   return sha256({ id: operation.id, type: operation.type, params: operation.params });
 }
 
