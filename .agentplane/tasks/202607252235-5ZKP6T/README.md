@@ -1,10 +1,11 @@
 ---
 id: "202607252235-5ZKP6T"
 title: "Prevent foreign task artifacts in branch_pr worktrees"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -28,40 +29,46 @@ plan_approval:
   note: "Re-approved under the user's persistent corrective-scope authorization: bounded historical foreign-README proof and expanded fail-closed verification for the observed XBHBE5 to THDN0G lifecycle shape."
 verification:
   state: "ok"
-  updated_at: "2026-07-26T01:53:14.289Z"
+  updated_at: "2026-07-26T02:24:37.538Z"
   updated_by: "TESTER"
-  note: "PASS at 35656c7f992fc4e0cda0771bcbaba91109b17f88: strict divergent proof now requires the exact direct first-parent TODO predecessor, a valid TODO-to-DOING Start transition, and verified DONE source; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, and diff check passed."
+  note: "PASS at 0fbc850d8b66086349faaa868221bedd29a04440: the hotspot-only route and operation split preserves strict foreign-replica proof behavior; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, diff check, and hotspots:check passed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T02:01:43.461Z"
+  updated_at: "2026-07-26T02:28:45.008Z"
   updated_by: "EVALUATOR"
-  note: "Rework: strict proof behavior passes the focused security suite, but the task fails the mandatory hotspot gate it itself regressed."
-  evaluated_sha: "35656c7f992fc4e0cda0771bcbaba91109b17f88"
+  note: "Pass: the hotspot split restores mandatory size gates without changing the guarded foreign-replica repair contract or its strict fail-closed proof behavior."
+  evaluated_sha: "0fbc850d8b66086349faaa868221bedd29a04440"
   blueprint_digest: "2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb"
   evidence_refs:
     - ".agentplane/tasks/202607252235-5ZKP6T/README.md"
-    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260726-020143461-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260726-020143461-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260726-020143461-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260726-022845008-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260726-022845008-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260726-022845008-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json"
-    - "bun run hotspots:check (failed: route-decision.ts 614 and workflow-step.ts 611 exceed 600; workflow-step.test.ts 1004 exceeds 1000; oversized baseline 11 entries and 12374 lines exceed budgets)"
-    - "git merge-base main HEAD = 220c7f110c07a14b2b055003cd338ad4c1c3503e; 5ZKP diff changes route-decision.ts +15, workflow-step.ts +19, workflow-step.test.ts +4"
-    - "bunx vitest run provenance suite: 7 passed"
-    - "bunx vitest run focused agentplane suite: 61 passed"
+    - "0fbc850d8b66086349faaa868221bedd29a04440"
+    - "git diff --exit-code 35656c7..0fbc850 -- task-worktree-foreign-artifact-repair.ts task-worktree-foreign-artifact-history-proof.ts task-worktree-foreign-artifact-lifecycle-proof.ts repair.command.ts"
+    - "bunx vitest run focused agentplane suite including workflow-operation-projection: 68 passed"
     - "bunx vitest run cli-core worktree runtime: 6 passed"
-    - "bun run typecheck; bun run lint:core; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check (passed; doctor has only historical warnings)"
+    - "bun run hotspots:check: passed; oversized baseline OK (10 entries, 11370 total lines)"
+    - "bun run typecheck; bun run lint:core; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; ap doctor; git diff --check: passed (doctor historical warnings only)"
+    - "read-only ap task next-action XBH root probe: no repair command; XBH THDN README digest unchanged"
   findings:
-    - "5ZKP changes route-decision.ts from 598 to 613 lines and workflow-step.ts from 591 to 610 lines; both now exceed the runtime 600-line gate."
-    - "5ZKP changes workflow-step.test.ts from 999 to 1003 lines, creating a new oversized-test baseline violation; baseline growth must not be used to accept this regression."
-    - "The task README states the hotspot failure is pre-existing and outside scope, but git history shows 5cae4c51 is the only commit after merge-base that modifies all three threshold-crossing files."
-    - "Focused security behavior is otherwise corroborated: 68 proof and route tests plus 6 CLI-core worktree-runtime tests pass; real XBHBE5/THDN0G remains proof-null and its foreign README is preserved."
-commit: null
+    - "The route split is behavior-preserving: the new route helper retains the dirty-worktree gate, inspection arguments, and fail-closed inspection error result; the exact repair operation remains agentplane flow repair <task-id> --safe-apply."
+    - "The repair and provenance implementations are byte-for-byte unchanged from the previously verified SHA 35656c7; 68 focused proof and route tests plus 6 CLI-core worktree-runtime tests pass at 0fbc850d."
+    - "Read-only evaluation against real XBHBE5/THDN0G returns task_worktree_blocked with no repair command; the foreign THDN README SHA-256 remained a1bb954199820e96629b6813433a22303839c7267903777e0f32d44fcd23ce5d before and after the probe."
+    - "No oversized-test baseline change was introduced. hotspots:check passes with route-decision.ts at 600, workflow-step.ts at 599, workflow-step.test.ts at 801, and baseline 10 entries / 11370 lines."
+commit:
+  hash: "0fbc850d8b66086349faaa868221bedd29a04440"
+  message: "🐛 5ZKP6T workflow: split foreign replica routing"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -100,8 +107,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS at 35656c7f992fc4e0cda0771bcbaba91109b17f88: strict divergent proof now requires the exact direct first-parent TODO predecessor, a valid TODO-to-DOING Start transition, and verified DONE source; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, and diff check passed."
+  -
+    type: "verify"
+    at: "2026-07-26T02:24:37.538Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS at 0fbc850d8b66086349faaa868221bedd29a04440: the hotspot-only route and operation split preserves strict foreign-replica proof behavior; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, diff check, and hotspots:check passed."
+  -
+    type: "status"
+    at: "2026-07-26T02:30:23.635Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T02:16:52.940Z"
+doc_updated_at: "2026-07-26T02:30:23.636Z"
 doc_updated_by: "CODER"
 description: "Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion."
 sections:
@@ -266,6 +286,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T02:24:37.538Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS at 0fbc850d8b66086349faaa868221bedd29a04440: the hotspot-only route and operation split preserves strict foreign-replica proof behavior; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, diff check, and hotspots:check passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:16:52.940Z, excerpt_hash=sha256:96932433b93f1fdfdee629869810a6e8b5afc26d89f23967f8b5e90cb3463c12
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+    - old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -298,6 +348,10 @@ sections:
     - Observation: The EVALUATOR correctly attributed the threshold regressions to 5ZKP: its diff raised route-decision.ts, workflow-step.ts, and workflow-step.test.ts across their baseline limits; the older README claim that the failure was pre-existing was inaccurate.
       Impact: The task could not pass the mandatory hotspot gate despite its strict provenance behavior being otherwise verified.
       Resolution: This rework extracts route-local replica inspection and repair-operation metadata, and moves exhaustive argv projection coverage into a focused test file. hotspots:check now passes with route-decision.ts at 599 and workflow-step.ts at 599 according to the gate, and workflow-step.test.ts no longer expands the oversized-test baseline.
+
+    - Observation: The strict provenance files are unchanged from the prior verified head. Direct read-only proof against the real XBHBE5/THDN0G state still resolves the THDN branch and returns proof:null; the foreign XBH README remains untouched. New route and workflow-operation extraction retains the same repair operation contract and the exhaustive argv projection test covers every registry operation.
+      Impact: The historical proof remains fail-closed while the previous fatal hotspots are below the >600 error threshold (route-decision 600 and workflow-step 599). hotspots:check reports no oversized-test baseline widening.
+      Resolution: No live repair, quarantine, publication, PR action, or integration was run. Next lifecycle owner is EVALUATOR for fresh quality review.
 extensions:
   workflow_route_baseline:
     start_head_sha: "220c7f110c07a14b2b055003cd338ad4c1c3503e"
@@ -476,6 +530,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T02:24:37.538Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS at 0fbc850d8b66086349faaa868221bedd29a04440: the hotspot-only route and operation split preserves strict foreign-replica proof behavior; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, diff check, and hotspots:check passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T02:16:52.940Z, excerpt_hash=sha256:96932433b93f1fdfdee629869810a6e8b5afc26d89f23967f8b5e90cb3463c12
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+- old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -512,3 +596,7 @@ DecisionContextRef:
 - Observation: The EVALUATOR correctly attributed the threshold regressions to 5ZKP: its diff raised route-decision.ts, workflow-step.ts, and workflow-step.test.ts across their baseline limits; the older README claim that the failure was pre-existing was inaccurate.
   Impact: The task could not pass the mandatory hotspot gate despite its strict provenance behavior being otherwise verified.
   Resolution: This rework extracts route-local replica inspection and repair-operation metadata, and moves exhaustive argv projection coverage into a focused test file. hotspots:check now passes with route-decision.ts at 599 and workflow-step.ts at 599 according to the gate, and workflow-step.test.ts no longer expands the oversized-test baseline.
+
+- Observation: The strict provenance files are unchanged from the prior verified head. Direct read-only proof against the real XBHBE5/THDN0G state still resolves the THDN branch and returns proof:null; the foreign XBH README remains untouched. New route and workflow-operation extraction retains the same repair operation contract and the exhaustive argv projection test covers every registry operation.
+  Impact: The historical proof remains fail-closed while the previous fatal hotspots are below the >600 error threshold (route-decision 600 and workflow-step 599). hotspots:check reports no oversized-test baseline widening.
+  Resolution: No live repair, quarantine, publication, PR action, or integration was run. Next lifecycle owner is EVALUATOR for fresh quality review.

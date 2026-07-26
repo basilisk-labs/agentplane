@@ -19,10 +19,9 @@ Stop work start from materializing foreign untracked task artifacts into a task 
 - Note:
 
 ```text
-PASS at 35656c7f992fc4e0cda0771bcbaba91109b17f88: strict divergent proof now requires the exact
-direct first-parent TODO predecessor, a valid TODO-to-DOING Start transition, and verified DONE
-source; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, and diff
-check passed.
+PASS at 0fbc850d8b66086349faaa868221bedd29a04440: the hotspot-only route and operation split
+preserves strict foreign-replica proof behavior; 68 focused tests, 6 CLI-core tests, typecheck,
+lint, lifecycle, routing, doctor, diff check, and hotspots:check passed.
 ```
 - Canonical workflow state lives in the task README.
 

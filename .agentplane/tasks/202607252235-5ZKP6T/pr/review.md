@@ -6,14 +6,14 @@ Created: 2026-07-25T22:39:31.309Z
 
 - Task: `202607252235-5ZKP6T`
 - Title: Prevent foreign task artifacts in branch_pr worktrees
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607252235-5ZKP6T/prevent-foreign-task-artifacts-in-branch-pr-work`
 - Canonical task record: `.agentplane/tasks/202607252235-5ZKP6T/README.md`
 
 ## Verification
 
 - State: ok
-- Note: PASS at 35656c7f992fc4e0cda0771bcbaba91109b17f88: strict divergent proof now requires the exact direct first-parent TODO predecessor, a valid TODO-to-DOING Start transition, and verified DONE source; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, and diff check passed.
+- Note: PASS at 0fbc850d8b66086349faaa868221bedd29a04440: the hotspot-only route and operation split preserves strict foreign-replica proof behavior; 68 focused tests, 6 CLI-core tests, typecheck, lint, lifecycle, routing, doctor, diff check, and hotspots:check passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
