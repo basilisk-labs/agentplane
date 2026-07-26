@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T22:58:48.977Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "Authority-only task commits incorrectly invalidate quality-review freshness and prevent the protected workflow from converging.",
+  "evaluated_sha": "d187f3fbbee9dd708eda74a2c96a60446c4efded",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "After a passing review, task authority grant changes only README revision and agentplane.side_effect_authority audit/grant records. resolveQualityReviewTargetSha classifies that README-only commit as independently reviewable metadata, so the route requires another review; the new review then needs another authority grant, creating a loop."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "agentplane task next-action 202607221849-NWVCAG --remote --explain (quality review stale after committed route.remote.refresh authority)",
+    "packages/agentplane/src/commands/shared/quality-review-target.ts"
+  ],
+  "missing_tests": [
+    "Add resolver coverage proving authority-only README advances preserve a prior reviewed target and a non-authority README change remains a fresh target."
+  ],
+  "hidden_assumptions": [
+    "Formal authority audit records are lifecycle-managed evidence, not semantic task metadata requiring a new evaluator judgement."
+  ],
+  "residual_risks": [
+    "Until fixed, no publication or integration is attempted; the route correctly fails closed but cannot make progress."
+  ]
+}
