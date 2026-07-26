@@ -6,14 +6,14 @@ Created: 2026-07-26T10:53:22.624Z
 
 - Task: `202607221848-VC4VVS`
 - Title: Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age`
 - Canonical task record: `.agentplane/tasks/202607221848-VC4VVS/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Rework at cd59e4d7 adds the approved AgentWorkOrder v2 production paths and passes declared checks.
+- State: needs_rework
+- Note: Generated CLI reference is stale after adding explicit remote options.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
