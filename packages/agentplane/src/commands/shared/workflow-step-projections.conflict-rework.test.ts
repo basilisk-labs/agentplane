@@ -169,6 +169,26 @@ describe("WorkflowStep conflict rework projections", () => {
         base_head_sha: "2222222222222222222222222222222222222222",
         merge_base_sha: "3333333333333333333333333333333333333333",
       },
+      base_context: {
+        provider_conflict_base_sha: "2222222222222222222222222222222222222222",
+        current_base_sha: "2222222222222222222222222222222222222222",
+        relation: "equal",
+        legacy_queue_base_sha: null,
+        legacy_queue_relation: "not_applicable",
+      },
+      route_evidence: {
+        kind: "current_queue",
+        queue: {
+          status: "handoff",
+          updated_at: "2026-07-26T00:00:00.000Z",
+          branch: taskBranch,
+          base: "main",
+          head_sha: resume.head_sha,
+          base_sha: "2222222222222222222222222222222222222222",
+          pr_number: 4626,
+        },
+        handoff: null,
+      },
       task_worktree: { path: taskWorktreePath, branch: taskBranch, state: "clean" },
       candidate_conflict_paths: {
         derivation: "paths_modified_on_both_sides_since_merge_base",
@@ -243,6 +263,99 @@ describe("WorkflowStep conflict rework projections", () => {
         instruction: "current_agent_performs_semantic_work",
       },
     });
+  });
+
+  it("routes an unadopted legacy conflict to an exact INTEGRATOR CLI operation before CODER", () => {
+    const token = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    const state = routeState({
+      blockers: [
+        {
+          code: "legacy_protected_conflict_adoption_required",
+          summary: "legacy protected PR conflict requires a formal recovery receipt",
+        },
+      ],
+      conflictRework: {
+        state: "adoption_required",
+        reason: "formal receipt is required",
+        adoption: {
+          token,
+          evidence: {
+            schema_version: 1,
+            kind: "legacy_protected_conflict_adoption",
+            task_id: task.id,
+            source_handoff: {
+              created_at: "2026-07-25T23:59:34.585Z",
+              from_role: "INTEGRATOR",
+              route_kind: "protected_base_integrate",
+              route_status: "awaiting_github_merge",
+              provider_base_sha_state: "absent",
+              branch: taskBranch,
+              base: "main",
+              head_sha: resume.head_sha,
+              pr_branch: taskBranch,
+              pr_number: 4626,
+            },
+            provider: {
+              pr_number: 4626,
+              branch: taskBranch,
+              head_sha: resume.head_sha,
+              base: "main",
+              base_sha: "2222222222222222222222222222222222222222",
+            },
+            queue: {
+              branch: taskBranch,
+              base: "main",
+              head_sha: resume.head_sha,
+              base_sha: "3333333333333333333333333333333333333333",
+              pr_number: 4626,
+              updated_at: "2026-07-26T05:24:58.052Z",
+            },
+            topology: {
+              provider_base_sha: "2222222222222222222222222222222222222222",
+              queue_base_sha: "3333333333333333333333333333333333333333",
+              observed_current_base_sha: "4444444444444444444444444444444444444444",
+              provider_to_queue: "ancestor_or_equal",
+              queue_to_current: "ancestor_or_equal",
+              provider_to_current: "strict_ancestor",
+            },
+          },
+        },
+      },
+    });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({
+      state,
+      step,
+      paths: { baseCheckoutPath: "/repo", taskWorktreePath },
+    });
+
+    expect(step).toMatchObject({
+      kind: "cli_operation",
+      id: "integration.adopt_legacy_protected_conflict",
+      authoritativeCheckout: "base_checkout",
+      operation: {
+        id: "integration.adopt_legacy_protected_conflict",
+        params: { taskId: task.id, expectedAdoptionToken: token },
+      },
+    });
+    expect(oracle.mutationPathHint).toBe("/repo");
+    expect(packet).toMatchObject({
+      actionKind: "local_command",
+      recommendedRole: "INTEGRATOR",
+      safeToMutate: true,
+      exactArgv: [
+        "agentplane",
+        "integrate",
+        "queue",
+        "adopt-legacy-protected-conflict",
+        task.id,
+        "--expect-adoption-token",
+        token,
+      ],
+      staleStateCheck: `agentplane task next-action ${task.id} --remote --explain`,
+      evidenceMissing: ["legacy_protected_conflict_adoption_receipt"],
+    });
+    expect(step.kind === "agent_episode").toBe(false);
   });
 
   it("fails closed when a provider conflict lacks a usable task worktree", () => {

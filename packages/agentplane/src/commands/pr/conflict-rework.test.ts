@@ -177,6 +177,18 @@ describe("provider conflict rework packet", () => {
           state: "protected_pull_request_merge",
         },
         local: { branch_head_sha: headSha, base_head_sha: baseSha, merge_base_sha: mergeBase },
+        base_context: {
+          provider_conflict_base_sha: baseSha,
+          current_base_sha: baseSha,
+          relation: "equal",
+          legacy_queue_base_sha: null,
+          legacy_queue_relation: "not_applicable",
+        },
+        route_evidence: {
+          kind: "current_queue",
+          queue: { status: "handoff", base_sha: baseSha },
+          handoff: null,
+        },
         task_worktree: { path: cleanWorktree.worktreePath, state: "clean" },
         candidate_conflict_paths: {
           derivation: "paths_modified_on_both_sides_since_merge_base",

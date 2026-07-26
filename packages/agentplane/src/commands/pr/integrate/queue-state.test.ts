@@ -7,16 +7,19 @@ import { describe, expect, it } from "vitest";
 import type { CliError } from "../../../shared/errors.js";
 import {
   claimNextQueuedEntry,
+  createLegacyProtectedConflictAdoptionReceipt,
   emptyIntegrationQueue,
   expireClaimedEntries,
   markQueueEntry,
   queueBaseConflictReason,
   inspectIntegrationQueueMutex,
   readIntegrationQueue,
+  recordLegacyProtectedConflictAdoption,
   reserveQueueEntryForIntegration,
   withIntegrationQueueMutex,
   upsertQueuedEntry,
   type QueueClock,
+  type IntegrationQueueEntry,
 } from "./queue-state.js";
 
 function clock(iso: string): QueueClock {
@@ -35,6 +38,71 @@ function enqueue(taskId: string, priority = 0) {
     pr_url: null,
     priority,
   };
+}
+
+function legacyAdoptionReceipt(entry: IntegrationQueueEntry) {
+  if (!entry.pr_number) throw new Error("legacy receipt fixture requires a PR number");
+  return createLegacyProtectedConflictAdoptionReceipt({
+    adoptedAt: "2026-07-26T05:30:00.000Z",
+    evidence: {
+      schema_version: 1,
+      kind: "legacy_protected_conflict_adoption",
+      task_id: entry.task_id,
+      source_handoff: {
+        created_at: "2026-07-25T23:59:34.585Z",
+        from_role: "INTEGRATOR",
+        route_kind: "protected_base_integrate",
+        route_status: "awaiting_github_merge",
+        provider_base_sha_state: "absent",
+        branch: entry.branch,
+        base: entry.base,
+        head_sha: entry.head_sha,
+        pr_branch: entry.branch,
+        pr_number: entry.pr_number,
+      },
+      provider: {
+        pr_number: entry.pr_number,
+        branch: entry.branch,
+        head_sha: entry.head_sha,
+        base: entry.base,
+        base_sha: "provider-base",
+      },
+      queue: {
+        branch: entry.branch,
+        base: entry.base,
+        head_sha: entry.head_sha,
+        base_sha: entry.base_sha,
+        pr_number: entry.pr_number,
+        updated_at: entry.updated_at,
+      },
+      topology: {
+        provider_base_sha: "provider-base",
+        queue_base_sha: entry.base_sha,
+        observed_current_base_sha: "current-base",
+        provider_to_queue: "ancestor_or_equal",
+        queue_to_current: "ancestor_or_equal",
+        provider_to_current: "strict_ancestor",
+      },
+    },
+  });
+}
+
+function legacyReworkEntry(): IntegrationQueueEntry {
+  const queued = upsertQueuedEntry(
+    emptyIntegrationQueue(),
+    { ...enqueue("T-legacy"), pr_number: 4626 },
+    clock("2026-07-26T05:24:00.000Z"),
+  );
+  const rework = markQueueEntry(
+    queued,
+    "T-legacy",
+    "rework",
+    "operator audit text only",
+    clock("2026-07-26T05:24:58.052Z"),
+  );
+  const entry = rework.entries[0];
+  if (!entry) throw new Error("missing legacy rework fixture");
+  return entry;
 }
 
 async function makeRoot(name: string): Promise<string> {
@@ -243,6 +311,56 @@ describe("integration queue state", () => {
     });
   });
 
+  it("records a structured legacy adoption only for the exact rework snapshot and clears it on ordinary transitions", () => {
+    const entry = legacyReworkEntry();
+    const receipt = legacyAdoptionReceipt(entry);
+    const recorded = recordLegacyProtectedConflictAdoption(
+      { schema_version: 1, entries: [entry] },
+      receipt,
+    );
+
+    expect(recorded.entries[0]?.legacy_protected_conflict_adoption).toEqual(receipt);
+    expect(recordLegacyProtectedConflictAdoption(recorded, receipt)).toEqual(recorded);
+
+    const released = markQueueEntry(
+      recorded,
+      entry.task_id,
+      "queued",
+      "new ordinary queue transition",
+      clock("2026-07-26T05:31:00.000Z"),
+    );
+    expect(released.entries[0]?.legacy_protected_conflict_adoption).toBeUndefined();
+
+    const requeued = upsertQueuedEntry(
+      recorded,
+      { ...enqueue(entry.task_id), pr_number: entry.pr_number },
+      clock("2026-07-26T05:31:00.000Z"),
+    );
+    expect(requeued.entries[0]?.legacy_protected_conflict_adoption).toBeUndefined();
+  });
+
+  it("fails closed when an adoption receipt does not match the live queue snapshot", () => {
+    const entry = legacyReworkEntry();
+    const receipt = legacyAdoptionReceipt(entry);
+    const changed = { ...entry, updated_at: "2026-07-26T05:31:00.000Z" };
+
+    expect(() =>
+      recordLegacyProtectedConflictAdoption({ schema_version: 1, entries: [changed] }, receipt),
+    ).toThrowError(expect.objectContaining({ code: "E_GIT_RACE" }));
+
+    expect(() =>
+      recordLegacyProtectedConflictAdoption(
+        { schema_version: 1, entries: [entry] },
+        { ...receipt, adopted_at: "" },
+      ),
+    ).toThrowError(
+      expect.objectContaining({
+        code: "E_VALIDATION",
+        context: { reason_code: "legacy_protected_conflict_adoption_receipt_invalid" },
+      }),
+    );
+  });
+
   it("invalidates a queued entry whenever the pinned base moves", () => {
     const entry = {
       ...enqueue("T-1"),
@@ -435,6 +553,37 @@ describe("integration queue state", () => {
           },
         ],
       },
+    },
+    {
+      name: "legacy adoption outside matching rework entry",
+      payload: (() => {
+        const entry = legacyReworkEntry();
+        const receipt = legacyAdoptionReceipt(entry);
+        return {
+          schema_version: 1,
+          entries: [{ ...entry, status: "queued", legacy_protected_conflict_adoption: receipt }],
+        };
+      })(),
+    },
+    {
+      name: "legacy adoption with a forged token",
+      payload: (() => {
+        const entry = legacyReworkEntry();
+        const receipt = legacyAdoptionReceipt(entry);
+        return {
+          schema_version: 1,
+          entries: [
+            {
+              ...entry,
+              legacy_protected_conflict_adoption: {
+                ...receipt,
+                evidence_token:
+                  "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+              },
+            },
+          ],
+        };
+      })(),
     },
   ])("fails closed for $name", async ({ payload }) => {
     const root = await makeRoot("integration-invalid-state");

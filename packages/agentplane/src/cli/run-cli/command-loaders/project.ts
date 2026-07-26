@@ -248,6 +248,10 @@ export const loadIntegrateQueueReleaseSpec = (deps: RunDeps) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueReleaseHandler(deps.getCtx),
   );
+export const loadIntegrateQueueAdoptLegacyProtectedConflictSpec = (deps: RunDeps) =>
+  import("../../../commands/integrate-queue.command.js").then((m) =>
+    m.makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(deps.getCtx),
+  );
 export const loadIntegrateQueueRunNextSpec = (deps: RunDeps) =>
   import("../../../commands/integrate-queue.command.js").then((m) =>
     m.makeRunIntegrateQueueRunNextHandler(deps.getCtx),

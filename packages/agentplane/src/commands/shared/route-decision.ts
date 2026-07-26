@@ -85,6 +85,7 @@ function routeGatePriority(code: string): number {
     code === "missing_pr_branch" ||
     code === "runner_alive" ||
     code === "implementation_rework_required" ||
+    code === "legacy_protected_conflict_adoption_required" ||
     code === "provider_merge_conflict" ||
     code === "provider_conflict_context_invalid"
   ) {

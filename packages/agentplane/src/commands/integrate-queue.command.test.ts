@@ -7,6 +7,8 @@ const mocks = vi.hoisted(() => ({
   inMutex: false,
   readIntegrationQueue: vi.fn(),
   writeIntegrationQueue: vi.fn(),
+  createLegacyProtectedConflictAdoptionReceipt: vi.fn(),
+  recordLegacyProtectedConflictAdoption: vi.fn(),
   claimNextQueuedEntry: vi.fn(),
   markQueueEntry: vi.fn(),
   rejectIfQueuedEntryIsStale: vi.fn(),
@@ -18,6 +20,9 @@ const mocks = vi.hoisted(() => ({
   queueState: null as unknown,
   cmdIntegrate: vi.fn(),
   waitForHostedChecks: vi.fn(),
+  resolvePrFlowStatus: vi.fn(),
+  prepareConflictReworkPacket: vi.fn(),
+  inspectTaskWorktreeCleanliness: vi.fn(),
   output: {
     json: vi.fn(),
     line: vi.fn(),
@@ -28,6 +33,8 @@ const mocks = vi.hoisted(() => ({
 vi.mock("./pr/integrate/queue-state.js", () => ({
   readIntegrationQueue: mocks.readIntegrationQueue,
   writeIntegrationQueue: mocks.writeIntegrationQueue,
+  createLegacyProtectedConflictAdoptionReceipt: mocks.createLegacyProtectedConflictAdoptionReceipt,
+  recordLegacyProtectedConflictAdoption: mocks.recordLegacyProtectedConflictAdoption,
   claimNextQueuedEntry: mocks.claimNextQueuedEntry,
   markQueueEntry: mocks.markQueueEntry,
   upsertQueuedEntry: mocks.upsertQueuedEntry,
@@ -64,6 +71,13 @@ vi.mock("./integrate-queue-doctor-command.js", () => ({
 vi.mock("./pr/hosted-checks.js", () => ({
   waitForHostedChecks: mocks.waitForHostedChecks,
 }));
+vi.mock("./pr/flow-status.js", () => ({ resolvePrFlowStatus: mocks.resolvePrFlowStatus }));
+vi.mock("./pr/conflict-rework.js", () => ({
+  prepareConflictReworkPacket: mocks.prepareConflictReworkPacket,
+}));
+vi.mock("./shared/task-worktree-cleanliness.js", () => ({
+  inspectTaskWorktreeCleanliness: mocks.inspectTaskWorktreeCleanliness,
+}));
 vi.mock("./shared/git-ops.js", () => ({ gitRevParse: mocks.gitRevParse }));
 vi.mock("../cli/output.js", () => ({
   createCliEmitter: () => mocks.output,
@@ -71,6 +85,7 @@ vi.mock("../cli/output.js", () => ({
 }));
 
 import {
+  makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler,
   makeRunIntegrateQueueClaimHandler,
   makeRunIntegrateQueueEnqueueHandler,
   makeRunIntegrateQueueRunNextHandler,
@@ -120,6 +135,48 @@ function runNextParsed(overrides: Record<string, unknown> = {}) {
   } as never;
 }
 
+const adoptionToken = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+const adoptionEvidence = {
+  schema_version: 1,
+  kind: "legacy_protected_conflict_adoption",
+  task_id: "T-1",
+  source_handoff: {
+    created_at: "2026-07-25T23:59:34.585Z",
+    from_role: "INTEGRATOR",
+    route_kind: "protected_base_integrate",
+    route_status: "awaiting_github_merge",
+    provider_base_sha_state: "absent",
+    branch: entry.branch,
+    base: entry.base,
+    head_sha: entry.head_sha,
+    pr_branch: entry.branch,
+    pr_number: entry.pr_number,
+  },
+  provider: {
+    pr_number: entry.pr_number,
+    branch: entry.branch,
+    head_sha: entry.head_sha,
+    base: entry.base,
+    base_sha: "provider-base",
+  },
+  queue: {
+    branch: entry.branch,
+    base: entry.base,
+    head_sha: entry.head_sha,
+    base_sha: entry.base_sha,
+    pr_number: entry.pr_number,
+    updated_at: entry.updated_at,
+  },
+  topology: {
+    provider_base_sha: "provider-base",
+    queue_base_sha: entry.base_sha,
+    observed_current_base_sha: "current-base",
+    provider_to_queue: "ancestor_or_equal",
+    queue_to_current: "ancestor_or_equal",
+    provider_to_current: "strict_ancestor",
+  },
+};
+
 describe("integrate queue claim publication guard", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -139,6 +196,25 @@ describe("integrate queue claim publication guard", () => {
     });
     mocks.cmdIntegrate.mockResolvedValue(0);
     mocks.waitForHostedChecks.mockResolvedValue(undefined);
+    mocks.resolvePrFlowStatus.mockResolvedValue({ branch: { name: entry.branch } });
+    mocks.inspectTaskWorktreeCleanliness.mockResolvedValue({
+      state: "clean",
+      branch: entry.branch,
+      worktreePath: "/repo/.agentplane/worktrees/T-1",
+      changedPaths: [],
+    });
+    mocks.prepareConflictReworkPacket.mockResolvedValue({
+      state: "adoption_required",
+      reason: "explicit receipt required",
+      adoption: { evidence: adoptionEvidence, token: adoptionToken },
+    });
+    mocks.createLegacyProtectedConflictAdoptionReceipt.mockReturnValue({
+      ...adoptionEvidence,
+      adopted_at: "2026-07-26T05:30:00.000Z",
+      adopted_by: "INTEGRATOR",
+      evidence_token: adoptionToken,
+    });
+    mocks.recordLegacyProtectedConflictAdoption.mockImplementation((queue: unknown) => queue);
     mocks.markQueueEntry.mockImplementation(
       (queue: unknown, _taskId: string, status: string, reason?: string) => ({
         ...(queue as object),
@@ -174,6 +250,50 @@ describe("integrate queue claim publication guard", () => {
       hostedPr: { prNumber: entry.pr_number, prUrl: entry.pr_url },
     });
     mocks.gitRevParse.mockResolvedValue(entry.base_sha);
+  });
+
+  it("records legacy conflict adoption only after recomputing the route inside the queue mutex", async () => {
+    const handler = makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(commandContext);
+
+    await expect(
+      handler({ cwd: "/repo", rootOverride: null } as never, {
+        taskId: "T-1",
+        expectedAdoptionToken: adoptionToken,
+      }),
+    ).resolves.toBe(0);
+
+    expect(mocks.prepareConflictReworkPacket).toHaveBeenCalledOnce();
+    expect(mocks.createLegacyProtectedConflictAdoptionReceipt).toHaveBeenCalledWith({
+      evidence: adoptionEvidence,
+    });
+    expect(mocks.recordLegacyProtectedConflictAdoption).toHaveBeenCalledWith(
+      mocks.queueState,
+      expect.objectContaining({ evidence_token: adoptionToken }),
+    );
+    expect(mocks.writeIntegrationQueue).toHaveBeenCalledOnce();
+    expect(mocks.output.success).toHaveBeenCalledWith(
+      "legacy protected-conflict adoption",
+      "T-1",
+      "recorded; recompute task next-action",
+    );
+  });
+
+  it("rejects a stale legacy adoption token without recording queue evidence", async () => {
+    const handler = makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(commandContext);
+
+    await expect(
+      handler({ cwd: "/repo", rootOverride: null } as never, {
+        taskId: "T-1",
+        expectedAdoptionToken:
+          "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "legacy_protected_conflict_adoption_stale" },
+    });
+
+    expect(mocks.recordLegacyProtectedConflictAdoption).not.toHaveBeenCalled();
+    expect(mocks.writeIntegrationQueue).not.toHaveBeenCalled();
   });
 
   it("checks the upstream and hosted PR head after releasing the queue mutex", async () => {

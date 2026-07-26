@@ -61,6 +61,7 @@ import { workStartSpec } from "../../../commands/branch/work-start.command.js";
 import { workResumeSpec } from "../../../commands/branch/work-resume.command.js";
 import { integrateSpec } from "../../../commands/integrate.spec.js";
 import {
+  integrateQueueAdoptLegacyProtectedConflictSpec,
   integrateQueueClaimSpec,
   integrateQueueDoctorSpec,
   integrateQueueEnqueueSpec,
@@ -191,6 +192,7 @@ import {
   loadIntegrateQueueListSpec,
   loadIntegrateQueueClaimSpec,
   loadIntegrateQueueDoctorSpec,
+  loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
   loadIntegrateQueueReleaseSpec,
   loadIntegrateQueueRunNextSpec,
   loadAcrSpec,
@@ -375,5 +377,8 @@ export const PROJECT_COMMANDS = [
   declareCommand(integrateQueueDoctorSpec, { load: loadIntegrateQueueDoctorSpec }),
   declareCommand(integrateQueueClaimSpec, { load: loadIntegrateQueueClaimSpec }),
   declareCommand(integrateQueueReleaseSpec, { load: loadIntegrateQueueReleaseSpec }),
+  declareCommand(integrateQueueAdoptLegacyProtectedConflictSpec, {
+    load: loadIntegrateQueueAdoptLegacyProtectedConflictSpec,
+  }),
   declareCommand(integrateQueueRunNextSpec, { load: loadIntegrateQueueRunNextSpec }),
 ] as const satisfies readonly CommandEntry[];

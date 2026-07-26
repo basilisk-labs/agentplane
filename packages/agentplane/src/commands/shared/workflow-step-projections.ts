@@ -66,6 +66,9 @@ function blockerEvidence(blockers: WorkflowStep["blockers"]): string[] {
     if (blocker.code === "pr_head_unpublished") missing.add("published_pr_head");
     if (blocker.code === "hosted_pr_head_mismatch") missing.add("aligned_hosted_pr_head");
     if (blocker.code === "provider_pr_unavailable") missing.add("live_provider_pr_state");
+    if (blocker.code === "legacy_protected_conflict_adoption_required") {
+      missing.add("legacy_protected_conflict_adoption_receipt");
+    }
     if (blocker.code === "provider_merge_conflict") missing.add("fresh_conflict_rework_packet");
     if (blocker.code === "provider_conflict_context_invalid") {
       missing.add("fresh_conflict_rework_packet");
@@ -137,7 +140,8 @@ function recomputeWithRemoteTruth(step: WorkflowStep): boolean {
   return (
     (step.kind === "cli_operation" &&
       (step.operation.id === "provider.pr.refresh" ||
-        step.operation.id === "route.remote.refresh")) ||
+        step.operation.id === "route.remote.refresh" ||
+        step.operation.id === "integration.adopt_legacy_protected_conflict")) ||
     (step.kind === "agent_episode" && step.id === "agent.provider_conflict_rework")
   );
 }
