@@ -87,6 +87,24 @@ export type AgentWorkOrderInvocationReadiness =
   | { status: "ready"; current_state_fingerprint: StateFingerprint }
   | { status: "rejected"; rejection: AgentWorkOrderPreparationRejection };
 
+/**
+ * One central remote-policy derivation for every AgentWorkOrder projection.
+ * `undefined` intentionally means that a surface supplied no override: the
+ * branch_pr route default is then used. An explicit `false` remains available
+ * only to internal callers that must suppress a provider probe.
+ */
+function resolveAgentWorkOrderRemotePreparation(opts: {
+  workflow_mode: "direct" | "branch_pr";
+  include_remote: boolean | undefined;
+}): { include_remote: boolean; remote_enabled: boolean } {
+  const includeRemote =
+    opts.include_remote === undefined ? opts.workflow_mode === "branch_pr" : opts.include_remote;
+  return {
+    include_remote: includeRemote,
+    remote_enabled: opts.workflow_mode === "branch_pr" && includeRemote,
+  };
+}
+
 export function requirePreparedAgentWorkOrder(
   result: AgentWorkOrderPreparationResult,
 ): PreparedAgentWorkOrder {
@@ -134,10 +152,13 @@ export async function prepareAgentWorkOrder(opts: {
   execution_context?: ReadOnlyExecutionContext;
   execution_profile?: ResolvedExecutionProfileRuntime;
 }): Promise<AgentWorkOrderPreparationResult> {
-  const includeRemote = opts.include_remote;
   const includeRunnerState = opts.include_runner_state;
   const executionContext =
     opts.execution_context ?? (await makeReadOnlyExecutionContext(opts.command_ctx));
+  const remotePreparation = resolveAgentWorkOrderRemotePreparation({
+    workflow_mode: executionContext.config.workflow_mode,
+    include_remote: opts.include_remote,
+  });
   const executionProfile = consumeExecutionProfileBudget({
     runtime: opts.execution_profile ?? executionContext.executionProfile,
     phase: "discovery",
@@ -179,7 +200,7 @@ export async function prepareAgentWorkOrder(opts: {
       ctx: executionContext.command,
       cwd: opts.cwd,
       rootOverride: opts.root_override ?? null,
-      includeRemote,
+      includeRemote: remotePreparation.include_remote,
       includeRunnerState,
       taskId: opts.task_id,
     });
@@ -210,9 +231,7 @@ export async function prepareAgentWorkOrder(opts: {
       work_order_id: canonicalWorkOrder.work_order_id,
       state_fingerprint: structuredClone(canonicalWorkOrder.state_fingerprint),
       remote_policy: buildAgentWorkOrderRemotePolicy({
-        include_remote: includeRemote,
-        remote_enabled:
-          executionContext.config.workflow_mode === "branch_pr" && includeRemote !== false,
+        remote_enabled: remotePreparation.remote_enabled,
         decision: routeDecision,
       }),
       route: projectAgentWorkOrderRoute(routeDecision),
@@ -232,7 +251,7 @@ export async function prepareAgentWorkOrder(opts: {
         execution_context: executionContext,
         execution_profile: executionProfile,
         route_inputs: {
-          include_remote: includeRemote,
+          include_remote: remotePreparation.include_remote,
           include_runner_state: includeRunnerState,
         },
       },

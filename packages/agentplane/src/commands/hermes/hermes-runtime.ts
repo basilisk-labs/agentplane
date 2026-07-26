@@ -119,7 +119,6 @@ export async function routePacket(opts: {
   cwd: string;
   rootOverride: string | null;
   taskId: string;
-  includeRemote: boolean;
 }) {
   const preparedWorkOrder = requirePreparedAgentWorkOrder(
     await prepareAgentWorkOrder({
@@ -127,7 +126,6 @@ export async function routePacket(opts: {
       cwd: opts.cwd,
       root_override: opts.rootOverride,
       task_id: opts.taskId,
-      include_remote: opts.includeRemote,
     }),
   );
   const fullTask = preparedWorkOrder.task_envelope.task.data;

@@ -1,5 +1,7 @@
+import { execFile } from "node:child_process";
 import { access, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import { defaultConfig } from "@agentplaneorg/core/config";
 import {
@@ -23,6 +25,8 @@ import { createDoingRunnerTask } from "./task-run-lifecycle.testkit.js";
 import { prepareTaskRunnerExecution } from "./task-run.js";
 
 installRunCliIntegrationHarness();
+
+const execFileAsync = promisify(execFile);
 
 type WorkOrderView = {
   work_order: {
@@ -58,13 +62,33 @@ async function captureFailure(argv: string[]): Promise<{ code: number; stderr: s
   }
 }
 
-async function createPreparedTask(root: string): Promise<string> {
-  await writeConfig(root, defaultConfig());
+async function createPreparedTask(
+  root: string,
+  workflowMode: "direct" | "branch_pr" = "direct",
+): Promise<string> {
+  const config = defaultConfig();
+  config.workflow_mode = workflowMode;
+  await writeConfig(root, config);
   return await createDoingRunnerTask({
     root,
     title: "Canonical AgentWorkOrder surface fixture",
     plan_text: "Prepare one canonical AgentWorkOrder for every CLI surface.",
   });
+}
+
+async function createBranchPrTaskWorktree(root: string, taskId: string): Promise<string> {
+  await execFileAsync("git", ["add", "-A"], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", "test: seed canonical work order task"], {
+    cwd: root,
+  });
+  const worktree = path.join(root, ".agentplane", "worktrees", `${taskId}-canonical-work-order`);
+  await mkdir(path.dirname(worktree), { recursive: true });
+  await execFileAsync(
+    "git",
+    ["worktree", "add", "-b", `task/${taskId}/canonical-work-order`, worktree],
+    { cwd: root },
+  );
+  return worktree;
 }
 
 function canonicalWorkOrderSignature(view: WorkOrderView): object {
@@ -139,58 +163,63 @@ function duplicatePromptOverlayBundle(): Record<string, unknown> {
 }
 
 describe("AgentWorkOrder v2 surface integration", () => {
-  it("renders one canonical work order through brief, next-action, runner, and Hermes", async () => {
-    const root = await mkGitRepoRoot();
-    const taskId = await createPreparedTask(root);
-    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+  it("renders one canonical work order through real brief, next-action, runner, and Hermes surfaces", async () => {
+    for (const workflowMode of ["direct", "branch_pr"] as const) {
+      const root = await mkGitRepoRoot();
+      const taskId = await createPreparedTask(root, workflowMode);
+      const worktree =
+        workflowMode === "branch_pr" ? await createBranchPrTaskWorktree(root, taskId) : root;
+      const commandCtx = await loadCommandContext({ cwd: worktree, rootOverride: worktree });
 
-    const brief = (await captureJsonRun([
-      "task",
-      "brief",
-      taskId,
-      "--json",
-      "--root",
-      root,
-    ])) as WorkOrderView & { contract: unknown };
-    const nextAction = (await captureJsonRun([
-      "task",
-      "next-action",
-      taskId,
-      "--json",
-      "--root",
-      root,
-    ])) as WorkOrderView & { workflowStep: unknown };
-    const hermes = (await routePacket({
-      ctx: commandCtx,
-      cwd: root,
-      rootOverride: root,
-      taskId,
-      includeRemote: false,
-    })) as WorkOrderView;
-    const runner = await prepareTaskRunnerExecution({
-      ctx: commandCtx,
-      cwd: root,
-      rootOverride: root,
-      task_id: taskId,
-      mode: "dry_run",
-      run_id: "work-order-surface-fixture",
-    });
-    const runnerView: WorkOrderView = {
-      work_order: runner.bundle.work_order!,
-      work_order_preparation: runner.bundle.work_order_preparation!,
-    };
+      const brief = (await captureJsonRun([
+        "task",
+        "brief",
+        taskId,
+        "--json",
+        "--root",
+        worktree,
+      ])) as WorkOrderView & { contract: unknown };
+      const nextAction = (await captureJsonRun([
+        "task",
+        "next-action",
+        taskId,
+        "--json",
+        "--root",
+        worktree,
+      ])) as WorkOrderView & { workflowStep: unknown };
+      const hermes = (await captureJsonRun([
+        "hermes",
+        "supervise",
+        taskId,
+        "--json",
+        "--root",
+        worktree,
+      ])) as WorkOrderView;
+      const runner = await prepareTaskRunnerExecution({
+        ctx: commandCtx,
+        cwd: worktree,
+        rootOverride: worktree,
+        task_id: taskId,
+        mode: "dry_run",
+        run_id: `work-order-surface-${workflowMode}`,
+      });
+      const runnerView: WorkOrderView = {
+        work_order: runner.bundle.work_order!,
+        work_order_preparation: runner.bundle.work_order_preparation!,
+      };
 
-    const expected = canonicalWorkOrderSignature(brief);
-    expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
-    expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
-    expect(canonicalWorkOrderSignature(runnerView)).toEqual(expected);
+      const expected = canonicalWorkOrderSignature(brief);
+      expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
+      expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
+      expect(canonicalWorkOrderSignature(runnerView)).toEqual(expected);
 
-    // V1 remains an explicit outer compatibility view; the embedded V2 surface has one casing.
-    expect(brief.contract).toBeTruthy();
-    expect(nextAction.workflowStep).toBeTruthy();
-    for (const view of [brief, nextAction, hermes, runnerView]) {
-      expectSnakeCaseOnly(view.work_order);
-      expectSnakeCaseOnly(view.work_order_preparation);
+      // V1 remains an explicit outer compatibility view; the embedded V2 surface has one casing.
+      expect(brief.contract).toBeTruthy();
+      expect(nextAction.workflowStep).toBeTruthy();
+      for (const view of [brief, nextAction, hermes, runnerView]) {
+        expectSnakeCaseOnly(view.work_order);
+        expectSnakeCaseOnly(view.work_order_preparation);
+      }
     }
   });
 
@@ -222,7 +251,6 @@ describe("AgentWorkOrder v2 surface integration", () => {
         cwd: root,
         rootOverride: root,
         taskId,
-        includeRemote: false,
       }),
     ).rejects.toThrow(/Runner prompt module compilation failed/u);
     await expect(

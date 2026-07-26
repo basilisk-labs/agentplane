@@ -160,7 +160,7 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         cwd: ctx.cwd,
         root_override: ctx.rootOverride ?? null,
         task_id: parsed.taskId,
-        include_remote: parsed.remote,
+        ...(parsed.remote ? { include_remote: true } : {}),
       }),
     );
     const decision = preparedWorkOrder.route_decision;
