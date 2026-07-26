@@ -298,6 +298,20 @@ async function commitForeignReadme(
   await git(fixture.foreignWorktree, ["commit", "--no-verify", "-m", message]);
 }
 
+async function commitForeignTaskStates(
+  fixture: ForeignTaskReadmeReplicaFixture,
+  states: readonly (readonly ["TODO" | "DOING" | "DONE", number])[],
+  label: string,
+): Promise<void> {
+  for (const [status, revision] of states) {
+    await commitForeignReadme(
+      fixture,
+      taskReadme({ taskId: FOREIGN_TASK_ID, status, revision }),
+      `test: ${label} ${status} ${revision}`,
+    );
+  }
+}
+
 async function removeForeignReadme(
   fixture: ForeignTaskReadmeReplicaFixture,
   message: string,
@@ -456,27 +470,24 @@ async function withUnavailableGh<T>(baseRoot: string, fn: () => Promise<T>): Pro
 }
 
 describe("foreign task README replica repair", () => {
-  it("accepts only exact bytes or the exact TODO-to-DOING start-ready transition", () => {
+  it("classifies only byte-identical replicas without historical provenance", () => {
     const todo = taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 });
     const doing = taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 });
 
     expect(
       classifyForeignTaskReadmeReplicaText({
-        foreignTaskId: FOREIGN_TASK_ID,
         replicaText: doing,
         sourceText: doing,
       }),
     ).toBe("byte_identical");
     expect(
       classifyForeignTaskReadmeReplicaText({
-        foreignTaskId: FOREIGN_TASK_ID,
         replicaText: todo,
         sourceText: doing,
       }),
-    ).toBe("start_ready_replica");
+    ).toBeNull();
     expect(
       classifyForeignTaskReadmeReplicaText({
-        foreignTaskId: FOREIGN_TASK_ID,
         replicaText: taskReadme({
           taskId: FOREIGN_TASK_ID,
           status: "TODO",
@@ -488,77 +499,75 @@ describe("foreign task README replica repair", () => {
     ).toBeNull();
   });
 
-  it.each([
-    ["start_ready", "start_ready_replica"],
-    ["byte_identical", "byte_identical"],
-  ] as const)(
-    "removes one proven %s replica through an explicit target worktree root",
-    async (mode, proof) => {
-      const fixture = await createFixture(mode);
-      const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+  it("removes a byte-identical replica through an explicit target worktree root", async () => {
+    const fixture = await createFixture("byte_identical");
+    const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
 
-      expect(path.resolve(ctx.resolvedProject.gitRoot)).toBe(path.resolve(fixture.targetWorktree));
-      const inspection = await inspectForeignTaskReadmeReplicaRepair({
+    expect(path.resolve(ctx.resolvedProject.gitRoot)).toBe(path.resolve(fixture.targetWorktree));
+    await expect(
+      inspectForeignTaskReadmeReplicaRepair({
         ctx,
         activeTaskId: ACTIVE_TASK_ID,
         taskWorktreePath: fixture.targetWorktree,
         baseBranch: "main",
-      });
-      expect(inspection).toMatchObject({
-        state: "eligible",
-        foreignTaskId: FOREIGN_TASK_ID,
-        proof,
-      });
+      }),
+    ).resolves.toMatchObject({
+      state: "eligible",
+      foreignTaskId: FOREIGN_TASK_ID,
+      proof: "byte_identical",
+    });
 
-      await expect(
-        applyForeignTaskReadmeReplicaRepair({
-          ctx,
-          activeTaskId: ACTIVE_TASK_ID,
-          baseBranch: "main",
-        }),
-      ).resolves.toMatchObject({ state: "applied", foreignTaskId: FOREIGN_TASK_ID });
-      await expect(readFile(fixture.replicaPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
-      await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain('status: "DOING"');
-    },
-  );
+    await expect(
+      applyForeignTaskReadmeReplicaRepair({
+        ctx,
+        activeTaskId: ACTIVE_TASK_ID,
+        baseBranch: "main",
+      }),
+    ).resolves.toMatchObject({ state: "applied", foreignTaskId: FOREIGN_TASK_ID });
+    await expect(readFile(fixture.replicaPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain('status: "DOING"');
+  });
 
-  it.each([
-    ["recorded TODO snapshot", undefined],
-    ["initial branch Start snapshot", "missing"],
-  ] as const)(
-    "removes a proven historical replica with a %s",
-    async (_description, initialSnapshot) => {
-      const fixture = await createHistoricalFixture({ initialSnapshot });
-      const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+  it("does not authorize a live TODO-to-DOING semantic replica without Git provenance", async () => {
+    const fixture = await createFixture("start_ready");
+    const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
 
-      await expect(
-        inspectForeignTaskReadmeReplicaRepair({
-          ctx,
-          activeTaskId: ACTIVE_TASK_ID,
-          taskWorktreePath: fixture.targetWorktree,
-          baseBranch: "main",
-        }),
-      ).resolves.toMatchObject({
-        state: "eligible",
-        foreignTaskId: FOREIGN_TASK_ID,
-        proof: "historical_start_ready_replica",
-      });
+    await expectHistoricalRepairRejected(fixture);
+    await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain('status: "DOING"');
+    expect(path.resolve(ctx.resolvedProject.gitRoot)).toBe(path.resolve(fixture.targetWorktree));
+  });
 
-      await expect(
-        applyForeignTaskReadmeReplicaRepair({
-          ctx,
-          activeTaskId: ACTIVE_TASK_ID,
-          baseBranch: "main",
-        }),
-      ).resolves.toEqual({
-        state: "applied",
-        foreignTaskId: FOREIGN_TASK_ID,
-        proof: "historical_start_ready_replica",
-      });
-      await expect(readFile(fixture.replicaPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
-      await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain('status: "DONE"');
-    },
-  );
+  it("removes a historically proven replica with a recorded pre-Start TODO blob", async () => {
+    const fixture = await createHistoricalFixture();
+    const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+
+    await expect(
+      inspectForeignTaskReadmeReplicaRepair({
+        ctx,
+        activeTaskId: ACTIVE_TASK_ID,
+        taskWorktreePath: fixture.targetWorktree,
+        baseBranch: "main",
+      }),
+    ).resolves.toMatchObject({
+      state: "eligible",
+      foreignTaskId: FOREIGN_TASK_ID,
+      proof: "historical_start_ready_replica",
+    });
+
+    await expect(
+      applyForeignTaskReadmeReplicaRepair({
+        ctx,
+        activeTaskId: ACTIVE_TASK_ID,
+        baseBranch: "main",
+      }),
+    ).resolves.toEqual({
+      state: "applied",
+      foreignTaskId: FOREIGN_TASK_ID,
+      proof: "historical_start_ready_replica",
+    });
+    await expect(readFile(fixture.replicaPath, "utf8")).rejects.toMatchObject({ code: "ENOENT" });
+    await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain('status: "DONE"');
+  });
 
   it("accepts only lifecycle evidence changes between the historical Start and DONE bodies", async () => {
     const fixture = await createHistoricalFixture({ lifecycleSections: true });
@@ -633,15 +642,13 @@ describe("foreign task README replica repair", () => {
 
   it("fails closed when the branch skipped the TODO-to-DOING Start transition", async () => {
     const fixture = await createFixture("start_ready");
-    await commitForeignReadme(
+    await commitForeignTaskStates(
       fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
-      "test: record foreign TODO snapshot",
-    );
-    await commitForeignReadme(
-      fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DONE", revision: 9 }),
-      "test: skip foreign Start transition",
+      [
+        ["TODO", 6],
+        ["DONE", 9],
+      ],
+      "skip foreign Start",
     );
 
     await expectHistoricalRepairRejected(fixture);
@@ -673,54 +680,22 @@ describe("foreign task README replica repair", () => {
 
   it("fails closed for ambiguous historical Start transitions", async () => {
     const fixture = await createFixture("start_ready");
-    await commitForeignReadme(
+    await commitForeignTaskStates(
       fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
-      "test: record foreign TODO snapshot",
-    );
-    await commitForeignReadme(
-      fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 }),
-      "test: record first foreign Start transition",
+      [
+        ["TODO", 6],
+        ["DOING", 7],
+      ],
+      "record first Start",
     );
     await removeForeignReadme(fixture, "test: remove foreign task history path");
-    await commitForeignReadme(
+    await commitForeignTaskStates(
       fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 }),
-      "test: record second foreign Start transition",
-    );
-    await commitForeignReadme(
-      fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DONE", revision: 9 }),
-      "test: record verified foreign completion",
-    );
-
-    await expectHistoricalRepairRejected(fixture);
-  });
-
-  it("fails closed when a valid transition exists only on an unrelated rebased history", async () => {
-    const fixture = await createFixture("start_ready");
-    await commitForeignReadme(
-      fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "TODO", revision: 6 }),
-      "test: record old foreign TODO snapshot",
-    );
-    await commitForeignReadme(
-      fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 7 }),
-      "test: record old foreign Start transition",
-    );
-    await git(fixture.foreignWorktree, ["branch", "scratch-valid-foreign-history"]);
-    await git(fixture.foreignWorktree, ["reset", "--hard", "main"]);
-    await commitForeignReadme(
-      fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DOING", revision: 8 }),
-      "test: record rebased foreign lifecycle",
-    );
-    await commitForeignReadme(
-      fixture,
-      taskReadme({ taskId: FOREIGN_TASK_ID, status: "DONE", revision: 10 }),
-      "test: record rebased foreign completion",
+      [
+        ["DOING", 7],
+        ["DONE", 9],
+      ],
+      "record second Start",
     );
 
     await expectHistoricalRepairRejected(fixture);

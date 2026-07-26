@@ -19,8 +19,9 @@ Stop work start from materializing foreign untracked task artifacts into a task 
 - Note:
 
 ```text
-Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a
-sibling README to be materialized; that contradicts the active-task-only contract and would fail CI.
+Rework: c587 passes the focused and CLI-core gates, but historical proof accepts an unrecorded TODO
+replica when the first authoritative path snapshot is DOING. This violates the approved strict
+requirement for a known TODO revision and allows an unknown replica to be deleted.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -41,10 +42,11 @@ sibling README to be materialized; that contradicts the active-task-only contrac
  .../src/commands/shared/route-decision-blockers.ts |  41 +-
  .../route-decision-blockers.worktree.test.ts       |  15 +
  .../src/commands/shared/route-decision.ts          |  15 +
- ...task-worktree-foreign-artifact-history-proof.ts | 205 +++++
+ ...task-worktree-foreign-artifact-history-proof.ts | 235 +++++
  ...sk-worktree-foreign-artifact-lifecycle-proof.ts | 286 ++++++
- .../task-worktree-foreign-artifact-repair.test.ts  | 990 +++++++++++++++++++++
- .../task-worktree-foreign-artifact-repair.ts       | 461 ++++++++++
+ ...sk-worktree-foreign-artifact-provenance.test.ts | 152 ++++
+ .../task-worktree-foreign-artifact-repair.test.ts  | 965 +++++++++++++++++++++
+ .../task-worktree-foreign-artifact-repair.ts       | 474 ++++++++++
  .../commands/shared/workflow-operation-effects.ts  |   1 +
  .../commands/shared/workflow-operation-prefix.ts   |   1 +
  .../shared/workflow-operation-projection.ts        |   3 +
@@ -53,7 +55,8 @@ sibling README to be materialized; that contradicts the active-task-only contrac
  .../commands/shared/workflow-step-fingerprint.ts   |   1 +
  .../src/commands/shared/workflow-step.test.ts      |   4 +
  .../src/commands/shared/workflow-step.ts           |  19 +
- 21 files changed, 2165 insertions(+), 42 deletions(-)
+ ...ask-worktree-foreign-artifact-repair-fixture.ts | 459 ++++++++++
+ 23 files changed, 2794 insertions(+), 42 deletions(-)
 ```
 
 </details>

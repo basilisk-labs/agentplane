@@ -4,7 +4,7 @@ title: "Prevent foreign task artifacts in branch_pr worktrees"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -28,10 +28,10 @@ plan_approval:
   note: "Re-approved under the user's persistent corrective-scope authorization: bounded historical foreign-README proof and expanded fail-closed verification for the observed XBHBE5 to THDN0G lifecycle shape."
 verification:
   state: "needs_rework"
-  updated_at: "2026-07-26T00:08:51.298Z"
+  updated_at: "2026-07-26T01:13:25.790Z"
   updated_by: "TESTER"
-  note: "Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a sibling README to be materialized; that contradicts the active-task-only contract and would fail CI."
-  attempts: 1
+  note: "Rework: c587 passes the focused and CLI-core gates, but historical proof accepts an unrecorded TODO replica when the first authoritative path snapshot is DOING. This violates the approved strict requirement for a known TODO revision and allows an unknown replica to be deleted."
+  attempts: 2
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
@@ -83,8 +83,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: 49 focused tests pass, but cli-core worktree runtime fails because it still expects a sibling README to be materialized; that contradicts the active-task-only contract and would fail CI."
+  -
+    type: "verify"
+    at: "2026-07-26T01:13:25.790Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: c587 passes the focused and CLI-core gates, but historical proof accepts an unrecorded TODO replica when the first authoritative path snapshot is DOING. This violates the approved strict requirement for a known TODO revision and allows an unknown replica to be deleted."
 doc_version: 3
-doc_updated_at: "2026-07-26T00:20:40.587Z"
+doc_updated_at: "2026-07-26T01:13:26.536Z"
 doc_updated_by: "CODER"
 description: "Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion."
 sections:
@@ -189,6 +195,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T01:13:25.790Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: c587 passes the focused and CLI-core gates, but historical proof accepts an unrecorded TODO replica when the first authoritative path snapshot is DOING. This violates the approved strict requirement for a known TODO revision and allows an unknown replica to be deleted.
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:20:40.587Z, excerpt_hash=sha256:96932433b93f1fdfdee629869810a6e8b5afc26d89f23967f8b5e90cb3463c12
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+    - old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -209,6 +245,10 @@ sections:
     - Observation: The real XBHBE5 contamination is an exact historical THDN0G TODO README while the authoritative THDN0G worktree has advanced through DOING to DONE; the current immediate-replica classifier returns no proof.
       Impact: The repair remains fail-closed but cannot restore the actual blocked XBH worktree, so the approved recovery objective is incomplete.
       Resolution: Re-approved a bounded historical proof contract: accept only an exact branch-history TODO snapshot with an immediate valid Start transition and a later same-task authoritative lifecycle state; cover the real shape and adversarial negative cases before any safe apply.
+
+    - Observation: task-worktree-foreign-artifact-history-proof.ts accepts previousText === null && !seenTaskReadme; the regression test explicitly treats an initial branch Start snapshot as eligible. Actual THDN first-parent README history starts at DOING, so it contains no authoritative TODO commit to prove XBH's replica.
+      Impact: A structurally valid but unrecorded TODO README can satisfy proof and be unlinked. The required strict historical source-of-truth guarantee is not met.
+      Resolution: Require an exact authoritative same-task TODO blob and fail closed for the XBH/THDN case, or formally define and verify a separate trusted provenance source for the pre-Start README; add a negative regression for an unavailable TODO snapshot.
 extensions:
   workflow_route_baseline:
     start_head_sha: "220c7f110c07a14b2b055003cd338ad4c1c3503e"
@@ -327,6 +367,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T01:13:25.790Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: c587 passes the focused and CLI-core gates, but historical proof accepts an unrecorded TODO replica when the first authoritative path snapshot is DOING. This violates the approved strict requirement for a known TODO revision and allows an unknown replica to be deleted.
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:20:40.587Z, excerpt_hash=sha256:96932433b93f1fdfdee629869810a6e8b5afc26d89f23967f8b5e90cb3463c12
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+- old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -351,3 +421,7 @@ DecisionContextRef:
 - Observation: The real XBHBE5 contamination is an exact historical THDN0G TODO README while the authoritative THDN0G worktree has advanced through DOING to DONE; the current immediate-replica classifier returns no proof.
   Impact: The repair remains fail-closed but cannot restore the actual blocked XBH worktree, so the approved recovery objective is incomplete.
   Resolution: Re-approved a bounded historical proof contract: accept only an exact branch-history TODO snapshot with an immediate valid Start transition and a later same-task authoritative lifecycle state; cover the real shape and adversarial negative cases before any safe apply.
+
+- Observation: task-worktree-foreign-artifact-history-proof.ts accepts previousText === null && !seenTaskReadme; the regression test explicitly treats an initial branch Start snapshot as eligible. Actual THDN first-parent README history starts at DOING, so it contains no authoritative TODO commit to prove XBH's replica.
+  Impact: A structurally valid but unrecorded TODO README can satisfy proof and be unlinked. The required strict historical source-of-truth guarantee is not met.
+  Resolution: Require an exact authoritative same-task TODO blob and fail closed for the XBH/THDN case, or formally define and verify a separate trusted provenance source for the pre-Start README; add a negative regression for an unavailable TODO snapshot.

@@ -1,5 +1,6 @@
 import { gitEnv, gitRevParse, gitShowFile } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
+import { parseTaskReadme } from "@agentplaneorg/core/tasks";
 
 import type { CommandContext } from "./task-backend.js";
 import {
@@ -12,6 +13,8 @@ export type HistoricalForeignTaskReadmeReplicaProof = {
   branch: string;
   branchHead: string;
   gitPath: string;
+  preStartCommit: string;
+  preStartContentSha256: string;
   startCommit: string;
   startContentSha256: string;
   sourceContentSha256: string;
@@ -29,6 +32,15 @@ type GitFileSnapshot =
 
 function isGitObjectId(value: string): boolean {
   return /^[0-9a-f]{40,64}$/u.test(value);
+}
+
+function lifecycleStatus(text: string): "TODO" | "DOING" | "DONE" | null {
+  try {
+    const status = parseTaskReadme(text).frontmatter.status;
+    return status === "TODO" || status === "DOING" || status === "DONE" ? status : null;
+  } catch {
+    return null;
+  }
 }
 
 async function readGitFileSnapshot(opts: {
@@ -113,50 +125,59 @@ export async function proveHistoricalStartReadyReplica(opts: {
   });
   if (!commits) return null;
 
-  const candidates: { commit: string; text: string }[] = [];
-  let previousText: string | null = null;
-  let seenTaskReadme = false;
+  const candidates: {
+    preStartCommit: string;
+    preStartText: string;
+    startCommit: string;
+    startText: string;
+  }[] = [];
+  let seenStartedLifecycle = false;
   for (const entry of commits) {
     const snapshot = await readGitFileSnapshot({
       gitRoot: opts.ctx.resolvedProject.gitRoot,
       ref: entry.commit,
       gitPath: opts.gitPath,
     });
-    if (snapshot.state === "error") return null;
-    const currentText = snapshot.state === "present" ? snapshot.text : null;
-    if (currentText === previousText) continue;
+    if (snapshot.state !== "present") return null;
 
-    // A task branch normally records the Start state as this README's first
-    // committed snapshot. Once that path has existed, deletion/recreation is
-    // ambiguous history rather than a direct lifecycle transition.
-    if (currentText === null) {
-      if (seenTaskReadme) return null;
-      previousText = null;
-      continue;
+    if (entry.parents.length === 1) {
+      const preStartCommit = entry.parents[0];
+      if (!preStartCommit) return null;
+      const predecessor = await readGitFileSnapshot({
+        gitRoot: opts.ctx.resolvedProject.gitRoot,
+        ref: preStartCommit,
+        gitPath: opts.gitPath,
+      });
+      if (
+        predecessor.state === "present" &&
+        predecessor.text === opts.replicaText &&
+        validStartReadyTransition({
+          foreignTaskId: opts.foreignTaskId,
+          replicaText: predecessor.text,
+          sourceText: snapshot.text,
+        })
+      ) {
+        if (seenStartedLifecycle) return null;
+        candidates.push({
+          preStartCommit,
+          preStartText: predecessor.text,
+          startCommit: entry.commit,
+          startText: snapshot.text,
+        });
+      }
     }
-
-    if (
-      entry.parents.length <= 1 &&
-      (previousText === opts.replicaText || (previousText === null && !seenTaskReadme)) &&
-      validStartReadyTransition({
-        foreignTaskId: opts.foreignTaskId,
-        replicaText: opts.replicaText,
-        sourceText: currentText,
-      })
-    ) {
-      candidates.push({ commit: entry.commit, text: currentText });
-    }
-    seenTaskReadme = true;
-    previousText = currentText;
+    const status = lifecycleStatus(snapshot.text);
+    if (!status) return null;
+    if (status === "DOING" || status === "DONE") seenStartedLifecycle = true;
   }
   if (candidates.length !== 1) return null;
 
   const start = candidates[0];
-  if (!start || start.commit === branchHead) return null;
+  if (!start || start.startCommit === branchHead) return null;
   if (
     !validVerifiedDoneContinuation({
       foreignTaskId: opts.foreignTaskId,
-      startedText: start.text,
+      startedText: start.startText,
       sourceText: opts.sourceText,
     })
   ) {
@@ -167,8 +188,10 @@ export async function proveHistoricalStartReadyReplica(opts: {
     branch: opts.foreignBranch,
     branchHead,
     gitPath: opts.gitPath,
-    startCommit: start.commit,
-    startContentSha256: contentSha256(start.text),
+    preStartCommit: start.preStartCommit,
+    preStartContentSha256: contentSha256(start.preStartText),
+    startCommit: start.startCommit,
+    startContentSha256: contentSha256(start.startText),
     sourceContentSha256: contentSha256(opts.sourceText),
   };
 }
@@ -182,7 +205,12 @@ export async function assertHistoricalProofUnchanged(
     throw new Error("authoritative foreign task branch changed after proof");
   }
 
-  const [start, source] = await Promise.all([
+  const [preStart, start, source] = await Promise.all([
+    readGitFileSnapshot({
+      gitRoot,
+      ref: proof.preStartCommit,
+      gitPath: proof.gitPath,
+    }),
     readGitFileSnapshot({
       gitRoot,
       ref: proof.startCommit,
@@ -195,8 +223,10 @@ export async function assertHistoricalProofUnchanged(
     }),
   ]);
   if (
+    preStart.state !== "present" ||
     start.state !== "present" ||
     source.state !== "present" ||
+    contentSha256(preStart.text) !== proof.preStartContentSha256 ||
     contentSha256(start.text) !== proof.startContentSha256 ||
     contentSha256(source.text) !== proof.sourceContentSha256
   ) {

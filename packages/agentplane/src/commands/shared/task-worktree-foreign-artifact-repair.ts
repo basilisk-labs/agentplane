@@ -16,17 +16,11 @@ import {
   proveHistoricalStartReadyReplica,
   type HistoricalForeignTaskReadmeReplicaProof,
 } from "./task-worktree-foreign-artifact-history-proof.js";
-import {
-  contentSha256,
-  validStartReadyTransition,
-} from "./task-worktree-foreign-artifact-lifecycle-proof.js";
+import { contentSha256 } from "./task-worktree-foreign-artifact-lifecycle-proof.js";
 
 const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
 
-export type ForeignTaskReadmeReplicaProof =
-  | "byte_identical"
-  | "start_ready_replica"
-  | "historical_start_ready_replica";
+export type ForeignTaskReadmeReplicaProof = "byte_identical" | "historical_start_ready_replica";
 
 type StableTextProof = {
   path: string;
@@ -131,12 +125,11 @@ function foreignTaskIdFromReplicaPath(opts: {
 }
 
 export function classifyForeignTaskReadmeReplicaText(opts: {
-  foreignTaskId: string;
   replicaText: string;
   sourceText: string;
 }): ForeignTaskReadmeReplicaProof | null {
   if (opts.replicaText === opts.sourceText) return "byte_identical";
-  return validStartReadyTransition(opts) ? "start_ready_replica" : null;
+  return null;
 }
 
 async function resolveAuthoritativeSource(opts: {
@@ -159,6 +152,21 @@ async function resolveAuthoritativeSource(opts: {
   if (!sourceWorktree || path.resolve(sourceWorktree) === path.resolve(opts.worktreePath))
     return null;
   return { worktreePath: sourceWorktree, branch: foreignBranch };
+}
+
+async function assertHistoricalProofContextUnchanged(opts: {
+  ctx: CommandContext;
+  foreignTaskId: string;
+  proof: HistoricalForeignTaskReadmeReplicaProof;
+}): Promise<void> {
+  const currentBranch = await resolveTaskBranchFromContext({
+    ctx: opts.ctx,
+    taskId: opts.foreignTaskId,
+  });
+  if (currentBranch !== opts.proof.branch) {
+    throw new Error("authoritative foreign task branch resolution changed after proof");
+  }
+  await assertHistoricalProofUnchanged(opts.proof, opts.ctx.resolvedProject.gitRoot);
 }
 
 function onlyForeignReplicaPath(opts: {
@@ -260,7 +268,6 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
   }
 
   let proof = classifyForeignTaskReadmeReplicaText({
-    foreignTaskId: candidate.foreignTaskId,
     replicaText,
     sourceText,
   });
@@ -302,7 +309,11 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
   }
   if (historicalProof) {
     try {
-      await assertHistoricalProofUnchanged(historicalProof, opts.ctx.resolvedProject.gitRoot);
+      await assertHistoricalProofContextUnchanged({
+        ctx: opts.ctx,
+        foreignTaskId: candidate.foreignTaskId,
+        proof: historicalProof,
+      });
     } catch {
       return { state: "not_applicable", reason: "foreign_replica_proof_failed" };
     }
@@ -419,10 +430,11 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
   }
   if (inspection.historicalProof) {
     try {
-      await assertHistoricalProofUnchanged(
-        inspection.historicalProof,
-        opts.ctx.resolvedProject.gitRoot,
-      );
+      await assertHistoricalProofContextUnchanged({
+        ctx: opts.ctx,
+        foreignTaskId: inspection.foreignTaskId,
+        proof: inspection.historicalProof,
+      });
     } catch {
       return { state: "skipped", reason: "authoritative_branch_changed_before_remove" };
     }
@@ -435,10 +447,11 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
   }
   if (inspection.historicalProof) {
     try {
-      await assertHistoricalProofUnchanged(
-        inspection.historicalProof,
-        opts.ctx.resolvedProject.gitRoot,
-      );
+      await assertHistoricalProofContextUnchanged({
+        ctx: opts.ctx,
+        foreignTaskId: inspection.foreignTaskId,
+        proof: inspection.historicalProof,
+      });
     } catch {
       return { state: "skipped", reason: "authoritative_branch_changed_before_remove" };
     }
