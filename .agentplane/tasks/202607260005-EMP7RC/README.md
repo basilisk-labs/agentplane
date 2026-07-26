@@ -4,7 +4,7 @@ title: "Reconcile provider-rebased protected PR heads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -35,34 +35,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-26T01:50:17.608Z"
+  updated_at: "2026-07-26T02:23:53.873Z"
   updated_by: "TESTER"
-  note: "Independent TESTER PASS at 3ad3880: 35 focused and 23 cli-core tests pass; 20/20 proof-identity matrix rejects symbolic, short, malformed, and local blob values; ZMV dry-run remains proof=provider_rebase and remote route is sync_hosted_close; all declared local gates pass; DQM6AW remains unstaged."
+  note: "Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T01:59:56.980Z"
+  updated_at: "2026-07-26T02:28:54.278Z"
   updated_by: "EVALUATOR"
-  note: "Reject at 3ad3880: task-branch identities are now fail-closed, but a canonical non-commit provider head still authorizes task-close cleanup."
-  evaluated_sha: "3ad3880cbf9ba8496100cdd82bbb24f0086641f0"
+  note: "Reject at 5da3b9b: blob receipts are blocked, but annotated tag object IDs still satisfy the commit guard and can authorize provider cleanup."
+  evaluated_sha: "5da3b9b7b3d3bcc7279e3a0d9237abd46eac958f"
   blueprint_digest: "6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137"
   evidence_refs:
     - ".agentplane/tasks/202607260005-EMP7RC/README.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-015956980-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-015956980-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-015956980-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-022854278-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-022854278-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-022854278-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/git-ops.ts"
     - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
     - "packages/agentplane/src/commands/branch/cleanup-merged-proof.ts"
-    - "bun -e ZMV identity matrix: task/local/closure/provider/merge blob and cross-field variants rejected; providerHeadBlobReceipt accepted blob 2f443825e19e8c531d1802d593e6dc59ac7e40af"
-    - "bunx vitest cleanup-merged.targeted.test.ts: 17 passed"
-    - "bunx vitest route-decision-next-action.test.ts close-tail-state.test.ts: 18 passed"
+    - "git probe: object 383ffa926ec48012d532cc7b918ddfc3b912dab4 type=tag; cat-file -e oid^{commit}=0; dereferenced commit 58eee6d8e2fc8a3410d79165946bd14b9f36cae6 is ancestor of main"
+    - "bun -e ZMV matrix: tag provider head and merge receipts accepted; tag taskCommitSha yielded provider_rebase_equivalent; blob/tree/ref/ref-expression rejected; normal ZMV positive remained"
+    - "bunx vitest provider-receipt, cleanup-targeted, route-decision, close-tail: 37 passed"
     - "git diff --check main...HEAD: pass"
   findings:
-    - "validateMergedProviderReceipt accepts the real local blob 2f443825e19e8c531d1802d593e6dc59ac7e40af as providerHeadSha when mergeCommit is valid; gitCommitObjectExists confirms that OID is not a commit."
-    - "targetedCleanupProof returns proof=provider_merge for a found task-close provider receipt without resolveProviderReconciliation, so this accepted blob bypasses the new provider-head object gate and can authorize cleanup."
-    - "Cross-field substitutions and non-commit blobs for all five identities correctly fail in resolveProviderReconciliation on the real ZMV d61ab0f->2a6d152->e27c938 topology; the remaining gap is the task-close receipt-only lane."
+    - "gitCommitObjectExists uses git cat-file -e <oid>^{commit}, which dereferences annotated tags rather than proving that the supplied canonical OID itself is a commit object."
+    - "Real repository tag object 383ffa926ec48012d532cc7b918ddfc3b912dab4 (refs/tags/v0.1.1) has type tag, yet the receipt validator accepts it as both providerHeadSha and mergeCommit. The task-close found-provider fast path therefore receives a valid receipt and returns provider_merge without reconciliation."
+    - "On the real ZMV d61ab0f->2a6d152->e27c938 topology, substituting that tag OID only for taskCommitSha returns provider_rebase_equivalent; the expected-reconciliation receipt also accepts it. Thus the shared guard fails the immutable commit-object contract in both reconciliation and receipt paths."
+    - "Canonical refs and expressions, absent hashes, blobs, and trees reject correctly; normal ZMV receipt and provider_rebase_equivalent remain positive. The remaining unsafe object type is an annotated tag that resolves to a commit."
 commit: null
 comments:
   -
@@ -100,8 +102,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent TESTER PASS at 3ad3880: 35 focused and 23 cli-core tests pass; 20/20 proof-identity matrix rejects symbolic, short, malformed, and local blob values; ZMV dry-run remains proof=provider_rebase and remote route is sync_hosted_close; all declared local gates pass; DQM6AW remains unstaged."
+  -
+    type: "verify"
+    at: "2026-07-26T02:23:53.873Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged."
 doc_version: 3
-doc_updated_at: "2026-07-26T01:50:18.330Z"
+doc_updated_at: "2026-07-26T02:23:54.797Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr reconciliation after a protected provider rebases a verified PR: reconcile remote provider truth with a stale local task head without publishing or deleting from uncertain lineage. Current incident: ZMV 202607252051-ZMVZRZ local d61ab0f55d1c122e5acbaf2a296e2ff508e87b55 versus provider-rebased 2a6d152b87666912d189304c4a6084eccaaff262, merged as main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -224,6 +232,36 @@ sections:
     Attempts: 0
 
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T01:22:28.745Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+    - old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
+
+    ### 2026-07-26T02:23:53.873Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T01:50:18.330Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
 
     Details:
 
@@ -390,6 +428,36 @@ Note: Independent TESTER PASS at 3ad3880: 35 focused and 23 cli-core tests pass;
 Attempts: 0
 
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T01:22:28.745Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+- old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
+
+### 2026-07-26T02:23:53.873Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T01:50:18.330Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
 
 Details:
 

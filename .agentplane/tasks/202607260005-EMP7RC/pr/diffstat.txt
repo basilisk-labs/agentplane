@@ -1,5 +1,5 @@
  .../src/commands/branch/cleanup-merged-proof.ts    | 252 +++++++-----
- .../branch/cleanup-merged-provider-receipt.test.ts | 284 ++++++++++++++
+ .../branch/cleanup-merged-provider-receipt.test.ts | 422 ++++++++++++++++++++
  .../cleanup-merged-provider-reconciliation.ts      | 435 +++++++++++++++++++++
  .../branch/cleanup-merged.targeted.test.ts         | 404 ++++++++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
@@ -7,6 +7,6 @@
  .../shared/route-decision-next-action.test.ts      |  49 +++
  .../src/commands/shared/route-decision.ts          |   3 +-
  .../src/commands/shared/workflow-step-branch.ts    |  46 ++-
- .../src/commands/task/close-tail-state.test.ts     |  16 +-
+ .../src/commands/task/close-tail-state.test.ts     |  22 +-
  .../src/commands/task/close-tail-state.ts          |  12 +-
- 11 files changed, 1419 insertions(+), 125 deletions(-)
+ 11 files changed, 1563 insertions(+), 125 deletions(-)

@@ -13,7 +13,7 @@ Created: 2026-07-26T00:39:19.677Z
 ## Verification
 
 - State: ok
-- Note: Independent TESTER PASS at 3ad3880: 35 focused and 23 cli-core tests pass; 20/20 proof-identity matrix rejects symbolic, short, malformed, and local blob values; ZMV dry-run remains proof=provider_rebase and remote route is sync_hosted_close; all declared local gates pass; DQM6AW remains unstaged.
+- Note: Independent TESTER PASS at 5da3b9b: 37 focused and 23 cli-core tests pass; provider-head and provider-merge local blobs are rejected by the shared receipt gate, and all five persisted reconciliation identities are commit-validated; resolver matrix rejects 20/20 invalid cases; task-close head-blob integration reports cleanup_blocked/no command/preserve; ZMV remains proof=provider_rebase; declared gates pass; DQM6AW remains unstaged.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,7 +30,7 @@ Created: 2026-07-26T00:39:19.677Z
 
 ```text
  .../src/commands/branch/cleanup-merged-proof.ts    | 252 +++++++-----
- .../branch/cleanup-merged-provider-receipt.test.ts | 284 ++++++++++++++
+ .../branch/cleanup-merged-provider-receipt.test.ts | 422 ++++++++++++++++++++
  .../cleanup-merged-provider-reconciliation.ts      | 435 +++++++++++++++++++++
  .../branch/cleanup-merged.targeted.test.ts         | 404 ++++++++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
@@ -38,9 +38,9 @@ Created: 2026-07-26T00:39:19.677Z
  .../shared/route-decision-next-action.test.ts      |  49 +++
  .../src/commands/shared/route-decision.ts          |   3 +-
  .../src/commands/shared/workflow-step-branch.ts    |  46 ++-
- .../src/commands/task/close-tail-state.test.ts     |  16 +-
+ .../src/commands/task/close-tail-state.test.ts     |  22 +-
  .../src/commands/task/close-tail-state.ts          |  12 +-
- 11 files changed, 1419 insertions(+), 125 deletions(-)
+ 11 files changed, 1563 insertions(+), 125 deletions(-)
 ```
 
 </details>

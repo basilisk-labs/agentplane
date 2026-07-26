@@ -64,6 +64,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
       status?: string;
       commitHash?: string;
       basisCommit?: string;
+      objectType?: string;
       branch?: string;
       prNumber?: number;
       markerPrNumber?: number | null;
@@ -101,7 +102,7 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
         })}\n`,
         stderr: "",
       })
-      .mockResolvedValue({ stdout: "", stderr: "" });
+      .mockResolvedValue({ stdout: `${opts.objectType ?? "commit"}\n`, stderr: "" });
   }
 
   async function recorded(
@@ -158,6 +159,11 @@ describe("taskPreMergeClosureRecordedOnBase", () => {
     await expect(recorded()).resolves.toBe(false);
 
     mockBaseArtifacts({ basisCommit: "refs/heads/main" });
+    await expect(recorded()).resolves.toBe(false);
+  });
+
+  it("rejects tag objects before treating base evidence as recorded", async () => {
+    mockBaseArtifacts({ objectType: "tag" });
     await expect(recorded()).resolves.toBe(false);
   });
 });

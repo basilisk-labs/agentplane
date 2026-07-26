@@ -36,11 +36,11 @@ export function isCanonicalFullCommitOid(value: string): boolean {
 export async function gitCommitObjectExists(gitRoot: string, oid: string): Promise<boolean> {
   if (!isCanonicalFullCommitOid(oid)) return false;
   try {
-    await execFileAsync("git", ["cat-file", "-e", `${oid}^{commit}`], {
+    const { stdout } = await execFileAsync("git", ["cat-file", "-t", oid], {
       cwd: gitRoot,
       env: gitEnv(),
     });
-    return true;
+    return stdout.trim() === "commit";
   } catch {
     return false;
   }
