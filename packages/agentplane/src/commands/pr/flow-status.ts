@@ -21,7 +21,11 @@ import {
   taskIsClosedByPreMergeClosure,
 } from "../task/hosted-close.command.js";
 import { readTaskHandoffLatest, resolveTaskHandoffPaths } from "../shared/task-handoff.js";
-import { readIntegrationQueue, type IntegrationQueueEntry } from "../pr/integrate/queue-state.js";
+import {
+  readIntegrationQueue,
+  type IntegrationQueueEntry,
+  type LegacyProtectedConflictAdoptionReceipt,
+} from "../pr/integrate/queue-state.js";
 import { checkGithubUnresolvedReviewThreads } from "./internal/github-review-threads.js";
 import { resolveHostedChecksStatus, type HostedChecksSummary } from "./hosted-checks.js";
 import { renderPrFlowStatusRows } from "./flow-status.render.js";
@@ -103,6 +107,7 @@ type QueueStatus =
       baseSha?: string | null;
       prNumber?: number | null;
       leaseExpiresAt?: string | null;
+      legacyProtectedConflictAdoption?: LegacyProtectedConflictAdoptionReceipt | null;
     };
 
 type HandoffStatus =
@@ -110,6 +115,8 @@ type HandoffStatus =
   | {
       present: true;
       reason: string;
+      createdAt?: string | null;
+      fromRole?: string | null;
       routeKind: "protected_base_integrate" | null;
       routeStatus: string | null;
       branch?: string | null;
@@ -118,8 +125,14 @@ type HandoffStatus =
       prBranch?: string | null;
       routePrNumber?: number | null;
       routeProviderBaseSha?: string | null;
+      routeProviderBaseShaState?: "present" | "absent" | "invalid";
       nextActions: string[];
     };
+
+function trimmed(value: string | null | undefined): string | null {
+  const normalized = value?.trim() ?? "";
+  return normalized.length > 0 ? normalized : null;
+}
 
 export async function matchesMergedPreMergeClosure(opts: {
   gitRoot: string;
@@ -232,9 +245,18 @@ async function resolveHandoffStatus(opts: {
     }),
   );
   if (!handoff) return { present: false };
+  const providerBaseSha = trimmed(handoff.route?.provider_base_sha);
+  const routeProviderBaseShaState =
+    !handoff.route || !Object.hasOwn(handoff.route, "provider_base_sha")
+      ? "absent"
+      : providerBaseSha
+        ? "present"
+        : "invalid";
   return {
     present: true,
     reason: handoff.reason,
+    createdAt: handoff.created_at ?? null,
+    fromRole: handoff.from_role ?? null,
     routeKind: handoff.route?.kind ?? null,
     routeStatus: handoff.route?.status ?? null,
     branch: handoff.branch ?? null,
@@ -242,7 +264,8 @@ async function resolveHandoffStatus(opts: {
     headSha: handoff.head_sha ?? null,
     prBranch: handoff.pr_branch ?? null,
     routePrNumber: handoff.route?.pr_number ?? null,
-    routeProviderBaseSha: handoff.route?.provider_base_sha ?? null,
+    routeProviderBaseSha: providerBaseSha,
+    routeProviderBaseShaState,
     nextActions: handoff.next_actions ?? [],
   };
 }
@@ -512,6 +535,7 @@ export async function resolvePrFlowStatus(opts: {
           baseSha: queueEntry.base_sha,
           prNumber: queueEntry.pr_number,
           leaseExpiresAt: queueEntry.lease_expires_at ?? null,
+          legacyProtectedConflictAdoption: queueEntry.legacy_protected_conflict_adoption ?? null,
         }
       : { present: false },
     handoff,

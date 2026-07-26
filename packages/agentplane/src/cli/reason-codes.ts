@@ -257,6 +257,28 @@ const REASON_CODE_MAP: Readonly<Record<string, ReasonCodeMeta>> = {
     action:
       "inspect the persisted handoff route, merge the GitHub PR, then pull the base branch after hosted close finishes",
   },
+  legacy_protected_conflict_adoption_required: {
+    code: "legacy_protected_conflict_adoption_required",
+    category: "handoff",
+    summary:
+      "a legacy protected PR conflict needs an explicit INTEGRATOR recovery receipt before semantic rework",
+    action:
+      "recompute task next-action and run the exact adopt-legacy-protected-conflict command with its token",
+  },
+  legacy_protected_conflict_adoption_stale: {
+    code: "legacy_protected_conflict_adoption_stale",
+    category: "validation",
+    summary:
+      "the legacy conflict recovery token no longer matches current provider, queue, handoff, or base truth",
+    action: "recompute task next-action with remote truth and use only its current adoption token",
+  },
+  legacy_protected_conflict_adoption_unavailable: {
+    code: "legacy_protected_conflict_adoption_unavailable",
+    category: "validation",
+    summary: "the current conflict route cannot accept a legacy recovery receipt",
+    action:
+      "repair the reported provider, queue, handoff, or base-context mismatch before retrying",
+  },
   network_gate: {
     code: "network_gate",
     category: "network",

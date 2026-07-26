@@ -4,6 +4,12 @@ export const WORKFLOW_OPERATION_ARGV_PREFIX = {
   "batch.collect_included": ["agentplane", "task", "brief"],
   "batch.follow_primary": ["agentplane", "task", "brief"],
   "batch.reconcile_included": ["agentplane", "release", "tasks", "reconcile"],
+  "integration.adopt_legacy_protected_conflict": [
+    "agentplane",
+    "integrate",
+    "queue",
+    "adopt-legacy-protected-conflict",
+  ],
   "integration.enqueue": ["agentplane", "integrate", "queue", "enqueue"],
   "pr.artifacts.update": ["agentplane", "pr", "update"],
   "pr.head.publish": ["agentplane", "pr", "open"],

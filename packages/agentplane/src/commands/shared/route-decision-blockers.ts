@@ -75,6 +75,14 @@ function addConflictReworkBlockers(
   preparation: ConflictReworkPreparation | null,
 ): void {
   if (!preparation || preparation.state === "not_conflicting") return;
+  if (preparation.state === "adoption_required") {
+    addBlocker(
+      blockers,
+      "legacy_protected_conflict_adoption_required",
+      "legacy protected PR conflict requires a formal INTEGRATOR recovery receipt before a CODER may receive semantic resolution authority",
+    );
+    return;
+  }
   if (preparation.state === "ready") {
     addBlocker(
       blockers,

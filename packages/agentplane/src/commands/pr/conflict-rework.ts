@@ -4,7 +4,22 @@ import { gitDiffNames, gitMergeBase } from "@agentplaneorg/core/git";
 
 import { gitRevParse } from "../shared/git-ops.js";
 import type { TaskWorktreeCleanliness } from "../shared/task-worktree-cleanliness.js";
+import {
+  normalizeConflictReworkChecks,
+  type ConflictReworkChecks,
+} from "./conflict-rework-checks.js";
+import {
+  resolveConflictRouteEligibility,
+  type ConflictRouteEvidence,
+} from "./conflict-rework-route-eligibility.js";
 import type { PrFlowStatusReport } from "./flow-status.js";
+import { legacyProtectedConflictAdoptionToken } from "./integrate/queue-state.js";
+import type { LegacyProtectedConflictAdoptionEvidence } from "./integrate/queue-state.js";
+import {
+  isLegacyProtectedConflictRoute,
+  legacyProtectedConflictAdoptionEvidence,
+  localAncestry,
+} from "./conflict-rework-legacy.js";
 import {
   hasCoherentGithubPrMergeability,
   isSettledGithubPrConflict,
@@ -15,8 +30,6 @@ import {
 } from "./integrate/internal/github-protection.js";
 
 const MAX_CANDIDATE_CONFLICT_PATHS = 32;
-const MAX_HOSTED_CHECK_ROWS = 64;
-const MAX_MISSING_REQUIRED_CHECKS = 32;
 
 type ConflictReworkInvalidReasonCode =
   | "provider_pr_not_conflicting"
@@ -28,6 +41,9 @@ type ConflictReworkInvalidReasonCode =
   | "provider_head_mismatch"
   | "provider_base_unavailable"
   | "provider_base_mismatch"
+  | "provider_base_not_ancestor"
+  | "legacy_queue_base_unavailable"
+  | "legacy_queue_base_not_ancestor"
   | "provider_base_protection_mismatch"
   | "provider_base_unprotected"
   | "provider_base_protection_unavailable"
@@ -37,26 +53,6 @@ type ConflictReworkInvalidReasonCode =
   | "task_worktree_missing"
   | "task_worktree_dirty"
   | "task_worktree_unavailable";
-
-type ConflictReworkChecks =
-  | {
-      checked: true;
-      total: number;
-      passing: number;
-      pending: number;
-      failing: number;
-      missingRequired: {
-        names: string[];
-        total: number;
-        truncated: boolean;
-      };
-      rows: {
-        entries: { name: string; state: string }[];
-        total: number;
-        truncated: boolean;
-      };
-    }
-  | { checked: false; reason: string };
 
 export type ConflictReworkPacket = {
   schema_version: 1;
@@ -86,6 +82,16 @@ export type ConflictReworkPacket = {
     base_head_sha: string;
     merge_base_sha: string;
   };
+  base_context: {
+    provider_conflict_base_sha: string;
+    current_base_sha: string;
+    relation: "equal" | "provider_base_ancestor_of_current_base";
+    legacy_queue_base_sha: string | null;
+    legacy_queue_relation:
+      | "not_applicable"
+      | "provider_base_ancestor_of_queue_base_and_queue_base_ancestor_of_current_base";
+  };
+  route_evidence: ConflictRouteEvidence;
   task_worktree: {
     path: string;
     branch: string;
@@ -118,6 +124,14 @@ export type ConflictReworkPacket = {
 export type ConflictReworkPreparation =
   | { state: "not_conflicting"; reason: string }
   | { state: "invalid"; reason_code: ConflictReworkInvalidReasonCode; reason: string }
+  | {
+      state: "adoption_required";
+      reason: string;
+      adoption: {
+        evidence: LegacyProtectedConflictAdoptionEvidence;
+        token: string;
+      };
+    }
   | { state: "ready"; packet: ConflictReworkPacket };
 
 function invalid(
@@ -143,40 +157,6 @@ const DEFAULT_GIT_OPS: ConflictReworkGitOps = {
   mergeBase: gitMergeBase,
   diffNames: gitDiffNames,
 };
-
-function normalizeChecks(report: PrFlowStatusReport): ConflictReworkChecks {
-  if (!report.hostedChecks.checked) {
-    return { checked: false, reason: report.hostedChecks.reason };
-  }
-  const rows = report.hostedChecks.rows
-    .map((row) => ({
-      name: trimmed(row.name) ?? "<unnamed>",
-      state: trimmed(row.state) ?? "UNKNOWN",
-    }))
-    .toSorted(
-      (left, right) => left.name.localeCompare(right.name) || left.state.localeCompare(right.state),
-    );
-  const missingRequired = [
-    ...new Set(report.hostedChecks.missingRequired.map((name) => trimmed(name) ?? "<unnamed>")),
-  ].toSorted((left, right) => left.localeCompare(right));
-  return {
-    checked: true,
-    total: report.hostedChecks.total,
-    passing: report.hostedChecks.passing,
-    pending: report.hostedChecks.pending,
-    failing: report.hostedChecks.failing,
-    missingRequired: {
-      names: missingRequired.slice(0, MAX_MISSING_REQUIRED_CHECKS),
-      total: missingRequired.length,
-      truncated: missingRequired.length > MAX_MISSING_REQUIRED_CHECKS,
-    },
-    rows: {
-      entries: rows.slice(0, MAX_HOSTED_CHECK_ROWS),
-      total: rows.length,
-      truncated: rows.length > MAX_HOSTED_CHECK_ROWS,
-    },
-  };
-}
 
 function tokenFor(value: unknown): string {
   return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
@@ -205,88 +185,6 @@ export function needsProviderConflictReworkPreparation(report: PrFlowStatusRepor
   }
   const mergeability = report.providerObservation.pr.mergeability;
   return !hasCoherentGithubPrMergeability(mergeability) || isSettledGithubPrConflict(mergeability);
-}
-
-type ConflictRouteIdentity = {
-  taskBranch: string;
-  providerHead: string;
-  base: string;
-  providerBase: string;
-  prNumber: number;
-};
-
-function hasCurrentClaimLease(leaseExpiresAt: string | null | undefined, now: Date): boolean {
-  const leaseExpiresAtMs = leaseExpiresAt ? Date.parse(leaseExpiresAt) : Number.NaN;
-  const nowMs = now.getTime();
-  return Number.isFinite(leaseExpiresAtMs) && Number.isFinite(nowMs) && leaseExpiresAtMs > nowMs;
-}
-
-function hasEligibleQueueEntry(
-  report: PrFlowStatusReport,
-  identity: ConflictRouteIdentity,
-  now: Date,
-): boolean {
-  if (!report.queue.present) return false;
-  if (
-    report.queue.status !== "queued" &&
-    report.queue.status !== "claimed" &&
-    report.queue.status !== "handoff"
-  ) {
-    return false;
-  }
-  if (
-    report.queue.status === "claimed" &&
-    !hasCurrentClaimLease(report.queue.leaseExpiresAt, now)
-  ) {
-    return false;
-  }
-  return (
-    report.queue.branch === identity.taskBranch &&
-    report.queue.base === identity.base &&
-    report.queue.headSha === identity.providerHead &&
-    report.queue.baseSha === identity.providerBase &&
-    report.queue.prNumber === identity.prNumber
-  );
-}
-
-function hasEligibleProtectedBaseHandoff(
-  report: PrFlowStatusReport,
-  identity: ConflictRouteIdentity,
-): boolean {
-  if (!report.handoff.present) return false;
-  return (
-    report.handoff.routeKind === "protected_base_integrate" &&
-    report.handoff.routeStatus === "awaiting_github_merge" &&
-    report.handoff.branch === identity.taskBranch &&
-    report.handoff.prBranch === identity.taskBranch &&
-    report.handoff.baseBranch === identity.base &&
-    report.handoff.headSha === identity.providerHead &&
-    report.handoff.routePrNumber === identity.prNumber &&
-    report.handoff.routeProviderBaseSha === identity.providerBase
-  );
-}
-
-function validateConflictRouteEligibility(
-  report: PrFlowStatusReport,
-  identity: ConflictRouteIdentity,
-  now: Date,
-): ConflictReworkPreparation | null {
-  if (report.task.status.trim().toUpperCase() !== "DONE" || report.task.verification !== "ok") {
-    return invalid(
-      "conflict_rework_route_ineligible",
-      "semantic conflict rework requires a DONE task with a current passing verification record",
-    );
-  }
-  if (
-    hasEligibleQueueEntry(report, identity, now) ||
-    hasEligibleProtectedBaseHandoff(report, identity)
-  ) {
-    return null;
-  }
-  return invalid(
-    "conflict_rework_route_ineligible",
-    "semantic conflict rework requires a current queued, claimed, or protected-base handoff record that matches the provider PR branch, head, base, base SHA, and PR number",
-  );
 }
 
 async function resolveLocalRef(opts: {
@@ -389,18 +287,21 @@ export async function prepareConflictReworkPacket(opts: {
       `provider head differs from local task branch: provider=${providerHead} local=${localHead}`,
     );
   }
-  const routeEligibility = validateConflictRouteEligibility(
-    opts.report,
-    {
+  const routeEligibility = resolveConflictRouteEligibility({
+    report: opts.report,
+    identity: {
+      taskId: opts.taskId,
       taskBranch,
       providerHead,
       base,
       providerBase,
       prNumber,
     },
-    opts.now ?? new Date(),
-  );
-  if (routeEligibility) return routeEligibility;
+    now: opts.now ?? new Date(),
+  });
+  if (routeEligibility.state === "ineligible") {
+    return invalid("conflict_rework_route_ineligible", routeEligibility.reason);
+  }
   const baseProtection =
     opts.baseProtection ??
     (await resolveGithubBasePullRequestProtection({ gitRoot: opts.gitRoot, baseBranch: base }));
@@ -449,20 +350,121 @@ export async function prepareConflictReworkPacket(opts: {
     label: `base ${base}`,
   });
   if (!localBase.ok) return localBase.preparation;
-  if (localBase.value !== providerBase) {
-    return invalid(
-      "provider_base_mismatch",
-      `provider base differs from local ${base}: provider=${providerBase} local=${localBase.value}`,
-    );
+
+  const routeEvidence = routeEligibility.evidence;
+  const baseContext = isLegacyProtectedConflictRoute(routeEvidence)
+    ? await (async () => {
+        const legacyQueueBase = routeEvidence.queue.base_sha;
+        if (localBase.value === providerBase) {
+          return invalid(
+            "conflict_rework_route_ineligible",
+            "legacy released conflict rework requires the provider conflict base to be a strict ancestor of the current local base",
+          );
+        }
+        const providerToQueue = await localAncestry({
+          gitRoot: opts.gitRoot,
+          gitOps,
+          ancestor: providerBase,
+          descendant: legacyQueueBase,
+        });
+        if (!providerToQueue.ok) {
+          return invalid(
+            "legacy_queue_base_unavailable",
+            `legacy queue base ancestry cannot be resolved locally: ${providerToQueue.reason}`,
+          );
+        }
+        if (!providerToQueue.isAncestor) {
+          return invalid(
+            "provider_base_not_ancestor",
+            `provider conflict base is not an ancestor of the released queue base: provider=${providerBase} queue=${legacyQueueBase}`,
+          );
+        }
+        const queueToCurrent = await localAncestry({
+          gitRoot: opts.gitRoot,
+          gitOps,
+          ancestor: legacyQueueBase,
+          descendant: localBase.value,
+        });
+        if (!queueToCurrent.ok) {
+          return invalid(
+            "legacy_queue_base_unavailable",
+            `current local base ancestry cannot be resolved from the released queue base: ${queueToCurrent.reason}`,
+          );
+        }
+        if (!queueToCurrent.isAncestor) {
+          return invalid(
+            "legacy_queue_base_not_ancestor",
+            `released queue base is not an ancestor of the current local ${base}: queue=${legacyQueueBase} local=${localBase.value}`,
+          );
+        }
+        return {
+          provider_conflict_base_sha: providerBase,
+          current_base_sha: localBase.value,
+          relation: "provider_base_ancestor_of_current_base" as const,
+          legacy_queue_base_sha: legacyQueueBase,
+          legacy_queue_relation:
+            "provider_base_ancestor_of_queue_base_and_queue_base_ancestor_of_current_base" as const,
+        };
+      })()
+    : localBase.value === providerBase
+      ? {
+          provider_conflict_base_sha: providerBase,
+          current_base_sha: localBase.value,
+          relation: "equal" as const,
+          legacy_queue_base_sha: null,
+          legacy_queue_relation: "not_applicable" as const,
+        }
+      : invalid(
+          "provider_base_mismatch",
+          `provider base differs from local ${base}: provider=${providerBase} local=${localBase.value}`,
+        );
+  if ("state" in baseContext) return baseContext;
+
+  if (isLegacyProtectedConflictRoute(routeEvidence)) {
+    const evidence = legacyProtectedConflictAdoptionEvidence({
+      taskId: opts.taskId,
+      routeEvidence,
+      provider: {
+        prNumber,
+        branch: taskBranch,
+        headSha: providerHead,
+        base,
+        baseSha: providerBase,
+      },
+      currentBaseSha: localBase.value,
+    });
+    if (!evidence) {
+      return invalid(
+        "conflict_rework_route_ineligible",
+        "legacy protected-base conflict context no longer has the exact INTEGRATOR handoff identity required for adoption",
+      );
+    }
+    const evidenceToken = legacyProtectedConflictAdoptionToken(evidence);
+    if (routeEligibility.state === "adoption_required") {
+      return {
+        state: "adoption_required",
+        reason: routeEligibility.reason,
+        adoption: { evidence, token: evidenceToken },
+      };
+    }
+    if (
+      routeEvidence.kind !== "legacy_adopted_protected_base_handoff" ||
+      routeEvidence.adoption.evidence_token !== evidenceToken
+    ) {
+      return invalid(
+        "conflict_rework_route_ineligible",
+        "legacy protected-base adoption receipt is stale or does not match current provider, queue, handoff, and base topology",
+      );
+    }
   }
 
   let mergeBase: string;
   try {
-    mergeBase = await gitOps.mergeBase(opts.gitRoot, providerBase, providerHead);
+    mergeBase = await gitOps.mergeBase(opts.gitRoot, localBase.value, providerHead);
   } catch (err) {
     return invalid(
       "merge_base_unavailable",
-      `merge base cannot be resolved for provider base/head: ${err instanceof Error ? err.message : String(err)}`,
+      `merge base cannot be resolved for current local base/head: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 
@@ -470,7 +472,7 @@ export async function prepareConflictReworkPacket(opts: {
   let headChanged: string[];
   try {
     [baseChanged, headChanged] = await Promise.all([
-      gitOps.diffNames(opts.gitRoot, mergeBase, providerBase),
+      gitOps.diffNames(opts.gitRoot, mergeBase, localBase.value),
       gitOps.diffNames(opts.gitRoot, mergeBase, providerHead),
     ]);
   } catch (err) {
@@ -483,7 +485,7 @@ export async function prepareConflictReworkPacket(opts: {
   const headPaths = [...new Set(headChanged)].toSorted((left, right) => left.localeCompare(right));
   const basePathSet = new Set(basePaths);
   const candidatePaths = headPaths.filter((candidate) => basePathSet.has(candidate));
-  const checks = normalizeChecks(opts.report);
+  const checks = normalizeConflictReworkChecks(opts.report);
   const snapshot = {
     schema_version: 1 as const,
     task_id: opts.taskId,
@@ -512,6 +514,8 @@ export async function prepareConflictReworkPacket(opts: {
       base_head_sha: localBase.value,
       merge_base_sha: mergeBase,
     },
+    base_context: baseContext,
+    route_evidence: routeEvidence,
     task_worktree: {
       path: opts.taskWorktree.worktreePath,
       branch: taskBranch,

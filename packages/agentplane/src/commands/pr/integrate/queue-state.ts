@@ -1,10 +1,30 @@
-import path from "node:path";
 import { hostname } from "node:os";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
+import path from "node:path";
 
 import { CliError } from "../../../shared/errors.js";
 import { gitMutationDiagnosticContext } from "../../../shared/git-mutation.js";
+import {
+  parseLegacyProtectedConflictAdoptionReceipt,
+  type LegacyProtectedConflictAdoptionReceipt,
+} from "./queue-state-legacy-adoption.js";
+import {
+  integrationQueuePath,
+  resolveIntegrationQueueMutexContext,
+  type IntegrationQueueMutexContext,
+} from "./queue-state-paths.js";
+
+export {
+  createLegacyProtectedConflictAdoptionReceipt,
+  legacyProtectedConflictAdoptionToken,
+} from "./queue-state-legacy-adoption.js";
+export type {
+  LegacyProtectedConflictAdoptionEvidence,
+  LegacyProtectedConflictAdoptionReceipt,
+} from "./queue-state-legacy-adoption.js";
+export { integrationQueueEntryMatchesSnapshot } from "./queue-state-snapshot.js";
+export type { IntegrationQueueMutexContext } from "./queue-state-paths.js";
 
 export type IntegrationQueueStatus = "queued" | "claimed" | "handoff" | "done" | "rework";
 
@@ -27,18 +47,12 @@ export type IntegrationQueueEntry = {
   claim_token?: string;
   active_operation?: "integration";
   reason?: string;
+  legacy_protected_conflict_adoption?: LegacyProtectedConflictAdoptionReceipt;
 };
 
 type IntegrationQueueState = {
   schema_version: 1;
   entries: IntegrationQueueEntry[];
-};
-
-export type IntegrationQueueMutexContext = {
-  gitRoot: string;
-  locksDir: string;
-  lockPath: string;
-  queuePath: string;
 };
 
 export type IntegrationQueueMutexInspection =
@@ -62,42 +76,8 @@ const INTEGRATION_QUEUE_STATUSES = new Set<IntegrationQueueStatus>([
   "rework",
 ]);
 
-function integrationQueuePath(gitRoot: string): string {
-  return path.join(gitRoot, ".agentplane", "cache", "integration-queue.json");
-}
-
-function resolveIntegrationQueueMutexContext(gitRoot: string): IntegrationQueueMutexContext {
-  const locksDir = path.join(gitRoot, ".agentplane", "cache", "locks");
-  return {
-    gitRoot,
-    locksDir,
-    lockPath: path.join(locksDir, "integration-queue.lock"),
-    queuePath: integrationQueuePath(gitRoot),
-  };
-}
-
 export function emptyIntegrationQueue(): IntegrationQueueState {
   return { schema_version: 1, entries: [] };
-}
-
-export function integrationQueueEntryMatchesSnapshot(
-  current: IntegrationQueueEntry | undefined,
-  expected: IntegrationQueueEntry,
-): current is IntegrationQueueEntry {
-  return (
-    current?.task_id === expected.task_id &&
-    current.status === expected.status &&
-    current.branch === expected.branch &&
-    current.base === expected.base &&
-    current.head_sha === expected.head_sha &&
-    current.base_sha === expected.base_sha &&
-    current.updated_at === expected.updated_at &&
-    current.claimed_by === expected.claimed_by &&
-    current.claimed_at === expected.claimed_at &&
-    current.lease_expires_at === expected.lease_expires_at &&
-    current.claim_token === expected.claim_token &&
-    current.active_operation === expected.active_operation
-  );
 }
 
 function parseQueueState(text: string): IntegrationQueueState {
@@ -150,12 +130,36 @@ function parseQueueState(text: string): IntegrationQueueState {
     ) {
       throw invalidQueueState(`active entry ${index} is missing claim identity`);
     }
+    let legacyProtectedConflictAdoption: LegacyProtectedConflictAdoptionReceipt | undefined;
+    if (maybe.legacy_protected_conflict_adoption !== undefined) {
+      try {
+        legacyProtectedConflictAdoption = parseLegacyProtectedConflictAdoptionReceipt(
+          maybe.legacy_protected_conflict_adoption,
+          index,
+        );
+      } catch (err) {
+        throw invalidQueueState(err instanceof Error ? err.message : String(err));
+      }
+    }
+    if (
+      legacyProtectedConflictAdoption &&
+      (status !== "rework" || legacyProtectedConflictAdoption.task_id !== maybe.task_id)
+    ) {
+      throw invalidQueueState(
+        `entry ${index} has a legacy protected-conflict adoption outside its matching rework entry`,
+      );
+    }
     if (taskIds.has(maybe.task_id!)) {
       throw invalidQueueState(`duplicate task_id ${maybe.task_id}`);
     }
     taskIds.add(maybe.task_id!);
     if (status === "claimed" || status === "handoff") activeLanes += 1;
-    entries.push(maybe as IntegrationQueueEntry);
+    entries.push({
+      ...maybe,
+      ...(legacyProtectedConflictAdoption
+        ? { legacy_protected_conflict_adoption: legacyProtectedConflictAdoption }
+        : {}),
+    } as IntegrationQueueEntry);
   }
   if (activeLanes > 1) {
     throw invalidQueueState(`multiple active integration lanes found: ${activeLanes}`);
@@ -313,7 +317,10 @@ export async function withIntegrationQueueMutex<T>(
 
 export function upsertQueuedEntry(
   state: IntegrationQueueState,
-  entry: Omit<IntegrationQueueEntry, "status" | "enqueued_at" | "updated_at">,
+  entry: Omit<
+    IntegrationQueueEntry,
+    "status" | "enqueued_at" | "updated_at" | "legacy_protected_conflict_adoption"
+  >,
   clock?: QueueClock,
 ): IntegrationQueueState {
   const resolvedClock = clock ?? DEFAULT_QUEUE_CLOCK;
@@ -437,6 +444,83 @@ export function markQueueEntry(
   };
 }
 
+function adoptionReceiptMatchesQueueEntry(
+  entry: IntegrationQueueEntry,
+  receipt: LegacyProtectedConflictAdoptionReceipt,
+): boolean {
+  return (
+    entry.status === "rework" &&
+    entry.task_id === receipt.task_id &&
+    entry.branch === receipt.queue.branch &&
+    entry.base === receipt.queue.base &&
+    entry.head_sha === receipt.queue.head_sha &&
+    entry.base_sha === receipt.queue.base_sha &&
+    entry.pr_number === receipt.queue.pr_number &&
+    entry.updated_at === receipt.queue.updated_at
+  );
+}
+
+export function recordLegacyProtectedConflictAdoption(
+  state: IntegrationQueueState,
+  receipt: LegacyProtectedConflictAdoptionReceipt,
+): IntegrationQueueState {
+  let validatedReceipt: LegacyProtectedConflictAdoptionReceipt;
+  try {
+    validatedReceipt = parseLegacyProtectedConflictAdoptionReceipt(receipt, 0);
+  } catch {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Legacy protected-conflict adoption receipt is internally inconsistent.",
+      context: { reason_code: "legacy_protected_conflict_adoption_receipt_invalid" },
+    });
+  }
+  let found = false;
+  const entries = state.entries.map((entry) => {
+    if (entry.task_id !== validatedReceipt.task_id) return entry;
+    found = true;
+    if (!adoptionReceiptMatchesQueueEntry(entry, validatedReceipt)) {
+      throw new CliError({
+        code: "E_GIT_RACE",
+        message:
+          `Legacy protected-conflict adoption became stale for ${validatedReceipt.task_id}; ` +
+          "recompute the route before recording recovery evidence.",
+        context: {
+          reason_code: "legacy_protected_conflict_adoption_queue_changed",
+          task_id: validatedReceipt.task_id,
+        },
+      });
+    }
+    const existing = entry.legacy_protected_conflict_adoption;
+    if (existing && existing.evidence_token !== validatedReceipt.evidence_token) {
+      throw new CliError({
+        code: "E_HANDOFF",
+        message:
+          `Legacy protected-conflict adoption already exists for ${validatedReceipt.task_id}; ` +
+          "do not overwrite recovery evidence through a new adoption.",
+        context: {
+          reason_code: "legacy_protected_conflict_adoption_exists",
+          task_id: validatedReceipt.task_id,
+          existing_evidence_token: existing.evidence_token,
+        },
+      });
+    }
+    return existing ? entry : { ...entry, legacy_protected_conflict_adoption: validatedReceipt };
+  });
+  if (!found) {
+    throw new CliError({
+      code: "E_HANDOFF",
+      message:
+        `Integration queue entry not found for legacy protected-conflict adoption: ` +
+        validatedReceipt.task_id,
+      context: {
+        reason_code: "legacy_protected_conflict_adoption_queue_missing",
+        task_id: validatedReceipt.task_id,
+      },
+    });
+  }
+  return { schema_version: 1, entries };
+}
+
 export function reserveQueueEntryForIntegration(
   state: IntegrationQueueState,
   taskId: string,
@@ -447,13 +531,17 @@ export function reserveQueueEntryForIntegration(
     schema_version: 1,
     entries: state.entries.map((entry) =>
       entry.task_id === taskId
-        ? {
-            ...entry,
-            status: "handoff",
-            active_operation: "integration",
-            updated_at: resolvedClock.now().toISOString(),
-            reason: "integration in progress",
-          }
+        ? (() => {
+            const { legacy_protected_conflict_adoption, ...entryWithoutAdoption } = entry;
+            void legacy_protected_conflict_adoption;
+            return {
+              ...entryWithoutAdoption,
+              status: "handoff",
+              active_operation: "integration",
+              updated_at: resolvedClock.now().toISOString(),
+              reason: "integration in progress",
+            };
+          })()
         : entry,
     ),
   };
@@ -484,8 +572,10 @@ function markEntryStatus(
   reason: string | undefined,
   clock: QueueClock,
 ): IntegrationQueueEntry {
-  const { active_operation, ...entryWithoutActiveOperation } = entry;
+  const { active_operation, legacy_protected_conflict_adoption, ...entryWithoutActiveOperation } =
+    entry;
   void active_operation;
+  void legacy_protected_conflict_adoption;
   const next = {
     ...entryWithoutActiveOperation,
     status,

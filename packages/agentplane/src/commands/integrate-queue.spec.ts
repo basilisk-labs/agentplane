@@ -21,7 +21,7 @@ export const integrateQueueSpec: CommandSpec<IntegrateQueueGroupParsed> = {
   group: "PR",
   summary: "Serialize branch_pr integration into one merge lane.",
   synopsis: [
-    "agentplane integrate queue <enqueue|list|doctor|claim|release|run-next> [args] [options]",
+    "agentplane integrate queue <enqueue|list|doctor|claim|release|adopt-legacy-protected-conflict|run-next> [args] [options]",
   ],
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
@@ -170,6 +170,50 @@ export const integrateQueueReleaseSpec: CommandSpec<IntegrateQueueReleaseParsed>
     reason: typeof raw.opts.reason === "string" ? raw.opts.reason : null,
   }),
 };
+
+export type IntegrateQueueAdoptLegacyProtectedConflictParsed = {
+  taskId: string;
+  expectedAdoptionToken: string;
+};
+
+export const integrateQueueAdoptLegacyProtectedConflictSpec: CommandSpec<IntegrateQueueAdoptLegacyProtectedConflictParsed> =
+  {
+    id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
+    group: "PR",
+    summary: "Record an explicit recovery receipt for a verified legacy protected-PR conflict.",
+    args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+    options: [
+      {
+        kind: "string",
+        name: "expect-adoption-token",
+        valueHint: "<sha256:...>",
+        description: "Exact token from task next-action or pr conflict-rework.",
+      },
+    ],
+    parse: (raw) => ({
+      taskId: String(raw.args["task-id"]),
+      expectedAdoptionToken: String(raw.opts["expect-adoption-token"] ?? ""),
+    }),
+    validateRaw: (raw) => {
+      const token =
+        typeof raw.opts["expect-adoption-token"] === "string"
+          ? raw.opts["expect-adoption-token"].trim()
+          : "";
+      if (!token) {
+        throw usageError({
+          spec: integrateQueueAdoptLegacyProtectedConflictSpec,
+          message: "Missing required --expect-adoption-token.",
+        });
+      }
+      if (!/^sha256:[a-f0-9]{64}$/.test(token)) {
+        throw usageError({
+          spec: integrateQueueAdoptLegacyProtectedConflictSpec,
+          message:
+            "Invalid --expect-adoption-token: expected sha256:<64 lowercase hex characters>.",
+        });
+      }
+    },
+  };
 
 export type IntegrateQueueRunNextParsed = {
   worker: string | null;

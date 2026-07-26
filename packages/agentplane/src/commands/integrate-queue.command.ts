@@ -14,12 +14,20 @@ import { cmdIntegrate } from "./pr/integrate/cmd.js";
 import { prepareIntegrate } from "./pr/integrate/internal/prepare.js";
 import {
   claimNextQueuedEntry,
+  createLegacyProtectedConflictAdoptionReceipt,
   markQueueEntry,
   readIntegrationQueue,
+  recordLegacyProtectedConflictAdoption,
   upsertQueuedEntry,
   withIntegrationQueueMutex,
   writeIntegrationQueue,
 } from "./pr/integrate/queue-state.js";
+import { prepareConflictReworkPacket } from "./pr/conflict-rework.js";
+import { resolvePrFlowStatus } from "./pr/flow-status.js";
+import {
+  inspectTaskWorktreeCleanliness,
+  type TaskWorktreeCleanliness,
+} from "./shared/task-worktree-cleanliness.js";
 import {
   assertIntegrationReservationStillFresh,
   completeIntegrationReservation,
@@ -38,6 +46,7 @@ import {
   renderIntegrationQueueEntry,
 } from "./integrate-queue-lane.js";
 import type {
+  IntegrateQueueAdoptLegacyProtectedConflictParsed,
   IntegrateQueueClaimParsed,
   IntegrateQueueDoctorParsed,
   IntegrateQueueEnqueueParsed,
@@ -52,6 +61,7 @@ const DEFAULT_QUEUE_POLL_INTERVAL_MS = 30_000;
 const DEFAULT_QUEUE_WAIT_TIMEOUT_MS = 10 * 60_000;
 
 export {
+  integrateQueueAdoptLegacyProtectedConflictSpec,
   integrateQueueClaimSpec,
   integrateQueueDoctorSpec,
   integrateQueueEnqueueSpec,
@@ -229,6 +239,88 @@ export function makeRunIntegrateQueueReleaseHandler(
       );
     });
     createCliEmitter().success("queue entry", p.taskId, `status=${p.status}`);
+    return 0;
+  };
+}
+
+export function makeRunIntegrateQueueAdoptLegacyProtectedConflictHandler(
+  getCtx: (cmd: string) => Promise<CommandContext>,
+) {
+  return async (
+    ctx: CommandCtx,
+    p: IntegrateQueueAdoptLegacyProtectedConflictParsed,
+  ): Promise<number> => {
+    const commandCtx = await getCtx("integrate queue adopt-legacy-protected-conflict");
+    const gitRoot = commandCtx.resolvedProject.gitRoot;
+    const result = await withIntegrationQueueMutex(gitRoot, async () => {
+      const report = await resolvePrFlowStatus({
+        ctx: commandCtx,
+        cwd: ctx.cwd,
+        rootOverride: ctx.rootOverride,
+        taskId: p.taskId,
+      });
+      const branch = report.branch.name?.trim() ?? "";
+      const taskWorktree: TaskWorktreeCleanliness = branch
+        ? await inspectTaskWorktreeCleanliness({ gitRoot, branch })
+        : { state: "not_present", branch: "", worktreePath: null, changedPaths: [] };
+      const preparation = await prepareConflictReworkPacket({
+        gitRoot,
+        taskId: p.taskId,
+        report,
+        taskWorktree,
+      });
+      if (
+        preparation.state === "ready" &&
+        preparation.packet.route_evidence.kind === "legacy_adopted_protected_base_handoff" &&
+        preparation.packet.route_evidence.adoption.evidence_token === p.expectedAdoptionToken
+      ) {
+        return { state: "already_recorded" as const };
+      }
+      if (preparation.state !== "adoption_required") {
+        const reason =
+          preparation.state === "ready"
+            ? "the current route is already eligible without this legacy adoption"
+            : preparation.reason;
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `Cannot adopt legacy protected-conflict context for ${p.taskId}: ` +
+            `${reason}. Recompute task next-action before any semantic resolution.`,
+          context: {
+            reason_code: "legacy_protected_conflict_adoption_unavailable",
+            task_id: p.taskId,
+            preparation_state: preparation.state,
+          },
+        });
+      }
+      if (preparation.adoption.token !== p.expectedAdoptionToken) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `Legacy protected-conflict adoption token is stale for ${p.taskId}. ` +
+            "Recompute task next-action and retry with its exact token.",
+          context: {
+            reason_code: "legacy_protected_conflict_adoption_stale",
+            task_id: p.taskId,
+            expected_adoption_token: p.expectedAdoptionToken,
+            current_adoption_token: preparation.adoption.token,
+          },
+        });
+      }
+      const receipt = createLegacyProtectedConflictAdoptionReceipt({
+        evidence: preparation.adoption.evidence,
+      });
+      const queue = await readIntegrationQueue(gitRoot);
+      await writeIntegrationQueue(gitRoot, recordLegacyProtectedConflictAdoption(queue, receipt));
+      return { state: "recorded" as const };
+    });
+    createCliEmitter().success(
+      "legacy protected-conflict adoption",
+      p.taskId,
+      result.state === "already_recorded"
+        ? "already recorded"
+        : "recorded; recompute task next-action",
+    );
     return 0;
   };
 }

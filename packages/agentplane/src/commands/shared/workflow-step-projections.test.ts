@@ -787,6 +787,47 @@ describe("WorkflowStep execution projections", () => {
     });
   });
 
+  it("projects legacy protected-conflict adoption as a mutating INTEGRATOR operation", () => {
+    const token = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    const state = routeState({
+      task: { ...task, status: "DONE", verification: { state: "ok" } },
+    });
+    const step = cliOperationStep({
+      state,
+      operationId: "integration.adopt_legacy_protected_conflict",
+      params: { taskId: task.id, expectedAdoptionToken: token },
+      code: "adopt_legacy_protected_conflict",
+      summary: "record formal legacy conflict recovery evidence",
+    });
+    const { oracle, packet } = executionPacket({
+      state,
+      step,
+      paths: { baseCheckoutPath: "/repo" },
+    });
+
+    expect(WORKFLOW_OPERATION_EFFECTS).toMatchObject({
+      "integration.adopt_legacy_protected_conflict": "mutating",
+    });
+    expect(oracle).toMatchObject({
+      authoritativeCheckout: "base_checkout",
+      mutationPathHint: "/repo",
+    });
+    expect(packet).toMatchObject({
+      actionKind: "local_command",
+      recommendedRole: "INTEGRATOR",
+      safeToMutate: true,
+      exactArgv: [
+        "agentplane",
+        "integrate",
+        "queue",
+        "adopt-legacy-protected-conflict",
+        task.id,
+        "--expect-adoption-token",
+        token,
+      ],
+    });
+  });
+
   it("derives integration enqueue from a verified DONE task with an open PR", () => {
     const openPr = {
       task: { id: task.id, status: "DONE", verification: "ok" },

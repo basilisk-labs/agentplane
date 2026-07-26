@@ -16,6 +16,17 @@ function operationArgv(operation: WorkflowOperation): string[] {
     case "batch.reconcile_included": {
       return ["agentplane", "release", "tasks", "reconcile", "--task-id", operation.params.taskId];
     }
+    case "integration.adopt_legacy_protected_conflict": {
+      return [
+        "agentplane",
+        "integrate",
+        "queue",
+        "adopt-legacy-protected-conflict",
+        operation.params.taskId,
+        "--expect-adoption-token",
+        operation.params.expectedAdoptionToken,
+      ];
+    }
     case "integration.enqueue": {
       return [
         "agentplane",

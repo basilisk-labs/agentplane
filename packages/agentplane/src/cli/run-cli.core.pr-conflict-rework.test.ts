@@ -38,9 +38,28 @@ type ConflictRouteOutput = {
         state: "ready";
         packet: {
           provider: { head_sha: string; base_sha: string; mergeability: { state: string } };
+          base_context: {
+            provider_conflict_base_sha: string;
+            current_base_sha: string;
+            relation: string;
+            legacy_queue_base_sha: string | null;
+          };
+          route_evidence: {
+            kind: string;
+            queue: { status: string; base_sha: string } | null;
+            handoff: { provider_base_sha: string | null } | null;
+          };
           candidate_conflict_paths: { paths: string[]; total: number };
           freshness: { token: string };
           safety: { preparation_mutations: unknown[]; cli_must_not: string[] };
+        };
+      }
+    | {
+        state: "adoption_required";
+        reason: string;
+        adoption: {
+          token: string;
+          evidence: { task_id: string };
         };
       }
     | { state: "invalid"; reason_code: string; reason: string }
@@ -502,5 +521,210 @@ describe("provider conflict rework CLI", () => {
         },
       );
     }
+
+    await writeFile(path.join(root, "conflict.txt"), "main queue snapshot\n", "utf8");
+    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: advance legacy queue snapshot"], {
+      cwd: root,
+    });
+    const { stdout: queueBaseRaw } = await execFileAsync("git", ["rev-parse", "main"], {
+      cwd: root,
+    });
+    const legacyQueueBase = queueBaseRaw.trim();
+
+    await writeFile(path.join(root, "conflict.txt"), "main current base\n", "utf8");
+    await execFileAsync("git", ["add", "conflict.txt"], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["commit", "-m", "test: advance current base beyond queue snapshot"],
+      {
+        cwd: root,
+      },
+    );
+    const { stdout: currentBaseRaw } = await execFileAsync("git", ["rev-parse", "main"], {
+      cwd: root,
+    });
+    const currentBase = currentBaseRaw.trim();
+
+    await writeFile(
+      queuePath,
+      `${JSON.stringify({
+        schema_version: 1,
+        entries: [
+          {
+            task_id: taskId,
+            branch,
+            base: "main",
+            head_sha: headSha,
+            base_sha: legacyQueueBase,
+            changed_paths: ["conflict.txt"],
+            pr_number: 4626,
+            pr_url: "https://github.example/acme/agentplane/pull/4626",
+            priority: 0,
+            status: "rework",
+            enqueued_at: "2026-07-26T00:00:00.000Z",
+            updated_at: "2026-07-26T05:24:58.052Z",
+            reason: "released after protected provider merge failed",
+          },
+        ],
+      })}\n`,
+      "utf8",
+    );
+    const handoffDir = path.join(root, ".agentplane", "tasks", taskId, "handoff");
+    await mkdir(handoffDir, { recursive: true });
+    await writeFile(
+      path.join(handoffDir, "latest.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        task_id: taskId,
+        created_at: "2026-07-26T00:00:00.000Z",
+        from_role: "INTEGRATOR",
+        reason: "branch_pr integration is waiting for the GitHub PR merge into main.",
+        note: "legacy protected-base handoff fixture",
+        branch,
+        base_branch: "main",
+        head_sha: headSha,
+        pr_branch: branch,
+        route: {
+          kind: "protected_base_integrate",
+          status: "awaiting_github_merge",
+          local_mutation: "not_performed",
+          finalize_via: "github_task_pr_merge_then_hosted_close",
+          pr_number: 4626,
+          pr_url: "https://github.example/acme/agentplane/pull/4626",
+        },
+        next_actions: [],
+        evidence_paths: [],
+      })}\n`,
+      "utf8",
+    );
+
+    await withFakeGh(
+      root,
+      fakeGithubProviderSource({
+        ...providerCore,
+        mergeable: false,
+        mergeable_state: "dirty",
+      }),
+      async () => {
+        const [rootBefore, worktreeBefore] = await Promise.all([
+          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+        ]);
+        const route = await readRemoteRoute(root, taskId);
+        const conflictRework = route.conflict_rework;
+        if (conflictRework?.state !== "adoption_required") {
+          throw new Error("expected legacy conflict-rework adoption requirement");
+        }
+        expect(route.workflow_step).toMatchObject({
+          kind: "cli_operation",
+          id: "integration.adopt_legacy_protected_conflict",
+          authoritativeCheckout: "base_checkout",
+          operation: {
+            params: { taskId, expectedAdoptionToken: conflictRework.adoption.token },
+          },
+        });
+        expect(route.execution_packet).toMatchObject({
+          actionKind: "local_command",
+          safeToMutate: true,
+          exactArgv: [
+            "agentplane",
+            "integrate",
+            "queue",
+            "adopt-legacy-protected-conflict",
+            taskId,
+            "--expect-adoption-token",
+            conflictRework.adoption.token,
+          ],
+        });
+
+        const blockedPacketIo = captureStdIO();
+        try {
+          const code = await runCli(["pr", "conflict-rework", taskId, "--json", "--root", root]);
+          expect(code).not.toBe(0);
+          expect(blockedPacketIo.stderr).toContain("explicit INTEGRATOR adoption receipt");
+          expect(blockedPacketIo.stderr).toContain("adopt-legacy-protected-conflict");
+          expect(blockedPacketIo.stderr).toContain(conflictRework.adoption.token);
+        } finally {
+          blockedPacketIo.restore();
+        }
+
+        const adoptionIo = captureStdIO();
+        try {
+          const code = await runCli([
+            "integrate",
+            "queue",
+            "adopt-legacy-protected-conflict",
+            taskId,
+            "--expect-adoption-token",
+            conflictRework.adoption.token,
+            "--root",
+            root,
+          ]);
+          if (code !== 0) process.stderr.write(adoptionIo.stderr);
+          expect(code).toBe(0);
+        } finally {
+          adoptionIo.restore();
+        }
+
+        const adoptedRoute = await readRemoteRoute(root, taskId);
+        const adoptedConflictRework = adoptedRoute.conflict_rework;
+        if (adoptedConflictRework?.state !== "ready") {
+          throw new Error("expected adopted legacy conflict-rework packet");
+        }
+        expect(adoptedRoute.workflow_step).toMatchObject({
+          kind: "agent_episode",
+          id: "agent.provider_conflict_rework",
+          authoritativeCheckout: "task_worktree",
+        });
+        expect(adoptedRoute.execution_packet).toMatchObject({
+          actionKind: "stop",
+          safeToMutate: true,
+        });
+        expect(adoptedConflictRework.packet).toMatchObject({
+          provider: { base_sha: baseSha },
+          base_context: {
+            provider_conflict_base_sha: baseSha,
+            current_base_sha: currentBase,
+            relation: "provider_base_ancestor_of_current_base",
+            legacy_queue_base_sha: legacyQueueBase,
+          },
+          route_evidence: {
+            kind: "legacy_adopted_protected_base_handoff",
+            queue: { status: "rework", base_sha: legacyQueueBase },
+            handoff: { provider_base_sha: null },
+          },
+        });
+
+        const packetIo = captureStdIO();
+        try {
+          const code = await runCli([
+            "pr",
+            "conflict-rework",
+            taskId,
+            "--expect-freshness-token",
+            adoptedConflictRework.packet.freshness.token,
+            "--json",
+            "--root",
+            root,
+          ]);
+          if (code !== 0) process.stderr.write(packetIo.stderr);
+          expect(code).toBe(0);
+          expect(JSON.parse(packetIo.stdout)).toMatchObject({
+            base_context: { current_base_sha: currentBase },
+            route_evidence: { kind: "legacy_adopted_protected_base_handoff" },
+          });
+        } finally {
+          packetIo.restore();
+        }
+
+        const [rootAfter, worktreeAfter] = await Promise.all([
+          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+        ]);
+        expect(rootAfter.stdout).toBe(rootBefore.stdout);
+        expect(worktreeAfter.stdout).toBe(worktreeBefore.stdout);
+      },
+    );
   });
 });

@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
 status: "TODO"
 priority: "high"
 owner: "TESTER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -21,6 +21,7 @@ depends_on:
   - "202607221907-DK2CJF"
   - "202607242158-QV09NA"
   - "202607252215-SNV847"
+  - "202607260532-9M7RNH"
 tags:
   - "milestone-0-7-0-alpha-2"
   - "quality"

@@ -51,6 +51,7 @@ Commands:
   PR:
     integrate  Integrate a task branch into the base branch (branch_pr workflow).
     integrate queue  Serialize branch_pr integration into one merge lane.
+    integrate queue adopt-legacy-protected-conflict  Record an explicit recovery receipt for a verified legacy protected-PR conflict.
     integrate queue claim  Claim the next queued integration candidate without running integrate.
     integrate queue doctor  Diagnose and optionally repair stale branch_pr integration queue state.
     integrate queue enqueue  Add or refresh a verified task branch in the integration queue.
@@ -61,6 +62,7 @@ Commands:
     pr check  Check that PR artifacts are present and valid.
     pr close  Close a GitHub PR through REST with optional remote head-branch deletion.
     pr close-superseded  Close a superseded task PR using task artifacts.
+    pr conflict-rework  Prepare a bounded read-only semantic rework packet for a provider-reported merge conflict.
     pr flow status  Show branch_pr task branch, remote PR, close-tail, and next-action state.
     pr note  Append a handoff note into PR review.md.
     pr open  Create PR artifacts for a task and, unless --sync-only is set, publish/link the remote GitHub PR.
@@ -202,6 +204,7 @@ Commands:
   Workflow:
     flow  Inspect and repair high-level task workflow routes.
     flow repair  Print or apply safe repair steps for task workflow drift.
+    workflow migrate  Migrate WORKFLOW.md v1 to v2 with an exact-byte rollback receipt.
   Framework Dev:
     codex  Codex integration commands.
     codex plugin  Install and inspect bundled Codex plugin integrations.

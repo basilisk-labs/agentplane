@@ -16,6 +16,7 @@ export const WORKFLOW_OPERATION_EFFECTS = {
   "batch.follow_primary": "read_only",
   "batch.collect_included": "read_only",
   "batch.reconcile_included": "mutating",
+  "integration.adopt_legacy_protected_conflict": "mutating",
   "worktree.prepare": "mutating",
   "pr.artifacts.update": "mutating",
   "pr.open": "mutating",

@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import { parseCommandArgv } from "../cli/spec/parse.js";
 import { applyIntegrationQueueDoctorRepairs } from "./integrate-queue-doctor.js";
-import { integrateQueueRunNextSpec } from "./integrate-queue.spec.js";
+import {
+  integrateQueueAdoptLegacyProtectedConflictSpec,
+  integrateQueueRunNextSpec,
+} from "./integrate-queue.spec.js";
 import {
   emptyIntegrationQueue,
   markQueueEntry,
@@ -59,6 +62,28 @@ describe("integrate queue spec parsing/validation", () => {
     } catch (err) {
       expect(err).toMatchObject({ code: "E_USAGE" });
     }
+  });
+
+  it("requires an exact structured token for legacy protected-conflict adoption", () => {
+    const token = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    expect(
+      parseCommandArgv(integrateQueueAdoptLegacyProtectedConflictSpec, [
+        "202607252223-THDN0G",
+        "--expect-adoption-token",
+        token,
+      ]).parsed,
+    ).toEqual({ taskId: "202607252223-THDN0G", expectedAdoptionToken: token });
+
+    expect(() =>
+      parseCommandArgv(integrateQueueAdoptLegacyProtectedConflictSpec, ["202607252223-THDN0G"]),
+    ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
+    expect(() =>
+      parseCommandArgv(integrateQueueAdoptLegacyProtectedConflictSpec, [
+        "202607252223-THDN0G",
+        "--expect-adoption-token",
+        "free-form-reason",
+      ]),
+    ).toThrowError(expect.objectContaining({ code: "E_USAGE" }));
   });
 
   it("applies doctor repairs to a fresh queue snapshot without dropping concurrent entries", () => {

@@ -14,6 +14,25 @@ function packetFailure(
   taskId: string,
   preparation: Exclude<ConflictReworkPreparation, { state: "ready" }>,
 ): CliError {
+  if (preparation.state === "adoption_required") {
+    const command =
+      `agentplane integrate queue adopt-legacy-protected-conflict ${taskId} ` +
+      `--expect-adoption-token ${preparation.adoption.token}`;
+    return new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Cannot prepare semantic conflict rework for ${taskId}: ${preparation.reason}. ` +
+        `An INTEGRATOR must first record the formal legacy recovery receipt with: ${command}. ` +
+        "No branch, worktree, PR, provider, queue, or task-state mutation was performed.",
+      context: {
+        reason_code: "legacy_protected_conflict_adoption_required",
+        task_id: taskId,
+        adoption_token: preparation.adoption.token,
+        next_command: command,
+      },
+    });
+  }
   const reasonCode =
     preparation.state === "invalid" ? preparation.reason_code : "provider_pr_not_conflicting";
   return new CliError({
@@ -87,7 +106,21 @@ export async function cmdPrConflictRework(opts: {
         { label: "pr", value: `#${preparation.packet.provider.pr_number}` },
         { label: "branch", value: preparation.packet.provider.branch },
         { label: "provider_head", value: preparation.packet.provider.head_sha },
-        { label: "provider_base", value: preparation.packet.provider.base_sha },
+        {
+          label: "provider_conflict_base",
+          value: preparation.packet.base_context.provider_conflict_base_sha,
+        },
+        { label: "current_base", value: preparation.packet.base_context.current_base_sha },
+        { label: "base_relation", value: preparation.packet.base_context.relation },
+        {
+          label: "legacy_queue_base",
+          value: preparation.packet.base_context.legacy_queue_base_sha ?? "none",
+        },
+        {
+          label: "legacy_queue_relation",
+          value: preparation.packet.base_context.legacy_queue_relation,
+        },
+        { label: "route_evidence", value: preparation.packet.route_evidence.kind },
         { label: "merge_base", value: preparation.packet.local.merge_base_sha },
         {
           label: "candidate_conflict_paths",
