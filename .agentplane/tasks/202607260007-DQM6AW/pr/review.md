@@ -6,14 +6,14 @@ Created: 2026-07-26T00:55:55.843Z
 
 - Task: `202607260007-DQM6AW`
 - Title: Prepare semantic conflict rework routes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes`
 - Canonical task record: `.agentplane/tasks/202607260007-DQM6AW/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted CI detected unsynchronized generated task-handoff schemas after provider_base_sha.
+- State: ok
+- Note: Independent verification at bb61f912: focused agentplane 93, cli-core 12, core schema 27, and critical 7 tests passed; schemas check, typecheck, lint, guards, lifecycle invariants, policy routing, doctor, and diff check passed. Doctor reported only historical archive warnings.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -47,22 +47,26 @@ Created: 2026-07-26T00:55:55.843Z
  .../src/commands/pr/internal/sync-github.ts        | 161 ++++-
  packages/agentplane/src/commands/pr/pr.command.ts  |  16 +
  packages/agentplane/src/commands/pr/pr.spec.ts     |  58 +-
- .../src/commands/shared/route-decision-blockers.ts |  25 +
+ .../route-decision-blockers.quality-review.test.ts |  25 +-
+ .../src/commands/shared/route-decision-blockers.ts |  44 ++
  .../src/commands/shared/route-decision-types.ts    |   2 +
  .../src/commands/shared/route-decision.ts          |  21 +-
  .../agentplane/src/commands/shared/route-oracle.ts |   2 +
  .../agentplane/src/commands/shared/task-handoff.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  16 +-
  .../src/commands/shared/workflow-step-factory.ts   |  61 ++
- .../shared/workflow-step-projections.test.ts       | 222 +++++++
+ .../shared/workflow-step-projections.test.ts       | 304 ++++++++++
  .../commands/shared/workflow-step-projections.ts   |  10 +-
  .../src/commands/shared/workflow-step.ts           |   2 +
  .../src/commands/task/next-action.command.ts       |  22 +
+ packages/core/schemas/task-handoff.schema.json     |  11 +
  .../core/src/tasks/task-artifact-schema.handoff.ts |   1 +
+ packages/spec/schemas/task-handoff.schema.json     |  11 +
  packages/testkit/src/github-pr.ts                  |  11 +-
+ schemas/task-handoff.schema.json                   |  11 +
  .../baselines/v0.7-compatibility-candidate.json    |  78 ++-
  .../check-compatibility-contract-baseline.mjs      |  52 +-
- 33 files changed, 2721 insertions(+), 63 deletions(-)
+ 37 files changed, 2878 insertions(+), 65 deletions(-)
 ```
 
 </details>
