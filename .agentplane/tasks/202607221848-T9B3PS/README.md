@@ -4,7 +4,7 @@ title: "Publish AgentWorkOrder v2 schema and migrations"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -35,11 +35,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-26T09:00:04.017Z"
+  state: "ok"
+  updated_at: "2026-07-26T09:09:04.748Z"
   updated_by: "TESTER"
-  note: "Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet shapes including owner:null, and avoid synthetic recommended_role fixtures."
-  attempts: 1
+  note: "Verified corrected v1 migration compatibility: explicit work_order_id and role omission receipts, lifecycle-role separation, representative runner/Hermes packets, and Hermes owner:null parsing."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-26T09:09:54.071Z"
+  updated_by: "EVALUATOR"
+  note: "PASS: the committed v1 compatibility reader now preserves lifecycle roles as audit metadata, records all caller-supplied v2 facts, and accepts representative runner/Hermes projections without granting authority."
+  evaluated_sha: "36eb7f509bd849cc051349e211a0326342edbb2b"
+  blueprint_digest: "e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6"
+  evidence_refs:
+    - ".agentplane/tasks/202607221848-T9B3PS/README.md"
+    - ".agentplane/tasks/202607221848-T9B3PS/quality/20260726-090954071-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-T9B3PS/quality/20260726-090954071-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-T9B3PS/quality/20260726-090954071-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-T9B3PS/blueprint/resolved-snapshot.json"
+    - "packages/core/src/runner/agent-work-order-compat.ts"
+    - "packages/core/src/runner/agent-work-order.test.ts"
+    - "schemas/examples/agent-work-order-v1.hermes.legacy.json"
+    - "bun run test:critical (11/11)"
+    - "independent constrained P0/P1 review: pass"
+  findings:
+    - "Verify Step 2 is satisfied: runner reads route_decision.executionPacket.recommendedRole, Hermes uses camelCase RouteExecutionPacket fields and owner:null, and migration requires explicit work_order_id and semantic role."
+    - "Verify Steps 1, 3, 4, and 5 are evidenced by generated fixtures/schema checks, focused contract tests, critical CLI 11/11, typecheck, formatting, guards, routing, and compatibility baseline."
 commit: null
 comments:
   -
@@ -59,8 +81,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet shapes including owner:null, and avoid synthetic recommended_role fixtures."
+  -
+    type: "verify"
+    at: "2026-07-26T09:09:04.748Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified corrected v1 migration compatibility: explicit work_order_id and role omission receipts, lifecycle-role separation, representative runner/Hermes packets, and Hermes owner:null parsing."
 doc_version: 3
-doc_updated_at: "2026-07-26T09:00:04.690Z"
+doc_updated_at: "2026-07-26T09:09:05.393Z"
 doc_updated_by: "CODER"
 description: "RF-05a: evolve agentplane.agent_work_context into one versioned AgentWorkOrder v2 schema containing objective, acceptance, role, fingerprint, authority, prepared evidence, knowledge refs, verification intent, required outputs, and semantic-result contract."
 sections:
@@ -115,6 +143,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T09:09:04.748Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified corrected v1 migration compatibility: explicit work_order_id and role omission receipts, lifecycle-role separation, representative runner/Hermes packets, and Hermes owner:null parsing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T09:00:04.690Z, excerpt_hash=sha256:bd068eed5da8a9bc8c1f7c672456083acd50da4745ff1c87fa2c05a3df936bd6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-T9B3PS-publish-agentworkorder-v2-schema-and-migrations/.agentplane/tasks/202607221848-T9B3PS/blueprint/resolved-snapshot.json
+    - old_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+    - current_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-T9B3PS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -124,6 +182,10 @@ sections:
     - Observation: Independent review found valid Hermes owner:null rejected and migration fixtures divergent from current runner/Hermes contracts.
       Impact: Verify Step 2 is not proven for representative v1 payloads.
       Resolution: Correct the reader and fixtures, rerun contract/compatibility checks, then record independent TESTER evidence.
+
+    - Observation: Focused core contract 9/9; typecheck, schemas:check, spec:examples:check, compatibility baseline, format, guards, routing, and critical CLI 11/11 passed. Independent constrained P0/P1 review passed.
+      Impact: Verify Steps 1-5 are evidenced; v1 migration no longer invents semantic role or rejects the Hermes nullable owner projection.
+      Resolution: Published v2 schema and compatibility candidate remain unchanged; this commit hardens only reader, fixtures, and generator formatting.
 extensions:
   workflow_route_baseline:
     start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
@@ -190,6 +252,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T09:09:04.748Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified corrected v1 migration compatibility: explicit work_order_id and role omission receipts, lifecycle-role separation, representative runner/Hermes packets, and Hermes owner:null parsing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T09:00:04.690Z, excerpt_hash=sha256:bd068eed5da8a9bc8c1f7c672456083acd50da4745ff1c87fa2c05a3df936bd6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-T9B3PS-publish-agentworkorder-v2-schema-and-migrations/.agentplane/tasks/202607221848-T9B3PS/blueprint/resolved-snapshot.json
+- old_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+- current_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-T9B3PS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -203,3 +295,7 @@ DecisionContextRef:
 - Observation: Independent review found valid Hermes owner:null rejected and migration fixtures divergent from current runner/Hermes contracts.
   Impact: Verify Step 2 is not proven for representative v1 payloads.
   Resolution: Correct the reader and fixtures, rerun contract/compatibility checks, then record independent TESTER evidence.
+
+- Observation: Focused core contract 9/9; typecheck, schemas:check, spec:examples:check, compatibility baseline, format, guards, routing, and critical CLI 11/11 passed. Independent constrained P0/P1 review passed.
+  Impact: Verify Steps 1-5 are evidenced; v1 migration no longer invents semantic role or rejects the Hermes nullable owner projection.
+  Resolution: Published v2 schema and compatibility candidate remain unchanged; this commit hardens only reader, fixtures, and generator formatting.
