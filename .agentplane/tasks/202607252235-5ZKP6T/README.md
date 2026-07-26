@@ -4,7 +4,7 @@ title: "Prevent foreign task artifacts in branch_pr worktrees"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,31 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-25T23:29:57.587Z"
+  state: "ok"
+  updated_at: "2026-07-25T23:48:22.803Z"
   updated_by: "TESTER"
-  note: "Rework: guarded repair may unlink the replica after its authoritative source changed, so the proof is stale at deletion time."
-  attempts: 1
+  note: "Verified rework SHA bc47bcd3: 42 focused tests passed; mutation, replacement, missing, and symlinked authoritative-source races each skipped with authoritative_source_changed_before_remove and retained the foreign replica; typecheck, lint, lifecycle, routing, diff, and doctor passed."
+  attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-25T23:54:36.677Z"
+  updated_by: "EVALUATOR"
+  note: "Rework: the repair revalidates the authoritative source but can unlink a replica changed after inspection."
+  evaluated_sha: "bc47bcd3a0153cba09908fb392d9078d20cc87a1"
+  blueprint_digest: "2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb"
+  evidence_refs:
+    - ".agentplane/tasks/202607252235-5ZKP6T/README.md"
+    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260725-235436677-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260725-235436677-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607252235-5ZKP6T/quality/20260725-235436677-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.ts:485-523"
+    - "packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts:287-318"
+    - "bunx vitest run packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts packages/agentplane/src/commands/shared/task-worktree-foreign-artifact-repair.test.ts packages/agentplane/src/commands/shared/route-decision-blockers.worktree.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts --config vitest.workspace.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000 (42 passed)"
+  findings:
+    - "applyForeignTaskReadmeReplicaRepair captures a fresh replica identity at lines 496-504, then awaits full source revalidation at lines 509-512, and unlinks at line 514 without comparing the target to the original replica proof. A changed regular replica can therefore be deleted."
+    - "The durable regression covers only source text mutation after inspection; it does not cover source replacement, removal, symlink substitution, or a replica mutation after proof."
 commit: null
 comments:
   -
@@ -51,8 +71,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: guarded repair may unlink the replica after its authoritative source changed, so the proof is stale at deletion time."
+  -
+    type: "verify"
+    at: "2026-07-25T23:48:22.803Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified rework SHA bc47bcd3: 42 focused tests passed; mutation, replacement, missing, and symlinked authoritative-source races each skipped with authoritative_source_changed_before_remove and retained the foreign replica; typecheck, lint, lifecycle, routing, diff, and doctor passed."
 doc_version: 3
-doc_updated_at: "2026-07-25T23:29:58.303Z"
+doc_updated_at: "2026-07-25T23:48:23.473Z"
 doc_updated_by: "CODER"
 description: "Stop work start from materializing foreign untracked task artifacts into a task worktree, and add a deterministic guarded repair route for already contaminated worktrees so their lifecycle can resume without manual deletion."
 sections:
@@ -101,6 +127,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-25T23:48:22.803Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified rework SHA bc47bcd3: 42 focused tests passed; mutation, replacement, missing, and symlinked authoritative-source races each skipped with authoritative_source_changed_before_remove and retained the foreign replica; typecheck, lint, lifecycle, routing, diff, and doctor passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T23:29:58.303Z, excerpt_hash=sha256:e861d2f2fe43755547db6bee543bf231d306135ebb7898f1a924c06b90c65dc8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+    - old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -109,6 +165,10 @@ sections:
     - Observation: Deterministic TOCTOU probe changed the authoritative source on inspect's post-proof git-status call; applyForeignTaskReadmeReplicaRepair still returned applied and removed the replica.
       Impact: A destructive repair can delete a README that is no longer an exact byte-identical or TODO-to-DOING replica of the live source.
       Resolution: Capture the authoritative source path-chain identity with the proof and revalidate it immediately before unlink; add a durable regression that mutates the source after proof and expects skipped/no deletion.
+
+    - Observation: Independent TOCTOU probe exercised source mutation, inode replacement, removal, and symlink substitution after proof.
+      Impact: A stale proof cannot delete the foreign README after authoritative-source drift.
+      Resolution: Source identity and content are revalidated immediately before unlink; all required local checks passed.
 extensions:
   workflow_route_baseline:
     start_head_sha: "220c7f110c07a14b2b055003cd338ad4c1c3503e"
@@ -170,6 +230,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-25T23:48:22.803Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified rework SHA bc47bcd3: 42 focused tests passed; mutation, replacement, missing, and symlinked authoritative-source races each skipped with authoritative_source_changed_before_remove and retained the foreign replica; typecheck, lint, lifecycle, routing, diff, and doctor passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-25T23:29:58.303Z, excerpt_hash=sha256:e861d2f2fe43755547db6bee543bf231d306135ebb7898f1a924c06b90c65dc8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607252235-5ZKP6T-prevent-foreign-task-artifacts-in-branch-pr-work/.agentplane/tasks/202607252235-5ZKP6T/blueprint/resolved-snapshot.json
+- old_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- current_digest: 2f56cc173030ddf9dc58489bddc12c017a6aad68fb7daa14e7ced35f5be68acb
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607252235-5ZKP6T
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -182,3 +272,7 @@ DecisionContextRef:
 - Observation: Deterministic TOCTOU probe changed the authoritative source on inspect's post-proof git-status call; applyForeignTaskReadmeReplicaRepair still returned applied and removed the replica.
   Impact: A destructive repair can delete a README that is no longer an exact byte-identical or TODO-to-DOING replica of the live source.
   Resolution: Capture the authoritative source path-chain identity with the proof and revalidate it immediately before unlink; add a durable regression that mutates the source after proof and expects skipped/no deletion.
+
+- Observation: Independent TOCTOU probe exercised source mutation, inode replacement, removal, and symlink substitution after proof.
+  Impact: A stale proof cannot delete the foreign README after authoritative-source drift.
+  Resolution: Source identity and content are revalidated immediately before unlink; all required local checks passed.

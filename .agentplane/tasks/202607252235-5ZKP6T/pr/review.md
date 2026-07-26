@@ -12,8 +12,8 @@ Created: 2026-07-25T22:39:31.309Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: guarded repair may unlink the replica after its authoritative source changed, so the proof is stale at deletion time.
+- State: ok
+- Note: Verified rework SHA bc47bcd3: 42 focused tests passed; mutation, replacement, missing, and symlinked authoritative-source races each skipped with authoritative_source_changed_before_remove and retained the foreign replica; typecheck, lint, lifecycle, routing, diff, and doctor passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,8 +37,8 @@ Created: 2026-07-25T22:39:31.309Z
  .../src/commands/shared/route-decision-blockers.ts |  41 +-
  .../route-decision-blockers.worktree.test.ts       |  15 +
  .../src/commands/shared/route-decision.ts          |  15 +
- .../task-worktree-foreign-artifact-repair.test.ts  | 438 +++++++++++++++++
- .../task-worktree-foreign-artifact-repair.ts       | 523 +++++++++++++++++++++
+ .../task-worktree-foreign-artifact-repair.test.ts  | 557 +++++++++++++++++++++
+ .../task-worktree-foreign-artifact-repair.ts       | 553 ++++++++++++++++++++
  .../commands/shared/workflow-operation-effects.ts  |   1 +
  .../commands/shared/workflow-operation-prefix.ts   |   1 +
  .../shared/workflow-operation-projection.ts        |   3 +
@@ -47,7 +47,7 @@ Created: 2026-07-25T22:39:31.309Z
  .../commands/shared/workflow-step-fingerprint.ts   |   1 +
  .../src/commands/shared/workflow-step.test.ts      |   4 +
  .../src/commands/shared/workflow-step.ts           |  19 +
- 18 files changed, 1178 insertions(+), 37 deletions(-)
+ 18 files changed, 1327 insertions(+), 37 deletions(-)
 ```
 
 </details>

@@ -19,11 +19,14 @@ const TASK_README_MAX_BYTES = 256 * 1024 * 1024;
 
 export type ForeignTaskReadmeReplicaProof = "byte_identical" | "start_ready_replica";
 
-type AuthoritativeSourceProof = {
+type StableTextProof = {
   path: string;
   identity: ContainedPathChainIdentity;
   content_sha256: string;
 };
+
+type AuthoritativeSourceProof = StableTextProof;
+type ForeignTaskReadmeReplicaPathProof = StableTextProof;
 
 type ForeignTaskReadmeReplicaRepairEligible = {
   state: "eligible";
@@ -46,6 +49,7 @@ export type ForeignTaskReadmeReplicaRepair =
 type InspectedForeignTaskReadmeReplicaRepair =
   | (ForeignTaskReadmeReplicaRepairEligible & {
       authoritativeSource: AuthoritativeSourceProof;
+      replica: ForeignTaskReadmeReplicaPathProof;
     })
   | {
       state: "not_applicable";
@@ -429,6 +433,11 @@ async function inspectForeignTaskReadmeReplicaRepairForApply(opts: {
     worktreePath,
     replicaPath,
     proof,
+    replica: {
+      path: replicaIdentity.file_path,
+      identity: replicaIdentity,
+      content_sha256: contentSha256(replicaText),
+    },
     authoritativeSource: {
       path: sourceIdentity.file_path,
       identity: sourceIdentity,
@@ -445,34 +454,55 @@ export async function inspectForeignTaskReadmeReplicaRepair(opts: {
 }): Promise<ForeignTaskReadmeReplicaRepair> {
   const inspection = await inspectForeignTaskReadmeReplicaRepairForApply(opts);
   if (inspection.state !== "eligible") return inspection;
-  const { authoritativeSource: _authoritativeSource, ...publicInspection } = inspection;
+  const {
+    authoritativeSource: _authoritativeSource,
+    replica: _replica,
+    ...publicInspection
+  } = inspection;
   return publicInspection;
+}
+
+async function assertStableTextProofUnchanged(opts: {
+  proof: StableTextProof;
+  label: string;
+}): Promise<void> {
+  const { proof, label } = opts;
+  await assertContainedPathChainIdentityUnchanged(proof.identity, label);
+  const sourceText = await readContainedStableTextNoFollow({
+    repository_root: proof.identity.repository_root,
+    file_path: proof.path,
+    label,
+    max_bytes: TASK_README_MAX_BYTES,
+  });
+  if (contentSha256(sourceText) !== proof.content_sha256) {
+    throw new Error(`${label} changed after proof`);
+  }
+  const afterIdentity = await captureContainedPathChainIdentity({
+    repository_root: proof.identity.repository_root,
+    file_path: proof.path,
+    label,
+  });
+  if (!afterIdentity.target_exists || !sameContainedPathChain(proof.identity, afterIdentity)) {
+    throw new Error(`${label} path changed after proof`);
+  }
 }
 
 async function assertAuthoritativeSourceProofUnchanged(
   proof: AuthoritativeSourceProof,
 ): Promise<void> {
-  await assertContainedPathChainIdentityUnchanged(
-    proof.identity,
-    "authoritative foreign task README",
-  );
-  const sourceText = await readContainedStableTextNoFollow({
-    repository_root: proof.identity.repository_root,
-    file_path: proof.path,
-    label: "authoritative foreign task README",
-    max_bytes: TASK_README_MAX_BYTES,
-  });
-  if (contentSha256(sourceText) !== proof.content_sha256) {
-    throw new Error("authoritative foreign task README changed after proof");
-  }
-  const afterIdentity = await captureContainedPathChainIdentity({
-    repository_root: proof.identity.repository_root,
-    file_path: proof.path,
+  await assertStableTextProofUnchanged({
+    proof,
     label: "authoritative foreign task README",
   });
-  if (!afterIdentity.target_exists || !sameContainedPathChain(proof.identity, afterIdentity)) {
-    throw new Error("authoritative foreign task README path changed after proof");
-  }
+}
+
+async function assertForeignTaskReadmeReplicaProofUnchanged(
+  proof: ForeignTaskReadmeReplicaPathProof,
+): Promise<void> {
+  await assertStableTextProofUnchanged({
+    proof,
+    label: "foreign task README replica",
+  });
 }
 
 export async function applyForeignTaskReadmeReplicaRepair(opts: {
@@ -481,6 +511,8 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
   baseBranch: string | null;
   /** @internal Deterministic TOCTOU injection for security regression tests. */
   after_inspection?: () => Promise<void>;
+  /** @internal Deterministic TOCTOU injection after source revalidation. */
+  after_source_revalidation?: () => Promise<void>;
 }): Promise<ForeignTaskReadmeReplicaApplyResult> {
   const inspection = await inspectForeignTaskReadmeReplicaRepairForApply({
     ctx: opts.ctx,
@@ -493,15 +525,7 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
   }
   await opts.after_inspection?.();
   try {
-    const replicaIdentity = await captureContainedPathChainIdentity({
-      repository_root: inspection.worktreePath,
-      file_path: inspection.replicaPath,
-      label: "foreign task README replica",
-    });
-    if (!replicaIdentity.target_exists) {
-      return { state: "skipped", reason: "foreign_replica_changed_before_remove" };
-    }
-    await assertContainedPathChainIdentityUnchanged(replicaIdentity, "foreign task README replica");
+    await assertForeignTaskReadmeReplicaProofUnchanged(inspection.replica);
   } catch {
     return { state: "skipped", reason: "foreign_replica_changed_before_remove" };
   }
@@ -509,6 +533,12 @@ export async function applyForeignTaskReadmeReplicaRepair(opts: {
     await assertAuthoritativeSourceProofUnchanged(inspection.authoritativeSource);
   } catch {
     return { state: "skipped", reason: "authoritative_source_changed_before_remove" };
+  }
+  await opts.after_source_revalidation?.();
+  try {
+    await assertForeignTaskReadmeReplicaProofUnchanged(inspection.replica);
+  } catch {
+    return { state: "skipped", reason: "foreign_replica_changed_before_remove" };
   }
   try {
     await unlink(inspection.replicaPath);

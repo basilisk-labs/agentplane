@@ -1,4 +1,13 @@
-import { lstat, mkdir, readFile, realpath, symlink, writeFile } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  readFile,
+  realpath,
+  rename,
+  symlink,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
 import path from "node:path";
 
 import { execFileAsync } from "@agentplaneorg/core/process";
@@ -196,6 +205,78 @@ async function createFixture(mode: ReplicaMode): Promise<{
   return { baseRoot, targetWorktree, foreignWorktree, activeReadmePath, replicaPath, sourcePath };
 }
 
+type ForeignTaskReadmeReplicaFixture = Awaited<ReturnType<typeof createFixture>>;
+
+async function replaceRegularFile(filePath: string, text: string): Promise<void> {
+  const replacementPath = `${filePath}.replacement`;
+  await writeFile(replacementPath, text, "utf8");
+  await rename(replacementPath, filePath);
+}
+
+async function mutateAuthoritativeSourceAfterProof(opts: {
+  fixture: ForeignTaskReadmeReplicaFixture;
+  mutation: "contents" | "replacement" | "missing" | "symlink";
+}): Promise<void> {
+  const { fixture, mutation } = opts;
+  if (mutation === "contents") {
+    await writeFile(
+      fixture.sourcePath,
+      taskReadme({
+        taskId: FOREIGN_TASK_ID,
+        status: "DOING",
+        revision: 7,
+        title: "Source changed after repair proof",
+      }),
+      "utf8",
+    );
+    return;
+  }
+  if (mutation === "replacement") {
+    await replaceRegularFile(
+      fixture.sourcePath,
+      taskReadme({
+        taskId: FOREIGN_TASK_ID,
+        status: "DOING",
+        revision: 7,
+        title: "Source replaced after repair proof",
+      }),
+    );
+    return;
+  }
+  await unlink(fixture.sourcePath);
+  if (mutation === "symlink") {
+    await symlink(fixture.replicaPath, fixture.sourcePath);
+  }
+}
+
+async function mutateReplicaAfterSourceRevalidation(opts: {
+  fixture: ForeignTaskReadmeReplicaFixture;
+  mutation: "contents" | "replacement" | "missing" | "symlink";
+}): Promise<void> {
+  const { fixture, mutation } = opts;
+  if (mutation === "contents") {
+    await writeFile(
+      fixture.replicaPath,
+      taskReadme({
+        taskId: FOREIGN_TASK_ID,
+        status: "TODO",
+        revision: 6,
+        title: "Replica changed after repair proof",
+      }),
+      "utf8",
+    );
+    return;
+  }
+  if (mutation === "replacement") {
+    await replaceRegularFile(fixture.replicaPath, await readFile(fixture.replicaPath, "utf8"));
+    return;
+  }
+  await unlink(fixture.replicaPath);
+  if (mutation === "symlink") {
+    await symlink(fixture.sourcePath, fixture.replicaPath);
+  }
+}
+
 async function targetContext(baseRoot: string, targetWorktree: string) {
   return loadCommandContext({ cwd: baseRoot, rootOverride: targetWorktree });
 }
@@ -284,38 +365,76 @@ describe("foreign task README replica repair", () => {
     },
   );
 
-  it("leaves the replica intact when the authoritative source changes after proof", async () => {
-    const fixture = await createFixture("start_ready");
-    const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+  it.each([
+    ["contents change", "contents"],
+    ["regular file replacement", "replacement"],
+    ["removal", "missing"],
+    ["symlink substitution", "symlink"],
+  ] as const)(
+    "leaves the replica intact when the authoritative source has a %s after proof",
+    async (_description, mutation) => {
+      const fixture = await createFixture("start_ready");
+      const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
 
-    await expect(
-      applyForeignTaskReadmeReplicaRepair({
-        ctx,
-        activeTaskId: ACTIVE_TASK_ID,
-        baseBranch: "main",
-        after_inspection: async () => {
-          await writeFile(
-            fixture.sourcePath,
-            taskReadme({
-              taskId: FOREIGN_TASK_ID,
-              status: "DOING",
-              revision: 7,
-              title: "Source changed after repair proof",
-            }),
-            "utf8",
-          );
-        },
-      }),
-    ).resolves.toEqual({
-      state: "skipped",
-      reason: "authoritative_source_changed_before_remove",
-    });
+      await expect(
+        applyForeignTaskReadmeReplicaRepair({
+          ctx,
+          activeTaskId: ACTIVE_TASK_ID,
+          baseBranch: "main",
+          after_inspection: async () => {
+            await mutateAuthoritativeSourceAfterProof({ fixture, mutation });
+          },
+        }),
+      ).resolves.toEqual({
+        state: "skipped",
+        reason: "authoritative_source_changed_before_remove",
+      });
 
-    await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
-    await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain(
-      "Source changed after repair proof",
-    );
-  });
+      await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
+      if (mutation === "missing") {
+        await expect(lstat(fixture.sourcePath)).rejects.toMatchObject({ code: "ENOENT" });
+      } else if (mutation === "symlink") {
+        expect((await lstat(fixture.sourcePath)).isSymbolicLink()).toBe(true);
+      } else {
+        await expect(readFile(fixture.sourcePath, "utf8")).resolves.toContain("Source");
+      }
+    },
+  );
+
+  it.each([
+    ["contents change", "contents"],
+    ["regular file replacement", "replacement"],
+    ["removal", "missing"],
+    ["symlink substitution", "symlink"],
+  ] as const)(
+    "does not unlink the replica when it has a %s after source revalidation",
+    async (_description, mutation) => {
+      const fixture = await createFixture("start_ready");
+      const ctx = await targetContext(fixture.baseRoot, fixture.targetWorktree);
+
+      await expect(
+        applyForeignTaskReadmeReplicaRepair({
+          ctx,
+          activeTaskId: ACTIVE_TASK_ID,
+          baseBranch: "main",
+          after_source_revalidation: async () => {
+            await mutateReplicaAfterSourceRevalidation({ fixture, mutation });
+          },
+        }),
+      ).resolves.toEqual({
+        state: "skipped",
+        reason: "foreign_replica_changed_before_remove",
+      });
+
+      if (mutation === "missing") {
+        await expect(lstat(fixture.replicaPath)).rejects.toMatchObject({ code: "ENOENT" });
+      } else if (mutation === "symlink") {
+        expect((await lstat(fixture.replicaPath)).isSymbolicLink()).toBe(true);
+      } else {
+        await expect(readFile(fixture.replicaPath, "utf8")).resolves.toContain('status: "TODO"');
+      }
+    },
+  );
 
   it("lets the current CLI repair an older task worktree selected by --root", async () => {
     const fixture = await createFixture("start_ready");
