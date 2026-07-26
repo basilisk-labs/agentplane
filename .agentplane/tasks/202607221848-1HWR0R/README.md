@@ -1,10 +1,11 @@
 ---
 id: "202607221848-1HWR0R"
 title: "Return typed task mutation results"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -30,16 +31,41 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-26T09:27:22.592Z"
+  state: "ok"
+  updated_at: "2026-07-26T09:43:23.141Z"
   updated_by: "TESTER"
-  note: "Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base."
-  attempts: 1
-commit: null
+  note: "Rework closes the stale cumulative compatibility ledger with exact RF-07 provenance and immutable receipt semantics."
+  attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-26T09:46:40.891Z"
+  updated_by: "EVALUATOR"
+  note: "RF-07 returns persisted task identities and records a CLI-owned task-creation receipt before downstream context-pack work; the cumulative compatibility candidate now proves the bounded context-contract delta."
+  evaluated_sha: "2e50c9252fa2408d3c37c26dd02a4e20385ea167"
+  blueprint_digest: "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d"
+  evidence_refs:
+    - ".agentplane/tasks/202607221848-1HWR0R/README.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-094640891-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-094640891-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/quality/20260726-094640891-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json"
+    - "bun run bench:compatibility:check"
+    - "bun run typecheck"
+    - "packages/agentplane/src/commands/shared/task-mutation.ts"
+    - "packages/agentplane/src/context/ingest-task-pack.ts"
+  findings:
+    - "No blocking semantic defect found."
+commit:
+  hash: "2e50c9252fa2408d3c37c26dd02a4e20385ea167"
+  message: "🧩 1HWR0R task: ratchet typed mutation receipts"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -54,8 +80,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Compatibility candidate does not yet represent the typed task-mutation receipt on the post-RF-05a base."
+  -
+    type: "verify"
+    at: "2026-07-26T09:43:23.141Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework closes the stale cumulative compatibility ledger with exact RF-07 provenance and immutable receipt semantics."
+  -
+    type: "status"
+    at: "2026-07-26T09:46:59.551Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T09:27:23.237Z"
+doc_updated_at: "2026-07-26T09:46:59.552Z"
 doc_updated_by: "CODER"
 description: "RF-07: make create and mutation use cases return exact task id, revision, backend identity, artifact paths, and recovery data instead of list-before/list-after discovery."
 sections:
@@ -109,6 +148,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T09:43:23.141Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework closes the stale cumulative compatibility ledger with exact RF-07 provenance and immutable receipt semantics.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T09:27:23.237Z, excerpt_hash=sha256:24b7588594a0696e478a1d5286da60f890bb48f975d108aaa0de78276b89a81e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-1HWR0R-return-typed-task-mutation-results/.agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json
+    - old_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+    - current_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-1HWR0R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -118,6 +187,10 @@ sections:
     - Observation: bun run bench:compatibility:check failed: candidate surface digest drift; the current branch changes agent_facing_context_contracts while the candidate omits task 202607221848-1HWR0R.
       Impact: Passing verification and integration would be unsupported while the branch is behind main and the cumulative candidate lacks exact provenance and receipt evidence.
       Resolution: Rebase on current main, update only the reviewed cumulative candidate/checker/critical assertions with post-rebase surface digests, then rerun focused and critical checks.
+
+    - Observation: Focused typed-mutation/context suite: 66 passed; compatibility gate, task-state, typecheck, lint:core, guards, lifecycle, routing, and critical CLI suite passed.
+      Impact: The candidate now exactly accounts for the RF-07 context-contract delta without modifying the immutable v0.6.24 anchor.
+      Resolution: Verified one changed context contract, receipt ordering and immutability, then refreshed candidate and regression coverage.
 extensions:
   workflow_route_baseline:
     start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
@@ -183,6 +256,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T09:43:23.141Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework closes the stale cumulative compatibility ledger with exact RF-07 provenance and immutable receipt semantics.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T09:27:23.237Z, excerpt_hash=sha256:24b7588594a0696e478a1d5286da60f890bb48f975d108aaa0de78276b89a81e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-1HWR0R-return-typed-task-mutation-results/.agentplane/tasks/202607221848-1HWR0R/blueprint/resolved-snapshot.json
+- old_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+- current_digest: 4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-1HWR0R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -196,3 +299,7 @@ DecisionContextRef:
 - Observation: bun run bench:compatibility:check failed: candidate surface digest drift; the current branch changes agent_facing_context_contracts while the candidate omits task 202607221848-1HWR0R.
   Impact: Passing verification and integration would be unsupported while the branch is behind main and the cumulative candidate lacks exact provenance and receipt evidence.
   Resolution: Rebase on current main, update only the reviewed cumulative candidate/checker/critical assertions with post-rebase surface digests, then rerun focused and critical checks.
+
+- Observation: Focused typed-mutation/context suite: 66 passed; compatibility gate, task-state, typecheck, lint:core, guards, lifecycle, routing, and critical CLI suite passed.
+  Impact: The candidate now exactly accounts for the RF-07 context-contract delta without modifying the immutable v0.6.24 anchor.
+  Resolution: Verified one changed context contract, receipt ordering and immutability, then refreshed candidate and regression coverage.

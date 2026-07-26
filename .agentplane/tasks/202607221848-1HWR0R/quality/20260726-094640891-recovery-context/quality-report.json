@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-1HWR0R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T09:46:40.891Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "RF-07 returns persisted task identities and records a CLI-owned task-creation receipt before downstream context-pack work; the cumulative compatibility candidate now proves the bounded context-contract delta.",
+  "evaluated_sha": "2e50c9252fa2408d3c37c26dd02a4e20385ea167",
+  "blueprint_digest": "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d",
+  "findings": [
+    "No blocking semantic defect found."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-1HWR0R/README.md",
+    "bun run bench:compatibility:check",
+    "bun run typecheck",
+    "packages/agentplane/src/commands/shared/task-mutation.ts",
+    "packages/agentplane/src/context/ingest-task-pack.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Legacy third-party backends remain non-atomic across their own write/get boundary, but no registry-diff scan is used and that distributed-transaction guarantee is explicitly out of scope."
+  ]
+}
