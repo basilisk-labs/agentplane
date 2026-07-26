@@ -135,6 +135,7 @@ export async function prepareTaskRunnerExecution(opts: {
   target?: RunnerTarget;
   danger_authority?: RunnerDangerFullAccessAuthority | null;
   execution_role?: string;
+  include_remote?: boolean;
   include_route_runner_state?: boolean;
   sandbox_override?: string;
 }): Promise<PreparedTaskRunnerExecution> {
@@ -160,6 +161,7 @@ export async function prepareTaskRunnerExecution(opts: {
       cwd: opts.cwd,
       root_override: opts.rootOverride ?? null,
       task_id: opts.task_id,
+      ...(opts.include_remote ? { include_remote: true } : {}),
       include_runner_state: opts.include_route_runner_state ?? false,
       recipe: opts.recipe,
       runner_command: runnerCommand,
@@ -333,6 +335,7 @@ export async function executeTaskRunnerExecution(opts: {
   target?: RunnerTarget;
   danger_authority?: RunnerDangerFullAccessAuthority | null;
   execution_role?: string;
+  include_remote?: boolean;
   include_route_runner_state?: boolean;
   sandbox_override?: string;
   replay_provenance?: TaskRunnerReplayProvenance;
@@ -386,6 +389,7 @@ export async function executeTaskRunnerExecution(opts: {
         target: opts.target,
         danger_authority: opts.danger_authority,
         execution_role: opts.execution_role,
+        ...(opts.include_remote ? { include_remote: true } : {}),
         include_route_runner_state: opts.include_route_runner_state,
         sandbox_override: opts.sandbox_override,
       });

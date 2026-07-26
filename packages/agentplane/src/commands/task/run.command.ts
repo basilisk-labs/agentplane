@@ -29,6 +29,7 @@ import { followRunnerLogs } from "./run-logs-follow.js";
 export type TaskRunParsed = {
   taskId: string;
   dryRun: boolean;
+  remote: boolean;
   sandbox?: string;
   allowDangerFullAccess: boolean;
   json: boolean;
@@ -65,6 +66,12 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
       description: "Prepare runner artifacts and invocation without executing the adapter.",
     },
     {
+      kind: "boolean",
+      name: "remote",
+      default: false,
+      description: "Include hosted PR/check/review state in the prepared work order.",
+    },
+    {
       kind: "string",
       name: "sandbox",
       choices: [...RUNNER_SANDBOX_MODES],
@@ -97,6 +104,7 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     dryRun: raw.opts["dry-run"] === true,
+    remote: raw.opts.remote === true,
     sandbox: typeof raw.opts.sandbox === "string" ? raw.opts.sandbox : undefined,
     allowDangerFullAccess: raw.opts["allow-danger-full-access"] === true,
     json: raw.opts.json === true,
@@ -258,6 +266,7 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
         rootOverride: ctx.rootOverride ?? null,
         task_id: parsed.taskId,
         mode: "dry_run",
+        ...(parsed.remote ? { include_remote: true } : {}),
         danger_authority: dangerAuthority,
         sandbox_override: parsed.sandbox,
       });
@@ -284,6 +293,7 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       task_id: parsed.taskId,
+      ...(parsed.remote ? { include_remote: true } : {}),
       danger_authority: dangerAuthority,
       sandbox_override: parsed.sandbox,
     });

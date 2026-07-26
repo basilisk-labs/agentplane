@@ -63,7 +63,7 @@ export type PreparedAgentWorkOrder = {
   execution_context: ReadOnlyExecutionContext;
   execution_profile: ResolvedExecutionProfileRuntime;
   route_inputs: {
-    include_remote?: boolean;
+    include_remote: boolean;
     include_runner_state?: boolean;
   };
 };
@@ -89,16 +89,15 @@ export type AgentWorkOrderInvocationReadiness =
 
 /**
  * One central remote-policy derivation for every AgentWorkOrder projection.
- * `undefined` intentionally means that a surface supplied no override: the
- * branch_pr route default is then used. An explicit `false` remains available
- * only to internal callers that must suppress a provider probe.
+ * `undefined` intentionally means that a surface supplied no explicit remote
+ * opt-in, so preparation remains local even in `branch_pr` mode. A remote
+ * probe can happen only when a surface explicitly supplies `true`.
  */
 function resolveAgentWorkOrderRemotePreparation(opts: {
   workflow_mode: "direct" | "branch_pr";
   include_remote: boolean | undefined;
 }): { include_remote: boolean; remote_enabled: boolean } {
-  const includeRemote =
-    opts.include_remote === undefined ? opts.workflow_mode === "branch_pr" : opts.include_remote;
+  const includeRemote = opts.include_remote === true;
   return {
     include_remote: includeRemote,
     remote_enabled: opts.workflow_mode === "branch_pr" && includeRemote,
