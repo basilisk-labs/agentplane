@@ -28,6 +28,7 @@ RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projec
 
 ```text
  .../src/cli/run-cli.core.task-run.test.ts          |   1 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/commands/hermes/hermes-runtime.ts          |  35 +-
  .../agentplane/src/commands/hermes/hermes-specs.ts |   8 +
  .../src/commands/hermes/hermes.command.ts          |   4 +-
@@ -43,14 +44,16 @@ RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projec
  .../src/runner/state-fingerprint-observation.ts    |   4 +-
  packages/agentplane/src/runner/types/context.ts    |  10 +-
  .../src/runner/usecases/agent-work-order-build.ts  | 382 ++++++++++++++++++++
- .../runner/usecases/agent-work-order-projection.ts | 182 ++++++++++
+ .../runner/usecases/agent-work-order-projection.ts | 181 ++++++++++
  .../usecases/agent-work-order.integration.test.ts  | 392 +++++++++++++++++++++
  .../src/runner/usecases/agent-work-order.ts        | 330 +++++++++++++++++
  .../src/runner/usecases/task-run-bootstrap.ts      |  72 +---
  .../usecases/task-run-context.integration.test.ts  |  24 +-
  .../agentplane/src/runner/usecases/task-run.ts     |  79 +++--
  scripts/baselines/trust-boundary-violations.json   |  36 --
- 23 files changed, 1554 insertions(+), 259 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  38 +-
+ .../check-compatibility-contract-baseline.mjs      |  28 ++
+ 26 files changed, 1618 insertions(+), 267 deletions(-)
 ```
 
 </details>
