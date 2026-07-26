@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607261646-DX3SFQ/allow-targeted-cleanup-of-registered-sibling-tas",
+  "created_at": "2026-07-26T16:48:58.285Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607261646-DX3SFQ",
+  "updated_at": "2026-07-26T16:48:58.285Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
