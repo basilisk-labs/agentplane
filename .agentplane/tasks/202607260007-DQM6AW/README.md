@@ -2,10 +2,10 @@
 id: "202607260007-DQM6AW"
 title: "Prepare semantic conflict rework routes"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -36,24 +36,33 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-26T04:46:14.723Z"
-  updated_by: "EVALUATOR"
-  note: "Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded."
-  attempts: 1
+  state: "ok"
+  updated_at: "2026-07-26T05:09:38.978Z"
+  updated_by: "TESTER"
+  note: "Corrective hotspot split is verified locally after rework."
+  attempts: 0
 quality_review:
-  state: "rework"
-  updated_at: "2026-07-26T04:46:14.723Z"
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-26T05:10:01.734Z"
   updated_by: "EVALUATOR"
-  note: "Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded."
-  evaluated_sha: "ea724edd7dc78dbd91c56563dab1f3e648ecd8bd"
+  note: "Independent review confirms the hotspot correction preserves CLI behavior, public route-confidence imports, and conflict-route coverage without weakening thresholds."
+  evaluated_sha: "323dab78e7fdacbe246523fededbbc9059afac2a"
   blueprint_digest: "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6"
   evidence_refs:
     - ".agentplane/tasks/202607260007-DQM6AW/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-051001734-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-051001734-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-051001734-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/pr/conflict-rework.command.ts"
+    - "packages/agentplane/src/commands/shared/route-decision-source-confidence.ts"
+    - "command: 63 focused tests passed; lint, TypeScript build, format, hotspots, and architecture cycle checks passed"
   findings:
-    - "Command: gh run view 30188136450 --log-failed\nResult: fail\nEvidence: packages/agentplane/src/commands/pr/conflict-rework.ts is 659 lines and packages/agentplane/src/commands/shared/route-decision.ts is 618 lines; threshold is 600. All other required Core CI jobs passed.\nScope: current DQM PR #4627 published head.\nResolution: split responsibilities into focused modules, rerun required local and hosted verification."
-commit: null
+    - "Command adapter and source-confidence extraction preserve their prior public contracts; split suites retain every prior test title without duplicates."
+commit:
+  hash: "323dab78e7fdacbe246523fededbbc9059afac2a"
+  message: "🧩 DQM6AW rework: split CI hotspots"
 comments:
   -
     author: "CODER"
@@ -67,6 +76,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -160,8 +172,21 @@ events:
     author: "EVALUATOR"
     state: "needs_rework"
     note: "Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded."
+  -
+    type: "verify"
+    at: "2026-07-26T05:09:38.978Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Corrective hotspot split is verified locally after rework."
+  -
+    type: "status"
+    at: "2026-07-26T05:10:25.165Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T04:46:15.503Z"
+doc_updated_at: "2026-07-26T05:10:25.166Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -470,6 +495,42 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T05:09:38.978Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Corrective hotspot split is verified locally after rework.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T04:46:15.503Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+    Details:
+
+    Command: bun run test:fast; bun run lint:core; bun run typecheck; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; git diff --check
+    Result: pass
+    Evidence: full fast suite passed 460 files / 3184 tests; independent post-fix review passed 63 focused tests, lint, direct TypeScript build, formatting, hotspot baseline, and architecture cycle check.
+    Scope: DQM PR #4627 command adapter, route confidence re-export, and focused test-suite splits.
+    Resolution: both runtime modules are below 600 lines; oversized test baseline remains unchanged and passes at 10 entries.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+    - old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -824,6 +885,42 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T05:09:38.978Z — VERIFY — ok
+
+By: TESTER
+
+Note: Corrective hotspot split is verified locally after rework.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T04:46:15.503Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+Details:
+
+Command: bun run test:fast; bun run lint:core; bun run typecheck; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; git diff --check
+Result: pass
+Evidence: full fast suite passed 460 files / 3184 tests; independent post-fix review passed 63 focused tests, lint, direct TypeScript build, formatting, hotspot baseline, and architecture cycle check.
+Scope: DQM PR #4627 command adapter, route confidence re-export, and focused test-suite splits.
+Resolution: both runtime modules are below 600 lines; oversized test baseline remains unchanged and passes at 10 entries.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+- old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
