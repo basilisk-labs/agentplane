@@ -2,16 +2,23 @@
   "base": "main",
   "branch": "task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes",
   "created_at": "2026-07-26T00:55:55.843Z",
-  "diffstat_sha256": "sha256:dce0c172fef67be16b90565ecd4ac36b39802695621ea0ca8699320831f30885",
-  "last_verified_at": "2026-07-26T03:49:18.189Z",
-  "last_verified_diffstat_sha256": "sha256:dce0c172fef67be16b90565ecd4ac36b39802695621ea0ca8699320831f30885",
+  "diffstat_sha256": "sha256:806a088bfde6a729f1c60d13b8245ef7efbe086101b134d4c734b2b965537838",
+  "last_verified_at": "2026-07-26T04:12:19.232Z",
+  "last_verified_diffstat_sha256": "sha256:806a088bfde6a729f1c60d13b8245ef7efbe086101b134d4c734b2b965537838",
   "pr_number": 4627,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4627",
+  "pre_merge_closure": {
+    "basis_commit": "bb61f9121dadffa527cb3961d20926aba00fa0de",
+    "branch": "task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes",
+    "pr_number": 4627,
+    "recorded_at": "2026-07-26T04:16:31.708Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607260007-DQM6AW",
   "updated_at": "2026-07-26T02:29:18.327Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }
