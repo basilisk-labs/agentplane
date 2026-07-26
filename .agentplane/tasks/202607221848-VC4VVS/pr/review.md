@@ -24,7 +24,7 @@ Created: 2026-07-26T10:53:22.624Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-26T10:53:22.624Z
+- Updated: 2026-07-26T10:55:35.062Z
 - Branch: task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
