@@ -608,7 +608,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
   });
 
-  it("fails closed when the provider-rebased head object is unavailable locally", async () => {
+  it("fails closed when the provider head object is unavailable locally", async () => {
     const fixture = await createTargetedFixture({ providerRebased: true });
     const fakeBin = await installFakeGh({ kind: "found", fixture, headSha: "f".repeat(40) });
     const result = await runWithFakeGh(fakeBin, [
@@ -621,7 +621,7 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
       fixture.root,
     ]);
     expect(result.code).toBe(5);
-    expect(result.stderr).toContain("provider rebase head object is unavailable locally");
+    expect(result.stderr).toContain("provider head object is unavailable locally");
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
     expect(await pathExists(fixture.worktreePath)).toBe(true);
   });

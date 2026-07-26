@@ -41,17 +41,33 @@ function canonicalProviderRevisionReason(label: string, value: string): string |
   return canonicalCommitIdentityReason(`provider ${label}`, value);
 }
 
-function canonicalReconciliationIdentityReason(proof: ProviderReconciliationProof): string | null {
-  const identities = [
+function reconciliationCommitIdentities(proof: ProviderReconciliationProof) {
+  return [
     ["recorded task commit", proof.taskCommitSha],
     ["recorded local task head", proof.localHeadSha],
     ["recorded provider head", proof.providerHeadSha],
     ["recorded provider merge commit", proof.mergeCommit],
     ["recorded pre-merge closure basis", proof.closureBasisCommit],
   ] as const;
+}
+
+function canonicalReconciliationIdentityReason(proof: ProviderReconciliationProof): string | null {
+  const identities = reconciliationCommitIdentities(proof);
   for (const [label, value] of identities) {
     const reason = canonicalCommitIdentityReason(label, value);
     if (reason) return reason;
+  }
+  return null;
+}
+
+async function reconciliationCommitObjectReason(opts: {
+  gitRoot: string;
+  proof: ProviderReconciliationProof;
+}): Promise<string | null> {
+  for (const [label, value] of reconciliationCommitIdentities(opts.proof)) {
+    if (!(await gitCommitObjectExists(opts.gitRoot, value))) {
+      return `${label} object is unavailable locally: ${value}`;
+    }
   }
   return null;
 }
@@ -208,6 +224,21 @@ export async function validateMergedProviderReceipt(opts: {
     return {
       receipt: null,
       reason: expectedIdentityReason,
+    };
+  }
+  const expectedObjectReason = expected
+    ? await reconciliationCommitObjectReason({ gitRoot: opts.gitRoot, proof: expected })
+    : null;
+  if (expectedObjectReason) {
+    return {
+      receipt: null,
+      reason: expectedObjectReason,
+    };
+  }
+  if (!(await gitCommitObjectExists(opts.gitRoot, providerHeadSha))) {
+    return {
+      receipt: null,
+      reason: `provider head object is unavailable locally: ${providerHeadSha}`,
     };
   }
   if (!(await gitCommitObjectExists(opts.gitRoot, mergeCommit))) {

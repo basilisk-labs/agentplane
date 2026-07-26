@@ -13,7 +13,7 @@ Created: 2026-07-26T00:39:19.677Z
 ## Verification
 
 - State: ok
-- Note: Independent re-verification passed: full canonical OID gate rejects main, short SHA, refs, and malformed provider identities before Git revision use; each negative reports cleanup_blocked with no command and preserves branch/worktree. Symmetric provider-patch and race coverage remains green; focused suites 27 plus 23 passed; static checks passed; live ZMV dry run reported proof=provider_rebase without cleanup.
+- Note: Independent TESTER PASS at 3ad3880: 35 focused and 23 cli-core tests pass; 20/20 proof-identity matrix rejects symbolic, short, malformed, and local blob values; ZMV dry-run remains proof=provider_rebase and remote route is sync_hosted_close; all declared local gates pass; DQM6AW remains unstaged.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,10 @@ Created: 2026-07-26T00:39:19.677Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/branch/cleanup-merged-proof.ts    | 252 ++++++++-----
- .../cleanup-merged-provider-reconciliation.ts      | 404 +++++++++++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         | 404 ++++++++++++++++++++-
+ .../src/commands/branch/cleanup-merged-proof.ts    | 252 +++++++-----
+ .../branch/cleanup-merged-provider-receipt.test.ts | 284 ++++++++++++++
+ .../cleanup-merged-provider-reconciliation.ts      | 435 +++++++++++++++++++++
+ .../branch/cleanup-merged.targeted.test.ts         | 404 ++++++++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
  packages/agentplane/src/commands/shared/git-ops.ts |  19 +
  .../shared/route-decision-next-action.test.ts      |  49 +++
@@ -39,7 +40,7 @@ Created: 2026-07-26T00:39:19.677Z
  .../src/commands/shared/workflow-step-branch.ts    |  46 ++-
  .../src/commands/task/close-tail-state.test.ts     |  16 +-
  .../src/commands/task/close-tail-state.ts          |  12 +-
- 10 files changed, 1104 insertions(+), 125 deletions(-)
+ 11 files changed, 1419 insertions(+), 125 deletions(-)
 ```
 
 </details>
