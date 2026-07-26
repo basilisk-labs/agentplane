@@ -5,9 +5,17 @@ import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteOperatorGuidance } from "./route-guidance.js";
+import {
+  appendSideEffectAuthorityAudit,
+  createSideEffectAuthorityRecord,
+  withSideEffectAuthorityState,
+} from "./side-effect-authority.js";
 import { cliOperationStep } from "./workflow-step-factory.js";
 import {
   WORKFLOW_OPERATION_EFFECTS,
+  WORKFLOW_OPERATION_REGISTRY,
+  type WorkflowOperation,
+  type WorkflowOperationId,
   type WorkflowRouteState,
   type WorkflowStep,
 } from "./workflow-step.js";
@@ -82,6 +90,43 @@ function routeState(overrides: Partial<WorkflowRouteStateInput> = {}): WorkflowR
     },
     ...overrides,
   });
+}
+
+function authorizeOperation<Id extends WorkflowOperationId>(opts: {
+  state: WorkflowRouteState;
+  operationId: Id;
+  params: WorkflowOperation["params"];
+}): WorkflowRouteState {
+  const operation = {
+    id: opts.operationId,
+    type: WORKFLOW_OPERATION_REGISTRY[opts.operationId].type,
+    params: opts.params,
+  } as Pick<WorkflowOperation, "id" | "type" | "params">;
+  const issuedAt = "1970-01-01T00:00:00.000Z";
+  const grant = createSideEffectAuthorityRecord({
+    id: `authority-${opts.operationId}`,
+    actor: "USER",
+    operation,
+    fingerprint: opts.state.preconditionFingerprint,
+    issuedAt,
+    expiresAt: "9999-12-31T23:59:59.999Z",
+  });
+  const authorityState = appendSideEffectAuthorityAudit({
+    state: { schemaVersion: 1, grants: [grant], audit: [] },
+    at: issuedAt,
+    actor: "USER",
+    operation,
+    fingerprint: opts.state.preconditionFingerprint,
+    authority: grant,
+    outcome: "approved",
+  });
+  return {
+    ...opts.state,
+    task: {
+      ...opts.state.task,
+      extensions: withSideEffectAuthorityState(opts.state.task, authorityState),
+    },
+  };
 }
 
 function executionPacket(opts: {
@@ -639,7 +684,7 @@ describe("WorkflowStep execution projections", () => {
     });
   });
 
-  it("keeps observational CLI operations executable without granting mutation authority", () => {
+  it("requires scoped authority for remote observations while keeping local runner reads executable", () => {
     expect(WORKFLOW_OPERATION_EFFECTS).toMatchObject({
       "task.verify.show": "read_only",
       "batch.follow_primary": "read_only",
@@ -667,14 +712,11 @@ describe("WorkflowStep execution projections", () => {
       mutationPathHint: null,
     });
     expect(provider.packet).toMatchObject({
-      actionKind: "local_command",
+      actionKind: "provider_action",
       safeToMutate: false,
       mustRunFrom: "/repo",
-      exactArgv: ["agentplane", "pr", "flow", "status", task.id],
+      exactArgv: null,
     });
-    expect(provider.packet.mustNot).toContain(
-      "do not use this read-only command to mutate task, PR, branch, runner, or worktree state",
-    );
     expect(
       deriveRouteOperatorGuidance(
         routeDecision({
@@ -682,6 +724,50 @@ describe("WorkflowStep execution projections", () => {
           step: providerStep,
           oracle: provider.oracle,
           packet: provider.packet,
+        }),
+      ),
+    ).toMatchObject({
+      canExecuteNow: false,
+      shouldRunNextCommand: false,
+      executorContext: {
+        currentAgentMustExecute: false,
+        instruction: "current_agent_waits_for_provider_or_recompute",
+      },
+    });
+
+    const authorizedProviderState = authorizeOperation({
+      state: providerState,
+      operationId: "provider.pr.refresh",
+      params: { taskId: task.id },
+    });
+    const authorizedProviderStep = cliOperationStep({
+      state: authorizedProviderState,
+      operationId: "provider.pr.refresh",
+      params: { taskId: task.id },
+      code: "retry_provider_lookup",
+      summary: "refresh provider state",
+    });
+    const authorizedProvider = executionPacket({
+      state: authorizedProviderState,
+      step: authorizedProviderStep,
+      paths: { baseCheckoutPath: "/repo" },
+    });
+    expect(authorizedProvider.packet).toMatchObject({
+      actionKind: "local_command",
+      safeToMutate: false,
+      mustRunFrom: "/repo",
+      exactArgv: ["agentplane", "pr", "flow", "status", task.id],
+    });
+    expect(authorizedProvider.packet.mustNot).toContain(
+      "do not use this read-only command to mutate task, PR, branch, runner, or worktree state",
+    );
+    expect(
+      deriveRouteOperatorGuidance(
+        routeDecision({
+          state: authorizedProviderState,
+          step: authorizedProviderStep,
+          oracle: authorizedProvider.oracle,
+          packet: authorizedProvider.packet,
         }),
       ),
     ).toMatchObject({
@@ -757,8 +843,12 @@ describe("WorkflowStep execution projections", () => {
   });
 
   it("projects integration enqueue to exact INTEGRATOR argv in the base checkout", () => {
-    const state = routeState({
-      task: { ...task, status: "DONE", verification: { state: "ok" } },
+    const state = authorizeOperation({
+      state: routeState({
+        task: { ...task, status: "DONE", verification: { state: "ok" } },
+      }),
+      operationId: "integration.enqueue",
+      params: { taskId: task.id, branch: taskBranch },
     });
     const step = cliOperationStep({
       state,
@@ -789,8 +879,12 @@ describe("WorkflowStep execution projections", () => {
 
   it("projects legacy protected-conflict adoption as a mutating INTEGRATOR operation", () => {
     const token = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-    const state = routeState({
-      task: { ...task, status: "DONE", verification: { state: "ok" } },
+    const state = authorizeOperation({
+      state: routeState({
+        task: { ...task, status: "DONE", verification: { state: "ok" } },
+      }),
+      operationId: "integration.adopt_legacy_protected_conflict",
+      params: { taskId: task.id, expectedAdoptionToken: token },
     });
     const step = cliOperationStep({
       state,
@@ -866,9 +960,14 @@ describe("WorkflowStep execution projections", () => {
       resume: { ...resume, task_status: "DONE" },
       prFlow: openPr,
     });
-    const step = reduceRouteState(state);
-    const { packet } = executionPacket({
+    const authorized = authorizeOperation({
       state,
+      operationId: "integration.enqueue",
+      params: { taskId: task.id, branch: taskBranch },
+    });
+    const step = reduceRouteState(authorized);
+    const { packet } = executionPacket({
+      state: authorized,
       step,
       paths: { baseCheckoutPath: "/repo" },
     });
@@ -892,7 +991,11 @@ describe("WorkflowStep execution projections", () => {
       { id: "provider.pr.refresh" as const, params: { taskId: task.id } },
       { id: "route.remote.refresh" as const, params: { taskId: task.id } },
     ]) {
-      const state = routeState();
+      const state = authorizeOperation({
+        state: routeState(),
+        operationId: operation.id,
+        params: operation.params,
+      });
       const step = cliOperationStep({
         state,
         operationId: operation.id,

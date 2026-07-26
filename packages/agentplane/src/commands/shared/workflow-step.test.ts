@@ -6,6 +6,11 @@ import type { TaskResumeContext } from "../task/handoff.shared.js";
 import { deriveRouteAmbiguities } from "./route-decision-repair.js";
 import { projectWorkflowOperationArgv, renderCliArgv } from "./workflow-operation-projection.js";
 import {
+  appendSideEffectAuthorityAudit,
+  createSideEffectAuthorityRecord,
+  withSideEffectAuthorityState,
+} from "./side-effect-authority.js";
+import {
   WORKFLOW_OPERATION_ARGV_PREFIX,
   WORKFLOW_OPERATION_REGISTRY,
   type WorkflowRouteState,
@@ -113,6 +118,38 @@ function routeState(overrides: Partial<WorkflowRouteState> = {}): WorkflowRouteS
     ...withBootstrapWorkflowFingerprint({ ...base, ...stateOverrides }),
     ...(preconditionFingerprint ? { preconditionFingerprint } : {}),
   };
+}
+
+function routeStateWithAuthority(overrides: Partial<WorkflowRouteState> = {}): WorkflowRouteState {
+  const initial = routeState(overrides);
+  const approval = reduceRouteState(initial);
+  if (approval.kind !== "approval" || approval.request.type !== "side_effect") return initial;
+  const issuedAt = "1970-01-01T00:00:00.000Z";
+  const expiresAt = "9999-12-31T23:59:59.999Z";
+  const grant = createSideEffectAuthorityRecord({
+    id: `authority-${approval.request.operationId}`,
+    actor: "USER",
+    operation: approval.request.operation,
+    fingerprint: approval.preconditionFingerprint,
+    issuedAt,
+    expiresAt,
+  });
+  const authorityState = appendSideEffectAuthorityAudit({
+    state: { schemaVersion: 1, grants: [grant], audit: [] },
+    at: issuedAt,
+    actor: "USER",
+    operation: approval.request.operation,
+    fingerprint: approval.preconditionFingerprint,
+    authority: grant,
+    outcome: "approved",
+  });
+  return routeState({
+    ...overrides,
+    task: {
+      ...initial.task,
+      extensions: withSideEffectAuthorityState(initial.task, authorityState),
+    },
+  });
 }
 
 describe("typed WorkflowStep reducer", () => {
@@ -276,7 +313,7 @@ describe("typed WorkflowStep reducer", () => {
       humanInput.kind,
       wait.kind,
       terminal.kind,
-    ]).toEqual(["cli_operation", "agent_episode", "approval", "human_input", "wait", "terminal"]);
+    ]).toEqual(["approval", "agent_episode", "approval", "human_input", "wait", "terminal"]);
   });
 
   it("never substitutes an unrelated blocker for human-input or runner-wait authority", () => {
@@ -323,8 +360,45 @@ describe("typed WorkflowStep reducer", () => {
     expect(wait).toMatchObject({ kind: "wait", selectedBlocker: null });
   });
 
-  it("opens the PR from an existing worktree when PR metadata is absent", () => {
-    const step = reduceRouteState(routeState());
+  it("requires a scoped authority before opening a PR, then restores the exact operation", () => {
+    const approval = reduceRouteState(routeState());
+    expect(approval).toMatchObject({
+      kind: "approval",
+      phase: "side_effect_authority_required",
+      request: { type: "side_effect", operationId: "pr.open" },
+      compatibility: {
+        code: "open_pr",
+        command: expect.stringContaining(`agentplane task authority grant ${task.id}`),
+      },
+    });
+    if (approval.kind !== "approval" || approval.request.type !== "side_effect") {
+      throw new Error("expected a side-effect approval step");
+    }
+    const grant = createSideEffectAuthorityRecord({
+      id: "authority-pr-open",
+      actor: "USER",
+      operation: approval.request.operation,
+      fingerprint: approval.preconditionFingerprint,
+      issuedAt: "2026-07-26T00:00:00.000Z",
+      expiresAt: "2026-07-27T00:00:00.000Z",
+    });
+    const authorityState = appendSideEffectAuthorityAudit({
+      state: { schemaVersion: 1, grants: [grant], audit: [] },
+      at: "2026-07-26T00:00:00.000Z",
+      actor: "USER",
+      operation: approval.request.operation,
+      fingerprint: approval.preconditionFingerprint,
+      authority: grant,
+      outcome: "approved",
+    });
+    const step = reduceRouteState(
+      routeStateWithAuthority({
+        task: {
+          ...task,
+          extensions: withSideEffectAuthorityState({ extensions: {} }, authorityState),
+        },
+      }),
+    );
     expect(step).toMatchObject({
       kind: "cli_operation",
       phase: "pr_needed",
@@ -338,6 +412,7 @@ describe("typed WorkflowStep reducer", () => {
     expect(step.operation).toMatchObject({
       id: "pr.open",
       type: "pr_sync",
+      authorityRef: "authority:authority-pr-open",
       params: { taskId: task.id, author: "CODER", includeTaskIds: [] },
     });
     expect(projectWorkflowOperationArgv(step.operation)).toEqual([
@@ -355,7 +430,7 @@ describe("typed WorkflowStep reducer", () => {
 
   it("starts an approved TODO task in its existing branch worktree before PR publication", () => {
     const step = reduceRouteState(
-      routeState({
+      routeStateWithAuthority({
         task: { ...task, status: "TODO" },
       }),
     );
@@ -624,7 +699,7 @@ describe("typed WorkflowStep reducer", () => {
 
   it("materializes every primary batch include-task in PR argv", () => {
     const step = reduceRouteState(
-      routeState({
+      routeStateWithAuthority({
         batchOwnership: {
           role: "primary",
           primaryTaskId: task.id,
@@ -761,10 +836,12 @@ describe("typed WorkflowStep reducer", () => {
   });
 
   it("derives deterministic fingerprints, idempotency keys, and compatibility projections", () => {
-    const first = reduceRouteState(routeState());
-    const repeated = reduceRouteState(routeState());
+    const first = reduceRouteState(routeStateWithAuthority());
+    const repeated = reduceRouteState(routeStateWithAuthority());
     const changed = reduceRouteState(
-      routeState({ resume: { ...resume, head_sha: "2222222222222222222222222222222222222222" } }),
+      routeStateWithAuthority({
+        resume: { ...resume, head_sha: "2222222222222222222222222222222222222222" },
+      }),
     );
     expect(first.preconditionFingerprint).toEqual(repeated.preconditionFingerprint);
     expect(changed.preconditionFingerprint.digest).not.toBe(first.preconditionFingerprint.digest);

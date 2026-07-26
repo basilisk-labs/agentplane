@@ -330,29 +330,21 @@ describe("WorkflowStep conflict rework projections", () => {
     });
 
     expect(step).toMatchObject({
-      kind: "cli_operation",
-      id: "integration.adopt_legacy_protected_conflict",
+      kind: "approval",
+      id: "approval.integration.adopt_legacy_protected_conflict",
       authoritativeCheckout: "base_checkout",
-      operation: {
-        id: "integration.adopt_legacy_protected_conflict",
-        params: { taskId: task.id, expectedAdoptionToken: token },
+      request: {
+        type: "side_effect",
+        operationId: "integration.adopt_legacy_protected_conflict",
+        operation: { params: { taskId: task.id, expectedAdoptionToken: token } },
       },
     });
-    expect(oracle.mutationPathHint).toBe("/repo");
+    expect(oracle.mutationPathHint).toBeNull();
     expect(packet).toMatchObject({
-      actionKind: "local_command",
-      recommendedRole: "INTEGRATOR",
-      safeToMutate: true,
-      exactArgv: [
-        "agentplane",
-        "integrate",
-        "queue",
-        "adopt-legacy-protected-conflict",
-        task.id,
-        "--expect-adoption-token",
-        token,
-      ],
-      staleStateCheck: `agentplane task next-action ${task.id} --remote --explain`,
+      actionKind: "provider_action",
+      recommendedRole: "USER",
+      safeToMutate: false,
+      exactArgv: null,
       evidenceMissing: ["legacy_protected_conflict_adoption_receipt"],
     });
     expect(step.kind === "agent_episode").toBe(false);
@@ -471,9 +463,10 @@ describe("WorkflowStep conflict rework projections", () => {
     const step = reduceRouteState(state);
 
     expect(step).toMatchObject({
-      kind: "cli_operation",
-      id: "integration.enqueue",
+      kind: "approval",
+      id: "approval.integration.enqueue",
       compatibility: { code: "wait_hosted_checks" },
+      request: { type: "side_effect", operationId: "integration.enqueue" },
     });
   });
 
@@ -626,23 +619,24 @@ describe("WorkflowStep conflict rework projections", () => {
     const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
 
     expect(step).toMatchObject({
-      kind: "cli_operation",
-      id: "pr.head.publish",
+      kind: "approval",
+      id: "approval.pr.head.publish",
       compatibility: {
         code: "publish_pr_head",
-        command: `agentplane pr open ${task.id} --author CODER`,
+        command: expect.stringContaining(`agentplane task authority grant ${task.id}`),
       },
+      request: { type: "side_effect", operationId: "pr.head.publish" },
     });
     expect(step.id).not.toBe("agent.implementation_rework");
     expect(oracle).toMatchObject({
-      phase: "pr_head_publication_needed",
+      phase: "side_effect_authority_required",
       authoritativeCheckout: "task_worktree",
-      nextCommand: `agentplane pr open ${task.id} --author CODER`,
+      nextCommand: expect.stringContaining(`agentplane task authority grant ${task.id}`),
     });
     expect(packet).toMatchObject({
-      actionKind: "local_command",
-      safeToMutate: true,
-      exactArgv: ["agentplane", "pr", "open", task.id, "--author", "CODER"],
+      actionKind: "provider_action",
+      safeToMutate: false,
+      exactArgv: null,
     });
   });
 });

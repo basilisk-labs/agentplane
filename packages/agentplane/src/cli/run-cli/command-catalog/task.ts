@@ -1,6 +1,7 @@
 import { taskAddSpec } from "../../../commands/task/add.command.js";
 import { taskActiveSpec } from "../../../commands/task/active.command.js";
 import { taskAnswerSpec } from "../../../commands/task/answer.command.js";
+import { taskAuthorityGrantSpec } from "../../../commands/task/authority-grant.command.js";
 import { taskAskSpec } from "../../../commands/task/ask.command.js";
 import { taskCloseDuplicateSpec } from "../../../commands/task/close-duplicate.command.js";
 import { taskCloseNoopSpec } from "../../../commands/task/close-noop.command.js";
@@ -86,6 +87,7 @@ import {
   loadTaskHostedClosePrSpec,
   loadTaskActiveSpec,
   loadTaskAnswerSpec,
+  loadTaskAuthorityGrantSpec,
   loadTaskAskSpec,
   loadTaskListSpec,
   loadTaskNextSpec,
@@ -164,6 +166,11 @@ export const TASK_COMMANDS = [
   declareCommand(taskActiveSpec, { load: loadTaskActiveSpec }),
   declareCommand(taskAskSpec, { load: loadTaskAskSpec }),
   declareCommand(taskAnswerSpec, { load: loadTaskAnswerSpec }),
+  declareCommand(taskAuthorityGrantSpec, {
+    load: loadTaskAuthorityGrantSpec,
+    surface: "advanced",
+    helpGroup: "Advanced",
+  }),
   declareCommand(taskListSpec, {
     load: loadTaskListSpec,
     invocation: requireCanonicalCommandInvocation(["task", "list"]),
