@@ -417,7 +417,7 @@ export function implementationReworkStep(state: WorkflowRouteState): WorkflowSte
 
 export function providerConflictReworkStep(state: WorkflowRouteState): WorkflowStep {
   const preparation = state.conflictRework;
-  if (!preparation || preparation.state !== "ready") {
+  if (preparation?.state !== "ready") {
     throw new Error("providerConflictReworkStep requires a ready conflict-rework packet");
   }
   const packet = preparation.packet;

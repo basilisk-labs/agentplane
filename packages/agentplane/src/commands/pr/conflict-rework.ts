@@ -219,12 +219,28 @@ type ConflictRouteIdentity = {
   prNumber: number;
 };
 
-function hasEligibleQueueEntry(report: PrFlowStatusReport, identity: ConflictRouteIdentity): boolean {
+function hasCurrentClaimLease(leaseExpiresAt: string | null | undefined, now: Date): boolean {
+  const leaseExpiresAtMs = leaseExpiresAt ? Date.parse(leaseExpiresAt) : Number.NaN;
+  const nowMs = now.getTime();
+  return Number.isFinite(leaseExpiresAtMs) && Number.isFinite(nowMs) && leaseExpiresAtMs > nowMs;
+}
+
+function hasEligibleQueueEntry(
+  report: PrFlowStatusReport,
+  identity: ConflictRouteIdentity,
+  now: Date,
+): boolean {
   if (!report.queue.present) return false;
   if (
     report.queue.status !== "queued" &&
     report.queue.status !== "claimed" &&
     report.queue.status !== "handoff"
+  ) {
+    return false;
+  }
+  if (
+    report.queue.status === "claimed" &&
+    !hasCurrentClaimLease(report.queue.leaseExpiresAt, now)
   ) {
     return false;
   }
@@ -248,13 +264,15 @@ function hasEligibleProtectedBaseHandoff(
     report.handoff.branch === identity.taskBranch &&
     report.handoff.prBranch === identity.taskBranch &&
     report.handoff.baseBranch === identity.base &&
-    report.handoff.headSha === identity.providerHead
+    report.handoff.headSha === identity.providerHead &&
+    report.handoff.routePrNumber === identity.prNumber
   );
 }
 
 function validateConflictRouteEligibility(
   report: PrFlowStatusReport,
   identity: ConflictRouteIdentity,
+  now: Date,
 ): ConflictReworkPreparation | null {
   if (report.task.status.trim().toUpperCase() !== "DONE" || report.task.verification !== "ok") {
     return invalid(
@@ -262,7 +280,10 @@ function validateConflictRouteEligibility(
       "semantic conflict rework requires a DONE task with a current passing verification record",
     );
   }
-  if (hasEligibleQueueEntry(report, identity) || hasEligibleProtectedBaseHandoff(report, identity)) {
+  if (
+    hasEligibleQueueEntry(report, identity, now) ||
+    hasEligibleProtectedBaseHandoff(report, identity)
+  ) {
     return null;
   }
   return invalid(
@@ -298,6 +319,7 @@ export async function prepareConflictReworkPacket(opts: {
   taskWorktree: TaskWorktreeCleanliness;
   gitOps?: ConflictReworkGitOps;
   baseProtection?: GithubBasePullRequestProtection;
+  now?: Date;
 }): Promise<ConflictReworkPreparation> {
   const gitOps = opts.gitOps ?? DEFAULT_GIT_OPS;
   if (opts.report.providerObservation?.state === "unavailable") {
@@ -377,7 +399,7 @@ export async function prepareConflictReworkPacket(opts: {
     base,
     providerBase,
     prNumber,
-  });
+  }, opts.now ?? new Date());
   if (routeEligibility) return routeEligibility;
   const baseProtection =
     opts.baseProtection ??
