@@ -1,10 +1,11 @@
 ---
 id: "202607260532-9M7RNH"
 title: "Recover stale protected-PR conflict-base context"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -34,16 +35,42 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-26T07:08:32.159Z"
+  updated_by: "TESTER"
+  note: "Independent TESTER passed the declared legacy protected-conflict recovery contract."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-26T07:09:36.990Z"
+  updated_by: "EVALUATOR"
+  note: "Independent EVALUATOR review passed for the current legacy protected-conflict adoption route."
+  evaluated_sha: "345f4a03941095055c2f26a85bcfaa9abb650033"
+  blueprint_digest: "62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f"
+  evidence_refs:
+    - ".agentplane/tasks/202607260532-9M7RNH/README.md"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-070936990-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-070936990-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260532-9M7RNH/quality/20260726-070936990-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260532-9M7RNH/blueprint/resolved-snapshot.json"
+    - "HEAD 345f4a039 independent code review"
+    - "packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts"
+    - "packages/agentplane/src/commands/pr/integrate/queue-state.ts"
+    - "packages/agentplane/src/commands/integrate-queue.command.ts"
+  findings:
+    - "Receipt and token bind task, provider PR, queue snapshot, protected handoff identity, and observed base topology; normal queue transitions clear the receipt."
+    - "The current parser delta rejects non-string tokens instead of coercing them and preserves exact validated token comparison."
+commit:
+  hash: "345f4a03941095055c2f26a85bcfaa9abb650033"
+  message: "🐛 9M7RNH conflict-rework: validate typed adoption token"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -52,8 +79,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-07-26T07:08:32.159Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent TESTER passed the declared legacy protected-conflict recovery contract."
+  -
+    type: "status"
+    at: "2026-07-26T07:09:58.897Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T05:34:28.944Z"
+doc_updated_at: "2026-07-26T07:09:58.898Z"
 doc_updated_by: "CODER"
 description: "Close the liveness gap for legacy protected PR conflicts whose provider-reported conflict base is an ancestor of current main. Prepare a bounded read-only reconciliation packet carrying provider conflict-base, current base, ancestry, local conflict probe, and freshness; preserve fail-closed behavior and prohibit CLI rebase, merge, push, queue, or cleanup mutations."
 sections:
@@ -80,6 +120,38 @@ sections:
     6. Record independent TESTER and EVALUATOR evidence; wait for stable hosted CI before normal branch_pr integration.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-26T07:08:32.159Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent TESTER passed the declared legacy protected-conflict recovery contract.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T05:34:28.944Z, excerpt_hash=sha256:296eb060c734854adbc8cb278bd598618ac578b91157115e668b46ee6aca3c75
+
+    Details:
+
+    Command: bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; focused Vitest agentplane and cli-core suites; git diff --check. Result: pass. Evidence: 157 agentplane tests plus 1 cli-core E2E passed; typecheck, lint, guards, lifecycle invariants, routing, and diff checks passed. Scope: legacy protected-PR adoption, receipt invalidation, conflict-rework routing, and CLI projection.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260532-9M7RNH-recover-stale-protected-pr-conflict-base-context/.agentplane/tasks/202607260532-9M7RNH/blueprint/resolved-snapshot.json
+    - old_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+    - current_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260532-9M7RNH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607260532-9M7RNH
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -123,6 +195,38 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-26T07:08:32.159Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent TESTER passed the declared legacy protected-conflict recovery contract.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T05:34:28.944Z, excerpt_hash=sha256:296eb060c734854adbc8cb278bd598618ac578b91157115e668b46ee6aca3c75
+
+Details:
+
+Command: bun run typecheck; bun run lint:core; bun run guards:check; bun run lifecycle:invariants; node .agentplane/policy/check-routing.mjs; focused Vitest agentplane and cli-core suites; git diff --check. Result: pass. Evidence: 157 agentplane tests plus 1 cli-core E2E passed; typecheck, lint, guards, lifecycle invariants, routing, and diff checks passed. Scope: legacy protected-PR adoption, receipt invalidation, conflict-rework routing, and CLI projection.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260532-9M7RNH-recover-stale-protected-pr-conflict-base-context/.agentplane/tasks/202607260532-9M7RNH/blueprint/resolved-snapshot.json
+- old_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+- current_digest: 62e7dccfeb5473213079b48611247d696a3f1c7d51171cce1ea5355ee01b1a4f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260532-9M7RNH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607260532-9M7RNH
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

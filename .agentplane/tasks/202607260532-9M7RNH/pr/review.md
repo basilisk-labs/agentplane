@@ -6,14 +6,14 @@ Created: 2026-07-26T05:34:29.033Z
 
 - Task: `202607260532-9M7RNH`
 - Title: Recover stale protected-PR conflict-base context
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607260532-9M7RNH/recover-stale-protected-pr-conflict-base-context`
 - Canonical task record: `.agentplane/tasks/202607260532-9M7RNH/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Independent TESTER passed the declared legacy protected-conflict recovery contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

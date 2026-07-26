@@ -15,8 +15,8 @@ Close the liveness gap for legacy protected PR conflicts whose provider-reported
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Independent TESTER passed the declared legacy protected-conflict recovery contract.
 - Canonical workflow state lives in the task README.
 
 <details>
