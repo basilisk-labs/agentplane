@@ -198,6 +198,13 @@ describe("DONE route quality-review target", () => {
 
   it("routes current hosted check failures on a DONE open PR back to implementation rework", async () => {
     const failingPrFlow = openPrFlow();
+    failingPrFlow.publication = {
+      state: "aligned",
+      localHeadSha: headSha,
+      upstreamRef: "origin/task/T-1/metadata-gate",
+      upstreamHeadSha: headSha,
+      hostedHeadSha: headSha,
+    };
     failingPrFlow.hostedChecks = {
       checked: true,
       total: 2,
@@ -209,6 +216,38 @@ describe("DONE route quality-review target", () => {
     };
 
     await expect(blockersFor(reviewedSha, undefined, failingPrFlow)).resolves.toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
+    );
+  });
+
+  it("keeps a newer unpublished head publishable despite stale failed hosted checks", async () => {
+    const providerHeadSha = "c".repeat(40);
+    const staleFailingPrFlow = openPrFlow();
+    staleFailingPrFlow.pr.headSha = providerHeadSha;
+    staleFailingPrFlow.publication = {
+      state: "unpublished",
+      reason: "upstream_head_mismatch",
+      localHeadSha: headSha,
+      upstreamRef: "origin/task/T-1/metadata-gate",
+      upstreamHeadSha: providerHeadSha,
+      hostedHeadSha: providerHeadSha,
+    };
+    staleFailingPrFlow.hostedChecks = {
+      checked: true,
+      total: 1,
+      pending: 0,
+      failing: 1,
+      passing: 0,
+      missingRequired: [],
+      rows: [{ name: "verify-contract", state: "FAILURE" }],
+    };
+
+    const blockers = await blockersFor(reviewedSha, undefined, staleFailingPrFlow);
+
+    expect(blockers).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "pr_head_unpublished" })]),
+    );
+    expect(blockers).not.toEqual(
       expect.arrayContaining([expect.objectContaining({ code: "implementation_rework_required" })]),
     );
   });

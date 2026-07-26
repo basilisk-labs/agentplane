@@ -18,15 +18,15 @@
  .../src/commands/pr/internal/sync-github.ts        | 161 ++++-
  packages/agentplane/src/commands/pr/pr.command.ts  |  16 +
  packages/agentplane/src/commands/pr/pr.spec.ts     |  58 +-
- .../route-decision-blockers.quality-review.test.ts |  25 +-
- .../src/commands/shared/route-decision-blockers.ts |  44 ++
+ .../route-decision-blockers.quality-review.test.ts |  64 +-
+ .../src/commands/shared/route-decision-blockers.ts |  54 ++
  .../src/commands/shared/route-decision-types.ts    |   2 +
  .../src/commands/shared/route-decision.ts          |  21 +-
  .../agentplane/src/commands/shared/route-oracle.ts |   2 +
  .../agentplane/src/commands/shared/task-handoff.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  16 +-
  .../src/commands/shared/workflow-step-factory.ts   |  61 ++
- .../shared/workflow-step-projections.test.ts       | 304 ++++++++++
+ .../shared/workflow-step-projections.test.ts       | 391 ++++++++++++
  .../commands/shared/workflow-step-projections.ts   |  10 +-
  .../src/commands/shared/workflow-step.ts           |   2 +
  .../src/commands/task/next-action.command.ts       |  22 +
@@ -37,4 +37,4 @@
  schemas/task-handoff.schema.json                   |  11 +
  .../baselines/v0.7-compatibility-candidate.json    |  78 ++-
  .../check-compatibility-contract-baseline.mjs      |  52 +-
- 39 files changed, 2880 insertions(+), 65 deletions(-)
+ 39 files changed, 3016 insertions(+), 65 deletions(-)

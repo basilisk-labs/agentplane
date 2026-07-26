@@ -451,6 +451,93 @@ describe("WorkflowStep execution projections", () => {
     });
   });
 
+  it("publishes a newer unpublished head before acting on stale failed hosted checks", () => {
+    const providerHeadSha = "2222222222222222222222222222222222222222";
+    const staleFailedPrFlow = {
+      task: { id: task.id, status: "DONE", verification: "ok" },
+      branch: { name: taskBranch, headSha: resume.head_sha, metaHeadSha: resume.head_sha },
+      pr: {
+        provider: "github",
+        state: "OPEN",
+        source: "lookup",
+        prNumber: 4626,
+        prUrl: "https://github.example/acme/agentplane/pull/4626",
+        base: "main",
+        headSha: providerHeadSha,
+        mergeCommit: null,
+      },
+      providerObservation: {
+        state: "found",
+        pr: {
+          prNumber: 4626,
+          prUrl: "https://github.example/acme/agentplane/pull/4626",
+          status: "OPEN",
+          mergedAt: null,
+          mergeCommit: null,
+          base: "main",
+          headSha: providerHeadSha,
+          mergeability: { state: "not_conflicting", mergeable: true, providerState: "blocked" },
+        },
+      },
+      publication: {
+        state: "unpublished",
+        reason: "upstream_head_mismatch",
+        localHeadSha: resume.head_sha,
+        upstreamRef: `origin/${taskBranch}`,
+        upstreamHeadSha: providerHeadSha,
+        hostedHeadSha: providerHeadSha,
+      },
+      closeTail: { state: "not_applicable", reason: "implementation PR remains open" },
+      hostedChecks: {
+        checked: true,
+        total: 1,
+        pending: 0,
+        failing: 1,
+        passing: 0,
+        missingRequired: [],
+        rows: [{ name: "verify-contract", state: "FAILURE" }],
+      },
+      reviewThreads: { checked: true, unresolved: 0 },
+      queue: { present: false },
+      handoff: { present: false },
+      nextAction: "hosted checks are failing on an older published head",
+    } satisfies PrFlowStatusReport;
+    const state = routeState({
+      task: { ...task, status: "DONE", verification: { state: "ok" } },
+      resume: { ...resume, task_status: "DONE" },
+      prFlow: staleFailedPrFlow,
+      conflictRework: null,
+      blockers: [
+        {
+          code: "pr_head_unpublished",
+          summary: "local task branch head is not published to its upstream tracking branch",
+        },
+      ],
+    });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({ state, step, paths: { taskWorktreePath } });
+
+    expect(step).toMatchObject({
+      kind: "cli_operation",
+      id: "pr.head.publish",
+      compatibility: {
+        code: "publish_pr_head",
+        command: `agentplane pr open ${task.id} --author CODER`,
+      },
+    });
+    expect(step.id).not.toBe("agent.implementation_rework");
+    expect(oracle).toMatchObject({
+      phase: "pr_head_publication_needed",
+      authoritativeCheckout: "task_worktree",
+      nextCommand: `agentplane pr open ${task.id} --author CODER`,
+    });
+    expect(packet).toMatchObject({
+      actionKind: "local_command",
+      safeToMutate: true,
+      exactArgv: ["agentplane", "pr", "open", task.id, "--author", "CODER"],
+    });
+  });
+
   it("projects runner wait without a mutation path or executable argv", () => {
     const blocker = { code: "runner_alive" as const, summary: "runner is active" };
     const state = routeState({
