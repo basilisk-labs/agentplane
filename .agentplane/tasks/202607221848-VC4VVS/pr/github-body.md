@@ -15,8 +15,13 @@ RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projec
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation
+paths for the approved AgentWorkOrder v2 scope.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
