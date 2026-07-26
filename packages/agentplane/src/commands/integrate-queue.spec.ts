@@ -192,7 +192,10 @@ export const integrateQueueAdoptLegacyProtectedConflictSpec: CommandSpec<Integra
     ],
     parse: (raw) => ({
       taskId: String(raw.args["task-id"]),
-      expectedAdoptionToken: String(raw.opts["expect-adoption-token"] ?? ""),
+      expectedAdoptionToken:
+        typeof raw.opts["expect-adoption-token"] === "string"
+          ? raw.opts["expect-adoption-token"].trim()
+          : "",
     }),
     validateRaw: (raw) => {
       const token =
