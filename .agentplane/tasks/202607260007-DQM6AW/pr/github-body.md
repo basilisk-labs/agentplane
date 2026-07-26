@@ -12,15 +12,8 @@ In scope: branch_pr queue conflict detection, provider-backed freshness and prov
 
 ## Verification
 
-- State: ok
-- Note:
-
-```text
-Independent verification at a9340067: aligned failed hosted head routes to CODER rework; stale
-failed provider head with newer unpublished local head routes only to publish_pr_head via agentplane
-pr open. Focused agentplane 86, CLI 12, and critical 11-file suites passed; schemas check,
-typecheck, lint, guards, lifecycle invariants, policy routing, doctor, and diff check passed.
-```
+- State: needs_rework
+- Note: Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded.
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -19,7 +19,7 @@ import {
 } from "./pr.spec.js";
 
 import { cmdPrCheck } from "./check.js";
-import { cmdPrConflictRework } from "./conflict-rework.js";
+import { cmdPrConflictRework } from "./conflict-rework.command.js";
 import { cmdPrCloseSuperseded } from "./close-superseded.js";
 import { cmdPrClose } from "./close.js";
 import { cmdPrFlowStatus } from "./flow-status.js";
