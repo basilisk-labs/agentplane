@@ -287,6 +287,50 @@ describe("AgentWorkOrder v2 surface integration", () => {
     }
   });
 
+  it("keeps a plan-unapproved route blocked instead of weakening required state components", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root);
+    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const task = await commandCtx.taskBackend.getTask(taskId);
+    expect(task).toBeTruthy();
+    await commandCtx.taskBackend.writeTask({
+      ...task!,
+      status: "DOING",
+      plan_approval: {
+        state: "pending",
+        updated_at: null,
+        updated_by: null,
+        note: null,
+      },
+    });
+
+    const prepared = requirePreparedAgentWorkOrder(
+      await prepareAgentWorkOrder({
+        command_ctx: commandCtx,
+        cwd: root,
+        root_override: root,
+        task_id: taskId,
+      }),
+    );
+    const readiness = await evaluatePreparedAgentWorkOrderReadiness({
+      command_ctx: commandCtx,
+      cwd: root,
+      root_override: root,
+      prepared,
+    });
+
+    expect(readiness).toMatchObject({
+      status: "rejected",
+      rejection: {
+        code: "work_order_stale",
+        precondition: {
+          reason_code: "state_fingerprint_required_component_unavailable",
+          unavailable_required_components: ["git", "backend_projection"],
+        },
+      },
+    });
+  });
+
   it("refuses every launch surface before execution when the prompt compiler reports an error", async () => {
     const root = await mkGitRepoRoot();
     await mkdir(path.join(root, ".agentplane", "generated"), { recursive: true });

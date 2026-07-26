@@ -55,10 +55,9 @@ import {
 } from "./task-run-blueprint-plan.js";
 import {
   evaluatePreparedAgentWorkOrderReadiness,
-  prepareAgentWorkOrder,
   requireAgentWorkOrderInvocationReadiness,
-  requirePreparedAgentWorkOrder,
 } from "./agent-work-order.js";
+import { prepareTaskRunnerAgentWorkOrder } from "./task-run-work-order.js";
 import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
 import {
   executeStateBoundRunnerInvocation,
@@ -155,20 +154,18 @@ export async function prepareTaskRunnerExecution(opts: {
   });
   let executionProfile = executionContext.executionProfile;
   const runnerCommand = target.kind === "recipe_scenario" ? "recipes scenario execute" : "task run";
-  const preparedWorkOrder = requirePreparedAgentWorkOrder(
-    await prepareAgentWorkOrder({
-      command_ctx: command,
-      cwd: opts.cwd,
-      root_override: opts.rootOverride ?? null,
-      task_id: opts.task_id,
-      ...(opts.include_remote ? { include_remote: true } : {}),
-      include_runner_state: opts.include_route_runner_state ?? false,
-      recipe: opts.recipe,
-      runner_command: runnerCommand,
-      execution_context: executionContext,
-      execution_profile: executionProfile,
-    }),
-  );
+  const preparedWorkOrder = await prepareTaskRunnerAgentWorkOrder({
+    command_ctx: command,
+    cwd: opts.cwd,
+    root_override: opts.rootOverride ?? null,
+    task_id: opts.task_id,
+    include_remote: opts.include_remote,
+    include_route_runner_state: opts.include_route_runner_state,
+    recipe: opts.recipe,
+    runner_command: runnerCommand,
+    execution_context: executionContext,
+    execution_profile: executionProfile,
+  });
   executionProfile = preparedWorkOrder.execution_profile;
   const taskEnvelope = preparedWorkOrder.task_envelope;
   const base_prompts = preparedWorkOrder.base_prompts;
