@@ -1,8 +1,11 @@
- .../src/commands/branch/cleanup-merged-proof.ts    | 212 +++++++-----
- .../cleanup-merged-provider-reconciliation.ts      | 378 +++++++++++++++++++++
- .../branch/cleanup-merged.targeted.test.ts         | 277 ++++++++++++++-
+ .../src/commands/branch/cleanup-merged-proof.ts    | 252 ++++++++-----
+ .../cleanup-merged-provider-reconciliation.ts      | 404 +++++++++++++++++++++
+ .../branch/cleanup-merged.targeted.test.ts         | 404 ++++++++++++++++++++-
  .../src/commands/branch/cleanup-merged.ts          |  24 +-
+ packages/agentplane/src/commands/shared/git-ops.ts |  19 +
  .../shared/route-decision-next-action.test.ts      |  49 +++
  .../src/commands/shared/route-decision.ts          |   3 +-
  .../src/commands/shared/workflow-step-branch.ts    |  46 ++-
- 7 files changed, 871 insertions(+), 118 deletions(-)
+ .../src/commands/task/close-tail-state.test.ts     |  16 +-
+ .../src/commands/task/close-tail-state.ts          |  12 +-
+ 10 files changed, 1104 insertions(+), 125 deletions(-)

@@ -27,6 +27,25 @@ export {
   resolveInitBaseBranch,
 } from "@agentplaneorg/core/git";
 
+const CANONICAL_FULL_COMMIT_OID = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u;
+
+export function isCanonicalFullCommitOid(value: string): boolean {
+  return CANONICAL_FULL_COMMIT_OID.test(value);
+}
+
+export async function gitCommitObjectExists(gitRoot: string, oid: string): Promise<boolean> {
+  if (!isCanonicalFullCommitOid(oid)) return false;
+  try {
+    await execFileAsync("git", ["cat-file", "-e", `${oid}^{commit}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function promptInitBaseBranch(opts: {
   gitRoot: string;
   fallback: string;

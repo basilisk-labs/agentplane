@@ -4,7 +4,7 @@ title: "Reconcile provider-rebased protected PR heads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -35,29 +35,32 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-26T00:59:01.831Z"
+  updated_at: "2026-07-26T01:22:27.984Z"
   updated_by: "TESTER"
-  note: "Independent re-verification passed: provider-only extra-patch refusal; exact-head and ZMV provider-rebase positives; identity, base, closure, unavailable, and race refusals; cleanup safeguards and route priority. Focused suites 26 plus 23 passed; typecheck, lint, guards, lifecycle, routing, doctor, diff check passed; live ZMV dry run reported proof=provider_rebase without cleanup."
+  note: "Independent re-verification passed: full canonical OID gate rejects main, short SHA, refs, and malformed provider identities before Git revision use; each negative reports cleanup_blocked with no command and preserves branch/worktree. Symmetric provider-patch and race coverage remains green; focused suites 27 plus 23 passed; static checks passed; live ZMV dry run reported proof=provider_rebase without cleanup."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T01:07:12.339Z"
+  updated_at: "2026-07-26T01:25:15.011Z"
   updated_by: "EVALUATOR"
-  note: "Reject: provider reconciliation accepts symbolic Git refs as immutable provider identities, so a malformed provider head or merge value can produce a cleanup-authorizing proof."
-  evaluated_sha: "811a7a85860c4b1665ba5aa9d5f301d59666dd38"
+  note: "Reject: the canonical provider gate is partial; task commit and pre-merge closure basis remain unvalidated Git revisions that can authorize provider-rebase cleanup."
+  evaluated_sha: "dec7de001981766de867867fd274cb4fdfe7b734"
   blueprint_digest: "6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137"
   evidence_refs:
     - ".agentplane/tasks/202607260005-EMP7RC/README.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-010712339-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-010712339-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-010712339-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-012515011-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-012515011-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607260005-EMP7RC/quality/20260726-012515011-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/commands/branch/cleanup-merged-provider-reconciliation.ts"
-    - "bun -e provider identity probe: symbolic_head and symbolic_merge each receiptAccepted=true proofAccepted=true on ZMV d61ab0f -> 2a6d152 -> e27c938"
+    - "packages/agentplane/src/commands/branch/cleanup-merged-proof.ts"
+    - "packages/agentplane/src/commands/task/close-tail-state.ts"
+    - "bun -e metadata identity probe: taskCommitSha=closureBasisCommit=task/202607252051-ZMVZRZ/make-merged-worktree-cleanup-resilient yielded proofAccepted=true on ZMV topology"
+    - "bun test cleanup-merged.targeted.test.ts route-decision-next-action.test.ts: 27 pass, 0 fail"
   findings:
-    - "At HEAD 811a7a85860c4b1665ba5aa9d5f301d59666dd38, provider headSha=main and mergeCommit=main are accepted by validateMergedProviderReceipt and resolveProviderReconciliation on the real ZMV topology; both yield provider_rebase_equivalent instead of refusal."
-    - "The proof contract requires immutable task, provider-head, and merge identities. Non-empty strings are passed to git cat-file, gitIsAncestor, git cherry, and rev-list, which resolve refs rather than only commit object IDs."
+    - "At HEAD dec7de001981766de867867fd274cb4fdfe7b734, resolveProviderReconciliation accepts taskCommitSha and closureBasisCommit equal to the mutable ZMV task branch ref, then returns provider_rebase_equivalent against the real d61ab0f -> 2a6d152 -> e27c938 topology."
+    - "validateMergedProviderReceipt now correctly rejects symbolic provider head and merge values, but targetedCleanupProof passes task.commit.hash and pre_merge_closure.basis_commit into Git ancestry/cherry operations without a canonical full OID check; taskPreMergeClosureRecordedOnBase only requires a non-empty commit hash and does not validate the closure basis."
 commit: null
 comments:
   -
@@ -83,8 +86,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent re-verification passed: provider-only extra-patch refusal; exact-head and ZMV provider-rebase positives; identity, base, closure, unavailable, and race refusals; cleanup safeguards and route priority. Focused suites 26 plus 23 passed; typecheck, lint, guards, lifecycle, routing, doctor, diff check passed; live ZMV dry run reported proof=provider_rebase without cleanup."
+  -
+    type: "verify"
+    at: "2026-07-26T01:22:27.984Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent re-verification passed: full canonical OID gate rejects main, short SHA, refs, and malformed provider identities before Git revision use; each negative reports cleanup_blocked with no command and preserves branch/worktree. Symmetric provider-patch and race coverage remains green; focused suites 27 plus 23 passed; static checks passed; live ZMV dry run reported proof=provider_rebase without cleanup."
 doc_version: 3
-doc_updated_at: "2026-07-26T00:59:02.533Z"
+doc_updated_at: "2026-07-26T01:22:28.745Z"
 doc_updated_by: "CODER"
 description: "Correct branch_pr reconciliation after a protected provider rebases a verified PR: reconcile remote provider truth with a stale local task head without publishing or deleting from uncertain lineage. Current incident: ZMV 202607252051-ZMVZRZ local d61ab0f55d1c122e5acbaf2a296e2ff508e87b55 versus provider-rebased 2a6d152b87666912d189304c4a6084eccaaff262, merged as main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -168,6 +177,36 @@ sections:
     - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
+
+    ### 2026-07-26T01:22:27.984Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent re-verification passed: full canonical OID gate rejects main, short SHA, refs, and malformed provider identities before Git revision use; each negative reports cleanup_blocked with no command and preserves branch/worktree. Symmetric provider-patch and race coverage remains green; focused suites 27 plus 23 passed; static checks passed; live ZMV dry run reported proof=provider_rebase without cleanup.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:59:02.533Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+    - old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: git_hook_side_effect
 
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "Revert only the bounded reconciliation change in a new normal branch_pr task or follow-up, preserving task artifacts and the pre-existing fail-closed route. Never restore or align a remote branch with a raw force-push. If provider truth changes, proof is incomplete, or cleanup reports dirty or identity mismatch, stop, preserve all state, and return the diagnostic route for human or agent rework."
@@ -274,6 +313,36 @@ DecisionContextRef:
 - repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
+
+### 2026-07-26T01:22:27.984Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent re-verification passed: full canonical OID gate rejects main, short SHA, refs, and malformed provider identities before Git revision use; each negative reports cleanup_blocked with no command and preserves branch/worktree. Symmetric provider-patch and race coverage remains green; focused suites 27 plus 23 passed; static checks passed; live ZMV dry run reported proof=provider_rebase without cleanup.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T00:59:02.533Z, excerpt_hash=sha256:33d33231218817701b0c2d10cb38000624bc73c9de998eeabad5f9c2a37ab551
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260005-EMP7RC-reconcile-provider-rebased-protected-pr-heads/.agentplane/tasks/202607260005-EMP7RC/blueprint/resolved-snapshot.json
+- old_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- current_digest: 6b380a98fe0abdbd235781627fa5549fa33d03fa784c92e76db15f288659a137
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260005-EMP7RC
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane pr open 202607260005-EMP7RC --author CODER
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: git_hook_side_effect
 
 <!-- END VERIFICATION RESULTS -->
 

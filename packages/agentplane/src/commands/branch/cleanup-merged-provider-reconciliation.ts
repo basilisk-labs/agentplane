@@ -1,7 +1,11 @@
 import { gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
 
-import { gitIsAncestor } from "../shared/git-ops.js";
+import {
+  gitCommitObjectExists,
+  gitIsAncestor,
+  isCanonicalFullCommitOid,
+} from "../shared/git-ops.js";
 import {
   observeExistingGithubPrByBranch,
   observeExistingGithubPrByNumber,
@@ -27,28 +31,29 @@ type ProviderMergeReceipt = {
   mergeCommit: string;
 };
 
-const CANONICAL_FULL_COMMIT_OID = /^(?:[0-9a-f]{40}|[0-9a-f]{64})$/u;
-
-export function isCanonicalFullCommitOid(value: string): boolean {
-  return CANONICAL_FULL_COMMIT_OID.test(value);
+function canonicalCommitIdentityReason(label: string, value: string): string | null {
+  return isCanonicalFullCommitOid(value)
+    ? null
+    : `${label} must be a canonical full commit OID: ${value || "-"}`;
 }
 
 function canonicalProviderRevisionReason(label: string, value: string): string | null {
-  return isCanonicalFullCommitOid(value)
-    ? null
-    : `provider ${label} must be a canonical full commit OID: ${value || "-"}`;
+  return canonicalCommitIdentityReason(`provider ${label}`, value);
 }
 
-async function gitCommitExists(gitRoot: string, sha: string): Promise<boolean> {
-  try {
-    await execFileAsync("git", ["cat-file", "-e", `${sha}^{commit}`], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    return true;
-  } catch {
-    return false;
+function canonicalReconciliationIdentityReason(proof: ProviderReconciliationProof): string | null {
+  const identities = [
+    ["recorded task commit", proof.taskCommitSha],
+    ["recorded local task head", proof.localHeadSha],
+    ["recorded provider head", proof.providerHeadSha],
+    ["recorded provider merge commit", proof.mergeCommit],
+    ["recorded pre-merge closure basis", proof.closureBasisCommit],
+  ] as const;
+  for (const [label, value] of identities) {
+    const reason = canonicalCommitIdentityReason(label, value);
+    if (reason) return reason;
   }
+  return null;
 }
 
 type GitCherryLine = { marker: "+" | "-"; sha: string };
@@ -198,17 +203,14 @@ export async function validateMergedProviderReceipt(opts: {
     };
   }
   const expected = opts.expectedReconciliation;
-  if (
-    expected &&
-    (!isCanonicalFullCommitOid(expected.providerHeadSha) ||
-      !isCanonicalFullCommitOid(expected.mergeCommit))
-  ) {
+  const expectedIdentityReason = expected ? canonicalReconciliationIdentityReason(expected) : null;
+  if (expectedIdentityReason) {
     return {
       receipt: null,
-      reason: "recorded provider reconciliation identities are not canonical full commit OIDs",
+      reason: expectedIdentityReason,
     };
   }
-  if (!(await gitCommitExists(opts.gitRoot, mergeCommit))) {
+  if (!(await gitCommitObjectExists(opts.gitRoot, mergeCommit))) {
     return {
       receipt: null,
       reason: `provider merge commit object is unavailable locally: ${mergeCommit}`,
@@ -267,22 +269,46 @@ export async function resolveProviderReconciliation(opts: {
   closureBasisCommit: string;
   receipt: ProviderMergeReceipt;
 }): Promise<{ proof: ProviderReconciliationProof | null; reason: string | null }> {
-  if (
-    !isCanonicalFullCommitOid(opts.receipt.providerHeadSha) ||
-    !isCanonicalFullCommitOid(opts.receipt.mergeCommit)
-  ) {
+  const identities = [
+    ["provider rebase head", opts.receipt.providerHeadSha],
+    ["provider merge commit", opts.receipt.mergeCommit],
+    ["task commit", opts.taskCommitSha],
+    ["local task branch head", opts.branchHead],
+    ["pre-merge closure basis", opts.closureBasisCommit],
+  ] as const;
+  for (const [label, value] of identities) {
+    const reason = canonicalCommitIdentityReason(label, value);
+    if (!reason) continue;
     return {
       proof: null,
-      reason: "provider reconciliation identities are not canonical full commit OIDs",
+      reason,
     };
   }
-  if (!(await gitCommitExists(opts.gitRoot, opts.receipt.providerHeadSha))) {
+  if (!(await gitCommitObjectExists(opts.gitRoot, opts.receipt.providerHeadSha))) {
     return {
       proof: null,
       reason: `provider rebase head object is unavailable locally: ${opts.receipt.providerHeadSha}`,
     };
   }
-  if (!(await gitCommitExists(opts.gitRoot, opts.closureBasisCommit))) {
+  if (!(await gitCommitObjectExists(opts.gitRoot, opts.receipt.mergeCommit))) {
+    return {
+      proof: null,
+      reason: `provider merge commit object is unavailable locally: ${opts.receipt.mergeCommit}`,
+    };
+  }
+  if (!(await gitCommitObjectExists(opts.gitRoot, opts.taskCommitSha))) {
+    return {
+      proof: null,
+      reason: `task commit object is unavailable locally: ${opts.taskCommitSha}`,
+    };
+  }
+  if (!(await gitCommitObjectExists(opts.gitRoot, opts.branchHead))) {
+    return {
+      proof: null,
+      reason: `local task branch head object is unavailable locally: ${opts.branchHead}`,
+    };
+  }
+  if (!(await gitCommitObjectExists(opts.gitRoot, opts.closureBasisCommit))) {
     return {
       proof: null,
       reason: `pre-merge closure basis object is unavailable locally: ${opts.closureBasisCommit}`,

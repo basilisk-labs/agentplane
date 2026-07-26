@@ -5,6 +5,7 @@ import { normalizeTaskStatus, parseTaskReadme } from "@agentplaneorg/core/tasks"
 
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { gitEnv } from "@agentplaneorg/core/git";
+import { gitCommitObjectExists, isCanonicalFullCommitOid } from "../shared/git-ops.js";
 import { parsePrMeta, readPreMergeClosureMarker } from "../shared/pr-meta.js";
 
 async function gitShowText(opts: {
@@ -48,12 +49,19 @@ export async function taskPreMergeClosureRecordedOnBase(opts: {
     const commit = task.commit;
     if (!commit || typeof commit !== "object" || Array.isArray(commit)) return false;
     if (typeof (commit as { hash?: unknown }).hash !== "string") return false;
-    if ((commit as { hash: string }).hash.trim().length === 0) return false;
+    const taskCommitHash = (commit as { hash: string }).hash.trim();
+    if (!isCanonicalFullCommitOid(taskCommitHash)) return false;
 
     const meta = parsePrMeta(metaRaw, opts.taskId);
     const marker = readPreMergeClosureMarker(meta);
+    if (!marker || !isCanonicalFullCommitOid(marker.basisCommit)) return false;
+    const [taskCommitExists, closureBasisExists] = await Promise.all([
+      gitCommitObjectExists(opts.gitRoot, taskCommitHash),
+      gitCommitObjectExists(opts.gitRoot, marker.basisCommit),
+    ]);
+    if (!taskCommitExists || !closureBasisExists) return false;
     return (
-      marker?.branch === opts.branch &&
+      marker.branch === opts.branch &&
       (marker.prNumber === undefined || marker.prNumber === opts.prNumber) &&
       meta.branch?.trim() === opts.branch &&
       meta.pr_number === opts.prNumber

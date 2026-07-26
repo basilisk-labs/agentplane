@@ -13,7 +13,11 @@ import {
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
 
-import { gitIsAncestor } from "../shared/git-ops.js";
+import {
+  gitCommitObjectExists,
+  gitIsAncestor,
+  isCanonicalFullCommitOid,
+} from "../shared/git-ops.js";
 import { parsePrMeta, readPreMergeClosureMarker } from "../shared/pr-meta.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
@@ -25,7 +29,6 @@ import {
   observeProviderPr,
   resolveProviderReconciliation,
   validateMergedProviderReceipt,
-  isCanonicalFullCommitOid,
   type ProviderReconciliationProof,
 } from "./cleanup-merged-provider-reconciliation.js";
 import type { GithubPrLookupResult } from "../pr/internal/sync-github.js";
@@ -95,12 +98,17 @@ async function taskLifecycleProofOnBase(opts: {
   taskId: string;
 }): Promise<CleanupCandidate["proof"] | null> {
   const taskCommitHash = opts.task.commit?.hash?.trim() ?? "";
-  if (taskCommitHash && (await gitIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))) {
+  if (
+    isCanonicalFullCommitOid(taskCommitHash) &&
+    (await gitCommitObjectExists(opts.gitRoot, taskCommitHash)) &&
+    (await gitIsAncestor(opts.gitRoot, taskCommitHash, opts.baseBranch))
+  ) {
     return "task_commit_on_base";
   }
   const meta = await readCleanupPrMetaIfPresent(opts);
   const mergeCommit = meta?.status === "MERGED" ? (meta.merge_commit?.trim() ?? "") : "";
   return isCanonicalFullCommitOid(mergeCommit) &&
+    (await gitCommitObjectExists(opts.gitRoot, mergeCommit)) &&
     (await gitIsAncestor(opts.gitRoot, mergeCommit, opts.baseBranch))
     ? "merged_meta_on_base"
     : null;
@@ -171,6 +179,37 @@ async function targetedCleanupProof(opts: {
   expectedHeadSha: string;
   providerReconciliation: ProviderReconciliationProof | null;
 }> {
+  const meta = await readCleanupPrMetaIfPresent(opts);
+  const marker = opts.kind === "task" ? readPreMergeClosureMarker(meta) : null;
+  const taskCommitIdentityReason =
+    opts.kind === "task" && !isCanonicalFullCommitOid(opts.taskCommitSha)
+      ? `task commit must be a canonical full commit OID: ${opts.taskCommitSha || "-"}`
+      : null;
+  const closureBasisIdentityReason =
+    opts.kind === "task" && marker && !isCanonicalFullCommitOid(marker.basisCommit)
+      ? `pre-merge closure basis must be a canonical full commit OID: ${marker.basisCommit || "-"}`
+      : null;
+  const blocked = (reason: string) => ({
+    proof: null,
+    reason,
+    expectedHeadSha: "",
+    providerReconciliation: null,
+  });
+  if (taskCommitIdentityReason) return blocked(taskCommitIdentityReason);
+  if (opts.kind === "task" && !marker) {
+    return blocked("exact pre-merge closure marker is unavailable");
+  }
+  if (closureBasisIdentityReason) return blocked(closureBasisIdentityReason);
+  if (opts.kind === "task") {
+    if (!(await gitCommitObjectExists(opts.gitRoot, opts.taskCommitSha))) {
+      return blocked(`task commit object is unavailable locally: ${opts.taskCommitSha}`);
+    }
+    if (!(await gitCommitObjectExists(opts.gitRoot, marker?.basisCommit ?? ""))) {
+      return blocked(
+        `pre-merge closure basis object is unavailable locally: ${marker?.basisCommit ?? "-"}`,
+      );
+    }
+  }
   const branchHeadResult = await execFileAsync("git", ["rev-parse", opts.branch], {
     cwd: opts.gitRoot,
     env: gitEnv(),
@@ -186,7 +225,6 @@ async function targetedCleanupProof(opts: {
     expectedHeadSha: branchHead,
     providerReconciliation,
   });
-  const meta = await readCleanupPrMetaIfPresent(opts);
   const metaBranch = meta?.branch?.trim() ?? "";
   const recordedPrNumber =
     metaBranch === opts.branch && Number.isInteger(meta?.pr_number) && Number(meta?.pr_number) > 0
@@ -220,8 +258,6 @@ async function targetedCleanupProof(opts: {
     if (providerReceipt.reason || !providerReceipt.receipt) {
       return result(null, providerReceipt.reason ?? "provider merge receipt is unavailable");
     }
-    const marker = readPreMergeClosureMarker(meta);
-    if (!marker) return result(null, "exact pre-merge closure marker is unavailable");
     const closureRecorded = await taskPreMergeClosureRecordedOnBase({
       gitRoot: opts.gitRoot,
       workflowDir: opts.workflowDir,
@@ -240,7 +276,7 @@ async function targetedCleanupProof(opts: {
       baseBranch: opts.baseBranch,
       taskCommitSha: opts.taskCommitSha,
       branchHead,
-      closureBasisCommit: marker.basisCommit,
+      closureBasisCommit: marker?.basisCommit ?? "",
       receipt: providerReceipt.receipt,
     });
     if (!reconciliation.proof) {
