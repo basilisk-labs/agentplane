@@ -128,7 +128,7 @@ export function buildCodexInvocation(opts: {
   return {
     adapter_id: opts.adapterId,
     run_id: execution.run_id,
-    work_order_id: execution.run_id,
+    work_order_id: opts.bundle.work_order?.work_order_id ?? execution.run_id,
     repository_root: opts.bundle.repository.git_root,
     artifact_root: execution.artifact_paths.artifact_root ?? opts.bundle.repository.git_root,
     run_dir: execution.artifact_paths.run_dir,
@@ -176,6 +176,7 @@ export function buildCodexInvocation(opts: {
       AGENTPLANE_RUNNER_ADAPTER: opts.adapterId,
       AGENTPLANE_RUNNER_MODE: execution.mode,
       AGENTPLANE_RUNNER_API_VERSION: opts.bundle.runner_api_version,
+      AGENTPLANE_RUNNER_WORK_ORDER_ID: opts.bundle.work_order?.work_order_id ?? execution.run_id,
       AGENTPLANE_RUNNER_TARGET: opts.bundle.target.kind,
       [CODEX_RESULT_TRANSPORT_ENV]: CODEX_RESULT_TRANSPORT,
       ...recipeEnv,

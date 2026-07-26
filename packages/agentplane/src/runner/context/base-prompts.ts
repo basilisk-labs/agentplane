@@ -21,6 +21,7 @@ export {
 export {
   compileRunnerPromptBlocksThroughModules,
   compileRunnerPromptModuleGraph,
+  RunnerPromptModuleCompilationError,
   runnerPromptBlocksToModuleGraph,
   runnerPromptBlockToModule,
 } from "./prompt-module-bridge.js";

@@ -130,11 +130,11 @@ function contextProfileMutationScriptLines(): string[] {
   ];
 }
 
-function contextProfileSemanticResult(runId: string, includeTransportNulls: boolean): string {
+function contextProfileSemanticResult(workOrderId: string, includeTransportNulls: boolean): string {
   return JSON.stringify({
     schema_version: 2,
     kind: "agent_semantic_result",
-    work_order_id: runId,
+    work_order_id: workOrderId,
     status: "completed",
     summary: "context profile prepared",
     findings: [],
@@ -144,17 +144,17 @@ function contextProfileSemanticResult(runId: string, includeTransportNulls: bool
   });
 }
 
-function codexSemanticResultEvent(runId: string): string {
+function codexSemanticResultEvent(workOrderId: string): string {
   return JSON.stringify({
     type: "item.completed",
     item: {
       type: "agent_message",
-      text: contextProfileSemanticResult(runId, true),
+      text: contextProfileSemanticResult(workOrderId, true),
     },
   });
 }
 
-async function configureCustomRunner(root: string, runId: string): Promise<void> {
+async function configureCustomRunner(root: string): Promise<void> {
   const config = defaultConfig();
   config.runner.default_adapter = "custom";
   config.runner.custom = {
@@ -166,9 +166,9 @@ async function configureCustomRunner(root: string, runId: string): Promise<void>
     "set -eu",
     ...contextProfileMutationScriptLines(),
     String.raw`printf '%s\n' '${contextProfileSemanticResult(
-      runId,
+      "__WORK_ORDER_ID__",
       false,
-    )}' > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
+    )}' | sed "s/__WORK_ORDER_ID__/$AGENTPLANE_RUNNER_WORK_ORDER_ID/g" > "$AGENTPLANE_RUNNER_RESULT_PATH"`,
     "cat >/dev/null",
     "exit 0",
   ]);
@@ -176,14 +176,14 @@ async function configureCustomRunner(root: string, runId: string): Promise<void>
   process.env.TEST_REPOSITORY_ROOT = root;
 }
 
-async function configureFakeCodex(root: string, runId: string): Promise<void> {
+async function configureFakeCodex(root: string): Promise<void> {
   await writeConfig(root, defaultConfig());
   await writeRunnerExecutable(root, "codex", [
     "#!/bin/sh",
     "set -eu",
     ...contextProfileMutationScriptLines(),
     "cat >/dev/null",
-    String.raw`printf '%s\n' '${codexSemanticResultEvent(runId)}'`,
+    String.raw`printf '%s\n' '${codexSemanticResultEvent("__WORK_ORDER_ID__")}' | sed "s/__WORK_ORDER_ID__/$AGENTPLANE_RUNNER_WORK_ORDER_ID/g"`,
     String.raw`printf '%s\n' '{"type":"turn.completed"}'`,
     "exit 0",
   ]);
@@ -243,7 +243,7 @@ describe("context task runner integration", () => {
   it("keeps trust unverified when a custom adapter only carries workspace-write as advisory", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-custom-advisory";
-    await configureCustomRunner(root, runId);
+    await configureCustomRunner(root);
     const taskId = await createContextTask(root, "Custom context advisory receipt");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 
@@ -301,7 +301,7 @@ describe("context task runner integration", () => {
   it("keeps trust unverified when native Codex lacks bounded descendant lifetime", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-codex-unverified";
-    await configureFakeCodex(root, runId);
+    await configureFakeCodex(root);
     const taskId = await createContextTask(root, "Native Codex context receipt");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 
@@ -401,7 +401,7 @@ describe("context task runner integration", () => {
   it("rejects a forged observed-success receipt and matching task reference", async () => {
     const root = await mkGitRepoRoot();
     const runId = "run-context-forged-receipt";
-    await configureFakeCodex(root, runId);
+    await configureFakeCodex(root);
     const taskId = await createContextTask(root, "Forged context receipt");
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
 

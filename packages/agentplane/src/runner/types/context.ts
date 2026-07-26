@@ -4,6 +4,7 @@ import type {
   RunnerTimeoutConfig,
 } from "@agentplaneorg/core/config";
 import type {
+  AgentWorkOrderV2,
   KnowledgeRef,
   PreparedKnowledgeExcerpt,
   StateFingerprint,
@@ -12,10 +13,12 @@ import type {
 
 import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
+import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import type { ResolvedExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
 import type { FrameworkExplainPayload } from "../../runtime/explain/index.js";
 import type { FrameworkProtocolSurface } from "../../runtime/protocol/index.js";
+import type { AgentWorkOrderPreparationView } from "../usecases/agent-work-order.js";
 
 import type { RunnerAdapterCapabilities } from "./capabilities.js";
 import type { RUNNER_API_VERSION, RUNNER_BUNDLE_SCHEMA_VERSION } from "./constants.js";
@@ -143,7 +146,12 @@ export type RunnerContextBundle = {
   recipe?: RunnerRecipeContext;
   blueprint?: BlueprintPlanArtifact;
   playbook?: RunnerExecutionPlaybookContract;
-  route_decision?: Record<string, unknown>;
+  /** Canonical V2 work order for the semantic episode; optional for v1 bundles. */
+  work_order?: AgentWorkOrderV2;
+  /** Canonical V2 preparation projection paired with `work_order`; optional for v1 bundles. */
+  work_order_preparation?: AgentWorkOrderPreparationView;
+  /** Internal typed route source retained for runner state-fingerprint observation. */
+  route_decision?: TaskRouteDecision;
   state_fingerprint?: StateFingerprint;
   state_fingerprint_policy?: StateFingerprintPolicy;
   /**

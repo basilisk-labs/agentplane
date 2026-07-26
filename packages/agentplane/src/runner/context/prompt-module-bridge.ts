@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import type {
   PromptModule,
   PromptModuleAddress,
+  PromptModuleDiagnostic,
   PromptModuleGraph,
   PromptModuleGraphNode,
   PromptModuleOwner,
@@ -11,7 +12,10 @@ import type {
   PromptModuleSurface,
   PromptModuleTarget,
 } from "../../runtime/prompt-modules/index.js";
-import { PROMPT_MODULE_CONTRACT_SCHEMA_VERSION } from "../../runtime/prompt-modules/index.js";
+import {
+  compilePromptModuleGraph,
+  PROMPT_MODULE_CONTRACT_SCHEMA_VERSION,
+} from "../../runtime/prompt-modules/index.js";
 import type { RunnerPromptBlock, RunnerPromptRole } from "../types.js";
 
 export type RunnerPromptBlockModuleContent = {
@@ -27,6 +31,25 @@ export type RunnerPromptBlockModuleContent = {
 };
 
 export type RunnerPromptModule = PromptModule<RunnerPromptBlockModuleContent>;
+
+/**
+ * A runner episode may not proceed with a prompt graph that the canonical
+ * compiler rejected.  Keeping diagnostics typed lets the work-order use case
+ * return a structured preparation refusal instead of treating prompt text as
+ * an opaque best-effort input.
+ */
+export class RunnerPromptModuleCompilationError extends Error {
+  readonly diagnostics: readonly PromptModuleDiagnostic[];
+
+  constructor(diagnostics: readonly PromptModuleDiagnostic[]) {
+    const errors = diagnostics
+      .filter((diagnostic) => diagnostic.severity === "error")
+      .map((diagnostic) => `${diagnostic.code}: ${diagnostic.message}`);
+    super(`Runner prompt module compilation failed: ${errors.join("; ")}`);
+    this.name = "RunnerPromptModuleCompilationError";
+    this.diagnostics = diagnostics;
+  }
+}
 
 function hashPromptBlockContent(content: RunnerPromptBlockModuleContent): string {
   return createHash("sha256").update(JSON.stringify(content)).digest("hex");
@@ -207,7 +230,14 @@ export function compileRunnerPromptBlocksThroughModules(
     originalBlocksByHash.set(hash, matchingBlocks);
   }
 
-  return compileRunnerPromptModuleGraph(runnerPromptBlocksToModuleGraph(blocks)).map((block) => {
+  const compiled = compilePromptModuleGraph({
+    graph: runnerPromptBlocksToModuleGraph(blocks),
+  });
+  if (!compiled.ok) {
+    throw new RunnerPromptModuleCompilationError(compiled.diagnostics);
+  }
+
+  return compileRunnerPromptModuleGraph(compiled).map((block) => {
     const hash = hashPromptBlockContent(promptBlockContent(block));
     const matchingBlocks = originalBlocksByHash.get(hash);
     return matchingBlocks?.shift() ?? block;

@@ -1,7 +1,10 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
+import {
+  prepareAgentWorkOrder,
+  requirePreparedAgentWorkOrder,
+} from "../../runner/usecases/agent-work-order.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
   deriveRouteOperatorGuidance,
   routeRunnerContextIsRelevant,
@@ -151,13 +154,16 @@ function operatorGuidanceJson(guidance: RouteOperatorGuidance): Record<string, u
 
 export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, parsed: TaskNextActionParsed): Promise<number> => {
-    const decision = await buildTaskRouteDecision({
-      ctx: await getCtx("task next-action"),
-      cwd: ctx.cwd,
-      includeRemote: parsed.remote,
-      rootOverride: ctx.rootOverride ?? null,
-      taskId: parsed.taskId,
-    });
+    const preparedWorkOrder = requirePreparedAgentWorkOrder(
+      await prepareAgentWorkOrder({
+        command_ctx: await getCtx("task next-action"),
+        cwd: ctx.cwd,
+        root_override: ctx.rootOverride ?? null,
+        task_id: parsed.taskId,
+        include_remote: parsed.remote,
+      }),
+    );
+    const decision = preparedWorkOrder.route_decision;
     const operatorGuidance = deriveRouteOperatorGuidance(decision);
     const output = createCliEmitter();
     if (parsed.json) {
@@ -183,12 +189,15 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
           route: decision.sourceConfidence.route,
           remote: decision.sourceConfidence.remote,
         },
+        work_order: preparedWorkOrder.work_order,
+        work_order_preparation: preparedWorkOrder.preparation,
       });
       return 0;
     }
     output.report(
       [
         { label: "phase", value: decision.oracle.phase },
+        { label: "work_order_id", value: preparedWorkOrder.work_order.work_order_id },
         { label: "authoritative_checkout", value: decision.oracle.authoritativeCheckout },
         {
           label: "authoritative_checkout_path",

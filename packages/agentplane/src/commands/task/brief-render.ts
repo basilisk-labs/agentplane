@@ -1,7 +1,7 @@
 import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import { routeRunnerContextIsRelevant } from "../shared/route-guidance.js";
 import { renderCliArgv } from "../shared/workflow-operation-projection.js";
-import type { TaskBrief, TaskBriefWithWorkflowStep } from "./brief-model.js";
+import type { TaskBriefWithWorkflowStep } from "./brief-model.js";
 
 function splitNonEmptyLines(text: string): string[] {
   return text
@@ -10,7 +10,9 @@ function splitNonEmptyLines(text: string): string[] {
     .filter(Boolean);
 }
 
-function formatSourceConfidence(sourceConfidence: TaskBrief["source_confidence"]): string {
+function formatSourceConfidence(
+  sourceConfidence: TaskBriefWithWorkflowStep["source_confidence"],
+): string {
   const keys = ["route", "next_action", "verify_steps", "snapshot", "remote"] as const;
   return keys
     .map((key) => {

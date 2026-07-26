@@ -216,42 +216,6 @@
       "path": "packages/agentplane/src/harness/hooks-lifecycle.ts",
       "locator": "shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
       "rationale": "internal orchestration executes a rendered command through a shell"
-    },
-    {
-      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/commands/task/brief-model.ts:contract:TaskBrief:duplicated-durable-shape:ast:module:TypeAliasDeclaration:289d2865fe24:1",
-      "rule_id": "trust.no-untyped-durable-route-workorder",
-      "rf_owners": ["RF-05a", "RF-05b"],
-      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
-      "path": "packages/agentplane/src/commands/task/brief-model.ts",
-      "locator": "contract:TaskBrief:duplicated-durable-shape:ast:module:TypeAliasDeclaration:289d2865fe24:1",
-      "rationale": "TaskBrief duplicates durable fields outside AgentWorkContextContract: task, workflow, route, next_action, execution_packet"
-    },
-    {
-      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/types/context.ts:type:RunnerContextBundle.route_decision:ast:TypeAliasDeclaration:RunnerContextBundle:1:PropertySignature:075b26406365:1",
-      "rule_id": "trust.no-untyped-durable-route-workorder",
-      "rf_owners": ["RF-05a", "RF-05b"],
-      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
-      "path": "packages/agentplane/src/runner/types/context.ts",
-      "locator": "type:RunnerContextBundle.route_decision:ast:TypeAliasDeclaration:RunnerContextBundle:1:PropertySignature:075b26406365:1",
-      "rationale": "durable route_decision payload uses Record<string, unknown> instead of a validated contract"
-    },
-    {
-      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/usecases/task-run.ts:assertion:bundle:route-decision-inline-shape:ast:FunctionDeclaration:prepareTaskRunnerExecution:1/VariableDeclaration:bundle:1:AsExpression:4f48903a04d2:1",
-      "rule_id": "trust.no-untyped-durable-route-workorder",
-      "rf_owners": ["RF-05a", "RF-05b"],
-      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
-      "path": "packages/agentplane/src/runner/usecases/task-run.ts",
-      "locator": "assertion:bundle:route-decision-inline-shape:ast:FunctionDeclaration:prepareTaskRunnerExecution:1/VariableDeclaration:bundle:1:AsExpression:4f48903a04d2:1",
-      "rationale": "route_decision is decoded through an inline bootstrap assertion instead of a shared contract"
-    },
-    {
-      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/runner/usecases/task-run.ts:cast:bundle:route_decision:ast:FunctionDeclaration:prepareTaskRunnerExecution:1/VariableDeclaration:bundle:1:AsExpression:89d6f887d7f1:1",
-      "rule_id": "trust.no-untyped-durable-route-workorder",
-      "rf_owners": ["RF-05a", "RF-05b"],
-      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
-      "path": "packages/agentplane/src/runner/usecases/task-run.ts",
-      "locator": "cast:bundle:route_decision:ast:FunctionDeclaration:prepareTaskRunnerExecution:1/VariableDeclaration:bundle:1:AsExpression:89d6f887d7f1:1",
-      "rationale": "durable route_decision payload crosses the boundary through an unchecked double cast"
     }
   ]
 }

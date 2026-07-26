@@ -1,18 +1,24 @@
-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
   deriveRouteOperatorGuidance,
   type RouteOperatorGuidance,
 } from "../shared/route-guidance.js";
 import { buildRouteSourceConfidenceBase } from "../shared/source-confidence.js";
 import type { WorkflowStep } from "../shared/workflow-step.js";
-import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+import type { CommandContext } from "../shared/task-backend.js";
+import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+import {
+  prepareAgentWorkOrder,
+  requirePreparedAgentWorkOrder,
+  type AgentWorkOrderLegacyBriefProjection,
+  type AgentWorkOrderPreparationView,
+  type PreparedAgentWorkOrder,
+} from "../../runner/usecases/agent-work-order.js";
+import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import {
   agentWorkContextContract,
   type AgentWorkContextContract,
   type AgentWorkContextSourceConfidence,
 } from "./agent-work-context-contract.js";
-import { resolveTaskBlueprintLifecycleSummary } from "./blueprint-summary.js";
 import { extractDocSection, isVerifyStepsFilled, VERIFY_STEPS_PLACEHOLDER } from "./shared.js";
 
 export type TaskBriefParsed = {
@@ -60,8 +66,17 @@ type TaskBriefBatchOwnership =
       };
     };
 
-export type TaskBrief = {
+type TaskBriefVerifySteps = {
+  filled: boolean;
+  quality: "missing" | "fallback" | "specific";
+  text: string;
+};
+
+type TaskBriefLegacyProjection = {
   contract: AgentWorkContextContract;
+  /** Canonical V2, snake_case work order; legacy fields below remain V1 projections. */
+  work_order: AgentWorkOrderV2;
+  work_order_preparation: AgentWorkOrderPreparationView;
   task: {
     id: string;
     title: string;
@@ -106,22 +121,11 @@ export type TaskBrief = {
     stop_reason: string | null;
   };
   decision_context: RouteOperatorGuidance;
-  verify_steps: {
-    filled: boolean;
-    quality: "missing" | "fallback" | "specific";
-    text: string;
-  };
-  blueprint: Awaited<ReturnType<typeof resolveTaskBlueprintLifecycleSummary>>;
+  verify_steps: TaskBriefVerifySteps;
+  blueprint: AgentWorkOrderLegacyBriefProjection["blueprint"];
   policy_modules: string[];
   evidence_required: string[];
-  snapshot: {
-    state: string;
-    path: string;
-    digest: string | null;
-    current_digest: string;
-    route_changed: boolean | null;
-    safe_command: string;
-  };
+  snapshot: AgentWorkOrderLegacyBriefProjection["snapshot"];
   stop_rules: string[];
   remote: {
     enabled: boolean;
@@ -130,7 +134,13 @@ export type TaskBrief = {
   source_confidence: Record<string, AgentWorkContextSourceConfidence>;
 };
 
-export type TaskBriefWithWorkflowStep = TaskBrief & {
+/**
+ * The named durable contract is intentionally only the shared V2 bridge.
+ * Existing V1 fields are composed at the rendering edge below.
+ */
+export type TaskBrief = AgentWorkContextContract;
+
+export type TaskBriefWithWorkflowStep = TaskBriefLegacyProjection & {
   workflow_step: WorkflowStep;
 };
 
@@ -139,8 +149,8 @@ function buildSourceConfidence(opts: {
   remoteEnabled: boolean;
   remoteResolved: boolean;
   snapshotState: string;
-  verifyStepsQuality: TaskBrief["verify_steps"]["quality"];
-}): TaskBrief["source_confidence"] {
+  verifyStepsQuality: TaskBriefVerifySteps["quality"];
+}): TaskBriefLegacyProjection["source_confidence"] {
   const routeSourceConfidence = buildRouteSourceConfidenceBase({
     batchOwnershipSource: "local_git",
     remoteEnabled: opts.remoteEnabled,
@@ -207,16 +217,14 @@ function buildSourceConfidence(opts: {
   };
 }
 
-function verifyStepsQuality(verifySteps: string): TaskBrief["verify_steps"]["quality"] {
+function verifyStepsQuality(verifySteps: string): TaskBriefVerifySteps["quality"] {
   if (!isVerifyStepsFilled(verifySteps)) return "missing";
   if (verifySteps.includes(VERIFY_STEPS_PLACEHOLDER)) return "missing";
   if (/PLANNER fallback scaffold/i.test(verifySteps)) return "fallback";
   return "specific";
 }
 
-function hasRemoteProviderEvidence(
-  route: Awaited<ReturnType<typeof buildTaskRouteDecision>>,
-): boolean {
+function hasRemoteProviderEvidence(route: TaskRouteDecision): boolean {
   const prFlow = route.prFlow;
   if (!prFlow) return false;
   return (
@@ -227,33 +235,18 @@ function hasRemoteProviderEvidence(
   );
 }
 
-export async function buildTaskBrief(opts: {
-  commandCtx: CommandContext;
-  cwd: string;
-  parsed: TaskBriefParsed;
-  rootOverride?: string | null;
-}): Promise<TaskBriefWithWorkflowStep> {
-  const task = await loadTaskFromContext({ ctx: opts.commandCtx, taskId: opts.parsed.taskId });
-  const doc =
-    typeof task.doc === "string"
-      ? task.doc
-      : ((await opts.commandCtx.taskBackend.getTaskDoc?.(opts.parsed.taskId)) ?? "");
+export function projectTaskBriefFromPreparedWorkOrder(
+  preparedWorkOrder: PreparedAgentWorkOrder,
+): TaskBriefWithWorkflowStep {
+  const task = preparedWorkOrder.task_envelope.task.data;
+  const doc = preparedWorkOrder.task_envelope.task.doc;
   const verifySteps = (extractDocSection(doc, "Verify Steps") ?? "").trim();
   const verifyQuality = verifyStepsQuality(verifySteps);
-  const route = await buildTaskRouteDecision({
-    ctx: opts.commandCtx,
-    cwd: opts.cwd,
-    includeRemote: opts.parsed.remote,
-    rootOverride: opts.rootOverride ?? null,
-    taskId: opts.parsed.taskId,
-  });
+  const route = preparedWorkOrder.route_decision;
   const decisionContext = deriveRouteOperatorGuidance(route);
-  const blueprint = await resolveTaskBlueprintLifecycleSummary({
-    task,
-    config: opts.commandCtx.config,
-    projectRoot: opts.commandCtx.resolvedProject.gitRoot,
-  });
-  const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.commandCtx, task });
+  const legacy = preparedWorkOrder.brief_projection;
+  const blueprint = legacy.blueprint;
+  const snapshot = legacy.snapshot;
   const batchOwnership =
     route.batchOwnership.role === "none"
       ? ({ role: "none" } as const)
@@ -274,6 +267,8 @@ export async function buildTaskBrief(opts: {
 
   return {
     contract: agentWorkContextContract(),
+    work_order: preparedWorkOrder.work_order,
+    work_order_preparation: preparedWorkOrder.preparation,
     task: {
       id: task.id,
       title: task.title,
@@ -342,27 +337,39 @@ export async function buildTaskBrief(opts: {
     blueprint,
     policy_modules: blueprint.policy_modules ?? [],
     evidence_required: blueprint.required_evidence ?? [],
-    snapshot: {
-      state: snapshot.state,
-      path: snapshot.path,
-      digest: snapshot.previous.digest,
-      current_digest: snapshot.current.digest,
-      route_changed: snapshot.routeChanged,
-      safe_command: snapshot.safeCommand,
-    },
+    snapshot,
     stop_rules: blueprint.stop_reasons ?? [],
     remote: {
-      enabled: opts.parsed.remote,
-      note: opts.parsed.remote
+      enabled: preparedWorkOrder.preparation.remote_policy.requested,
+      note: preparedWorkOrder.preparation.remote_policy.requested
         ? "remote lookup explicitly enabled"
         : "remote lookup skipped; pass --remote for hosted PR/check/review truth",
     },
     source_confidence: buildSourceConfidence({
       blueprintError: blueprint.error,
-      remoteEnabled: opts.parsed.remote,
+      remoteEnabled: preparedWorkOrder.preparation.remote_policy.requested,
       remoteResolved: hasRemoteProviderEvidence(route),
       snapshotState: snapshot.state,
       verifyStepsQuality: verifyQuality,
     }),
   };
+}
+
+export async function buildTaskBrief(opts: {
+  commandCtx: CommandContext;
+  cwd: string;
+  parsed: TaskBriefParsed;
+  rootOverride?: string | null;
+}): Promise<TaskBriefWithWorkflowStep> {
+  return projectTaskBriefFromPreparedWorkOrder(
+    requirePreparedAgentWorkOrder(
+      await prepareAgentWorkOrder({
+        command_ctx: opts.commandCtx,
+        cwd: opts.cwd,
+        root_override: opts.rootOverride ?? null,
+        task_id: opts.parsed.taskId,
+        include_remote: opts.parsed.remote,
+      }),
+    ),
+  );
 }

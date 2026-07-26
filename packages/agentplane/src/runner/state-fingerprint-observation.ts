@@ -95,8 +95,8 @@ function missingComponent(source: string, reason_code: string): StateFingerprint
   };
 }
 
-function serializeTaskRouteDecision(routeDecision: TaskRouteDecision): Record<string, unknown> {
-  return { ...structuredClone(routeDecision) };
+function serializeTaskRouteDecision(routeDecision: TaskRouteDecision): TaskRouteDecision {
+  return structuredClone(routeDecision);
 }
 
 function taskComponent(task: TaskData | null): StateFingerprintComponentInput {
