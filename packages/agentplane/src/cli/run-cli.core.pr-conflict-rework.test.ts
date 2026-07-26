@@ -131,7 +131,7 @@ function fakeGithubProviderSource(detail: Record<string, unknown>): string {
     "const args = process.argv.slice(2);",
     `const detail = ${JSON.stringify(detail)};`,
     'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
-    '  console.log(JSON.stringify({ required_pull_request_reviews: {} }));',
+    "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
     "  process.exit(0);",
     "}",
     'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
@@ -289,7 +289,7 @@ describe("provider conflict rework CLI", () => {
         base: { ref: "main", sha: baseSha },
       })};`,
       'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
-      '  console.log(JSON.stringify({ required_pull_request_reviews: {} }));',
+      "  console.log(JSON.stringify({ required_pull_request_reviews: {} }));",
       "  process.exit(0);",
       "}",
       'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
@@ -405,6 +405,18 @@ describe("provider conflict rework CLI", () => {
         "pending unknown mergeability",
         { ...providerCore, mergeable: null, mergeable_state: "unknown" },
       ],
+      [
+        "unsettled null and pending mergeability",
+        { ...providerCore, mergeable: null, mergeable_state: "pending" },
+      ],
+      [
+        "contradictory true and dirty mergeability",
+        { ...providerCore, mergeable: true, mergeable_state: "dirty" },
+      ],
+      [
+        "contradictory true and conflicting mergeability",
+        { ...providerCore, mergeable: true, mergeable_state: "conflicting" },
+      ],
     ] as const;
     for (const [label, providerDetail] of unsettledProviderDetails) {
       await withFakeGh(root, fakeGithubProviderSource(providerDetail), async () => {
@@ -428,7 +440,9 @@ describe("provider conflict rework CLI", () => {
         expect(route.blockers.map((blocker) => blocker.code)).toContain(
           "provider_conflict_context_invalid",
         );
-        expect(route.blockers.map((blocker) => blocker.code)).not.toContain("provider_merge_conflict");
+        expect(route.blockers.map((blocker) => blocker.code)).not.toContain(
+          "provider_merge_conflict",
+        );
         expect(route.conflict_rework).toMatchObject({
           state: "invalid",
           reason_code: "provider_mergeability_unknown",
@@ -441,6 +455,52 @@ describe("provider conflict rework CLI", () => {
         expect(rootAfter.stdout, label).toBe(rootBefore.stdout);
         expect(worktreeAfter.stdout, label).toBe(worktreeBefore.stdout);
       });
+    }
+
+    const coherentNonConflictProviderDetails = ["clean", "behind", "unstable", "blocked"] as const;
+    for (const providerState of coherentNonConflictProviderDetails) {
+      await withFakeGh(
+        root,
+        fakeGithubProviderSource({
+          ...providerCore,
+          mergeable: true,
+          mergeable_state: providerState,
+        }),
+        async () => {
+          const [rootBefore, worktreeBefore] = await Promise.all([
+            execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+            execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+          ]);
+          const route = await readRemoteRoute(root, taskId);
+
+          expect(route.conflict_rework, providerState).toBeNull();
+          expect(route.workflow_step, providerState).toMatchObject({
+            kind: "agent_episode",
+            id: "agent.quality_review",
+            compatibility: { code: "quality_review_required", command: null },
+          });
+          expect(route.execution_packet, providerState).toMatchObject({
+            actionKind: "stop",
+            safeToMutate: false,
+            exactArgv: null,
+          });
+          expect(
+            route.blockers.map((blocker) => blocker.code),
+            providerState,
+          ).not.toContain("provider_conflict_context_invalid");
+          expect(
+            route.blockers.map((blocker) => blocker.code),
+            providerState,
+          ).not.toContain("provider_merge_conflict");
+
+          const [rootAfter, worktreeAfter] = await Promise.all([
+            execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+            execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+          ]);
+          expect(rootAfter.stdout, providerState).toBe(rootBefore.stdout);
+          expect(worktreeAfter.stdout, providerState).toBe(worktreeBefore.stdout);
+        },
+      );
     }
   });
 });

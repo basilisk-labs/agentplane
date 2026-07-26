@@ -24,35 +24,45 @@ Created: 2026-07-26T00:55:55.843Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-26T00:55:55.843Z
+- Updated: 2026-07-26T02:29:18.327Z
 - Branch: task/202607260007-DQM6AW/prepare-semantic-conflict-rework-routes
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
  docs/user/cli-reference.generated.mdx              |  24 +
- .../cli/run-cli.core.pr-conflict-rework.test.ts    | 446 ++++++++++++++
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 506 ++++++++++++++++
+ ...n-cli.core.pr-flow.integrate-validation.test.ts |   2 +
  .../run-cli.core.route-decision.pre-merge.test.ts  |   4 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   3 +
  .../src/cli/run-cli/command-loaders/project.ts     |   4 +
- .../src/commands/pr/conflict-rework.test.ts        | 427 ++++++++++++++
- .../agentplane/src/commands/pr/conflict-rework.ts  | 653 +++++++++++++++++++++
- packages/agentplane/src/commands/pr/flow-status.ts |  24 +
+ .../src/commands/pr/branch-publication.test.ts     |  19 +-
+ .../src/commands/pr/conflict-rework.test.ts        | 492 +++++++++++++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  | 658 +++++++++++++++++++++
+ packages/agentplane/src/commands/pr/flow-status.ts |  26 +
+ .../src/commands/pr/integrate/cmd.test.ts          |  71 +++
  .../pr/integrate/internal/github-protection.ts     |  35 +-
- .../src/commands/pr/internal/sync-github.test.ts   | 120 +++-
- .../src/commands/pr/internal/sync-github.ts        | 145 ++++-
+ .../integrate/internal/protected-base-handoff.ts   |  26 +-
+ .../src/commands/pr/internal/sync-github.test.ts   | 146 ++++-
+ .../src/commands/pr/internal/sync-github.ts        | 161 ++++-
  packages/agentplane/src/commands/pr/pr.command.ts  |  16 +
  packages/agentplane/src/commands/pr/pr.spec.ts     |  58 +-
  .../src/commands/shared/route-decision-blockers.ts |  25 +
  .../src/commands/shared/route-decision-types.ts    |   2 +
  .../src/commands/shared/route-decision.ts          |  21 +-
  .../agentplane/src/commands/shared/route-oracle.ts |   2 +
+ .../agentplane/src/commands/shared/task-handoff.ts |   1 +
  .../src/commands/shared/workflow-step-branch.ts    |  16 +-
  .../src/commands/shared/workflow-step-factory.ts   |  61 ++
  .../shared/workflow-step-projections.test.ts       | 222 +++++++
  .../commands/shared/workflow-step-projections.ts   |  10 +-
  .../src/commands/shared/workflow-step.ts           |   2 +
  .../src/commands/task/next-action.command.ts       |  22 +
- 23 files changed, 2302 insertions(+), 40 deletions(-)
+ .../core/src/tasks/task-artifact-schema.handoff.ts |   1 +
+ packages/testkit/src/github-pr.ts                  |  11 +-
+ .../baselines/v0.7-compatibility-candidate.json    |  78 ++-
+ .../check-compatibility-contract-baseline.mjs      |  52 +-
+ 33 files changed, 2721 insertions(+), 63 deletions(-)
 ```
 
 </details>

@@ -86,6 +86,7 @@ function normalizeRoute(route: TaskHandoffRoute | undefined): TaskHandoffRoute |
     finalize_via: route.finalize_via ?? undefined,
     pr_number: typeof route.pr_number === "number" && route.pr_number > 0 ? route.pr_number : null,
     pr_url: trimOrNull(route.pr_url) ?? undefined,
+    provider_base_sha: trimOrNull(route.provider_base_sha) ?? undefined,
     handoff_show_command: trimOrNull(route.handoff_show_command) ?? undefined,
     base_pull_command: trimOrNull(route.base_pull_command) ?? undefined,
   };

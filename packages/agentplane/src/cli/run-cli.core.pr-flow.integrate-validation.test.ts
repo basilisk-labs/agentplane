@@ -437,6 +437,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
         finalize_via?: string;
         pr_number?: number | null;
         pr_url?: string | null;
+        provider_base_sha?: string | null;
         handoff_show_command?: string | null;
         base_pull_command?: string | null;
       };
@@ -457,6 +458,7 @@ describe("runCli", { timeout: INTEGRATE_ROUTE_TIMEOUT_MS }, () => {
       finalize_via: "github_task_pr_merge_then_hosted_close",
       pr_number: 321,
       pr_url: "https://github.com/example/repo/pull/321",
+      provider_base_sha: "provider-base-sha",
       handoff_show_command: `agentplane task handoff show ${taskId}`,
       base_pull_command: "git pull --ff-only",
     });

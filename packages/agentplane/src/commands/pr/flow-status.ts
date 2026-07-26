@@ -117,6 +117,7 @@ type HandoffStatus =
       headSha?: string | null;
       prBranch?: string | null;
       routePrNumber?: number | null;
+      routeProviderBaseSha?: string | null;
       nextActions: string[];
     };
 
@@ -241,6 +242,7 @@ async function resolveHandoffStatus(opts: {
     headSha: handoff.head_sha ?? null,
     prBranch: handoff.pr_branch ?? null,
     routePrNumber: handoff.route?.pr_number ?? null,
+    routeProviderBaseSha: handoff.route?.provider_base_sha ?? null,
     nextActions: handoff.next_actions ?? [],
   };
 }

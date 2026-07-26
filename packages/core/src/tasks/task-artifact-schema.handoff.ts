@@ -47,6 +47,7 @@ export const TASK_HANDOFF_ROUTE_ZOD_SCHEMA = z
     finalize_via: z.enum(HANDOFF_FINALIZE_VIA_VALUES).nullable().optional(),
     pr_number: z.number().int().min(1).nullable().optional(),
     pr_url: NULLABLE_NON_EMPTY_STRING.optional(),
+    provider_base_sha: NULLABLE_NON_EMPTY_STRING.optional(),
     handoff_show_command: z.string().nullable().optional(),
     base_pull_command: z.string().nullable().optional(),
   })
