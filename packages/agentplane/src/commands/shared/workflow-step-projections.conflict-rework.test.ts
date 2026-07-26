@@ -332,7 +332,7 @@ describe("WorkflowStep conflict rework projections", () => {
     expect(step).toMatchObject({
       kind: "approval",
       id: "approval.integration.adopt_legacy_protected_conflict",
-      authoritativeCheckout: "base_checkout",
+      authoritativeCheckout: "task_worktree",
       request: {
         type: "side_effect",
         operationId: "integration.adopt_legacy_protected_conflict",

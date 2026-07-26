@@ -341,7 +341,8 @@ function sideEffectApprovalStep(opts: {
     id: `approval.${opts.operation.id}`,
     kind: "approval",
     phase: "side_effect_authority_required",
-    authoritativeCheckout: WORKFLOW_OPERATION_REGISTRY[opts.operation.id].checkout,
+    authoritativeCheckout:
+      opts.state.workflowMode === "branch_pr" ? "task_worktree" : "current_checkout",
     summary: `${opts.summary}; approval required: ${opts.reason}`,
     blockers: routeBlockerSnapshot(opts.state),
     selectedBlocker: selectedRouteBlocker(opts.state, opts.selectedBlocker),
