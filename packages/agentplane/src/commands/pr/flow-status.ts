@@ -102,6 +102,7 @@ type QueueStatus =
       headSha?: string | null;
       baseSha?: string | null;
       prNumber?: number | null;
+      leaseExpiresAt?: string | null;
     };
 
 type HandoffStatus =
@@ -115,6 +116,7 @@ type HandoffStatus =
       baseBranch?: string | null;
       headSha?: string | null;
       prBranch?: string | null;
+      routePrNumber?: number | null;
       nextActions: string[];
     };
 
@@ -238,6 +240,7 @@ async function resolveHandoffStatus(opts: {
     baseBranch: handoff.base_branch ?? null,
     headSha: handoff.head_sha ?? null,
     prBranch: handoff.pr_branch ?? null,
+    routePrNumber: handoff.route?.pr_number ?? null,
     nextActions: handoff.next_actions ?? [],
   };
 }
@@ -506,6 +509,7 @@ export async function resolvePrFlowStatus(opts: {
           headSha: queueEntry.head_sha,
           baseSha: queueEntry.base_sha,
           prNumber: queueEntry.pr_number,
+          leaseExpiresAt: queueEntry.lease_expires_at ?? null,
         }
       : { present: false },
     handoff,

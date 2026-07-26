@@ -75,6 +75,7 @@ function report(overrides: Partial<PrFlowStatusReport> = {}): PrFlowStatusReport
       headSha,
       baseSha,
       prNumber: 4626,
+      leaseExpiresAt: "2026-07-26T01:00:00.000Z",
     },
     handoff: {
       present: true,
@@ -85,6 +86,7 @@ function report(overrides: Partial<PrFlowStatusReport> = {}): PrFlowStatusReport
       baseBranch: "main",
       headSha,
       prBranch: branch,
+      routePrNumber: 4626,
       nextActions: [],
     },
     nextAction: "wait hosted checks, then merge remote PR 4626 through the configured provider API",
@@ -128,6 +130,7 @@ function prepare(opts: {
   taskWorktree?: TaskWorktreeCleanliness;
   baseProtection?: GithubBasePullRequestProtection;
   git?: ReturnType<typeof primeGit>;
+  now?: Date;
 } = {}) {
   const git = opts.git ?? primeGit();
   return prepareConflictReworkPacket({
@@ -137,6 +140,7 @@ function prepare(opts: {
     taskWorktree: opts.taskWorktree ?? cleanWorktree,
     baseProtection: opts.baseProtection ?? protectedBase,
     gitOps: git.gitOps,
+    now: opts.now,
   });
 }
 
@@ -331,6 +335,41 @@ describe("provider conflict rework packet", () => {
     const viaHandoff = report({ queue: { present: false } });
 
     await expect(prepare({ report: viaHandoff })).resolves.toMatchObject({ state: "ready" });
+  });
+
+  it("rejects an expired claimed lease but accepts a current claimed lease", async () => {
+    const now = new Date("2026-07-26T00:00:00.000Z");
+    const expired = report({ handoff: { present: false } });
+    if (!expired.queue.present) throw new Error("fixture error");
+    expired.queue = {
+      ...expired.queue,
+      status: "claimed",
+      leaseExpiresAt: "2026-07-25T23:59:59.000Z",
+    };
+    await expect(prepare({ report: expired, now })).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "conflict_rework_route_ineligible",
+    });
+
+    const current = report({ handoff: { present: false } });
+    if (!current.queue.present) throw new Error("fixture error");
+    current.queue = {
+      ...current.queue,
+      status: "claimed",
+      leaseExpiresAt: "2026-07-26T00:00:01.000Z",
+    };
+    await expect(prepare({ report: current, now })).resolves.toMatchObject({ state: "ready" });
+  });
+
+  it("rejects a protected-base handoff recorded for a different PR", async () => {
+    const staleHandoff = report({ queue: { present: false } });
+    if (!staleHandoff.handoff.present) throw new Error("fixture error");
+    staleHandoff.handoff = { ...staleHandoff.handoff, routePrNumber: 4627 };
+
+    await expect(prepare({ report: staleHandoff })).resolves.toMatchObject({
+      state: "invalid",
+      reason_code: "conflict_rework_route_ineligible",
+    });
   });
 
   it("rejects nonqueued or unverified task PR conflicts before semantic routing", async () => {
