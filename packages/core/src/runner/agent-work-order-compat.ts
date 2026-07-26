@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import {
-  AGENT_WORK_ORDER_ROLE_VALUES,
   AGENT_WORK_ORDER_SCHEMA_VERSION,
   AGENT_WORK_ORDER_KIND,
   validateAgentWorkOrderV2,
@@ -23,13 +22,43 @@ const LEGACY_CONTRACT_ZOD_SCHEMA = z
 const LEGACY_TASK_ZOD_SCHEMA = z
   .object({
     id: z.string().trim().min(1),
-    title: z.string().trim().min(1).optional(),
-    owner: z.string().trim().min(1).optional(),
+    // Hermes projects the task owner directly from the lifecycle route, where an
+    // unassigned task is represented as null. Preserve that fact instead of
+    // rejecting an otherwise valid legacy packet.
+    title: z.string().trim().min(1).nullable().optional(),
+    owner: z.string().trim().min(1).nullable().optional(),
   })
   .passthrough();
-const LEGACY_EXECUTION_PACKET_ZOD_SCHEMA = z
+const LEGACY_BRIEF_EXECUTION_PACKET_ZOD_SCHEMA = z
   .object({
     recommended_role: z.string().trim().min(1).optional(),
+  })
+  .passthrough();
+const LEGACY_RUNNER_EXECUTION_ZOD_SCHEMA = z
+  .object({
+    adapter_id: z.string().trim().min(1).optional(),
+    mode: z.enum(["execute", "dry_run"]).optional(),
+    run_id: z.string().trim().min(1).optional(),
+  })
+  .passthrough();
+const LEGACY_RUNNER_ROUTE_DECISION_ZOD_SCHEMA = z
+  .object({
+    executionPacket: z
+      .object({
+        recommendedRole: z.string().trim().min(1).optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+const LEGACY_HERMES_EXECUTION_PACKET_ZOD_SCHEMA = z
+  .object({
+    schemaVersion: z.literal(1).optional(),
+    actionKind: z.enum(["local_command", "provider_action", "wait", "stop"]).optional(),
+    safeToMutate: z.boolean().optional(),
+    requiresProviderAction: z.boolean().optional(),
+    recommendedRole: z.string().trim().min(1).optional(),
+    exactArgv: z.array(z.string()).nullable().optional(),
   })
   .passthrough();
 
@@ -37,7 +66,7 @@ const LEGACY_BRIEF_V1_ZOD_SCHEMA = z
   .object({
     contract: LEGACY_CONTRACT_ZOD_SCHEMA,
     task: LEGACY_TASK_ZOD_SCHEMA,
-    execution_packet: LEGACY_EXECUTION_PACKET_ZOD_SCHEMA.optional(),
+    execution_packet: LEGACY_BRIEF_EXECUTION_PACKET_ZOD_SCHEMA.optional(),
   })
   .passthrough();
 const LEGACY_RUNNER_V1_ZOD_SCHEMA = z
@@ -47,13 +76,14 @@ const LEGACY_RUNNER_V1_ZOD_SCHEMA = z
         data: LEGACY_TASK_ZOD_SCHEMA,
       })
       .passthrough(),
-    execution: LEGACY_EXECUTION_PACKET_ZOD_SCHEMA.optional(),
+    execution: LEGACY_RUNNER_EXECUTION_ZOD_SCHEMA.optional(),
+    route_decision: LEGACY_RUNNER_ROUTE_DECISION_ZOD_SCHEMA.optional(),
   })
   .passthrough();
 const LEGACY_HERMES_V1_ZOD_SCHEMA = z
   .object({
     task: LEGACY_TASK_ZOD_SCHEMA,
-    execution_packet: LEGACY_EXECUTION_PACKET_ZOD_SCHEMA.optional(),
+    execution_packet: LEGACY_HERMES_EXECUTION_PACKET_ZOD_SCHEMA.optional(),
   })
   .passthrough();
 
@@ -61,6 +91,8 @@ export type AgentWorkOrderV1Surface = (typeof AGENT_WORK_ORDER_V1_SURFACE_VALUES
 export type AgentWorkContextV1Contract = z.infer<typeof LEGACY_CONTRACT_ZOD_SCHEMA>;
 export type AgentWorkOrderV1OmissionReceipt = {
   field:
+    | "work_order_id"
+    | "role"
     | "task.revision"
     | "task.objective"
     | "task.acceptance_criteria"
@@ -86,11 +118,18 @@ export type AgentWorkOrderV1CompatibilityView = {
     title: string | null;
     owner: string | null;
   };
-  role: AgentWorkOrderRole | null;
+  /**
+   * The legacy route role is lifecycle guidance (for example CODER), not an
+   * AgentWorkOrder semantic role. It is preserved for audit only and never
+   * fills the required v2 `role` field.
+   */
+  legacy_recommended_role: string | null;
   omissions: AgentWorkOrderV1OmissionReceipt[];
 };
 
 const V1_OMISSION_FIELDS: AgentWorkOrderV1OmissionReceipt["field"][] = [
+  "work_order_id",
+  "role",
   "task.revision",
   "task.objective",
   "task.acceptance_criteria",
@@ -107,14 +146,10 @@ const V1_OMISSION_FIELDS: AgentWorkOrderV1OmissionReceipt["field"][] = [
   "stop_rules",
 ];
 
-function normalizedRole(value: string | undefined): AgentWorkOrderRole | null {
-  return AGENT_WORK_ORDER_ROLE_VALUES.find((role) => role === value) ?? null;
-}
-
 function compatibilityView(opts: {
   source_surface: AgentWorkOrderV1Surface;
-  task: { id: string; title?: string; owner?: string };
-  role?: string;
+  task: { id: string; title?: string | null; owner?: string | null };
+  legacy_recommended_role?: string;
 }): AgentWorkOrderV1CompatibilityView {
   return {
     source_version: AGENT_WORK_CONTEXT_V1_VERSION,
@@ -128,7 +163,7 @@ function compatibilityView(opts: {
       title: opts.task.title ?? null,
       owner: opts.task.owner ?? null,
     },
-    role: normalizedRole(opts.role),
+    legacy_recommended_role: opts.legacy_recommended_role ?? null,
     omissions: V1_OMISSION_FIELDS.map((field) => ({
       field,
       reason_code: "legacy_v1_field_not_carried",
@@ -150,7 +185,7 @@ export function readAgentWorkOrderV1CompatibilityView(opts: {
       return compatibilityView({
         source_surface: "brief",
         task: payload.task,
-        role: payload.execution_packet?.recommended_role,
+        legacy_recommended_role: payload.execution_packet?.recommended_role,
       });
     }
     case "runner": {
@@ -158,7 +193,7 @@ export function readAgentWorkOrderV1CompatibilityView(opts: {
       return compatibilityView({
         source_surface: "runner",
         task: payload.task.data,
-        role: payload.execution?.recommended_role ?? payload.task.data.owner,
+        legacy_recommended_role: payload.route_decision?.executionPacket?.recommendedRole,
       });
     }
     case "hermes": {
@@ -166,7 +201,7 @@ export function readAgentWorkOrderV1CompatibilityView(opts: {
       return compatibilityView({
         source_surface: "hermes",
         task: payload.task,
-        role: payload.execution_packet?.recommended_role,
+        legacy_recommended_role: payload.execution_packet?.recommendedRole,
       });
     }
   }
@@ -187,16 +222,13 @@ export type AgentWorkOrderV1MigrationResult = {
 
 /**
  * Migrate a parsed v1 view only with caller-supplied v2 facts. The v1 payload does not contain
- * authority, fingerprint, evidence, or verification intent, so accepting defaults here would
- * create false authority.
+ * a work-order id, semantic role, authority, fingerprint, evidence, or verification intent, so
+ * accepting defaults here would create false authority or false semantics.
  */
 export function migrateAgentWorkOrderV1ToV2(opts: {
   compatibility: AgentWorkOrderV1CompatibilityView;
   overrides: AgentWorkOrderV2MigrationOverrides;
 }): AgentWorkOrderV1MigrationResult {
-  if (opts.compatibility.role !== null && opts.compatibility.role !== opts.overrides.role) {
-    throw new Error("Legacy work-order role must match the explicit v2 migration role.");
-  }
   const workOrder = validateAgentWorkOrderV2({
     ...opts.overrides,
     schema_version: AGENT_WORK_ORDER_SCHEMA_VERSION,
@@ -311,32 +343,88 @@ export const AGENT_WORK_ORDER_V1_COMPATIBILITY_FIXTURES = {
     task: {
       id: "task-example-001",
       title: "Publish one bounded schema change with observed verification evidence.",
-      owner: "EXECUTOR",
+      owner: "CODER",
     },
     workflow: { mode: "branch_pr" },
     route: { phase: "agent_episode" },
-    execution_packet: { recommended_role: "EXECUTOR" },
+    execution_packet: { recommended_role: "CODER" },
     verify_steps: { text: "Run the schema synchronization check." },
   },
   runner: {
+    schema_version: 1,
+    runner_api_version: "1",
+    target: { kind: "task", task_id: "task-example-001" },
     task: {
       data: {
         id: "task-example-001",
         title: "Publish one bounded schema change with observed verification evidence.",
-        owner: "EXECUTOR",
+        owner: "CODER",
       },
     },
-    execution: { recommended_role: "EXECUTOR" },
-    route_decision: { phase: "agent_episode" },
+    execution: {
+      adapter_id: "codex",
+      mode: "execute",
+      run_id: "run-example-001",
+      artifact_paths: {
+        run_dir: ".agentplane/runs/run-example-001",
+        bundle_path: ".agentplane/runs/run-example-001/bundle.json",
+      },
+    },
+    route_decision: {
+      executionPacket: {
+        schemaVersion: 1,
+        actionKind: "local_command",
+        safeToMutate: true,
+        requiresProviderAction: false,
+        recommendedRole: "CODER",
+        authoritativeCheckout: "task_worktree",
+        authoritativeCheckoutPath: "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+        mutationPathHint: "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+        mustRunFrom: "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+        exactArgv: ["agentplane", "task", "start-ready", "task-example-001"],
+        mustNot: ["do not mutate outside the task worktree"],
+        returnControlWhen: "after the task starts",
+        humanProviderAction: null,
+        staleStateCheck: "agentplane task next-action task-example-001 --explain",
+        evidenceMissing: [],
+        verificationCandidate: null,
+        stopReason: null,
+      },
+    },
   },
   hermes: {
     task: {
       id: "task-example-001",
       title: "Publish one bounded schema change with observed verification evidence.",
-      owner: "EXECUTOR",
+      status: "DOING",
+      owner: null,
+      revision: 7,
+      verification_state: null,
     },
-    execution_packet: { recommended_role: "EXECUTOR" },
-    route_oracle: { phase: "agent_episode" },
+    next_action: {
+      code: "implementation_rework_required",
+      summary: "Return control to the CODER for implementation rework in the task worktree.",
+    },
+    execution_packet: {
+      schemaVersion: 1,
+      actionKind: "local_command",
+      safeToMutate: true,
+      requiresProviderAction: false,
+      recommendedRole: "CODER",
+      authoritativeCheckout: "task_worktree",
+      authoritativeCheckoutPath: "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+      mutationPathHint: "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+      mustRunFrom: "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+      exactArgv: ["agentplane", "task", "start-ready", "task-example-001"],
+      mustNot: ["do not mutate outside the task worktree"],
+      returnControlWhen: "after the task starts",
+      humanProviderAction: null,
+      staleStateCheck: "agentplane task next-action task-example-001 --explain",
+      evidenceMissing: [],
+      verificationCandidate: null,
+      stopReason: null,
+    },
+    route_oracle: { phase: "implementation_rework_required" },
   },
 } as const;
 

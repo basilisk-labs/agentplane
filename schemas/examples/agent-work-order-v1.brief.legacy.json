@@ -6,7 +6,7 @@
   "task": {
     "id": "task-example-001",
     "title": "Publish one bounded schema change with observed verification evidence.",
-    "owner": "EXECUTOR"
+    "owner": "CODER"
   },
   "workflow": {
     "mode": "branch_pr"
@@ -15,7 +15,7 @@
     "phase": "agent_episode"
   },
   "execution_packet": {
-    "recommended_role": "EXECUTOR"
+    "recommended_role": "CODER"
   },
   "verify_steps": {
     "text": "Run the schema synchronization check."

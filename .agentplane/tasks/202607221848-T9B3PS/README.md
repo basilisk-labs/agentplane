@@ -4,7 +4,7 @@ title: "Publish AgentWorkOrder v2 schema and migrations"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -35,11 +35,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-26T09:00:04.017Z"
+  updated_by: "TESTER"
+  note: "Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet shapes including owner:null, and avoid synthetic recommended_role fixtures."
+  attempts: 1
 commit: null
 comments:
   -
@@ -53,8 +53,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-07-26T09:00:04.017Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet shapes including owner:null, and avoid synthetic recommended_role fixtures."
 doc_version: 3
-doc_updated_at: "2026-07-26T08:07:55.477Z"
+doc_updated_at: "2026-07-26T09:00:04.690Z"
 doc_updated_by: "CODER"
 description: "RF-05a: evolve agentplane.agent_work_context into one versioned AgentWorkOrder v2 schema containing objective, acceptance, role, fingerprint, authority, prepared evidence, knowledge refs, verification intent, required outputs, and semantic-result contract."
 sections:
@@ -79,12 +85,45 @@ sections:
     5. Run `bun run schemas:check`, `bun run spec:examples:check`, focused contract tests, and `bun run typecheck`.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-26T09:00:04.017Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet shapes including owner:null, and avoid synthetic recommended_role fixtures.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T08:07:55.477Z, excerpt_hash=sha256:bd068eed5da8a9bc8c1f7c672456083acd50da4745ff1c87fa2c05a3df936bd6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-T9B3PS-publish-agentworkorder-v2-schema-and-migrations/.agentplane/tasks/202607221848-T9B3PS/blueprint/resolved-snapshot.json
+    - old_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+    - current_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-T9B3PS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221848-T9B3PS
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: Independent review found valid Hermes owner:null rejected and migration fixtures divergent from current runner/Hermes contracts.
+      Impact: Verify Step 2 is not proven for representative v1 payloads.
+      Resolution: Correct the reader and fixtures, rerun contract/compatibility checks, then record independent TESTER evidence.
 extensions:
   workflow_route_baseline:
     start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
@@ -121,6 +160,36 @@ RF-05a: evolve agentplane.agent_work_context into one versioned AgentWorkOrder v
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-26T09:00:04.017Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: v1 compatibility must receipt work_order_id, parse representative runner and Hermes packet shapes including owner:null, and avoid synthetic recommended_role fixtures.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T08:07:55.477Z, excerpt_hash=sha256:bd068eed5da8a9bc8c1f7c672456083acd50da4745ff1c87fa2c05a3df936bd6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-T9B3PS-publish-agentworkorder-v2-schema-and-migrations/.agentplane/tasks/202607221848-T9B3PS/blueprint/resolved-snapshot.json
+- old_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+- current_digest: e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-T9B3PS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221848-T9B3PS
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -130,3 +199,7 @@ RF-05a: evolve agentplane.agent_work_context into one versioned AgentWorkOrder v
 - Re-run focused contract, migration, and type checks.
 
 ## Findings
+
+- Observation: Independent review found valid Hermes owner:null rejected and migration fixtures divergent from current runner/Hermes contracts.
+  Impact: Verify Step 2 is not proven for representative v1 payloads.
+  Resolution: Correct the reader and fixtures, rerun contract/compatibility checks, then record independent TESTER evidence.

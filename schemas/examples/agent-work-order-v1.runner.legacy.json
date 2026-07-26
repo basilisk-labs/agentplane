@@ -1,15 +1,45 @@
 {
+  "schema_version": 1,
+  "runner_api_version": "1",
+  "target": {
+    "kind": "task",
+    "task_id": "task-example-001"
+  },
   "task": {
     "data": {
       "id": "task-example-001",
       "title": "Publish one bounded schema change with observed verification evidence.",
-      "owner": "EXECUTOR"
+      "owner": "CODER"
     }
   },
   "execution": {
-    "recommended_role": "EXECUTOR"
+    "adapter_id": "codex",
+    "mode": "execute",
+    "run_id": "run-example-001",
+    "artifact_paths": {
+      "run_dir": ".agentplane/runs/run-example-001",
+      "bundle_path": ".agentplane/runs/run-example-001/bundle.json"
+    }
   },
   "route_decision": {
-    "phase": "agent_episode"
+    "executionPacket": {
+      "schemaVersion": 1,
+      "actionKind": "local_command",
+      "safeToMutate": true,
+      "requiresProviderAction": false,
+      "recommendedRole": "CODER",
+      "authoritativeCheckout": "task_worktree",
+      "authoritativeCheckoutPath": "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+      "mutationPathHint": "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+      "mustRunFrom": "/workspace/agentplane/.agentplane/worktrees/task-example-001",
+      "exactArgv": ["agentplane", "task", "start-ready", "task-example-001"],
+      "mustNot": ["do not mutate outside the task worktree"],
+      "returnControlWhen": "after the task starts",
+      "humanProviderAction": null,
+      "staleStateCheck": "agentplane task next-action task-example-001 --explain",
+      "evidenceMissing": [],
+      "verificationCandidate": null,
+      "stopReason": null
+    }
   }
 }
