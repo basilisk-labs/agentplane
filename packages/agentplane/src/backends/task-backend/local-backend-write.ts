@@ -70,7 +70,7 @@ export async function generateLocalTaskId(
   });
 }
 
-export async function writeLocalTask(
+async function writeLocalTask(
   context: LocalBackendContext,
   task: TaskData,
   opts?: TaskWriteOptions,

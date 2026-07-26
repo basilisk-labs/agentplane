@@ -238,13 +238,15 @@ describe("task doc commands (unit)", () => {
       "## Findings",
       "",
     ].join("\n");
-    const writeTask = vi.fn<(task: TaskData, opts?: Record<string, unknown>) => Promise<void>>(() =>
-      Promise.resolve(),
-    );
+    let persisted: TaskData | null = null;
+    const writeTask = vi.fn<(task: TaskData, opts?: Record<string, unknown>) => Promise<void>>((task) => {
+      persisted = structuredClone(task);
+      return Promise.resolve();
+    });
     const backend: TaskBackend = {
       id: "mock",
       listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+      getTask: () => Promise.resolve(persisted && structuredClone(persisted)),
       getTaskDoc: () => Promise.resolve(""),
       writeTask,
     };
@@ -284,13 +286,15 @@ describe("task doc commands (unit)", () => {
       "## Findings",
       "",
     ].join("\n");
-    const writeTask = vi.fn<(task: TaskData, opts?: Record<string, unknown>) => Promise<void>>(() =>
-      Promise.resolve(),
-    );
+    let persisted: TaskData | null = null;
+    const writeTask = vi.fn<(task: TaskData, opts?: Record<string, unknown>) => Promise<void>>((task) => {
+      persisted = structuredClone(task);
+      return Promise.resolve();
+    });
     const backend: TaskBackend = {
       id: "mock",
       listTasks: () => Promise.resolve([]),
-      getTask: () => Promise.resolve(null),
+      getTask: () => Promise.resolve(persisted && structuredClone(persisted)),
       getTaskDoc: () => Promise.resolve(""),
       writeTask,
     };
