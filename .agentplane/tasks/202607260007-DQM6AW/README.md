@@ -2,10 +2,10 @@
 id: "202607260007-DQM6AW"
 title: "Prepare semantic conflict rework routes"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -36,37 +36,24 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-26T04:35:15.634Z"
-  updated_by: "TESTER"
-  note: "Independent verification at a9340067: aligned failed hosted head routes to CODER rework; stale failed provider head with newer unpublished local head routes only to publish_pr_head via agentplane pr open. Focused agentplane 86, CLI 12, and critical 11-file suites passed; schemas check, typecheck, lint, guards, lifecycle invariants, policy routing, doctor, and diff check passed."
-  attempts: 0
-quality_review:
-  state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T04:38:10.514Z"
+  state: "needs_rework"
+  updated_at: "2026-07-26T04:46:14.723Z"
   updated_by: "EVALUATOR"
-  note: "Independent review of a9340067 confirms that failed hosted checks require CODER rework only for the same aligned published provider head; stale failures cannot block publication of a newer local head."
-  evaluated_sha: "a9340067aae97ebbd066802e093b59a3b771d31d"
+  note: "Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded."
+  attempts: 1
+quality_review:
+  state: "rework"
+  updated_at: "2026-07-26T04:46:14.723Z"
+  updated_by: "EVALUATOR"
+  note: "Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded."
+  evaluated_sha: "ea724edd7dc78dbd91c56563dab1f3e648ecd8bd"
   blueprint_digest: "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6"
   evidence_refs:
     - ".agentplane/tasks/202607260007-DQM6AW/README.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-043810514-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-043810514-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/quality/20260726-043810514-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
-    - "packages/agentplane/src/commands/shared/route-decision-blockers.ts"
-    - "packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts"
-    - "packages/agentplane/src/commands/shared/workflow-step-projections.test.ts"
-    - "command: bunx vitest run route-decision-blockers.quality-review workflow-step-projections run-cli.core.route-decision.quality run-cli.core.route-decision.pre-merge (35 passed)"
-    - "command: git diff --check HEAD (passed)"
-    - "TESTER verification recorded at a9340067"
+    - "/Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json"
   findings:
-    - "Aligned live lookup case requires pr.source=lookup, publication=aligned, equal local/upstream/hosted/provider SHA, and observed failing hosted checks before implementation_rework_required is added."
-    - "Stale provider failure case keeps only pr_head_unpublished and projects the exact CODER publication command before any hosted-check rework decision."
-commit:
-  hash: "a9340067aae97ebbd066802e093b59a3b771d31d"
-  message: "🧩 DQM6AW rework: align hosted failures to published head"
+    - "Command: gh run view 30188136450 --log-failed\nResult: fail\nEvidence: packages/agentplane/src/commands/pr/conflict-rework.ts is 659 lines and packages/agentplane/src/commands/shared/route-decision.ts is 618 lines; threshold is 600. All other required Core CI jobs passed.\nScope: current DQM PR #4627 published head.\nResolution: split responsibilities into focused modules, rerun required local and hosted verification."
+commit: null
 comments:
   -
     author: "CODER"
@@ -167,8 +154,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-26T04:46:14.723Z"
+    author: "EVALUATOR"
+    state: "needs_rework"
+    note: "Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded."
 doc_version: 3
-doc_updated_at: "2026-07-26T04:38:48.956Z"
+doc_updated_at: "2026-07-26T04:46:15.503Z"
 doc_updated_by: "CODER"
 description: "When a queued protected branch_pr PR has a real merge conflict, prepare a bounded context packet and an explicit CODER rework route rather than prohibiting manual rebase without an alternative. The CLI must not select semantic resolution or silently rewrite a branch. Current incident: THDN 202607252223-THDN0G PR #4626 is CONFLICTING after main e27c938698668ce242243d166f8c7c1b64cce88f."
 sections:
@@ -441,6 +434,42 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-26T04:46:14.723Z — VERIFY — needs_rework
+
+    By: EVALUATOR
+
+    Note: Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T04:38:48.956Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+    Details:
+
+    Command: gh run view 30188136450 --log-failed
+    Result: fail
+    Evidence: packages/agentplane/src/commands/pr/conflict-rework.ts is 659 lines and packages/agentplane/src/commands/shared/route-decision.ts is 618 lines; threshold is 600. All other required Core CI jobs passed.
+    Scope: current DQM PR #4627 published head.
+    Resolution: split responsibilities into focused modules, rerun required local and hosted verification.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+    - old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+    - diagnostic_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -759,6 +788,42 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-26T04:46:14.723Z — VERIFY — needs_rework
+
+By: EVALUATOR
+
+Note: Hosted Core CI failed on the current published head ea724edd: hotspot threshold exceeded.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T04:38:48.956Z, excerpt_hash=sha256:fdcd9ba52c849ed7fef21f254416faca99218bb89f54851b9ddc269b848d053f
+
+Details:
+
+Command: gh run view 30188136450 --log-failed
+Result: fail
+Evidence: packages/agentplane/src/commands/pr/conflict-rework.ts is 659 lines and packages/agentplane/src/commands/shared/route-decision.ts is 618 lines; threshold is 600. All other required Core CI jobs passed.
+Scope: current DQM PR #4627 published head.
+Resolution: split responsibilities into focused modules, rerun required local and hosted verification.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607260007-DQM6AW-prepare-semantic-conflict-rework-routes/.agentplane/tasks/202607260007-DQM6AW/blueprint/resolved-snapshot.json
+- old_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- current_digest: ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607260007-DQM6AW
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+- diagnostic_command: agentplane task next-action 202607260007-DQM6AW --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
