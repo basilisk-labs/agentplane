@@ -14,6 +14,10 @@ import {
 } from "../shared/task-worktree-cleanliness.js";
 import { resolvePrFlowStatus, type PrFlowStatusReport } from "./flow-status.js";
 import {
+  hasSettledGithubPrMergeability,
+  isSettledGithubPrConflict,
+} from "./internal/sync-github.js";
+import {
   resolveGithubBasePullRequestProtection,
   type GithubBasePullRequestProtection,
 } from "./integrate/internal/github-protection.js";
@@ -191,7 +195,7 @@ function providerConflict(report: PrFlowStatusReport): boolean {
     report.pr.state === "OPEN" &&
     report.providerObservation?.state === "found" &&
     report.providerObservation.pr.status === "OPEN" &&
-    report.providerObservation.pr.mergeability?.state === "conflicting"
+    isSettledGithubPrConflict(report.providerObservation.pr.mergeability)
   );
 }
 
@@ -207,8 +211,8 @@ export function needsProviderConflictReworkPreparation(report: PrFlowStatusRepor
   ) {
     return false;
   }
-  const state = report.providerObservation.pr.mergeability?.state;
-  return state === "conflicting" || state === "pending" || state === "unknown";
+  const mergeability = report.providerObservation.pr.mergeability;
+  return !hasSettledGithubPrMergeability(mergeability) || isSettledGithubPrConflict(mergeability);
 }
 
 type ConflictRouteIdentity = {
@@ -337,16 +341,15 @@ export async function prepareConflictReworkPacket(opts: {
   if (
     opts.report.pr.state === "OPEN" &&
     opts.report.providerObservation?.state === "found" &&
-    opts.report.providerObservation.pr.status === "OPEN" &&
-    opts.report.providerObservation.pr.mergeability !== undefined &&
-    opts.report.providerObservation.pr.mergeability.state !== "conflicting" &&
-    opts.report.providerObservation.pr.mergeability.state !== "not_conflicting"
+    opts.report.providerObservation.pr.status === "OPEN"
   ) {
     const mergeability = opts.report.providerObservation.pr.mergeability;
-    return invalid(
-      "provider_mergeability_unknown",
-      `GitHub mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
-    );
+    if (!hasSettledGithubPrMergeability(mergeability)) {
+      return invalid(
+        "provider_mergeability_unknown",
+        `GitHub mergeability is not settled: state=${mergeability?.state ?? "missing"} provider_state=${mergeability?.providerState ?? "missing"}`,
+      );
+    }
   }
   if (!providerConflict(opts.report)) {
     return {

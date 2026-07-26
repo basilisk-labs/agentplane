@@ -171,6 +171,58 @@ describe("sync-github", () => {
     );
   });
 
+  it.each([
+    [
+      "omitted mergeability fields",
+      {},
+      { state: "unknown", mergeable: null, providerState: null },
+    ],
+    [
+      "contradictory false and unknown mergeability",
+      { mergeable: false, mergeable_state: "unknown" },
+      { state: "unknown", mergeable: false, providerState: "unknown" },
+    ],
+    [
+      "pending unknown mergeability",
+      { mergeable: null, mergeable_state: "unknown" },
+      { state: "pending", mergeable: null, providerState: "unknown" },
+    ],
+    [
+      "settled clean mergeability",
+      { mergeable: true, mergeable_state: "clean" },
+      { state: "not_conflicting", mergeable: true, providerState: "clean" },
+    ],
+    [
+      "settled conflicting mergeability",
+      { mergeable: false, mergeable_state: "dirty" },
+      { state: "conflicting", mergeable: false, providerState: "dirty" },
+    ],
+  ])("normalizes %s conservatively", async (_label, mergeability, expected) => {
+    mocks.execFileAsync
+      .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })
+      .mockResolvedValueOnce({
+        stdout: JSON.stringify({
+          number: 123,
+          html_url: "https://github.com/example/repo/pull/123",
+          state: "open",
+          merged_at: null,
+          head: { ref: "task/T-1/work", sha: "head" },
+          base: { ref: "main", sha: "base-head" },
+          ...mergeability,
+        }),
+      });
+
+    await expect(
+      observeExistingGithubPrByNumber({
+        gitRoot: "/repo",
+        prNumber: 123,
+        branch: "task/T-1/work",
+        baseBranch: "main",
+      }),
+    ).resolves.toMatchObject({ state: "found", pr: { mergeability: expected } });
+    expectGithubApiTransport("repos/example/repo/pulls/123");
+  });
+
   it("keeps a valid successful identity mismatch as authoritative absence", async () => {
     mocks.execFileAsync
       .mockResolvedValueOnce({ stdout: "https://github.com/example/repo.git\n" })

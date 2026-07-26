@@ -22,8 +22,8 @@ type ConflictRouteOutput = {
   workflow_step: {
     kind: string;
     id: string;
-    authoritativeCheckout: string;
-    episode: { purpose: string; role: string };
+    authoritativeCheckout?: string;
+    episode?: { purpose: string; role: string };
     compatibility: { code: string; command: string | null };
   };
   execution_packet: {
@@ -33,15 +33,19 @@ type ConflictRouteOutput = {
     staleStateCheck: string;
   };
   blockers: { code: string }[];
-  conflict_rework: {
-    state: string;
-    packet: {
-      provider: { head_sha: string; base_sha: string; mergeability: { state: string } };
-      candidate_conflict_paths: { paths: string[]; total: number };
-      freshness: { token: string };
-      safety: { preparation_mutations: unknown[]; cli_must_not: string[] };
-    };
-  };
+  conflict_rework:
+    | {
+        state: "ready";
+        packet: {
+          provider: { head_sha: string; base_sha: string; mergeability: { state: string } };
+          candidate_conflict_paths: { paths: string[]; total: number };
+          freshness: { token: string };
+          safety: { preparation_mutations: unknown[]; cli_must_not: string[] };
+        };
+      }
+    | { state: "invalid"; reason_code: string; reason: string }
+    | { state: "not_conflicting"; reason: string }
+    | null;
 };
 
 async function createBranchPrTask(root: string): Promise<string> {
@@ -100,6 +104,56 @@ async function withFakeGh<T>(root: string, source: string, run: () => Promise<T>
     if (previousGhArgs === undefined) delete process.env.AGENTPLANE_GH_ARGS;
     else process.env.AGENTPLANE_GH_ARGS = previousGhArgs;
   }
+}
+
+async function readRemoteRoute(root: string, taskId: string): Promise<ConflictRouteOutput> {
+  const routeIo = captureStdIO();
+  try {
+    const code = await runCli([
+      "task",
+      "next-action",
+      taskId,
+      "--remote",
+      "--json",
+      "--root",
+      root,
+    ]);
+    if (code !== 0) process.stderr.write(routeIo.stderr);
+    expect(code).toBe(0);
+    return JSON.parse(routeIo.stdout) as ConflictRouteOutput;
+  } finally {
+    routeIo.restore();
+  }
+}
+
+function fakeGithubProviderSource(detail: Record<string, unknown>): string {
+  return [
+    "const args = process.argv.slice(2);",
+    `const detail = ${JSON.stringify(detail)};`,
+    'if (args[0] === "api" && args[1] === "repos/example/repo/branches/main/protection") {',
+    '  console.log(JSON.stringify({ required_pull_request_reviews: {} }));',
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "api" && (args[1] ?? "").startsWith("repos/example/repo/pulls?")) {',
+    "  console.log(JSON.stringify([{ number: detail.number, state: detail.state, head: detail.head, base: { ref: detail.base.ref } }]));",
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "api" && args[1] === "repos/example/repo/pulls/4626") {',
+    "  console.log(JSON.stringify(detail));",
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "pr" && args[1] === "checks") {',
+    '  console.log("[]");',
+    "  process.exit(0);",
+    "}",
+    'if (args[0] === "api" && args[1] === "graphql") {',
+    "  console.log(JSON.stringify({ data: { repository: { pullRequest: { reviewThreads: { nodes: [], pageInfo: { hasNextPage: false, endCursor: null } } } } } }));",
+    "  process.exit(0);",
+    "}",
+    "console.error(`unexpected gh args: ${JSON.stringify(args)}`);",
+    "process.exit(91);",
+    "",
+  ].join("\n");
 }
 
 describe("provider conflict rework CLI", () => {
@@ -263,25 +317,11 @@ describe("provider conflict rework CLI", () => {
       const before = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
       expect(before.stdout).toBe("");
 
-      const routeIo = captureStdIO();
-      let route: ConflictRouteOutput | null = null;
-      try {
-        const code = await runCli([
-          "task",
-          "next-action",
-          taskId,
-          "--remote",
-          "--json",
-          "--root",
-          root,
-        ]);
-        if (code !== 0) process.stderr.write(routeIo.stderr);
-        expect(code).toBe(0);
-        route = JSON.parse(routeIo.stdout) as ConflictRouteOutput;
-      } finally {
-        routeIo.restore();
+      const route = await readRemoteRoute(root, taskId);
+      const conflictRework = route.conflict_rework;
+      if (conflictRework?.state !== "ready") {
+        throw new Error("expected ready conflict-rework packet");
       }
-      if (!route) throw new Error("expected conflict route output");
 
       expect(route.workflow_step).toMatchObject({
         kind: "agent_episode",
@@ -290,7 +330,7 @@ describe("provider conflict rework CLI", () => {
         episode: { purpose: "implementation_rework", role: "CODER" },
         compatibility: {
           code: "semantic_conflict_rework_required",
-          command: `agentplane pr conflict-rework ${taskId} --expect-freshness-token ${route.conflict_rework.packet.freshness.token}`,
+          command: `agentplane pr conflict-rework ${taskId} --expect-freshness-token ${conflictRework.packet.freshness.token}`,
         },
       });
       expect(route.execution_packet).toMatchObject({
@@ -300,7 +340,7 @@ describe("provider conflict rework CLI", () => {
         staleStateCheck: `agentplane task next-action ${taskId} --remote --explain`,
       });
       expect(route.blockers.map((blocker) => blocker.code)).toContain("provider_merge_conflict");
-      expect(route.conflict_rework).toMatchObject({
+      expect(conflictRework).toMatchObject({
         state: "ready",
         packet: {
           provider: {
@@ -315,7 +355,7 @@ describe("provider conflict rework CLI", () => {
         },
       });
       expect(
-        route.conflict_rework.packet.safety.cli_must_not.some((rule) => rule.includes("auto-rebase")),
+        conflictRework.packet.safety.cli_must_not.some((rule) => rule.includes("auto-rebase")),
       ).toBe(true);
 
       const packetIo = captureStdIO();
@@ -325,7 +365,7 @@ describe("provider conflict rework CLI", () => {
           "conflict-rework",
           taskId,
           "--expect-freshness-token",
-          route.conflict_rework.packet.freshness.token,
+          conflictRework.packet.freshness.token,
           "--json",
           "--root",
           root,
@@ -336,7 +376,7 @@ describe("provider conflict rework CLI", () => {
           freshness: { token: string };
           safety: { preparation_mutations: unknown[] };
         };
-        expect(packet.freshness.token).toBe(route.conflict_rework.packet.freshness.token);
+        expect(packet.freshness.token).toBe(conflictRework.packet.freshness.token);
         expect(packet.safety.preparation_mutations).toEqual([]);
       } finally {
         packetIo.restore();
@@ -345,5 +385,62 @@ describe("provider conflict rework CLI", () => {
       const after = await execFileAsync("git", ["status", "--porcelain"], { cwd: worktree });
       expect(after.stdout).toBe(before.stdout);
     });
+
+    const providerCore = {
+      number: 4626,
+      html_url: "https://github.example/acme/agentplane/pull/4626",
+      state: "open",
+      merged_at: null,
+      merge_commit_sha: null,
+      head: { ref: branch, sha: headSha },
+      base: { ref: "main", sha: baseSha },
+    };
+    const unsettledProviderDetails = [
+      ["omitted mergeability fields", providerCore],
+      [
+        "contradictory false and unknown mergeability",
+        { ...providerCore, mergeable: false, mergeable_state: "unknown" },
+      ],
+      [
+        "pending unknown mergeability",
+        { ...providerCore, mergeable: null, mergeable_state: "unknown" },
+      ],
+    ] as const;
+    for (const [label, providerDetail] of unsettledProviderDetails) {
+      await withFakeGh(root, fakeGithubProviderSource(providerDetail), async () => {
+        const [rootBefore, worktreeBefore] = await Promise.all([
+          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+        ]);
+        const route = await readRemoteRoute(root, taskId);
+
+        expect(route.workflow_step).toMatchObject({
+          kind: "terminal",
+          id: "terminal.provider_conflict_context_invalid",
+        });
+        expect(route.workflow_step.kind, label).not.toBe("agent_episode");
+        expect(route.workflow_step.kind, label).not.toBe("cli_operation");
+        expect(route.execution_packet).toMatchObject({
+          actionKind: "stop",
+          safeToMutate: false,
+          exactArgv: null,
+        });
+        expect(route.blockers.map((blocker) => blocker.code)).toContain(
+          "provider_conflict_context_invalid",
+        );
+        expect(route.blockers.map((blocker) => blocker.code)).not.toContain("provider_merge_conflict");
+        expect(route.conflict_rework).toMatchObject({
+          state: "invalid",
+          reason_code: "provider_mergeability_unknown",
+        });
+
+        const [rootAfter, worktreeAfter] = await Promise.all([
+          execFileAsync("git", ["status", "--porcelain"], { cwd: root }),
+          execFileAsync("git", ["status", "--porcelain"], { cwd: worktree }),
+        ]);
+        expect(rootAfter.stdout, label).toBe(rootBefore.stdout);
+        expect(worktreeAfter.stdout, label).toBe(worktreeBefore.stdout);
+      });
+    }
   });
 });

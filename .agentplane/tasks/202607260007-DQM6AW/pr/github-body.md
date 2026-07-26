@@ -12,12 +12,12 @@ In scope: branch_pr queue conflict detection, provider-backed freshness and prov
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Rework: full lint is not clean, and stale queue or handoff identity can still unlock the semantic
-conflict route.
+Verified at 1e13a7c: only coherent provider mergeability truth can route; unsettled and
+contradictory truth fails closed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -30,15 +30,16 @@ conflict route.
 
 ```text
  docs/user/cli-reference.generated.mdx              |  24 +
- .../cli/run-cli.core.pr-conflict-rework.test.ts    | 349 +++++++++++
+ .../cli/run-cli.core.pr-conflict-rework.test.ts    | 446 ++++++++++++++
+ .../run-cli.core.route-decision.pre-merge.test.ts  |   4 +
  .../src/cli/run-cli/command-catalog/project.ts     |   3 +
  .../src/cli/run-cli/command-loaders/project.ts     |   4 +
- .../src/commands/pr/conflict-rework.test.ts        | 409 +++++++++++++
- .../agentplane/src/commands/pr/conflict-rework.ts  | 650 +++++++++++++++++++++
+ .../src/commands/pr/conflict-rework.test.ts        | 427 ++++++++++++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  | 653 +++++++++++++++++++++
  packages/agentplane/src/commands/pr/flow-status.ts |  24 +
  .../pr/integrate/internal/github-protection.ts     |  35 +-
- .../src/commands/pr/internal/sync-github.test.ts   |  68 ++-
- .../src/commands/pr/internal/sync-github.ts        | 111 +++-
+ .../src/commands/pr/internal/sync-github.test.ts   | 120 +++-
+ .../src/commands/pr/internal/sync-github.ts        | 145 ++++-
  packages/agentplane/src/commands/pr/pr.command.ts  |  16 +
  packages/agentplane/src/commands/pr/pr.spec.ts     |  58 +-
  .../src/commands/shared/route-decision-blockers.ts |  25 +
@@ -51,7 +52,7 @@ conflict route.
  .../commands/shared/workflow-step-projections.ts   |  10 +-
  .../src/commands/shared/workflow-step.ts           |   2 +
  .../src/commands/task/next-action.command.ts       |  22 +
- 22 files changed, 2094 insertions(+), 40 deletions(-)
+ 23 files changed, 2302 insertions(+), 40 deletions(-)
 ```
 
 </details>
