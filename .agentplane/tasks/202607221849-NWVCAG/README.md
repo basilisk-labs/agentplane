@@ -4,7 +4,7 @@ title: "Bind side effects to explicit authority records"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +33,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-26T11:01:10.281Z"
+  updated_by: "TESTER"
+  note: "Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation paths for the approved authority-record scope."
+  attempts: 1
 commit: null
 comments:
   -
@@ -51,8 +51,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "verify"
+    at: "2026-07-26T11:01:10.281Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation paths for the approved authority-record scope."
 doc_version: 3
-doc_updated_at: "2026-07-26T10:58:46.219Z"
+doc_updated_at: "2026-07-26T11:01:11.150Z"
 doc_updated_by: "CODER"
 description: "RF-13: classify local, external reversible, external high-risk, and semantic operations; require typed authority/approval records and audit actor, policy rule, digest, and scope."
 sections:
@@ -77,12 +83,45 @@ sections:
     5. Run focused policy/lifecycle tests, guards, and typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-26T11:01:10.281Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation paths for the approved authority-record scope.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T10:58:46.219Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+    - old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221849-NWVCAG
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: Compared with main, changed paths are limited to .agentplane/tasks/202607221849-NWVCAG artifacts.
+      Impact: The declared authority, stale-record, semantic-input, and audit Verify Steps cannot be satisfied without a source implementation.
+      Resolution: Return the task to CODER for the approved implementation, then run the declared focused policy/lifecycle checks.
 extensions:
   workflow_route_baseline:
     start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"
@@ -119,6 +158,36 @@ RF-13: classify local, external reversible, external high-risk, and semantic ope
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-26T11:01:10.281Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation paths for the approved authority-record scope.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T10:58:46.219Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+- old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221849-NWVCAG
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -128,3 +197,7 @@ RF-13: classify local, external reversible, external high-risk, and semantic ope
 - Re-run focused contract, migration, and type checks.
 
 ## Findings
+
+- Observation: Compared with main, changed paths are limited to .agentplane/tasks/202607221849-NWVCAG artifacts.
+  Impact: The declared authority, stale-record, semantic-input, and audit Verify Steps cannot be satisfied without a source implementation.
+  Resolution: Return the task to CODER for the approved implementation, then run the declared focused policy/lifecycle checks.

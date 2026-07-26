@@ -15,8 +15,13 @@ RF-13: classify local, external reversible, external high-risk, and semantic ope
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework required: the current branch contains only task/blueprint/PR artifacts and no implementation
+paths for the approved authority-record scope.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
