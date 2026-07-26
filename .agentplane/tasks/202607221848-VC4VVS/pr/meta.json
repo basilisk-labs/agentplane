@@ -8,10 +8,10 @@
   "pr_number": 4632,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4632",
   "pre_merge_closure": {
-    "basis_commit": "64cc762797ccbdd832d1ca6a8424913ca97982ed",
+    "basis_commit": "da1dbe84d88ee61be532fbc514c224371c3ae441",
     "branch": "task/202607221848-VC4VVS/unify-brief-next-action-runner-and-hermes-on-age",
     "pr_number": 4632,
-    "recorded_at": "2026-07-26T12:47:47.212Z",
+    "recorded_at": "2026-07-26T13:28:32.924Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
