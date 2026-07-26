@@ -2,10 +2,10 @@
 id: "202607221848-VC4VVS"
 title: "Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -35,36 +35,37 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-26T13:34:57.281Z"
+  state: "ok"
+  updated_at: "2026-07-26T15:24:04.065Z"
   updated_by: "TESTER"
-  note: "Generated CLI reference is stale after adding explicit remote options."
-  attempts: 1
+  note: "TESTER confirmed 81570066: clean worktree; fast CI 466 files/3232 tests, critical 11/11, focused 88/88 passed."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T13:23:20.727Z"
+  updated_at: "2026-07-26T15:25:39.640Z"
   updated_by: "EVALUATOR"
-  note: "Independent review of a6c34e0a: the compatibility ratchet admits exactly two explicit default-false remote opt-ins with exact VC4VVS provenance; the immutable v0.6.24 baseline remains byte-identical."
-  evaluated_sha: "a6c34e0a4510c78ad0e72493d3c5b0172a89e328"
+  note: "Independent review of 81570066 passes: no P0/P1/P2 found; canonical work-order parity, local-first policy, stale and prompt refusal, legacy binding, fixtures, and generated CLI reference are consistent."
+  evaluated_sha: "81570066ad26ea54a89ba2da43fdae5553c57818"
   blueprint_digest: "50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b"
   evidence_refs:
     - ".agentplane/tasks/202607221848-VC4VVS/README.md"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-132320727-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-132320727-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-132320727-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-152539640-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-152539640-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221848-VC4VVS/quality/20260726-152539640-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json"
-    - "git show a6c34e0a (four scoped files); frozen scripts/baselines/v0.6.24-compatibility-contract.json blob=c70bfb4dc15dcebf8cf8e1b4893d463d2fb7a87b before and after"
-    - "bun run bench:compatibility:check: passed; candidate=approved and 247commands/168args/783options"
-    - "bun run format:check: passed"
-    - "agent-work-order.integration.test.ts: 4 passed; cli route-decision plus task-run focused tests: 14 passed"
-    - "bun run test:critical: 11 of 11 chunks passed, exit 0; baseline critical test 7 passed"
-    - "git diff --check a6c34e0a: passed; clean worktree before evaluator record"
+    - "git show 81570066ad26ea54a89ba2da43fdae5553c57818"
+    - "packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts"
+    - "packages/agentplane/src/runner/adapters/execute-supervised.ts"
+    - "bun run ci:local:fast: pass (466 files / 3232 tests)"
+    - "bun run test:critical: pass (11/11 chunks)"
+    - "RF05b focused test matrix: pass (88/88)"
   findings:
-    - "The candidate checker fixes the full additive CLI surface at 247 commands, 168 positional arguments, and 783 options; it rejects removed or mutated commands/options and requires exact source-task provenance."
-    - "Production integration covers both local default and explicit remote parity across task brief, next-action, task run, and Hermes supervise; all compared work-order signatures match."
-    - "The sole source-file edit is a Prettier-compatible projection formatting repair; no behavioral baseline weakening was introduced."
-commit: null
+    - "Brief, next-action, Hermes, and runner use the prepared AgentWorkOrder v2 projection; local default and explicit remote parity are covered without duplicate v2 aliases."
+    - "Legacy v1 manifest identity is bound only from the supervised invocation while v2 work-order mismatches remain rejected."
+commit:
+  hash: "81570066ad26ea54a89ba2da43fdae5553c57818"
+  message: "🐛 VC4VVS task: bind legacy results to supervised work order"
 comments:
   -
     author: "CODER"
@@ -75,6 +76,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -115,8 +119,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Generated CLI reference is stale after adding explicit remote options."
+  -
+    type: "verify"
+    at: "2026-07-26T15:24:04.065Z"
+    author: "TESTER"
+    state: "ok"
+    note: "TESTER confirmed 81570066: clean worktree; fast CI 466 files/3232 tests, critical 11/11, focused 88/88 passed."
+  -
+    type: "status"
+    at: "2026-07-26T15:26:41.304Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T13:34:58.093Z"
+doc_updated_at: "2026-07-26T15:26:41.305Z"
 doc_updated_by: "CODER"
 description: "RF-05b/RF-25c: make task brief, next-action, runner bootstrap, and Hermes projections views of one prepared AgentWorkOrder v2 result instead of independent route/context reconstruction."
 sections:
@@ -231,6 +248,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-26T15:24:04.065Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: TESTER confirmed 81570066: clean worktree; fast CI 466 files/3232 tests, critical 11/11, focused 88/88 passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T13:34:58.093Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+    - old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -248,6 +295,10 @@ sections:
     - Observation: ci:local:fast failed docs:cli:check
       Impact: PR cannot be safely published
       Resolution: Regenerate and review CLI reference, then rerun full-fast.
+
+    - Observation: Command: bun run ci:local:fast; Result: pass; Evidence: 466 files/3232 tests; Scope: RF05b work-order, route, manifest, fixtures, and generated CLI reference.
+      Impact: The prior stale-CLI-reference rework is resolved locally; no hosted PR or provider action was performed.
+      Resolution: Record local TESTER approval at 81570066 and recompute the route before any publication or integration.
 extensions:
   implementation_commit:
     hash: "a6c34e0a4510c78ad0e72493d3c5b0172a89e328"
@@ -377,6 +428,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-26T15:24:04.065Z — VERIFY — ok
+
+By: TESTER
+
+Note: TESTER confirmed 81570066: clean worktree; fast CI 466 files/3232 tests, critical 11/11, focused 88/88 passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-26T13:34:58.093Z, excerpt_hash=sha256:d2f6c6f20f6879962cc44710c469d54d50ecf5b8cd8c7fb3dae9389597c7fc90
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221848-VC4VVS-unify-brief-next-action-runner-and-hermes-on-age/.agentplane/tasks/202607221848-VC4VVS/blueprint/resolved-snapshot.json
+- old_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- current_digest: 50309d8cd21a0a68cf5481cf5ea2ed8e90ca936a04ac8bba4dba183cd6d3675b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221848-VC4VVS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -398,3 +479,7 @@ DecisionContextRef:
 - Observation: ci:local:fast failed docs:cli:check
   Impact: PR cannot be safely published
   Resolution: Regenerate and review CLI reference, then rerun full-fast.
+
+- Observation: Command: bun run ci:local:fast; Result: pass; Evidence: 466 files/3232 tests; Scope: RF05b work-order, route, manifest, fixtures, and generated CLI reference.
+  Impact: The prior stale-CLI-reference rework is resolved locally; no hosted PR or provider action was performed.
+  Resolution: Record local TESTER approval at 81570066 and recompute the route before any publication or integration.
