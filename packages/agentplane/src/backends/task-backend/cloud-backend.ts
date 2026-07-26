@@ -235,10 +235,8 @@ export class CloudBackend implements TaskBackend {
   async writeTask(task: TaskData, opts?: TaskWriteOptions): Promise<void> {
     await this.writeTaskWithResult(task, opts);
   }
-  async writeTaskWithResult(task: TaskData, opts?: TaskWriteOptions): Promise<TaskWriteResult> {
-    return await this.withProjectionOperation("write-task", async () => {
-      return await this.writeTaskUnlocked(task, opts);
-    });
+  writeTaskWithResult(task: TaskData, opts?: TaskWriteOptions): Promise<TaskWriteResult> {
+    return this.withProjectionOperation("write-task", () => this.writeTaskUnlocked(task, opts));
   }
   async writeTaskWithProjectionTransition<T>(
     task: TaskData,
