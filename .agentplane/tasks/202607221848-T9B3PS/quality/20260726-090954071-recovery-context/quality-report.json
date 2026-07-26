@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-T9B3PS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T09:09:54.071Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "PASS: the committed v1 compatibility reader now preserves lifecycle roles as audit metadata, records all caller-supplied v2 facts, and accepts representative runner/Hermes projections without granting authority.",
+  "evaluated_sha": "36eb7f509bd849cc051349e211a0326342edbb2b",
+  "blueprint_digest": "e83f19491ff117343a64b4965d78cb5a0efe43e489b30d534b94b7bcbf8ce8d6",
+  "findings": [
+    "Verify Step 2 is satisfied: runner reads route_decision.executionPacket.recommendedRole, Hermes uses camelCase RouteExecutionPacket fields and owner:null, and migration requires explicit work_order_id and semantic role.",
+    "Verify Steps 1, 3, 4, and 5 are evidenced by generated fixtures/schema checks, focused contract tests, critical CLI 11/11, typecheck, formatting, guards, routing, and compatibility baseline."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-T9B3PS/README.md",
+    "packages/core/src/runner/agent-work-order-compat.ts",
+    "packages/core/src/runner/agent-work-order.test.ts",
+    "schemas/examples/agent-work-order-v1.hermes.legacy.json",
+    "bun run test:critical (11/11)",
+    "independent constrained P0/P1 review: pass"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "v1 surfaces intentionally do not supply AgentWorkOrder semantic role or invocation authority; callers must provide the explicit v2 migration overrides."
+  ]
+}
