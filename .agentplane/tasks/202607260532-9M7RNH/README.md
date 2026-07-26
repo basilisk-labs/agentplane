@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -63,8 +63,8 @@ quality_review:
     - "The generated reference contains the canonical command id, task-id argument, and exact adoption-token option; docs freshness and full contract checks pass."
     - "The v0.7 compatibility candidate remains exact-locked to the additive 247-command surface, and the immutable v0.6.24 anchor is unchanged."
 commit:
-  hash: "f2cfe1c8b38c443d5f18d52db0431c8c5e16b04c"
-  message: "🧐 9M7RNH task: refresh docs quality review"
+  hash: "c185d3ea252638b03d96b9baf2b3eafcfaebda3d"
+  message: "🧩 9M7RNH task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -119,8 +122,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Refreshed verification after generated CLI-reference update; implementation diff and hosted evidence remain passed."
+  -
+    type: "status"
+    at: "2026-07-26T07:54:34.005Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T07:53:36.195Z"
+doc_updated_at: "2026-07-26T07:54:34.005Z"
 doc_updated_by: "CODER"
 description: "Close the liveness gap for legacy protected PR conflicts whose provider-reported conflict base is an ancestor of current main. Prepare a bounded read-only reconciliation packet carrying provider conflict-base, current base, ancestry, local conflict probe, and freshness; preserve fail-closed behavior and prohibit CLI rebase, merge, push, queue, or cleanup mutations."
 sections:

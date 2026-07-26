@@ -8,10 +8,10 @@
   "pr_number": 4629,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4629",
   "pre_merge_closure": {
-    "basis_commit": "f2cfe1c8b38c443d5f18d52db0431c8c5e16b04c",
+    "basis_commit": "c185d3ea252638b03d96b9baf2b3eafcfaebda3d",
     "branch": "task/202607260532-9M7RNH/recover-stale-protected-pr-conflict-base-context",
     "pr_number": 4629,
-    "recorded_at": "2026-07-26T07:38:45.469Z",
+    "recorded_at": "2026-07-26T07:54:34.054Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
