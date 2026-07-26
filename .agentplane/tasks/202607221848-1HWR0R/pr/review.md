@@ -32,6 +32,7 @@ Created: 2026-07-26T08:11:00.143Z
  .../src/backends/task-backend.revision-cas.test.ts |  56 ++++++++-
  packages/agentplane/src/backends/task-backend.ts   |   1 +
  .../src/backends/task-backend/cloud-backend.ts     |  16 ++-
+ .../backends/task-backend/local-backend-write.ts   |   2 +-
  .../src/backends/task-backend/local-backend.ts     |  12 +-
  .../agentplane/src/backends/task-backend/shared.ts |   1 +
  .../src/backends/task-backend/shared/types.ts      |  12 ++
@@ -43,9 +44,12 @@ Created: 2026-07-26T08:11:00.143Z
  .../src/commands/shared/task-mutation.test.ts      |  49 +++++++-
  .../src/commands/shared/task-mutation.ts           |  94 +++++++++++++-
  .../agentplane/src/commands/task/begin.command.ts  |  57 ++++-----
- packages/agentplane/src/commands/task/index.ts     |   2 +-
+ .../agentplane/src/commands/task/doc.unit.test.ts  |  20 +--
+ .../src/commands/task/mutation-parity.unit.test.ts |  28 ++++-
  .../agentplane/src/commands/task/new.command.ts    |   3 +-
  packages/agentplane/src/commands/task/new.ts       |  22 +++-
+ .../agentplane/src/commands/task/plan.unit.test.ts |   8 +-
+ .../src/commands/task/verify-record.unit.test.ts   |  71 +++++------
  packages/agentplane/src/commands/workflow.test.ts  |  39 +++++-
  .../src/context/ingest-task-pack.test.ts           |  74 ++++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     |  26 ++++
@@ -54,7 +58,7 @@ Created: 2026-07-26T08:11:00.143Z
  packages/agentplane/src/context/ingest.ts          |  32 ++---
  .../baselines/v0.7-compatibility-candidate.json    |  39 +++++-
  .../check-compatibility-contract-baseline.mjs      | 138 +++++++++++++++++++++
- 25 files changed, 704 insertions(+), 107 deletions(-)
+ 29 files changed, 777 insertions(+), 161 deletions(-)
 ```
 
 </details>
