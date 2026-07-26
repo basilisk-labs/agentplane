@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-1HWR0R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T09:56:15.012Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The hotspot rework removes only redundant async and await wrappers while preserving the cloud write lock and typed-result boundary; RF-07 receipt semantics remain unchanged.",
+  "evaluated_sha": "13816364eb35292e49294a92cabb41f702dd9a75",
+  "blueprint_digest": "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d",
+  "findings": [
+    "No blocking semantic defect found in the post-review hotspot delta."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-1HWR0R/README.md",
+    "bun run hotspots:check",
+    "packages/agentplane/src/backends/task-backend.revision-cas.test.ts",
+    "bun run typecheck",
+    "git diff --check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted checks currently evaluate the prior PR head; publish the current head and require a fresh hosted run. Any old-head failures outside the hotspot guard must be classified against the refreshed head before merge."
+  ]
+}
