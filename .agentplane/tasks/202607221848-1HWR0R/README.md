@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -58,8 +58,8 @@ quality_review:
   findings:
     - "No blocking semantic defect found in the current hosted rework."
 commit:
-  hash: "92a1057524cd9382a1043946973afc85959d6068"
-  message: "🧪 1HWR0R task: refresh hotspot quality review"
+  hash: "6b4d58d8515f64aa565bd7c0f7633ef030f41711"
+  message: "🧪 1HWR0R task: record hosted rework quality"
 comments:
   -
     author: "CODER"
@@ -67,6 +67,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -104,8 +107,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-26T10:30:55.010Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T09:57:05.690Z"
+doc_updated_at: "2026-07-26T10:30:55.010Z"
 doc_updated_by: "CODER"
 description: "RF-07: make create and mutation use cases return exact task id, revision, backend identity, artifact paths, and recovery data instead of list-before/list-after discovery."
 sections:
@@ -204,8 +214,8 @@ sections:
       Resolution: Verified one changed context contract, receipt ordering and immutability, then refreshed candidate and regression coverage.
 extensions:
   implementation_commit:
-    hash: "13816364eb35292e49294a92cabb41f702dd9a75"
-    message: "🧩 1HWR0R task: preserve cloud backend hotspot bound"
+    hash: "7155466b6e84a550e86fb92e2476322dc15ddafd"
+    message: "🧩 1HWR0R task: close hosted rework"
   workflow_route_baseline:
     start_head_sha: "5b5d36e5363277b35b80ece2dc4f70927e4ce00e"
     version: 1
