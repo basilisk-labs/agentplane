@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -40,23 +40,28 @@ verification:
   note: "Verified the authority-only review-target repair: a committed authority grant no longer invalidates the prior quality target, while substantive README changes remain reviewable. Passed targeted quality/route tests, test:fast (468 files, 3257 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T22:58:48.977Z"
+  updated_at: "2026-07-26T23:06:05.994Z"
   updated_by: "EVALUATOR"
-  note: "Authority-only task commits incorrectly invalidate quality-review freshness and prevent the protected workflow from converging."
-  evaluated_sha: "d187f3fbbee9dd708eda74a2c96a60446c4efded"
+  note: "RF-13 now enforces explicit, scoped authority records for classified side effects without authorizing semantic values. The rework closes the route-authority sandbox gap and prevents authority-only task metadata from causing a non-convergent quality-review loop."
+  evaluated_sha: "dcbe0bba607e22b30e17135de5c509c03bcdd933"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225848977-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225848977-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225848977-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-230605994-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-230605994-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-230605994-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
-    - "agentplane task next-action 202607221849-NWVCAG --remote --explain (quality review stale after committed route.remote.refresh authority)"
-    - "packages/agentplane/src/commands/shared/quality-review-target.ts"
+    - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+    - "packages/agentplane/src/commands/shared/workflow-step-fingerprint.test.ts"
+    - "packages/agentplane/src/commands/shared/quality-review-target.test.ts"
+    - "bun run test:fast (468 files, 3257 tests)"
+    - "bun run test:critical (11 chunks, 72 tests)"
+    - "bun run typecheck"
+    - "bun run format:changed"
   findings:
-    - "After a passing review, task authority grant changes only README revision and agentplane.side_effect_authority audit/grant records. resolveQualityReviewTargetSha classifies that README-only commit as independently reviewable metadata, so the route requires another review; the new review then needs another authority grant, creating a loop."
+    - "The authority-only review-target exception removes only README revision and agentplane.side_effect_authority records, and is guarded by a changed-files check; ordinary README semantic metadata changes remain reviewable."
 commit:
   hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
   message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
