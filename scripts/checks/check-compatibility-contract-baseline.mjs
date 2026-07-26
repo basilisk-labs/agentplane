@@ -398,7 +398,7 @@ function validateReviewedCandidate({
     "execution receipt contract artifact comparison drift",
   );
   assert(
-    executionReceiptArtifact.source_task === "202607221846-9XC1H0",
+    executionReceiptArtifact.source_task === "202607221849-NWVCAG",
     "execution receipt contract artifact source task drift",
   );
   const executionReceiptSchema = JSON.parse(

@@ -163,9 +163,9 @@
     },
     "execution_receipt_schema": {
       "path": "schemas/execution-receipt.schema.json",
-      "sha256": "2182ce7788ff3cffea246a15864c27350b6787555588ba1444fbc3fc5b0f3db9",
+      "sha256": "ebcdcda6d38e1b399696add88587e3a2a1a84246beebc656feccdfb357dfbddf",
       "comparison": "canonical_json_exact",
-      "source_task": "202607221846-9XC1H0"
+      "source_task": "202607221849-NWVCAG"
     },
     "core_execution_receipt_exports": {
       "comparison": "required_named_reexports",
