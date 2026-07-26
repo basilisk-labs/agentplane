@@ -1,1 +1,1 @@
-🚧 VC4VVS task: Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2 [202607221848-VC4VVS]
+✅ VC4VVS task: Unify brief, next-action, runner, and Hermes on AgentWorkOrder v2 [202607221848-VC4VVS]
