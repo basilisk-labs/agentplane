@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607260007-DQM6AW",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T04:19:02.369Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Independent closure review of fffee8b0 confirms the repo-fixable schema-generation finding was promoted as a bounded append-only incident record with an exact packaged mirror.",
+  "evaluated_sha": "fffee8b0d158c7dbf2f850a5cdfc4c0d17b11121",
+  "blueprint_digest": "ce5797093a8c2c90262f575322642ecedef3d2c3eaf280e889d68d20598f33a6",
+  "findings": [
+    "The closure delta appends exactly one INC-20260726-01 record to incidents.md. It contains the required id/date/scope/failure/rule/evidence/enforcement/state fields, is explicitly fixability=repo-fixable and state=open, and its evidence points to task 202607260007-DQM6AW and the repaired implementation commit bb61f9121dad.",
+    "The rule is correctly limited to analogous task-handoff schema generation: review the recorded advice, run schemas:sync, commit generated schemas with the source change, then rerun checks. No semantic conflict, branch, PR, queue, or integration action is prescribed. The packaged policy mirror is byte-identical to the repository registry."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607260007-DQM6AW/README.md",
+    ".agentplane/policy/incidents.md",
+    "packages/agentplane/assets/policy/incidents.md",
+    "commit: fffee8b0d158c7dbf2f850a5cdfc4c0d17b11121 closure; incident evidence references bb61f9121dad",
+    "command: git diff --name-status bb61f912..fffee8b0 (only closure artifacts plus two incident mirrors)",
+    "command: cmp -s .agentplane/policy/incidents.md packages/agentplane/assets/policy/incidents.md (passed)",
+    "command: node .agentplane/policy/check-routing.mjs (policy routing OK)",
+    "command: agentplane doctor (OK; only historical archive warnings)",
+    "command: git diff --check bb61f912..fffee8b0 (passed)"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "fffee8b0 is intentionally unpublished. PR #4627 and hosted checks still describe the prior remote head; a fresh remote route and stable hosted checks remain mandatory before publication, queue, or integration."
+  ]
+}
