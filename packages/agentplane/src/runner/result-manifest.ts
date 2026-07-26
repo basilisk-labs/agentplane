@@ -12,6 +12,15 @@ import { readStableRegularTextNoFollow } from "./stable-file.js";
 export const RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 2 as const;
 const LEGACY_RUNNER_RESULT_MANIFEST_SCHEMA_VERSION = 1 as const;
 
+/**
+ * A v1 manifest carries no work-order identity. Callers that already own a
+ * supervised invocation can bind its synthetic identity to that invocation;
+ * unbound parsing keeps the historical run-directory-derived identity.
+ */
+export type RunnerResultManifestParseOptions = {
+  legacy_work_order_id?: string;
+};
+
 export {
   applyRunnerResultManifest,
   invalidRunnerResultManifestPath,
@@ -86,7 +95,17 @@ function normalizedOptionalStringArray(
 
 function deriveLegacyWorkOrderId(resultPath: string): string {
   const runDirName = path.basename(path.dirname(resultPath)).trim();
-  return runDirName || "legacy-run";
+  if (runDirName) return runDirName;
+  return "legacy-run";
+}
+
+function resolveLegacyWorkOrderId(opts: {
+  result_path: string;
+  legacy_work_order_id?: string;
+}): string {
+  const boundWorkOrderId = opts.legacy_work_order_id?.trim();
+  if (boundWorkOrderId === "") return deriveLegacyWorkOrderId(opts.result_path);
+  return boundWorkOrderId ?? deriveLegacyWorkOrderId(opts.result_path);
 }
 
 function legacySemanticStatus(value: unknown): LegacyAgentSemanticResult["status"] | undefined {
@@ -204,6 +223,7 @@ function parseLegacyRunnerResultManifest(opts: {
   raw: Record<string, unknown>;
   raw_content: string;
   result_path: string;
+  legacy_work_order_id?: string;
 }): RunnerResultManifest {
   const summary = normalizedOptionalString(
     opts.raw.summary,
@@ -222,7 +242,7 @@ function parseLegacyRunnerResultManifest(opts: {
   const semanticResult: LegacyAgentSemanticResult = {
     schema_version: RUNNER_RESULT_MANIFEST_SCHEMA_VERSION,
     kind: "legacy_agent_semantic_result",
-    work_order_id: deriveLegacyWorkOrderId(opts.result_path),
+    work_order_id: resolveLegacyWorkOrderId(opts),
     ...(status ? { status } : {}),
     ...(summary ? { summary } : {}),
     ...(findings ? { findings } : {}),
@@ -277,10 +297,11 @@ function parseAgentSemanticResultManifest(opts: {
 
 export async function readRunnerResultManifest(
   resultPath: string,
+  options: RunnerResultManifestParseOptions = {},
 ): Promise<RunnerResultManifest | null> {
   try {
     const rawText = await readStableRegularTextNoFollow(resultPath, "runner result manifest");
-    return parseRunnerResultManifestText(rawText, resultPath);
+    return parseRunnerResultManifestText(rawText, resultPath, options);
   } catch (err) {
     const code = (err as NodeJS.ErrnoException | null)?.code;
     if (code === "ENOENT") return null;
@@ -291,6 +312,7 @@ export async function readRunnerResultManifest(
 export function parseRunnerResultManifestText(
   rawText: string,
   resultPath: string,
+  options: RunnerResultManifestParseOptions = {},
 ): RunnerResultManifest {
   let parsed: unknown;
   try {
@@ -307,6 +329,7 @@ export function parseRunnerResultManifestText(
       raw: parsed,
       raw_content: rawText,
       result_path: resultPath,
+      legacy_work_order_id: options.legacy_work_order_id,
     });
   }
   if (parsed.schema_version === RUNNER_RESULT_MANIFEST_SCHEMA_VERSION) {

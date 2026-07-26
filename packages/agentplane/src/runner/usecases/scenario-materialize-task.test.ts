@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 
+import { execFileAsync } from "@agentplaneorg/core/process";
 import { describe, expect, it } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
@@ -182,11 +183,43 @@ describe("materializeRecipeScenarioTask", () => {
       scenario_id: "RECIPE_SCENARIO",
       run_id: "recipe-run-blueprint",
     });
+    expect(
+      await runCliSilent([
+        "task",
+        "plan",
+        "set",
+        materialized.task_id,
+        "--text",
+        "Execute the materialized recipe scenario through the runner.",
+        "--updated-by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    expect(
+      await runCliSilent([
+        "task",
+        "plan",
+        "approve",
+        materialized.task_id,
+        "--by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]),
+    ).toBe(0);
+    const approvedTask = await ctx.taskBackend.getTask(materialized.task_id);
+    expect(approvedTask).toBeTruthy();
     await ctx.taskBackend.writeTask({
-      ...materialized.task,
+      ...approvedTask!,
       status: "DOING",
       tags: ["analysis", "recipes"],
       verify: [],
+    });
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: prepare materialized recipe scenario"], {
+      cwd: root,
     });
 
     const prepared = await prepareTaskRunnerExecution({
@@ -198,6 +231,11 @@ describe("materializeRecipeScenarioTask", () => {
       run_id: "runner-blueprint-fixture",
       recipe: materialized.recipe_context,
       sandbox_override: "read-only",
+    });
+
+    expect(prepared.bundle.work_order?.state_fingerprint.components).toMatchObject({
+      git: { state: "present" },
+      backend_projection: { state: "present" },
     });
 
     expect(prepared.bundle.blueprint?.blueprintId).toBe("analysis.light");

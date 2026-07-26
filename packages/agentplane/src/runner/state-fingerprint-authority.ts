@@ -60,14 +60,31 @@ function selectedRunnerEnv(config: AgentplaneConfig["runner"]): Record<string, s
 }
 
 function routeEvidenceProjection(routeDecision: TaskRouteDecision): Record<string, unknown> {
-  const prFlow = routeDecision.prFlow
+  const prFlow = isRecord(routeDecision.prFlow)
     ? (() => {
         const { task: _task, branch, ...rest } = structuredClone(routeDecision.prFlow);
-        const { headSha: _headSha, ...branchProjection } = branch;
+        const branchProjection = isRecord(branch)
+          ? (() => {
+              const { headSha: _headSha, ...projection } = branch;
+              return projection;
+            })()
+          : null;
         return { ...rest, branch: branchProjection };
       })()
     : null;
-  const { root: _root, headSha: _headSha, ...workspace } = routeDecision.workspace;
+  // Legacy bundles can carry a route shell without a resolved workspace.
+  // Preserve that missing authority input explicitly in the fingerprint instead
+  // of treating it as a runtime error or silently replacing it with an object.
+  const workspace = isRecord(routeDecision.workspace)
+    ? (() => {
+        const {
+          root: _root,
+          headSha: _headSha,
+          ...projection
+        } = structuredClone(routeDecision.workspace);
+        return projection;
+      })()
+    : null;
   return {
     workflow_mode: routeDecision.workflowMode,
     agent_contract: {

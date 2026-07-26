@@ -245,6 +245,7 @@ function softLegacyStatus(value: unknown): LegacyAgentSemanticResult["status"] |
 export function salvageBlockedRunnerResultManifest(
   rawContent: string,
   resultPath = "legacy-run/result.json",
+  options: { legacy_work_order_id?: string } = {},
 ): {
   semantic_result: AgentReportedSemanticResult;
   manifest_warnings: RunnerResultManifestWarning[];
@@ -274,10 +275,13 @@ export function salvageBlockedRunnerResultManifest(
   const blockedSummary = softNonEmptyString(evidence?.blocked_reason);
   const recommendedAction = softNonEmptyString(evidence?.recommended_parent_action);
   if (!summary && !findings && !status && !blockedSummary) return null;
+  const boundWorkOrderId = softNonEmptyString(options.legacy_work_order_id);
+  const legacyRunId = softNonEmptyString(path.basename(path.dirname(resultPath)));
+  const workOrderId = boundWorkOrderId ?? legacyRunId ?? "legacy-run";
   const value: LegacyAgentSemanticResult = {
     schema_version: 2,
     kind: "legacy_agent_semantic_result",
-    work_order_id: path.basename(path.dirname(resultPath)) || "legacy-run",
+    work_order_id: workOrderId,
     ...(status ? { status } : {}),
     ...(summary ? { summary } : {}),
     ...(findings ? { findings } : {}),

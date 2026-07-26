@@ -248,9 +248,13 @@ export async function executeSupervisedRunnerAdapter(opts: {
         "runner result source manifest",
       );
       sourceManifestSha256 = `sha256:${createHash("sha256").update(sourceText, "utf8").digest("hex")}`;
-      manifest = parseRunnerResultManifestText(sourceText, sourceManifestPath);
+      manifest = parseRunnerResultManifestText(sourceText, sourceManifestPath, {
+        legacy_work_order_id: invocation.work_order_id,
+      });
     } else {
-      manifest = await readRunnerResultManifest(invocation.result_path);
+      manifest = await readRunnerResultManifest(invocation.result_path, {
+        legacy_work_order_id: invocation.work_order_id,
+      });
     }
     if (manifest && manifest.semantic_result.value.work_order_id !== invocation.work_order_id) {
       throw new CliError({
@@ -324,7 +328,9 @@ export async function executeSupervisedRunnerAdapter(opts: {
           : null;
       blockedManifestFallback =
         err instanceof InvalidRunnerResultManifestError
-          ? salvageBlockedRunnerResultManifest(err.raw_content, invocation.result_path)
+          ? salvageBlockedRunnerResultManifest(err.raw_content, invocation.result_path, {
+              legacy_work_order_id: invocation.work_order_id,
+            })
           : null;
       artifacts = opts.buildArtifacts({
         invocation,

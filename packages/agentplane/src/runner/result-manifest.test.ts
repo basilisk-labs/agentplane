@@ -236,6 +236,30 @@ describe("runner result manifest", () => {
     );
   });
 
+  it("binds a legacy v1 synthetic work-order id to a supervisor-owned invocation id", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-legacy-result-bound-"));
+    const resultPath = await writeJsonManifest(path.join(tempDir, "legacy-run"), {
+      schema_version: 1,
+      summary: "Legacy runner result.",
+    });
+
+    const manifest = await readRunnerResultManifest(resultPath, {
+      legacy_work_order_id: "work-order-supervised",
+    });
+
+    expect(manifest).toMatchObject({
+      source_schema_version: 1,
+      semantic_result: {
+        provenance: "agent_reported",
+        value: {
+          kind: "legacy_agent_semantic_result",
+          work_order_id: "work-order-supervised",
+          summary: "Legacy runner result.",
+        },
+      },
+    });
+  });
+
   it("normalizes legacy v1 semantics while preserving observed-looking values as raw claims", async () => {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-result-manifest-v1-"));
     const resultPath = await writeJsonManifest(path.join(tempDir, "legacy-work-order"), {
@@ -462,6 +486,24 @@ describe("runner result manifest", () => {
     expect(salvaged).not.toHaveProperty("metrics");
     expect(salvaged).not.toHaveProperty("artifacts");
     expect(salvaged).not.toHaveProperty("evidence");
+  });
+
+  it("binds salvaged legacy blocker guidance to the supervised work order", () => {
+    const salvaged = salvageBlockedRunnerResultManifest(
+      JSON.stringify({
+        schema_version: 1,
+        status: "blocked",
+        summary: "Runner stopped for a declared blocker.",
+      }),
+      "runs/legacy-blocked/result.json",
+      { legacy_work_order_id: "work-order-supervised" },
+    );
+
+    expect(salvaged?.semantic_result.value).toMatchObject({
+      kind: "legacy_agent_semantic_result",
+      work_order_id: "work-order-supervised",
+      status: "blocked",
+    });
   });
 
   it("preserves malformed manifest payloads for later inspection", async () => {
