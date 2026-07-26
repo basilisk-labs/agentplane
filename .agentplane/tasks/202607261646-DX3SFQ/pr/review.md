@@ -6,14 +6,14 @@ Created: 2026-07-26T16:48:58.285Z
 
 - Task: `202607261646-DX3SFQ`
 - Title: Allow targeted cleanup of registered sibling task worktrees
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607261646-DX3SFQ/allow-targeted-cleanup-of-registered-sibling-tas`
 - Canonical task record: `.agentplane/tasks/202607261646-DX3SFQ/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Published HEAD 32359412: focused DX3SFQ matrix (52/52), typecheck, lifecycle, guards, and routing pass; ci:local:fast fails with 9 task-run lifecycle/claim/replay failures and 6 unhandled errors.
+- State: ok
+- Note: PASS: registered sibling cleanup is allowed only in the explicit task-id plus finalize lane after fresh Git-topology and common-directory validation; all other external paths remain fail-closed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
