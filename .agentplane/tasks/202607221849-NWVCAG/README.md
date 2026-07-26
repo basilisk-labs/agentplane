@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -40,26 +40,23 @@ verification:
   note: "Implementation rework verified: route authority now forces the runner read-only when the canonical work order has no writable roots."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T22:56:53.058Z"
+  updated_at: "2026-07-26T22:58:48.977Z"
   updated_by: "EVALUATOR"
-  note: "The current head preserves the reviewed route-bound sandbox fix and adds only the explicit remote-refresh authority record."
+  note: "Authority-only task commits incorrectly invalidate quality-review freshness and prevent the protected workflow from converging."
   evaluated_sha: "d187f3fbbee9dd708eda74a2c96a60446c4efded"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225653058-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225653058-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225653058-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225848977-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225848977-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-225848977-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
-    - "git log --oneline 128118ae0..d187f3fbb"
-    - "bun run test:fast (468 files, 3255 tests passed)"
-    - "bun run test:critical (11 chunks, 72 tests passed)"
-    - "agentplane task next-action 202607221849-NWVCAG --remote --explain (PR #4633 open, not merged)"
+    - "agentplane task next-action 202607221849-NWVCAG --remote --explain (quality review stale after committed route.remote.refresh authority)"
+    - "packages/agentplane/src/commands/shared/quality-review-target.ts"
   findings:
-    - "The implementation diff remains limited to deriving runner sandbox and write scope from canonical route authority; the subsequent authority commit records actor, policy rule, operation digest, state scope, expiry, and audit-chain linkage for the read-only remote refresh."
-    - "The live refresh reports PR #4633 open and unmerged, so no merge, enqueue, or publication has been inferred from local metadata."
+    - "After a passing review, task authority grant changes only README revision and agentplane.side_effect_authority audit/grant records. resolveQualityReviewTargetSha classifies that README-only commit as independently reviewable metadata, so the route requires another review; the new review then needs another authority grant, creating a loop."
 commit:
   hash: "c3af98022fa7c79e891761b14e2b2ca715c7b238"
   message: "🐛 NWVCAG task: stabilize authority fingerprint transitions"
