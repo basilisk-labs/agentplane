@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607221848-T9B3PS/publish-agentworkorder-v2-schema-and-migrations",
   "created_at": "2026-07-26T08:07:55.572Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:8a743b467962fec81120cc3ed28a190f162df6bd9173c6593a0aebeb878e17ff",
   "last_verified_at": null,
+  "pr_number": 4630,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4630",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607221848-T9B3PS",
-  "updated_at": "2026-07-26T08:07:55.572Z",
+  "updated_at": "2026-07-26T08:09:07.907Z",
   "verify": {
     "status": "skipped"
   }

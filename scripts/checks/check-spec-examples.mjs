@@ -20,6 +20,7 @@ const generatedSchemasDir = path.join(repoRoot, "packages", "core", "schemas");
 const publicExamplesDir = path.join(repoRoot, "schemas", "examples");
 const publicSchemasDir = path.join(repoRoot, "schemas");
 const PUBLIC_EXAMPLE_ROUTES = [
+  ["agent-work-order-v2.valid.json", "agent-work-order-v2.schema.json"],
   ["agent-semantic-result-v2.blocked.valid.json", "agent-semantic-result.schema.json"],
   ["agent-semantic-result-v2.failed.valid.json", "agent-semantic-result.schema.json"],
   ["agent-semantic-result-v2.needs-context.valid.json", "agent-semantic-result.schema.json"],
@@ -28,7 +29,13 @@ const PUBLIC_EXAMPLE_ROUTES = [
   ["execution-receipt-v2.valid.json", "execution-receipt.schema.json"],
   ["knowledge-ref-v1.valid.json", "knowledge-ref.schema.json"],
 ];
-const PUBLIC_COMPATIBILITY_ONLY_EXAMPLES = ["runner-result-manifest-v1.legacy.json"];
+const PUBLIC_COMPATIBILITY_ONLY_EXAMPLES = [
+  "agent-work-order-v1.brief.legacy.json",
+  "agent-work-order-v1.hermes.legacy.json",
+  "agent-work-order-v1.runner.legacy.json",
+  "agent-work-order-v2.camel-case.compat.json",
+  "runner-result-manifest-v1.legacy.json",
+];
 
 function readJson(filePath) {
   try {

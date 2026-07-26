@@ -1,5 +1,8 @@
-const AGENT_WORK_CONTEXT_CONTRACT_KIND = "agentplane.agent_work_context" as const;
-const AGENT_WORK_CONTEXT_CONTRACT_VERSION = 1 as const;
+import {
+  AGENT_WORK_CONTEXT_V1_KIND,
+  AGENT_WORK_CONTEXT_V1_VERSION,
+  type AgentWorkOrderV2,
+} from "@agentplaneorg/core/schemas";
 
 type AgentWorkContextSourceKind =
   | "static"
@@ -28,14 +31,19 @@ export type AgentWorkContextSourceConfidence = {
   note?: string;
 };
 
-export type AgentWorkContextContract = {
-  kind: typeof AGENT_WORK_CONTEXT_CONTRACT_KIND;
-  version: typeof AGENT_WORK_CONTEXT_CONTRACT_VERSION;
-};
+/**
+ * The v1 brief surface keeps this tag-only compatibility view. The optional v2 payload is typed
+ * from the canonical core model and is populated only by the RF-05b view builder.
+ */
+export interface AgentWorkContextContract {
+  kind: typeof AGENT_WORK_CONTEXT_V1_KIND;
+  version: typeof AGENT_WORK_CONTEXT_V1_VERSION;
+  work_order?: AgentWorkOrderV2;
+}
 
 export function agentWorkContextContract(): AgentWorkContextContract {
   return {
-    kind: AGENT_WORK_CONTEXT_CONTRACT_KIND,
-    version: AGENT_WORK_CONTEXT_CONTRACT_VERSION,
+    kind: AGENT_WORK_CONTEXT_V1_KIND,
+    version: AGENT_WORK_CONTEXT_V1_VERSION,
   };
 }

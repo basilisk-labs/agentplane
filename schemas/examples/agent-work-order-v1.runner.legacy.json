@@ -1,0 +1,15 @@
+{
+  "task": {
+    "data": {
+      "id": "task-example-001",
+      "title": "Publish one bounded schema change with observed verification evidence.",
+      "owner": "EXECUTOR"
+    }
+  },
+  "execution": {
+    "recommended_role": "EXECUTOR"
+  },
+  "route_decision": {
+    "phase": "agent_episode"
+  }
+}

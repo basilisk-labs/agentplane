@@ -136,6 +136,60 @@ export {
 } from "../runner/knowledge-ref.js";
 
 export {
+  AGENT_WORK_ORDER_KIND,
+  AGENT_WORK_ORDER_NETWORK_POLICY_VALUES,
+  AGENT_WORK_ORDER_ROLE_VALUES,
+  AGENT_WORK_ORDER_SANDBOX_VALUES,
+  AGENT_WORK_ORDER_SCHEMA_VERSION,
+  AGENT_WORK_ORDER_SEMANTIC_RESULT_SCHEMA,
+  AGENT_WORK_ORDER_TOOL_CLASS_VALUES,
+  AGENT_WORK_ORDER_V2_ZOD_SCHEMA,
+  AgentWorkOrderPreparationError,
+  assertAgentWorkOrderReadyForInvocation,
+  listAgentWorkOrderV2SchemaErrors,
+  renderAgentWorkOrderV2SchemaJson,
+  validateAgentSemanticResultForWorkOrder,
+  validateAgentWorkOrderV2,
+  type AgentWorkOrderArtifactContract,
+  type AgentWorkOrderArtifactRef,
+  type AgentWorkOrderAuthority,
+  type AgentWorkOrderContextIntent,
+  type AgentWorkOrderPreparationDiagnostic,
+  type AgentWorkOrderPreparedEvidence,
+  type AgentWorkOrderRole,
+  type AgentWorkOrderV2,
+  type AgentWorkOrderVerificationIntent,
+} from "../runner/agent-work-order.js";
+
+export {
+  AGENT_WORK_ORDER_V2_VALID_FIXTURE,
+  buildAgentWorkOrderV2ValidFixture,
+  renderAgentWorkOrderV2ValidFixtureJson,
+} from "../runner/agent-work-order-fixtures.js";
+
+export {
+  AGENT_WORK_CONTEXT_V1_KIND,
+  AGENT_WORK_CONTEXT_V1_VERSION,
+  AGENT_WORK_ORDER_V1_COMPATIBILITY_FIXTURES,
+  AGENT_WORK_ORDER_V1_SURFACE_VALUES,
+  AgentWorkOrderCasingError,
+  buildAgentWorkOrderV1MigrationFixture,
+  migrateAgentWorkOrderV1ToV2,
+  parseAgentWorkOrderV2,
+  readAgentWorkOrderV1CompatibilityView,
+  renderAgentWorkOrderV1CompatibilityFixtureJson,
+  renderAgentWorkOrderV2CamelCaseFixtureJson,
+  toAgentWorkOrderV2CamelCase,
+  type AgentWorkContextV1Contract,
+  type AgentWorkOrderCasingDiagnostic,
+  type AgentWorkOrderV1CompatibilityView,
+  type AgentWorkOrderV1MigrationResult,
+  type AgentWorkOrderV1OmissionReceipt,
+  type AgentWorkOrderV1Surface,
+  type AgentWorkOrderV2MigrationOverrides,
+} from "../runner/agent-work-order-compat.js";
+
+export {
   ACR_VERSION,
   computeAcrRecordDigest,
   listAgentPlaneRunnerHandoffJsonSchemaErrors,

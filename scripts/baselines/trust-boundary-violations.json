@@ -218,15 +218,6 @@
       "rationale": "internal orchestration executes a rendered command through a shell"
     },
     {
-      "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/commands/task/agent-work-context-contract.ts:contract:AgentWorkContextContract:nominal-only:ast:module:TypeAliasDeclaration:b4f482f058e5:1",
-      "rule_id": "trust.no-untyped-durable-route-workorder",
-      "rf_owners": ["RF-05a", "RF-05b"],
-      "owner_task_ids": ["202607221848-T9B3PS", "202607221848-VC4VVS"],
-      "path": "packages/agentplane/src/commands/task/agent-work-context-contract.ts",
-      "locator": "contract:AgentWorkContextContract:nominal-only:ast:module:TypeAliasDeclaration:b4f482f058e5:1",
-      "rationale": "AgentWorkContextContract is nominal metadata without a typed durable work-order payload"
-    },
-    {
       "violation_id": "trust.no-untyped-durable-route-workorder:packages/agentplane/src/commands/task/brief-model.ts:contract:TaskBrief:duplicated-durable-shape:ast:module:TypeAliasDeclaration:289d2865fe24:1",
       "rule_id": "trust.no-untyped-durable-route-workorder",
       "rf_owners": ["RF-05a", "RF-05b"],

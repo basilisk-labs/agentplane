@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 2,
+  "kind": "agent_work_order",
+  "workOrderId": "work-order-example-001",
+  "role": "EXECUTOR",
+  "task": {
+    "id": "task-example-001",
+    "revision": 7,
+    "objective": "Publish one bounded schema change with observed verification evidence.",
+    "acceptanceCriteria": [
+      {
+        "id": "schema-generated",
+        "description": "The canonical Zod model generates the public schema and fixture.",
+        "required": true
+      }
+    ],
+    "unresolvedQuestions": []
+  },
+  "stateFingerprint": {
+    "schemaVersion": 1,
+    "kind": "state_fingerprint",
+    "observedBy": "agentplane",
+    "taskId": "task-example-001",
+    "taskRevision": 7,
+    "gitHead": "0123456789abcdef0123456789abcdef01234567",
+    "worktree": "/workspace/agentplane",
+    "components": {
+      "task": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:138deb6dcb7e92f5cb96931fabca9a167404fb9f40a9e9da71cab8cbba18f9ee",
+        "reasonCode": null
+      },
+      "git": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:8fb93331ace9f1f3c2cf9e3444a4a9c12d7bdb0baeee47c7c9e388283e81f2b7",
+        "reasonCode": null
+      },
+      "backendProjection": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:138deb6dcb7e92f5cb96931fabca9a167404fb9f40a9e9da71cab8cbba18f9ee",
+        "reasonCode": null
+      },
+      "policy": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:0de2597fcd404b8bf481da3dd9c1c6cb5ef1dffd8f5108bcc8e5187c234e661b",
+        "reasonCode": null
+      },
+      "blueprint": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:875000d93e3e9ae5bacc91341065716c934c2cade606f4ad18c0cf92d39764f5",
+        "reasonCode": null
+      },
+      "knowledge": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:f53657d7fcae1cd51f8f7d48dff137b823b7d2f3b3c6c19c05575fe7ca1ece3d",
+        "reasonCode": null
+      },
+      "provider": {
+        "state": "missing",
+        "source": "fixture",
+        "digest": "sha256:c0d7eefb5758cfd957bdbc6e341750246551e37d0c360d69fe5a5b44b31e31e0",
+        "reasonCode": "not_requested"
+      },
+      "authority": {
+        "state": "present",
+        "source": "fixture",
+        "digest": "sha256:c44e66497ca038b5df7a85efb3cdf40b2c0a003d3a0ecc371904ca4ad3274a6b",
+        "reasonCode": null
+      }
+    },
+    "digest": "sha256:0e9a3e3024d8ac85148f4439d0e3d8420b4d35d33bc92b54805d1863600e06ed"
+  },
+  "stateFingerprintPolicy": {
+    "requiredComponents": [
+      "task",
+      "git",
+      "backend_projection",
+      "policy",
+      "blueprint",
+      "knowledge",
+      "authority"
+    ],
+    "provider": {
+      "required": false,
+      "unavailable": "allow_if_unchanged"
+    }
+  },
+  "authority": {
+    "mutationScope": "task",
+    "writableRoots": ["packages/core", "schemas"],
+    "protectedPaths": [".agentplane/tasks.json"],
+    "allowedToolClasses": [
+      "repository_read",
+      "workspace_write",
+      "git_read",
+      "run_checks",
+      "knowledge_read",
+      "report_result",
+      "report_blocker"
+    ],
+    "network": "deny",
+    "externalSideEffects": [],
+    "sandbox": "workspace-write",
+    "expiresAt": null
+  },
+  "contextIntent": {
+    "purpose": "Provide the executor with the canonical execution-boundary decision.",
+    "requiredKnowledgeRefDigests": [
+      "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    ],
+    "requirePreparedEvidence": true
+  },
+  "knowledgeRefs": [
+    {
+      "schemaVersion": 1,
+      "ref": "context/wiki/architecture.md#section=execution-boundary",
+      "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "kind": "wiki",
+      "reason": "The executor needs the canonical execution-boundary decision.",
+      "retrieval": "exact",
+      "required": true,
+      "score": 1
+    }
+  ],
+  "preparedEvidence": [
+    {
+      "role": "EXECUTOR",
+      "excerpt": {
+        "schemaVersion": 1,
+        "kind": "prepared_knowledge_excerpt",
+        "knowledgeRef": {
+          "schemaVersion": 1,
+          "ref": "context/wiki/architecture.md#section=execution-boundary",
+          "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "kind": "wiki",
+          "reason": "The executor needs the canonical execution-boundary decision.",
+          "retrieval": "exact",
+          "required": true,
+          "score": 1
+        },
+        "indexFreshness": {
+          "status": "unavailable",
+          "projectionVersion": null,
+          "generatedAt": null,
+          "indexedDigest": null,
+          "observedDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "limits": {
+          "maxBytes": 1024,
+          "maxLines": 8
+        },
+        "observed": {
+          "originalBytes": 66,
+          "emittedBytes": 66,
+          "originalLines": 1,
+          "emittedLines": 1
+        },
+        "status": "included",
+        "reasonCode": "included",
+        "source": {
+          "ref": "context/wiki/architecture.md#section=execution-boundary",
+          "path": "context/wiki/architecture.md",
+          "selector": {
+            "key": "section",
+            "value": "execution-boundary"
+          },
+          "lineStart": 1,
+          "lineEnd": 1,
+          "observedSourceDigest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "contentDigest": "sha256:4e8268617df308340b3cf5c980deb07850ae715510c5ea3bc7ad4e718da99f32",
+          "contentBytes": 66,
+          "contentLines": 1
+        },
+        "content": "The executor changes only files inside the approved task worktree."
+      }
+    }
+  ],
+  "requiredInputs": [
+    {
+      "id": "task-readme",
+      "kind": "task_document",
+      "description": "The approved task contract.",
+      "path": ".agentplane/tasks/task-example-001/README.md",
+      "required": true
+    }
+  ],
+  "requiredOutputs": [
+    {
+      "id": "semantic-result",
+      "kind": "semantic_result",
+      "description": "Agent-reported semantic outcome; observed facts remain supervisor-owned.",
+      "required": true
+    }
+  ],
+  "verificationIntent": {
+    "requirements": [
+      {
+        "id": "schemas-check",
+        "description": "Run the schema synchronization check after the implementation change.",
+        "required": true,
+        "observedBy": "agentplane"
+      }
+    ],
+    "requireExecutionReceipt": true
+  },
+  "semanticResultSchema": "agentplane.agent_semantic_result.v2",
+  "stopRules": ["Return control when required knowledge is missing or stale."]
+}
