@@ -38,7 +38,78 @@ async function resolveTarget(opts: {
   });
 }
 
+function taskReadme(opts: {
+  taskId: string;
+  revision: number;
+  title?: string;
+  authority?: boolean;
+}): string {
+  const authority = opts.authority
+    ? [
+        "extensions:",
+        "  agentplane.side_effect_authority:",
+        "    grants:",
+        "      - id: authority-1",
+        "        operationId: route.remote.refresh",
+      ].join("\n")
+    : "";
+  return [
+    "---",
+    `id: ${opts.taskId}`,
+    `title: ${opts.title ?? "Quality target"}`,
+    `revision: ${opts.revision}`,
+    authority,
+    "---",
+    "# Quality target",
+    "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 describe("quality review target resolver", () => {
+  it("preserves the prior reviewed target across an authority-only README advance", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-AUTHORITY";
+    const reviewedSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: establish reviewed task state",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 2, authority: true }),
+      "chore: record route authority",
+    );
+
+    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
+      reviewedSha,
+    );
+  });
+
+  it("keeps a non-authority README change reviewable", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-README";
+    const reviewedSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 1 }),
+      "docs: establish reviewed task state",
+    );
+    const changedSha = await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/README.md`,
+      taskReadme({ taskId, revision: 2, title: "Changed semantic task metadata" }),
+      "docs: change reviewed task metadata",
+    );
+
+    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
+      changedSha,
+    );
+  });
+
   it("preserves a reviewed metadata work unit across more than twenty managed artifact commits", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-TARGET";
