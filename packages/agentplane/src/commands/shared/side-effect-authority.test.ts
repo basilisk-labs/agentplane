@@ -9,6 +9,7 @@ import {
   readSideEffectAuthorityState,
   withSideEffectAuthorityState,
   WORKFLOW_OPERATION_AUTHORITY_POLICY,
+  workflowAuthorityStateScopeDigest,
 } from "./side-effect-authority.js";
 import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
 
@@ -19,7 +20,7 @@ const operation = {
   params: { taskId, author: "CODER", includeTaskIds: [] },
 } as Pick<WorkflowOperation, "id" | "type" | "params">;
 
-function fingerprint(gitHead = "a".repeat(40)): StateFingerprint {
+function fingerprint(gitHead = "a".repeat(40), trackedContent = gitHead): StateFingerprint {
   return buildStateFingerprint({
     task_id: taskId,
     task_revision: 4,
@@ -27,7 +28,13 @@ function fingerprint(gitHead = "a".repeat(40)): StateFingerprint {
     worktree: "/repo/.agentplane/worktrees/auth",
     components: {
       task: { state: "present", source: "fixture", value: { title: "Authority fixture" } },
-      git: { state: "present", source: "fixture", value: { head: gitHead } },
+      git: {
+        state: "present",
+        source: "fixture",
+        value: {
+          trackedContent,
+        },
+      },
       backend_projection: { state: "present", source: "fixture", value: { backend: "local" } },
       policy: { state: "present", source: "fixture", value: { rule: "workflow" } },
       blueprint: { state: "present", source: "fixture", value: { digest: "blueprint" } },
@@ -151,6 +158,30 @@ describe("side-effect authority", () => {
         operation,
         fingerprint: fingerprint(),
         now: new Date("2026-07-26T12:15:00.000Z"),
+      }),
+    ).toMatchObject({ state: "approval_required" });
+  });
+
+  it("keeps authority valid across its own task-state commit but not a code change", () => {
+    const task = approvedTask();
+    const technicalAuthorityCommit = fingerprint("b".repeat(40), "a".repeat(40));
+    expect(workflowAuthorityStateScopeDigest(technicalAuthorityCommit)).toBe(
+      workflowAuthorityStateScopeDigest(fingerprint()),
+    );
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation,
+        fingerprint: technicalAuthorityCommit,
+        now: new Date("2026-07-26T12:01:00.000Z"),
+      }),
+    ).toMatchObject({ state: "allowed" });
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation,
+        fingerprint: fingerprint("b".repeat(40), "changed-source"),
+        now: new Date("2026-07-26T12:01:00.000Z"),
       }),
     ).toMatchObject({ state: "approval_required" });
   });

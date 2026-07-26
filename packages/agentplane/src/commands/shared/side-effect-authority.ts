@@ -261,10 +261,13 @@ export function workflowOperationAuthorityDigest(
 }
 
 /**
- * A grant itself changes task revision and the authority component. Those fields
- * cannot participate in the comparison or every durable approval invalidates
- * itself. All semantic, Git, policy, knowledge, provider, and worktree facts
- * remain bound and therefore still fail closed after material drift.
+ * A grant itself changes the task revision, authority component, and Git HEAD.
+ * The task worktree is excluded from the Git content snapshot and semantic task
+ * state removes the authority extension, so the corresponding technical HEAD and
+ * snapshot digest cannot participate in the comparison or every durable approval
+ * invalidates itself. All semantic task, non-task Git, policy, knowledge,
+ * provider, and worktree facts remain bound and therefore still fail closed after
+ * material drift.
  */
 export function workflowAuthorityStateScopeDigest(fingerprint: StateFingerprint): string {
   return sha256({
@@ -272,7 +275,6 @@ export function workflowAuthorityStateScopeDigest(fingerprint: StateFingerprint)
     kind: fingerprint.kind,
     observedBy: fingerprint.observed_by,
     taskId: fingerprint.task_id,
-    gitHead: fingerprint.git_head,
     worktree: fingerprint.worktree,
     components: {
       task: fingerprint.components.task,
