@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221848-1HWR0R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-26T10:29:58.246Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The hosted rework removes only dead export surface and makes legacy-backend fixtures return the exact persisted task; typed mutation receipt semantics and no-discovery guarantees remain intact.",
+  "evaluated_sha": "7155466b6e84a550e86fb92e2476322dc15ddafd",
+  "blueprint_digest": "4ebecc6d1f1a8c5e9280b37abd3c3861470a34224ad2293269f232d0a73c589d",
+  "findings": [
+    "No blocking semantic defect found in the current hosted rework."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221848-1HWR0R/README.md",
+    "bun run test:fast",
+    "bun run knip:check",
+    "bun run hotspots:check",
+    "packages/agentplane/src/commands/shared/task-mutation.ts",
+    "packages/agentplane/src/commands/task/verify-record.unit.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Fresh hosted CI must evaluate 7155466b; old b22 failures are not current evidence."
+  ]
+}
