@@ -15,8 +15,8 @@ Prevent transient read-stability races from failing concurrent runner effect-res
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch.
 - Canonical workflow state lives in the task README.
 
 <details>
