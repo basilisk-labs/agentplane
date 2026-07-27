@@ -109,8 +109,8 @@ async function prepareRunDirectory(input: RunnerInvocation): Promise<void> {
 
 async function waitForBarrier(root: string, expected: number): Promise<void> {
   for (let attempt = 0; attempt < 400; attempt += 1) {
-    if ((await readdir(root)).filter((entry) => entry.startsWith("ready-")).length === expected)
-      return;
+    const entries = await readdir(root);
+    if (entries.filter((entry) => entry.startsWith("ready-")).length === expected) return;
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
   throw new Error("Independent runner effect processes did not reach the synchronization barrier.");
@@ -163,7 +163,7 @@ describe("runner effect operation journal", () => {
     const barrier = path.join(root, "barrier");
     const workerPath = path.join(root, "effect-worker.mjs");
     await mkdir(barrier, { recursive: true });
-    const effectModuleUrl = new URL("./effect-operation.ts", import.meta.url).href;
+    const effectModuleUrl = new URL("effect-operation.ts", import.meta.url).href;
     const fingerprintModuleUrl = new URL(
       "../../../core/src/runner/state-fingerprint.ts",
       import.meta.url,
@@ -202,7 +202,8 @@ describe("runner effect operation journal", () => {
     );
     expect(outcomes.filter((outcome) => outcome.status === "winner")).toHaveLength(1);
     expect(outcomes.filter((outcome) => outcome.status === "loser")).toHaveLength(1);
-    const spawns = (await readFile(path.join(barrier, "adapter-spawns.jsonl"), "utf8"))
+    const spawnLog = await readFile(path.join(barrier, "adapter-spawns.jsonl"), "utf8");
+    const spawns = spawnLog
       .trim()
       .split("\n")
       .map((line) => JSON.parse(line) as { operation_key: string });
