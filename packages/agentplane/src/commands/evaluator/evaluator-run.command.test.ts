@@ -7,12 +7,18 @@ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { parseCommandArgv } from "../../cli/spec/parse.js";
-import { loadCommandContext } from "../shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdTaskAdd } from "../workflow.js";
+import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 
 import { runEvaluatorRun } from "./evaluator.command.js";
+import {
+  prepareEvaluatorReview,
+  type PreparedEvaluatorReview,
+} from "./evaluator-review-usecase.js";
+import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
 import { evaluatorRunSpec } from "./evaluator.spec.js";
 
 const execFileAsync = promisify(execFile);
@@ -89,6 +95,57 @@ async function setPrimaryBatchOwnership(
       }),
     }),
   });
+}
+
+async function prepareTypedReview(
+  root: string,
+  taskId: string,
+): Promise<{
+  command: Awaited<ReturnType<typeof loadCommandContext>>;
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  prepared: PreparedEvaluatorReview;
+}> {
+  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+  const task = await loadTaskFromContext({ ctx: command, taskId });
+  const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+  const evaluator = catalog.find((entry) => entry.id === "recovery-context");
+  if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
+  return {
+    command,
+    task,
+    prepared: await prepareEvaluatorReview({
+      ctx: command,
+      task,
+      evaluator,
+      provenance: "evaluator_supplied",
+    }),
+  };
+}
+
+function typedEvaluatorResult(
+  prepared: PreparedEvaluatorReview,
+  overrides: Record<string, unknown> = {},
+) {
+  const diff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
+  if (!diff) throw new Error("Missing frozen actual-diff evidence.");
+  return {
+    schema_version: 1,
+    kind: "evaluator_result",
+    evaluator_id: prepared.work_order.evaluator.id,
+    verdict: "pass",
+    findings: [
+      {
+        id: "finding-1",
+        severity: "low",
+        summary: "The frozen implementation evidence satisfies the declared review contract.",
+        broken_invariant: "none",
+        evidence_refs: [{ path: diff.path }],
+      },
+    ],
+    missing_tests: [],
+    hidden_assumptions: [],
+    ...overrides,
+  };
 }
 
 describe("evaluator run command", () => {
@@ -490,5 +547,115 @@ describe("evaluator run command", () => {
     );
 
     expect(await readEvaluatedSha(root, taskId)).toBeNull();
+  });
+
+  it("prepares a frozen read-only work order and applies only the matching typed evaluator result", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV12";
+    await addTask(root, taskId);
+    const implementationSha = await commitPath(
+      root,
+      "src/evaluated.ts",
+      "export const evaluated = true;\n",
+      "feat: evaluator target",
+    );
+
+    const { command, task, prepared } = await prepareTypedReview(root, taskId);
+    expect(prepared.work_order).toMatchObject({
+      task: { id: taskId, revision: task.revision },
+      evaluated_sha: implementationSha,
+      authority: { sandbox: "read-only", writable_roots: [], external_side_effects: [] },
+      result_contract: "sgr.evaluator_result.v1",
+    });
+    expect(prepared.work_order.evidence.map((entry) => entry.kind)).toEqual(
+      expect.arrayContaining(["task_document", "actual_diff", "observed_checks", "blueprint"]),
+    );
+    const prompt = await readFile(prepared.prompt_path, "utf8");
+    expect(prompt).toContain("# AgentPlane EVALUATOR episode");
+    expect(prompt).toContain("sgr.evaluator_result.v1");
+    expect(prompt).toContain("caller, not the read-only evaluator, persists it");
+    expect(prompt).toContain(`result_output: ${path.relative(root, prepared.result_path)}`);
+
+    const applied = await applyEvaluatorSgrReview({
+      ctx: command,
+      task,
+      workOrderPath: prepared.work_order_path,
+      result: typedEvaluatorResult(prepared),
+    });
+
+    expect(applied.report_path).toContain(`.agentplane/tasks/${taskId}/quality/`);
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toMatchObject({
+      state: "pass",
+      provenance: "evaluator_supplied",
+      updated_by: "EVALUATOR",
+      evaluated_sha: implementationSha,
+    });
+  });
+
+  it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV13";
+    await addTask(root, taskId);
+    await commitPath(
+      root,
+      "src/evaluated.ts",
+      "export const version = 1;\n",
+      "feat: initial target",
+    );
+    const { command, task, prepared } = await prepareTypedReview(root, taskId);
+    await commitPath(root, "src/evaluated.ts", "export const version = 2;\n", "feat: newer target");
+
+    await expect(
+      applyEvaluatorSgrReview({
+        ctx: command,
+        task,
+        workOrderPath: prepared.work_order_path,
+        result: typedEvaluatorResult(prepared),
+      }),
+    ).rejects.toThrow("evaluated SHA changed");
+  });
+
+  it("rejects unfrozen evidence and mutation-shaped evaluator results before task state changes", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV14";
+    await addTask(root, taskId);
+    await commitPath(root, "src/evaluated.ts", "export const target = true;\n", "feat: target");
+    const { command, task, prepared } = await prepareTypedReview(root, taskId);
+
+    const unfrozen = typedEvaluatorResult(prepared, {
+      findings: [
+        {
+          id: "unfrozen",
+          severity: "high",
+          summary: "Unfrozen evidence must not be accepted.",
+          broken_invariant: "frozen evidence only",
+          evidence_refs: [{ path: "src/not-frozen.ts" }],
+        },
+      ],
+    });
+    await expect(
+      applyEvaluatorSgrReview({
+        ctx: command,
+        task,
+        workOrderPath: prepared.work_order_path,
+        result: unfrozen,
+      }),
+    ).rejects.toThrow("outside the frozen work order");
+
+    await expect(
+      applyEvaluatorSgrReview({
+        ctx: command,
+        task,
+        workOrderPath: prepared.work_order_path,
+        result: { ...typedEvaluatorResult(prepared), patch: "src/evaluated.ts" },
+      }),
+    ).rejects.toThrow("forbidden fields");
+
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toBeUndefined();
   });
 });

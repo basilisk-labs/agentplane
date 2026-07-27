@@ -138,7 +138,9 @@ import {
   contextLearnTasksSpec,
 } from "../../../commands/context/context.learn.spec.js";
 import {
+  evaluatorApplySpec,
   evaluatorListSpec,
+  evaluatorPrepareSpec,
   evaluatorRunSpec,
   evaluatorShowSpec,
   evaluatorSpec,
@@ -253,6 +255,8 @@ export const PROJECT_COMMANDS = [
   fromCommandsEvaluatorCommand(evaluatorSpec, "runEvaluatorGroup", { needs: "none" }),
   fromCommandsEvaluatorCommand(evaluatorListSpec, "runEvaluatorList", { needs: "none" }),
   fromCommandsEvaluatorCommand(evaluatorShowSpec, "runEvaluatorShow", { needs: "none" }),
+  fromCommandsEvaluatorCommand(evaluatorPrepareSpec, "runEvaluatorPrepare"),
+  fromCommandsEvaluatorCommand(evaluatorApplySpec, "runEvaluatorApply"),
   fromCommandsEvaluatorCommand(evaluatorRunSpec, "runEvaluatorRun"),
   fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),

@@ -59,29 +59,38 @@ export function renderEvaluatorPrompt(opts: {
   evaluator: EvaluatorModule;
   taskId: string;
   taskReadmePath: string;
+  workOrderPath: string;
+  resultPath: string;
   reportPath: string;
   provenance: EvaluatorRunProvenance;
 }): string {
   return [
-    "# AgentPlane semantic quality review record",
+    "# AgentPlane EVALUATOR episode",
     "",
-    "AgentPlane records supplied review values here; this command does not execute an evaluator.",
-    "Use the evaluator module below as the review procedure before supplying a result.",
-    "Do not edit implementation files. Inspect task scope, diff, verification evidence, and residual risk.",
+    "AgentPlane prepared and froze the authoritative review input. Perform the semantic evaluation; do not reproduce CLI discovery or lifecycle work.",
+    "This prompt does not execute an evaluator. A caller must run the evaluator in the work-order authority boundary and persist its returned typed result at the declared output path.",
+    "Do not edit implementation, task lifecycle, policy, or evidence files. You may read the frozen evidence and run read-only checks only.",
     "",
     `- task_id: ${opts.taskId}`,
     `- task_readme: ${opts.taskReadmePath}`,
+    `- work_order: ${opts.workOrderPath}`,
+    `- result_output: ${opts.resultPath}`,
     `- report_path: ${opts.reportPath}`,
     `- provenance: ${opts.provenance}`,
     "",
-    "Required report fields:",
-    "- verdict: pass | rework | blocked | human_review",
-    "- summary: concise judgement",
-    "- findings: non-empty list for pass/rework/blocked",
-    "- evidence_refs: concrete files, checks, PRs, traces, or reports inspected",
-    "- missing_tests: tests or checks that should exist but do not",
-    "- hidden_assumptions: assumptions the implementation relies on",
-    "- residual_risks: known remaining risks",
+    "## Required result",
+    "",
+    "Return exactly one `sgr.evaluator_result.v1` JSON object through the evaluator result channel. The caller, not the read-only evaluator, persists it at `result_output`. It must contain:",
+    "- schema_version: 1",
+    "- kind: evaluator_result",
+    "- evaluator_id: the evaluator id from the work order",
+    "- verdict: pass | rework | blocked",
+    "- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs",
+    "- missing_tests and hidden_assumptions: string arrays",
+    "- recovery_context: optional string",
+    "",
+    "Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.",
+    "The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.",
     "",
     "## Evaluator module",
     "",

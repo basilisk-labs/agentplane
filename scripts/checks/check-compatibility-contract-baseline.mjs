@@ -317,6 +317,7 @@ function validateReviewedCandidate({
     "202607221848-0ZAB1F",
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
+    "202607221849-TBTX8X",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
@@ -333,6 +334,7 @@ function validateReviewedCandidate({
     "202607221848-1HWR0R",
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
+    "202607221849-TBTX8X",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
@@ -991,6 +993,27 @@ function validateReviewedCandidate({
   ];
   const expectedAddedCommandDescriptors = [
     {
+      id: ["evaluator", "apply"],
+      visibility: "user",
+      group: "Evaluators",
+      args: [{ name: "taskId", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "work-order", kind: "string", valueHint: "<path>" },
+        { name: "result", kind: "string", valueHint: "<path>" },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
+      id: ["evaluator", "prepare"],
+      visibility: "user",
+      group: "Evaluators",
+      args: [{ name: "taskId", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "evaluator", kind: "string", valueHint: "<id>", default: "recovery-context" },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
       id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
       visibility: "user",
       group: "PR",
@@ -1096,6 +1119,34 @@ function validateReviewedCandidate({
       kind: "string",
       valueHint: "<task-id>",
       repeatable: true,
+    },
+    {
+      command: "evaluator apply",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    { command: "evaluator apply", name: "result", kind: "string", valueHint: "<path>" },
+    {
+      command: "evaluator apply",
+      name: "work-order",
+      kind: "string",
+      valueHint: "<path>",
+    },
+    {
+      command: "evaluator prepare",
+      name: "evaluator",
+      kind: "string",
+      valueHint: "<id>",
+      default: "recovery-context",
+    },
+    {
+      command: "evaluator prepare",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
     },
     {
       command: "evaluator run",
@@ -1236,6 +1287,8 @@ function validateReviewedCandidate({
     },
   ];
   const expectedAdditionSources = [
+    { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
+    { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
     {
       kind: "command",
       command: "integrate queue adopt-legacy-protected-conflict",
@@ -1275,6 +1328,36 @@ function validateReviewedCandidate({
       command: "cleanup merged",
       name: "task-id",
       source_task: "202607230554-YFYT83",
+    },
+    {
+      kind: "option",
+      command: "evaluator apply",
+      name: "json",
+      source_task: "202607221849-TBTX8X",
+    },
+    {
+      kind: "option",
+      command: "evaluator apply",
+      name: "result",
+      source_task: "202607221849-TBTX8X",
+    },
+    {
+      kind: "option",
+      command: "evaluator apply",
+      name: "work-order",
+      source_task: "202607221849-TBTX8X",
+    },
+    {
+      kind: "option",
+      command: "evaluator prepare",
+      name: "evaluator",
+      source_task: "202607221849-TBTX8X",
+    },
+    {
+      kind: "option",
+      command: "evaluator prepare",
+      name: "json",
+      source_task: "202607221849-TBTX8X",
     },
     {
       kind: "option",
@@ -1429,6 +1512,8 @@ function validateReviewedCandidate({
   assert(
     hashJson(addedCommands) ===
       hashJson([
+        "evaluator apply",
+        "evaluator prepare",
         "integrate queue adopt-legacy-protected-conflict",
         "pr conflict-rework",
         "task authority grant",

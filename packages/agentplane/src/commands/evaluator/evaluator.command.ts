@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { findGitRoot, resolveProject } from "@agentplaneorg/core/project";
 
@@ -10,34 +10,25 @@ import {
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
-import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
-import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
-import { applyTaskMutation } from "../shared/task-mutation.js";
-import { setTaskFieldsIntent } from "../shared/task-store.js";
 import {
   evaluatorSpec,
+  type EvaluatorApplyParsed,
   type EvaluatorListParsed,
+  type EvaluatorPrepareParsed,
   type EvaluatorRunParsed,
   type EvaluatorShowParsed,
 } from "./evaluator.spec.js";
 import {
-  EVALUATOR_OPINION_FILE,
-  EVALUATOR_PROMPT_FILE,
-  QUALITY_REPORT_FILE,
-  pathsOutsideTaskArtifacts,
-  relativeArtifactPath,
-  renderEvaluatorPrompt,
-  renderOpinionMarkdown,
-  safePathSegment,
-  timestampPathSegment,
-  type EvaluatorQualityReport,
-} from "./evaluator-quality-artifacts.js";
+  prepareEvaluatorReview,
+  type PreparedEvaluatorReview,
+} from "./evaluator-review-usecase.js";
+import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
 
 export {
+  evaluatorApplySpec,
   evaluatorListSpec,
+  evaluatorPrepareSpec,
   evaluatorRunSpec,
   evaluatorShowSpec,
   evaluatorSpec,
@@ -173,187 +164,232 @@ export const runEvaluatorShow: CommandHandler<EvaluatorShowParsed> = async (ctx,
   return 0;
 };
 
-export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p) => {
-  assertRunnableReviewInput(p);
-  const provenance = p.provenance;
-  const rows = await loadCatalogForCommand(ctx, true);
-  const evaluator = rows.find((row) => row.id === p.evaluator);
+async function loadEvaluatorReviewContext(opts: {
+  ctx: CommandCtx;
+  taskId: string;
+  evaluatorId: string;
+}): Promise<{
+  command: Awaited<ReturnType<typeof loadCommandContext>>;
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  evaluator: EvaluatorModule;
+}> {
+  const rows = await loadCatalogForCommand(opts.ctx, true);
+  const evaluator = rows.find((row) => row.id === opts.evaluatorId);
   if (!evaluator) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: `Unknown evaluator id: ${p.evaluator}`,
+      message: `Unknown evaluator id: ${opts.evaluatorId}`,
     });
   }
+  const command = await loadCommandContext({
+    cwd: opts.ctx.cwd,
+    rootOverride: opts.ctx.rootOverride ?? null,
+  });
+  const task = await loadTaskFromContext({ ctx: command, taskId: opts.taskId });
+  return { command, task, evaluator };
+}
 
+function printEvaluatorPayload(opts: {
+  json: boolean;
+  title: string;
+  payload: Record<string, unknown>;
+}): void {
+  if (opts.json) {
+    process.stdout.write(`${JSON.stringify(opts.payload, null, 2)}\n`);
+    return;
+  }
+  process.stdout.write(
+    [
+      opts.title,
+      ...Object.entries(opts.payload)
+        .filter(([, value]) => value !== null && value !== undefined)
+        .map(([key, value]) => `${key.replaceAll("_", " ")}: ${String(value)}`),
+    ].join("\n") + "\n",
+  );
+}
+
+function projectPath(gitRoot: string, value: string, label: string): string {
+  const absolute = path.resolve(gitRoot, value);
+  const relative = path.relative(gitRoot, absolute);
+  if (
+    !relative ||
+    relative === ".." ||
+    relative.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relative)
+  ) {
+    throw new CliError({ code: "E_USAGE", message: `${label} must be inside the project root.` });
+  }
+  return absolute;
+}
+
+export const runEvaluatorPrepare: CommandHandler<EvaluatorPrepareParsed> = async (ctx, p) => {
+  const { command, task, evaluator } = await loadEvaluatorReviewContext({
+    ctx,
+    taskId: p.taskId,
+    evaluatorId: p.evaluator,
+  });
+  const prepared = await prepareEvaluatorReview({
+    ctx: command,
+    task,
+    evaluator,
+    provenance: "evaluator_supplied",
+  });
+  printEvaluatorPayload({
+    json: p.json,
+    title: `evaluator prepare ${p.taskId}`,
+    payload: {
+      work_order_id: prepared.work_order.work_order_id,
+      work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
+      prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
+      evaluated_sha: prepared.work_order.evaluated_sha,
+      sandbox: prepared.work_order.authority.sandbox,
+    },
+  });
+  return 0;
+};
+
+export const runEvaluatorApply: CommandHandler<EvaluatorApplyParsed> = async (ctx, p) => {
   const command = await loadCommandContext({
     cwd: ctx.cwd,
     rootOverride: ctx.rootOverride ?? null,
   });
   const task = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
-  const gitRoot = command.resolvedProject.gitRoot;
-  if (p.record) {
-    const staged = await command.git.statusStagedPaths();
-    const unstaged = await command.git.statusUnstagedTrackedPaths();
-    const stagedBlocking = pathsOutsideTaskArtifacts(
-      staged,
-      command.config.paths.workflow_dir,
-      p.taskId,
-    );
-    const unstagedBlocking = pathsOutsideTaskArtifacts(
-      unstaged,
-      command.config.paths.workflow_dir,
-      p.taskId,
-    );
-    if (stagedBlocking.length > 0 || unstagedBlocking.length > 0) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: [
-          "Recording EVALUATOR quality_review requires no dirty tracked paths outside the current task artifact subtree.",
-          `task=${p.taskId}`,
-          `staged_blocking=${stagedBlocking.length}`,
-          `unstaged_blocking=${unstagedBlocking.length}`,
-          "Commit or revert tracked changes first, then rerun evaluator run.",
-          "Batch recovery: for related tasks, run evaluator -> finish -> commit for one task subtree before recording the next task review.",
-          "Use --no-record only for artifact-generation smoke checks.",
-        ].join("\n"),
-      });
-    }
-  }
-  const taskReadmePath = path.join(
-    gitRoot,
-    command.config.paths.workflow_dir,
-    p.taskId,
-    "README.md",
-  );
-  const at = new Date().toISOString();
-  const stamp = timestampPathSegment(at);
-  const reviewDir = path.join(
-    gitRoot,
-    command.config.paths.workflow_dir,
-    p.taskId,
-    "quality",
-    `${stamp}-${safePathSegment(evaluator.id) || "evaluator"}`,
-  );
-  await mkdir(reviewDir, { recursive: true });
-
-  const evaluatedSha = await resolveQualityReviewTargetSha({
-    gitRoot,
-    workflowDir: command.config.paths.workflow_dir,
-    taskId: p.taskId,
-    taskIds: [p.taskId, ...normalizeBranchPrBatchIncludedTaskIds(task, p.taskId)],
-    previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
-  });
-  const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: command, task }).catch(() => null);
-  const reportPath = path.join(reviewDir, QUALITY_REPORT_FILE);
-  const promptPath = path.join(reviewDir, EVALUATOR_PROMPT_FILE);
-  const opinionPath = path.join(reviewDir, EVALUATOR_OPINION_FILE);
-  const rel = (absPath: string) => relativeArtifactPath(gitRoot, absPath);
-  const report: EvaluatorQualityReport = {
-    schema_version: 1,
-    task_id: p.taskId,
-    evaluator_id: evaluator.id,
-    evaluator_profile: evaluator.profile,
-    generated_at: at,
-    provenance,
-    verdict: p.verdict,
-    summary: p.summary,
-    evaluated_sha: evaluatedSha,
-    blueprint_digest: snapshot?.current.digest ?? null,
-    findings: p.findings,
-    evidence_refs: [...new Set([rel(taskReadmePath), ...p.evidenceRefs])],
-    missing_tests: p.missingTests,
-    hidden_assumptions: p.hiddenAssumptions,
-    residual_risks: p.residualRisks,
-  };
-
-  await writeFile(
-    promptPath,
-    renderEvaluatorPrompt({
-      evaluator,
-      taskId: p.taskId,
-      taskReadmePath: rel(taskReadmePath),
-      reportPath: rel(reportPath),
-      provenance,
-    }),
-    "utf8",
-  );
-  await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  await writeFile(opinionPath, renderOpinionMarkdown(report), "utf8");
-
-  const contextEvaluatorReportPath = p.record
-    ? await projectEvaluatorQualityReportToContext({
-        root: gitRoot,
-        task,
-        report,
-        reportPath: rel(reportPath),
-      })
-    : null;
-
-  const evidenceRefs = [
-    rel(taskReadmePath),
-    rel(reportPath),
-    rel(promptPath),
-    rel(opinionPath),
-    ...(snapshot?.path
-      ? [path.isAbsolute(snapshot.path) ? rel(snapshot.path) : snapshot.path]
-      : []),
-    ...p.evidenceRefs,
-    ...(contextEvaluatorReportPath ? [contextEvaluatorReportPath] : []),
-  ];
-  if (p.record) {
-    await applyTaskMutation({
-      ctx: command,
-      taskId: p.taskId,
-      policyAction: "task_verify",
-      phase: "verify",
-      build: () => ({
-        intents: setTaskFieldsIntent({
-          quality_review: {
-            state: p.verdict,
-            provenance,
-            updated_at: at,
-            updated_by: provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
-            note: p.summary,
-            evaluated_sha: evaluatedSha,
-            blueprint_digest: snapshot?.current.digest ?? null,
-            evidence_refs: [...new Set(evidenceRefs)],
-            findings: p.findings,
-          },
-        }),
-      }),
+  const resultPath = projectPath(command.resolvedProject.gitRoot, p.resultPath, "Evaluator result");
+  let rawResult: unknown;
+  try {
+    rawResult = JSON.parse(await readFile(resultPath, "utf8"));
+  } catch (error) {
+    throw new CliError({
+      code: "E_USAGE",
+      message: `Unable to read EvaluatorSgrResult JSON: ${error instanceof Error ? error.message : String(error)}`,
     });
   }
+  const applied = await applyEvaluatorSgrReview({
+    ctx: command,
+    task,
+    workOrderPath: p.workOrderPath,
+    result: rawResult,
+  });
+  printEvaluatorPayload({
+    json: p.json,
+    title: `evaluator apply ${p.taskId}`,
+    payload: {
+      work_order_id: applied.work_order.work_order_id,
+      evaluator: applied.work_order.evaluator.id,
+      verdict:
+        rawResult && typeof rawResult === "object"
+          ? (rawResult as { verdict?: unknown }).verdict
+          : null,
+      report: applied.report_path,
+      result: applied.result_path,
+      recorded: true,
+    },
+  });
+  return 0;
+};
 
-  const payload = {
-    task_id: p.taskId,
-    evaluator_id: evaluator.id,
-    provenance,
-    verdict: p.verdict,
-    recorded: p.record,
-    report_path: rel(reportPath),
-    prompt_path: rel(promptPath),
-    opinion_path: rel(opinionPath),
-    context_evaluator_report_path: contextEvaluatorReportPath,
-  };
-  if (p.json) {
-    process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
-  } else {
-    process.stdout.write(
-      [
-        `evaluator run ${p.taskId}`,
-        `provenance: ${provenance}`,
-        `verdict: ${p.verdict}`,
-        `recorded: ${String(p.record)}`,
-        `report: ${payload.report_path}`,
-        `prompt: ${payload.prompt_path}`,
-        `opinion: ${payload.opinion_path}`,
-        ...(contextEvaluatorReportPath
-          ? [`context evaluator report: ${contextEvaluatorReportPath}`]
-          : []),
-      ].join("\n") + "\n",
-    );
+function relativeToProject(gitRoot: string, absolutePath: string): string {
+  return path.relative(gitRoot, absolutePath).replaceAll("\\", "/");
+}
+
+function compatibilityResult(opts: {
+  parsed: EvaluatorRunParsed;
+  prepared: PreparedEvaluatorReview;
+}) {
+  if (opts.parsed.verdict === "human_review") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "evaluator_supplied cannot record human_review; use --provenance human_supplied.",
+    });
   }
+  const frozenEvidence = opts.prepared.work_order.evidence.find(
+    (entry) => entry.kind === "actual_diff",
+  );
+  if (!frozenEvidence)
+    throw new Error("Prepared evaluator work order is missing actual diff evidence.");
+  return {
+    schema_version: 1,
+    kind: "evaluator_result",
+    evaluator_id: opts.prepared.work_order.evaluator.id,
+    verdict: opts.parsed.verdict,
+    findings: opts.parsed.findings.map((summary, index) => ({
+      id: `compatibility-finding-${index + 1}`,
+      severity: "medium",
+      summary,
+      broken_invariant: "Compatibility evaluator facade requires independent review evidence.",
+      evidence_refs: [{ path: frozenEvidence.path }],
+    })),
+    missing_tests: opts.parsed.missingTests,
+    hidden_assumptions: opts.parsed.hiddenAssumptions,
+    ...(opts.parsed.reworkContext.length > 0
+      ? { recovery_context: opts.parsed.reworkContext.join("\n") }
+      : {}),
+  };
+}
+
+export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p) => {
+  assertRunnableReviewInput(p);
+  const { command, task, evaluator } = await loadEvaluatorReviewContext({
+    ctx,
+    taskId: p.taskId,
+    evaluatorId: p.evaluator,
+  });
+  const prepared = await prepareEvaluatorReview({
+    ctx: command,
+    task,
+    evaluator,
+    provenance: p.provenance,
+  });
+  if (!p.record) {
+    printEvaluatorPayload({
+      json: p.json,
+      title: `evaluator run ${p.taskId}`,
+      payload: {
+        provenance: p.provenance,
+        verdict: p.verdict,
+        recorded: false,
+        work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
+        prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
+      },
+    });
+    return 0;
+  }
+  const applied =
+    p.provenance === "human_supplied"
+      ? await applyHumanEvaluatorReview({
+          ctx: command,
+          task,
+          workOrderPath: prepared.work_order_path,
+          input: {
+            verdict: p.verdict,
+            summary: p.summary,
+            findings: p.findings,
+            evidence_refs: p.evidenceRefs,
+            missing_tests: p.missingTests,
+            hidden_assumptions: p.hiddenAssumptions,
+            residual_risks: p.residualRisks,
+          },
+        })
+      : await applyEvaluatorSgrReview({
+          ctx: command,
+          task,
+          workOrderPath: prepared.work_order_path,
+          result: compatibilityResult({ parsed: p, prepared }),
+        });
+  printEvaluatorPayload({
+    json: p.json,
+    title: `evaluator run ${p.taskId}`,
+    payload: {
+      provenance: p.provenance,
+      verdict: p.verdict,
+      recorded: true,
+      work_order_id: applied.work_order.work_order_id,
+      report: applied.report_path,
+      prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
+      opinion: relativeToProject(command.resolvedProject.gitRoot, prepared.opinion_path),
+    },
+  });
   return 0;
 };

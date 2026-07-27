@@ -22,12 +22,22 @@ RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over froze
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T12:39:26.919Z
+- Updated: 2026-07-27T12:46:00.307Z
 - Branch: task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+ .../src/cli/run-cli/command-catalog/project.ts     |   4 +
+ .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
+ .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+ .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+ .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
+ .../src/commands/evaluator/evaluator.command.ts    | 396 ++++++++-------
+ .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
+ .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+ .../check-compatibility-contract-baseline.mjs      |  85 ++++
+ 10 files changed, 1503 insertions(+), 206 deletions(-)
 ```
 
 </details>
