@@ -4,7 +4,7 @@ title: "Reconcile resolved release incidents after SX8T09 integration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -12,7 +12,13 @@ tags:
   - "incidents"
   - "release"
   - "v0.7"
-verify: []
+verify:
+  - "node scripts/check-release-incidents.mjs"
+  - "node .agentplane/policy/check-routing.mjs"
+  - "node packages/agentplane/bin/agentplane.js doctor"
+  - "bun run guards:check"
+  - "bun run schemas:check"
+  - "bun run format:changed"
 plan_approval:
   state: "approved"
   updated_at: "2026-07-27T04:45:40.644Z"
