@@ -42,19 +42,6 @@ export function relativeArtifactPath(gitRoot: string, absPath: string): string {
   return path.relative(gitRoot, absPath).replaceAll("\\", "/");
 }
 
-export function pathsOutsideTaskArtifacts(
-  paths: string[],
-  workflowDir: string,
-  taskId: string,
-): string[] {
-  const normalizedWorkflowDir = workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
-  const taskPrefix = `${normalizedWorkflowDir}/${taskId}/`;
-  return paths.filter((changedPath) => {
-    const normalizedPath = changedPath.replaceAll("\\", "/");
-    return !normalizedPath.startsWith(taskPrefix);
-  });
-}
-
 export function renderEvaluatorPrompt(opts: {
   evaluator: EvaluatorModule;
   taskId: string;

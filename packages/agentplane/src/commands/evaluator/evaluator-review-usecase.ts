@@ -30,8 +30,8 @@ import {
 } from "./evaluator-quality-artifacts.js";
 import type { EvaluatorRunProvenance, EvaluatorRunVerdict } from "./evaluator.spec.js";
 
-export const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
-export const EVALUATOR_RESULT_FILE = "evaluator-result.json";
+const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
+const EVALUATOR_RESULT_FILE = "evaluator-result.json";
 const EVALUATOR_DIFF_FILE = "evaluator-diff.patch";
 const EVALUATOR_OBSERVED_CHECKS_FILE = "evaluator-observed-checks.json";
 const EVALUATOR_BLUEPRINT_FILE = "evaluator-blueprint.json";
@@ -167,7 +167,7 @@ function qualityDir(opts: {
   );
 }
 
-export async function readFileDigest(filePath: string): Promise<`sha256:${string}`> {
+async function readFileDigest(filePath: string): Promise<`sha256:${string}`> {
   return sha256(await readFile(filePath));
 }
 

@@ -309,6 +309,7 @@ function compatibilityResult(opts: {
   );
   if (!frozenEvidence)
     throw new Error("Prepared evaluator work order is missing actual diff evidence.");
+  const reworkContext = opts.parsed.reworkContext ?? [];
   return {
     schema_version: 1,
     kind: "evaluator_result",
@@ -323,8 +324,8 @@ function compatibilityResult(opts: {
     })),
     missing_tests: opts.parsed.missingTests,
     hidden_assumptions: opts.parsed.hiddenAssumptions,
-    ...(opts.parsed.reworkContext.length > 0
-      ? { recovery_context: opts.parsed.reworkContext.join("\n") }
+    ...(reworkContext.length > 0
+      ? { recovery_context: reworkContext.join("\n") }
       : {}),
   };
 }

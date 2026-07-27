@@ -27,7 +27,7 @@ export type EvaluatorRunParsed = {
   missingTests: string[];
   hiddenAssumptions: string[];
   residualRisks: string[];
-  reworkContext: string[];
+  reworkContext?: string[];
   json: boolean;
   record: boolean;
 };
