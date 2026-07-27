@@ -1,0 +1,237 @@
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/README.md b/.agentplane/tasks/202607221849-TBTX8X/README.md
+index abb01916e..474c4c501 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/README.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/README.md
+@@ -2,10 +2,10 @@
+ id: "202607221849-TBTX8X"
+ title: "Prepare and apply typed evaluator results"
+ result_summary: "pre-merge closure"
+-status: "DONE"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 23
++revision: 24
+ origin:
+   system: "manual"
+ depends_on:
+@@ -66,8 +66,8 @@ quality_review:
+   findings:
+     - "The generated user-facing CLI reference now exposes the two reviewed additive commands, so the public CLI contract and its documentation are synchronized."
+ commit:
+-  hash: "b2e021901539a60c0e3a727e197654f464c5a21a"
+-  message: "📚 TBTX8X task: refresh CLI reference"
++  hash: "39d80c29b68a7bc10d38b607881244794c09cea0"
++  message: "📚 TBTX8X task: record PR publish authority"
+ comments:
+   -
+     author: "CODER"
+@@ -84,6 +84,9 @@ comments:
+   -
+     author: "CODER"
+     body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Reopened before merge: hosted full-fast verification found a legacy evaluator run input without reworkContext and four newly unused evaluator exports. Restore compatibility defaulting and remove dead exports, then repeat CI-equivalent checks."
+ events:
+   -
+     type: "status"
+@@ -126,8 +129,15 @@ events:
+     from: "DOING"
+     to: "DONE"
+     note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "status"
++    at: "2026-07-27T14:20:52.327Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DOING"
++    note: "Reopened before merge: hosted full-fast verification found a legacy evaluator run input without reworkContext and four newly unused evaluator exports. Restore compatibility defaulting and remove dead exports, then repeat CI-equivalent checks."
+ doc_version: 3
+-doc_updated_at: "2026-07-27T14:12:07.089Z"
++doc_updated_at: "2026-07-27T14:20:52.327Z"
+ doc_updated_by: "CODER"
+ description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
+ sections:
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+index 40afc0958..83e1ca073 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+@@ -1,12 +1,12 @@
+  docs/user/cli-reference.generated.mdx              |  35 +-
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   4 +
+- .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
++ .../evaluator/evaluator-quality-artifacts.ts       |  46 +-
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
+- .../src/commands/evaluator/evaluator.command.ts    | 396 ++++++++-------
+- .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
++ .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
++ .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1537 insertions(+), 207 deletions(-)
++ 11 files changed, 1539 insertions(+), 221 deletions(-)
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+index 6f75c848d..5fe89e985 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+@@ -37,15 +37,15 @@ reviewed compatibility ratchet passed.
+  docs/user/cli-reference.generated.mdx              |  35 +-
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   4 +
+- .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
++ .../evaluator/evaluator-quality-artifacts.ts       |  46 +-
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
+- .../src/commands/evaluator/evaluator.command.ts    | 396 ++++++++-------
+- .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
++ .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
++ .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1537 insertions(+), 207 deletions(-)
++ 11 files changed, 1539 insertions(+), 221 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt b/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt
+index a77bcf8dd..9a10e85d9 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt
+@@ -1 +1 @@
+-✅ TBTX8X task: Prepare and apply typed evaluator results [202607221849-TBTX8X]
++🚧 TBTX8X task: Prepare and apply typed evaluator results [202607221849-TBTX8X]
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+index 85e0ca3bf..64ac6ee01 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results",
+   "created_at": "2026-07-27T12:39:26.919Z",
+-  "diffstat_sha256": "sha256:1152bd8389b09fbb370e09926bb6de86e11e0d5f21b7135f7547987ab35fc353",
++  "diffstat_sha256": "sha256:10981a3b3f696d7385d8878d28e1f39adc04cdf921fd0af68cac9e645fc2fe4b",
+   "last_verified_at": "2026-07-27T13:56:01.444Z",
+   "last_verified_diffstat_sha256": "sha256:2b586e04c68639c03af63668eacb6af3e2a9f62b3c7b69345c74803a3492968d",
+   "pr_number": 4642,
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+index e540d5cfe..356a77a31 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+@@ -6,7 +6,7 @@ Created: 2026-07-27T12:39:26.919Z
+ 
+ - Task: `202607221849-TBTX8X`
+ - Title: Prepare and apply typed evaluator results
+-- Status: DONE
++- Status: DOING
+ - Branch: `task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results`
+ - Canonical task record: `.agentplane/tasks/202607221849-TBTX8X/README.md`
+ 
+@@ -32,15 +32,15 @@ Created: 2026-07-27T12:39:26.919Z
+  docs/user/cli-reference.generated.mdx              |  35 +-
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   4 +
+- .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
++ .../evaluator/evaluator-quality-artifacts.ts       |  46 +-
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
+- .../src/commands/evaluator/evaluator.command.ts    | 396 ++++++++-------
+- .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
++ .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
++ .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1537 insertions(+), 207 deletions(-)
++ 11 files changed, 1539 insertions(+), 221 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts b/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
+index cd05daabd..9e8e4139b 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
+@@ -42,19 +42,6 @@ export function relativeArtifactPath(gitRoot: string, absPath: string): string {
+   return path.relative(gitRoot, absPath).replaceAll("\\", "/");
+ }
+ 
+-export function pathsOutsideTaskArtifacts(
+-  paths: string[],
+-  workflowDir: string,
+-  taskId: string,
+-): string[] {
+-  const normalizedWorkflowDir = workflowDir.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
+-  const taskPrefix = `${normalizedWorkflowDir}/${taskId}/`;
+-  return paths.filter((changedPath) => {
+-    const normalizedPath = changedPath.replaceAll("\\", "/");
+-    return !normalizedPath.startsWith(taskPrefix);
+-  });
+-}
+-
+ export function renderEvaluatorPrompt(opts: {
+   evaluator: EvaluatorModule;
+   taskId: string;
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index 49489845d..a204ff7f6 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -30,8 +30,8 @@ import {
+ } from "./evaluator-quality-artifacts.js";
+ import type { EvaluatorRunProvenance, EvaluatorRunVerdict } from "./evaluator.spec.js";
+ 
+-export const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
+-export const EVALUATOR_RESULT_FILE = "evaluator-result.json";
++const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
++const EVALUATOR_RESULT_FILE = "evaluator-result.json";
+ const EVALUATOR_DIFF_FILE = "evaluator-diff.patch";
+ const EVALUATOR_OBSERVED_CHECKS_FILE = "evaluator-observed-checks.json";
+ const EVALUATOR_BLUEPRINT_FILE = "evaluator-blueprint.json";
+@@ -167,7 +167,7 @@ function qualityDir(opts: {
+   );
+ }
+ 
+-export async function readFileDigest(filePath: string): Promise<`sha256:${string}`> {
++async function readFileDigest(filePath: string): Promise<`sha256:${string}`> {
+   return sha256(await readFile(filePath));
+ }
+ 
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index 384d88732..56ebb89e0 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -309,6 +309,7 @@ function compatibilityResult(opts: {
+   );
+   if (!frozenEvidence)
+     throw new Error("Prepared evaluator work order is missing actual diff evidence.");
++  const reworkContext = opts.parsed.reworkContext ?? [];
+   return {
+     schema_version: 1,
+     kind: "evaluator_result",
+@@ -323,8 +324,8 @@ function compatibilityResult(opts: {
+     })),
+     missing_tests: opts.parsed.missingTests,
+     hidden_assumptions: opts.parsed.hiddenAssumptions,
+-    ...(opts.parsed.reworkContext.length > 0
+-      ? { recovery_context: opts.parsed.reworkContext.join("\n") }
++    ...(reworkContext.length > 0
++      ? { recovery_context: reworkContext.join("\n") }
+       : {}),
+   };
+ }
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.spec.ts b/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
+index 1fab6095b..1cb671a3a 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
+@@ -27,7 +27,7 @@ export type EvaluatorRunParsed = {
+   missingTests: string[];
+   hiddenAssumptions: string[];
+   residualRisks: string[];
+-  reworkContext: string[];
++  reworkContext?: string[];
+   json: boolean;
+   record: boolean;
+ };
