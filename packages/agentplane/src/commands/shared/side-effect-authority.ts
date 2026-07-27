@@ -14,7 +14,7 @@ import type {
 /** Durable task extension owned by the formal workflow control plane. */
 export const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
 
-export type SideEffectClass =
+type SideEffectClass =
   | "local_reversible"
   | "external_reversible"
   | "external_high_risk"
@@ -252,7 +252,7 @@ export function readSideEffectAuthorityState(
   };
 }
 
-export function workflowOperationAuthorityRequirement(
+function workflowOperationAuthorityRequirement(
   operationId: WorkflowOperationId,
 ): AuthorityRequirement {
   return WORKFLOW_OPERATION_AUTHORITY_POLICY[operationId];
