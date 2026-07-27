@@ -28,10 +28,8 @@ import {
 } from "../effect-operation.js";
 import { runnerEffectRuntimeError } from "../effect-operation-contract.js";
 
-import {
-  readTaskRunnerActiveClaim,
-  retireTaskRunnerActiveClaimAfterEffectResolution,
-} from "./task-run-active-claim.js";
+import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
+import { retireTaskRunnerActiveClaimAfterEffectResolution } from "./task-run-effect-resolution-claim.js";
 
 const EFFECT_RESOLUTION_ARTIFACT_MAX_BYTES = 64 * 1024;
 const LEGACY_EFFECT_ACCEPTANCE_FILENAME = ".runner-effect-legacy-acceptance.json";

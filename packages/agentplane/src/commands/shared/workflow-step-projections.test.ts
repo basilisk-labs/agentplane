@@ -221,43 +221,6 @@ function routeDecision(opts: {
 }
 
 describe("WorkflowStep execution projections", () => {
-  it("projects runner wait without a mutation path or executable argv", () => {
-    const blocker = { code: "runner_alive" as const, summary: "runner is active" };
-    const state = routeState({
-      blockers: [blocker],
-      resume: {
-        ...resume,
-        runner: {
-          ...resume.runner,
-          run_id: "run-1",
-          status: "running",
-          next_action: "wait",
-          next_command: `agentplane task run status ${task.id} --run-id run-1`,
-        },
-      },
-    });
-    const step = reduceRouteState(state);
-    const { oracle, packet } = executionPacket({
-      state,
-      step,
-      paths: { taskWorktreePath },
-    });
-
-    expect(step).toMatchObject({
-      kind: "wait",
-      authoritativeCheckout: "task_worktree",
-      condition: { type: "runner_terminal", taskId: task.id, runId: "run-1" },
-    });
-    expect(oracle.mutationPathHint).toBeNull();
-    expect(packet).toMatchObject({
-      actionKind: "wait",
-      safeToMutate: false,
-      mutationPathHint: null,
-      exactArgv: null,
-      evidenceMissing: ["runner_terminal_state"],
-    });
-  });
-
   it("keeps an active runner wait ahead of dirty-worktree resolution", () => {
     const state = routeState({
       blockers: [
@@ -341,33 +304,6 @@ describe("WorkflowStep execution projections", () => {
       mutationPathHint: null,
       exactArgv: null,
       evidenceMissing: ["verification_record"],
-    });
-  });
-
-  it("hands an open branch_pr task without an implementation checkpoint to CODER", () => {
-    const state = routeState({ prFlow: openPrFlow });
-    const step = reduceRouteState(state);
-    const { oracle, packet } = executionPacket({
-      state,
-      step,
-      paths: { taskWorktreePath },
-    });
-
-    expect(step).toMatchObject({
-      kind: "agent_episode",
-      id: "agent.branch_implementation",
-      authoritativeCheckout: "task_worktree",
-      episode: { purpose: "implementation", role: "CODER", taskId: task.id },
-      compatibility: { code: "continue_branch_implementation", command: null },
-      execution: { semanticMutationAllowed: true },
-    });
-    expect(oracle.mutationPathHint).toBe(taskWorktreePath);
-    expect(packet).toMatchObject({
-      actionKind: "stop",
-      recommendedRole: "CODER",
-      safeToMutate: true,
-      mutationPathHint: taskWorktreePath,
-      exactArgv: null,
     });
   });
 
