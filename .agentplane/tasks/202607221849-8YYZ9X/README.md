@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The expectation was updated only from 252/173/811 to the already-reviewed 253/174/813 candidate surface, matching evaluator execute and its two public options; compatibility ratchet remains green."
 commit:
-  hash: "8bb85d54f98547be17d5cf28e6b86c0a06f808da"
-  message: "🐛 8YYZ9X task: harden evaluator provider failures"
+  hash: "22c6719bfb4a9cce5996212ea3e2b5d29bc3e390"
+  message: "📚 8YYZ9X task: record refreshed closure authority"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -119,8 +122,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T16:56:37.921Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T16:38:13.959Z"
+doc_updated_at: "2026-07-27T16:56:37.930Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
@@ -379,6 +389,9 @@ extensions:
         stateFingerprintDigest: "sha256:1504f0ee1df7520d86ad8a97316ccf6a24bad9a95368d84e2796d23804294b93"
         stateScopeDigest: "sha256:1a13c30644a7e3d423c2c675ab47509cec2510abec5c701ef59f2557d6763596"
     schemaVersion: 1
+  implementation_commit:
+    hash: "665d84dd02d38c4bb9b7f870288198d00fb1266a"
+    message: "🐛 8YYZ9X task: refresh critical compatibility expectation"
   workflow_route_baseline:
     start_head_sha: "8c863087669ef21c562e8c230e851bc94a12e8a4"
     version: 1
