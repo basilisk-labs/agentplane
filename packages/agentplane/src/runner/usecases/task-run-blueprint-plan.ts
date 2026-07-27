@@ -108,7 +108,7 @@ export function resolveRunnerBlueprintPlan(opts: {
   basePrompts: readonly RunnerPromptBlock[];
 }): Promise<RunnerContextBundle["blueprint"]> {
   const input = blueprintResolveInputFromTask({
-    task: opts.taskEnvelope.task.data,
+    task: opts.taskEnvelope.source_task,
     config: opts.config,
   });
   const manifest = recipeManifestFromContext(opts.recipe);

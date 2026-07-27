@@ -1,4 +1,3 @@
-import type { TaskData } from "../backends/task-backend.js";
 import { normalizeGitPathPrefix } from "../shared/git-path.js";
 
 import { readRecipeRunProfile } from "./adapters/recipe-run-profile.js";
@@ -19,12 +18,23 @@ import {
 
 const READ_ONLY_ROLES = new Set(["AUDITOR", "EVALUATOR", "REVIEWER"]);
 
+type RunnerTaskPolicyInput = {
+  id?: string;
+  task_id?: string;
+  owner?: string | null;
+  mutation_scope?: string | null;
+  task_kind?: string | null;
+};
+
 function normalizedRole(owner: string | null | undefined): string {
   const role = owner?.trim();
   return role ? role.toUpperCase() : "EXECUTOR";
 }
 
-function roleRequestsReadOnly(task: TaskData | undefined, executionRole: string): boolean {
+function roleRequestsReadOnly(
+  task: RunnerTaskPolicyInput | undefined,
+  executionRole: string,
+): boolean {
   if (READ_ONLY_ROLES.has(executionRole)) return true;
   if (task?.mutation_scope === "context" || task?.task_kind === "context") return false;
   if (task?.mutation_scope === "none" || task?.task_kind === "analysis") return true;
@@ -49,7 +59,7 @@ export function hasExplicitRunnerDangerFullAccessAuthority(
 }
 
 export function resolveRunnerSandboxPolicy(opts: {
-  task?: TaskData;
+  task?: RunnerTaskPolicyInput;
   recipe?: RunnerRecipeContext;
   danger_authority?: RunnerDangerFullAccessAuthority | null;
   execution_role?: string;
@@ -94,7 +104,7 @@ export function resolveRunnerSandboxPolicy(opts: {
 export function resolveRunnerWriteScopePolicy(opts: {
   sandbox: RunnerSandboxPolicy;
   protected_path_groups: Record<string, readonly string[]>;
-  task?: TaskData;
+  task?: RunnerTaskPolicyInput;
   recipe?: RunnerRecipeContext;
 }): RunnerWriteScopePolicy {
   const protectedPaths = new Set<string>();
@@ -106,7 +116,7 @@ export function resolveRunnerWriteScopePolicy(opts: {
   }
   const recipeWritableRoots = normalizeRecipeArtifactPrefixes(
     readRecipeRunProfile(opts.recipe)?.writes_artifacts_to,
-    { task_id: opts.task?.id },
+    { task_id: opts.task?.id ?? opts.task?.task_id },
   );
   const writableRoots = (() => {
     if (opts.sandbox.requested === RUNNER_READ_ONLY_SANDBOX) return [];

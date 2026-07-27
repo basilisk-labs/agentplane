@@ -123,12 +123,12 @@ export function buildCustomInvocation(opts: {
     );
   }
   const { execution } = opts.bundle;
-  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.task_id);
+  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.metadata.task_id);
   const enforcement = normalizeCustomEnforcement(opts.config);
   const sandboxPolicy =
     execution.sandbox_policy ??
     resolveRunnerSandboxPolicy({
-      task: opts.bundle.task?.data,
+      task: opts.bundle.task?.metadata,
       recipe: opts.bundle.recipe,
     });
   if (

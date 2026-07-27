@@ -4,11 +4,7 @@ import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/c
 import { mapBackendError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
-import {
-  loadCommandContext,
-  loadTaskFromContext,
-  taskDataToFrontmatter,
-} from "../../commands/shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
 import { gitCurrentBranch } from "../../commands/shared/git-ops.js";
 import { resolveTaskDependencyState } from "../../commands/task/shared.js";
 import { CliError } from "../../shared/errors.js";
@@ -16,21 +12,23 @@ import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type {
   RunnerDependencyState,
   RunnerRepositoryContext,
-  RunnerTaskContext,
   RunnerTaskContextCompaction,
   RunnerTaskContextCompactionEntry,
+  TaskEpisodeOmissionReceipt,
+  TaskEpisodeSection,
+  TaskEpisodeView,
 } from "../types.js";
 
 export type RunnerTaskContextEnvelope = {
   repository: RunnerRepositoryContext;
-  task: RunnerTaskContext;
+  task: TaskEpisodeView;
+  /** Backend state remains CLI-internal and is never serialized into a runner bundle. */
+  source_task: TaskData;
 };
 
 const TRUNCATED_MARKER = "\n\n[TRUNCATED]";
-const OMITTED_SECTION_MARKER = "[TRUNCATED: omitted due to task context budget]";
 
 export const RUNNER_TASK_CONTEXT_BUDGETS = {
-  doc_max_bytes: 24_576,
   section_max_bytes: 3072,
   sections_total_max_bytes: 20_480,
   comments_max_count: 20,
@@ -109,70 +107,107 @@ function measureEvents(events: TaskEvent[]): number {
   return utf8Bytes(JSON.stringify(events));
 }
 
-function prioritizeSections(sections: Record<string, string>): [string, string][] {
-  const preferredOrder = [
-    "Summary",
-    "Scope",
-    "Plan",
-    "Verify Steps",
-    "Verification",
-    "Rollback Plan",
-    "Findings",
-  ];
-  const entries = Object.entries(sections);
-  const indexByKey = new Map(entries.map(([key], index) => [key, index]));
-  return entries.toSorted(([left], [right]) => {
-    const leftPreferred = preferredOrder.indexOf(left);
-    const rightPreferred = preferredOrder.indexOf(right);
-    if (leftPreferred !== -1 && rightPreferred !== -1) return leftPreferred - rightPreferred;
-    if (leftPreferred !== -1) return -1;
-    if (rightPreferred !== -1) return 1;
-    return (indexByKey.get(left) ?? 0) - (indexByKey.get(right) ?? 0);
-  });
+function sectionKey(section: string): string {
+  return section.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase();
 }
 
-function compactSections(sections: Record<string, string>): {
+function compactSections(opts: {
+  task_id: string;
   sections: Record<string, string>;
-  doc: string;
+  required_sections: readonly string[];
+}): {
+  sections: TaskEpisodeSection[];
+  omissions: TaskEpisodeOmissionReceipt[];
   compaction: RunnerTaskContextCompaction["sections"];
-  docCompaction: RunnerTaskContextCompaction["doc"];
 } {
-  const originalEntries = prioritizeSections(sections);
-  const originalDoc = renderTaskDocFromSections(sections);
+  const requiredByKey = new Map(
+    opts.required_sections.map((section) => [sectionKey(section), section.trim()]),
+  );
+  const entriesByKey = new Map(
+    Object.entries(opts.sections).map(([section, text]) => [
+      sectionKey(section),
+      { section, text },
+    ]),
+  );
+  const missing = [...requiredByKey.entries()]
+    .filter(([key]) => !entriesByKey.has(key))
+    .map(([, section]) => section);
+  const empty = [...requiredByKey.entries()].flatMap(([key, required]) => {
+    const entry = entriesByKey.get(key);
+    return entry?.text.trim().length === 0 ? [required] : [];
+  });
+  const unavailableRequired = new Set([...missing, ...empty]);
+  const requiredEntries = [...requiredByKey.entries()].flatMap(([key, required]) => {
+    if (unavailableRequired.has(required)) return [];
+    const entry = entriesByKey.get(key)!;
+    return [{ name: required, text: entry.text, required: true as const }];
+  });
+  const optionalEntries = Object.entries(opts.sections)
+    .filter(([section]) => !requiredByKey.has(sectionKey(section)))
+    .map(([name, text]) => ({ name, text, required: false as const }));
+  const originalEntries = [...requiredEntries, ...optionalEntries];
   let remainingBudget: number = RUNNER_TASK_CONTEXT_BUDGETS.sections_total_max_bytes;
   let truncated = false;
-  const compactedEntries = originalEntries.map(([section, text]) => {
-    if (!text) return [section, text] as const;
+  const omissions: TaskEpisodeOmissionReceipt[] = [
+    ...missing.map((section) => ({
+      section,
+      required: true,
+      reason_code: "required_section_unavailable" as const,
+    })),
+    ...empty.map((section) => ({
+      section,
+      required: true,
+      reason_code: "required_section_unavailable" as const,
+    })),
+  ];
+  const compactedEntries: TaskEpisodeSection[] = [];
+  for (const entry of originalEntries) {
+    const textBytes = utf8Bytes(entry.text);
+    if (entry.required) {
+      const allowedBytes = Math.min(RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes, remainingBudget);
+      if (textBytes > allowedBytes) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            `TaskEpisodeView cannot compact required section ${JSON.stringify(entry.name)} ` +
+            `for ${opts.task_id} without loss.`,
+          context: {
+            task_id: opts.task_id,
+            reason_code: "task_episode_required_section_exceeds_budget",
+            section: entry.name,
+            section_bytes: textBytes,
+            allowed_bytes: allowedBytes,
+          },
+        });
+      }
+      remainingBudget -= textBytes;
+      compactedEntries.push(entry);
+      continue;
+    }
     if (remainingBudget <= 0) {
       truncated = true;
-      return [section, OMITTED_SECTION_MARKER] as const;
+      omissions.push({
+        section: entry.name,
+        required: false,
+        reason_code: "section_budget_exhausted",
+      });
+      continue;
     }
     const allowedBytes = Math.min(RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes, remainingBudget);
-    const nextText = utf8Bytes(text) > allowedBytes ? truncateUtf8(text, allowedBytes) : text;
-    if (nextText !== text) truncated = true;
+    const nextText = textBytes > allowedBytes ? truncateUtf8(entry.text, allowedBytes) : entry.text;
+    if (nextText !== entry.text) truncated = true;
     remainingBudget = Math.max(0, remainingBudget - utf8Bytes(nextText));
-    return [section, nextText] as const;
-  });
-  const compactedSections = Object.fromEntries(compactedEntries);
-  const compactedDoc = truncateUtf8(
-    renderTaskDocFromSections(compactedSections),
-    RUNNER_TASK_CONTEXT_BUDGETS.doc_max_bytes,
-  );
-  const docTruncated = compactedDoc !== originalDoc;
+    compactedEntries.push({ ...entry, text: nextText });
+  }
   return {
-    sections: compactedSections,
-    doc: compactedDoc,
+    sections: compactedEntries,
+    omissions,
     compaction: {
-      original_bytes: utf8Bytes(JSON.stringify(sections)),
-      emitted_bytes: utf8Bytes(JSON.stringify(compactedSections)),
+      original_bytes: utf8Bytes(JSON.stringify(opts.sections)),
+      emitted_bytes: utf8Bytes(JSON.stringify(compactedEntries)),
       original_count: originalEntries.length,
       emitted_count: compactedEntries.length,
       truncated,
-    },
-    docCompaction: {
-      original_bytes: utf8Bytes(originalDoc),
-      emitted_bytes: utf8Bytes(compactedDoc),
-      truncated: docTruncated,
     },
   };
 }
@@ -290,7 +325,6 @@ export async function assembleRunnerTaskContext(opts: {
     const dependencyState = toRunnerDependencyState(
       await resolveTaskDependencyState(task, opts.dependency_backend ?? ctx.taskBackend),
     );
-    const frontmatter = taskDataToFrontmatter(task);
     const baseDoc =
       typeof task.doc === "string"
         ? task.doc
@@ -298,20 +332,76 @@ export async function assembleRunnerTaskContext(opts: {
           ? renderTaskDocFromSections(task.sections)
           : "";
     const baseSections = task.sections ?? (baseDoc ? taskDocToSectionMap(baseDoc) : {});
-    const compactedSections = compactSections(baseSections);
+    const compactedSections = compactSections({
+      task_id: task.id,
+      sections: baseSections,
+      required_sections: ctx.config.tasks.doc.required_sections,
+    });
     const compactedComments = compactComments(task.comments ?? []);
     const compactedEvents = compactEvents(task.events ?? []);
     const compaction: RunnerTaskContextCompaction = {
-      doc: compactedSections.docCompaction,
       sections: compactedSections.compaction,
       comments: compactedComments.compaction,
       events: compactedEvents.compaction,
+      omissions: compactedSections.omissions,
+      serialized: {
+        source_bytes: utf8Bytes(JSON.stringify(task)),
+        emitted_bytes: 0,
+        duplicate_bytes_removed: 0,
+      },
     };
     const [branch, head_commit, readme_path] = await Promise.all([
       readOptionalBranch(ctx.resolvedProject.gitRoot),
       readOptionalHeadCommit(ctx),
       resolveTaskReadmePath(ctx, task.id),
     ]);
+
+    const episode: TaskEpisodeView = {
+      schema_version: 1,
+      kind: "agentplane.task_episode_view",
+      metadata: {
+        task_id: task.id,
+        revision: task.revision ?? null,
+        status: task.status,
+        owner: task.owner ?? null,
+        priority: task.priority ?? null,
+        tags: [...(task.tags ?? [])],
+        task_kind: task.task_kind ?? null,
+        mutation_scope: task.mutation_scope ?? null,
+        blueprint_request: task.blueprint_request ?? null,
+      },
+      narrative: {
+        title: task.title,
+        description: task.description,
+        sections: compactedSections.sections,
+      },
+      verification: {
+        commands: [...task.verify],
+      },
+      section_policy: {
+        source: "task_document_schema",
+        required_sections: [...ctx.config.tasks.doc.required_sections],
+      },
+      history: {
+        comments: compactedComments.comments,
+        events: compactedEvents.events,
+      },
+      readme_path,
+      dependency_state: dependencyState,
+      compaction,
+    };
+    let emittedBytes = utf8Bytes(JSON.stringify(episode));
+    compaction.serialized.emitted_bytes = emittedBytes;
+    compaction.serialized.duplicate_bytes_removed = Math.max(
+      0,
+      compaction.serialized.source_bytes - emittedBytes,
+    );
+    emittedBytes = utf8Bytes(JSON.stringify(episode));
+    compaction.serialized.emitted_bytes = emittedBytes;
+    compaction.serialized.duplicate_bytes_removed = Math.max(
+      0,
+      compaction.serialized.source_bytes - emittedBytes,
+    );
 
     return {
       repository: {
@@ -322,18 +412,8 @@ export async function assembleRunnerTaskContext(opts: {
         branch,
         head_commit,
       },
-      task: {
-        task_id: task.id,
-        data: task,
-        frontmatter,
-        doc: compactedSections.doc,
-        sections: compactedSections.sections,
-        comments: compactedComments.comments,
-        events: compactedEvents.events,
-        readme_path,
-        dependency_state: dependencyState,
-        compaction,
-      },
+      task: episode,
+      source_task: task,
     };
   } catch (err) {
     if (err instanceof CliError) throw err;

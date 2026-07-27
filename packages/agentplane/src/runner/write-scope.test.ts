@@ -25,7 +25,7 @@ function observedFilesystem(changed_paths: string[] = []): RunnerProtectedFilesy
 
 function enforcedBundle() {
   const bundle = makeRunnerContextBundle();
-  bundle.task!.data.mutation_scope = "code";
+  bundle.task!.metadata.mutation_scope = "code";
   bundle.execution.write_scope = {
     mutation_scope: "code",
     writable_roots: ["."],
@@ -69,7 +69,7 @@ describe("runner actual write scope", () => {
 
   it("rejects an unreported write outside narrow context roots", () => {
     const bundle = enforcedBundle();
-    bundle.task!.data.mutation_scope = "context";
+    bundle.task!.metadata.mutation_scope = "context";
     bundle.execution.write_scope = {
       mutation_scope: "context",
       writable_roots: [".agentplane/context", "context"],
@@ -94,7 +94,7 @@ describe("runner actual write scope", () => {
 
   it("does not reinterpret a literal backslash in an observed Git path as a separator", () => {
     const bundle = enforcedBundle();
-    bundle.task!.data.mutation_scope = "context";
+    bundle.task!.metadata.mutation_scope = "context";
     bundle.execution.write_scope = {
       mutation_scope: "context",
       writable_roots: ["context"],

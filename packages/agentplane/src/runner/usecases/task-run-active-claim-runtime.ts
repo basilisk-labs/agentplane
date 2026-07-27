@@ -77,7 +77,7 @@ export async function recordActiveClaimCleanupFailure(opts: {
 }): Promise<TaskRunnerActiveClaimCleanupDiagnostic> {
   const diagnostic = cleanupDiagnostic(opts.error);
   const taskId =
-    opts.bundle?.task?.task_id ??
+    opts.bundle?.task?.metadata.task_id ??
     (opts.bundle?.target.kind === "task" ? opts.bundle.target.task_id : null);
   if (!opts.bundle || !taskId) return diagnostic;
   try {

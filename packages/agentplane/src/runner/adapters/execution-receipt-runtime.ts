@@ -49,7 +49,7 @@ export type {
 } from "./execution-receipt-runtime-types.js";
 
 function receiptTaskId(bundle: RunnerContextBundle | null | undefined): string {
-  const taskId = bundle?.task?.task_id ?? bundle?.target.task_id;
+  const taskId = bundle?.task?.metadata.task_id ?? bundle?.target.task_id;
   if (!taskId) {
     throw new Error("Runner execution receipt requires a task-bound supervisor artifact locator.");
   }
@@ -262,7 +262,7 @@ function writeScopeCheck(scope: ExecutionReceiptScopeEvaluation): ExecutionRecei
 function deferredTaskVerificationCheck(
   bundle: RunnerContextBundle | null,
 ): ExecutionReceiptObservedCheck {
-  const commandCount = bundle?.task?.data.verify.length ?? 0;
+  const commandCount = bundle?.task?.verification.commands.length ?? 0;
   return observedCheck({
     id: "task.verify.deferred",
     required: false,

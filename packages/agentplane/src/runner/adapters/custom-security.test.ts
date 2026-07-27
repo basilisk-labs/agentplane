@@ -46,7 +46,7 @@ describe("CustomRunnerAdapter security boundaries", () => {
     await writeFile(path.join(tempDir, ".gitignore"), ".agentplane/policy/*.local\n", "utf8");
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
-    bundle.task!.data.mutation_scope = "context";
+    bundle.task!.metadata.mutation_scope = "context";
     bundle.execution.mode = "execute";
     bundle.execution.write_scope = {
       mutation_scope: "context",
@@ -139,7 +139,7 @@ describe("CustomRunnerAdapter security boundaries", () => {
     await mkdir(path.join(tempDir, ".agentplane", "policy"), { recursive: true });
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
-    bundle.task!.data.mutation_scope = "context";
+    bundle.task!.metadata.mutation_scope = "context";
     bundle.execution.mode = "execute";
     bundle.execution.write_scope = {
       mutation_scope: "context",
@@ -357,7 +357,7 @@ describe("CustomRunnerAdapter security boundaries", () => {
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = root;
     bundle.execution.mode = "execute";
-    bundle.task!.data.mutation_scope = "context";
+    bundle.task!.metadata.mutation_scope = "context";
     bundle.execution.write_scope = {
       mutation_scope: "context",
       writable_roots: ["context"],

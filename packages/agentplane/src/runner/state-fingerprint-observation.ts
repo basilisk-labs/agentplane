@@ -240,7 +240,7 @@ async function resolveLiveState(opts: {
       : liveContext
         ? await observeRunnerTaskProjection(
             liveContext,
-            opts.bundle.task?.task_id ?? opts.bundle.target.task_id ?? "",
+            opts.bundle.task?.metadata.task_id ?? opts.bundle.target.task_id ?? "",
           )
         : null;
   } catch {
@@ -349,7 +349,14 @@ export async function observePreparedRunnerStateComponents(opts: {
   bundle: RunnerContextBundle;
   probes?: RunnerStateFingerprintComponentProbes;
 }): Promise<RunnerStateFingerprintObservedComponents> {
-  const task = opts.bundle.task?.data ?? null;
+  // TaskEpisodeView deliberately excludes full lifecycle state. Re-observe the
+  // backend projection while preparing the fingerprint instead of retaining a
+  // second serialized TaskData copy in the runner bundle.
+  const task = opts.bundle.task
+    ? opts.probes?.load_task
+      ? await opts.probes.load_task()
+      : await observeRunnerTaskProjection(opts.ctx, opts.bundle.task.metadata.task_id)
+    : null;
   const repositoryRoot = authoritativePreparedRepositoryRoot(opts);
   const [backend, policy, knowledge, blueprint, authority] = await Promise.all([
     opts.probes?.observe_backend_projection?.() ?? observeBackendProjection(opts.ctx),

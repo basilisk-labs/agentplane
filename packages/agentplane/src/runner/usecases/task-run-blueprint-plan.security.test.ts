@@ -26,7 +26,7 @@ describe("runner blueprint prepared-artifact security", () => {
         setRunnerBundleRunDir(bundle, runDir);
         const resolved = resolveBlueprint({
           input: {
-            taskId: bundle.task!.task_id,
+            taskId: bundle.task!.metadata.task_id,
             tags: ["code"],
             taskKind: "code",
             mutation: "code",
@@ -36,7 +36,7 @@ describe("runner blueprint prepared-artifact security", () => {
         bundle.blueprint = buildBlueprintPlanArtifact({
           resolved,
           input: {
-            taskId: bundle.task!.task_id,
+            taskId: bundle.task!.metadata.task_id,
             tags: ["code"],
             taskKind: "code",
             mutation: "code",

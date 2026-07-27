@@ -22,7 +22,7 @@ function truncateGoalText(value: string, maxLength = 320): string {
 
 function renderCodexGoalLine(bundle: RunnerContextBundle, targetLabel: string): string | null {
   if (bundle.execution.adapter_id !== "codex") return null;
-  const taskTitle = compactGoalText(bundle.task?.data.title ?? "");
+  const taskTitle = compactGoalText(bundle.task?.narrative.title ?? "");
   const recipeGoal =
     typeof bundle.recipe?.scenario?.goal === "string"
       ? compactGoalText(bundle.recipe.scenario.goal)

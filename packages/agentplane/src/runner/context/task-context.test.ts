@@ -89,14 +89,24 @@ describe("assembleRunnerTaskContext", () => {
     expect(assembled.repository.git_root).toBe(root);
     expect(assembled.repository.workflow_dir).toBe(".agentplane/tasks");
     expect(assembled.repository.backend_id).toBe("local");
-    expect(assembled.task.task_id).toBe(main.id);
-    expect(assembled.task.frontmatter.id).toBe(main.id);
-    expect(assembled.task.data.title).toBe("Main task");
-    expect(Object.keys(assembled.task.sections)).toContain("Summary");
-    expect(assembled.task.comments).toEqual([
+    expect(assembled.task.metadata.task_id).toBe(main.id);
+    expect(assembled.task.narrative.title).toBe("Main task");
+    expect(assembled.task.narrative.sections.map((section) => section.name)).not.toContain(
+      "Summary",
+    );
+    expect(assembled.task.compaction.omissions).toEqual(
+      expect.arrayContaining([
+        {
+          section: "Summary",
+          required: true,
+          reason_code: "required_section_unavailable",
+        },
+      ]),
+    );
+    expect(assembled.task.history.comments).toEqual([
       { author: "CODER", body: "Start: assemble runner task context." },
     ]);
-    expect(assembled.task.events).toEqual([
+    expect(assembled.task.history.events).toEqual([
       {
         type: "status",
         at: "2026-03-23T14:05:00.000Z",
@@ -115,7 +125,10 @@ describe("assembleRunnerTaskContext", () => {
     expect(assembled.task.readme_path).toBe(
       path.join(root, ".agentplane/tasks", main.id, "README.md"),
     );
-    expect(assembled.task.doc).toContain("## Summary");
+    expect(assembled.task).not.toHaveProperty("data");
+    expect(assembled.task).not.toHaveProperty("frontmatter");
+    expect(assembled.task).not.toHaveProperty("doc");
+    expect(assembled.source_task.title).toBe("Main task");
   });
 
   it("returns a typed failure when the task is missing", async () => {
@@ -160,7 +173,6 @@ describe("assembleRunnerTaskContext", () => {
     const longSections = {
       ...currentSections,
       Findings: "Long findings ".repeat(900),
-      Verification: "Long verification ".repeat(700),
     };
     const longDoc = renderTaskDocFromSections(longSections);
     await ctx.taskBackend.writeTask({
@@ -187,33 +199,124 @@ describe("assembleRunnerTaskContext", () => {
       task_id: main.id,
     });
 
-    expect(Buffer.byteLength(assembled.task.doc, "utf8")).toBeLessThanOrEqual(
-      RUNNER_TASK_CONTEXT_BUDGETS.doc_max_bytes,
-    );
-    expect(assembled.task.comments.length).toBeLessThanOrEqual(
+    expect(assembled.task.history.comments.length).toBeLessThanOrEqual(
       RUNNER_TASK_CONTEXT_BUDGETS.comments_max_count,
     );
-    expect(assembled.task.events.length).toBeLessThanOrEqual(
+    expect(assembled.task.history.events.length).toBeLessThanOrEqual(
       RUNNER_TASK_CONTEXT_BUDGETS.events_max_count,
     );
-    expect(assembled.task.comments.at(-1)?.body).toContain("Long comment payload");
-    expect(assembled.task.comments[0]?.body).not.toContain("00 Long comment payload");
+    expect(assembled.task.history.comments.at(-1)?.body).toContain("Long comment payload");
+    expect(assembled.task.history.comments[0]?.body).not.toContain("00 Long comment payload");
     expect(assembled.task.compaction).toMatchObject({
-      doc: { truncated: true },
       sections: { truncated: true },
       comments: {
         truncated: true,
         original_count: 28,
-        emitted_count: assembled.task.comments.length,
+        emitted_count: assembled.task.history.comments.length,
       },
       events: {
         truncated: true,
         original_count: 52,
-        emitted_count: assembled.task.events.length,
+        emitted_count: assembled.task.history.events.length,
       },
     });
+    expect(assembled.task.compaction.omissions).toEqual(
+      expect.arrayContaining([
+        {
+          section: "Summary",
+          required: true,
+          reason_code: "required_section_unavailable",
+        },
+      ]),
+    );
+    expect(assembled.task.compaction.serialized.duplicate_bytes_removed).toBeGreaterThan(0);
+    expect(assembled.task.compaction.serialized.emitted_bytes).toBeLessThan(
+      assembled.task.compaction.serialized.source_bytes * 0.7,
+    );
     expect(assembled.task.readme_path).toBe(
       path.join(root, ".agentplane/tasks", main.id, "README.md"),
     );
+  });
+
+  it("fails with a structured issue instead of truncating a required section", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+    const task = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Required section budget fixture",
+      description: "Exercise required section compaction refusal.",
+      owner: "CODER",
+      priority: "high",
+      tags: ["runner"],
+      dependsOn: [],
+      verify: [],
+    });
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
+    const sections = { ...(loaded.sections ?? {}), Summary: "required ".repeat(500) };
+    await ctx.taskBackend.writeTask({
+      ...loaded,
+      doc: renderTaskDocFromSections(sections),
+      sections,
+    });
+
+    await expect(
+      assembleRunnerTaskContext({ ctx, cwd: root, rootOverride: root, task_id: task.id }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "task_episode_required_section_exceeds_budget",
+        section: "Summary",
+      },
+    });
+  });
+
+  it("uses configured structural section metadata for custom non-English headings", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+    const task = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Локализованный контекст",
+      description: "Проверяет структурный приоритет.",
+      owner: "CODER",
+      priority: "high",
+      tags: ["runner"],
+      dependsOn: [],
+      verify: [],
+    });
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    ctx.config.tasks.doc.required_sections = ["Контекст", "Проверка"];
+    const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
+    const sections = {
+      Summary: "Optional English heading must not outrank structural metadata.",
+      Контекст: "Обязательный контекст.",
+      Проверка: "Обязательная проверка.",
+      Дополнительно: "Необязательная секция.",
+    };
+    await ctx.taskBackend.writeTask({
+      ...loaded,
+      doc: renderTaskDocFromSections(sections),
+      sections,
+    });
+
+    const assembled = await assembleRunnerTaskContext({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: task.id,
+    });
+
+    expect(assembled.task.section_policy).toEqual({
+      source: "task_document_schema",
+      required_sections: ["Контекст", "Проверка"],
+    });
+    expect(assembled.task.narrative.sections.slice(0, 2)).toEqual([
+      { name: "Контекст", text: "Обязательный контекст.", required: true },
+      { name: "Проверка", text: "Обязательная проверка.", required: true },
+    ]);
   });
 });

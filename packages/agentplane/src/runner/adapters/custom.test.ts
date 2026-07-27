@@ -756,7 +756,7 @@ describe("CustomRunnerAdapter", () => {
     );
     expect(normalized.verification_hints).toBeUndefined();
     const receiptLocator = createSupervisorExecutionReceiptLocator({
-      task_id: bundle.task!.task_id,
+      task_id: bundle.task!.metadata.task_id,
       run_id: invocation.run_id,
     });
     expect(normalized.evidence).toMatchObject({
@@ -821,7 +821,7 @@ describe("CustomRunnerAdapter", () => {
 
     const bundle = makeRunnerContextBundle(customBundleDefaults);
     bundle.repository.git_root = tempDir;
-    bundle.task!.data.verify = ["bun run focused-check"];
+    bundle.task!.verification.commands = ["bun run focused-check"];
     bundle.execution.mode = "execute";
     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-observed-delta"));
     await writeRunnerExecutable(tempDir, "custom-runner", [

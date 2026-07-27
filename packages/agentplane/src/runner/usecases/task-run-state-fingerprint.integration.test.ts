@@ -543,7 +543,7 @@ describe("task-run state fingerprint precondition", () => {
       mode: "execute",
       run_id: "run-state-fingerprint-replay-cas",
     });
-    const preparedRevision = prepared.bundle.task?.data.revision;
+    const preparedRevision = prepared.bundle.task?.metadata.revision;
     if (typeof preparedRevision !== "number") {
       throw new Error("Prepared task revision missing.");
     }

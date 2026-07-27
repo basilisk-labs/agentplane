@@ -279,7 +279,7 @@ export class RunnerRunRepository {
     assertRunnerBundleArtifactPaths(
       opts.bundle,
       this.paths,
-      opts.bundle.task?.task_id ?? opts.bundle.execution.run_id,
+      opts.bundle.task?.metadata.task_id ?? opts.bundle.execution.run_id,
       opts.bundle.execution.run_id,
     );
     await this.createFreshDirectory({

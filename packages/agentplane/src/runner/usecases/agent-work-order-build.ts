@@ -17,7 +17,6 @@ import { checkTaskBlueprintSnapshotDrift } from "../../commands/blueprint/snapsh
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
-import { extractDocSection } from "../../commands/task/shared.js";
 import type { ReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { RunnerPromptBlock } from "../types.js";
 import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
@@ -75,6 +74,18 @@ function verifyStepLines(value: string): string[] {
   );
 }
 
+function episodeSectionText(opts: {
+  task_envelope: RunnerTaskContextEnvelope;
+  section: string;
+}): string {
+  const wanted = opts.section.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase();
+  return (
+    opts.task_envelope.task.narrative.sections.find(
+      (entry) => entry.name.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase() === wanted,
+    )?.text ?? ""
+  );
+}
+
 function workOrderRole(owner: string): AgentWorkOrderRole {
   const normalized = owner.trim().toUpperCase();
   if (normalized === "PLANNER" || normalized === "CURATOR" || normalized === "EVALUATOR") {
@@ -119,11 +130,11 @@ export async function buildAgentWorkOrderLegacyBriefProjection(opts: {
 }): Promise<AgentWorkOrderLegacyBriefProjection> {
   const snapshot = await checkTaskBlueprintSnapshotDrift({
     ctx: opts.command_ctx,
-    task: opts.task_envelope.task.data,
+    task: opts.task_envelope.source_task,
   });
   return {
     blueprint: legacyBlueprintSummary({
-      task_id: opts.task_envelope.task.data.id,
+      task_id: opts.task_envelope.task.metadata.task_id,
       blueprint: opts.blueprint,
     }),
     snapshot: {
@@ -165,11 +176,12 @@ export function buildAgentWorkOrderSourceManifest(opts: {
       source: stableSourcePath(entry.source, execution_context.repo.git_root),
     }))
     .toSorted((left, right) => left.id.localeCompare(right.id));
-  const taskDoc = taskEnvelope.task.doc;
-  const verifySteps = verifyStepLines(extractDocSection(taskDoc, "Verify Steps") ?? "");
+  const verifySteps = verifyStepLines(
+    episodeSectionText({ task_envelope: taskEnvelope, section: "Verify Steps" }),
+  );
   const taskReadme = taskEnvelope.task.readme_path
     ? stableSourcePath(taskEnvelope.task.readme_path, execution_context.repo.git_root)
-    : `${taskEnvelope.repository.workflow_dir}/${taskEnvelope.task.task_id}/README.md`;
+    : `${taskEnvelope.repository.workflow_dir}/${taskEnvelope.task.metadata.task_id}/README.md`;
   return {
     schema_version: 1,
     source_paths: uniqueSorted([
@@ -182,7 +194,7 @@ export function buildAgentWorkOrderSourceManifest(opts: {
     prompt_modules: promptModules,
     blueprint_context: blueprintContext,
     verification_context: {
-      task_verify: uniqueSorted(taskEnvelope.task.data.verify),
+      task_verify: uniqueSorted(taskEnvelope.task.verification.commands),
       verify_steps: verifySteps,
     },
   };
@@ -199,7 +211,7 @@ function acceptanceCriteria(opts: {
   const descriptions =
     candidates.length > 0
       ? candidates
-      : [`Complete the approved task outcome for ${opts.task_envelope.task.data.title}.`];
+      : [`Complete the approved task outcome for ${opts.task_envelope.task.narrative.title}.`];
   return descriptions.slice(0, 64).map((description, index) => ({
     id: `acceptance-${index + 1}`,
     description: compactText(description, "Complete the approved task outcome."),
@@ -300,8 +312,8 @@ export function buildCanonicalAgentWorkOrder(opts: {
     execution_context: executionContext,
     route_decision: decision,
   } = opts.prepared;
-  const task = taskEnvelope.task.data;
-  const role = workOrderRole(task.owner);
+  const task = taskEnvelope.task;
+  const role = workOrderRole(task.metadata.owner ?? "");
   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
   const mutationPath = decision.oracle.mutationPathHint;
   const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
@@ -315,7 +327,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
         "workspace_write",
       ]
     : ["repository_read", "git_read", "run_checks", "report_result", "report_blocker"];
-  const summary = extractDocSection(taskEnvelope.task.doc, "Summary") ?? task.description;
+  const summary =
+    episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
+    task.narrative.description;
   const verification = verificationIntent({ source_manifest: opts.source_manifest });
   const stopRules = uniqueSorted([
     ...decision.executionPacket.mustNot,
@@ -326,15 +340,15 @@ export function buildCanonicalAgentWorkOrder(opts: {
     schema_version: AGENT_WORK_ORDER_SCHEMA_VERSION,
     kind: AGENT_WORK_ORDER_KIND,
     work_order_id: deterministicWorkOrderId({
-      task_id: task.id,
+      task_id: task.metadata.task_id,
       role,
       fingerprint: stateFingerprint,
     }),
     role,
     task: {
-      id: task.id,
-      revision: task.revision ?? null,
-      objective: compactText(summary, task.title),
+      id: task.metadata.task_id,
+      revision: task.metadata.revision,
+      objective: compactText(summary, task.narrative.title),
       acceptance_criteria: acceptanceCriteria({
         task_envelope: taskEnvelope,
         source_manifest: opts.source_manifest,
@@ -344,7 +358,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
     state_fingerprint: stateFingerprint,
     state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
     authority: {
-      mutation_scope: task.mutation_scope ?? "unknown",
+      mutation_scope: task.metadata.mutation_scope ?? "unknown",
       writable_roots: canMutate ? [mutationPath] : [],
       protected_paths: protectedPaths(executionContext),
       allowed_tool_classes: allowedToolClasses,

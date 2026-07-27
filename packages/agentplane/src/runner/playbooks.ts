@@ -46,10 +46,10 @@ const BUILTIN_RUNNER_PLAYBOOKS: readonly RunnerTaskPlaybookContract[] = [
 
 function textFromBundle(bundle: RunnerContextBundle): string {
   return [
-    bundle.task?.data.title,
-    bundle.task?.data.description,
-    ...(bundle.task?.data.tags ?? []),
-    bundle.task?.data.blueprint_request,
+    bundle.task?.narrative.title,
+    bundle.task?.narrative.description,
+    ...(bundle.task?.metadata.tags ?? []),
+    bundle.task?.metadata.blueprint_request,
     bundle.blueprint?.blueprintId,
     bundle.recipe?.scenario_id,
     bundle.recipe?.recipe_name,

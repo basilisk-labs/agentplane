@@ -68,7 +68,7 @@ async function appendCancellationRefusal(opts: {
     type: "runner_cancel_refused",
     message: opts.error.message,
     data: opts.error.context ?? {
-      task_id: opts.loaded.bundle.task?.task_id ?? null,
+      task_id: opts.loaded.bundle.task?.metadata.task_id ?? null,
       run_id: opts.loaded.invocation.run_id,
       pid: opts.pid,
     },
@@ -88,7 +88,7 @@ async function recoverTerminalActiveClaim(opts: {
   const lookup = {
     git_root: opts.loaded.bundle.repository.git_root,
     workflow_dir: opts.loaded.bundle.repository.workflow_dir,
-    task_id: opts.loaded.bundle.task?.task_id ?? "",
+    task_id: opts.loaded.bundle.task?.metadata.task_id ?? "",
     run_id: opts.loaded.invocation.run_id,
   };
   const active = await readTaskRunnerActiveClaim(lookup);
