@@ -15,8 +15,8 @@ Verify that the two active release incidents are already fixed on main, archive 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: release incident, policy, guard, schema, formatting, and hosted PR checks passed on b5e79fe4.
 - Canonical workflow state lives in the task README.
 
 <details>
