@@ -289,6 +289,31 @@ export function implementationReworkStep(state: WorkflowRouteState): WorkflowSte
   });
 }
 
+export function branchImplementationStep(state: WorkflowRouteState): WorkflowStep {
+  return agentEpisodeStep({
+    state,
+    id: "agent.branch_implementation",
+    code: "continue_branch_implementation",
+    phase: "branch_implementation",
+    checkout: "task_worktree",
+    role: "CODER",
+    purpose: "implementation",
+    summary:
+      "hand the branch_pr task to CODER for semantic implementation in the dedicated task worktree",
+    objective:
+      "Complete the task's semantic implementation, create an intended branch commit, and record that implementation commit before verification is handed to TESTER.",
+    semanticMutationAllowed: true,
+    mustNot: [
+      "do not publish, queue, integrate, or close the PR while semantic implementation belongs to CODER",
+      "do not record verification as CODER; after the implementation commit is recorded, recompute task next-action for the TESTER handoff",
+      "do not replace the implementation episode with a generic runner or retry operation",
+    ],
+    returnControlWhen:
+      "after CODER records the committed implementation with task set-status while preserving DOING, then recompute task next-action for TESTER verification",
+    selectedBlocker: null,
+  });
+}
+
 export function worktreeResolutionStep(
   state: WorkflowRouteState,
   blocker: RouteBlocker,

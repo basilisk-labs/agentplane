@@ -3,6 +3,7 @@ import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
 import {
   approvalStep,
+  branchImplementationStep,
   cliOperationStep,
   commonExecution,
   implementationReworkStep,
@@ -511,6 +512,12 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
       summary: "publish/link the task PR",
       selectedBlocker: routeBlockerFor(state, "remote_pr_missing"),
     });
+  }
+  if (
+    state.task.verification?.state !== "ok" &&
+    !(typeof state.task.commit?.hash === "string" && state.task.commit.hash.trim())
+  ) {
+    return branchImplementationStep(state);
   }
   if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
     return verificationStep(state);

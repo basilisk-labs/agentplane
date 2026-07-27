@@ -13,7 +13,6 @@ import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
 import {
   addTaskWorktreeCleanlinessBlocker,
-  addVerificationRequiredBlocker,
   deriveBlockers,
 } from "./route-decision-blockers.js";
 import type { WorkflowStep } from "./workflow-step.js";
@@ -496,14 +495,6 @@ export async function buildTaskRouteDecision(opts: {
       tasksPath: ctx.config.paths.tasks_path,
       requireAllChanges: true,
     });
-  }
-  if (
-    ctx.config.workflow_mode === "branch_pr" &&
-    provisionalWorkflowStep.kind === "cli_operation" &&
-    (provisionalWorkflowStep.operation.id === "task.pre_merge_close" ||
-      provisionalWorkflowStep.operation.id === "integration.enqueue")
-  ) {
-    addVerificationRequiredBlocker({ blockers, task });
   }
   blockers.sort((left, right) => routeGatePriority(left.code) - routeGatePriority(right.code));
   const finalRouteStateInput: WorkflowRouteStateInput = {

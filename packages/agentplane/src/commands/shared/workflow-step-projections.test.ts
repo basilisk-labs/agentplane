@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import type { PrFlowStatusReport } from "../pr/flow-status.js";
 import type { TaskResumeContext } from "../task/handoff.shared.js";
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import { deriveRouteOperatorGuidance } from "./route-guidance.js";
@@ -53,6 +54,31 @@ const task = {
 
 const taskWorktreePath = `/repo/.agentplane/worktrees/${task.id}`;
 const taskBranch = `task/${task.id}/workflow-step-projection-fixture`;
+
+const openPrFlow = {
+  task: { id: task.id, status: "DOING", verification: "pending" },
+  branch: {
+    name: taskBranch,
+    headSha: "1111111111111111111111111111111111111111",
+    metaHeadSha: "1111111111111111111111111111111111111111",
+  },
+  pr: {
+    provider: "github",
+    state: "OPEN",
+    source: "lookup",
+    prNumber: 101,
+    prUrl: "https://github.com/example/repo/pull/101",
+    base: "main",
+    headSha: "1111111111111111111111111111111111111111",
+    mergeCommit: null,
+  },
+  closeTail: { state: "not_applicable", reason: "implementation PR is open" },
+  hostedChecks: { checked: false, reason: "not requested" },
+  reviewThreads: { checked: false, reason: "not requested" },
+  queue: { present: false },
+  handoff: { present: false },
+  nextAction: "",
+} satisfies PrFlowStatusReport;
 
 const resume = {
   task_id: task.id,
@@ -281,6 +307,13 @@ describe("WorkflowStep execution projections", () => {
 
   it("projects verification as a TESTER episode with mutation forbidden", () => {
     const state = routeState({
+      task: {
+        ...task,
+        commit: {
+          hash: "2222222222222222222222222222222222222222",
+          message: "feat: implementation",
+        },
+      },
       blockers: [
         {
           code: "verification_required",
@@ -308,6 +341,33 @@ describe("WorkflowStep execution projections", () => {
       mutationPathHint: null,
       exactArgv: null,
       evidenceMissing: ["verification_record"],
+    });
+  });
+
+  it("hands an open branch_pr task without an implementation checkpoint to CODER", () => {
+    const state = routeState({ prFlow: openPrFlow });
+    const step = reduceRouteState(state);
+    const { oracle, packet } = executionPacket({
+      state,
+      step,
+      paths: { taskWorktreePath },
+    });
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      id: "agent.branch_implementation",
+      authoritativeCheckout: "task_worktree",
+      episode: { purpose: "implementation", role: "CODER", taskId: task.id },
+      compatibility: { code: "continue_branch_implementation", command: null },
+      execution: { semanticMutationAllowed: true },
+    });
+    expect(oracle.mutationPathHint).toBe(taskWorktreePath);
+    expect(packet).toMatchObject({
+      actionKind: "stop",
+      recommendedRole: "CODER",
+      safeToMutate: true,
+      mutationPathHint: taskWorktreePath,
+      exactArgv: null,
     });
   });
 
@@ -846,7 +906,14 @@ describe("WorkflowStep execution projections", () => {
   });
 
   it("stabilizes a protected step when the full fingerprint resolves bootstrap approval", async () => {
-    const state = routeState();
+    const state = routeState({
+      task: { ...task, verification: { state: "ok" } },
+      prFlow: {
+        ...openPrFlow,
+        task: { ...openPrFlow.task, verification: "ok" },
+        pr: { provider: "github", state: "not_found", source: "lookup" },
+      },
+    });
     const initial = reduceRouteState(state);
     if (initial.kind !== "approval" || initial.request.type !== "side_effect") {
       throw new Error("expected a bootstrap side-effect approval");
