@@ -2,10 +2,10 @@
 id: "202607221850-9C9WBP"
 title: "Normalize runner task inputs into TaskEpisodeView"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -61,7 +61,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Reviewed task-context compaction: only the canonical BEGIN/END verification envelope is reclassified as optional; localized configured required sections and oversized semantic sections retain their structural validation behavior."
-commit: null
+commit:
+  hash: "0490dbd84b699dd22a37a17b0b69789d4670d604"
+  message: "📝 9C9WBP task: authorize pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -75,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -128,8 +133,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents."
+  -
+    type: "status"
+    at: "2026-07-27T23:14:36.838Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T23:12:54.310Z"
+doc_updated_at: "2026-07-27T23:14:36.839Z"
 doc_updated_by: "CODER"
 description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
 sections:
@@ -436,8 +448,8 @@ extensions:
         stateScopeDigest: "sha256:9cce8f57beccc6f358eafd6af1db0287d9939c0e247f7cff0b1ebd7f89d8bf96"
     schemaVersion: 1
   implementation_commit:
-    hash: "91edc7d8080ab6518f3ca0054efe6b06b312b60d"
-    message: "✨ 9C9WBP task: pre-merge closure"
+    hash: "6f18f3796dd7d31d7c9697841a5b55fc2b5376a1"
+    message: "🐛 9C9WBP runner: bound lifecycle verification context"
   workflow_route_baseline:
     start_head_sha: "9f99149a3920e2e49a6887d2dcd22460e10f672e"
     version: 1
