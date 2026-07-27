@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records",
   "created_at": "2026-07-26T10:58:46.358Z",
-  "diffstat_sha256": "sha256:82ad49f03d21abab6cebfac74811cd7def88778f960991d2fedf03c52e39f7eb",
+  "diffstat_sha256": "sha256:00b939d66c9e0dba0429b595424bb0c25a1bfd48d1c274502d7538ece0a55b93",
   "last_verified_at": "2026-07-26T23:17:50.537Z",
   "last_verified_diffstat_sha256": "sha256:73a1c9166f7747e00380adf3a0da7b7cd1a44bf75cf4d9538f1334119d1d51d1",
   "pr_number": 4633,

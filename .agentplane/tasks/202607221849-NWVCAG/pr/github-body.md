@@ -34,25 +34,29 @@ chunks, 72 tests), typecheck, and format:changed.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  11 +-
  .../src/cli/run-cli/command-catalog/task.ts        |   7 +
  .../src/cli/run-cli/command-loaders/task.ts        |   4 +
- .../commands/shared/quality-review-target.test.ts  |  71 ++++
- .../src/commands/shared/quality-review-target.ts   |  72 +++-
- .../shared/route-decision-next-action.test.ts      |   2 +-
- .../src/commands/shared/route-decision.ts          |  72 +++-
- .../commands/shared/side-effect-authority.test.ts  | 273 +++++++++++++
- .../src/commands/shared/side-effect-authority.ts   | 433 +++++++++++++++++++++
+ .../commands/shared/quality-review-target.test.ts  |  71 ++
+ .../src/commands/shared/quality-review-target.ts   |  69 +-
+ .../route-decision-fingerprint-stabilization.ts    |  51 ++
+ .../shared/route-decision-next-action.test.ts      |   4 +-
+ .../src/commands/shared/route-decision.ts          |  30 +-
+ .../commands/shared/side-effect-authority.test.ts  | 273 ++++++++
+ .../src/commands/shared/side-effect-authority.ts   | 433 ++++++++++++
  .../workflow-operation-projection.registry.test.ts |  43 +-
- .../src/commands/shared/workflow-step-factory.ts   |  98 ++++-
+ .../src/commands/shared/workflow-step-authority.ts | 178 +++++
+ .../src/commands/shared/workflow-step-common.ts    |  75 ++
+ .../src/commands/shared/workflow-step-factory.ts   | 160 +----
  .../shared/workflow-step-fingerprint.test.ts       |  29 +-
- .../commands/shared/workflow-step-fingerprint.ts   |  50 ++-
- ...rkflow-step-projections.conflict-rework.test.ts |  54 ++-
- .../shared/workflow-step-projections.test.ts       | 200 +++++++++-
- .../src/commands/shared/workflow-step.test.ts      | 107 ++++-
- .../src/commands/shared/workflow-step.ts           |  33 +-
- .../commands/task/authority-grant.command.test.ts  |  32 ++
- .../src/commands/task/authority-grant.command.ts   | 207 ++++++++++
+ .../commands/shared/workflow-step-fingerprint.ts   |  50 +-
+ .../workflow-step-integration-projections.test.ts  | 223 ++++++
+ ...rkflow-step-projections.conflict-rework.test.ts |  58 +-
+ .../shared/workflow-step-projections.test.ts       | 269 ++++---
+ .../src/commands/shared/workflow-step.test.ts      |  82 ++-
+ .../src/commands/shared/workflow-step.ts           |  26 +-
+ .../commands/task/authority-grant.command.test.ts  |  32 +
+ .../src/commands/task/authority-grant.command.ts   | 210 ++++++
  .../agentplane/src/runner/sandbox-policy.test.ts   |  14 +
  packages/agentplane/src/runner/sandbox-policy.ts   |  13 +-
  .../src/runner/state-fingerprint-observation.ts    |   5 +
@@ -60,9 +64,12 @@ chunks, 72 tests), typecheck, and format:changed.
  .../usecases/agent-work-order.integration.test.ts  |  16 +
  .../agentplane/src/runner/usecases/task-run.ts     |   1 +
  packages/core/src/runner/execution-receipt.ts      |   2 +-
- .../baselines/v0.7-compatibility-candidate.json    | 168 +++++++-
- .../check-compatibility-contract-baseline.mjs      | 120 ++++++
- 28 files changed, 2032 insertions(+), 103 deletions(-)
+ schemas/execution-receipt.schema.json              |  21 +-
+ scripts/baselines/clone-baseline.json              | 778 ++++++++++-----------
+ .../baselines/v0.7-compatibility-candidate.json    | 172 ++++-
+ .../check-compatibility-contract-baseline.mjs      | 122 +++-
+ scripts/generate/sync-schemas.mjs                  |   5 +-
+ 35 files changed, 2812 insertions(+), 727 deletions(-)
 ```
 
 </details>
