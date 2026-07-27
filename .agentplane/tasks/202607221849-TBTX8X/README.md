@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 35
 origin:
   system: "manual"
 depends_on:
@@ -44,27 +44,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T14:36:29.970Z"
+  updated_at: "2026-07-27T14:44:28.132Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "9fbcd8fe21742287bc3846c50ad777db198ac495"
+  evaluated_sha: "fb63a666ffcd7e7f11a7a1c51e5a3314e2de61cf"
   blueprint_digest: "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53"
   evidence_refs:
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221849-TBTX8X/README.md"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The prepare/apply flow binds evaluator output to the frozen task revision, evaluated SHA, blueprint digest, and evidence digests; mutation-shaped result fields are rejected before quality state can change."
+    - "The follow-up change only normalizes the compatibility conditional to the repository Prettier style; it does not change the optional reworkContext behavior that the focused evaluator regression tests cover."
 commit:
   hash: "fb63a666ffcd7e7f11a7a1c51e5a3314e2de61cf"
   message: "🧩 TBTX8X task: format evaluator compatibility"
@@ -168,8 +168,20 @@ events:
     author: "CODER"
     from: "DOING"
     to: "DOING"
+  -
+    type: "status"
+    at: "2026-07-27T14:43:42.281Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+  -
+    type: "status"
+    at: "2026-07-27T14:45:00.485Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
 doc_version: 3
-doc_updated_at: "2026-07-27T14:43:30.468Z"
+doc_updated_at: "2026-07-27T14:45:00.485Z"
 doc_updated_by: "CODER"
 description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
 sections:
