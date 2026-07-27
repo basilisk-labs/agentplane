@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on:
@@ -69,8 +69,8 @@ quality_review:
     - "The dedicated retirement module remains reachable only from effect resolution; it requires an exact durable resolution reference before stale-claim retirement."
     - "The resolve-effect and resume-effect command contracts are re-exported unchanged from the stable task-run command module; direct CLI help and focused regression suites preserve the public surface."
 commit:
-  hash: "2d735bbb41c251281b9239d730bc22ae6fc42c76"
-  message: "✨ QV09NA task: record renewed closure authority"
+  hash: "0c5c5b0d6d390d45bb051087102bb3051ac02186"
+  message: "📋 QV09NA task: authorize pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -81,6 +81,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -119,8 +122,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T11:06:56.898Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T06:47:44.141Z"
+doc_updated_at: "2026-07-27T11:06:56.899Z"
 doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
@@ -405,8 +415,8 @@ extensions:
         stateScopeDigest: "sha256:005fb04be1c4ea0427b043d581c2cc00e0bc2693351c872be0a9490dc3101ed2"
     schemaVersion: 1
   implementation_commit:
-    hash: "90d33ac632e4181385fc8cf59b37c8badc3fa1d2"
-    message: "🐛 QV09NA effect-in-doubt: format resolution coverage"
+    hash: "7f6761be42d40ba041572448685f0888a23b17be"
+    message: "🐛 QV09NA effect-in-doubt: split resolution hot paths"
   workflow_route_baseline:
     start_head_sha: "cae1a43c6aadbe44325f842254f0f60c78882b84"
     version: 1

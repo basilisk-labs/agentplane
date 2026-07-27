@@ -8,10 +8,10 @@
   "pr_number": 4639,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4639",
   "pre_merge_closure": {
-    "basis_commit": "2d735bbb41c251281b9239d730bc22ae6fc42c76",
+    "basis_commit": "0c5c5b0d6d390d45bb051087102bb3051ac02186",
     "branch": "task/202607242158-QV09NA/resolve-durable-runner-effects-in-doubt-without",
     "pr_number": 4639,
-    "recorded_at": "2026-07-27T06:47:44.193Z",
+    "recorded_at": "2026-07-27T11:06:56.968Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
