@@ -12,7 +12,6 @@ import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import {
-  evaluatorExecuteSpec,
   evaluatorSpec,
   type EvaluatorApplyParsed,
   type EvaluatorExecuteParsed,
@@ -33,13 +32,13 @@ import {
 
 export {
   evaluatorApplySpec,
-  evaluatorExecuteSpec,
   evaluatorListSpec,
   evaluatorPrepareSpec,
   evaluatorRunSpec,
   evaluatorShowSpec,
   evaluatorSpec,
 } from "./evaluator.spec.js";
+export { evaluatorExecuteSpec } from "./evaluator.spec.js";
 
 export async function runEvaluatorGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
   return throwGroupCommandUsage({
