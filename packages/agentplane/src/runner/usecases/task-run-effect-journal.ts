@@ -4,8 +4,8 @@ import {
   advanceRunnerEffectJournal,
   prepareRunnerEffectOperation,
   startRunnerEffectOperation,
-  type StartedRunnerEffectOperation,
 } from "../effect-operation.js";
+import type { StartedRunnerEffectOperation } from "../effect-operation.js";
 export type { StartedRunnerEffectOperation } from "../effect-operation.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import type {

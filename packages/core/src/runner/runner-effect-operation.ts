@@ -345,7 +345,7 @@ export function createRunnerEffectOperationRef(input: {
     schema_version: RUNNER_EFFECT_OPERATION_SCHEMA_VERSION,
     kind: RUNNER_EFFECT_OPERATION_REF_KIND,
     run_id: input.run_id.trim(),
-    source_run_id: input.source_run_id?.trim() || null,
+    source_run_id: input.source_run_id?.trim() ?? null,
     operation_key: input.operation.operation_key,
     operation_digest: input.operation.digest,
     claim_generation: input.operation.claim_generation,
