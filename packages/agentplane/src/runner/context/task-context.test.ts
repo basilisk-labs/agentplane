@@ -254,6 +254,7 @@ describe("assembleRunnerTaskContext", () => {
       verify: [],
     });
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    ctx.config.tasks.doc.required_sections = ["Summary"];
     const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
     const sections = { ...(loaded.sections ?? {}), Summary: "required ".repeat(500) };
     await ctx.taskBackend.writeTask({
@@ -318,5 +319,56 @@ describe("assembleRunnerTaskContext", () => {
       { name: "Контекст", text: "Обязательный контекст.", required: true },
       { name: "Проверка", text: "Обязательная проверка.", required: true },
     ]);
+  });
+
+  it("keeps CLI-managed verification history out of required episode input", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+    const task = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "Verification history budget fixture",
+      description: "Formal verification history stays outside the required semantic core.",
+      owner: "CODER",
+      priority: "high",
+      tags: ["runner"],
+      dependsOn: [],
+      verify: [],
+    });
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
+    const sections = {
+      ...(loaded.sections ?? {}),
+      Summary: "Required semantic summary.",
+      Scope: "Required semantic scope.",
+      Plan: "Required semantic plan.",
+      "Verify Steps": "Required semantic acceptance checks.",
+      Verification: [
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "Formal lifecycle record ".repeat(400),
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+    };
+    await ctx.taskBackend.writeTask({
+      ...loaded,
+      doc: renderTaskDocFromSections(sections),
+      sections,
+    });
+
+    const assembled = await assembleRunnerTaskContext({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      task_id: task.id,
+    });
+
+    expect(assembled.task.section_policy.required_sections).not.toContain("Verification");
+    const verificationSection = assembled.task.narrative.sections.find(
+      (section) => section.name === "Verification",
+    );
+    expect(verificationSection).toMatchObject({ name: "Verification", required: false });
+    expect(verificationSection?.text).toContain("Formal lifecycle record");
+    expect(assembled.task.compaction.sections.truncated).toBe(true);
   });
 });

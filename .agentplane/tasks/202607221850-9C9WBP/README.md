@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-27T22:40:18.777Z"
+  state: "ok"
+  updated_at: "2026-07-27T23:12:53.569Z"
   updated_by: "TESTER"
-  note: "Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths."
-  attempts: 1
+  note: "Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -117,8 +117,20 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths."
+  -
+    type: "verify"
+    at: "2026-07-27T22:51:23.280Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verified locally: task episode consumers tolerate incomplete legacy-shaped task inputs without restoring raw TaskData transport."
+  -
+    type: "verify"
+    at: "2026-07-27T23:12:53.569Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents."
 doc_version: 3
-doc_updated_at: "2026-07-27T22:40:19.605Z"
+doc_updated_at: "2026-07-27T23:12:54.310Z"
 doc_updated_by: "CODER"
 description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
 sections:
@@ -202,6 +214,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-27T22:51:23.280Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verified locally: task episode consumers tolerate incomplete legacy-shaped task inputs without restoring raw TaskData transport.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:40:19.605Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+    - old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-27T23:12:53.569Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:51:24.222Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+    - old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -221,6 +293,14 @@ sections:
     - Observation: GitHub verify-unit: 10 failures (effect-operation.test.ts and base-prompts.test.ts); all originate from dereferencing missing metadata on legacy/partial task views.
       Impact: RF-21 breaks compatibility for callers that provide a task identity or legacy shape without TaskEpisodeView.metadata.
       Resolution: Restore null-safe metadata access with target task-id fallback and add focused regression coverage before re-verification.
+
+    - Observation: Focused runner tests, test:fast, test:critical, typecheck, guards, formatting, and ci:contract all passed after commit 7957097d079f122b9d3bcf797cded794cf400e82.
+      Impact: The hosted verify-unit failure is addressed while preserving TaskEpisodeView as the only semantic runner task representation.
+      Resolution: Publish the rework head, then rerun hosted PR verification and quality closure.
+
+    - Observation: Focused runner tests (26), test:fast, test:critical, lint, typecheck, guards, and ci:contract passed after the Verification-marker regression fix.
+      Impact: Long lifecycle evidence no longer blocks task-route or evaluator preparation, and it is not silently lost from the compact episode view.
+      Resolution: Commit the verified rework, refresh evaluator quality evidence, publish the PR head, and wait for hosted checks.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -427,6 +507,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-27T22:51:23.280Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verified locally: task episode consumers tolerate incomplete legacy-shaped task inputs without restoring raw TaskData transport.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:40:19.605Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+- old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-27T23:12:53.569Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:51:24.222Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+- old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -450,3 +590,11 @@ DecisionContextRef:
 - Observation: GitHub verify-unit: 10 failures (effect-operation.test.ts and base-prompts.test.ts); all originate from dereferencing missing metadata on legacy/partial task views.
   Impact: RF-21 breaks compatibility for callers that provide a task identity or legacy shape without TaskEpisodeView.metadata.
   Resolution: Restore null-safe metadata access with target task-id fallback and add focused regression coverage before re-verification.
+
+- Observation: Focused runner tests, test:fast, test:critical, typecheck, guards, formatting, and ci:contract all passed after commit 7957097d079f122b9d3bcf797cded794cf400e82.
+  Impact: The hosted verify-unit failure is addressed while preserving TaskEpisodeView as the only semantic runner task representation.
+  Resolution: Publish the rework head, then rerun hosted PR verification and quality closure.
+
+- Observation: Focused runner tests (26), test:fast, test:critical, lint, typecheck, guards, and ci:contract passed after the Verification-marker regression fix.
+  Impact: Long lifecycle evidence no longer blocks task-route or evaluator preparation, and it is not silently lost from the compact episode view.
+  Resolution: Commit the verified rework, refresh evaluator quality evidence, publish the PR head, and wait for hosted checks.

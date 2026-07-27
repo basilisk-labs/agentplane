@@ -27,6 +27,8 @@ export type RunnerTaskContextEnvelope = {
 };
 
 const TRUNCATED_MARKER = "\n\n[TRUNCATED]";
+const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
+const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 
 export const RUNNER_TASK_CONTEXT_BUDGETS = {
   section_max_bytes: 3072,
@@ -109,6 +111,26 @@ function measureEvents(events: TaskEvent[]): number {
 
 function sectionKey(section: string): string {
   return section.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase();
+}
+
+function isCliManagedVerificationSection(text: string | undefined): boolean {
+  return (
+    typeof text === "string" &&
+    text.includes(VERIFICATION_RESULTS_BEGIN) &&
+    text.includes(VERIFICATION_RESULTS_END)
+  );
+}
+
+function semanticRequiredSections(opts: {
+  required_sections: readonly string[];
+  sections: Record<string, string>;
+}): string[] {
+  const sectionsByKey = new Map(
+    Object.entries(opts.sections).map(([section, text]) => [sectionKey(section), text]),
+  );
+  return opts.required_sections.filter(
+    (section) => !isCliManagedVerificationSection(sectionsByKey.get(sectionKey(section))),
+  );
 }
 
 function compactSections(opts: {
@@ -332,10 +354,14 @@ export async function assembleRunnerTaskContext(opts: {
           ? renderTaskDocFromSections(task.sections)
           : "";
     const baseSections = task.sections ?? (baseDoc ? taskDocToSectionMap(baseDoc) : {});
+    const requiredSections = semanticRequiredSections({
+      required_sections: ctx.config.tasks.doc.required_sections,
+      sections: baseSections,
+    });
     const compactedSections = compactSections({
       task_id: task.id,
       sections: baseSections,
-      required_sections: ctx.config.tasks.doc.required_sections,
+      required_sections: requiredSections,
     });
     const compactedComments = compactComments(task.comments ?? []);
     const compactedEvents = compactEvents(task.events ?? []);
@@ -380,7 +406,7 @@ export async function assembleRunnerTaskContext(opts: {
       },
       section_policy: {
         source: "task_document_schema",
-        required_sections: [...ctx.config.tasks.doc.required_sections],
+        required_sections: requiredSections,
       },
       history: {
         comments: compactedComments.comments,
