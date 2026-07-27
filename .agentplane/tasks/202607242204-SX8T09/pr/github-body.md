@@ -41,12 +41,12 @@ Define strict versioned runner effect operation and journal contracts, persist o
  .../usecases/task-run-active-claim-cleanup.ts      |  72 +++
  .../src/runner/usecases/task-run-effect-journal.ts | 150 ++++++
  .../runner/usecases/task-run-framework-explain.ts  |  19 +
- .../task-run-state-fingerprint.integration.test.ts |  78 ++-
+ .../task-run-state-fingerprint.integration.test.ts |  60 ++-
  .../agentplane/src/runner/usecases/task-run.ts     | 143 +++---
  packages/core/src/index.ts                         |  28 ++
  .../core/src/runner/runner-effect-operation.ts     | 370 ++++++++++++++
  packages/core/src/schemas/index.ts                 |  31 ++
- 14 files changed, 2005 insertions(+), 79 deletions(-)
+ 14 files changed, 1987 insertions(+), 79 deletions(-)
 ```
 
 </details>

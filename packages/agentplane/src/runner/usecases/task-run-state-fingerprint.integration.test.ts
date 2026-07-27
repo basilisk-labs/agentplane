@@ -60,14 +60,6 @@ async function captureRejection(promise: Promise<unknown>): Promise<unknown> {
   throw new Error("Expected promise to reject.");
 }
 
-function readRecordStringField(record: Record<string, unknown>, field: string): string {
-  const value = record[field];
-  if (typeof value !== "string") {
-    throw new Error(`Expected ${field} to be a string in runner effect artifact.`);
-  }
-  return value;
-}
-
 async function switchReplayFixtureToAcknowledgedCloud(opts: {
   root: string;
   task_id: string;
@@ -223,7 +215,7 @@ describe("task-run state fingerprint precondition", () => {
         validateRunnerEffectOperationRef(reference);
         const paths = resolveRunnerEffectOperationPaths({
           run_dir: invocation.run_dir,
-          operation_key: readRecordStringField(reference, "operation_key"),
+          operation_key: String(reference.operation_key),
         });
         const operation = JSON.parse(await readFile(paths.operation_path, "utf8")) as Record<
           string,
@@ -271,23 +263,13 @@ describe("task-run state fingerprint precondition", () => {
     if (!effectOperationAtFirstAdapterInstruction || !effectJournalAtFirstAdapterInstruction) {
       throw new Error("Expected runner effect operation before adapter instruction.");
     }
-    const operationKey = readRecordStringField(
-      effectOperationAtFirstAdapterInstruction,
-      "operation_key",
+    const operationKey = String(effectOperationAtFirstAdapterInstruction.operation_key);
+    const claimGeneration = String(effectOperationAtFirstAdapterInstruction.claim_generation);
+    expect(String(effectOperationAtFirstAdapterInstruction.idempotency_key)).toEqual(
+      `runner-effect:${operationKey}`,
     );
-    const claimGeneration = readRecordStringField(
-      effectOperationAtFirstAdapterInstruction,
-      "claim_generation",
-    );
-    expect(
-      readRecordStringField(effectOperationAtFirstAdapterInstruction, "idempotency_key"),
-    ).toEqual(`runner-effect:${operationKey}`);
-    expect(readRecordStringField(effectJournalAtFirstAdapterInstruction, "operation_key")).toBe(
-      operationKey,
-    );
-    expect(readRecordStringField(effectJournalAtFirstAdapterInstruction, "claim_generation")).toBe(
-      claimGeneration,
-    );
+    expect(String(effectJournalAtFirstAdapterInstruction.operation_key)).toBe(operationKey);
+    expect(String(effectJournalAtFirstAdapterInstruction.claim_generation)).toBe(claimGeneration);
     expect(effectJournalState?.effect_operation).toMatchObject({
       run_id: "run-state-fingerprint-success",
       operation_key: operationKey,
