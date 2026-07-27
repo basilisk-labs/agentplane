@@ -228,6 +228,38 @@ describe("evaluator run command", () => {
     ).rejects.toThrow("EVALUATOR rework requires at least one --finding.");
   });
 
+  it("keeps the evaluator compatibility facade tolerant of a legacy input without reworkContext", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV15";
+    await addTask(root, taskId);
+    await commitPath(root, "src/review-target.txt", "review target", "feat: review target");
+
+    await runEvaluatorRun(
+      { cwd: root, rootOverride: undefined },
+      {
+        taskId,
+        evaluator: "recovery-context",
+        provenance: "evaluator_supplied",
+        verdict: "pass",
+        summary: "The evaluator reviewed the committed target.",
+        findings: ["The evaluator compatibility facade preserved the supplied review."],
+        evidenceRefs: ["src/review-target.txt"],
+        missingTests: [],
+        hiddenAssumptions: [],
+        residualRisks: [],
+        json: false,
+        record: true,
+      },
+    );
+
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toMatchObject({
+      provenance: "evaluator_supplied",
+      state: "pass",
+    });
+  });
+
   it("preserves supplied review values with explicit human provenance", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
