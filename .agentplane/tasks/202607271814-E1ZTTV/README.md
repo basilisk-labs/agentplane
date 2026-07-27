@@ -2,10 +2,10 @@
 id: "202607271814-E1ZTTV"
 title: "Stabilize concurrent recovery-lease reads"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -52,8 +52,8 @@ quality_review:
   findings:
     - "The task now declares code mutation and code.branch_pr; its regenerated blueprint requires code-path, fast-check, PR, verification, quality, hosted, and commit evidence, all of which map to the implemented lease-read recovery fix and recorded validation."
 commit:
-  hash: "f6349f313390cefb99adb47e1d7efe9e4d161d97"
-  message: "🧩 E1ZTTV task: authorize pre-merge closure"
+  hash: "1f437206b560142cf1c9cdaaf5f54cd044a8e4b6"
+  message: "🧩 E1ZTTV task: authorize reviewed closure"
 comments:
   -
     author: "CODER"
@@ -70,6 +70,9 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Reopened: correct task intent to code mutation and regenerate the branch_pr blueprint after PR review P1."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -112,9 +115,16 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Reopened: correct task intent to code mutation and regenerate the branch_pr blueprint after PR review P1."
+  -
+    type: "status"
+    at: "2026-07-27T19:15:32.971Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T19:13:01.212Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-07-27T19:15:32.972Z"
+doc_updated_by: "CODER"
 description: "Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability."
 sections:
   Summary: |-
