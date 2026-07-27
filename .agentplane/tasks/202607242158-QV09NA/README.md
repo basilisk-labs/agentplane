@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 48
+revision: 49
 origin:
   system: "manual"
 depends_on:
@@ -43,9 +43,9 @@ plan_approval:
   note: "Approved as the explicit operator-resolution and claim-retirement boundary after typed effect journals and authority contracts."
 verification:
   state: "ok"
-  updated_at: "2026-07-27T06:38:24.275Z"
+  updated_at: "2026-07-27T12:02:57.849Z"
   updated_by: "TESTER"
-  note: "Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck, compatibility baseline, formatter, and diff check. Concurrent identical intents converge; conflicting verdicts reject without adapter execution."
+  note: "Verified current QV09NA implementation and closure: bun run test:fast (474 files, 3284 tests), lint, arch, Knip, typecheck, critical CLI, compatibility baseline, explicit resolve-effect/resume-effect help, and GitHub PR #4639 hosted checks all passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -147,8 +147,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-27T12:02:57.849Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified current QV09NA implementation and closure: bun run test:fast (474 files, 3284 tests), lint, arch, Knip, typecheck, critical CLI, compatibility baseline, explicit resolve-effect/resume-effect help, and GitHub PR #4639 hosted checks all passed."
 doc_version: 3
-doc_updated_at: "2026-07-27T11:47:31.895Z"
+doc_updated_at: "2026-07-27T12:03:03.854Z"
 doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
@@ -204,6 +210,36 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607242158-QV09NA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-27T12:02:57.849Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified current QV09NA implementation and closure: bun run test:fast (474 files, 3284 tests), lint, arch, Knip, typecheck, critical CLI, compatibility baseline, explicit resolve-effect/resume-effect help, and GitHub PR #4639 hosted checks all passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T11:47:31.895Z, excerpt_hash=sha256:36c83d45021296a1a33d2c8b29198a53b6f5104ea1fee8a63c5e13ae454acc25
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242158-QV09NA-resolve-durable-runner-effects-in-doubt-without/.agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json
+    - old_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+    - current_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242158-QV09NA
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -787,6 +823,36 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607242158-QV09NA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-27T12:02:57.849Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified current QV09NA implementation and closure: bun run test:fast (474 files, 3284 tests), lint, arch, Knip, typecheck, critical CLI, compatibility baseline, explicit resolve-effect/resume-effect help, and GitHub PR #4639 hosted checks all passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T11:47:31.895Z, excerpt_hash=sha256:36c83d45021296a1a33d2c8b29198a53b6f5104ea1fee8a63c5e13ae454acc25
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242158-QV09NA-resolve-durable-runner-effects-in-doubt-without/.agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json
+- old_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+- current_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242158-QV09NA
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

@@ -24,10 +24,9 @@ Consume the typed effect journal produced by 202607242204-SX8T09 and resolve it 
 - Note:
 
 ```text
-Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect
-cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck,
-compatibility baseline, formatter, and diff check. Concurrent identical intents converge;
-conflicting verdicts reject without adapter execution.
+Verified current QV09NA implementation and closure: bun run test:fast (474 files, 3284 tests), lint,
+arch, Knip, typecheck, critical CLI, compatibility baseline, explicit resolve-effect/resume-effect
+help, and GitHub PR #4639 hosted checks all passed.
 ```
 - Canonical workflow state lives in the task README.
 
