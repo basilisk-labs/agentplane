@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The task now declares code mutation and code.branch_pr; its regenerated blueprint requires code-path, fast-check, PR, verification, quality, hosted, and commit evidence, all of which map to the implemented lease-read recovery fix and recorded validation.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The targeted 30-second test-harness waits remain bounded and sufficient under local and hosted worker contention."
+  ]
+}
