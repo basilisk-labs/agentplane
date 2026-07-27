@@ -4,7 +4,7 @@ title: "Stabilize concurrent recovery-lease reads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "2fa8ca98733263e3e3a688afff63e5f3385d4ead"
+  message: "🐛 E1ZTTV reliability: stabilize concurrent recovery-lease reads"
 comments:
   -
     author: "CODER"
     body: "Start: isolate and stabilize concurrent recovery-lease observation without weakening file-integrity checks."
+  -
+    author: "CODER"
+    body: "Implementation committed: bounded recovery-lease read retries, deterministic collision coverage, and resilient runner test waits passed the full fast CI."
 events:
   -
     type: "status"
@@ -35,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: isolate and stabilize concurrent recovery-lease observation without weakening file-integrity checks."
+  -
+    type: "status"
+    at: "2026-07-27T18:55:11.055Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: bounded recovery-lease read retries, deterministic collision coverage, and resilient runner test waits passed the full fast CI."
 doc_version: 3
-doc_updated_at: "2026-07-27T18:15:07.754Z"
+doc_updated_at: "2026-07-27T18:55:11.055Z"
 doc_updated_by: "CODER"
 description: "Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability."
 sections:
