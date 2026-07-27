@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "finding.frozen-read-only-review",
+      "severity": "low",
+      "summary": "The prepare/apply flow binds evaluator output to the frozen task revision, evaluated SHA, blueprint digest, and evidence digests; mutation-shaped result fields are rejected before quality state can change.",
+      "broken_invariant": "Quality state may only accept a review bound to an unchanged, read-only implementation target.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-diff.patch"
+        },
+        {
+          "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-observed-checks.json"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Hosted full-fast CI remains the integration gate. The local full-fast run had runner-supervision EPERM and timing failures outside the changed evaluator paths; focused evaluator tests, critical CLI, schemas, lifecycle invariants, typecheck, Knip, and CLI-reference checks passed."
+}

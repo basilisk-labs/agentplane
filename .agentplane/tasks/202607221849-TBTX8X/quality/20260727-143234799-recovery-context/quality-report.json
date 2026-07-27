@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-TBTX8X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T14:36:29.970Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "9fbcd8fe21742287bc3846c50ad777db198ac495",
+  "blueprint_digest": "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53",
+  "findings": [
+    "The prepare/apply flow binds evaluator output to the frozen task revision, evaluated SHA, blueprint digest, and evidence digests; mutation-shaped result fields are rejected before quality state can change."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-143234799-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted full-fast CI remains the integration gate. The local full-fast run had runner-supervision EPERM and timing failures outside the changed evaluator paths; focused evaluator tests, critical CLI, schemas, lifecycle invariants, typecheck, Knip, and CLI-reference checks passed."
+  ]
+}
