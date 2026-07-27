@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The typed EVALUATOR boundary is satisfied: a result is schema-checked, limited to frozen evidence paths, and cannot carry lifecycle or implementation mutations.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "External provider dispatch and calibration are intentionally deferred to RF-12b; this task establishes only the typed prepare/apply boundary."
+  ]
+}
