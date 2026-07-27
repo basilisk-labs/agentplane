@@ -33,6 +33,8 @@ typecheck, test:critical, and ci:contract.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |   1 +
+ packages/agentplane/assets/policy/incidents.md     |   1 +
  .../src/commands/hermes/hermes-runtime.ts          |   2 +-
  .../agentplane/src/commands/task/brief-model.ts    |   4 +-
  .../src/runner/adapters/codex-preparation.ts       |   4 +-
@@ -74,7 +76,7 @@ typecheck, test:critical, and ci:contract.
  packages/agentplane/src/runner/write-scope.test.ts |   6 +-
  packages/testkit/src/runner.ts                     |  65 ++++--
  scripts/baselines/trust-boundary-violations.json   |  90 ---------
- 41 files changed, 581 insertions(+), 304 deletions(-)
+ 43 files changed, 583 insertions(+), 304 deletions(-)
 ```
 
 </details>
