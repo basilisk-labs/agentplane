@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607242158-QV09NA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T06:38:59.242Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "The implementation preserves the no-duplicate-execution boundary: typed immutable intents bind authority, fingerprints and claim generation; only the specialised stale-claim path retires a resolved effect; and not_applied resumes under a fresh operation key.",
+  "evaluated_sha": "1bf26e0701276bc5e4bd7038524edfb2ddb40350",
+  "blueprint_digest": "75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f",
+  "findings": [
+    "Reviewed the durable resolution, active-claim retirement and replay paths against the task criteria. Generic recovery remains blocked for unresolved effects, identical concurrent resolution converges, and an opposing verdict conflicts before provider invocation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607242158-QV09NA/README.md",
+    "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Operator-supplied evidence is intentionally trusted as a human authority; filesystem protocol coverage is local-process based and hosted CI remains required."
+  ]
+}

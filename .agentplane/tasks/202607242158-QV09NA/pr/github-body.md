@@ -20,8 +20,15 @@ Consume the typed effect journal produced by 202607242204-SX8T09 and resolve it 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect
+cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck,
+compatibility baseline, formatter, and diff check. Concurrent identical intents converge;
+conflicting verdicts reject without adapter execution.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
