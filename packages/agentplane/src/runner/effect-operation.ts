@@ -19,7 +19,6 @@ import {
   buildFreshRunnerEffectOperation,
   runnerEffectOperationMatchesIdentity,
   runnerEffectRuntimeError,
-  taskIdFromRunnerEffectBundle,
 } from "./effect-operation-contract.js";
 export { RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV } from "./effect-operation-contract.js";
 import { ensureStableRunnerArtifactDirectoryChain } from "./run-directory-boundary.js";
@@ -193,7 +192,7 @@ async function writeJournal(opts: {
     "utf8",
   );
   const observed = await readRunnerEffectJournal(opts.paths.journal_path);
-  if (!observed || observed.digest !== opts.journal.digest) {
+  if (observed?.digest !== opts.journal.digest) {
     throw new Error(
       "Runner effect journal changed while its atomic transition was being observed.",
     );
@@ -225,7 +224,7 @@ async function readEffectOperationForRun(opts: {
   });
   await ensureOperationDirectory({ artifact_root: opts.artifact_root, paths });
   const operation = await readRunnerEffectOperation(paths.operation_path);
-  if (!operation || operation.digest !== reference.operation_digest) {
+  if (operation?.digest !== reference.operation_digest) {
     throw runnerEffectRuntimeError(
       "Runner effect operation reference does not resolve to its immutable operation.",
       {
@@ -309,7 +308,7 @@ export async function prepareRunnerEffectOperation(opts: {
       expected_run_id: normalizedSourceRunId,
     });
     sourceRunId = normalizedSourceRunId;
-    if (!source) {
+    if (source === null) {
       candidate = buildFreshRunnerEffectOperation({
         ...opts,
         replay_source: {
@@ -394,7 +393,7 @@ export async function prepareRunnerEffectOperation(opts: {
     value: reference,
   });
   const observedReference = await readRunnerEffectOperationRef(paths.run_ref_path);
-  if (!observedReference || observedReference.digest !== reference.digest) {
+  if (observedReference?.digest !== reference.digest) {
     throw runnerEffectRuntimeError(
       "Runner effect operation reference changed during preparation.",
       {
@@ -462,7 +461,7 @@ export async function startRunnerEffectOperation(opts: {
     value: claim,
   });
   const observedClaim = await readRunnerEffectClaim(prepared.paths.claim_path);
-  if (!observedClaim || observedClaim.digest !== claim.digest || !won) {
+  if (observedClaim?.digest !== claim.digest || !won) {
     throw runnerEffectRuntimeError(
       "Runner effect start authority is already claimed by another supervisor.",
       {

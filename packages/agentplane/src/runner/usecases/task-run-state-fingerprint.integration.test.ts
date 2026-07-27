@@ -7,6 +7,11 @@ import type {
   StateFingerprint,
   StateFingerprintPreconditionDiagnostic,
 } from "@agentplaneorg/core/schemas";
+import {
+  validateRunnerEffectJournal,
+  validateRunnerEffectOperation,
+  validateRunnerEffectOperationRef,
+} from "@agentplaneorg/core/schemas";
 import { installRunCliIntegrationHarness } from "@agentplane/testkit";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -192,9 +197,9 @@ describe("task-run state fingerprint precondition", () => {
     let effectJournalState: Awaited<ReturnType<RunnerRunRepository["readState"]>> = null;
     let effectJournalEvents = "";
     let effectOperationAtFirstAdapterInstruction: {
-      operation: Record<string, unknown>;
-      journal: Record<string, unknown>;
-      reference: Record<string, unknown>;
+      operation: ReturnType<typeof validateRunnerEffectOperation>;
+      journal: ReturnType<typeof validateRunnerEffectJournal>;
+      reference: ReturnType<typeof validateRunnerEffectOperationRef>;
     } | null = null;
     const executeSpy = vi
       .spyOn(CustomRunnerAdapter.prototype, "execute")
@@ -208,22 +213,22 @@ describe("task-run state fingerprint precondition", () => {
         });
         effectJournalState = await repository.readState();
         effectJournalEvents = await readFile(invocation.events_path, "utf8");
-        const reference = JSON.parse(
-          await readFile(path.join(invocation.run_dir, ".runner-effect-operation.json"), "utf8"),
-        ) as Record<string, unknown>;
+        const reference = validateRunnerEffectOperationRef(
+          JSON.parse(
+            await readFile(path.join(invocation.run_dir, ".runner-effect-operation.json"), "utf8"),
+          ),
+        );
         const paths = resolveRunnerEffectOperationPaths({
           run_dir: invocation.run_dir,
-          operation_key: String(reference.operation_key),
+          operation_key: reference.operation_key,
         });
         effectOperationAtFirstAdapterInstruction = {
-          operation: JSON.parse(await readFile(paths.operation_path, "utf8")) as Record<
-            string,
-            unknown
-          >,
-          journal: JSON.parse(await readFile(paths.journal_path, "utf8")) as Record<
-            string,
-            unknown
-          >,
+          operation: validateRunnerEffectOperation(
+            JSON.parse(await readFile(paths.operation_path, "utf8")),
+          ),
+          journal: validateRunnerEffectJournal(
+            JSON.parse(await readFile(paths.journal_path, "utf8")),
+          ),
           reference,
         };
         return await originalExecute.call(this, invocation);
