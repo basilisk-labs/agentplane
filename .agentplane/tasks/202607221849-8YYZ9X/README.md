@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The change is bounded to test typing/formatting and command-spec re-export hygiene: provider fixtures still return promises, startup failures remain redacted as E_RUNTIME, and evaluator execute remains exported from the public command specification."
 commit:
-  hash: "6afca2863b5436f9a72817747b17975dd11569e1"
-  message: "📚 8YYZ9X task: record refreshed closure authority"
+  hash: "90d5787d068e7131d82f3822636f4d7d756ccdf0"
+  message: "📚 8YYZ9X task: record final closure authority"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -155,8 +158,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T17:34:58.564Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T17:15:53.199Z"
+doc_updated_at: "2026-07-27T17:34:58.564Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
@@ -580,8 +590,8 @@ extensions:
         stateScopeDigest: "sha256:36c2235d1eaea45dd34b454c21d21198e46690368f0f230d68133cf62cf76398"
     schemaVersion: 1
   implementation_commit:
-    hash: "e852fd816a6f8cecb09ee2b63cab395b4d5fde69"
-    message: "🧪 8YYZ9X evaluator: align critical compatibility snapshot"
+    hash: "6efa2f68f7d1529fbb0ff5f650cb334ea0297ac9"
+    message: "🧪 8YYZ9X evaluator: resolve evaluator lint findings"
   workflow_route_baseline:
     start_head_sha: "8c863087669ef21c562e8c230e851bc94a12e8a4"
     version: 1
