@@ -4,9 +4,7 @@ import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import {
   createRunnerEffectClaim,
   createRunnerEffectJournal,
-  createRunnerEffectOperation,
   createRunnerEffectOperationRef,
-  digestRunnerEffectValue,
   validateRunnerEffectClaim,
   validateRunnerEffectJournal,
   validateRunnerEffectOperation,
@@ -14,12 +12,16 @@ import {
   type RunnerEffectJournalPhase,
   type RunnerEffectOperation,
   type RunnerEffectOperationRef,
-  type RunnerEffectReplayDisposition,
 } from "@agentplaneorg/core/schemas";
 
-import { exitCodeForError } from "../cli/exit-codes.js";
-import { CliError } from "../shared/errors.js";
-
+import {
+  applyForwardedRunnerEffectIdempotencyKey,
+  buildFreshRunnerEffectOperation,
+  runnerEffectOperationMatchesIdentity,
+  runnerEffectRuntimeError,
+  taskIdFromRunnerEffectBundle,
+} from "./effect-operation-contract.js";
+export { RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV } from "./effect-operation-contract.js";
 import { ensureStableRunnerArtifactDirectoryChain } from "./run-directory-boundary.js";
 import { readStableRegularTextNoFollow, writeNewStableRegularFileNoFollow } from "./stable-file.js";
 import { assertSafeRunnerRunId } from "./task-run-paths.js";
@@ -35,7 +37,6 @@ const EFFECT_JOURNAL_FILENAME = "journal.json";
 const EFFECT_START_CLAIM_FILENAME = "start-claim.json";
 const EFFECT_OPERATION_REF_FILENAME = ".runner-effect-operation.json";
 const EFFECT_ARTIFACT_MAX_BYTES = 64 * 1024;
-export const RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV = "AGENTPLANE_RUNNER_EFFECT_IDEMPOTENCY_KEY";
 
 const JOURNAL_PHASE_ORDER: Record<RunnerEffectJournalPhase, number> = {
   prepared: 0,
@@ -64,21 +65,6 @@ export type PreparedRunnerEffectOperation = {
 export type StartedRunnerEffectOperation = PreparedRunnerEffectOperation & {
   journal: NonNullable<Awaited<ReturnType<typeof readRunnerEffectJournal>>>;
 };
-
-function runtimeError(message: string, context: Record<string, unknown>): CliError {
-  return new CliError({
-    exitCode: exitCodeForError("E_RUNTIME"),
-    code: "E_RUNTIME",
-    message,
-    context,
-  });
-}
-
-function taskIdFromBundle(bundle: RunnerContextBundle): string {
-  const taskId = bundle.task?.task_id ?? bundle.target.task_id;
-  if (!taskId) throw new Error("Runner effect operation requires a task-bound invocation.");
-  return taskId;
-}
 
 function taskDirectoryFromRunDir(runDir: string): string {
   return path.dirname(path.dirname(path.resolve(runDir)));
@@ -172,116 +158,6 @@ async function readRunnerEffectOperationRef(
   });
 }
 
-function operationMatchesIdentity(
-  left: RunnerEffectOperation,
-  right: RunnerEffectOperation,
-): boolean {
-  return (
-    left.operation_key === right.operation_key &&
-    left.claim_generation === right.claim_generation &&
-    left.task_id === right.task_id &&
-    left.adapter_id === right.adapter_id &&
-    left.work_order_id === right.work_order_id &&
-    left.authority_ref === right.authority_ref &&
-    left.authority_digest === right.authority_digest &&
-    left.precondition_fingerprint_digest === right.precondition_fingerprint_digest &&
-    left.precondition_policy_digest === right.precondition_policy_digest &&
-    left.invocation_digest === right.invocation_digest &&
-    left.enforcement === right.enforcement &&
-    left.idempotency_key === right.idempotency_key &&
-    left.expected_postconditions.join("\n") === right.expected_postconditions.join("\n") &&
-    JSON.stringify(left.replay_source) === JSON.stringify(right.replay_source)
-  );
-}
-
-function adapterForwardsEffectIdempotencyKey(bundle: RunnerContextBundle): boolean {
-  const capability = bundle.execution?.adapter_capabilities?.fields.effect_idempotency_key;
-  return capability?.level === "native" && capability.channel === "env";
-}
-
-function injectionEnvironmentKeys(opts: {
-  bundle: RunnerContextBundle;
-  invocation: RunnerInvocation;
-}): string[] {
-  const keys = new Set(Object.keys(opts.invocation.env));
-  if (adapterForwardsEffectIdempotencyKey(opts.bundle)) {
-    keys.add(RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV);
-  }
-  return [...keys].toSorted();
-}
-
-function applyForwardedEffectIdempotencyKey(opts: {
-  bundle: RunnerContextBundle;
-  invocation: RunnerInvocation;
-  operation: RunnerEffectOperation;
-}): void {
-  if (opts.operation.enforcement !== "provider_key_forwarded") return;
-  if (!adapterForwardsEffectIdempotencyKey(opts.bundle)) {
-    throw runtimeError("Runner operation requires a provider idempotency-key forwarding adapter.", {
-      reason: "runner_effect_provider_forwarding_unavailable",
-      operation_key: opts.operation.operation_key,
-      adapter_id: opts.invocation.adapter_id,
-    });
-  }
-  const existing = opts.invocation.env[RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV];
-  if (existing && existing !== opts.operation.idempotency_key) {
-    throw runtimeError("Runner invocation contains an incompatible provider idempotency key.", {
-      reason: "runner_effect_provider_key_conflict",
-      operation_key: opts.operation.operation_key,
-      adapter_id: opts.invocation.adapter_id,
-    });
-  }
-  opts.invocation.env[RUNNER_EFFECT_IDEMPOTENCY_KEY_ENV] = opts.operation.idempotency_key;
-}
-
-function buildFreshEffectOperation(opts: {
-  bundle: RunnerContextBundle;
-  invocation: RunnerInvocation;
-  state_fingerprint: RunnerStateFingerprintRecord;
-  replay_source?: {
-    source_run_id: string;
-    disposition: RunnerEffectReplayDisposition;
-  } | null;
-}): RunnerEffectOperation {
-  const authority = opts.bundle.work_order?.authority ?? {
-    kind: "runner_route_authority",
-    state_fingerprint: opts.state_fingerprint.precondition_fingerprint.digest,
-  };
-  return createRunnerEffectOperation({
-    task_id: taskIdFromBundle(opts.bundle),
-    origin_run_id: opts.invocation.run_id,
-    adapter_id: opts.invocation.adapter_id,
-    work_order_id: opts.invocation.work_order_id,
-    authority_ref: opts.bundle.work_order
-      ? `work-order:${opts.bundle.work_order.work_order_id}`
-      : `runner:${taskIdFromBundle(opts.bundle)}:${opts.state_fingerprint.precondition_fingerprint.digest}`,
-    authority_digest: digestRunnerEffectValue(authority),
-    precondition_fingerprint_digest: opts.state_fingerprint.precondition_fingerprint.digest,
-    precondition_policy_digest: digestRunnerEffectValue(opts.state_fingerprint.precondition_policy),
-    invocation_digest: digestRunnerEffectValue({
-      adapter_id: opts.invocation.adapter_id,
-      argv: opts.invocation.argv,
-      env_keys: injectionEnvironmentKeys(opts),
-      work_order_id: opts.invocation.work_order_id,
-    }),
-    expected_postconditions: [
-      "runner.execution_receipt.observed",
-      "runner.result.recorded",
-      "runner.state_fingerprint.recorded",
-    ],
-    replay_source: opts.replay_source
-      ? {
-          source_run_id: opts.replay_source.source_run_id,
-          destination_run_id: opts.invocation.run_id,
-          disposition: opts.replay_source.disposition,
-        }
-      : null,
-    enforcement: adapterForwardsEffectIdempotencyKey(opts.bundle)
-      ? "provider_key_forwarded"
-      : "supervisor_single_spawn",
-  });
-}
-
 async function ensureOperationDirectory(opts: {
   artifact_root: string;
   paths: RunnerEffectOperationPaths;
@@ -334,11 +210,14 @@ async function readEffectOperationForRun(opts: {
   );
   if (!reference) return null;
   if (reference.run_id !== opts.expected_run_id) {
-    throw runtimeError("Runner effect operation reference is bound to a different run.", {
-      reason: "runner_effect_reference_run_mismatch",
-      expected_run_id: opts.expected_run_id,
-      observed_run_id: reference.run_id,
-    });
+    throw runnerEffectRuntimeError(
+      "Runner effect operation reference is bound to a different run.",
+      {
+        reason: "runner_effect_reference_run_mismatch",
+        expected_run_id: opts.expected_run_id,
+        observed_run_id: reference.run_id,
+      },
+    );
   }
   const paths = resolveRunnerEffectOperationPaths({
     run_dir: opts.run_dir,
@@ -347,7 +226,7 @@ async function readEffectOperationForRun(opts: {
   await ensureOperationDirectory({ artifact_root: opts.artifact_root, paths });
   const operation = await readRunnerEffectOperation(paths.operation_path);
   if (!operation || operation.digest !== reference.operation_digest) {
-    throw runtimeError(
+    throw runnerEffectRuntimeError(
       "Runner effect operation reference does not resolve to its immutable operation.",
       {
         reason: "runner_effect_operation_reference_invalid",
@@ -360,10 +239,13 @@ async function readEffectOperationForRun(opts: {
     operation.claim_generation !== reference.claim_generation ||
     operation.enforcement !== reference.enforcement
   ) {
-    throw runtimeError("Runner effect operation reference has incompatible claim authority.", {
-      reason: "runner_effect_operation_reference_authority_invalid",
-      operation_key: operation.operation_key,
-    });
+    throw runnerEffectRuntimeError(
+      "Runner effect operation reference has incompatible claim authority.",
+      {
+        reason: "runner_effect_operation_reference_authority_invalid",
+        operation_key: operation.operation_key,
+      },
+    );
   }
   return { operation, reference };
 }
@@ -382,9 +264,9 @@ export async function prepareRunnerEffectOperation(opts: {
   });
   if (existingForRun) {
     if (!opts.source_run_id) {
-      const expected = buildFreshEffectOperation(opts);
-      if (!operationMatchesIdentity(existingForRun.operation, expected)) {
-        throw runtimeError(
+      const expected = buildFreshRunnerEffectOperation(opts);
+      if (!runnerEffectOperationMatchesIdentity(existingForRun.operation, expected)) {
+        throw runnerEffectRuntimeError(
           "Runner effect operation no longer matches current prepared authority.",
           {
             reason: "runner_effect_operation_precondition_mismatch",
@@ -399,12 +281,12 @@ export async function prepareRunnerEffectOperation(opts: {
     });
     const journal = await readRunnerEffectJournal(paths.journal_path);
     if (!journal) {
-      throw runtimeError("Runner effect operation is missing its required journal.", {
+      throw runnerEffectRuntimeError("Runner effect operation is missing its required journal.", {
         reason: "runner_effect_journal_missing",
         operation_key: existingForRun.operation.operation_key,
       });
     }
-    applyForwardedEffectIdempotencyKey({
+    applyForwardedRunnerEffectIdempotencyKey({
       bundle: opts.bundle,
       invocation: opts.invocation,
       operation: existingForRun.operation,
@@ -428,7 +310,7 @@ export async function prepareRunnerEffectOperation(opts: {
     });
     sourceRunId = normalizedSourceRunId;
     if (!source) {
-      candidate = buildFreshEffectOperation({
+      candidate = buildFreshRunnerEffectOperation({
         ...opts,
         replay_source: {
           source_run_id: normalizedSourceRunId,
@@ -442,7 +324,7 @@ export async function prepareRunnerEffectOperation(opts: {
       });
       const sourceJournal = await readRunnerEffectJournal(sourcePaths.journal_path);
       if (!sourceJournal) {
-        throw runtimeError("Runner effect operation is missing its required journal.", {
+        throw runnerEffectRuntimeError("Runner effect operation is missing its required journal.", {
           reason: "runner_effect_source_journal_missing",
           source_run_id: normalizedSourceRunId,
           operation_key: source.operation.operation_key,
@@ -453,7 +335,7 @@ export async function prepareRunnerEffectOperation(opts: {
         sourceJournal.operation_digest !== source.operation.digest ||
         sourceJournal.claim_generation !== source.operation.claim_generation
       ) {
-        throw runtimeError(
+        throw runnerEffectRuntimeError(
           "Runner effect source journal is not bound to its immutable operation authority.",
           {
             reason: "runner_effect_source_journal_authority_mismatch",
@@ -464,7 +346,7 @@ export async function prepareRunnerEffectOperation(opts: {
       }
       candidate =
         sourceJournal.phase === "prepared"
-          ? buildFreshEffectOperation({
+          ? buildFreshRunnerEffectOperation({
               ...opts,
               replay_source: {
                 source_run_id: normalizedSourceRunId,
@@ -474,7 +356,7 @@ export async function prepareRunnerEffectOperation(opts: {
           : source.operation;
     }
   } else {
-    candidate = buildFreshEffectOperation(opts);
+    candidate = buildFreshRunnerEffectOperation(opts);
   }
 
   const paths = resolveRunnerEffectOperationPaths({
@@ -489,12 +371,15 @@ export async function prepareRunnerEffectOperation(opts: {
   });
   const operation = await readRunnerEffectOperation(paths.operation_path);
   if (!operation) throw new Error("Runner effect operation disappeared after publication.");
-  if (!operationMatchesIdentity(operation, candidate)) {
-    throw runtimeError("Runner effect operation key already names incompatible authority.", {
-      reason: "runner_effect_operation_identity_conflict",
-      operation_key: candidate.operation_key,
-      published,
-    });
+  if (!runnerEffectOperationMatchesIdentity(operation, candidate)) {
+    throw runnerEffectRuntimeError(
+      "Runner effect operation key already names incompatible authority.",
+      {
+        reason: "runner_effect_operation_identity_conflict",
+        operation_key: candidate.operation_key,
+        published,
+      },
+    );
   }
   const reference = createRunnerEffectOperationRef({
     run_id: opts.invocation.run_id,
@@ -510,12 +395,15 @@ export async function prepareRunnerEffectOperation(opts: {
   });
   const observedReference = await readRunnerEffectOperationRef(paths.run_ref_path);
   if (!observedReference || observedReference.digest !== reference.digest) {
-    throw runtimeError("Runner effect operation reference changed during preparation.", {
-      reason: "runner_effect_operation_reference_conflict",
-      run_id: opts.invocation.run_id,
-      operation_key: operation.operation_key,
-      wrote_reference: wroteReference,
-    });
+    throw runnerEffectRuntimeError(
+      "Runner effect operation reference changed during preparation.",
+      {
+        reason: "runner_effect_operation_reference_conflict",
+        run_id: opts.invocation.run_id,
+        operation_key: operation.operation_key,
+        wrote_reference: wroteReference,
+      },
+    );
   }
   let journal = await readRunnerEffectJournal(paths.journal_path);
   if (!journal) {
@@ -533,12 +421,15 @@ export async function prepareRunnerEffectOperation(opts: {
     journal.operation_digest !== operation.digest ||
     journal.claim_generation !== operation.claim_generation
   ) {
-    throw runtimeError("Runner effect journal is not bound to the immutable operation authority.", {
-      reason: "runner_effect_journal_authority_mismatch",
-      operation_key: operation.operation_key,
-    });
+    throw runnerEffectRuntimeError(
+      "Runner effect journal is not bound to the immutable operation authority.",
+      {
+        reason: "runner_effect_journal_authority_mismatch",
+        operation_key: operation.operation_key,
+      },
+    );
   }
-  applyForwardedEffectIdempotencyKey({
+  applyForwardedRunnerEffectIdempotencyKey({
     bundle: opts.bundle,
     invocation: opts.invocation,
     operation,
@@ -554,12 +445,15 @@ export async function startRunnerEffectOperation(opts: {
 }): Promise<StartedRunnerEffectOperation> {
   const prepared = await prepareRunnerEffectOperation(opts);
   if (prepared.journal.phase !== "prepared") {
-    throw runtimeError("Runner refuses a second adapter spawn for an existing effect operation.", {
-      reason: "runner_effect_operation_not_spawnable",
-      operation_key: prepared.operation.operation_key,
-      journal_phase: prepared.journal.phase,
-      enforcement: prepared.operation.enforcement,
-    });
+    throw runnerEffectRuntimeError(
+      "Runner refuses a second adapter spawn for an existing effect operation.",
+      {
+        reason: "runner_effect_operation_not_spawnable",
+        operation_key: prepared.operation.operation_key,
+        journal_phase: prepared.journal.phase,
+        enforcement: prepared.operation.enforcement,
+      },
+    );
   }
   const claim = createRunnerEffectClaim({ operation: prepared.operation });
   const won = await writeImmutableJson({
@@ -569,12 +463,15 @@ export async function startRunnerEffectOperation(opts: {
   });
   const observedClaim = await readRunnerEffectClaim(prepared.paths.claim_path);
   if (!observedClaim || observedClaim.digest !== claim.digest || !won) {
-    throw runtimeError("Runner effect start authority is already claimed by another supervisor.", {
-      reason: "runner_effect_operation_claimed",
-      operation_key: prepared.operation.operation_key,
-      claim_generation: prepared.operation.claim_generation,
-      observed_claim_digest: observedClaim?.digest ?? null,
-    });
+    throw runnerEffectRuntimeError(
+      "Runner effect start authority is already claimed by another supervisor.",
+      {
+        reason: "runner_effect_operation_claimed",
+        operation_key: prepared.operation.operation_key,
+        claim_generation: prepared.operation.claim_generation,
+        observed_claim_digest: observedClaim?.digest ?? null,
+      },
+    );
   }
   const started = createRunnerEffectJournal({
     operation: prepared.operation,
@@ -593,7 +490,7 @@ export async function advanceRunnerEffectJournal(opts: {
 }): Promise<ReturnType<typeof validateRunnerEffectJournal>> {
   const current = await readRunnerEffectJournal(opts.session.paths.journal_path);
   if (!current) {
-    throw runtimeError(
+    throw runnerEffectRuntimeError(
       "Runner effect journal disappeared after adapter spawn authority was claimed.",
       {
         reason: "runner_effect_journal_missing_after_start",
@@ -605,7 +502,7 @@ export async function advanceRunnerEffectJournal(opts: {
     JOURNAL_PHASE_ORDER[current.phase] > JOURNAL_PHASE_ORDER[opts.phase] ||
     (current.phase !== "prepared" && current.phase !== "started" && current.phase !== opts.phase)
   ) {
-    throw runtimeError(
+    throw runnerEffectRuntimeError(
       "Runner effect journal refuses a downgrade after an observed terminal phase.",
       {
         reason: "runner_effect_journal_downgrade",
@@ -616,17 +513,20 @@ export async function advanceRunnerEffectJournal(opts: {
     );
   }
   if (current.digest !== opts.session.journal.digest && current.phase !== opts.phase) {
-    throw runtimeError("Runner effect journal transition lost exclusive operation authority.", {
-      reason: "runner_effect_journal_transition_conflict",
-      operation_key: opts.session.operation.operation_key,
-      expected_journal_digest: opts.session.journal.digest,
-      observed_journal_digest: current.digest,
-      observed_phase: current.phase,
-    });
+    throw runnerEffectRuntimeError(
+      "Runner effect journal transition lost exclusive operation authority.",
+      {
+        reason: "runner_effect_journal_transition_conflict",
+        operation_key: opts.session.operation.operation_key,
+        expected_journal_digest: opts.session.journal.digest,
+        observed_journal_digest: current.digest,
+        observed_phase: current.phase,
+      },
+    );
   }
   if (current.phase === opts.phase) {
     if (current.previous_digest !== opts.session.journal.digest) {
-      throw runtimeError(
+      throw runnerEffectRuntimeError(
         "Runner effect journal terminal record is not chained to the claimed start.",
         {
           reason: "runner_effect_journal_terminal_chain_invalid",

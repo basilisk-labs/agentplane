@@ -1,5 +1,4 @@
 import {
-  digestRunnerEffectValue,
   type StateFingerprint,
   type StateFingerprintPolicy,
   type StateFingerprintPreconditionDiagnostic,
@@ -8,10 +7,7 @@ import { loadCommandContext, type CommandContext } from "../../commands/shared/t
 import { CliError } from "../../shared/errors.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
-import {
-  appendFrameworkExplainBehaviorInputs,
-  type ExplainBehaviorInput,
-} from "../../runtime/explain/index.js";
+import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/index.js";
 import { buildFrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { RunnerAdapter } from "../adapters/shared.js";
@@ -20,12 +16,6 @@ import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { RunnerRunRepository } from "../run-repository.js";
-import {
-  advanceRunnerEffectJournal,
-  prepareRunnerEffectOperation,
-  startRunnerEffectOperation,
-  type StartedRunnerEffectOperation,
-} from "../effect-operation.js";
 import { createRunnerRunId, resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "../sandbox-policy.js";
 import {
@@ -39,15 +29,10 @@ import {
   assertRunnerPolicyCompatibility,
   assertRunnerTaskExecutable,
 } from "./task-run-authority.js";
-import {
-  acquireTaskRunnerActiveClaim,
-  releaseTaskRunnerActiveClaim,
-} from "./task-run-active-claim.js";
+import { acquireTaskRunnerActiveClaim } from "./task-run-active-claim.js";
 import { inspectTaskRunnerClaimedRunAuthority } from "./task-run-active-claim-authority.js";
 import {
   assertTaskRunnerActiveClaimHistorySafe,
-  assertTaskRunnerActiveClaimCurrent,
-  attachSuppressedActiveClaimCleanup,
   reconcileStaleTerminalTaskRunnerActiveClaim,
   reconcileTerminalTaskRunnerActiveClaim,
   recordActiveClaimCleanupFailure,
@@ -66,6 +51,16 @@ import {
 } from "./agent-work-order.js";
 import { prepareTaskRunnerAgentWorkOrder } from "./task-run-work-order.js";
 import { RunnerPreparationCliError, writeRunnerRefusalArtifacts } from "./task-run-refusal.js";
+import { collectTaskRunnerFrameworkExplainBehaviorInputs } from "./task-run-framework-explain.js";
+import {
+  persistPreparedTaskRunnerEffectOperation,
+  recordTaskRunnerEffectUnknown,
+  recordTaskRunnerPostStateUnknown,
+  persistTaskRunnerEffectAccepted,
+  startTaskRunnerEffectOperation,
+  type StartedRunnerEffectOperation,
+} from "./task-run-effect-journal.js";
+import { finalizeTaskRunnerActiveClaimCleanup } from "./task-run-active-claim-cleanup.js";
 import {
   executeStateBoundRunnerInvocation,
   RunnerStateFingerprintCliError,
@@ -113,22 +108,6 @@ export type ExecutedTaskRunnerExecution = Omit<
   active_claim_cleanup?: TaskRunnerActiveClaimCleanupDiagnostic;
 };
 export type { TaskRunnerReplayProvenance } from "./task-run-replay-anchor.js";
-function collectFrameworkExplainBehaviorInputs(
-  prompts: RunnerContextBundle["base_prompts"],
-): ExplainBehaviorInput[] {
-  return prompts.flatMap((prompt) =>
-    prompt.resolution
-      ? [
-          {
-            id: prompt.id,
-            category: "prompt" as const,
-            ...(prompt.source ? { source: prompt.source } : {}),
-            resolution: prompt.resolution,
-          },
-        ]
-      : [],
-  );
-}
 
 export async function prepareTaskRunnerExecution(opts: {
   ctx?: CommandContext;
@@ -181,7 +160,7 @@ export async function prepareTaskRunnerExecution(opts: {
   const route_decision = preparedWorkOrder.route_decision;
   const framework_explain = appendFrameworkExplainBehaviorInputs(
     executionContext.frameworkExplain,
-    collectFrameworkExplainBehaviorInputs(base_prompts),
+    collectTaskRunnerFrameworkExplainBehaviorInputs(base_prompts),
   );
   const framework_protocol = buildFrameworkProtocolSurface({
     explain: framework_explain,
@@ -322,24 +301,14 @@ export async function prepareTaskRunnerExecution(opts: {
     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
     invocation,
   });
-  if (!state.state_fingerprint) {
-    throw new Error(
-      `Runner prepared state is missing effect-journal fingerprint authority for ` +
-        `${opts.task_id}:${invocation.run_id}.`,
-    );
-  }
-  const effectOperation = await prepareRunnerEffectOperation({
+  const stateWithEffectOperation = await persistPreparedTaskRunnerEffectOperation({
+    repository,
     bundle,
     invocation,
-    state_fingerprint: state.state_fingerprint,
+    state,
+    task_id: opts.task_id,
     ...(opts.effect_source_run_id ? { source_run_id: opts.effect_source_run_id } : {}),
   });
-  const stateWithEffectOperation = {
-    ...state,
-    effect_operation: effectOperation.reference,
-    updated_at: new Date().toISOString(),
-  };
-  await repository.writeState(stateWithEffectOperation);
   return {
     bundle,
     invocation,
@@ -481,7 +450,7 @@ export async function executeTaskRunnerExecution(opts: {
             lease: activeClaim,
             allow_claimed_run: true,
           });
-          effectOperation = await startRunnerEffectOperation({
+          effectOperation = await startTaskRunnerEffectOperation({
             bundle: prepared.bundle,
             invocation: prepared.invocation,
             state_fingerprint: stateFingerprint,
@@ -496,15 +465,9 @@ export async function executeTaskRunnerExecution(opts: {
         },
         on_apply_error: async ({ error, state_fingerprint: stateFingerprint }) => {
           if (effectOperation) {
-            await advanceRunnerEffectJournal({
+            await recordTaskRunnerEffectUnknown({
               session: effectOperation,
-              phase: "effect_unknown",
-              evidence: {
-                code: "runner_adapter_effect_error",
-                digest: digestRunnerEffectValue({
-                  message: error instanceof Error ? error.message : String(error),
-                }),
-              },
+              error,
             });
           }
           await persistRunnerStateFingerprintEffectUnknown({
@@ -518,17 +481,9 @@ export async function executeTaskRunnerExecution(opts: {
         },
         on_post_state_error: async ({ result, state_fingerprint: stateFingerprint }) => {
           if (effectOperation) {
-            await advanceRunnerEffectJournal({
+            await recordTaskRunnerPostStateUnknown({
               session: effectOperation,
-              phase: "post_state_unknown",
-              evidence: {
-                code: "runner_post_state_observation_unavailable",
-                digest: digestRunnerEffectValue({
-                  status: result.status,
-                  exit_code: result.exit_code,
-                  ended_at: result.ended_at,
-                }),
-              },
+              result,
             });
           }
           await persistRunnerStateFingerprintPostStateUnknown({
@@ -557,48 +512,22 @@ export async function executeTaskRunnerExecution(opts: {
     const preconditionFingerprint = guardedExecution.precondition_fingerprint;
     const preconditionPolicy = guardedExecution.precondition_policy;
     const result = guardedExecution.result;
-    if (!effectOperation) {
-      throw new Error(
-        `Runner adapter returned without a durable effect operation for ` +
-          `${opts.task_id}:${prepared.invocation.run_id}.`,
-      );
-    }
-    let state;
-    try {
-      state = await persistRunnerStateFingerprintSuccess({
-        ctx,
-        task_id: opts.task_id,
-        bundle: prepared.bundle,
-        invocation: prepared.invocation,
-        prepared_state: prepared.state,
-        result,
-        state_fingerprint: guardedExecution.state_fingerprint,
-      });
-    } catch (error) {
-      await advanceRunnerEffectJournal({
-        session: effectOperation,
-        phase: "post_state_unknown",
-        evidence: {
-          code: "runner_post_effect_persistence_unavailable",
-          digest: digestRunnerEffectValue({
-            message: error instanceof Error ? error.message : String(error),
-          }),
-        },
-      });
-      throw error;
-    }
-    await advanceRunnerEffectJournal({
+    const state = await persistTaskRunnerEffectAccepted({
       session: effectOperation,
-      phase: "accepted",
-      evidence: {
-        code: "runner_post_state_observed",
-        digest: digestRunnerEffectValue({
-          status: result.status,
-          exit_code: result.exit_code,
-          ended_at: result.ended_at,
-          state_fingerprint: guardedExecution.state_fingerprint.state_after?.digest ?? null,
+      task_id: opts.task_id,
+      run_id: prepared.invocation.run_id,
+      result,
+      state_fingerprint: guardedExecution.state_fingerprint,
+      persist_post_effect_state: async () =>
+        await persistRunnerStateFingerprintSuccess({
+          ctx,
+          task_id: opts.task_id,
+          bundle: prepared.bundle,
+          invocation: prepared.invocation,
+          prepared_state: prepared.state,
+          result,
+          state_fingerprint: guardedExecution.state_fingerprint,
         }),
-      },
     });
     const claimedRunAuthority = await inspectTaskRunnerClaimedRunAuthority(
       {
@@ -648,47 +577,15 @@ export async function executeTaskRunnerExecution(opts: {
     hasPrimaryError = true;
     throw error;
   } finally {
-    if (!releaseActiveClaim && hasPrimaryError) {
-      try {
-        const authority = await inspectTaskRunnerClaimedRunAuthority(
-          {
-            git_root: ctx.resolvedProject.gitRoot,
-            workflow_dir: ctx.config.paths.workflow_dir,
-            task_id: opts.task_id,
-          },
-          activeClaim.claim,
-        );
-        if (authority === "effect_in_doubt") {
-          await assertTaskRunnerActiveClaimCurrent({
-            git_root: ctx.resolvedProject.gitRoot,
-            workflow_dir: ctx.config.paths.workflow_dir,
-            expected: activeClaim.claim,
-          });
-        } else {
-          releaseActiveClaim = authority === "absent" || authority === "incomplete_pre_provider";
-        }
-      } catch (inspectionError) {
-        const diagnostic = await recordActiveClaimCleanupFailure({
-          bundle: cleanupBundle,
-          error: inspectionError,
-        });
-        attachSuppressedActiveClaimCleanup(primaryError, diagnostic);
-      }
-    }
-    if (releaseActiveClaim) {
-      try {
-        await releaseTaskRunnerActiveClaim(activeClaim);
-      } catch (cleanupError) {
-        const diagnostic = await recordActiveClaimCleanupFailure({
-          bundle: cleanupBundle,
-          error: cleanupError,
-        });
-        if (hasPrimaryError) {
-          attachSuppressedActiveClaimCleanup(primaryError, diagnostic);
-        } else if (completed) {
-          completed.active_claim_cleanup = diagnostic;
-        }
-      }
-    }
+    await finalizeTaskRunnerActiveClaimCleanup({
+      ctx,
+      task_id: opts.task_id,
+      active_claim: activeClaim,
+      cleanup_bundle: cleanupBundle,
+      release_active_claim: releaseActiveClaim,
+      has_primary_error: hasPrimaryError,
+      primary_error: primaryError,
+      completed,
+    });
   }
 }

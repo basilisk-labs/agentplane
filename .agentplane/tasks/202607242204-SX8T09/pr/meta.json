@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex",
   "created_at": "2026-07-27T02:12:20.863Z",
-  "diffstat_sha256": "sha256:027644c7bfadfc384a788f074348ab0d2b79b16a7c5ee280dfd1229150ec97c1",
+  "diffstat_sha256": "sha256:31a75cda1f85003a42f45c6a47e3a9dbdf6bea254ef5303e9dd5683f1b440320",
   "last_verified_at": null,
   "pr_number": 4637,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4637",
