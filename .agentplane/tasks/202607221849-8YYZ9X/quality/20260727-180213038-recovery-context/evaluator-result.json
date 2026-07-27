@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The six helpers reported by Knip are internal implementation details; removing their exports preserves the externally used EvaluatorEpisodeProvider, EvaluatorEpisodeReceipt, executePreparedEvaluatorEpisode, and writeEvaluatorEpisodeReceipt contracts.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted CI must validate the final published PR head because a prior local full-fast run hit an unrelated, non-reproducible runner concurrency test failure."
+  ]
+}
