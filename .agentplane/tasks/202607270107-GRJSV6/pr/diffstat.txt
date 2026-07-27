@@ -1,0 +1,6 @@
+ .../src/commands/branch/cleanup-merged-proof.ts    | 91 +++++++++++++++++++---
+ .../branch/cleanup-merged.targeted.test.ts         | 61 +++++++++++++++
+ .../src/commands/shared/quality-review-target.ts   |  2 +-
+ .../commands/shared/side-effect-authority.test.ts  |  4 +-
+ .../src/commands/shared/side-effect-authority.ts   |  5 +-
+ 5 files changed, 150 insertions(+), 13 deletions(-)
