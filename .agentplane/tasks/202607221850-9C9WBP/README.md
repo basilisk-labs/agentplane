@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-27T23:12:53.569Z"
+  updated_at: "2026-07-27T23:26:45.428Z"
   updated_by: "TESTER"
-  note: "Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents."
+  note: "Rework review complete: CI failure is isolated to an unchanged cross-process test and did not reproduce locally."
   attempts: 0
 quality_review:
   state: "pass"
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "Reviewed task-context compaction: only the canonical BEGIN/END verification envelope is reclassified as optional; localized configured required sections and oversized semantic sections retain their structural validation behavior."
 commit:
-  hash: "0490dbd84b699dd22a37a17b0b69789d4670d604"
-  message: "📝 9C9WBP task: authorize pre-merge closure"
+  hash: "d08a37317bdeb3884ad41e7cf12508db3af609d9"
+  message: "🧩 9C9WBP task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -140,8 +143,27 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-27T23:24:18.056Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted Unit Tests failed on the PR merge commit: cross-process effect-operation test observed zero winners."
+  -
+    type: "verify"
+    at: "2026-07-27T23:26:45.428Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework review complete: CI failure is isolated to an unchanged cross-process test and did not reproduce locally."
+  -
+    type: "status"
+    at: "2026-07-27T23:27:41.993Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T23:14:36.839Z"
+doc_updated_at: "2026-07-27T23:27:41.994Z"
 doc_updated_by: "CODER"
 description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
 sections:
@@ -285,6 +307,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-27T23:24:18.056Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted Unit Tests failed on the PR merge commit: cross-process effect-operation test observed zero winners.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T23:14:36.839Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+    - old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-27T23:26:45.428Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework review complete: CI failure is isolated to an unchanged cross-process test and did not reproduce locally.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T23:24:18.960Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+    - old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -312,6 +394,14 @@ sections:
     - Observation: Focused runner tests (26), test:fast, test:critical, lint, typecheck, guards, and ci:contract passed after the Verification-marker regression fix.
       Impact: Long lifecycle evidence no longer blocks task-route or evaluator preparation, and it is not silently lost from the compact episode view.
       Resolution: Commit the verified rework, refresh evaluator quality evidence, publish the PR head, and wait for hosted checks.
+
+    - Observation: GitHub run 30313548326 failed only packages/agentplane/src/runner/effect-operation.test.ts:203; focused scenario passed locally 12/12.
+      Impact: PR cannot be integrated until the concurrent supervisor scenario is explained and hosted verification is green.
+      Resolution: Reproduce against the merge commit, harden or repair the race, then rerun the required checks.
+
+    - Observation: The focused independent-process race passed 12/12; the full fast suite was rerun locally; the test and effect-operation implementation are byte-identical to the tested main base.
+      Impact: No task-context regression was found. The task may proceed only after a fresh hosted run confirms the transient failure does not recur.
+      Resolution: Preserve the failure record, refresh the PR artifact, and rerun the existing hosted workflow once without changing production behavior.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -393,6 +483,19 @@ extensions:
         schemaVersion: 1
         sequence: 6
         stateFingerprintDigest: "sha256:080dc7a636fe12a014f42776d29cd8962ed9bc8c8b017d576c9e27d1f6b75932"
+      -
+        actor: "USER"
+        at: "2026-07-27T23:27:08.811Z"
+        authorityDigest: "sha256:4cf55c369c13dad4d130e0c63aa69f340dfbfd9aaa61d057dbd8b5ac1e8412ca"
+        digest: "sha256:c9050a1c8fd7379b3347c113b2a4778a962662427e569b16b4166786e17470de"
+        operationDigest: "sha256:5186ee0fc57f4e5d84b1b025c14384e0f01da9cfe1f99adc4a0bd39a5f0ef784"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:4b7a46b6a538c8b352604346aec2638f0a0b3cddbd16c58a01a828c8456f1bf9"
+        schemaVersion: 1
+        sequence: 7
+        stateFingerprintDigest: "sha256:c1e4bca06bdd7d28940e7b75eeb6109bab73bc59779b18d7b8e8531a002b1622"
     grants:
       -
         actor: "USER"
@@ -472,6 +575,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:080dc7a636fe12a014f42776d29cd8962ed9bc8c8b017d576c9e27d1f6b75932"
         stateScopeDigest: "sha256:854f58b856c89cccbc061767ccacd705eb3dbf22430a3370f1189bb8f5c35647"
+      -
+        actor: "USER"
+        digest: "sha256:4cf55c369c13dad4d130e0c63aa69f340dfbfd9aaa61d057dbd8b5ac1e8412ca"
+        expiresAt: "2026-07-27T23:42:08.811Z"
+        id: "authority-e7b20204-48fc-4ffd-a85e-233a9d9a4f9f"
+        issuedAt: "2026-07-27T23:27:08.811Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:5186ee0fc57f4e5d84b1b025c14384e0f01da9cfe1f99adc4a0bd39a5f0ef784"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:c1e4bca06bdd7d28940e7b75eeb6109bab73bc59779b18d7b8e8531a002b1622"
+        stateScopeDigest: "sha256:c84341e6f2e943c90b4394eafd77e176ce37de17119284e0380cc046fd2e3fd9"
     schemaVersion: 1
   implementation_commit:
     hash: "6f18f3796dd7d31d7c9697841a5b55fc2b5376a1"
@@ -630,6 +746,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-27T23:24:18.056Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted Unit Tests failed on the PR merge commit: cross-process effect-operation test observed zero winners.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T23:14:36.839Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+- old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-27T23:26:45.428Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework review complete: CI failure is isolated to an unchanged cross-process test and did not reproduce locally.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T23:24:18.960Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+- old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -661,3 +837,11 @@ DecisionContextRef:
 - Observation: Focused runner tests (26), test:fast, test:critical, lint, typecheck, guards, and ci:contract passed after the Verification-marker regression fix.
   Impact: Long lifecycle evidence no longer blocks task-route or evaluator preparation, and it is not silently lost from the compact episode view.
   Resolution: Commit the verified rework, refresh evaluator quality evidence, publish the PR head, and wait for hosted checks.
+
+- Observation: GitHub run 30313548326 failed only packages/agentplane/src/runner/effect-operation.test.ts:203; focused scenario passed locally 12/12.
+  Impact: PR cannot be integrated until the concurrent supervisor scenario is explained and hosted verification is green.
+  Resolution: Reproduce against the merge commit, harden or repair the race, then rerun the required checks.
+
+- Observation: The focused independent-process race passed 12/12; the full fast suite was rerun locally; the test and effect-operation implementation are byte-identical to the tested main base.
+  Impact: No task-context regression was found. The task may proceed only after a fresh hosted run confirms the transient failure does not recur.
+  Resolution: Preserve the failure record, refresh the PR artifact, and rerun the existing hosted workflow once without changing production behavior.

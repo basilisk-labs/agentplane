@@ -6,14 +6,14 @@ Created: 2026-07-27T21:31:31.669Z
 
 - Task: `202607221850-9C9WBP`
 - Title: Normalize runner task inputs into TaskEpisodeView
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie`
 - Canonical task record: `.agentplane/tasks/202607221850-9C9WBP/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents.
+- Note: Rework review complete: CI failure is isolated to an unchanged cross-process test and did not reproduce locally.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
