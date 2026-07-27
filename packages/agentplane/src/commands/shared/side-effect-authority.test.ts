@@ -156,8 +156,8 @@ describe("side-effect authority", () => {
       });
     }
     expect(WORKFLOW_OPERATION_AUTHORITY_POLICY["task.hosted_close.finalize"]).toMatchObject({
-      class: "external_high_risk",
-      requiresAuthority: true,
+      class: "local_reversible",
+      requiresAuthority: false,
     });
   });
 

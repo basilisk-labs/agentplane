@@ -42,7 +42,7 @@ function authorityComparableTaskReadme(markdown: string): string | null {
   }
 }
 
-async function isAuthorityOnlyTaskReadmeAdvance(opts: {
+export async function isAuthorityOnlyTaskReadmeAdvance(opts: {
   gitRoot: string;
   parent: string;
   current: string;

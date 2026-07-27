@@ -282,6 +282,23 @@ async function configureFinalizationRemote(fixture: TargetedFixture): Promise<vo
   });
 }
 
+async function commitAuthorityOnlyTail(fixture: TargetedFixture): Promise<string> {
+  const task = await readTask({ cwd: fixture.worktreePath, taskId: fixture.taskId });
+  const readme = await readFile(task.readmePath, "utf8");
+  const updated = readme.replace(
+    /^comments:/mu,
+    "extensions:\n  agentplane.side_effect_authority:\n    schemaVersion: 1\n    grants: []\n    audit: []\ncomments:",
+  );
+  expect(updated).not.toBe(readme);
+  await writeFile(task.readmePath, updated, "utf8");
+  await commitAll(fixture.worktreePath, `authority ${fixture.taskId} post-merge cleanup`);
+  const { stdout } = await execFileAsync("git", ["rev-parse", fixture.branch], {
+    cwd: fixture.root,
+    env: cleanGitEnv(),
+  });
+  return stdout.trim();
+}
+
 async function installFakeGithubOriginLookup(fakeBin: string): Promise<void> {
   const locator = process.platform === "win32" ? "where" : "which";
   const { stdout } = await execFileAsync(locator, ["git"], { env: cleanGitEnv() });
@@ -508,6 +525,50 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
     expect(await pathExists(fixture.worktreePath)).toBe(true);
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
+  });
+
+  it("cleans a provider-merged task with a local authority-only post-merge tail", async () => {
+    const fixture = await createTargetedFixture();
+    const localTail = await commitAuthorityOnlyTail(fixture);
+    expect(localTail).not.toBe(fixture.branchHead);
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("proof=provider_merge");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
+    expect(await pathExists(fixture.worktreePath)).toBe(false);
+  });
+
+  it("keeps a semantic post-merge tail blocked despite a matching provider head", async () => {
+    const fixture = await createTargetedFixture();
+    await writeFile(
+      path.join(fixture.worktreePath, "semantic-tail.txt"),
+      "must not clean\n",
+      "utf8",
+    );
+    await commitAll(fixture.worktreePath, `semantic ${fixture.taskId} post-merge tail`);
+    const fakeBin = await installFakeGh({ kind: "found", fixture });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider head mismatch");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
   });
 
   it("fails closed on provider base mismatch before deleting the worktree", async () => {
