@@ -4,7 +4,7 @@ title: "Preserve authority-only tails during merged cleanup"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -61,6 +61,36 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-27T01:22:11.621Z"
+        authorityDigest: "sha256:380140799ddcedbfce850b5b646d3e817edce64230776010aefcafcdccd42963"
+        digest: "sha256:9ec49f000de2e8ff95112a6b97e4021284871adb8250a18f93de09d3c5520780"
+        operationDigest: "sha256:457693dd75dab26a5967c46a9a5cbaed57cb8134a5955c165cc7a37fd1633032"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:447625bb985641e8e1e4b9a726a083688bcf78081d00ed1860a1ce1e7b127f05"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:380140799ddcedbfce850b5b646d3e817edce64230776010aefcafcdccd42963"
+        expiresAt: "2026-07-27T01:37:11.621Z"
+        id: "authority-c54eac2c-890f-439a-8cbb-e699691b1996"
+        issuedAt: "2026-07-27T01:22:11.621Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:457693dd75dab26a5967c46a9a5cbaed57cb8134a5955c165cc7a37fd1633032"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:447625bb985641e8e1e4b9a726a083688bcf78081d00ed1860a1ce1e7b127f05"
+        stateScopeDigest: "sha256:7315243d9bcacad97144422ba77090892cebb6d15843c223b6acfd376e355a88"
+    schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "518f9f4a62e09016262af2cbbeb89947550be2e0"
     version: 1
