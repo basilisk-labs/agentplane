@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
     - "The current runner transport remains bounded to TaskEpisodeView at the implementation commit; the closure commit changes only task evidence and policy incident projections."
     - "The promoted incident is a transparent limitation record, not a synthetic role heuristic: current schema supplies structural headings, and a later blueprint/schema task must author per-role policy."
 commit:
-  hash: "5f48099a010484ce2506d7ef1b652ce1b8f86958"
-  message: "✨ 9C9WBP runner: normalize task episode view"
+  hash: "df380750d7c9fcd2a3410b2ad0bf910e47e41895"
+  message: "✨ 9C9WBP task: record closure authority"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -103,8 +106,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T22:32:17.808Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T22:29:06.731Z"
+doc_updated_at: "2026-07-27T22:32:17.809Z"
 doc_updated_by: "CODER"
 description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
 sections:
@@ -256,6 +266,9 @@ extensions:
         stateFingerprintDigest: "sha256:3a5969e5e83cd36116c128f42f4915cfc8862eedf38c9b4e75ba06fb2007a0ec"
         stateScopeDigest: "sha256:ab034cca36ab7ec0cd70f3e7ae7a6d0404b2e348a3d74a9d0ea96373726608d3"
     schemaVersion: 1
+  implementation_commit:
+    hash: "91edc7d8080ab6518f3ca0054efe6b06b312b60d"
+    message: "✨ 9C9WBP task: pre-merge closure"
   workflow_route_baseline:
     start_head_sha: "9f99149a3920e2e49a6887d2dcd22460e10f672e"
     version: 1
