@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:e66c970f3774145cfe8e517caed57f0ba40093eb3b597b8c1acefe2c0b0188b0",
   "pr_number": 4644,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4644",
+  "pre_merge_closure": {
+    "basis_commit": "f6349f313390cefb99adb47e1d7efe9e4d161d97",
+    "branch": "task/202607271814-E1ZTTV/stabilize-concurrent-recovery-lease-reads",
+    "pr_number": 4644,
+    "recorded_at": "2026-07-27T19:00:57.858Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607271814-E1ZTTV",

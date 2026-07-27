@@ -1,10 +1,11 @@
 ---
 id: "202607271814-E1ZTTV"
 title: "Stabilize concurrent recovery-lease reads"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -43,8 +44,8 @@ quality_review:
   findings:
     - "The recovery-lease reader retries only the existing atomic-replacement collision signature; each attempt retains directory-boundary, regular-file, and inode validation before accepting lease state."
 commit:
-  hash: "9804dae6bdb5c97ab068ca435483573d1c6ff744"
-  message: "🐛 E1ZTTV reliability: stabilize concurrent recovery-lease reads"
+  hash: "f6349f313390cefb99adb47e1d7efe9e4d161d97"
+  message: "🧩 E1ZTTV task: authorize pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -55,6 +56,9 @@ comments:
   -
     author: "CODER"
     body: "Traceability correction: record the final amended implementation commit that was independently evaluated."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -83,8 +87,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Traceability correction: record the final amended implementation commit that was independently evaluated."
+  -
+    type: "status"
+    at: "2026-07-27T19:00:57.787Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T18:57:23.413Z"
+doc_updated_at: "2026-07-27T19:00:57.788Z"
 doc_updated_by: "CODER"
 description: "Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability."
 sections:
@@ -199,6 +210,9 @@ extensions:
         stateFingerprintDigest: "sha256:020128c8a620373dbc3cde40272dfec26a21cd1309c49dae91cb6b3ee4702fea"
         stateScopeDigest: "sha256:7177ced2049af92cf0237cbce8d1214b462d17aef8c6296c5f622d288a134c96"
     schemaVersion: 1
+  implementation_commit:
+    hash: "8b3d06c90f00a7da9ef6573b3fe4a8420e571783"
+    message: "🧩 E1ZTTV task: correct implementation traceability"
   workflow_route_baseline:
     start_head_sha: "8c863087669ef21c562e8c230e851bc94a12e8a4"
     version: 1
