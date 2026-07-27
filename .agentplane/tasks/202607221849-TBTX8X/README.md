@@ -2,10 +2,10 @@
 id: "202607221849-TBTX8X"
 title: "Prepare and apply typed evaluator results"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "The generated user-facing CLI reference now exposes the two reviewed additive commands, so the public CLI contract and its documentation are synchronized."
 commit:
-  hash: "b2e021901539a60c0e3a727e197654f464c5a21a"
-  message: "📚 TBTX8X task: refresh CLI reference"
+  hash: "39d80c29b68a7bc10d38b607881244794c09cea0"
+  message: "📚 TBTX8X task: record PR publish authority"
 comments:
   -
     author: "CODER"
@@ -84,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Reopened before merge: hosted full-fast verification found a legacy evaluator run input without reworkContext and four newly unused evaluator exports. Restore compatibility defaulting and remove dead exports, then repeat CI-equivalent checks."
 events:
   -
     type: "status"
@@ -126,8 +129,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T14:20:52.327Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Reopened before merge: hosted full-fast verification found a legacy evaluator run input without reworkContext and four newly unused evaluator exports. Restore compatibility defaulting and remove dead exports, then repeat CI-equivalent checks."
 doc_version: 3
-doc_updated_at: "2026-07-27T14:12:07.089Z"
+doc_updated_at: "2026-07-27T14:20:52.327Z"
 doc_updated_by: "CODER"
 description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
 sections:
