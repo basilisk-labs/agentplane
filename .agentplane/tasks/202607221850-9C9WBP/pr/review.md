@@ -6,7 +6,7 @@ Created: 2026-07-27T21:31:31.669Z
 
 - Task: `202607221850-9C9WBP`
 - Title: Normalize runner task inputs into TaskEpisodeView
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie`
 - Canonical task record: `.agentplane/tasks/202607221850-9C9WBP/README.md`
 
