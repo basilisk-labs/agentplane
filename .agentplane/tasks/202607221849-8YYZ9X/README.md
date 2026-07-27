@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The prior hosted failure was isolated to concurrent recovery-lease reads outside RF-12b semantics; the merged bounded retry preserves strict stable-file validation and the exact failed effect-resolution scenario now passes."
 commit:
-  hash: "e77226f79a8185a65511a31438b018cc0ec17841"
-  message: "📚 8YYZ9X task: authorize rebased pre-merge closure"
+  hash: "916c517b923fb3d173096574f6336b92bb0ca746"
+  message: "📚 8YYZ9X task: authorize refreshed pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -191,8 +194,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: the rebased final branch passed full local CI and fresh hosted PR checks, including the recovered runner race regression."
+  -
+    type: "status"
+    at: "2026-07-27T19:55:14.517Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T19:53:53.230Z"
+doc_updated_at: "2026-07-27T19:55:14.518Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
