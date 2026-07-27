@@ -124,6 +124,7 @@ export async function prepareTaskRunnerExecution(opts: {
   include_route_runner_state?: boolean;
   sandbox_override?: string;
   effect_source_run_id?: string | null;
+  resolved_not_applied_source?: boolean;
 }): Promise<PreparedTaskRunnerExecution> {
   const command =
     opts.ctx ??
@@ -308,6 +309,7 @@ export async function prepareTaskRunnerExecution(opts: {
     state,
     task_id: opts.task_id,
     ...(opts.effect_source_run_id ? { source_run_id: opts.effect_source_run_id } : {}),
+    ...(opts.resolved_not_applied_source ? { resolved_not_applied_source: true } : {}),
   });
   return {
     bundle,
@@ -388,6 +390,9 @@ export async function executeTaskRunnerExecution(opts: {
         ...(opts.replay_provenance
           ? { effect_source_run_id: opts.replay_provenance.source_run_id }
           : {}),
+        ...(opts.replay_provenance?.action === "resume_effect"
+          ? { resolved_not_applied_source: true }
+          : {}),
       });
     } catch (err) {
       if (err instanceof RunnerPreparationCliError) {
@@ -455,6 +460,9 @@ export async function executeTaskRunnerExecution(opts: {
             invocation: prepared.invocation,
             state_fingerprint: stateFingerprint,
             ...(replayProvenance ? { source_run_id: replayProvenance.source_run_id } : {}),
+            ...(replayProvenance?.action === "resume_effect"
+              ? { resolved_not_applied_source: true }
+              : {}),
           });
           await persistRunnerStateFingerprintEffectStarted({
             ctx,

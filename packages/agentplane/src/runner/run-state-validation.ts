@@ -3,6 +3,7 @@ import { isDeepStrictEqual } from "node:util";
 import {
   evaluateStateFingerprintPrecondition,
   validateRunnerEffectOperationRef,
+  validateRunnerEffectResolutionRef,
   validateStateFingerprint,
   validateStateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
@@ -330,6 +331,29 @@ function isRunnerEffectOperationMarker(value: unknown, runId: string): boolean {
   }
 }
 
+function isRunnerEffectResolutionMarker(value: unknown, runId: string): boolean {
+  try {
+    return validateRunnerEffectResolutionRef(value).run_id === runId;
+  } catch {
+    return false;
+  }
+}
+
+function effectResolutionMatchesOperation(operation: unknown, resolution: unknown): boolean {
+  if (resolution === undefined) return true;
+  try {
+    const parsedResolution = validateRunnerEffectResolutionRef(resolution);
+    if (operation === undefined) return false;
+    const parsedOperation = validateRunnerEffectOperationRef(operation);
+    return (
+      parsedResolution.operation_key === parsedOperation.operation_key &&
+      parsedResolution.operation_digest === parsedOperation.operation_digest
+    );
+  } catch {
+    return false;
+  }
+}
+
 export type RunnerRunStateParseOptions = {
   profile?: RunnerRecordProfile;
 };
@@ -384,7 +408,10 @@ function hasValidRunnerRunStateShape(
     (stateFingerprint === undefined ||
       isRunnerStateFingerprintRecord(stateFingerprint, value.target)) &&
     (value.effect_operation === undefined ||
-      isRunnerEffectOperationMarker(value.effect_operation, value.run_id))
+      isRunnerEffectOperationMarker(value.effect_operation, value.run_id)) &&
+    (value.effect_resolution === undefined ||
+      isRunnerEffectResolutionMarker(value.effect_resolution, value.run_id)) &&
+    effectResolutionMatchesOperation(value.effect_operation, value.effect_resolution)
   );
 }
 

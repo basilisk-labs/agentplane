@@ -40,7 +40,14 @@ export type RetriedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
   source_status: RunnerLifecycleStatus;
 };
 
-export type RunnerReplayAction = "resume" | "retry";
+export type EffectResumedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
+  ctx: CommandContext;
+  source_run_id: string;
+  source_status: RunnerLifecycleStatus;
+  previous_status: RunnerLifecycleStatus;
+};
+
+export type RunnerReplayAction = "resume" | "retry" | "resume_effect";
 
 export function runnerReplayDangerAuthoritySource(action: RunnerReplayAction): string {
   return `task run ${action} --allow-danger-full-access`;

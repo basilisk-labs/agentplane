@@ -97,6 +97,14 @@ export const loadTaskRunReconcileSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) =>
     m.makeRunTaskRunReconcileHandler(deps.getCtx),
   );
+export const loadTaskRunResolveEffectSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run.command.js").then((m) =>
+    m.makeRunTaskRunResolveEffectHandler(deps.getCtx),
+  );
+export const loadTaskRunResumeEffectSpec = (deps: RunDeps) =>
+  import("../../../commands/task/run.command.js").then((m) =>
+    m.makeRunTaskRunResumeEffectHandler(deps.getCtx),
+  );
 export const loadTaskRunLogsSpec = (deps: RunDeps) =>
   import("../../../commands/task/run.command.js").then((m) =>
     m.makeRunTaskRunLogsHandler(deps.getCtx),

@@ -34,6 +34,9 @@ const EFFECT_OPERATIONS_DIRECTORY = "effect-operations";
 const EFFECT_OPERATION_FILENAME = "operation.json";
 const EFFECT_JOURNAL_FILENAME = "journal.json";
 const EFFECT_START_CLAIM_FILENAME = "start-claim.json";
+export const EFFECT_RESOLUTION_INTENT_FILENAME = "resolution-intent.json";
+export const EFFECT_RESOLUTION_LEASE_FILENAME = "resolution-lease.json";
+export const EFFECT_RESOLUTION_FILENAME = "resolution.json";
 const EFFECT_OPERATION_REF_FILENAME = ".runner-effect-operation.json";
 const EFFECT_ARTIFACT_MAX_BYTES = 64 * 1024;
 
@@ -52,6 +55,9 @@ export type RunnerEffectOperationPaths = {
   operation_path: string;
   journal_path: string;
   claim_path: string;
+  resolution_intent_path: string;
+  resolution_lease_path: string;
+  resolution_path: string;
 };
 
 export type PreparedRunnerEffectOperation = {
@@ -97,7 +103,36 @@ export function resolveRunnerEffectOperationPaths(opts: {
     operation_path: path.join(operation_dir, EFFECT_OPERATION_FILENAME),
     journal_path: path.join(operation_dir, EFFECT_JOURNAL_FILENAME),
     claim_path: path.join(operation_dir, EFFECT_START_CLAIM_FILENAME),
+    resolution_intent_path: path.join(operation_dir, EFFECT_RESOLUTION_INTENT_FILENAME),
+    resolution_lease_path: path.join(operation_dir, EFFECT_RESOLUTION_LEASE_FILENAME),
+    resolution_path: path.join(operation_dir, EFFECT_RESOLUTION_FILENAME),
   };
+}
+
+export async function loadRunnerEffectOperationForResolution(opts: {
+  run_dir: string;
+  artifact_root: string;
+  expected_run_id: string;
+}): Promise<{
+  operation: RunnerEffectOperation;
+  reference: RunnerEffectOperationRef;
+  journal: NonNullable<Awaited<ReturnType<typeof readRunnerEffectJournal>>>;
+  paths: RunnerEffectOperationPaths;
+} | null> {
+  const loaded = await readEffectOperationForRun(opts);
+  if (!loaded) return null;
+  const paths = resolveRunnerEffectOperationPaths({
+    run_dir: opts.run_dir,
+    operation_key: loaded.operation.operation_key,
+  });
+  const journal = await readRunnerEffectJournal(paths.journal_path);
+  if (!journal) {
+    throw runnerEffectRuntimeError("Runner effect operation is missing its required journal.", {
+      reason: "runner_effect_journal_missing",
+      operation_key: loaded.operation.operation_key,
+    });
+  }
+  return { ...loaded, journal, paths };
 }
 
 async function readOptional<T>(opts: {
@@ -254,6 +289,7 @@ export async function prepareRunnerEffectOperation(opts: {
   invocation: RunnerInvocation;
   state_fingerprint: RunnerStateFingerprintRecord;
   source_run_id?: string | null;
+  resolved_not_applied_source?: boolean;
 }): Promise<PreparedRunnerEffectOperation> {
   const artifactRoot = opts.invocation.artifact_root ?? opts.invocation.repository_root;
   const existingForRun = await readEffectOperationForRun({
@@ -352,7 +388,15 @@ export async function prepareRunnerEffectOperation(opts: {
                 disposition: "prepared_fresh",
               },
             })
-          : source.operation;
+          : opts.resolved_not_applied_source
+            ? buildFreshRunnerEffectOperation({
+                ...opts,
+                replay_source: {
+                  source_run_id: normalizedSourceRunId,
+                  disposition: "resolved_not_applied_fresh",
+                },
+              })
+            : source.operation;
     }
   } else {
     candidate = buildFreshRunnerEffectOperation(opts);
@@ -441,6 +485,7 @@ export async function startRunnerEffectOperation(opts: {
   invocation: RunnerInvocation;
   state_fingerprint: RunnerStateFingerprintRecord;
   source_run_id?: string | null;
+  resolved_not_applied_source?: boolean;
 }): Promise<StartedRunnerEffectOperation> {
   const prepared = await prepareRunnerEffectOperation(opts);
   if (prepared.journal.phase !== "prepared") {

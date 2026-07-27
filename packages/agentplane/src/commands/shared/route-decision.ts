@@ -11,10 +11,7 @@ import { resolvePrHeadPublicationStatus } from "../pr/head-publication.js";
 import { resolveCleanupPlan } from "../branch/cleanup-merged-proof.js";
 import { buildTaskResumeContext, type TaskResumeContext } from "../task/handoff.shared.js";
 import { resolveBatchOwnership } from "./route-batch-ownership.js";
-import {
-  addTaskWorktreeCleanlinessBlocker,
-  deriveBlockers,
-} from "./route-decision-blockers.js";
+import { addTaskWorktreeCleanlinessBlocker, deriveBlockers } from "./route-decision-blockers.js";
 import type { WorkflowStep } from "./workflow-step.js";
 import {
   projectWorkflowStepExecutionPacket,
