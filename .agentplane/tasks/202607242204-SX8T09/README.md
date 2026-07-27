@@ -1,10 +1,11 @@
 ---
 id: "202607242204-SX8T09"
 title: "Persist typed runner effect operations before execution"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -38,16 +39,43 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the pre-effect journal and supervisor single-spawn safety boundary required before effect resolution."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T03:57:14.469Z"
+  updated_by: "TESTER"
+  note: "Focused runner effect suites passed (91 tests); typecheck, lifecycle invariants, guards, critical CLI suite, hotspot baseline, lint, and Knip baseline passed. Hosted PR #4637 is green on the published head."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T03:57:52.962Z"
+  updated_by: "EVALUATOR"
+  note: "The implementation satisfies the approved durable effect-operation contract: authority is persisted before adapter execution, one atomic claim controls spawn, and post-effect ambiguity remains explicit rather than being presented as exactly-once."
+  evaluated_sha: "6b83d0c70fc0c093ab00a21c217a5adec936ac38"
+  blueprint_digest: "cbfb06223de4a9891387ca669dbd5c69859ac1054e7fd24be7e0fe709148c327"
+  evidence_refs:
+    - ".agentplane/tasks/202607242204-SX8T09/README.md"
+    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-035752962-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-035752962-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-035752962-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242204-SX8T09/blueprint/resolved-snapshot.json"
+    - "packages/core/src/runner/runner-effect-operation.ts"
+    - "packages/agentplane/src/runner/effect-operation.test.ts"
+    - "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts"
+    - "https://github.com/basilisk-labs/agentplane/pull/4637"
+  findings:
+    - "The strict core schema binds operation identity, claim generation, authority, fingerprints, invocation digest, postconditions, replay provenance, and enforcement mode; the runner stores a state marker before execution."
+    - "Focused tests cover first-adapter filesystem visibility, independent-process contention, tampering, legacy compatibility, replay states, provider forwarding, and lifecycle state integration."
+    - "Hosted PR #4637 passed static, Knip, contract, unit, critical CLI, Windows, runtime, coverage, workflow, documentation, and CodeQL checks on the reviewed head."
+commit:
+  hash: "6b83d0c70fc0c093ab00a21c217a5adec936ac38"
+  message: "✨ SX8T09 runner: remove unused effect helper exports"
 comments:
   -
     author: "CODER"
     body: "Start: map the runner effect boundary, then implement the durable operation journal and single-spawn claim."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -56,8 +84,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: map the runner effect boundary, then implement the durable operation journal and single-spawn claim."
+  -
+    type: "verify"
+    at: "2026-07-27T03:57:14.469Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused runner effect suites passed (91 tests); typecheck, lifecycle invariants, guards, critical CLI suite, hotspot baseline, lint, and Knip baseline passed. Hosted PR #4637 is green on the published head."
+  -
+    type: "status"
+    at: "2026-07-27T03:58:40.359Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T02:12:20.737Z"
+doc_updated_at: "2026-07-27T03:58:40.359Z"
 doc_updated_by: "CODER"
 description: "Define strict versioned runner effect operation and journal contracts, persist operation identity, idempotency, authority, StateFingerprint and expected postconditions before adapter execution, and make crash/restart/replay refuse a second spawn for the same operation key."
 sections:
@@ -89,6 +130,36 @@ sections:
     7. Run focused effect-operation/journal suites, bun run lifecycle:invariants, bun run guards:check, bun run test:critical and bun run typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T03:57:14.469Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused runner effect suites passed (91 tests); typecheck, lifecycle invariants, guards, critical CLI suite, hotspot baseline, lint, and Knip baseline passed. Hosted PR #4637 is green on the published head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T02:12:20.737Z, excerpt_hash=sha256:51296906977449187f73387f030b344457f202d7fc4c05b19d790a02eb0fadb7
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242204-SX8T09-persist-typed-runner-effect-operations-before-ex/.agentplane/tasks/202607242204-SX8T09/blueprint/resolved-snapshot.json
+    - old_digest: cbfb06223de4a9891387ca669dbd5c69859ac1054e7fd24be7e0fe709148c327
+    - current_digest: cbfb06223de4a9891387ca669dbd5c69859ac1054e7fd24be7e0fe709148c327
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242204-SX8T09
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the implementation commits while retaining RF-06 fail-closed effect guards.
@@ -204,6 +275,19 @@ extensions:
         schemaVersion: 1
         sequence: 8
         stateFingerprintDigest: "sha256:20866ec96845f4ac9feb0e6e164b80278ad900f09406f6d50b2df4ecfaa6ef70"
+      -
+        actor: "USER"
+        at: "2026-07-27T03:58:15.684Z"
+        authorityDigest: "sha256:860fbafa4669696f6e8727b7beda523ac0e35fc614fa812e99f156a8f9a29ac9"
+        digest: "sha256:1519e8e78252fa132a24181bf4399b8df218a5588cb394a10248933e25d743e5"
+        operationDigest: "sha256:e8f48e6fbaad91cf5c1c86fe065fefef8d275325a31a7855cc7a173f7fabd697"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:622c80e2ef403c6bfc198ffd5efc7e702fb2fe6781e6d6cf1725cef95f66fb11"
+        schemaVersion: 1
+        sequence: 9
+        stateFingerprintDigest: "sha256:5a07178970cdb9a20171f69b9fe23a5f8a0a95f75e6fe718a38ec3d113353b1d"
     grants:
       -
         actor: "USER"
@@ -309,6 +393,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:20866ec96845f4ac9feb0e6e164b80278ad900f09406f6d50b2df4ecfaa6ef70"
         stateScopeDigest: "sha256:ff310df0b278fc6ad390598305b6254b3306f9e7f86fe4a07b882bb03ac45bcc"
+      -
+        actor: "USER"
+        digest: "sha256:860fbafa4669696f6e8727b7beda523ac0e35fc614fa812e99f156a8f9a29ac9"
+        expiresAt: "2026-07-27T04:13:15.684Z"
+        id: "authority-81346005-d459-40bb-9f39-be29cdb3bb22"
+        issuedAt: "2026-07-27T03:58:15.684Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:e8f48e6fbaad91cf5c1c86fe065fefef8d275325a31a7855cc7a173f7fabd697"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:5a07178970cdb9a20171f69b9fe23a5f8a0a95f75e6fe718a38ec3d113353b1d"
+        stateScopeDigest: "sha256:98da6e8e606e696576f3e483c1b0bf01bc7f3b45d58e2f470373d2a0f1a1ae9c"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "e080b180b13f9d138b9a8eee0e5d73a18517722b"
@@ -352,6 +449,36 @@ Define strict versioned runner effect operation and journal contracts, persist o
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T03:57:14.469Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused runner effect suites passed (91 tests); typecheck, lifecycle invariants, guards, critical CLI suite, hotspot baseline, lint, and Knip baseline passed. Hosted PR #4637 is green on the published head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T02:12:20.737Z, excerpt_hash=sha256:51296906977449187f73387f030b344457f202d7fc4c05b19d790a02eb0fadb7
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242204-SX8T09-persist-typed-runner-effect-operations-before-ex/.agentplane/tasks/202607242204-SX8T09/blueprint/resolved-snapshot.json
+- old_digest: cbfb06223de4a9891387ca669dbd5c69859ac1054e7fd24be7e0fe709148c327
+- current_digest: cbfb06223de4a9891387ca669dbd5c69859ac1054e7fd24be7e0fe709148c327
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242204-SX8T09
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

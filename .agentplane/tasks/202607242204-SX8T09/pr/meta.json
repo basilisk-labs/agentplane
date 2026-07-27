@@ -3,14 +3,22 @@
   "branch": "task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex",
   "created_at": "2026-07-27T02:12:20.863Z",
   "diffstat_sha256": "sha256:b4534d76fbd41fc6d785b59f56a6a3b0d9264f9ca9d43316cb6cf1a0263bdf56",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-27T03:57:14.469Z",
+  "last_verified_diffstat_sha256": "sha256:b4534d76fbd41fc6d785b59f56a6a3b0d9264f9ca9d43316cb6cf1a0263bdf56",
   "pr_number": 4637,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4637",
+  "pre_merge_closure": {
+    "basis_commit": "6b83d0c70fc0c093ab00a21c217a5adec936ac38",
+    "branch": "task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex",
+    "pr_number": 4637,
+    "recorded_at": "2026-07-27T03:58:40.415Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607242204-SX8T09",
   "updated_at": "2026-07-27T02:14:01.139Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
