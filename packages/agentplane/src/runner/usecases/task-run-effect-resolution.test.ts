@@ -6,6 +6,7 @@ import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schema
 import { afterEach, describe, expect, it } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 import { advanceRunnerEffectJournal, startRunnerEffectOperation } from "../effect-operation.js";
 import { evolveRunnerRunState, writeRunnerRunState } from "../artifacts.js";
 import { RunnerRunRepository } from "../run-repository.js";
@@ -190,11 +191,8 @@ describe("task runner effect resolution", () => {
       run_id: identicalFixture.prepared.invocation.run_id,
       storage: "supervisor",
     });
-    expect(
-      (await readFile(identicalRepository.paths.events_path, "utf8")).match(
-        /runner_effect_resolved/g,
-      ),
-    ).toHaveLength(1);
+    const identicalEvents = await readFile(identicalRepository.paths.events_path, "utf8");
+    expect(identicalEvents.match(/runner_effect_resolved/g)).toHaveLength(1);
     expect(existsSync(identicalFixture.adapterMarker)).toBe(false);
 
     const opposingFixture = await uncertainEffectFixture();
@@ -204,14 +202,17 @@ describe("task runner effect resolution", () => {
       resolveTaskRunnerEffect({ ...opposingInput, verdict: "not_applied" }),
     ]);
     expect(opposing.filter((result) => result.status === "fulfilled")).toHaveLength(1);
-    expect(opposing).toContainEqual(
-      expect.objectContaining({
-        status: "rejected",
-        reason: expect.objectContaining({
-          context: expect.objectContaining({ reason: "runner_effect_resolution_intent_conflict" }),
-        }),
-      }),
-    );
+    const rejected = opposing.find((result) => result.status === "rejected");
+    expect(rejected?.status).toBe("rejected");
+    if (rejected?.status !== "rejected") {
+      throw new Error("Expected the opposing resolution to reject.");
+    }
+    const reason: unknown = rejected.reason;
+    expect(reason).toBeInstanceOf(CliError);
+    if (!(reason instanceof CliError)) {
+      throw new Error("Expected a CliError for the opposing resolution.");
+    }
+    expect(reason.context?.reason).toBe("runner_effect_resolution_intent_conflict");
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
   });
 
