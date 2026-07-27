@@ -191,7 +191,9 @@ describe("task runner effect resolution", () => {
       storage: "supervisor",
     });
     expect(
-      (await readFile(identicalRepository.paths.events_path, "utf8")).match(/runner_effect_resolved/g),
+      (await readFile(identicalRepository.paths.events_path, "utf8")).match(
+        /runner_effect_resolved/g,
+      ),
     ).toHaveLength(1);
     expect(existsSync(identicalFixture.adapterMarker)).toBe(false);
 

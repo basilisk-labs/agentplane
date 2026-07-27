@@ -57,7 +57,7 @@ conflicting verdicts reject without adapter execution.
  .../usecases/task-run-active-claim-record.ts       |   8 +-
  .../src/runner/usecases/task-run-active-claim.ts   | 128 +++++
  .../src/runner/usecases/task-run-effect-journal.ts |   3 +
- .../usecases/task-run-effect-resolution.test.ts    | 318 +++++++++++
+ .../usecases/task-run-effect-resolution.test.ts    | 320 +++++++++++
  .../runner/usecases/task-run-effect-resolution.ts  | 596 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-replay.ts   |  48 ++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   9 +-
@@ -70,7 +70,7 @@ conflicting verdicts reject without adapter execution.
  packages/core/src/schemas/index.ts                 |  23 +
  .../baselines/v0.7-compatibility-candidate.json    | 376 ++++++++++++-
  .../check-compatibility-contract-baseline.mjs      | 184 +++++++
- 31 files changed, 2600 insertions(+), 41 deletions(-)
+ 31 files changed, 2602 insertions(+), 41 deletions(-)
 ```
 
 </details>
