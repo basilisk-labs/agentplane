@@ -8,10 +8,10 @@
   "pr_number": 4647,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4647",
   "pre_merge_closure": {
-    "basis_commit": "5f48099a010484ce2506d7ef1b652ce1b8f86958",
+    "basis_commit": "df380750d7c9fcd2a3410b2ad0bf910e47e41895",
     "branch": "task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie",
     "pr_number": 4647,
-    "recorded_at": "2026-07-27T22:29:06.806Z",
+    "recorded_at": "2026-07-27T22:32:17.860Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
