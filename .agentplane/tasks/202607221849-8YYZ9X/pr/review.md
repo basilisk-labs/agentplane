@@ -13,7 +13,7 @@ Created: 2026-07-27T15:40:36.124Z
 ## Verification
 
 - State: ok
-- Note: All deterministic calibration scenarios pass: pass/rework/blocked/human_review provenance, stale revision rejection, success and failure-path no-write enforcement, and safe provider-failure classification. Typecheck, lint, compatibility ratchet, assets, docs, and policy routing pass.
+- Note: Reverification after the hosted critical-CI fix: critical-cli suite now accepts the reviewed 253commands/174args/813options surface; compatibility ratchet remains green. No production behavior changed beyond the tested expectation.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
