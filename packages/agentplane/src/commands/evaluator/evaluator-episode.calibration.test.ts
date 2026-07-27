@@ -326,4 +326,53 @@ describe("evaluator episode calibration", () => {
     const stored = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(stored.frontmatter.quality_review).toBeUndefined();
   });
+
+  it("checks workspace state before classifying a provider failure", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607270000-EC05";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const { command, prepared } = await prepare(root, taskId);
+
+    await expect(
+      executePreparedEvaluatorEpisode({
+        ctx: command,
+        prepared,
+        executor: async (invocation) => {
+          await writeFile(
+            path.join(invocation.repository_root, "src", "rogue-before-failure.ts"),
+            "export {};\n",
+            "utf8",
+          );
+          throw new Error("provider startup failed");
+        },
+      }),
+    ).rejects.toThrow("read-only provider changed repository state");
+  });
+
+  it("maps provider startup failures to safe runtime errors without applying a result", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607270000-EC06";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const { command, prepared } = await prepare(root, taskId);
+    const failure = await executePreparedEvaluatorEpisode({
+      ctx: command,
+      prepared,
+      executor: async () => {
+        throw new Error("provider cache failed at /private/provider-diagnostics");
+      },
+    }).catch((error: unknown) => error);
+
+    expect(failure).toMatchObject({ code: "E_RUNTIME" });
+    expect(failure).toHaveProperty(
+      "message",
+      "Codex evaluator provider failed before returning a typed result. The typed result was not applied.",
+    );
+    expect(String(failure)).not.toContain("/private/provider-diagnostics");
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toBeUndefined();
+  });
 });

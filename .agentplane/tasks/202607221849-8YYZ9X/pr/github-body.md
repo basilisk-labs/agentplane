@@ -15,8 +15,13 @@ RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Focused calibration, compatibility, type, lint, build, and critical CLI checks pass; the real
+read-only Codex episode failed before a typed response.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -34,8 +39,8 @@ RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its 
  packages/agentplane/assets/AGENTS.md               |   4 +-
  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
- .../evaluator-episode.calibration.test.ts          | 329 +++++++++++++++++++
- .../src/commands/evaluator/evaluator-episode.ts    | 355 +++++++++++++++++++++
+ .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
+ .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
  .../evaluator/evaluator-quality-artifacts.ts       |   5 +-
  .../commands/evaluator/evaluator-review-apply.ts   |  58 ++++
  .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
@@ -44,9 +49,9 @@ RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its 
  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 +-
  .../agentplane/src/runtime/sgr/contract-types.ts   |   2 +-
  .../src/shared/builtin-assets.generated.ts         |   8 +-
- .../baselines/v0.7-compatibility-candidate.json    | 130 ++++++--
+ .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
- 19 files changed, 1091 insertions(+), 70 deletions(-)
+ 19 files changed, 1153 insertions(+), 70 deletions(-)
 ```
 
 </details>
