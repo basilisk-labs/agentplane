@@ -19,8 +19,8 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
 - Note:
 
 ```text
-Rework verified: CLI-managed verification history is bounded optional episode context, while
-structural semantic sections and TaskEpisodeView remain authoritative for agents.
+Rework review complete: CI failure is isolated to an unchanged cross-process test and did not
+reproduce locally.
 ```
 - Canonical workflow state lives in the task README.
 
