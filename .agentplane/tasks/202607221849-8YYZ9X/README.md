@@ -1,10 +1,10 @@
 ---
 id: "202607221849-8YYZ9X"
 title: "Execute and calibrate EVALUATOR episodes"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -27,9 +27,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-27T15:39:29.453Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -38,11 +38,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-27T15:40:35.719Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:49:09.638Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-27T15:40:35.719Z"
+doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
   Summary: |-
@@ -72,6 +82,40 @@ sections:
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
   Findings: ""
+extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-27T15:41:01.436Z"
+        authorityDigest: "sha256:5e0af3b7002d7541010ab6fd5d314073627612e04c5537f7decc99a34eace50c"
+        digest: "sha256:a77ead1fb848ed4f29fcad3ba6dfae657b9b6146ff3376bc0709001b5ba6d676"
+        operationDigest: "sha256:1b1ad54abbd2f3dc6f1996c7f819dfa4d2a90a5a3a6d3ab372ad407e63009121"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:f895a0e405b3b1a8ff568566ab08bad61f1c57a3cffab8f4601541b48dff030d"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:5e0af3b7002d7541010ab6fd5d314073627612e04c5537f7decc99a34eace50c"
+        expiresAt: "2026-07-27T15:56:01.436Z"
+        id: "authority-6a79b910-61ff-4d0c-8ade-44dc910205fa"
+        issuedAt: "2026-07-27T15:41:01.436Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:1b1ad54abbd2f3dc6f1996c7f819dfa4d2a90a5a3a6d3ab372ad407e63009121"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:f895a0e405b3b1a8ff568566ab08bad61f1c57a3cffab8f4601541b48dff030d"
+        stateScopeDigest: "sha256:20a01e4c833c85b6d2cd63c6ca38a542039710cbc923772f5b3190f03d7e58f3"
+    schemaVersion: 1
+  workflow_route_baseline:
+    start_head_sha: "8c863087669ef21c562e8c230e851bc94a12e8a4"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
