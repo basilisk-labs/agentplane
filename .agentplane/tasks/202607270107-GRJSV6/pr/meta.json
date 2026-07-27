@@ -3,7 +3,8 @@
   "branch": "task/202607270107-GRJSV6/preserve-authority-only-tails-during-merged-clea",
   "created_at": "2026-07-27T01:22:25.252Z",
   "diffstat_sha256": "sha256:3f322f0219ad3e159fbe302a2341d20eb798f90028d4896bdb77a576e55bbda9",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-27T01:49:26.181Z",
+  "last_verified_diffstat_sha256": "sha256:3f322f0219ad3e159fbe302a2341d20eb798f90028d4896bdb77a576e55bbda9",
   "pr_number": 4636,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4636",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607270107-GRJSV6",
   "updated_at": "2026-07-27T01:23:26.428Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
