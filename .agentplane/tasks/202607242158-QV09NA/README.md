@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on:
@@ -50,24 +50,22 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T11:18:28.816Z"
+  updated_at: "2026-07-27T11:45:13.384Z"
   updated_by: "EVALUATOR"
-  note: "Reviewed bcf068d: the static-analysis repair only narrows an already asserted rejected result to CliError before reading its typed context."
-  evaluated_sha: "bcf068d13b4f1fe8c342246f0fdce98ff57cc0e1"
+  note: "Reviewed the post-CI repair at 4aa3d6f36e62: it removes only an unused public type re-export and makes three routing fixtures explicitly represent the already-committed, verified state their asserted integration routes require. No runner-effect verdict, claim-retirement, adapter-call, or retry semantics changed."
+  evaluated_sha: "4aa3d6f36e621a7446fbb96c9f2b2ee7f180f8d7"
   blueprint_digest: "75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f"
   evidence_refs:
     - ".agentplane/tasks/202607242158-QV09NA/README.md"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-111828816-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-111828816-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-111828816-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-114513384-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-114513384-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-114513384-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json"
-    - "git diff bcf068d^ bcf068d -- packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
-    - "bun run lint:core"
-    - "bunx vitest run packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts (7 passed)"
-    - "bun run typecheck && bun run lifecycle:invariants && bun run guards:check && bun run format:check && bun run test:critical"
+    - "bun run test:fast (474 files, 3284 tests passed)"
+    - "bun run lint:core && bun run arch:check && bun run knip:check && bun run typecheck && bun run test:critical"
+    - "git diff 278c7491397046cda79831600d7b10bf9d62f707...4aa3d6f36e621a7446fbb96c9f2b2ee7f180f8d7"
   findings:
-    - "The concurrent opposite-verdict test still requires one fulfilled result and one runner_effect_resolution_intent_conflict; the new narrowing removes unsafe any traversal without weakening the assertion."
-    - "The test still proves no adapter invocation after both identical and opposing concurrent resolution attempts."
+    - "The previous CI failure was test/static drift, not a defect in the QV effect-resolution safety contract. The corrected fixtures now preserve the fail-safe branch route for genuinely uncommitted work."
 commit:
   hash: "e669a5a45438a25e7c45ceab5a6a61efab12d91a"
   message: "📋 QV09NA task: authorize refreshed pre-merge closure"
