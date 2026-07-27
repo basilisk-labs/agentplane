@@ -320,11 +320,13 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
               change: "adds evaluator human_review as a typed semantic escalation verdict",
               before: {
                 normalized_bytes: 6_471,
-                normalized_sha256: "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
+                normalized_sha256:
+                  "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
               },
               after: {
                 normalized_bytes: 6_488,
-                normalized_sha256: "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a",
+                normalized_sha256:
+                  "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a",
               },
             },
             {
@@ -332,11 +334,13 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
               change: "adds the CLI-owned immutable task-creation receipt",
               before: {
                 normalized_bytes: 19_492,
-                normalized_sha256: "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
+                normalized_sha256:
+                  "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
               },
               after: {
                 normalized_bytes: 20_630,
-                normalized_sha256: "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77",
+                normalized_sha256:
+                  "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77",
               },
             },
           ],
