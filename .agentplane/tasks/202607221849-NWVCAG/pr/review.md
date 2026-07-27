@@ -6,14 +6,14 @@ Created: 2026-07-26T10:58:46.358Z
 
 - Task: `202607221849-NWVCAG`
 - Title: Bind side effects to explicit authority records
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records`
 - Canonical task record: `.agentplane/tasks/202607221849-NWVCAG/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: RF13 end-to-end authority route rework required
+- State: ok
+- Note: Verified RF13 integration authority scope recovery
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,14 +37,14 @@ Created: 2026-07-26T10:58:46.358Z
  .../route-decision-fingerprint-stabilization.ts    |  51 ++
  .../shared/route-decision-next-action.test.ts      |   4 +-
  .../src/commands/shared/route-decision.ts          |  30 +-
- .../commands/shared/side-effect-authority.test.ts  | 273 ++++++++
+ .../commands/shared/side-effect-authority.test.ts  | 361 ++++++++++
  .../src/commands/shared/side-effect-authority.ts   | 433 ++++++++++++
  .../workflow-operation-projection.registry.test.ts |  43 +-
  .../src/commands/shared/workflow-step-authority.ts | 178 +++++
  .../src/commands/shared/workflow-step-common.ts    |  75 ++
  .../src/commands/shared/workflow-step-factory.ts   | 160 +----
  .../shared/workflow-step-fingerprint.test.ts       |  29 +-
- .../commands/shared/workflow-step-fingerprint.ts   |  50 +-
+ .../commands/shared/workflow-step-fingerprint.ts   |  75 +-
  .../workflow-step-integration-projections.test.ts  | 223 ++++++
  ...rkflow-step-projections.conflict-rework.test.ts |  58 +-
  .../shared/workflow-step-projections.test.ts       | 269 ++++---
@@ -64,7 +64,7 @@ Created: 2026-07-26T10:58:46.358Z
  .../baselines/v0.7-compatibility-candidate.json    | 172 ++++-
  .../check-compatibility-contract-baseline.mjs      | 122 +++-
  scripts/generate/sync-schemas.mjs                  |   5 +-
- 35 files changed, 2812 insertions(+), 727 deletions(-)
+ 35 files changed, 2924 insertions(+), 728 deletions(-)
 ```
 
 </details>

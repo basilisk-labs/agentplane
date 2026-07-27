@@ -2,16 +2,23 @@
   "base": "main",
   "branch": "task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records",
   "created_at": "2026-07-26T10:58:46.358Z",
-  "diffstat_sha256": "sha256:00b939d66c9e0dba0429b595424bb0c25a1bfd48d1c274502d7538ece0a55b93",
-  "last_verified_at": "2026-07-27T00:35:09.687Z",
-  "last_verified_diffstat_sha256": "sha256:00b939d66c9e0dba0429b595424bb0c25a1bfd48d1c274502d7538ece0a55b93",
+  "diffstat_sha256": "sha256:2f15f470e1ed52c0e1e353b2ca201ac38aa5df3e593c610680749e8907ccaf52",
+  "last_verified_at": "2026-07-27T00:44:43.872Z",
+  "last_verified_diffstat_sha256": "sha256:2f15f470e1ed52c0e1e353b2ca201ac38aa5df3e593c610680749e8907ccaf52",
   "pr_number": 4633,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4633",
+  "pre_merge_closure": {
+    "basis_commit": "4fa0f7eb7c02c3876f69000b457b633343b79908",
+    "branch": "task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records",
+    "pr_number": 4633,
+    "recorded_at": "2026-07-27T00:45:23.718Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221849-NWVCAG",
   "updated_at": "2026-07-26T10:59:30.476Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

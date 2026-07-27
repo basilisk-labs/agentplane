@@ -1,1 +1,1 @@
-🚧 NWVCAG task: Bind side effects to explicit authority records [202607221849-NWVCAG]
+✅ NWVCAG task: Bind side effects to explicit authority records [202607221849-NWVCAG]
