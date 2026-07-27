@@ -19,9 +19,9 @@ RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its 
 - Note:
 
 ```text
-All deterministic calibration scenarios pass: pass/rework/blocked/human_review provenance, stale
-revision rejection, success and failure-path no-write enforcement, and safe provider-failure
-classification. Typecheck, lint, compatibility ratchet, assets, docs, and policy routing pass.
+Reverification after the hosted critical-CI fix: critical-cli suite now accepts the reviewed
+253commands/174args/813options surface; compatibility ratchet remains green. No production behavior
+changed beyond the tested expectation.
 ```
 - Canonical workflow state lives in the task README.
 
