@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -72,8 +72,8 @@ quality_review:
   findings:
     - "Verify Step 4 requires a recorded publish decision; README currently records verification and residual risk but no decision."
 commit:
-  hash: "b84ae3fa29f6f01716d101905cf69d9e369d7e7f"
-  message: "🧪 9M2FBQ task: persist alpha qualification context"
+  hash: "5b71fa6261472160e6b37bb952e72125494e3a59"
+  message: "🧭 9M2FBQ task: record alpha decision rework"
 comments:
   -
     author: "TESTER"
@@ -81,6 +81,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: rebased alpha.2 qualification onto main at 5ae5c5b13; schemas and lifecycle invariants passed; critical suite completed without reported failure; ci:contract completed locally but the terminal transport did not return its final exit code, so hosted PR checks remain mandatory evidence."
+  -
+    author: "CODER"
+    body: "Implementation rework: recorded the explicit do-not-publish decision for alpha.2; no product code changed."
 events:
   -
     type: "status"
@@ -102,8 +105,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration."
+  -
+    type: "status"
+    at: "2026-07-27T21:21:03.445Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework: recorded the explicit do-not-publish decision for alpha.2; no product code changed."
 doc_version: 3
-doc_updated_at: "2026-07-27T21:18:54.161Z"
+doc_updated_at: "2026-07-27T21:21:03.445Z"
 doc_updated_by: "CODER"
 description: "Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -166,6 +176,10 @@ sections:
     - Observation: Local terminal transport did not emit the final exit record for the two long aggregate commands after their child processes completed.
       Impact: Local aggregate exit-code evidence is weaker than the deterministic check output.
       Resolution: Require a green hosted PR gate for the published final head before queueing or qualifying the milestone.
+
+    - Observation: Publish decision: do not publish 0.7.0-alpha.2 from this task.
+      Impact: An optional prerelease would add external package state while the final rebased head still requires an independent hosted gate.
+      Resolution: Defer alpha.2 publication. Continue v0.7 work from the qualified task evidence; reconsider publication only through a dedicated release task after a green hosted PR gate and explicit release approval.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -274,3 +288,7 @@ DecisionContextRef:
 - Observation: Local terminal transport did not emit the final exit record for the two long aggregate commands after their child processes completed.
   Impact: Local aggregate exit-code evidence is weaker than the deterministic check output.
   Resolution: Require a green hosted PR gate for the published final head before queueing or qualifying the milestone.
+
+- Observation: Publish decision: do not publish 0.7.0-alpha.2 from this task.
+  Impact: An optional prerelease would add external package state while the final rebased head still requires an independent hosted gate.
+  Resolution: Defer alpha.2 publication. Continue v0.7 work from the qualified task evidence; reconsider publication only through a dedicated release task after a green hosted PR gate and explicit release approval.
