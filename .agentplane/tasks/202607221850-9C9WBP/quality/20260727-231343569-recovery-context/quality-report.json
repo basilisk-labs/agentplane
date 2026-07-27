@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-9C9WBP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T23:13:43.702Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "6f18f3796dd7d31d7c9697841a5b55fc2b5376a1",
+  "blueprint_digest": "cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073",
+  "findings": [
+    "Reviewed task-context compaction: only the canonical BEGIN/END verification envelope is reclassified as optional; localized configured required sections and oversized semantic sections retain their structural validation behavior."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
