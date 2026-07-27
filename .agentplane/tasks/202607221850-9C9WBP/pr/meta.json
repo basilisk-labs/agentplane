@@ -3,14 +3,22 @@
   "branch": "task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie",
   "created_at": "2026-07-27T21:31:31.669Z",
   "diffstat_sha256": "sha256:8321bbde0c41e40b5d3b039a510e3c6da6446b6e3b2a23bb37046ebaec7c2f05",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-27T22:27:24.490Z",
+  "last_verified_diffstat_sha256": "sha256:8321bbde0c41e40b5d3b039a510e3c6da6446b6e3b2a23bb37046ebaec7c2f05",
   "pr_number": 4647,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4647",
+  "pre_merge_closure": {
+    "basis_commit": "5f48099a010484ce2506d7ef1b652ce1b8f86958",
+    "branch": "task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie",
+    "pr_number": 4647,
+    "recorded_at": "2026-07-27T22:29:06.806Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221850-9C9WBP",
   "updated_at": "2026-07-27T21:32:51.170Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
