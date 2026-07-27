@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -41,27 +41,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T16:54:57.235Z"
+  updated_at: "2026-07-27T17:14:40.331Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "665d84dd02d38c4bb9b7f870288198d00fb1266a"
+  evaluated_sha: "e852fd816a6f8cecb09ee2b63cab395b4d5fde69"
   blueprint_digest: "4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f"
   evidence_refs:
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221849-8YYZ9X/README.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The expectation was updated only from 252/173/811 to the already-reviewed 253/174/813 candidate surface, matching evaluator execute and its two public options; compatibility ratchet remains green."
+    - "The rework updates only the critical test expectation to the generated candidate: source_tasks includes RF-12b, and the CLI/context surface digests match the approved candidate."
 commit:
   hash: "6a7cc2dfc19bfe44e92fb7865694628849e9ffff"
   message: "📚 8YYZ9X task: record final closure authority"

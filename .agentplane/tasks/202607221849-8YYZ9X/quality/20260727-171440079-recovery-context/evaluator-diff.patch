@@ -1,0 +1,159 @@
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt b/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
+index 8795b47bd..e3bdf169f 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
+@@ -4,7 +4,7 @@
+  docs/user/task-lifecycle.mdx                       |   8 +-
+  packages/agentplane/assets/AGENTS.md               |   4 +-
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
+- ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |  49 ++-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+@@ -18,4 +18,4 @@
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 20 files changed, 1154 insertions(+), 71 deletions(-)
++ 20 files changed, 1185 insertions(+), 87 deletions(-)
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md b/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
+index 90c12d380..acd5b3067 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
+@@ -39,7 +39,7 @@ changed beyond the tested expectation.
+  docs/user/task-lifecycle.mdx                       |   8 +-
+  packages/agentplane/assets/AGENTS.md               |   4 +-
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
+- ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |  49 ++-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+@@ -53,7 +53,7 @@ changed beyond the tested expectation.
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 20 files changed, 1154 insertions(+), 71 deletions(-)
++ 20 files changed, 1185 insertions(+), 87 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json b/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
+index 41ed993c6..7961512d7 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
+   "created_at": "2026-07-27T15:40:36.124Z",
+-  "diffstat_sha256": "sha256:272ee674c831edfb268f44cebdaf9c0f433bd7bd230514c16a3fc32284fabff0",
++  "diffstat_sha256": "sha256:3a0d3ffa106aa3a5484485ce77038ac7e39ed9e5ce79a475c2b39f581d41ca22",
+   "last_verified_at": "2026-07-27T17:01:13.971Z",
+   "last_verified_diffstat_sha256": "sha256:272ee674c831edfb268f44cebdaf9c0f433bd7bd230514c16a3fc32284fabff0",
+   "pr_number": 4643,
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md b/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
+index c9271ba24..d7d23f7b9 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
+@@ -35,7 +35,7 @@ Created: 2026-07-27T15:40:36.124Z
+  docs/user/task-lifecycle.mdx                       |   8 +-
+  packages/agentplane/assets/AGENTS.md               |   4 +-
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
+- ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |  49 ++-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+@@ -49,7 +49,7 @@ Created: 2026-07-27T15:40:36.124Z
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 20 files changed, 1154 insertions(+), 71 deletions(-)
++ 20 files changed, 1185 insertions(+), 87 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 7e955cc8e..5f405e69f 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -175,16 +175,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607221848-VC4VVS",
+           "202607221849-NWVCAG",
+           "202607221849-TBTX8X",
++          "202607221849-8YYZ9X",
+           "202607242158-QV09NA",
+           "202607260007-DQM6AW",
+           "202607260532-9M7RNH",
+         ],
+         candidate: {
+-          surface_sha256: "bc9d2678e72c8e8478afb48ac7b18284c9daf9d85cbb02697423d0f2b2b161a8",
++          surface_sha256: "cae67e3c40031c35350d6bae212a060528d3256ac4d924d8354fba589674e32a",
+           section_digests: {
+             agent_facing_context_contracts:
+-              "5e5cf440852bb118c3771115090399a4e4ab46caf5a856ff57742884749dafec",
+-            cli_topology: "1a97bc1e6b715304e07172db86a5e12d22626b7e391d74cba7a0cfc6d158ee5f",
++              "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
++            cli_topology: "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+@@ -301,30 +302,44 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       });
+       expect(compatibilityCandidate.deltas).toContainEqual({
+         section: "agent_facing_context_contracts",
+-        source_tasks: ["202607221848-1HWR0R"],
++        source_tasks: ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
+         from_sha256: "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
+-        to_sha256: "5e5cf440852bb118c3771115090399a4e4ab46caf5a856ff57742884749dafec",
++        to_sha256: "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
+         classification: "additive",
+         summary:
+-          "Adds a CLI-owned immutable task-creation receipt before context task-pack generation.",
++          "Adds a CLI-owned immutable task-creation receipt and the typed EVALUATOR human-review escalation verdict.",
+         evidence: {
+           contract_count: 4,
+           unchanged_contract_paths: [
+             "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
+             "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
+-            "packages/agentplane/src/runtime/sgr/contract-types.ts",
+           ],
+-          source_contract: {
+-            path: "packages/agentplane/src/context/ingest-task-pack.ts",
+-            before: {
+-              normalized_bytes: 19_492,
+-              normalized_sha256: "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
++          changed_contracts: [
++            {
++              path: "packages/agentplane/src/runtime/sgr/contract-types.ts",
++              change: "adds evaluator human_review as a typed semantic escalation verdict",
++              before: {
++                normalized_bytes: 6_471,
++                normalized_sha256: "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
++              },
++              after: {
++                normalized_bytes: 6_488,
++                normalized_sha256: "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a",
++              },
+             },
+-            after: {
+-              normalized_bytes: 20_630,
+-              normalized_sha256: "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77",
++            {
++              path: "packages/agentplane/src/context/ingest-task-pack.ts",
++              change: "adds the CLI-owned immutable task-creation receipt",
++              before: {
++                normalized_bytes: 19_492,
++                normalized_sha256: "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
++              },
++              after: {
++                normalized_bytes: 20_630,
++                normalized_sha256: "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77",
++              },
+             },
+-          },
++          ],
+           task_creation_receipt: {
+             path: ".agentplane/tasks/<task-id>/task-creation.json",
+             version: 1,

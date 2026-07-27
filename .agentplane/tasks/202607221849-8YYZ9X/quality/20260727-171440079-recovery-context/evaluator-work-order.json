@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221849-8YYZ9X-42b945d4db6c7054139e2ef1",
+  "prepared_at": "2026-07-27T17:14:40.079Z",
+  "task": {
+    "id": "202607221849-8YYZ9X",
+    "revision": 26,
+    "objective": "Execute and calibrate EVALUATOR episodes\n\nRF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios.",
+    "acceptance_criteria": [
+      "bun run coverage:workflow-suite",
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: evaluator adapter invocation, result application, rework/blocked/human-review transitions, evidence-linked findings, stale-result rejection, no-write enforcement, calibration fixtures, and human escalation policy.\n- Out of scope: a general benchmarking product; full evaluation-platform work remains outside the 0.7 task-level safety primitive.",
+      "1. Invoke EVALUATOR with the prepared read-only AgentWorkOrder and result schema.\n2. Validate/apply the result through the typed boundary.\n3. Convert rework into a bounded next semantic work order and blocked/human uncertainty into explicit steps.\n4. Build calibration fixtures covering false pass, false rework, missing evidence, context reconciliation, and ambiguous acceptance.\n5. Tune escalation policy without deterministic semantic heuristics.",
+      "1. Run pass, rework, blocked, and human-review fixtures. Expected: the verdict originates only in EvaluatorSgrResult and each transition preserves evidence provenance.\n2. Change evaluated SHA or task revision after invocation. Expected: apply rejects the stale result.\n3. Attempt an evaluator filesystem mutation. Expected: sandbox/receipt policy makes the episode unacceptable.\n4. Run calibration scenarios repeatedly. Expected: ambiguous or weak-evidence cases escalate; no router heuristic supplies a verdict.\n5. Run focused evaluator tests, workflow coverage, lifecycle invariants, and typecheck."
+    ]
+  },
+  "evaluated_sha": "e852fd816a6f8cecb09ee2b63cab395b4d5fde69",
+  "blueprint_digest": "4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221849-8YYZ9X/README.md",
+      "sha256": "sha256:85a49f91f5abcada5d95cd38f7240475b6395b1f457be155ffeb2530c0f91941",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:448f52efb7b60218d7fd2b75b308264344cbb0ccb92e2b55231b4e98c087940b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:38520791ddf126ea7a5a96c26551c070c5ca96a7489d87ac46029894a098c598",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:0fb24c038b731b38f089b9302478b0f8c4bc3457014cd35109e54e3b207783c9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
