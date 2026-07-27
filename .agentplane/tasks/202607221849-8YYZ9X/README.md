@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The rework updates only the critical test expectation to the generated candidate: source_tasks includes RF-12b, and the CLI/context surface digests match the approved candidate."
 commit:
-  hash: "6a7cc2dfc19bfe44e92fb7865694628849e9ffff"
-  message: "📚 8YYZ9X task: record final closure authority"
+  hash: "6afca2863b5436f9a72817747b17975dd11569e1"
+  message: "📚 8YYZ9X task: record refreshed closure authority"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -145,8 +148,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T17:15:53.199Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T17:02:31.520Z"
+doc_updated_at: "2026-07-27T17:15:53.199Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
@@ -544,8 +554,8 @@ extensions:
         stateScopeDigest: "sha256:bec8889a1e6c88aaac7668a1e89da204b11fb6252f5d0fd6f327f668295607d0"
     schemaVersion: 1
   implementation_commit:
-    hash: "665d84dd02d38c4bb9b7f870288198d00fb1266a"
-    message: "🐛 8YYZ9X task: refresh critical compatibility expectation"
+    hash: "e852fd816a6f8cecb09ee2b63cab395b4d5fde69"
+    message: "🧪 8YYZ9X evaluator: align critical compatibility snapshot"
   workflow_route_baseline:
     start_head_sha: "8c863087669ef21c562e8c230e851bc94a12e8a4"
     version: 1

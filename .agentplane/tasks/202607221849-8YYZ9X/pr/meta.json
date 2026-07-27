@@ -8,10 +8,10 @@
   "pr_number": 4643,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4643",
   "pre_merge_closure": {
-    "basis_commit": "6a7cc2dfc19bfe44e92fb7865694628849e9ffff",
+    "basis_commit": "6afca2863b5436f9a72817747b17975dd11569e1",
     "branch": "task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
     "pr_number": 4643,
-    "recorded_at": "2026-07-27T17:02:31.584Z",
+    "recorded_at": "2026-07-27T17:15:53.260Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
