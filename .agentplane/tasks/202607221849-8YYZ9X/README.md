@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The expectation was updated only from 252/173/811 to the already-reviewed 253/174/813 candidate surface, matching evaluator execute and its two public options; compatibility ratchet remains green."
 commit:
-  hash: "22c6719bfb4a9cce5996212ea3e2b5d29bc3e390"
-  message: "📚 8YYZ9X task: record refreshed closure authority"
+  hash: "6a7cc2dfc19bfe44e92fb7865694628849e9ffff"
+  message: "📚 8YYZ9X task: record final closure authority"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -135,8 +138,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Reverification after the hosted critical-CI fix: critical-cli suite now accepts the reviewed 253commands/174args/813options surface; compatibility ratchet remains green. No production behavior changed beyond the tested expectation."
+  -
+    type: "status"
+    at: "2026-07-27T17:02:31.519Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T17:01:16.963Z"
+doc_updated_at: "2026-07-27T17:02:31.520Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
