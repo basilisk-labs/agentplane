@@ -1,0 +1,86 @@
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt b/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
+index e152ea714..8795b47bd 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
+@@ -4,6 +4,7 @@
+  docs/user/task-lifecycle.mdx                       |   8 +-
+  packages/agentplane/assets/AGENTS.md               |   4 +-
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+@@ -17,4 +18,4 @@
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 19 files changed, 1153 insertions(+), 70 deletions(-)
++ 20 files changed, 1154 insertions(+), 71 deletions(-)
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md b/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
+index 037fb5d4c..c1aea2cc0 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
+@@ -39,6 +39,7 @@ classification. Typecheck, lint, compatibility ratchet, assets, docs, and policy
+  docs/user/task-lifecycle.mdx                       |   8 +-
+  packages/agentplane/assets/AGENTS.md               |   4 +-
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+@@ -52,7 +53,7 @@ classification. Typecheck, lint, compatibility ratchet, assets, docs, and policy
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 19 files changed, 1153 insertions(+), 70 deletions(-)
++ 20 files changed, 1154 insertions(+), 71 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json b/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
+index 1719db141..8108c2fa8 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
+   "created_at": "2026-07-27T15:40:36.124Z",
+-  "diffstat_sha256": "sha256:f61095436de0e0818037011a5c84ef554a2c8047f765ea5cef3fdb3b3b4feb77",
++  "diffstat_sha256": "sha256:272ee674c831edfb268f44cebdaf9c0f433bd7bd230514c16a3fc32284fabff0",
+   "last_verified_at": "2026-07-27T16:35:01.324Z",
+   "last_verified_diffstat_sha256": "sha256:f61095436de0e0818037011a5c84ef554a2c8047f765ea5cef3fdb3b3b4feb77",
+   "pr_number": 4643,
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md b/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
+index 0221dc150..9c163eae4 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
+@@ -35,6 +35,7 @@ Created: 2026-07-27T15:40:36.124Z
+  docs/user/task-lifecycle.mdx                       |   8 +-
+  packages/agentplane/assets/AGENTS.md               |   4 +-
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+@@ -48,7 +49,7 @@ Created: 2026-07-27T15:40:36.124Z
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 19 files changed, 1153 insertions(+), 70 deletions(-)
++ 20 files changed, 1154 insertions(+), 71 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 34148b7b0..7e955cc8e 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("252commands/173args/811options");
++      expect(compatibility.stdout).toContain("253commands/174args/813options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -41,27 +41,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T16:36:39.992Z"
+  updated_at: "2026-07-27T16:54:57.235Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "8bb85d54f98547be17d5cf28e6b86c0a06f808da"
+  evaluated_sha: "665d84dd02d38c4bb9b7f870288198d00fb1266a"
   blueprint_digest: "4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f"
   evidence_refs:
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221849-8YYZ9X/README.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-165456275-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluator episode snapshots repository state both after CLI preparation and after a provider failure, rejects any mutation before a verdict can be applied, and maps launch failures to a safe E_RUNTIME response."
+    - "The expectation was updated only from 252/173/811 to the already-reviewed 253/174/813 candidate surface, matching evaluator execute and its two public options; compatibility ratchet remains green."
 commit:
   hash: "8bb85d54f98547be17d5cf28e6b86c0a06f808da"
   message: "🐛 8YYZ9X task: harden evaluator provider failures"
