@@ -3,14 +3,12 @@ import path from "node:path";
 
 import { gitEnv } from "@agentplaneorg/core/git";
 import { execFileAsync } from "@agentplaneorg/core/process";
-import type {
-  StateFingerprint,
-  StateFingerprintPreconditionDiagnostic,
-} from "@agentplaneorg/core/schemas";
 import {
   validateRunnerEffectJournal,
   validateRunnerEffectOperation,
   validateRunnerEffectOperationRef,
+  type StateFingerprint,
+  type StateFingerprintPreconditionDiagnostic,
 } from "@agentplaneorg/core/schemas";
 import { installRunCliIntegrationHarness } from "@agentplane/testkit";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -60,6 +58,14 @@ async function captureRejection(promise: Promise<unknown>): Promise<unknown> {
     return error;
   }
   throw new Error("Expected promise to reject.");
+}
+
+function readRecordStringField(record: Record<string, unknown>, field: string): string {
+  const value = record[field];
+  if (typeof value !== "string") {
+    throw new Error(`Expected ${field} to be a string in runner effect artifact.`);
+  }
+  return value;
 }
 
 async function switchReplayFixtureToAcknowledgedCloud(opts: {
@@ -196,11 +202,9 @@ describe("task-run state fingerprint precondition", () => {
     const originalExecute = CustomRunnerAdapter.prototype.execute;
     let effectJournalState: Awaited<ReturnType<RunnerRunRepository["readState"]>> = null;
     let effectJournalEvents = "";
-    let effectOperationAtFirstAdapterInstruction: {
-      operation: ReturnType<typeof validateRunnerEffectOperation>;
-      journal: ReturnType<typeof validateRunnerEffectJournal>;
-      reference: ReturnType<typeof validateRunnerEffectOperationRef>;
-    } | null = null;
+    let effectOperationAtFirstAdapterInstruction: Record<string, unknown> | null = null;
+    let effectJournalAtFirstAdapterInstruction: Record<string, unknown> | null = null;
+    let effectReferenceAtFirstAdapterInstruction: Record<string, unknown> | null = null;
     const executeSpy = vi
       .spyOn(CustomRunnerAdapter.prototype, "execute")
       .mockImplementation(async function (invocation) {
@@ -213,24 +217,27 @@ describe("task-run state fingerprint precondition", () => {
         });
         effectJournalState = await repository.readState();
         effectJournalEvents = await readFile(invocation.events_path, "utf8");
-        const reference = validateRunnerEffectOperationRef(
-          JSON.parse(
-            await readFile(path.join(invocation.run_dir, ".runner-effect-operation.json"), "utf8"),
-          ),
-        );
+        const reference = JSON.parse(
+          await readFile(path.join(invocation.run_dir, ".runner-effect-operation.json"), "utf8"),
+        ) as Record<string, unknown>;
+        validateRunnerEffectOperationRef(reference);
         const paths = resolveRunnerEffectOperationPaths({
           run_dir: invocation.run_dir,
-          operation_key: reference.operation_key,
+          operation_key: readRecordStringField(reference, "operation_key"),
         });
-        effectOperationAtFirstAdapterInstruction = {
-          operation: validateRunnerEffectOperation(
-            JSON.parse(await readFile(paths.operation_path, "utf8")),
-          ),
-          journal: validateRunnerEffectJournal(
-            JSON.parse(await readFile(paths.journal_path, "utf8")),
-          ),
-          reference,
-        };
+        const operation = JSON.parse(await readFile(paths.operation_path, "utf8")) as Record<
+          string,
+          unknown
+        >;
+        const journal = JSON.parse(await readFile(paths.journal_path, "utf8")) as Record<
+          string,
+          unknown
+        >;
+        validateRunnerEffectOperation(operation);
+        validateRunnerEffectJournal(journal);
+        effectOperationAtFirstAdapterInstruction = operation;
+        effectJournalAtFirstAdapterInstruction = journal;
+        effectReferenceAtFirstAdapterInstruction = reference;
         return await originalExecute.call(this, invocation);
       });
 
@@ -251,31 +258,40 @@ describe("task-run state fingerprint precondition", () => {
     });
     expect(effectJournalEvents).toContain('"type":"runner_effect_started"');
     expect(effectOperationAtFirstAdapterInstruction).toMatchObject({
-      operation: {
-        task_id: taskId,
-        origin_run_id: "run-state-fingerprint-success",
-        adapter_id: "custom",
-        enforcement: "supervisor_single_spawn",
-      },
-      journal: { phase: "started" },
-      reference: {
-        run_id: "run-state-fingerprint-success",
-        enforcement: "supervisor_single_spawn",
-      },
+      task_id: taskId,
+      origin_run_id: "run-state-fingerprint-success",
+      adapter_id: "custom",
+      enforcement: "supervisor_single_spawn",
     });
-    expect(effectOperationAtFirstAdapterInstruction?.operation.idempotency_key).toEqual(
-      `runner-effect:${effectOperationAtFirstAdapterInstruction?.operation.operation_key}`,
+    expect(effectJournalAtFirstAdapterInstruction).toMatchObject({ phase: "started" });
+    expect(effectReferenceAtFirstAdapterInstruction).toMatchObject({
+      run_id: "run-state-fingerprint-success",
+      enforcement: "supervisor_single_spawn",
+    });
+    if (!effectOperationAtFirstAdapterInstruction || !effectJournalAtFirstAdapterInstruction) {
+      throw new Error("Expected runner effect operation before adapter instruction.");
+    }
+    const operationKey = readRecordStringField(
+      effectOperationAtFirstAdapterInstruction,
+      "operation_key",
     );
-    expect(effectOperationAtFirstAdapterInstruction?.journal.operation_key).toBe(
-      effectOperationAtFirstAdapterInstruction?.operation.operation_key,
+    const claimGeneration = readRecordStringField(
+      effectOperationAtFirstAdapterInstruction,
+      "claim_generation",
     );
-    expect(effectOperationAtFirstAdapterInstruction?.journal.claim_generation).toBe(
-      effectOperationAtFirstAdapterInstruction?.operation.claim_generation,
+    expect(
+      readRecordStringField(effectOperationAtFirstAdapterInstruction, "idempotency_key"),
+    ).toEqual(`runner-effect:${operationKey}`);
+    expect(readRecordStringField(effectJournalAtFirstAdapterInstruction, "operation_key")).toBe(
+      operationKey,
+    );
+    expect(readRecordStringField(effectJournalAtFirstAdapterInstruction, "claim_generation")).toBe(
+      claimGeneration,
     );
     expect(effectJournalState?.effect_operation).toMatchObject({
       run_id: "run-state-fingerprint-success",
-      operation_key: effectOperationAtFirstAdapterInstruction?.operation.operation_key,
-      claim_generation: effectOperationAtFirstAdapterInstruction?.operation.claim_generation,
+      operation_key: operationKey,
+      claim_generation: claimGeneration,
     });
     expect(executed.precondition).toMatchObject({
       status: "fresh",
