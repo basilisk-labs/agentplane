@@ -104,7 +104,7 @@ ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --
 ```bash
 ap vshow <task-id>
 ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
-ap evaluator execute <task-id> --evaluator <id>
+ap evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]
 ap incidents advise <task-id>
 ap incidents collect <task-id> --check
 ap doctor
