@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221850-9C9WBP-60c987de87018406798f2e2e",
+  "prepared_at": "2026-07-27T22:30:06.990Z",
+  "task": {
+    "id": "202607221850-9C9WBP",
+    "revision": 14,
+    "objective": "Normalize runner task inputs into TaskEpisodeView\n\nRF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets.\n- Out of scope: knowledge retrieval or lifecycle commands.",
+      "1. Measure duplicate task representations from the frozen baseline.\n2. Define TaskEpisodeView with one authoritative field per fact.\n3. Select required sections from schema/blueprint metadata and fail loudly when unavailable.\n4. Compact history with explicit coverage/omission receipts.\n5. Migrate runner/work-order serialization and ratchet duplicate bytes downward.",
+      "1. Serialize representative large tasks before and after migration. Expected: one authoritative task representation and a material reduction in duplicate bytes without lower verified success fixtures.\n2. Remove or truncate a required section. Expected: preparation fails or records an explicit omission; it never silently hides required context.\n3. Exercise non-English/custom headings through blueprint metadata. Expected: section priority is structural, not an English string heuristic.\n4. Run task-context/work-order tests, guards, and typecheck."
+    ]
+  },
+  "evaluated_sha": "91edc7d8080ab6518f3ca0054efe6b06b312b60d",
+  "blueprint_digest": "cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221850-9C9WBP/README.md",
+      "sha256": "sha256:813a4622572834e5e4e6fcacce3039fdf87e98e22ae7331e3d0ce62bedefc462",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:5a9669e45118dd5ee4b79b1ccfa35b54e3c3262bcb648b5e232f5d1d8743ab59",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:d16de5e45b695842776e37dbca0fce407b5adfb5f7f44d954c9f6ebca6e8b1d3",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:bc9ae4bebf53a7af2fee977a0bfc74f8db1774fff1a3bca08e0f15cbb1cb92f5",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

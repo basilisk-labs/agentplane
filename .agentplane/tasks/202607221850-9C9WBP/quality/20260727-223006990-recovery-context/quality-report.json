@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-9C9WBP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T22:30:07.119Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "91edc7d8080ab6518f3ca0054efe6b06b312b60d",
+  "blueprint_digest": "cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073",
+  "findings": [
+    "The current runner transport remains bounded to TaskEpisodeView at the implementation commit; the closure commit changes only task evidence and policy incident projections.",
+    "The promoted incident is a transparent limitation record, not a synthetic role heuristic: current schema supplies structural headings, and a later blueprint/schema task must author per-role policy."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
