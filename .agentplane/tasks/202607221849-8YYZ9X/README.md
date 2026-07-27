@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The six helpers reported by Knip are internal implementation details; removing their exports preserves the externally used EvaluatorEpisodeProvider, EvaluatorEpisodeReceipt, executePreparedEvaluatorEpisode, and writeEvaluatorEpisodeReceipt contracts."
 commit:
-  hash: "90d5787d068e7131d82f3822636f4d7d756ccdf0"
-  message: "📚 8YYZ9X task: record final closure authority"
+  hash: "92231a093805168013038e8a8a4ba733e48271a0"
+  message: "📚 8YYZ9X task: record static-gate closure authority"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -165,8 +168,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T18:03:50.873Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T17:34:58.564Z"
+doc_updated_at: "2026-07-27T18:03:50.874Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
@@ -642,8 +652,8 @@ extensions:
         stateScopeDigest: "sha256:4488993dcee9903911b8e8bc8bd82ca5278432306d5d8491673bc568297af6cf"
     schemaVersion: 1
   implementation_commit:
-    hash: "6efa2f68f7d1529fbb0ff5f650cb334ea0297ac9"
-    message: "🧪 8YYZ9X evaluator: resolve evaluator lint findings"
+    hash: "e40a266e7f570792354831cbc2625ee0a67579f8"
+    message: "🧪 8YYZ9X evaluator: keep episode helpers module-private"
   workflow_route_baseline:
     start_head_sha: "8c863087669ef21c562e8c230e851bc94a12e8a4"
     version: 1
