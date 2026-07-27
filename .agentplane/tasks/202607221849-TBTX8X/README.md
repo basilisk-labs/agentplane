@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 32
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "The prepare/apply flow binds evaluator output to the frozen task revision, evaluated SHA, blueprint digest, and evidence digests; mutation-shaped result fields are rejected before quality state can change."
 commit:
-  hash: "9fbcd8fe21742287bc3846c50ad777db198ac495"
-  message: "🧩 TBTX8X task: repair evaluator compatibility"
+  hash: "fb63a666ffcd7e7f11a7a1c51e5a3314e2de61cf"
+  message: "🧩 TBTX8X task: format evaluator compatibility"
 comments:
   -
     author: "CODER"
@@ -162,8 +162,14 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Reopened before merge: hosted verify-contract found Prettier drift in evaluator.command.ts. Restore formatting, repeat format check, and refresh the PR head."
+  -
+    type: "status"
+    at: "2026-07-27T14:43:30.468Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
 doc_version: 3
-doc_updated_at: "2026-07-27T14:42:10.204Z"
+doc_updated_at: "2026-07-27T14:43:30.468Z"
 doc_updated_by: "CODER"
 description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
 sections:
