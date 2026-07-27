@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on:
@@ -69,8 +69,8 @@ quality_review:
     - "The concurrent opposite-verdict test still requires one fulfilled result and one runner_effect_resolution_intent_conflict; the new narrowing removes unsafe any traversal without weakening the assertion."
     - "The test still proves no adapter invocation after both identical and opposing concurrent resolution attempts."
 commit:
-  hash: "0c5c5b0d6d390d45bb051087102bb3051ac02186"
-  message: "📋 QV09NA task: authorize pre-merge closure"
+  hash: "e669a5a45438a25e7c45ceab5a6a61efab12d91a"
+  message: "📋 QV09NA task: authorize refreshed pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -81,6 +81,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -129,8 +132,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T11:19:37.611Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T11:06:56.899Z"
+doc_updated_at: "2026-07-27T11:19:37.612Z"
 doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
@@ -493,8 +503,8 @@ extensions:
         stateScopeDigest: "sha256:7a8203d83a336bf6972bfdc514e4fed41db32c7797d043ebf1aa648596f6053c"
     schemaVersion: 1
   implementation_commit:
-    hash: "7f6761be42d40ba041572448685f0888a23b17be"
-    message: "🐛 QV09NA effect-in-doubt: split resolution hot paths"
+    hash: "bcf068d13b4f1fe8c342246f0fdce98ff57cc0e1"
+    message: "🐛 QV09NA effect-in-doubt: satisfy static test safety"
   workflow_route_baseline:
     start_head_sha: "cae1a43c6aadbe44325f842254f0f60c78882b84"
     version: 1
