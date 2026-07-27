@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
     - "Reviewed integrity and freshness: grants bind operation and state scope, malformed audit state fails closed, and technical grant commits do not invalidate the semantic scope."
     - "Reviewed semantic boundary: authority records contain actor and policy metadata only; verdicts, summaries, and implementation decisions remain outside the authority mechanism."
 commit:
-  hash: "e3ad5bc54772c6da8dcd2c0f0f1ef7dd4b01641f"
-  message: "🔐 NWVCAG task: authorize remote pre-merge closure"
+  hash: "a9a91de3265e65e7450546f0e3cc9d5ac0d6c6e0"
+  message: "🔐 NWVCAG task: authorize pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -71,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -126,8 +129,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T00:22:55.506Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-26T23:36:23.831Z"
+doc_updated_at: "2026-07-27T00:22:55.507Z"
 doc_updated_by: "CODER"
 description: "RF-13: classify local, external reversible, external high-risk, and semantic operations; require typed authority/approval records and audit actor, policy rule, digest, and scope."
 sections:
@@ -737,8 +747,8 @@ extensions:
         stateScopeDigest: "sha256:92c1df721b5f6c2a9f62d2f4651977d9e186c699f2bd7323b2c0de54db18ef93"
     schemaVersion: 1
   implementation_commit:
-    hash: "e8e2c315fef1194a3f10fc29fb4481346427fdec"
-    message: "🐛 NWVCAG task: stabilize pre-merge authority digest"
+    hash: "96e569f7d32491cf05647f62d5dc78125b20fa9e"
+    message: "♻️ NWVCAG code: trim authority export surface"
   workflow_route_baseline:
     start_head_sha: "4da09cdaca713eb3be1576f00a4f57e72b1353db"
     version: 1
