@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607271814-E1ZTTV-cdc7b464eda1ca5c690cbee3",
+  "prepared_at": "2026-07-27T19:14:31.199Z",
+  "task": {
+    "id": "202607271814-E1ZTTV",
+    "revision": 17,
+    "objective": "Stabilize concurrent recovery-lease reads\n\nPrevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability.",
+    "acceptance_criteria": [
+      "- In scope: Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability.\n- Out of scope: unrelated refactors not required for \"Stabilize concurrent recovery-lease reads\".",
+      "1. Inspect the recovery-lease read and retirement protocol plus both failing concurrent tests. 2. Add the smallest bounded retry or contention classification that never accepts an unstable file and preserves identity/boundary validation. 3. Add deterministic tests for a transient concurrent replacement/read collision. 4. Run focused runner tests repeatedly, static/type/lint gates, then publish a narrow PR and require hosted checks before integrating RF-12b.",
+      "1. Run bun run ci:local:fast. Expected: all test files and critical CLI chunks pass.\n2. Run bun run typecheck and bun run lint:core. Expected: both exit successfully.\n3. Confirm the recovery-lease retry accepts only the known transient collision and preserves per-attempt directory, regular-file, and inode validation.\n4. Publish the task branch and require green hosted checks before integration."
+    ]
+  },
+  "evaluated_sha": "8b3d06c90f00a7da9ef6573b3fe4a8420e571783",
+  "blueprint_digest": "5c1bb2e6732acdf2aff6f9bcdf4093808f71144359323d2e6c894cb2b97e75ec",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/README.md",
+      "sha256": "sha256:e57256ab17535713b5fc1252a5309df22f8e56d4b87b9debc8748f96fe8c737e",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:06d93b89bcfe2b2783716f4b4b6772e80dd632b80ef0d2827c8989d4d685e091",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:8be8f6810b4920cdc1a1cda41ea45f07a5b31205443db6a94dc21445682cde03",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:ce00a16b344ec24ea1c713d17349bbc33556963b0952890448c37e3d087f9c9a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

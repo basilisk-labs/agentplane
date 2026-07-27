@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -30,23 +30,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T18:59:56.181Z"
+  updated_at: "2026-07-27T19:14:32.492Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "8b3d06c90f00a7da9ef6573b3fe4a8420e571783"
-  blueprint_digest: "1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc"
+  blueprint_digest: "5c1bb2e6732acdf2aff6f9bcdf4093808f71144359323d2e6c894cb2b97e75ec"
   evidence_refs:
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607271814-E1ZTTV/README.md"
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The recovery-lease reader retries only the existing atomic-replacement collision signature; each attempt retains directory-boundary, regular-file, and inode validation before accepting lease state."
+    - "The task now declares code mutation and code.branch_pr; its regenerated blueprint requires code-path, fast-check, PR, verification, quality, hosted, and commit evidence, all of which map to the implemented lease-read recovery fix and recorded validation."
 commit:
   hash: "f6349f313390cefb99adb47e1d7efe9e4d161d97"
   message: "🧩 E1ZTTV task: authorize pre-merge closure"

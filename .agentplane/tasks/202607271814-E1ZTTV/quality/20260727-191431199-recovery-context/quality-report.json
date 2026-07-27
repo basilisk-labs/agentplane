@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607271814-E1ZTTV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T19:14:32.492Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8b3d06c90f00a7da9ef6573b3fe4a8420e571783",
+  "blueprint_digest": "5c1bb2e6732acdf2aff6f9bcdf4093808f71144359323d2e6c894cb2b97e75ec",
+  "findings": [
+    "The task now declares code mutation and code.branch_pr; its regenerated blueprint requires code-path, fast-check, PR, verification, quality, hosted, and commit evidence, all of which map to the implemented lease-read recovery fix and recorded validation."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-191431199-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The targeted 30-second test-harness waits remain bounded and sufficient under local and hosted worker contention."
+  ],
+  "residual_risks": []
+}
