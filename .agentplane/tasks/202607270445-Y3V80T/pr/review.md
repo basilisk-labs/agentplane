@@ -24,12 +24,15 @@ Created: 2026-07-27T04:46:25.529Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T04:46:25.529Z
+- Updated: 2026-07-27T04:47:52.829Z
 - Branch: task/202607270445-Y3V80T/reconcile-resolved-release-incidents-after-sx8t0
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/policy/incidents.md                | 2 --
+ docs/developer/incident-archive.mdx            | 5 +++++
+ packages/agentplane/assets/policy/incidents.md | 2 --
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 ```
 
 </details>

@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607270445-Y3V80T/reconcile-resolved-release-incidents-after-sx8t0",
   "created_at": "2026-07-27T04:46:25.529Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:6ce22d762441aaa3bda8503a7d5c8dd501949dc6ff59f28be2162984e1e2c05a",
   "last_verified_at": null,
+  "pr_number": 4638,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4638",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607270445-Y3V80T",
-  "updated_at": "2026-07-27T04:46:25.529Z",
+  "updated_at": "2026-07-27T04:47:52.829Z",
   "verify": {
     "status": "skipped"
   }
