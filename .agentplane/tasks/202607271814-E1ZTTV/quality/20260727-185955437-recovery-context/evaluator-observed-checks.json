@@ -1,0 +1,12 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-27T18:55:40.772Z",
+    "updated_by": "TESTER",
+    "note": "Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch."
+  },
+  "runner_history": []
+}

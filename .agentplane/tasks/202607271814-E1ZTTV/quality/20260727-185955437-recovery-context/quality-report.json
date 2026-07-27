@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607271814-E1ZTTV",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T18:59:56.181Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8b3d06c90f00a7da9ef6573b3fe4a8420e571783",
+  "blueprint_digest": "1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc",
+  "findings": [
+    "The recovery-lease reader retries only the existing atomic-replacement collision signature; each attempt retains directory-boundary, regular-file, and inode validation before accepting lease state."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A 30-second bounded test-harness wait remains sufficient under saturated local and hosted worker scheduling."
+  ],
+  "residual_risks": []
+}

@@ -1,0 +1,49 @@
+diff --git a/.agentplane/tasks/202607271814-E1ZTTV/README.md b/.agentplane/tasks/202607271814-E1ZTTV/README.md
+index 048ced91e..b1f04b073 100644
+--- a/.agentplane/tasks/202607271814-E1ZTTV/README.md
++++ b/.agentplane/tasks/202607271814-E1ZTTV/README.md
+@@ -4,7 +4,7 @@ title: "Stabilize concurrent recovery-lease reads"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 8
++revision: 9
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -43,7 +43,7 @@ quality_review:
+   findings:
+     - "The retry classification exactly mirrors the existing runner-state atomic-replacement guard; directory and inode validation still run on every attempt."
+ commit:
+-  hash: "2fa8ca98733263e3e3a688afff63e5f3385d4ead"
++  hash: "9804dae6bdb5c97ab068ca435483573d1c6ff744"
+   message: "🐛 E1ZTTV reliability: stabilize concurrent recovery-lease reads"
+ comments:
+   -
+@@ -52,6 +52,9 @@ comments:
+   -
+     author: "CODER"
+     body: "Implementation committed: bounded recovery-lease read retries, deterministic collision coverage, and resilient runner test waits passed the full fast CI."
++  -
++    author: "CODER"
++    body: "Traceability correction: record the final amended implementation commit that was independently evaluated."
+ events:
+   -
+     type: "status"
+@@ -73,8 +76,15 @@ events:
+     author: "TESTER"
+     state: "ok"
+     note: "Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch."
++  -
++    type: "status"
++    at: "2026-07-27T18:57:23.413Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Traceability correction: record the final amended implementation commit that was independently evaluated."
+ doc_version: 3
+-doc_updated_at: "2026-07-27T18:55:42.193Z"
++doc_updated_at: "2026-07-27T18:57:23.413Z"
+ doc_updated_by: "CODER"
+ description: "Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability."
+ sections:
