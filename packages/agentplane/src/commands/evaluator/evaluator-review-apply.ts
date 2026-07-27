@@ -8,9 +8,11 @@ import { CliError } from "../../shared/errors.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { getHumanInputState, setHumanInputState } from "../task/human-input.js";
 
 import {
   renderOpinionMarkdown,
+  EVALUATOR_FOLLOW_UP_FILE,
   type EvaluatorQualityReport,
 } from "./evaluator-quality-artifacts.js";
 import {
@@ -53,6 +55,15 @@ async function persistReview(opts: {
   if (opts.resultPayload !== null) {
     await writeFile(paths.result_path, `${JSON.stringify(opts.resultPayload, null, 2)}\n`, "utf8");
   }
+  const followUp = evaluatorFollowUp({
+    workOrder: opts.workOrder,
+    result: opts.resultPayload,
+    resultPath: relative(gitRoot, paths.result_path),
+  });
+  const followUpPath = path.join(reviewDir, EVALUATOR_FOLLOW_UP_FILE);
+  if (followUp !== null) {
+    await writeFile(followUpPath, `${JSON.stringify(followUp, null, 2)}\n`, "utf8");
+  }
   await writeFile(paths.report_path, `${JSON.stringify(opts.report, null, 2)}\n`, "utf8");
   await writeFile(paths.opinion_path, renderOpinionMarkdown(opts.report), "utf8");
   const contextReportPath = await projectEvaluatorQualityReportToContext({
@@ -67,10 +78,24 @@ async function persistReview(opts: {
     relative(gitRoot, paths.prompt_path),
     relative(gitRoot, paths.opinion_path),
     ...(opts.resultPayload === null ? [] : [relative(gitRoot, paths.result_path)]),
+    ...(followUp === null ? [] : [relative(gitRoot, followUpPath)]),
     ...opts.workOrder.evidence.map((entry) => entry.path),
     ...opts.report.evidence_refs,
     ...(contextReportPath ? [contextReportPath] : []),
   ]);
+  const humanInput =
+    opts.resultPayload?.verdict === "human_review"
+      ? setHumanInputState(opts.task, {
+          ...getHumanInputState(opts.task),
+          openQuestion: {
+            id: `evaluator-${opts.workOrder.work_order_id}`,
+            question: opts.resultPayload.recovery_context!,
+            askedAt: opts.report.generated_at,
+            askedBy: "EVALUATOR",
+            previousStatus: opts.task.status,
+          },
+        })
+      : null;
   await applyTaskMutation({
     ctx: opts.ctx,
     taskId: opts.task.id,
@@ -89,6 +114,7 @@ async function persistReview(opts: {
           evidence_refs: evidenceRefs,
           findings: opts.report.findings,
         },
+        ...(humanInput ? { extensions: humanInput } : {}),
       }),
     }),
   });
@@ -97,6 +123,32 @@ async function persistReview(opts: {
     prompt_path: relative(gitRoot, paths.prompt_path),
     opinion_path: relative(gitRoot, paths.opinion_path),
     result_path: opts.resultPayload === null ? null : relative(gitRoot, paths.result_path),
+  };
+}
+
+function evaluatorFollowUp(opts: {
+  workOrder: EvaluatorWorkOrder;
+  result: EvaluatorSgrResult | null;
+  resultPath: string;
+}): Record<string, unknown> | null {
+  if (!opts.result || opts.result.verdict === "pass") return null;
+  const nextOwner = opts.result.verdict === "rework" ? "CODER" : "USER";
+  const kind =
+    opts.result.verdict === "rework" ? "evaluator_rework_work_order" : "evaluator_escalation";
+  return {
+    schema_version: 1,
+    kind,
+    source_work_order_id: opts.workOrder.work_order_id,
+    task_id: opts.workOrder.task.id,
+    verdict: opts.result.verdict,
+    next_owner: nextOwner,
+    instruction: opts.result.recovery_context,
+    findings: opts.result.findings.map((finding) => ({
+      id: finding.id,
+      summary: finding.summary,
+      evidence_refs: finding.evidence_refs,
+    })),
+    source_result: opts.resultPath,
   };
 }
 
@@ -129,6 +181,12 @@ export async function applyEvaluatorSgrReview(opts: {
     });
   }
   assertResultEvidenceIsFrozen({ workOrder, result });
+  if (result.verdict === "human_review" && !result.recovery_context) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Evaluator human_review requires a bounded recovery_context question.",
+    });
+  }
   await assertWorkOrderCurrent({ ctx: opts.ctx, task: opts.task, workOrder });
   const at = new Date().toISOString();
   const report: EvaluatorQualityReport = {

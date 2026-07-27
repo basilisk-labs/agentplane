@@ -6,6 +6,7 @@ import type { EvaluatorRunParsed, EvaluatorRunProvenance } from "./evaluator.spe
 export const QUALITY_REPORT_FILE = "quality-report.json";
 export const EVALUATOR_PROMPT_FILE = "evaluator-prompt.md";
 export const EVALUATOR_OPINION_FILE = "evaluator-opinion.md";
+export const EVALUATOR_FOLLOW_UP_FILE = "evaluator-follow-up.json";
 
 export type EvaluatorQualityReport = {
   schema_version: 1;
@@ -71,10 +72,10 @@ export function renderEvaluatorPrompt(opts: {
     "- schema_version: 1",
     "- kind: evaluator_result",
     "- evaluator_id: the evaluator id from the work order",
-    "- verdict: pass | rework | blocked",
+    "- verdict: pass | rework | blocked | human_review",
     "- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs",
     "- missing_tests and hidden_assumptions: string arrays",
-    "- recovery_context: optional string",
+    "- recovery_context: required non-empty string for rework, blocked, or human_review; for human_review it must be the single decision question for the human owner",
     "",
     "Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.",
     "The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.",

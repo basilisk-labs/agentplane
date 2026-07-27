@@ -205,7 +205,7 @@ export type ContextExtractionSgrResult = {
   extracted_items: ContextExtractionItem[];
 };
 
-export type EvaluatorVerdict = "pass" | "rework" | "blocked";
+export type EvaluatorVerdict = "pass" | "rework" | "blocked" | "human_review";
 export type EvaluatorFindingSeverity = "low" | "medium" | "high";
 
 export type EvaluatorFinding = {

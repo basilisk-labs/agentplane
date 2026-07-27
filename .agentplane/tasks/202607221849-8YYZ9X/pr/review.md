@@ -24,12 +24,31 @@ Created: 2026-07-27T15:40:36.124Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T15:40:36.124Z
+- Updated: 2026-07-27T16:23:01.398Z
 - Branch: task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/agents/EVALUATOR.json                  |   8 +-
+ docs/user/cli-reference.generated.mdx              |  16 +
+ docs/user/commands.mdx                             |  20 +-
+ docs/user/task-lifecycle.mdx                       |   8 +-
+ packages/agentplane/assets/AGENTS.md               |   4 +-
+ packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
+ .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+ .../evaluator-episode.calibration.test.ts          | 329 +++++++++++++++++++
+ .../src/commands/evaluator/evaluator-episode.ts    | 355 +++++++++++++++++++++
+ .../evaluator/evaluator-quality-artifacts.ts       |   5 +-
+ .../commands/evaluator/evaluator-review-apply.ts   |  58 ++++
+ .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
+ .../src/commands/evaluator/evaluator.command.ts    |  46 +++
+ .../src/commands/evaluator/evaluator.spec.ts       |  45 ++-
+ .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 +-
+ .../agentplane/src/runtime/sgr/contract-types.ts   |   2 +-
+ .../src/shared/builtin-assets.generated.ts         |   8 +-
+ .../baselines/v0.7-compatibility-candidate.json    | 130 ++++++--
+ .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+ 19 files changed, 1091 insertions(+), 70 deletions(-)
 ```
 
 </details>

@@ -45,6 +45,12 @@ export type EvaluatorApplyParsed = {
   json: boolean;
 };
 
+export type EvaluatorExecuteParsed = {
+  taskId: string;
+  evaluator: string;
+  json: boolean;
+};
+
 function parseBuiltinFlag(value: unknown): boolean {
   return value !== "false";
 }
@@ -67,7 +73,7 @@ export const evaluatorSpec: CommandSpec<GroupCommandParsed> = {
   group: "Evaluators",
   summary: "Prepare, apply, inspect, and record evaluator quality reviews.",
   description:
-    "This is a command group. Use `agentplane evaluator prepare`, `agentplane evaluator apply`, `agentplane evaluator list`, `agentplane evaluator show <id>`, or the compatibility `agentplane evaluator run <task-id>` facade.",
+    "This is a command group. Use `agentplane evaluator execute`, `agentplane evaluator prepare`, `agentplane evaluator apply`, `agentplane evaluator list`, `agentplane evaluator show <id>`, or the compatibility `agentplane evaluator run <task-id>` facade.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     { cmd: "agentplane evaluator list", why: "Show available evaluator prompt modules." },
@@ -155,6 +161,43 @@ export const evaluatorApplySpec: CommandSpec<EvaluatorApplyParsed> = {
       json: raw.opts.json === true,
     };
   },
+};
+
+export const evaluatorExecuteSpec: CommandSpec<EvaluatorExecuteParsed> = {
+  id: ["evaluator", "execute"],
+  group: "Evaluators",
+  summary: "Run one read-only EVALUATOR provider episode and apply its typed result.",
+  args: [{ name: "taskId", required: true, valueHint: "<task-id>" }],
+  options: [
+    {
+      kind: "string",
+      name: "evaluator",
+      valueHint: "<id>",
+      default: "recovery-context",
+      description: "Evaluator prompt module id to use.",
+    },
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit machine-readable episode and recorded artifact paths.",
+    },
+  ],
+  validateRaw: (raw) => {
+    if (!raw.args.taskId) {
+      throw usageError({
+        spec: evaluatorExecuteSpec,
+        command: "evaluator execute",
+        message: "Provide a task id.",
+      });
+    }
+  },
+  parse: (raw) => ({
+    taskId: String(raw.args.taskId ?? "").trim(),
+    evaluator:
+      typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
+    json: raw.opts.json === true,
+  }),
 };
 
 export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {

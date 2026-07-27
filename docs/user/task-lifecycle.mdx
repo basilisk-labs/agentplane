@@ -62,9 +62,11 @@ before doing another lifecycle step.
   explicitly delegates a fallback.
 - `pr update` / `pr check` own PR artifact freshness; do not repair stale PR metadata with manual
   edits or amend commits.
-- `evaluator run` records `quality_review.evaluated_sha` for the last non-task-artifact commit; if
-  the current quality report is stale, rerun the evaluator on current `HEAD` instead of creating an
-  amend commit just to align the SHA.
+- `evaluator execute` owns the frozen review packet, one read-only provider episode, result
+  validation, and `quality_review.evaluated_sha` recording for the last non-task-artifact commit.
+  If the current quality report is stale, run a fresh evaluator episode on current `HEAD` instead of
+  creating an amend commit just to align the SHA. `evaluator run` remains an explicit
+  compatibility record.
 - `integrate queue` / `integrate --run-verify` own the serialized merge lane and hosted-check
   gate; do not merge, rebase, squash, or rewrite task branch history outside that route.
 - `finish --pre-merge-closure`, `task hosted-close-pr`, and hosted close own close-tail evidence;

@@ -139,6 +139,7 @@ import {
 } from "../../../commands/context/context.learn.spec.js";
 import {
   evaluatorApplySpec,
+  evaluatorExecuteSpec,
   evaluatorListSpec,
   evaluatorPrepareSpec,
   evaluatorRunSpec,
@@ -257,6 +258,7 @@ export const PROJECT_COMMANDS = [
   fromCommandsEvaluatorCommand(evaluatorShowSpec, "runEvaluatorShow", { needs: "none" }),
   fromCommandsEvaluatorCommand(evaluatorPrepareSpec, "runEvaluatorPrepare"),
   fromCommandsEvaluatorCommand(evaluatorApplySpec, "runEvaluatorApply"),
+  fromCommandsEvaluatorCommand(evaluatorExecuteSpec, "runEvaluatorExecute"),
   fromCommandsEvaluatorCommand(evaluatorRunSpec, "runEvaluatorRun"),
   fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
   fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),

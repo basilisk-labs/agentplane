@@ -14,6 +14,7 @@
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
     "202607221849-TBTX8X",
+    "202607221849-8YYZ9X",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH"
@@ -25,13 +26,13 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "bc9d2678e72c8e8478afb48ac7b18284c9daf9d85cbb02697423d0f2b2b161a8",
+    "surface_sha256": "cae67e3c40031c35350d6bae212a060528d3256ac4d924d8354fba589674e32a",
     "section_digests": {
-      "cli_topology": "1a97bc1e6b715304e07172db86a5e12d22626b7e391d74cba7a0cfc6d158ee5f",
+      "cli_topology": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
-      "agent_facing_context_contracts": "5e5cf440852bb118c3771115090399a4e4ab46caf5a856ff57742884749dafec",
+      "agent_facing_context_contracts": "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
       "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
       "tarball_policy": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091"
     }
@@ -358,29 +359,31 @@
         "202607221848-VC4VVS",
         "202607221849-NWVCAG",
         "202607221849-TBTX8X",
+        "202607221849-8YYZ9X",
         "202607242158-QV09NA",
         "202607260007-DQM6AW",
         "202607260532-9M7RNH"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "1a97bc1e6b715304e07172db86a5e12d22626b7e391d74cba7a0cfc6d158ee5f",
+      "to_sha256": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
       "classification": "additive",
-      "summary": "Adds frozen EVALUATOR work-order preparation and typed-result application alongside the existing additive workflow, authority, and runner recovery surfaces; no command or option is removed or mutated.",
+      "summary": "Adds a CLI-owned read-only EVALUATOR provider episode alongside frozen work-order preparation and typed-result application; no command or option is removed or mutated.",
       "evidence": {
         "command_count": {
           "from": 243,
-          "to": 252
+          "to": 253
         },
         "positional_count": {
           "from": 165,
-          "to": 173
+          "to": 174
         },
         "option_count": {
           "from": 767,
-          "to": 811
+          "to": 813
         },
         "added_commands": [
           "evaluator apply",
+          "evaluator execute",
           "evaluator prepare",
           "integrate queue adopt-legacy-protected-conflict",
           "pr conflict-rework",
@@ -414,6 +417,33 @@
                 "name": "result",
                 "kind": "string",
                 "valueHint": "<path>"
+              },
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
+          {
+            "id": ["evaluator", "execute"],
+            "visibility": "user",
+            "group": "Evaluators",
+            "args": [
+              {
+                "name": "taskId",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "evaluator",
+                "kind": "string",
+                "valueHint": "<id>",
+                "default": "recovery-context"
               },
               {
                 "name": "json",
@@ -763,6 +793,20 @@
             "valueHint": "<path>"
           },
           {
+            "command": "evaluator execute",
+            "name": "evaluator",
+            "kind": "string",
+            "valueHint": "<id>",
+            "default": "recovery-context"
+          },
+          {
+            "command": "evaluator execute",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
             "command": "evaluator prepare",
             "name": "evaluator",
             "kind": "string",
@@ -1035,6 +1079,11 @@
           },
           {
             "kind": "command",
+            "command": "evaluator execute",
+            "source_task": "202607221849-8YYZ9X"
+          },
+          {
+            "kind": "command",
             "command": "evaluator prepare",
             "source_task": "202607221849-TBTX8X"
           },
@@ -1108,6 +1157,18 @@
             "command": "evaluator apply",
             "name": "work-order",
             "source_task": "202607221849-TBTX8X"
+          },
+          {
+            "kind": "option",
+            "command": "evaluator execute",
+            "name": "evaluator",
+            "source_task": "202607221849-8YYZ9X"
+          },
+          {
+            "kind": "option",
+            "command": "evaluator execute",
+            "name": "json",
+            "source_task": "202607221849-8YYZ9X"
           },
           {
             "kind": "option",
@@ -1342,29 +1403,43 @@
     },
     {
       "section": "agent_facing_context_contracts",
-      "source_tasks": ["202607221848-1HWR0R"],
+      "source_tasks": ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
       "from_sha256": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
-      "to_sha256": "5e5cf440852bb118c3771115090399a4e4ab46caf5a856ff57742884749dafec",
+      "to_sha256": "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
       "classification": "additive",
-      "summary": "Adds a CLI-owned immutable task-creation receipt before context task-pack generation.",
+      "summary": "Adds a CLI-owned immutable task-creation receipt and the typed EVALUATOR human-review escalation verdict.",
       "evidence": {
         "contract_count": 4,
         "unchanged_contract_paths": [
           "packages/agentplane/src/runtime/sgr/context-extraction-contract.ts",
-          "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts",
-          "packages/agentplane/src/runtime/sgr/contract-types.ts"
+          "packages/agentplane/src/runtime/sgr/context-extraction-payloads.ts"
         ],
-        "source_contract": {
-          "path": "packages/agentplane/src/context/ingest-task-pack.ts",
-          "before": {
-            "normalized_bytes": 19492,
-            "normalized_sha256": "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63"
+        "changed_contracts": [
+          {
+            "path": "packages/agentplane/src/runtime/sgr/contract-types.ts",
+            "before": {
+              "normalized_bytes": 6471,
+              "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261"
+            },
+            "after": {
+              "normalized_bytes": 6488,
+              "normalized_sha256": "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a"
+            },
+            "change": "adds evaluator human_review as a typed semantic escalation verdict"
           },
-          "after": {
-            "normalized_bytes": 20630,
-            "normalized_sha256": "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77"
+          {
+            "path": "packages/agentplane/src/context/ingest-task-pack.ts",
+            "before": {
+              "normalized_bytes": 19492,
+              "normalized_sha256": "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63"
+            },
+            "after": {
+              "normalized_bytes": 20630,
+              "normalized_sha256": "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77"
+            },
+            "change": "adds the CLI-owned immutable task-creation receipt"
           }
-        },
+        ],
         "task_creation_receipt": {
           "path": ".agentplane/tasks/<task-id>/task-creation.json",
           "version": 1,
@@ -1410,11 +1485,16 @@
     },
     {
       "section": "tarball_policy",
-      "source_tasks": ["202607221846-4VB97J", "202607221848-ER5H6N", "202607221848-T9B3PS"],
+      "source_tasks": [
+        "202607221846-4VB97J",
+        "202607221848-ER5H6N",
+        "202607221848-T9B3PS",
+        "202607221849-8YYZ9X"
+      ],
       "from_sha256": "c37264a69d57cd40bd519115b084430c590a71b0df3fe6b541b44bad02e4b61d",
       "to_sha256": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091",
       "classification": "additive",
-      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package; no package source file is removed.",
+      "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package while updating shipped EVALUATOR guidance; no package source file is removed.",
       "evidence": {
         "package": "@agentplaneorg/core",
         "source_file_count": {

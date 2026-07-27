@@ -318,6 +318,7 @@ function validateReviewedCandidate({
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
     "202607221849-TBTX8X",
+    "202607221849-8YYZ9X",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
@@ -335,6 +336,7 @@ function validateReviewedCandidate({
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
     "202607221849-TBTX8X",
+    "202607221849-8YYZ9X",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
@@ -658,11 +660,16 @@ function validateReviewedCandidate({
     );
   }
   const expectedDeltaSources = {
-    agent_facing_context_contracts: ["202607221848-1HWR0R"],
+    agent_facing_context_contracts: ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
     workflow_schema: ["202607221846-4VB97J"],
-    tarball_policy: ["202607221846-4VB97J", "202607221848-ER5H6N", "202607221848-T9B3PS"],
+    tarball_policy: [
+      "202607221846-4VB97J",
+      "202607221848-ER5H6N",
+      "202607221848-T9B3PS",
+      "202607221849-8YYZ9X",
+    ],
   };
   for (const delta of candidate.deltas) {
     assert(
@@ -706,11 +713,16 @@ function validateReviewedCandidate({
   });
   assert(
     hashJson(changedContextContracts.map((contract) => contract.path)) ===
-      hashJson(["packages/agentplane/src/context/ingest-task-pack.ts"]),
-    "task-creation receipt must be the only changed context source contract",
+      hashJson([
+        "packages/agentplane/src/runtime/sgr/contract-types.ts",
+        "packages/agentplane/src/context/ingest-task-pack.ts",
+      ]),
+    "only the reviewed task-creation and evaluator result contracts may change",
   );
   const unchangedContextPaths = expectedContextContractPaths.filter(
-    (contractPath) => contractPath !== "packages/agentplane/src/context/ingest-task-pack.ts",
+    (contractPath) =>
+      contractPath !== "packages/agentplane/src/context/ingest-task-pack.ts" &&
+      contractPath !== "packages/agentplane/src/runtime/sgr/contract-types.ts",
   );
   for (const contractPath of unchangedContextPaths) {
     const beforeContract = beforeContextByPath.get(contractPath);
@@ -728,20 +740,45 @@ function validateReviewedCandidate({
     (contract) => contract.path === "packages/agentplane/src/context/ingest-task-pack.ts",
   );
   assert(beforeContextSource && afterContextSource, "task-pack context source contract missing");
+  const beforeEvaluatorContract = beforeContextByPath.get(
+    "packages/agentplane/src/runtime/sgr/contract-types.ts",
+  );
+  const afterEvaluatorContract = afterContextContracts.find(
+    (contract) => contract.path === "packages/agentplane/src/runtime/sgr/contract-types.ts",
+  );
+  assert(
+    beforeEvaluatorContract && afterEvaluatorContract,
+    "evaluator result contract source is missing",
+  );
   const expectedContextReceiptEvidence = {
     contract_count: expectedContextContractPaths.length,
     unchanged_contract_paths: unchangedContextPaths,
-    source_contract: {
-      path: afterContextSource.path,
-      before: {
-        normalized_bytes: beforeContextSource.normalized_bytes,
-        normalized_sha256: beforeContextSource.normalized_sha256,
+    changed_contracts: [
+      {
+        path: afterEvaluatorContract.path,
+        before: {
+          normalized_bytes: beforeEvaluatorContract.normalized_bytes,
+          normalized_sha256: beforeEvaluatorContract.normalized_sha256,
+        },
+        after: {
+          normalized_bytes: afterEvaluatorContract.normalized_bytes,
+          normalized_sha256: afterEvaluatorContract.normalized_sha256,
+        },
+        change: "adds evaluator human_review as a typed semantic escalation verdict",
       },
-      after: {
-        normalized_bytes: afterContextSource.normalized_bytes,
-        normalized_sha256: afterContextSource.normalized_sha256,
+      {
+        path: afterContextSource.path,
+        before: {
+          normalized_bytes: beforeContextSource.normalized_bytes,
+          normalized_sha256: beforeContextSource.normalized_sha256,
+        },
+        after: {
+          normalized_bytes: afterContextSource.normalized_bytes,
+          normalized_sha256: afterContextSource.normalized_sha256,
+        },
+        change: "adds the CLI-owned immutable task-creation receipt",
       },
-    },
+    ],
     task_creation_receipt: {
       path: ".agentplane/tasks/<task-id>/task-creation.json",
       version: 1,
@@ -1004,6 +1041,16 @@ function validateReviewedCandidate({
       ],
     },
     {
+      id: ["evaluator", "execute"],
+      visibility: "user",
+      group: "Evaluators",
+      args: [{ name: "taskId", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "evaluator", kind: "string", valueHint: "<id>", default: "recovery-context" },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
       id: ["evaluator", "prepare"],
       visibility: "user",
       group: "Evaluators",
@@ -1133,6 +1180,20 @@ function validateReviewedCandidate({
       name: "work-order",
       kind: "string",
       valueHint: "<path>",
+    },
+    {
+      command: "evaluator execute",
+      name: "evaluator",
+      kind: "string",
+      valueHint: "<id>",
+      default: "recovery-context",
+    },
+    {
+      command: "evaluator execute",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
     },
     {
       command: "evaluator prepare",
@@ -1288,6 +1349,7 @@ function validateReviewedCandidate({
   ];
   const expectedAdditionSources = [
     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
+    { kind: "command", command: "evaluator execute", source_task: "202607221849-8YYZ9X" },
     { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
     {
       kind: "command",
@@ -1346,6 +1408,18 @@ function validateReviewedCandidate({
       command: "evaluator apply",
       name: "work-order",
       source_task: "202607221849-TBTX8X",
+    },
+    {
+      kind: "option",
+      command: "evaluator execute",
+      name: "evaluator",
+      source_task: "202607221849-8YYZ9X",
+    },
+    {
+      kind: "option",
+      command: "evaluator execute",
+      name: "json",
+      source_task: "202607221849-8YYZ9X",
     },
     {
       kind: "option",
@@ -1513,6 +1587,7 @@ function validateReviewedCandidate({
     hashJson(addedCommands) ===
       hashJson([
         "evaluator apply",
+        "evaluator execute",
         "evaluator prepare",
         "integrate queue adopt-legacy-protected-conflict",
         "pr conflict-rework",
