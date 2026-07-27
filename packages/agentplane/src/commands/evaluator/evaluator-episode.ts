@@ -15,7 +15,7 @@ import {
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
 
-export const EVALUATOR_EPISODE_RECEIPT_FILE = "evaluator-episode.json";
+const EVALUATOR_EPISODE_RECEIPT_FILE = "evaluator-episode.json";
 const EVALUATOR_RESULT_SCHEMA_FILE = "evaluator-result.schema.json";
 const MAX_PROVIDER_STDOUT_BYTES = 16 * 1024 * 1024;
 const MAX_PROVIDER_STDERR_BYTES = 1024 * 1024;
@@ -80,11 +80,11 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
   ],
 } as const;
 
-export function renderEvaluatorResultOutputSchemaJson(): string {
+function renderEvaluatorResultOutputSchemaJson(): string {
   return `${JSON.stringify(EVALUATOR_RESULT_OUTPUT_SCHEMA, null, 2)}\n`;
 }
 
-export type EvaluatorEpisodeInvocation = {
+type EvaluatorEpisodeInvocation = {
   provider: "codex";
   repository_root: string;
   work_order_id: string;
@@ -94,7 +94,7 @@ export type EvaluatorEpisodeInvocation = {
   argv: string[];
 };
 
-export type EvaluatorEpisodeProviderResult = {
+type EvaluatorEpisodeProviderResult = {
   raw_result: unknown;
   started_at: string;
   ended_at: string;
@@ -178,7 +178,7 @@ function evaluatorCodexArgv(opts: { repositoryRoot: string; outputSchemaPath: st
   ];
 }
 
-export async function prepareEvaluatorEpisodeInvocation(opts: {
+async function prepareEvaluatorEpisodeInvocation(opts: {
   ctx: CommandContext;
   prepared: PreparedEvaluatorReview;
 }): Promise<EvaluatorEpisodeInvocation> {
@@ -203,7 +203,7 @@ function tail(value: string, next: string, limit: number): string {
   return combined.length <= limit ? combined : combined.slice(-limit);
 }
 
-export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation) =>
+const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation) =>
   await new Promise<EvaluatorEpisodeProviderResult>((resolve, reject) => {
     const [command, ...args] = invocation.argv;
     if (!command) {
