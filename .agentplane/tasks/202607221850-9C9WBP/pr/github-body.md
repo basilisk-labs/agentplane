@@ -15,8 +15,14 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified 5f48099a: TaskEpisodeView serializes one task view; required context fails or records an
+omission; localized schema headings retain priority. Passed focused vitest (47 tests), guards,
+typecheck, test:critical, and ci:contract.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

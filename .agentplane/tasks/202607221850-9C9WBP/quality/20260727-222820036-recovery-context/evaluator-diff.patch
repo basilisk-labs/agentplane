@@ -1,0 +1,2537 @@
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/README.md b/.agentplane/tasks/202607221850-9C9WBP/README.md
+index 15f481ebf..c1924dd9b 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/README.md
++++ b/.agentplane/tasks/202607221850-9C9WBP/README.md
+@@ -4,7 +4,7 @@ title: "Normalize runner task inputs into TaskEpisodeView"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 8
++revision: 9
+ origin:
+   system: "manual"
+ depends_on:
+@@ -50,7 +50,7 @@ events:
+     to: "DOING"
+     note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-27T21:31:31.540Z"
++doc_updated_at: "2026-07-27T22:25:16.226Z"
+ doc_updated_by: "CODER"
+ description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
+ sections:
+@@ -79,7 +79,12 @@ sections:
+     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
+     - Restore the previous compatibility path behind an explicit feature/compatibility boundary.
+     - Re-run lifecycle, focused, and type checks before resuming dependent work.
+-  Findings: ""
++  Findings: |-
++    - Observation: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (tasks.doc.required_sections) as the structural authority.
++      Impact: Required context is prioritized without English heading heuristics and localized/custom headings are covered, but a dedicated per-role section policy requires an explicit later blueprint/schema extension.
++      Resolution: Keep RF-21 narrow: record the source as task_document_schema, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task.
++      Promotion: incident-candidate
++      Fixability: repo-fixable
+ extensions:
+   agentplane.side_effect_authority:
+     audit:
+@@ -154,3 +159,9 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
+ - Re-run lifecycle, focused, and type checks before resuming dependent work.
+ 
+ ## Findings
++
++- Observation: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (tasks.doc.required_sections) as the structural authority.
++  Impact: Required context is prioritized without English heading heuristics and localized/custom headings are covered, but a dedicated per-role section policy requires an explicit later blueprint/schema extension.
++  Resolution: Keep RF-21 narrow: record the source as task_document_schema, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task.
++  Promotion: incident-candidate
++  Fixability: repo-fixable
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..8f44439a7
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221850-9C9WBP",
++    "title": "Normalize runner task inputs into TaskEpisodeView",
++    "description": "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt.",
++    "tags": [
++      "cognitive-load",
++      "context",
++      "milestone-beta1",
++      "refactor",
++      "rf-21",
++      "runner",
++      "v0.7",
++      "wave-supervisor"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221850-9C9WBP",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073"
++  }
++}
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt b/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt
+index e69de29bb..db5d69a4e 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt
+@@ -0,0 +1,42 @@
++ .../src/commands/hermes/hermes-runtime.ts          |   2 +-
++ .../agentplane/src/commands/task/brief-model.ts    |   4 +-
++ .../src/runner/adapters/codex-preparation.ts       |   4 +-
++ .../src/runner/adapters/custom-preparation.ts      |   4 +-
++ .../src/runner/adapters/custom-security.test.ts    |   6 +-
++ .../agentplane/src/runner/adapters/custom.test.ts  |   4 +-
++ .../adapters/execution-receipt-runtime.test.ts     |   4 +-
++ .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
++ packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
++ .../src/runner/context/overlay-prompt-blocks.ts    |   8 +-
++ .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
++ .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
++ .../src/runner/effect-operation-contract.ts        |   2 +-
++ packages/agentplane/src/runner/playbooks.ts        |   8 +-
++ .../src/runner/run-repository-contract.ts          |   3 +-
++ packages/agentplane/src/runner/run-repository.ts   |   2 +-
++ packages/agentplane/src/runner/sandbox-policy.ts   |  20 +-
++ .../src/runner/state-fingerprint-observation.ts    |  11 +-
++ ...te-fingerprint-residual-git.integration.test.ts |   2 +-
++ .../src/runner/state-fingerprint.testkit.ts        |  54 ++++-
++ .../agentplane/src/runner/state-fingerprint.ts     |   2 +-
++ packages/agentplane/src/runner/task-state.ts       |   2 +-
++ packages/agentplane/src/runner/types.ts            |   3 +
++ packages/agentplane/src/runner/types/context.ts    |  71 ++++++-
++ .../src/runner/usecases/agent-work-order-build.ts  |  46 +++--
++ .../usecases/agent-work-order.integration.test.ts  |   2 +-
++ .../src/runner/usecases/agent-work-order.ts        |   2 +-
++ .../usecases/task-run-active-claim-runtime.ts      |   2 +-
++ .../src/runner/usecases/task-run-authority.ts      |   8 +-
++ .../task-run-blueprint-plan.security.test.ts       |   4 +-
++ .../src/runner/usecases/task-run-blueprint-plan.ts |   2 +-
++ .../src/runner/usecases/task-run-bootstrap.ts      |   2 +-
++ .../usecases/task-run-context.integration.test.ts  |   4 +-
++ .../runner/usecases/task-run-lifecycle-cancel.ts   |   4 +-
++ .../task-run-lifecycle-replay-security.test.ts     |   2 +-
++ .../src/runner/usecases/task-run-replay-anchor.ts  |   2 +-
++ .../task-run-state-fingerprint.integration.test.ts |   2 +-
++ .../agentplane/src/runner/usecases/task-run.ts     |   6 +-
++ packages/agentplane/src/runner/write-scope.test.ts |   6 +-
++ packages/testkit/src/runner.ts                     |  65 ++++--
++ scripts/baselines/trust-boundary-violations.json   |  90 ---------
++ 41 files changed, 581 insertions(+), 304 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md b/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md
+index 6cec7334b..b17a5b9cd 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md
+@@ -22,12 +22,53 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T21:31:31.669Z
++- Updated: 2026-07-27T21:32:51.170Z
+ - Branch: task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../src/commands/hermes/hermes-runtime.ts          |   2 +-
++ .../agentplane/src/commands/task/brief-model.ts    |   4 +-
++ .../src/runner/adapters/codex-preparation.ts       |   4 +-
++ .../src/runner/adapters/custom-preparation.ts      |   4 +-
++ .../src/runner/adapters/custom-security.test.ts    |   6 +-
++ .../agentplane/src/runner/adapters/custom.test.ts  |   4 +-
++ .../adapters/execution-receipt-runtime.test.ts     |   4 +-
++ .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
++ packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
++ .../src/runner/context/overlay-prompt-blocks.ts    |   8 +-
++ .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
++ .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
++ .../src/runner/effect-operation-contract.ts        |   2 +-
++ packages/agentplane/src/runner/playbooks.ts        |   8 +-
++ .../src/runner/run-repository-contract.ts          |   3 +-
++ packages/agentplane/src/runner/run-repository.ts   |   2 +-
++ packages/agentplane/src/runner/sandbox-policy.ts   |  20 +-
++ .../src/runner/state-fingerprint-observation.ts    |  11 +-
++ ...te-fingerprint-residual-git.integration.test.ts |   2 +-
++ .../src/runner/state-fingerprint.testkit.ts        |  54 ++++-
++ .../agentplane/src/runner/state-fingerprint.ts     |   2 +-
++ packages/agentplane/src/runner/task-state.ts       |   2 +-
++ packages/agentplane/src/runner/types.ts            |   3 +
++ packages/agentplane/src/runner/types/context.ts    |  71 ++++++-
++ .../src/runner/usecases/agent-work-order-build.ts  |  46 +++--
++ .../usecases/agent-work-order.integration.test.ts  |   2 +-
++ .../src/runner/usecases/agent-work-order.ts        |   2 +-
++ .../usecases/task-run-active-claim-runtime.ts      |   2 +-
++ .../src/runner/usecases/task-run-authority.ts      |   8 +-
++ .../task-run-blueprint-plan.security.test.ts       |   4 +-
++ .../src/runner/usecases/task-run-blueprint-plan.ts |   2 +-
++ .../src/runner/usecases/task-run-bootstrap.ts      |   2 +-
++ .../usecases/task-run-context.integration.test.ts  |   4 +-
++ .../runner/usecases/task-run-lifecycle-cancel.ts   |   4 +-
++ .../task-run-lifecycle-replay-security.test.ts     |   2 +-
++ .../src/runner/usecases/task-run-replay-anchor.ts  |   2 +-
++ .../task-run-state-fingerprint.integration.test.ts |   2 +-
++ .../agentplane/src/runner/usecases/task-run.ts     |   6 +-
++ packages/agentplane/src/runner/write-scope.test.ts |   6 +-
++ packages/testkit/src/runner.ts                     |  65 ++++--
++ scripts/baselines/trust-boundary-violations.json   |  90 ---------
++ 41 files changed, 581 insertions(+), 304 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json b/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json
+index 50efe4ac0..894e6c180 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie",
+   "created_at": "2026-07-27T21:31:31.669Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:8321bbde0c41e40b5d3b039a510e3c6da6446b6e3b2a23bb37046ebaec7c2f05",
+   "last_verified_at": null,
++  "pr_number": 4647,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4647",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607221850-9C9WBP",
+-  "updated_at": "2026-07-27T21:31:31.669Z",
++  "updated_at": "2026-07-27T21:32:51.170Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/review.md b/.agentplane/tasks/202607221850-9C9WBP/pr/review.md
+index 720c2898e..bdb6e7be4 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/review.md
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/review.md
+@@ -24,12 +24,53 @@ Created: 2026-07-27T21:31:31.669Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T21:31:31.669Z
++- Updated: 2026-07-27T21:32:51.170Z
+ - Branch: task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../src/commands/hermes/hermes-runtime.ts          |   2 +-
++ .../agentplane/src/commands/task/brief-model.ts    |   4 +-
++ .../src/runner/adapters/codex-preparation.ts       |   4 +-
++ .../src/runner/adapters/custom-preparation.ts      |   4 +-
++ .../src/runner/adapters/custom-security.test.ts    |   6 +-
++ .../agentplane/src/runner/adapters/custom.test.ts  |   4 +-
++ .../adapters/execution-receipt-runtime.test.ts     |   4 +-
++ .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
++ packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
++ .../src/runner/context/overlay-prompt-blocks.ts    |   8 +-
++ .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
++ .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
++ .../src/runner/effect-operation-contract.ts        |   2 +-
++ packages/agentplane/src/runner/playbooks.ts        |   8 +-
++ .../src/runner/run-repository-contract.ts          |   3 +-
++ packages/agentplane/src/runner/run-repository.ts   |   2 +-
++ packages/agentplane/src/runner/sandbox-policy.ts   |  20 +-
++ .../src/runner/state-fingerprint-observation.ts    |  11 +-
++ ...te-fingerprint-residual-git.integration.test.ts |   2 +-
++ .../src/runner/state-fingerprint.testkit.ts        |  54 ++++-
++ .../agentplane/src/runner/state-fingerprint.ts     |   2 +-
++ packages/agentplane/src/runner/task-state.ts       |   2 +-
++ packages/agentplane/src/runner/types.ts            |   3 +
++ packages/agentplane/src/runner/types/context.ts    |  71 ++++++-
++ .../src/runner/usecases/agent-work-order-build.ts  |  46 +++--
++ .../usecases/agent-work-order.integration.test.ts  |   2 +-
++ .../src/runner/usecases/agent-work-order.ts        |   2 +-
++ .../usecases/task-run-active-claim-runtime.ts      |   2 +-
++ .../src/runner/usecases/task-run-authority.ts      |   8 +-
++ .../task-run-blueprint-plan.security.test.ts       |   4 +-
++ .../src/runner/usecases/task-run-blueprint-plan.ts |   2 +-
++ .../src/runner/usecases/task-run-bootstrap.ts      |   2 +-
++ .../usecases/task-run-context.integration.test.ts  |   4 +-
++ .../runner/usecases/task-run-lifecycle-cancel.ts   |   4 +-
++ .../task-run-lifecycle-replay-security.test.ts     |   2 +-
++ .../src/runner/usecases/task-run-replay-anchor.ts  |   2 +-
++ .../task-run-state-fingerprint.integration.test.ts |   2 +-
++ .../agentplane/src/runner/usecases/task-run.ts     |   6 +-
++ packages/agentplane/src/runner/write-scope.test.ts |   6 +-
++ packages/testkit/src/runner.ts                     |  65 ++++--
++ scripts/baselines/trust-boundary-violations.json   |  90 ---------
++ 41 files changed, 581 insertions(+), 304 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/hermes/hermes-runtime.ts b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+index f0e46c409..750beb4bb 100644
+--- a/packages/agentplane/src/commands/hermes/hermes-runtime.ts
++++ b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+@@ -130,7 +130,7 @@ export async function routePacket(opts: {
+       ...(opts.includeRemote ? { include_remote: true } : {}),
+     }),
+   );
+-  const fullTask = preparedWorkOrder.task_envelope.task.data;
++  const fullTask = preparedWorkOrder.task_envelope.source_task;
+   const decision = preparedWorkOrder.route_decision;
+   const shouldProjectRunner = routeNeedsRunnerProjection(decision) || Boolean(fullTask.runner);
+   const runner = shouldProjectRunner
+diff --git a/packages/agentplane/src/commands/task/brief-model.ts b/packages/agentplane/src/commands/task/brief-model.ts
+index 832d478e4..d6455a7b0 100644
+--- a/packages/agentplane/src/commands/task/brief-model.ts
++++ b/packages/agentplane/src/commands/task/brief-model.ts
+@@ -238,8 +238,8 @@ function hasRemoteProviderEvidence(route: TaskRouteDecision): boolean {
+ export function projectTaskBriefFromPreparedWorkOrder(
+   preparedWorkOrder: PreparedAgentWorkOrder,
+ ): TaskBriefWithWorkflowStep {
+-  const task = preparedWorkOrder.task_envelope.task.data;
+-  const doc = preparedWorkOrder.task_envelope.task.doc;
++  const task = preparedWorkOrder.task_envelope.source_task;
++  const doc = typeof task.doc === "string" ? task.doc : "";
+   const verifySteps = (extractDocSection(doc, "Verify Steps") ?? "").trim();
+   const verifyQuality = verifyStepsQuality(verifySteps);
+   const route = preparedWorkOrder.route_decision;
+diff --git a/packages/agentplane/src/runner/adapters/codex-preparation.ts b/packages/agentplane/src/runner/adapters/codex-preparation.ts
+index fe9d59ed9..64464bec2 100644
+--- a/packages/agentplane/src/runner/adapters/codex-preparation.ts
++++ b/packages/agentplane/src/runner/adapters/codex-preparation.ts
+@@ -118,11 +118,11 @@ export function buildCodexInvocation(opts: {
+   const sandboxPolicy =
+     execution.sandbox_policy ??
+     resolveRunnerSandboxPolicy({
+-      task: opts.bundle.task?.data,
++      task: opts.bundle.task?.metadata,
+       recipe: opts.bundle.recipe,
+     });
+   const sandbox = resolveCodexSandbox(sandboxPolicy.requested, sandboxPolicy.authority);
+-  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.task_id);
++  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.metadata.task_id);
+   const workspaceWrite = sandbox === RUNNER_WORKSPACE_WRITE_SANDBOX;
+   const resultTransportPaths = resolveCodexResultTransportPaths(execution.artifact_paths.run_dir);
+   return {
+diff --git a/packages/agentplane/src/runner/adapters/custom-preparation.ts b/packages/agentplane/src/runner/adapters/custom-preparation.ts
+index f75117112..1ce042d36 100644
+--- a/packages/agentplane/src/runner/adapters/custom-preparation.ts
++++ b/packages/agentplane/src/runner/adapters/custom-preparation.ts
+@@ -123,12 +123,12 @@ export function buildCustomInvocation(opts: {
+     );
+   }
+   const { execution } = opts.bundle;
+-  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.task_id);
++  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.metadata.task_id);
+   const enforcement = normalizeCustomEnforcement(opts.config);
+   const sandboxPolicy =
+     execution.sandbox_policy ??
+     resolveRunnerSandboxPolicy({
+-      task: opts.bundle.task?.data,
++      task: opts.bundle.task?.metadata,
+       recipe: opts.bundle.recipe,
+     });
+   if (
+diff --git a/packages/agentplane/src/runner/adapters/custom-security.test.ts b/packages/agentplane/src/runner/adapters/custom-security.test.ts
+index fe5f52cb3..fc9ddeda4 100644
+--- a/packages/agentplane/src/runner/adapters/custom-security.test.ts
++++ b/packages/agentplane/src/runner/adapters/custom-security.test.ts
+@@ -46,7 +46,7 @@ describe("CustomRunnerAdapter security boundaries", () => {
+     await writeFile(path.join(tempDir, ".gitignore"), ".agentplane/policy/*.local\n", "utf8");
+     const bundle = makeRunnerContextBundle(customBundleDefaults);
+     bundle.repository.git_root = tempDir;
+-    bundle.task!.data.mutation_scope = "context";
++    bundle.task!.metadata.mutation_scope = "context";
+     bundle.execution.mode = "execute";
+     bundle.execution.write_scope = {
+       mutation_scope: "context",
+@@ -139,7 +139,7 @@ describe("CustomRunnerAdapter security boundaries", () => {
+     await mkdir(path.join(tempDir, ".agentplane", "policy"), { recursive: true });
+     const bundle = makeRunnerContextBundle(customBundleDefaults);
+     bundle.repository.git_root = tempDir;
+-    bundle.task!.data.mutation_scope = "context";
++    bundle.task!.metadata.mutation_scope = "context";
+     bundle.execution.mode = "execute";
+     bundle.execution.write_scope = {
+       mutation_scope: "context",
+@@ -357,7 +357,7 @@ describe("CustomRunnerAdapter security boundaries", () => {
+     const bundle = makeRunnerContextBundle(customBundleDefaults);
+     bundle.repository.git_root = root;
+     bundle.execution.mode = "execute";
+-    bundle.task!.data.mutation_scope = "context";
++    bundle.task!.metadata.mutation_scope = "context";
+     bundle.execution.write_scope = {
+       mutation_scope: "context",
+       writable_roots: ["context"],
+diff --git a/packages/agentplane/src/runner/adapters/custom.test.ts b/packages/agentplane/src/runner/adapters/custom.test.ts
+index b699daf69..b7379d47c 100644
+--- a/packages/agentplane/src/runner/adapters/custom.test.ts
++++ b/packages/agentplane/src/runner/adapters/custom.test.ts
+@@ -756,7 +756,7 @@ describe("CustomRunnerAdapter", () => {
+     );
+     expect(normalized.verification_hints).toBeUndefined();
+     const receiptLocator = createSupervisorExecutionReceiptLocator({
+-      task_id: bundle.task!.task_id,
++      task_id: bundle.task!.metadata.task_id,
+       run_id: invocation.run_id,
+     });
+     expect(normalized.evidence).toMatchObject({
+@@ -821,7 +821,7 @@ describe("CustomRunnerAdapter", () => {
+ 
+     const bundle = makeRunnerContextBundle(customBundleDefaults);
+     bundle.repository.git_root = tempDir;
+-    bundle.task!.data.verify = ["bun run focused-check"];
++    bundle.task!.verification.commands = ["bun run focused-check"];
+     bundle.execution.mode = "execute";
+     setRunnerBundleRunDir(bundle, path.join(tempDir, "runs", "run-observed-delta"));
+     await writeRunnerExecutable(tempDir, "custom-runner", [
+diff --git a/packages/agentplane/src/runner/adapters/execution-receipt-runtime.test.ts b/packages/agentplane/src/runner/adapters/execution-receipt-runtime.test.ts
+index d56b61561..ae052e365 100644
+--- a/packages/agentplane/src/runner/adapters/execution-receipt-runtime.test.ts
++++ b/packages/agentplane/src/runner/adapters/execution-receipt-runtime.test.ts
+@@ -61,7 +61,7 @@ async function prepareObservation(
+     status: "DOING",
+     mode: "execute",
+   });
+-  bundle.task!.data.mutation_scope = selectedWriteScope.mutation_scope;
++  bundle.task!.metadata.mutation_scope = selectedWriteScope.mutation_scope;
+   bundle.execution.write_scope = selectedWriteScope;
+   bundle.execution.sandbox_policy = {
+     requested: nativeReadOnly ? "read-only" : "workspace-write",
+@@ -241,7 +241,7 @@ describe("execution receipt protected filesystem observation", () => {
+ 
+     expect(finalized.result.execution_receipt?.path).toBe(
+       createSupervisorExecutionReceiptLocator({
+-        task_id: prepared.observationBefore.bundle!.task!.task_id,
++        task_id: prepared.observationBefore.bundle!.task!.metadata.task_id,
+         run_id: prepared.invocation.run_id,
+       }),
+     );
+diff --git a/packages/agentplane/src/runner/adapters/execution-receipt-runtime.ts b/packages/agentplane/src/runner/adapters/execution-receipt-runtime.ts
+index f1cd4ba31..ff9033951 100644
+--- a/packages/agentplane/src/runner/adapters/execution-receipt-runtime.ts
++++ b/packages/agentplane/src/runner/adapters/execution-receipt-runtime.ts
+@@ -49,7 +49,7 @@ export type {
+ } from "./execution-receipt-runtime-types.js";
+ 
+ function receiptTaskId(bundle: RunnerContextBundle | null | undefined): string {
+-  const taskId = bundle?.task?.task_id ?? bundle?.target.task_id;
++  const taskId = bundle?.task?.metadata.task_id ?? bundle?.target.task_id;
+   if (!taskId) {
+     throw new Error("Runner execution receipt requires a task-bound supervisor artifact locator.");
+   }
+@@ -262,7 +262,7 @@ function writeScopeCheck(scope: ExecutionReceiptScopeEvaluation): ExecutionRecei
+ function deferredTaskVerificationCheck(
+   bundle: RunnerContextBundle | null,
+ ): ExecutionReceiptObservedCheck {
+-  const commandCount = bundle?.task?.data.verify.length ?? 0;
++  const commandCount = bundle?.task?.verification.commands.length ?? 0;
+   return observedCheck({
+     id: "task.verify.deferred",
+     required: false,
+diff --git a/packages/agentplane/src/runner/artifacts.test.ts b/packages/agentplane/src/runner/artifacts.test.ts
+index f13bd8696..538e6e47e 100644
+--- a/packages/agentplane/src/runner/artifacts.test.ts
++++ b/packages/agentplane/src/runner/artifacts.test.ts
+@@ -41,23 +41,52 @@ describe("runner artifacts", () => {
+         backend_config_path: path.join(tempDir, ".agentplane/backends/local/backend.json"),
+       },
+       task: {
+-        task_id: "202603231310-NT5V5C",
+-        data: {
+-          id: "202603231310-NT5V5C",
+-          title: "R3",
+-          description: "Define runner bundle contract",
++        schema_version: 1,
++        kind: "agentplane.task_episode_view",
++        metadata: {
++          task_id: "202603231310-NT5V5C",
++          revision: null,
+           status: "DOING",
+-          priority: "high",
+           owner: "CODER",
+-          depends_on: [],
++          priority: "high",
+           tags: ["runner"],
+-          verify: [],
++          task_kind: null,
++          mutation_scope: null,
++          blueprint_request: null,
++        },
++        narrative: {
++          title: "R3",
++          description: "Define runner bundle contract",
++          sections: [{ name: "Summary", text: "Bundle contract", required: false }],
++        },
++        verification: { commands: [] },
++        section_policy: { source: "task_document_schema", required_sections: [] },
++        history: { comments: [], events: [] },
++        compaction: {
++          sections: {
++            original_bytes: 0,
++            emitted_bytes: 0,
++            original_count: 0,
++            emitted_count: 0,
++            truncated: false,
++          },
++          comments: {
++            original_bytes: 0,
++            emitted_bytes: 0,
++            original_count: 0,
++            emitted_count: 0,
++            truncated: false,
++          },
++          events: {
++            original_bytes: 0,
++            emitted_bytes: 0,
++            original_count: 0,
++            emitted_count: 0,
++            truncated: false,
++          },
++          omissions: [],
++          serialized: { source_bytes: 0, emitted_bytes: 0, duplicate_bytes_removed: 0 },
+         },
+-        frontmatter: { id: "202603231310-NT5V5C", status: "DOING" },
+-        doc: "## Summary\n\nBundle contract",
+-        sections: { Summary: "Bundle contract" },
+-        comments: [],
+-        events: [],
+         readme_path: path.join(tempDir, ".agentplane/tasks/202603231310-NT5V5C/README.md"),
+       },
+       execution: {
+diff --git a/packages/agentplane/src/runner/context/overlay-prompt-blocks.ts b/packages/agentplane/src/runner/context/overlay-prompt-blocks.ts
+index 12023c86c..760711914 100644
+--- a/packages/agentplane/src/runner/context/overlay-prompt-blocks.ts
++++ b/packages/agentplane/src/runner/context/overlay-prompt-blocks.ts
+@@ -22,8 +22,8 @@ async function detectRepoTypes(gitRoot: string): Promise<string[]> {
+ }
+ 
+ function inferTaskKind(task: RunnerTaskContext | undefined): string | undefined {
+-  const tags = Array.isArray(task?.data.tags)
+-    ? task.data.tags.filter((tag): tag is string => typeof tag === "string")
++  const tags = Array.isArray(task?.metadata.tags)
++    ? task.metadata.tags.filter((tag): tag is string => typeof tag === "string")
+     : [];
+   if (tags.includes("docs")) return "docs";
+   if (tags.includes("refactor")) return "refactor";
+@@ -43,8 +43,8 @@ export async function collectOverlayPromptBlocks(opts: {
+   });
+   if (!bundle) return [];
+   const repoTypes = await detectRepoTypes(opts.git_root);
+-  const tags = Array.isArray(opts.task?.data.tags)
+-    ? opts.task.data.tags.filter((tag): tag is string => typeof tag === "string")
++  const tags = Array.isArray(opts.task?.metadata.tags)
++    ? opts.task.metadata.tags.filter((tag): tag is string => typeof tag === "string")
+     : [];
+   const taskKind = inferTaskKind(opts.task);
+   const blocks: RunnerPromptBlock[] = [];
+diff --git a/packages/agentplane/src/runner/context/task-context.test.ts b/packages/agentplane/src/runner/context/task-context.test.ts
+index c8bd2820e..a20224733 100644
+--- a/packages/agentplane/src/runner/context/task-context.test.ts
++++ b/packages/agentplane/src/runner/context/task-context.test.ts
+@@ -89,14 +89,24 @@ describe("assembleRunnerTaskContext", () => {
+     expect(assembled.repository.git_root).toBe(root);
+     expect(assembled.repository.workflow_dir).toBe(".agentplane/tasks");
+     expect(assembled.repository.backend_id).toBe("local");
+-    expect(assembled.task.task_id).toBe(main.id);
+-    expect(assembled.task.frontmatter.id).toBe(main.id);
+-    expect(assembled.task.data.title).toBe("Main task");
+-    expect(Object.keys(assembled.task.sections)).toContain("Summary");
+-    expect(assembled.task.comments).toEqual([
++    expect(assembled.task.metadata.task_id).toBe(main.id);
++    expect(assembled.task.narrative.title).toBe("Main task");
++    expect(assembled.task.narrative.sections.map((section) => section.name)).not.toContain(
++      "Summary",
++    );
++    expect(assembled.task.compaction.omissions).toEqual(
++      expect.arrayContaining([
++        {
++          section: "Summary",
++          required: true,
++          reason_code: "required_section_unavailable",
++        },
++      ]),
++    );
++    expect(assembled.task.history.comments).toEqual([
+       { author: "CODER", body: "Start: assemble runner task context." },
+     ]);
+-    expect(assembled.task.events).toEqual([
++    expect(assembled.task.history.events).toEqual([
+       {
+         type: "status",
+         at: "2026-03-23T14:05:00.000Z",
+@@ -115,7 +125,10 @@ describe("assembleRunnerTaskContext", () => {
+     expect(assembled.task.readme_path).toBe(
+       path.join(root, ".agentplane/tasks", main.id, "README.md"),
+     );
+-    expect(assembled.task.doc).toContain("## Summary");
++    expect(assembled.task).not.toHaveProperty("data");
++    expect(assembled.task).not.toHaveProperty("frontmatter");
++    expect(assembled.task).not.toHaveProperty("doc");
++    expect(assembled.source_task.title).toBe("Main task");
+   });
+ 
+   it("returns a typed failure when the task is missing", async () => {
+@@ -160,7 +173,6 @@ describe("assembleRunnerTaskContext", () => {
+     const longSections = {
+       ...currentSections,
+       Findings: "Long findings ".repeat(900),
+-      Verification: "Long verification ".repeat(700),
+     };
+     const longDoc = renderTaskDocFromSections(longSections);
+     await ctx.taskBackend.writeTask({
+@@ -187,33 +199,124 @@ describe("assembleRunnerTaskContext", () => {
+       task_id: main.id,
+     });
+ 
+-    expect(Buffer.byteLength(assembled.task.doc, "utf8")).toBeLessThanOrEqual(
+-      RUNNER_TASK_CONTEXT_BUDGETS.doc_max_bytes,
+-    );
+-    expect(assembled.task.comments.length).toBeLessThanOrEqual(
++    expect(assembled.task.history.comments.length).toBeLessThanOrEqual(
+       RUNNER_TASK_CONTEXT_BUDGETS.comments_max_count,
+     );
+-    expect(assembled.task.events.length).toBeLessThanOrEqual(
++    expect(assembled.task.history.events.length).toBeLessThanOrEqual(
+       RUNNER_TASK_CONTEXT_BUDGETS.events_max_count,
+     );
+-    expect(assembled.task.comments.at(-1)?.body).toContain("Long comment payload");
+-    expect(assembled.task.comments[0]?.body).not.toContain("00 Long comment payload");
++    expect(assembled.task.history.comments.at(-1)?.body).toContain("Long comment payload");
++    expect(assembled.task.history.comments[0]?.body).not.toContain("00 Long comment payload");
+     expect(assembled.task.compaction).toMatchObject({
+-      doc: { truncated: true },
+       sections: { truncated: true },
+       comments: {
+         truncated: true,
+         original_count: 28,
+-        emitted_count: assembled.task.comments.length,
++        emitted_count: assembled.task.history.comments.length,
+       },
+       events: {
+         truncated: true,
+         original_count: 52,
+-        emitted_count: assembled.task.events.length,
++        emitted_count: assembled.task.history.events.length,
+       },
+     });
++    expect(assembled.task.compaction.omissions).toEqual(
++      expect.arrayContaining([
++        {
++          section: "Summary",
++          required: true,
++          reason_code: "required_section_unavailable",
++        },
++      ]),
++    );
++    expect(assembled.task.compaction.serialized.duplicate_bytes_removed).toBeGreaterThan(0);
++    expect(assembled.task.compaction.serialized.emitted_bytes).toBeLessThan(
++      assembled.task.compaction.serialized.source_bytes * 0.7,
++    );
+     expect(assembled.task.readme_path).toBe(
+       path.join(root, ".agentplane/tasks", main.id, "README.md"),
+     );
+   });
++
++  it("fails with a structured issue instead of truncating a required section", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    await writeLocalBackendConfig(root);
++    const task = await createTask({
++      cwd: root,
++      rootOverride: root,
++      title: "Required section budget fixture",
++      description: "Exercise required section compaction refusal.",
++      owner: "CODER",
++      priority: "high",
++      tags: ["runner"],
++      dependsOn: [],
++      verify: [],
++    });
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
++    const sections = { ...(loaded.sections ?? {}), Summary: "required ".repeat(500) };
++    await ctx.taskBackend.writeTask({
++      ...loaded,
++      doc: renderTaskDocFromSections(sections),
++      sections,
++    });
++
++    await expect(
++      assembleRunnerTaskContext({ ctx, cwd: root, rootOverride: root, task_id: task.id }),
++    ).rejects.toMatchObject({
++      code: "E_VALIDATION",
++      context: {
++        reason_code: "task_episode_required_section_exceeds_budget",
++        section: "Summary",
++      },
++    });
++  });
++
++  it("uses configured structural section metadata for custom non-English headings", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    await writeLocalBackendConfig(root);
++    const task = await createTask({
++      cwd: root,
++      rootOverride: root,
++      title: "Локализованный контекст",
++      description: "Проверяет структурный приоритет.",
++      owner: "CODER",
++      priority: "high",
++      tags: ["runner"],
++      dependsOn: [],
++      verify: [],
++    });
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    ctx.config.tasks.doc.required_sections = ["Контекст", "Проверка"];
++    const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
++    const sections = {
++      Summary: "Optional English heading must not outrank structural metadata.",
++      Контекст: "Обязательный контекст.",
++      Проверка: "Обязательная проверка.",
++      Дополнительно: "Необязательная секция.",
++    };
++    await ctx.taskBackend.writeTask({
++      ...loaded,
++      doc: renderTaskDocFromSections(sections),
++      sections,
++    });
++
++    const assembled = await assembleRunnerTaskContext({
++      ctx,
++      cwd: root,
++      rootOverride: root,
++      task_id: task.id,
++    });
++
++    expect(assembled.task.section_policy).toEqual({
++      source: "task_document_schema",
++      required_sections: ["Контекст", "Проверка"],
++    });
++    expect(assembled.task.narrative.sections.slice(0, 2)).toEqual([
++      { name: "Контекст", text: "Обязательный контекст.", required: true },
++      { name: "Проверка", text: "Обязательная проверка.", required: true },
++    ]);
++  });
+ });
+diff --git a/packages/agentplane/src/runner/context/task-context.ts b/packages/agentplane/src/runner/context/task-context.ts
+index 7f3ec23c3..68257cc68 100644
+--- a/packages/agentplane/src/runner/context/task-context.ts
++++ b/packages/agentplane/src/runner/context/task-context.ts
+@@ -4,11 +4,7 @@ import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/c
+ import { mapBackendError } from "../../cli/error-map.js";
+ import { fileExists } from "../../cli/fs-utils.js";
+ import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
+-import {
+-  loadCommandContext,
+-  loadTaskFromContext,
+-  taskDataToFrontmatter,
+-} from "../../commands/shared/task-backend.js";
++import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
+ import { gitCurrentBranch } from "../../commands/shared/git-ops.js";
+ import { resolveTaskDependencyState } from "../../commands/task/shared.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -16,21 +12,23 @@ import type { CommandContext } from "../../commands/shared/task-backend.js";
+ import type {
+   RunnerDependencyState,
+   RunnerRepositoryContext,
+-  RunnerTaskContext,
+   RunnerTaskContextCompaction,
+   RunnerTaskContextCompactionEntry,
++  TaskEpisodeOmissionReceipt,
++  TaskEpisodeSection,
++  TaskEpisodeView,
+ } from "../types.js";
+ 
+ export type RunnerTaskContextEnvelope = {
+   repository: RunnerRepositoryContext;
+-  task: RunnerTaskContext;
++  task: TaskEpisodeView;
++  /** Backend state remains CLI-internal and is never serialized into a runner bundle. */
++  source_task: TaskData;
+ };
+ 
+ const TRUNCATED_MARKER = "\n\n[TRUNCATED]";
+-const OMITTED_SECTION_MARKER = "[TRUNCATED: omitted due to task context budget]";
+ 
+ export const RUNNER_TASK_CONTEXT_BUDGETS = {
+-  doc_max_bytes: 24_576,
+   section_max_bytes: 3072,
+   sections_total_max_bytes: 20_480,
+   comments_max_count: 20,
+@@ -109,71 +107,108 @@ function measureEvents(events: TaskEvent[]): number {
+   return utf8Bytes(JSON.stringify(events));
+ }
+ 
+-function prioritizeSections(sections: Record<string, string>): [string, string][] {
+-  const preferredOrder = [
+-    "Summary",
+-    "Scope",
+-    "Plan",
+-    "Verify Steps",
+-    "Verification",
+-    "Rollback Plan",
+-    "Findings",
+-  ];
+-  const entries = Object.entries(sections);
+-  const indexByKey = new Map(entries.map(([key], index) => [key, index]));
+-  return entries.toSorted(([left], [right]) => {
+-    const leftPreferred = preferredOrder.indexOf(left);
+-    const rightPreferred = preferredOrder.indexOf(right);
+-    if (leftPreferred !== -1 && rightPreferred !== -1) return leftPreferred - rightPreferred;
+-    if (leftPreferred !== -1) return -1;
+-    if (rightPreferred !== -1) return 1;
+-    return (indexByKey.get(left) ?? 0) - (indexByKey.get(right) ?? 0);
+-  });
++function sectionKey(section: string): string {
++  return section.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase();
+ }
+ 
+-function compactSections(sections: Record<string, string>): {
++function compactSections(opts: {
++  task_id: string;
+   sections: Record<string, string>;
+-  doc: string;
++  required_sections: readonly string[];
++}): {
++  sections: TaskEpisodeSection[];
++  omissions: TaskEpisodeOmissionReceipt[];
+   compaction: RunnerTaskContextCompaction["sections"];
+-  docCompaction: RunnerTaskContextCompaction["doc"];
+ } {
+-  const originalEntries = prioritizeSections(sections);
+-  const originalDoc = renderTaskDocFromSections(sections);
++  const requiredByKey = new Map(
++    opts.required_sections.map((section) => [sectionKey(section), section.trim()]),
++  );
++  const entriesByKey = new Map(
++    Object.entries(opts.sections).map(([section, text]) => [
++      sectionKey(section),
++      { section, text },
++    ]),
++  );
++  const missing = [...requiredByKey.entries()]
++    .filter(([key]) => !entriesByKey.has(key))
++    .map(([, section]) => section);
++  const empty = [...requiredByKey.entries()].flatMap(([key, required]) => {
++    const entry = entriesByKey.get(key);
++    return entry?.text.trim().length === 0 ? [required] : [];
++  });
++  const unavailableRequired = new Set([...missing, ...empty]);
++  const requiredEntries = [...requiredByKey.entries()].flatMap(([key, required]) => {
++    if (unavailableRequired.has(required)) return [];
++    const entry = entriesByKey.get(key)!;
++    return [{ name: required, text: entry.text, required: true as const }];
++  });
++  const optionalEntries = Object.entries(opts.sections)
++    .filter(([section]) => !requiredByKey.has(sectionKey(section)))
++    .map(([name, text]) => ({ name, text, required: false as const }));
++  const originalEntries = [...requiredEntries, ...optionalEntries];
+   let remainingBudget: number = RUNNER_TASK_CONTEXT_BUDGETS.sections_total_max_bytes;
+   let truncated = false;
+-  const compactedEntries = originalEntries.map(([section, text]) => {
+-    if (!text) return [section, text] as const;
++  const omissions: TaskEpisodeOmissionReceipt[] = [
++    ...missing.map((section) => ({
++      section,
++      required: true,
++      reason_code: "required_section_unavailable" as const,
++    })),
++    ...empty.map((section) => ({
++      section,
++      required: true,
++      reason_code: "required_section_unavailable" as const,
++    })),
++  ];
++  const compactedEntries: TaskEpisodeSection[] = [];
++  for (const entry of originalEntries) {
++    const textBytes = utf8Bytes(entry.text);
++    if (entry.required) {
++      const allowedBytes = Math.min(RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes, remainingBudget);
++      if (textBytes > allowedBytes) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message:
++            `TaskEpisodeView cannot compact required section ${JSON.stringify(entry.name)} ` +
++            `for ${opts.task_id} without loss.`,
++          context: {
++            task_id: opts.task_id,
++            reason_code: "task_episode_required_section_exceeds_budget",
++            section: entry.name,
++            section_bytes: textBytes,
++            allowed_bytes: allowedBytes,
++          },
++        });
++      }
++      remainingBudget -= textBytes;
++      compactedEntries.push(entry);
++      continue;
++    }
+     if (remainingBudget <= 0) {
+       truncated = true;
+-      return [section, OMITTED_SECTION_MARKER] as const;
++      omissions.push({
++        section: entry.name,
++        required: false,
++        reason_code: "section_budget_exhausted",
++      });
++      continue;
+     }
+     const allowedBytes = Math.min(RUNNER_TASK_CONTEXT_BUDGETS.section_max_bytes, remainingBudget);
+-    const nextText = utf8Bytes(text) > allowedBytes ? truncateUtf8(text, allowedBytes) : text;
+-    if (nextText !== text) truncated = true;
++    const nextText = textBytes > allowedBytes ? truncateUtf8(entry.text, allowedBytes) : entry.text;
++    if (nextText !== entry.text) truncated = true;
+     remainingBudget = Math.max(0, remainingBudget - utf8Bytes(nextText));
+-    return [section, nextText] as const;
+-  });
+-  const compactedSections = Object.fromEntries(compactedEntries);
+-  const compactedDoc = truncateUtf8(
+-    renderTaskDocFromSections(compactedSections),
+-    RUNNER_TASK_CONTEXT_BUDGETS.doc_max_bytes,
+-  );
+-  const docTruncated = compactedDoc !== originalDoc;
++    compactedEntries.push({ ...entry, text: nextText });
++  }
+   return {
+-    sections: compactedSections,
+-    doc: compactedDoc,
++    sections: compactedEntries,
++    omissions,
+     compaction: {
+-      original_bytes: utf8Bytes(JSON.stringify(sections)),
+-      emitted_bytes: utf8Bytes(JSON.stringify(compactedSections)),
++      original_bytes: utf8Bytes(JSON.stringify(opts.sections)),
++      emitted_bytes: utf8Bytes(JSON.stringify(compactedEntries)),
+       original_count: originalEntries.length,
+       emitted_count: compactedEntries.length,
+       truncated,
+     },
+-    docCompaction: {
+-      original_bytes: utf8Bytes(originalDoc),
+-      emitted_bytes: utf8Bytes(compactedDoc),
+-      truncated: docTruncated,
+-    },
+   };
+ }
+ 
+@@ -290,7 +325,6 @@ export async function assembleRunnerTaskContext(opts: {
+     const dependencyState = toRunnerDependencyState(
+       await resolveTaskDependencyState(task, opts.dependency_backend ?? ctx.taskBackend),
+     );
+-    const frontmatter = taskDataToFrontmatter(task);
+     const baseDoc =
+       typeof task.doc === "string"
+         ? task.doc
+@@ -298,14 +332,23 @@ export async function assembleRunnerTaskContext(opts: {
+           ? renderTaskDocFromSections(task.sections)
+           : "";
+     const baseSections = task.sections ?? (baseDoc ? taskDocToSectionMap(baseDoc) : {});
+-    const compactedSections = compactSections(baseSections);
++    const compactedSections = compactSections({
++      task_id: task.id,
++      sections: baseSections,
++      required_sections: ctx.config.tasks.doc.required_sections,
++    });
+     const compactedComments = compactComments(task.comments ?? []);
+     const compactedEvents = compactEvents(task.events ?? []);
+     const compaction: RunnerTaskContextCompaction = {
+-      doc: compactedSections.docCompaction,
+       sections: compactedSections.compaction,
+       comments: compactedComments.compaction,
+       events: compactedEvents.compaction,
++      omissions: compactedSections.omissions,
++      serialized: {
++        source_bytes: utf8Bytes(JSON.stringify(task)),
++        emitted_bytes: 0,
++        duplicate_bytes_removed: 0,
++      },
+     };
+     const [branch, head_commit, readme_path] = await Promise.all([
+       readOptionalBranch(ctx.resolvedProject.gitRoot),
+@@ -313,6 +356,53 @@ export async function assembleRunnerTaskContext(opts: {
+       resolveTaskReadmePath(ctx, task.id),
+     ]);
+ 
++    const episode: TaskEpisodeView = {
++      schema_version: 1,
++      kind: "agentplane.task_episode_view",
++      metadata: {
++        task_id: task.id,
++        revision: task.revision ?? null,
++        status: task.status,
++        owner: task.owner ?? null,
++        priority: task.priority ?? null,
++        tags: [...(task.tags ?? [])],
++        task_kind: task.task_kind ?? null,
++        mutation_scope: task.mutation_scope ?? null,
++        blueprint_request: task.blueprint_request ?? null,
++      },
++      narrative: {
++        title: task.title,
++        description: task.description,
++        sections: compactedSections.sections,
++      },
++      verification: {
++        commands: [...task.verify],
++      },
++      section_policy: {
++        source: "task_document_schema",
++        required_sections: [...ctx.config.tasks.doc.required_sections],
++      },
++      history: {
++        comments: compactedComments.comments,
++        events: compactedEvents.events,
++      },
++      readme_path,
++      dependency_state: dependencyState,
++      compaction,
++    };
++    let emittedBytes = utf8Bytes(JSON.stringify(episode));
++    compaction.serialized.emitted_bytes = emittedBytes;
++    compaction.serialized.duplicate_bytes_removed = Math.max(
++      0,
++      compaction.serialized.source_bytes - emittedBytes,
++    );
++    emittedBytes = utf8Bytes(JSON.stringify(episode));
++    compaction.serialized.emitted_bytes = emittedBytes;
++    compaction.serialized.duplicate_bytes_removed = Math.max(
++      0,
++      compaction.serialized.source_bytes - emittedBytes,
++    );
++
+     return {
+       repository: {
+         git_root: ctx.resolvedProject.gitRoot,
+@@ -322,18 +412,8 @@ export async function assembleRunnerTaskContext(opts: {
+         branch,
+         head_commit,
+       },
+-      task: {
+-        task_id: task.id,
+-        data: task,
+-        frontmatter,
+-        doc: compactedSections.doc,
+-        sections: compactedSections.sections,
+-        comments: compactedComments.comments,
+-        events: compactedEvents.events,
+-        readme_path,
+-        dependency_state: dependencyState,
+-        compaction,
+-      },
++      task: episode,
++      source_task: task,
+     };
+   } catch (err) {
+     if (err instanceof CliError) throw err;
+diff --git a/packages/agentplane/src/runner/effect-operation-contract.ts b/packages/agentplane/src/runner/effect-operation-contract.ts
+index 2cd436a5b..e7def1668 100644
+--- a/packages/agentplane/src/runner/effect-operation-contract.ts
++++ b/packages/agentplane/src/runner/effect-operation-contract.ts
+@@ -29,7 +29,7 @@ export function runnerEffectRuntimeError(
+ }
+ 
+ function taskIdFromRunnerEffectBundle(bundle: RunnerContextBundle): string {
+-  const taskId = bundle.task?.task_id ?? bundle.target.task_id;
++  const taskId = bundle.task?.metadata.task_id ?? bundle.target.task_id;
+   if (!taskId) throw new Error("Runner effect operation requires a task-bound invocation.");
+   return taskId;
+ }
+diff --git a/packages/agentplane/src/runner/playbooks.ts b/packages/agentplane/src/runner/playbooks.ts
+index a3cefec4f..47fb284bd 100644
+--- a/packages/agentplane/src/runner/playbooks.ts
++++ b/packages/agentplane/src/runner/playbooks.ts
+@@ -46,10 +46,10 @@ const BUILTIN_RUNNER_PLAYBOOKS: readonly RunnerTaskPlaybookContract[] = [
+ 
+ function textFromBundle(bundle: RunnerContextBundle): string {
+   return [
+-    bundle.task?.data.title,
+-    bundle.task?.data.description,
+-    ...(bundle.task?.data.tags ?? []),
+-    bundle.task?.data.blueprint_request,
++    bundle.task?.narrative.title,
++    bundle.task?.narrative.description,
++    ...(bundle.task?.metadata.tags ?? []),
++    bundle.task?.metadata.blueprint_request,
+     bundle.blueprint?.blueprintId,
+     bundle.recipe?.scenario_id,
+     bundle.recipe?.recipe_name,
+diff --git a/packages/agentplane/src/runner/run-repository-contract.ts b/packages/agentplane/src/runner/run-repository-contract.ts
+index f0395bb88..835400a8f 100644
+--- a/packages/agentplane/src/runner/run-repository-contract.ts
++++ b/packages/agentplane/src/runner/run-repository-contract.ts
+@@ -99,8 +99,7 @@ export function assertRunnerBundleMatchesTask(
+   runId: string,
+ ): void {
+   const bundleTaskIds = [
+-    bundle.task?.task_id,
+-    bundle.task?.data.id,
++    bundle.task?.metadata.task_id,
+     bundle.target.kind === "task" ? bundle.target.task_id : bundle.target.task_id,
+   ].filter((value): value is string => typeof value === "string" && value.length > 0);
+   if (bundle.execution.run_id !== runId) {
+diff --git a/packages/agentplane/src/runner/run-repository.ts b/packages/agentplane/src/runner/run-repository.ts
+index 722f9a765..c396a6e1f 100644
+--- a/packages/agentplane/src/runner/run-repository.ts
++++ b/packages/agentplane/src/runner/run-repository.ts
+@@ -279,7 +279,7 @@ export class RunnerRunRepository {
+     assertRunnerBundleArtifactPaths(
+       opts.bundle,
+       this.paths,
+-      opts.bundle.task?.task_id ?? opts.bundle.execution.run_id,
++      opts.bundle.task?.metadata.task_id ?? opts.bundle.execution.run_id,
+       opts.bundle.execution.run_id,
+     );
+     await this.createFreshDirectory({
+diff --git a/packages/agentplane/src/runner/sandbox-policy.ts b/packages/agentplane/src/runner/sandbox-policy.ts
+index 94731488e..96ce68aaf 100644
+--- a/packages/agentplane/src/runner/sandbox-policy.ts
++++ b/packages/agentplane/src/runner/sandbox-policy.ts
+@@ -1,4 +1,3 @@
+-import type { TaskData } from "../backends/task-backend.js";
+ import { normalizeGitPathPrefix } from "../shared/git-path.js";
+ 
+ import { readRecipeRunProfile } from "./adapters/recipe-run-profile.js";
+@@ -19,12 +18,23 @@ import {
+ 
+ const READ_ONLY_ROLES = new Set(["AUDITOR", "EVALUATOR", "REVIEWER"]);
+ 
++type RunnerTaskPolicyInput = {
++  id?: string;
++  task_id?: string;
++  owner?: string | null;
++  mutation_scope?: string | null;
++  task_kind?: string | null;
++};
++
+ function normalizedRole(owner: string | null | undefined): string {
+   const role = owner?.trim();
+   return role ? role.toUpperCase() : "EXECUTOR";
+ }
+ 
+-function roleRequestsReadOnly(task: TaskData | undefined, executionRole: string): boolean {
++function roleRequestsReadOnly(
++  task: RunnerTaskPolicyInput | undefined,
++  executionRole: string,
++): boolean {
+   if (READ_ONLY_ROLES.has(executionRole)) return true;
+   if (task?.mutation_scope === "context" || task?.task_kind === "context") return false;
+   if (task?.mutation_scope === "none" || task?.task_kind === "analysis") return true;
+@@ -49,7 +59,7 @@ export function hasExplicitRunnerDangerFullAccessAuthority(
+ }
+ 
+ export function resolveRunnerSandboxPolicy(opts: {
+-  task?: TaskData;
++  task?: RunnerTaskPolicyInput;
+   recipe?: RunnerRecipeContext;
+   danger_authority?: RunnerDangerFullAccessAuthority | null;
+   execution_role?: string;
+@@ -94,7 +104,7 @@ export function resolveRunnerSandboxPolicy(opts: {
+ export function resolveRunnerWriteScopePolicy(opts: {
+   sandbox: RunnerSandboxPolicy;
+   protected_path_groups: Record<string, readonly string[]>;
+-  task?: TaskData;
++  task?: RunnerTaskPolicyInput;
+   recipe?: RunnerRecipeContext;
+ }): RunnerWriteScopePolicy {
+   const protectedPaths = new Set<string>();
+@@ -106,7 +116,7 @@ export function resolveRunnerWriteScopePolicy(opts: {
+   }
+   const recipeWritableRoots = normalizeRecipeArtifactPrefixes(
+     readRecipeRunProfile(opts.recipe)?.writes_artifacts_to,
+-    { task_id: opts.task?.id },
++    { task_id: opts.task?.id ?? opts.task?.task_id },
+   );
+   const writableRoots = (() => {
+     if (opts.sandbox.requested === RUNNER_READ_ONLY_SANDBOX) return [];
+diff --git a/packages/agentplane/src/runner/state-fingerprint-observation.ts b/packages/agentplane/src/runner/state-fingerprint-observation.ts
+index b15bd8814..157383771 100644
+--- a/packages/agentplane/src/runner/state-fingerprint-observation.ts
++++ b/packages/agentplane/src/runner/state-fingerprint-observation.ts
+@@ -240,7 +240,7 @@ async function resolveLiveState(opts: {
+       : liveContext
+         ? await observeRunnerTaskProjection(
+             liveContext,
+-            opts.bundle.task?.task_id ?? opts.bundle.target.task_id ?? "",
++            opts.bundle.task?.metadata.task_id ?? opts.bundle.target.task_id ?? "",
+           )
+         : null;
+   } catch {
+@@ -349,7 +349,14 @@ export async function observePreparedRunnerStateComponents(opts: {
+   bundle: RunnerContextBundle;
+   probes?: RunnerStateFingerprintComponentProbes;
+ }): Promise<RunnerStateFingerprintObservedComponents> {
+-  const task = opts.bundle.task?.data ?? null;
++  // TaskEpisodeView deliberately excludes full lifecycle state. Re-observe the
++  // backend projection while preparing the fingerprint instead of retaining a
++  // second serialized TaskData copy in the runner bundle.
++  const task = opts.bundle.task
++    ? opts.probes?.load_task
++      ? await opts.probes.load_task()
++      : await observeRunnerTaskProjection(opts.ctx, opts.bundle.task.metadata.task_id)
++    : null;
+   const repositoryRoot = authoritativePreparedRepositoryRoot(opts);
+   const [backend, policy, knowledge, blueprint, authority] = await Promise.all([
+     opts.probes?.observe_backend_projection?.() ?? observeBackendProjection(opts.ctx),
+diff --git a/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts b/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts
+index 3261a2933..525a5501d 100644
+--- a/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts
++++ b/packages/agentplane/src/runner/state-fingerprint-residual-git.integration.test.ts
+@@ -166,7 +166,7 @@ async function expectExactlyChanged(opts: {
+   try {
+     await executeStateBoundRunnerInvocation({
+       ctx: opts.ctx,
+-      task_id: opts.prepared.bundle.task?.task_id ?? "",
++      task_id: opts.prepared.bundle.task?.metadata.task_id ?? "",
+       bundle: opts.prepared.bundle,
+       invocation: opts.prepared.invocation,
+       precondition_fingerprint: opts.prepared.precondition_fingerprint,
+diff --git a/packages/agentplane/src/runner/state-fingerprint.testkit.ts b/packages/agentplane/src/runner/state-fingerprint.testkit.ts
+index 146dd27e8..e6726bc24 100644
+--- a/packages/agentplane/src/runner/state-fingerprint.testkit.ts
++++ b/packages/agentplane/src/runner/state-fingerprint.testkit.ts
+@@ -4,7 +4,11 @@ import { makeTaskBackendDouble, makeTaskCommandContext } from "@agentplane/testk
+ import type { TaskData } from "../backends/task-backend.js";
+ import type { GitSnapshot } from "./observation/git-snapshot.js";
+ import type { RunnerStateFingerprintProbes } from "./state-fingerprint.js";
+-import type { RunnerContextBundle, RunnerInvocation } from "./types.js";
++import type {
++  RunnerContextBundle,
++  RunnerInvocation,
++  RunnerTaskContextCompaction,
++} from "./types.js";
+ 
+ const DEFAULT_APPROVALS: NonNullable<RunnerContextBundle["execution"]["approvals"]> = {
+   require_plan: false,
+@@ -13,13 +17,22 @@ const DEFAULT_APPROVALS: NonNullable<RunnerContextBundle["execution"]["approvals
+   require_force: false,
+ };
+ 
+-const EMPTY_TASK_CONTEXT_PROJECTIONS = {
+-  frontmatter: {},
+-  doc: "",
+-  sections: {},
+-  comments: [],
+-  events: [],
+-} satisfies Omit<NonNullable<RunnerContextBundle["task"]>, "task_id" | "data">;
++function emptyTaskEpisodeCompaction(): RunnerTaskContextCompaction {
++  const emptyEntry = {
++    original_bytes: 0,
++    emitted_bytes: 0,
++    original_count: 0,
++    emitted_count: 0,
++    truncated: false,
++  };
++  return {
++    sections: { ...emptyEntry },
++    comments: { ...emptyEntry },
++    events: { ...emptyEntry },
++    omissions: [],
++    serialized: { source_bytes: 0, emitted_bytes: 0, duplicate_bytes_removed: 0 },
++  };
++}
+ 
+ export function task(overrides: Partial<TaskData> = {}): TaskData {
+   return {
+@@ -99,9 +112,28 @@ export function bundle(taskData = task()): RunnerContextBundle {
+       head_commit: "a".repeat(40),
+     },
+     task: {
+-      task_id: taskData.id,
+-      data: taskData,
+-      ...EMPTY_TASK_CONTEXT_PROJECTIONS,
++      schema_version: 1,
++      kind: "agentplane.task_episode_view",
++      metadata: {
++        task_id: taskData.id,
++        revision: taskData.revision ?? null,
++        status: taskData.status,
++        owner: taskData.owner ?? null,
++        priority: taskData.priority ?? null,
++        tags: [...(taskData.tags ?? [])],
++        task_kind: taskData.task_kind ?? null,
++        mutation_scope: taskData.mutation_scope ?? null,
++        blueprint_request: taskData.blueprint_request ?? null,
++      },
++      narrative: {
++        title: taskData.title,
++        description: taskData.description,
++        sections: [],
++      },
++      verification: { commands: [...taskData.verify] },
++      section_policy: { source: "task_document_schema", required_sections: [] },
++      history: { comments: [], events: [] },
++      compaction: emptyTaskEpisodeCompaction(),
+     },
+     blueprint: {
+       schemaVersion: 1,
+diff --git a/packages/agentplane/src/runner/state-fingerprint.ts b/packages/agentplane/src/runner/state-fingerprint.ts
+index 32dc408a4..893171aab 100644
+--- a/packages/agentplane/src/runner/state-fingerprint.ts
++++ b/packages/agentplane/src/runner/state-fingerprint.ts
+@@ -63,7 +63,7 @@ export type RunnerStateFingerprintProbes = RunnerStateFingerprintComponentProbes
+ };
+ 
+ function runnerTaskId(bundle: RunnerContextBundle): string {
+-  const taskId = bundle.task?.task_id ?? bundle.target.task_id;
++  const taskId = bundle.task?.metadata.task_id ?? bundle.target.task_id;
+   if (!taskId) {
+     throw new Error("Runner state fingerprint requires a task id.");
+   }
+diff --git a/packages/agentplane/src/runner/task-state.ts b/packages/agentplane/src/runner/task-state.ts
+index 7dcc28e1e..4054e9dd5 100644
+--- a/packages/agentplane/src/runner/task-state.ts
++++ b/packages/agentplane/src/runner/task-state.ts
+@@ -172,7 +172,7 @@ export async function persistRunnerOutcomeToTask(opts: {
+   backend_projection_transition?: RunnerBackendProjectionTransitionRequest;
+ }): Promise<TaskData | null> {
+   if (opts.bundle?.execution.mode === "dry_run" || opts.state.mode === "dry_run") {
+-    return opts.bundle?.task?.data ?? null;
++    return await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.task_id });
+   }
+ 
+   const backend = opts.ctx.taskBackend;
+diff --git a/packages/agentplane/src/runner/types.ts b/packages/agentplane/src/runner/types.ts
+index 12850b160..286602066 100644
+--- a/packages/agentplane/src/runner/types.ts
++++ b/packages/agentplane/src/runner/types.ts
+@@ -30,6 +30,9 @@ export type {
+   RunnerTaskContext,
+   RunnerTaskContextCompaction,
+   RunnerTaskContextCompactionEntry,
++  TaskEpisodeOmissionReceipt,
++  TaskEpisodeSection,
++  TaskEpisodeView,
+   RunnerTracePolicy,
+ } from "./types/context.js";
+ export type {
+diff --git a/packages/agentplane/src/runner/types/context.ts b/packages/agentplane/src/runner/types/context.ts
+index 026f4ab8d..21231de1e 100644
+--- a/packages/agentplane/src/runner/types/context.ts
++++ b/packages/agentplane/src/runner/types/context.ts
+@@ -11,7 +11,7 @@ import type {
+   StateFingerprintPolicy,
+ } from "@agentplaneorg/core/schemas";
+ 
+-import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
++import type { TaskEvent } from "../../backends/task-backend.js";
+ import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
+ import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
+ import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
+@@ -47,19 +47,65 @@ export type RunnerDependencyState = {
+   completed: string[];
+ };
+ 
+-export type RunnerTaskContext = {
++export type TaskEpisodeSection = {
++  name: string;
++  text: string;
++  required: boolean;
++};
++
++export type TaskEpisodeOmissionReceipt = {
++  section: string;
++  required: boolean;
++  reason_code: "section_budget_exhausted" | "required_section_unavailable";
++};
++
++type TaskEpisodeMetadata = {
+   task_id: string;
+-  data: TaskData;
+-  frontmatter: Record<string, unknown>;
+-  doc: string;
+-  sections: Record<string, string>;
+-  comments: { author: string; body: string }[];
+-  events: TaskEvent[];
++  revision: number | null;
++  status: string;
++  owner: string | null;
++  priority: string | number | null;
++  tags: string[];
++  task_kind: string | null;
++  mutation_scope: string | null;
++  blueprint_request: string | null;
++};
++
++/**
++ * The only task representation serialized into a semantic runner episode.
++ *
++ * The backend TaskData object is intentionally not part of this view: it is
++ * lifecycle state owned by the CLI, whereas an agent needs only the selected
++ * semantic narrative and the compact history for its single episode.
++ */
++export type TaskEpisodeView = {
++  schema_version: 1;
++  kind: "agentplane.task_episode_view";
++  metadata: TaskEpisodeMetadata;
++  narrative: {
++    title: string;
++    description: string;
++    sections: TaskEpisodeSection[];
++  };
++  verification: {
++    commands: string[];
++  };
++  section_policy: {
++    source: "task_document_schema";
++    required_sections: string[];
++  };
++  history: {
++    comments: { author: string; body: string }[];
++    events: TaskEvent[];
++  };
+   readme_path?: string;
+   dependency_state?: RunnerDependencyState;
+-  compaction?: RunnerTaskContextCompaction;
++  compaction: RunnerTaskContextCompaction;
+ };
+ 
++/** @deprecated Use TaskEpisodeView; retained as a type-only compatibility alias. */
++export type RunnerTaskContext = TaskEpisodeView;
++
+ export type RunnerTaskContextCompactionEntry = {
+   original_bytes: number;
+   emitted_bytes: number;
+@@ -69,10 +115,15 @@ export type RunnerTaskContextCompactionEntry = {
+ };
+ 
+ export type RunnerTaskContextCompaction = {
+-  doc: RunnerTaskContextCompactionEntry;
+   sections: RunnerTaskContextCompactionEntry;
+   comments: RunnerTaskContextCompactionEntry;
+   events: RunnerTaskContextCompactionEntry;
++  omissions: TaskEpisodeOmissionReceipt[];
++  serialized: {
++    source_bytes: number;
++    emitted_bytes: number;
++    duplicate_bytes_removed: number;
++  };
+ };
+ 
+ export type RunnerRecipeContext = {
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+index 4e01e5cbd..38824cf24 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+@@ -17,7 +17,6 @@ import { checkTaskBlueprintSnapshotDrift } from "../../commands/blueprint/snapsh
+ import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
+ import type { CommandContext } from "../../commands/shared/task-backend.js";
+ import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
+-import { extractDocSection } from "../../commands/task/shared.js";
+ import type { ReadOnlyExecutionContext } from "../../runtime/execution-context.js";
+ import type { RunnerPromptBlock } from "../types.js";
+ import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
+@@ -75,6 +74,18 @@ function verifyStepLines(value: string): string[] {
+   );
+ }
+ 
++function episodeSectionText(opts: {
++  task_envelope: RunnerTaskContextEnvelope;
++  section: string;
++}): string {
++  const wanted = opts.section.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase();
++  return (
++    opts.task_envelope.task.narrative.sections.find(
++      (entry) => entry.name.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase() === wanted,
++    )?.text ?? ""
++  );
++}
++
+ function workOrderRole(owner: string): AgentWorkOrderRole {
+   const normalized = owner.trim().toUpperCase();
+   if (normalized === "PLANNER" || normalized === "CURATOR" || normalized === "EVALUATOR") {
+@@ -119,11 +130,11 @@ export async function buildAgentWorkOrderLegacyBriefProjection(opts: {
+ }): Promise<AgentWorkOrderLegacyBriefProjection> {
+   const snapshot = await checkTaskBlueprintSnapshotDrift({
+     ctx: opts.command_ctx,
+-    task: opts.task_envelope.task.data,
++    task: opts.task_envelope.source_task,
+   });
+   return {
+     blueprint: legacyBlueprintSummary({
+-      task_id: opts.task_envelope.task.data.id,
++      task_id: opts.task_envelope.task.metadata.task_id,
+       blueprint: opts.blueprint,
+     }),
+     snapshot: {
+@@ -165,11 +176,12 @@ export function buildAgentWorkOrderSourceManifest(opts: {
+       source: stableSourcePath(entry.source, execution_context.repo.git_root),
+     }))
+     .toSorted((left, right) => left.id.localeCompare(right.id));
+-  const taskDoc = taskEnvelope.task.doc;
+-  const verifySteps = verifyStepLines(extractDocSection(taskDoc, "Verify Steps") ?? "");
++  const verifySteps = verifyStepLines(
++    episodeSectionText({ task_envelope: taskEnvelope, section: "Verify Steps" }),
++  );
+   const taskReadme = taskEnvelope.task.readme_path
+     ? stableSourcePath(taskEnvelope.task.readme_path, execution_context.repo.git_root)
+-    : `${taskEnvelope.repository.workflow_dir}/${taskEnvelope.task.task_id}/README.md`;
++    : `${taskEnvelope.repository.workflow_dir}/${taskEnvelope.task.metadata.task_id}/README.md`;
+   return {
+     schema_version: 1,
+     source_paths: uniqueSorted([
+@@ -182,7 +194,7 @@ export function buildAgentWorkOrderSourceManifest(opts: {
+     prompt_modules: promptModules,
+     blueprint_context: blueprintContext,
+     verification_context: {
+-      task_verify: uniqueSorted(taskEnvelope.task.data.verify),
++      task_verify: uniqueSorted(taskEnvelope.task.verification.commands),
+       verify_steps: verifySteps,
+     },
+   };
+@@ -199,7 +211,7 @@ function acceptanceCriteria(opts: {
+   const descriptions =
+     candidates.length > 0
+       ? candidates
+-      : [`Complete the approved task outcome for ${opts.task_envelope.task.data.title}.`];
++      : [`Complete the approved task outcome for ${opts.task_envelope.task.narrative.title}.`];
+   return descriptions.slice(0, 64).map((description, index) => ({
+     id: `acceptance-${index + 1}`,
+     description: compactText(description, "Complete the approved task outcome."),
+@@ -300,8 +312,8 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     execution_context: executionContext,
+     route_decision: decision,
+   } = opts.prepared;
+-  const task = taskEnvelope.task.data;
+-  const role = workOrderRole(task.owner);
++  const task = taskEnvelope.task;
++  const role = workOrderRole(task.metadata.owner ?? "");
+   const stateFingerprint = structuredClone(decision.workflowStep.preconditionFingerprint);
+   const mutationPath = decision.oracle.mutationPathHint;
+   const canMutate = decision.executionPacket.safeToMutate && mutationPath !== null;
+@@ -315,7 +327,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
+         "workspace_write",
+       ]
+     : ["repository_read", "git_read", "run_checks", "report_result", "report_blocker"];
+-  const summary = extractDocSection(taskEnvelope.task.doc, "Summary") ?? task.description;
++  const summary =
++    episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
++    task.narrative.description;
+   const verification = verificationIntent({ source_manifest: opts.source_manifest });
+   const stopRules = uniqueSorted([
+     ...decision.executionPacket.mustNot,
+@@ -326,15 +340,15 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     schema_version: AGENT_WORK_ORDER_SCHEMA_VERSION,
+     kind: AGENT_WORK_ORDER_KIND,
+     work_order_id: deterministicWorkOrderId({
+-      task_id: task.id,
++      task_id: task.metadata.task_id,
+       role,
+       fingerprint: stateFingerprint,
+     }),
+     role,
+     task: {
+-      id: task.id,
+-      revision: task.revision ?? null,
+-      objective: compactText(summary, task.title),
++      id: task.metadata.task_id,
++      revision: task.metadata.revision,
++      objective: compactText(summary, task.narrative.title),
+       acceptance_criteria: acceptanceCriteria({
+         task_envelope: taskEnvelope,
+         source_manifest: opts.source_manifest,
+@@ -344,7 +358,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     state_fingerprint: stateFingerprint,
+     state_fingerprint_policy: AGENT_WORK_ORDER_STATE_FINGERPRINT_POLICY,
+     authority: {
+-      mutation_scope: task.mutation_scope ?? "unknown",
++      mutation_scope: task.metadata.mutation_scope ?? "unknown",
+       writable_roots: canMutate ? [mutationPath] : [],
+       protected_paths: protectedPaths(executionContext),
+       allowed_tool_classes: allowedToolClasses,
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+index a6836a731..6643b3773 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+@@ -427,7 +427,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
+     };
+ 
+     const taskPrepared = await prepare();
+-    const frozenTitle = taskPrepared.task_envelope.task.data.title;
++    const frozenTitle = taskPrepared.task_envelope.task.narrative.title;
+     const persistedTask = await commandCtx.taskBackend.getTask(taskId);
+     expect(persistedTask).toBeTruthy();
+     await commandCtx.taskBackend.writeTask({
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.ts b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+index e41118a5b..ed416951a 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+@@ -167,7 +167,7 @@ export async function prepareAgentWorkOrder(opts: {
+     });
+     const basePrompts = await collectRunnerBasePrompts({
+       git_root: executionContext.repo.git_root,
+-      owner_id: taskEnvelope.task.data.owner,
++      owner_id: taskEnvelope.source_task.owner,
+       agents_dir: executionContext.harness.workflow.paths.agents_dir,
+       task: taskEnvelope.task,
+       command: opts.runner_command ?? "task run",
+diff --git a/packages/agentplane/src/runner/usecases/task-run-active-claim-runtime.ts b/packages/agentplane/src/runner/usecases/task-run-active-claim-runtime.ts
+index 953797d5b..cd0f820ff 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-active-claim-runtime.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-active-claim-runtime.ts
+@@ -77,7 +77,7 @@ export async function recordActiveClaimCleanupFailure(opts: {
+ }): Promise<TaskRunnerActiveClaimCleanupDiagnostic> {
+   const diagnostic = cleanupDiagnostic(opts.error);
+   const taskId =
+-    opts.bundle?.task?.task_id ??
++    opts.bundle?.task?.metadata.task_id ??
+     (opts.bundle?.target.kind === "task" ? opts.bundle.target.task_id : null);
+   if (!opts.bundle || !taskId) return diagnostic;
+   try {
+diff --git a/packages/agentplane/src/runner/usecases/task-run-authority.ts b/packages/agentplane/src/runner/usecases/task-run-authority.ts
+index a746fe9bf..2f73b21b5 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-authority.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-authority.ts
+@@ -25,7 +25,7 @@ export function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): vo
+   const sandboxPolicy =
+     bundle.execution.sandbox_policy ??
+     resolveRunnerSandboxPolicy({
+-      task: bundle.task?.data,
++      task: bundle.task?.metadata,
+       recipe: bundle.recipe,
+     });
+ 
+@@ -155,13 +155,13 @@ export async function assertRunnerCheckoutAuthority(opts: {
+ export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
+   const task = bundle.task;
+   if (!task) return;
+-  const status = normalizeTaskStatus(task.data.status);
++  const status = normalizeTaskStatus(task.metadata.status);
+   if (status === "DOING") return;
+   throw new CliError({
+     exitCode: 2,
+     code: "E_USAGE",
+     message:
+-      `${task.task_id}: runner execution requires task status DOING ` +
+-      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.task_id} --author <ROLE> --body "Start: ..."\` first).`,
++      `${task.metadata.task_id}: runner execution requires task status DOING ` +
++      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.metadata.task_id} --author <ROLE> --body "Start: ..."\` first).`,
+   });
+ }
+diff --git a/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.security.test.ts b/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.security.test.ts
+index 0d1724295..747ca815b 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.security.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.security.test.ts
+@@ -26,7 +26,7 @@ describe("runner blueprint prepared-artifact security", () => {
+         setRunnerBundleRunDir(bundle, runDir);
+         const resolved = resolveBlueprint({
+           input: {
+-            taskId: bundle.task!.task_id,
++            taskId: bundle.task!.metadata.task_id,
+             tags: ["code"],
+             taskKind: "code",
+             mutation: "code",
+@@ -36,7 +36,7 @@ describe("runner blueprint prepared-artifact security", () => {
+         bundle.blueprint = buildBlueprintPlanArtifact({
+           resolved,
+           input: {
+-            taskId: bundle.task!.task_id,
++            taskId: bundle.task!.metadata.task_id,
+             tags: ["code"],
+             taskKind: "code",
+             mutation: "code",
+diff --git a/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.ts b/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.ts
+index 89e728f30..05ef661aa 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-blueprint-plan.ts
+@@ -108,7 +108,7 @@ export function resolveRunnerBlueprintPlan(opts: {
+   basePrompts: readonly RunnerPromptBlock[];
+ }): Promise<RunnerContextBundle["blueprint"]> {
+   const input = blueprintResolveInputFromTask({
+-    task: opts.taskEnvelope.task.data,
++    task: opts.taskEnvelope.source_task,
+     config: opts.config,
+   });
+   const manifest = recipeManifestFromContext(opts.recipe);
+diff --git a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+index 5fb576474..c47ab154f 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-bootstrap.ts
+@@ -22,7 +22,7 @@ function truncateGoalText(value: string, maxLength = 320): string {
+ 
+ function renderCodexGoalLine(bundle: RunnerContextBundle, targetLabel: string): string | null {
+   if (bundle.execution.adapter_id !== "codex") return null;
+-  const taskTitle = compactGoalText(bundle.task?.data.title ?? "");
++  const taskTitle = compactGoalText(bundle.task?.narrative.title ?? "");
+   const recipeGoal =
+     typeof bundle.recipe?.scenario?.goal === "string"
+       ? compactGoalText(bundle.recipe.scenario.goal)
+diff --git a/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts b/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+index 61bf4c75a..8bf377864 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+@@ -260,7 +260,7 @@ describe("context task runner integration", () => {
+       source: "role_default",
+       role: "CURATOR",
+     });
+-    expect(executed.bundle.task?.data.owner).toBe("CURATOR");
++    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
+     expect(executed.bundle.execution.write_scope).toMatchObject({
+       mutation_scope: "context",
+       writable_roots: [".agentplane/context", "context"],
+@@ -318,7 +318,7 @@ describe("context task runner integration", () => {
+       source: "role_default",
+       role: "CURATOR",
+     });
+-    expect(executed.bundle.task?.data.owner).toBe("CURATOR");
++    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
+     expect(executed.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
+       requested: "workspace-write",
+       effective: "workspace-write",
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts
+index 29d5d7437..994367549 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.ts
+@@ -68,7 +68,7 @@ async function appendCancellationRefusal(opts: {
+     type: "runner_cancel_refused",
+     message: opts.error.message,
+     data: opts.error.context ?? {
+-      task_id: opts.loaded.bundle.task?.task_id ?? null,
++      task_id: opts.loaded.bundle.task?.metadata.task_id ?? null,
+       run_id: opts.loaded.invocation.run_id,
+       pid: opts.pid,
+     },
+@@ -88,7 +88,7 @@ async function recoverTerminalActiveClaim(opts: {
+   const lookup = {
+     git_root: opts.loaded.bundle.repository.git_root,
+     workflow_dir: opts.loaded.bundle.repository.workflow_dir,
+-    task_id: opts.loaded.bundle.task?.task_id ?? "",
++    task_id: opts.loaded.bundle.task?.metadata.task_id ?? "",
+     run_id: opts.loaded.invocation.run_id,
+   };
+   const active = await readTaskRunnerActiveClaim(lookup);
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts
+index f6380d23f..98d92025e 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay-security.test.ts
+@@ -303,7 +303,7 @@ describe("task-run fresh replay security", () => {
+         destinationRunId: `run-${action}-current-authority`,
+       });
+ 
+-      expect(replayed.bundle.task?.data.owner).toBe("REVIEWER");
++      expect(replayed.bundle.task?.metadata.owner).toBe("REVIEWER");
+       expect(replayed.bundle.execution.sandbox_policy).toMatchObject({
+         requested: "read-only",
+         source: "role_default",
+diff --git a/packages/agentplane/src/runner/usecases/task-run-replay-anchor.ts b/packages/agentplane/src/runner/usecases/task-run-replay-anchor.ts
+index 767a1ce0d..746e33499 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-replay-anchor.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-replay-anchor.ts
+@@ -64,7 +64,7 @@ export async function persistReplayAnchorBeforeExecution(opts: {
+       : opts.provenance.action === "retry"
+         ? "runner_retry_created"
+         : "runner_effect_resume_created";
+-  const expectedTaskRevision = opts.bundle.task?.data.revision;
++  const expectedTaskRevision = opts.bundle.task?.metadata.revision;
+   if (
+     typeof expectedTaskRevision !== "number" ||
+     !Number.isInteger(expectedTaskRevision) ||
+diff --git a/packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts b/packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts
+index f2357eb0d..8275b4fdf 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts
+@@ -543,7 +543,7 @@ describe("task-run state fingerprint precondition", () => {
+       mode: "execute",
+       run_id: "run-state-fingerprint-replay-cas",
+     });
+-    const preparedRevision = prepared.bundle.task?.data.revision;
++    const preparedRevision = prepared.bundle.task?.metadata.revision;
+     if (typeof preparedRevision !== "number") {
+       throw new Error("Prepared task revision missing.");
+     }
+diff --git a/packages/agentplane/src/runner/usecases/task-run.ts b/packages/agentplane/src/runner/usecases/task-run.ts
+index 8125d6eb8..e4e3e3939 100644
+--- a/packages/agentplane/src/runner/usecases/task-run.ts
++++ b/packages/agentplane/src/runner/usecases/task-run.ts
+@@ -176,12 +176,12 @@ export async function prepareTaskRunnerExecution(opts: {
+     run_id,
+   });
+   const sandbox_policy = resolveRunnerSandboxPolicy({
+-    task: taskEnvelope.task.data,
++    task: taskEnvelope.source_task,
+     recipe: opts.recipe,
+     danger_authority: opts.danger_authority,
+     execution_role:
+       opts.execution_role ??
+-      taskEnvelope.task.data.owner ??
++      taskEnvelope.source_task.owner ??
+       route_decision.executionPacket.recommendedRole ??
+       undefined,
+     requested_sandbox: opts.sandbox_override,
+@@ -190,7 +190,7 @@ export async function prepareTaskRunnerExecution(opts: {
+   const write_scope = resolveRunnerWriteScopePolicy({
+     sandbox: sandbox_policy,
+     protected_path_groups: executionContext.harness.policy.protected_paths,
+-    task: taskEnvelope.task.data,
++    task: taskEnvelope.source_task,
+     recipe: opts.recipe,
+   });
+   const bundle: RunnerContextBundle = {
+diff --git a/packages/agentplane/src/runner/write-scope.test.ts b/packages/agentplane/src/runner/write-scope.test.ts
+index 51a6a0581..5fe977a67 100644
+--- a/packages/agentplane/src/runner/write-scope.test.ts
++++ b/packages/agentplane/src/runner/write-scope.test.ts
+@@ -25,7 +25,7 @@ function observedFilesystem(changed_paths: string[] = []): RunnerProtectedFilesy
+ 
+ function enforcedBundle() {
+   const bundle = makeRunnerContextBundle();
+-  bundle.task!.data.mutation_scope = "code";
++  bundle.task!.metadata.mutation_scope = "code";
+   bundle.execution.write_scope = {
+     mutation_scope: "code",
+     writable_roots: ["."],
+@@ -69,7 +69,7 @@ describe("runner actual write scope", () => {
+ 
+   it("rejects an unreported write outside narrow context roots", () => {
+     const bundle = enforcedBundle();
+-    bundle.task!.data.mutation_scope = "context";
++    bundle.task!.metadata.mutation_scope = "context";
+     bundle.execution.write_scope = {
+       mutation_scope: "context",
+       writable_roots: [".agentplane/context", "context"],
+@@ -94,7 +94,7 @@ describe("runner actual write scope", () => {
+ 
+   it("does not reinterpret a literal backslash in an observed Git path as a separator", () => {
+     const bundle = enforcedBundle();
+-    bundle.task!.data.mutation_scope = "context";
++    bundle.task!.metadata.mutation_scope = "context";
+     bundle.execution.write_scope = {
+       mutation_scope: "context",
+       writable_roots: ["context"],
+diff --git a/packages/testkit/src/runner.ts b/packages/testkit/src/runner.ts
+index e1ec1010a..c61db5832 100644
+--- a/packages/testkit/src/runner.ts
++++ b/packages/testkit/src/runner.ts
+@@ -146,23 +146,62 @@ export function makeRunnerContextBundle(
+       ...opts.repository,
+     },
+     task: {
+-      task_id: taskId,
+-      data: {
+-        id: taskId,
+-        title,
+-        description,
++      schema_version: 1,
++      kind: "agentplane.task_episode_view",
++      metadata: {
++        task_id: taskId,
++        revision: null,
+         status,
+-        priority: opts.priority ?? "med",
+         owner: opts.owner ?? "CODER",
+-        depends_on: [],
++        priority: opts.priority ?? "med",
+         tags: opts.tags ?? ["code"],
+-        verify: [],
++        task_kind: null,
++        mutation_scope: null,
++        blueprint_request: null,
++      },
++      narrative: {
++        title,
++        description,
++        sections: Object.entries(opts.sections ?? { Summary: "" }).map(([name, text]) => ({
++          name,
++          text,
++          required: false,
++        })),
++      },
++      verification: { commands: [] },
++      section_policy: {
++        source: "task_document_schema",
++        required_sections: [],
++      },
++      history: {
++        comments: [],
++        events: [],
++      },
++      compaction: {
++        sections: {
++          original_bytes: 0,
++          emitted_bytes: 0,
++          original_count: 0,
++          emitted_count: 0,
++          truncated: false,
++        },
++        comments: {
++          original_bytes: 0,
++          emitted_bytes: 0,
++          original_count: 0,
++          emitted_count: 0,
++          truncated: false,
++        },
++        events: {
++          original_bytes: 0,
++          emitted_bytes: 0,
++          original_count: 0,
++          emitted_count: 0,
++          truncated: false,
++        },
++        omissions: [],
++        serialized: { source_bytes: 0, emitted_bytes: 0, duplicate_bytes_removed: 0 },
+       },
+-      frontmatter: { id: taskId, title },
+-      doc: opts.doc ?? "## Summary\n",
+-      sections: opts.sections ?? { Summary: "" },
+-      comments: [],
+-      events: [],
+       ...opts.task,
+     },
+     execution,
+diff --git a/scripts/baselines/trust-boundary-violations.json b/scripts/baselines/trust-boundary-violations.json
+index c396379aa..7c4a84676 100644
+--- a/scripts/baselines/trust-boundary-violations.json
++++ b/scripts/baselines/trust-boundary-violations.json
+@@ -109,96 +109,6 @@
+     }
+   ],
+   "violations": [
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/context/task-context.ts:builder:assembleRunnerTaskContext.data+comments:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:5160a3833a16:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/context/task-context.ts",
+-      "locator": "builder:assembleRunnerTaskContext.data+comments:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:5160a3833a16:1",
+-      "rationale": "runner task builder emits TaskData beside duplicate comments projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/context/task-context.ts:builder:assembleRunnerTaskContext.data+doc:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:f2b88fa268c3:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/context/task-context.ts",
+-      "locator": "builder:assembleRunnerTaskContext.data+doc:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:f2b88fa268c3:1",
+-      "rationale": "runner task builder emits TaskData beside duplicate doc projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/context/task-context.ts:builder:assembleRunnerTaskContext.data+events:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:2a25e49e1aef:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/context/task-context.ts",
+-      "locator": "builder:assembleRunnerTaskContext.data+events:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:2a25e49e1aef:1",
+-      "rationale": "runner task builder emits TaskData beside duplicate events projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/context/task-context.ts:builder:assembleRunnerTaskContext.data+frontmatter:ast:FunctionDeclaration:assembleRunnerTaskContext:1:ShorthandPropertyAssignment:11bb4a852699:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/context/task-context.ts",
+-      "locator": "builder:assembleRunnerTaskContext.data+frontmatter:ast:FunctionDeclaration:assembleRunnerTaskContext:1:ShorthandPropertyAssignment:11bb4a852699:1",
+-      "rationale": "runner task builder emits TaskData beside duplicate frontmatter projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/context/task-context.ts:builder:assembleRunnerTaskContext.data+sections:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:579be85e6a0a:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/context/task-context.ts",
+-      "locator": "builder:assembleRunnerTaskContext.data+sections:ast:FunctionDeclaration:assembleRunnerTaskContext:1:PropertyAssignment:579be85e6a0a:1",
+-      "rationale": "runner task builder emits TaskData beside duplicate sections projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+comments:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:a53ca7e78138:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/types/context.ts",
+-      "locator": "type:RunnerTaskContext.data+comments:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:a53ca7e78138:1",
+-      "rationale": "RunnerTaskContext serializes TaskData beside duplicate comments projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+doc:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:5fc30f1ebcc2:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/types/context.ts",
+-      "locator": "type:RunnerTaskContext.data+doc:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:5fc30f1ebcc2:1",
+-      "rationale": "RunnerTaskContext serializes TaskData beside duplicate doc projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+events:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:81dc6236bc8d:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/types/context.ts",
+-      "locator": "type:RunnerTaskContext.data+events:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:81dc6236bc8d:1",
+-      "rationale": "RunnerTaskContext serializes TaskData beside duplicate events projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+frontmatter:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:1d872e1c44f3:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/types/context.ts",
+-      "locator": "type:RunnerTaskContext.data+frontmatter:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:1d872e1c44f3:1",
+-      "rationale": "RunnerTaskContext serializes TaskData beside duplicate frontmatter projection"
+-    },
+-    {
+-      "violation_id": "trust.no-duplicate-runner-task-representation:packages/agentplane/src/runner/types/context.ts:type:RunnerTaskContext.data+sections:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:4df0624af752:1",
+-      "rule_id": "trust.no-duplicate-runner-task-representation",
+-      "rf_owners": ["RF-21"],
+-      "owner_task_ids": ["202607221850-9C9WBP"],
+-      "path": "packages/agentplane/src/runner/types/context.ts",
+-      "locator": "type:RunnerTaskContext.data+sections:ast:TypeAliasDeclaration:RunnerTaskContext:1:PropertySignature:4df0624af752:1",
+-      "rationale": "RunnerTaskContext serializes TaskData beside duplicate sections projection"
+-    },
+     {
+       "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:subprocess:runAgentplaneStep:ast:module:FunctionDeclaration:55a1dc9cd665:1",
+       "rule_id": "trust.no-rendered-command-orchestration",

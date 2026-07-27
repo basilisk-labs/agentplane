@@ -6,14 +6,14 @@ Created: 2026-07-27T21:31:31.669Z
 
 - Task: `202607221850-9C9WBP`
 - Title: Normalize runner task inputs into TaskEpisodeView
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie`
 - Canonical task record: `.agentplane/tasks/202607221850-9C9WBP/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified 5f48099a: TaskEpisodeView serializes one task view; required context fails or records an omission; localized schema headings retain priority. Passed focused vitest (47 tests), guards, typecheck, test:critical, and ci:contract.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

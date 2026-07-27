@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The task transport has one agent-facing representation: TaskEpisodeView. source_task is not assigned to RunnerContextBundle.task or AgentWorkOrderV2.task, and focused transport/serialization tests cover the removed legacy fields.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-222820036-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Required-section handling is explicit: oversized required content fails with E_VALIDATION, absent/empty required content emits a typed omission, and configured non-English headings are prioritized structurally.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-222820036-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The active task-document schema is the only available structural source; the current blueprint contract does not yet author per-role section metadata."
+  ]
+}
