@@ -20,7 +20,12 @@ export function validateEvaluatorSgrResult(
   const result = requireRecord(raw, field);
   requireSchemaVersion(result, field);
   if (result.kind !== "evaluator_result") throw invalid(`${field}.kind`, '"evaluator_result"');
-  const verdict = requireEnum(result.verdict, `${field}.verdict`, ["pass", "rework", "blocked"]);
+  const verdict = requireEnum(result.verdict, `${field}.verdict`, [
+    "pass",
+    "rework",
+    "blocked",
+    "human_review",
+  ]);
   const findings = requireArray(result.findings, `${field}.findings`, (entry, findingField) => {
     const finding = requireRecord(entry, findingField);
     return {
@@ -42,6 +47,7 @@ export function validateEvaluatorSgrResult(
   if ((verdict === "rework" || verdict === "blocked") && findings.length === 0) {
     throw invalid(`${field}.findings`, "non-empty array for rework or blocked verdict");
   }
+  const recoveryContext = optionalString(result.recovery_context, `${field}.recovery_context`);
   return {
     schema_version: SGR_CONTRACT_SCHEMA_VERSION,
     kind: "evaluator_result",
@@ -53,7 +59,7 @@ export function validateEvaluatorSgrResult(
       result.hidden_assumptions,
       `${field}.hidden_assumptions`,
     ),
-    recovery_context: optionalString(result.recovery_context, `${field}.recovery_context`),
+    recovery_context: recoveryContext,
   };
 }
 

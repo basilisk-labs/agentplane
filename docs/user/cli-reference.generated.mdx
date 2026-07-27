@@ -206,6 +206,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [context wiki report](#context-wiki-report)
 - Evaluators
   - [evaluator apply](#evaluator-apply)
+  - [evaluator execute](#evaluator-execute)
   - [evaluator list](#evaluator-list)
   - [evaluator prepare](#evaluator-prepare)
   - [evaluator run](#evaluator-run)
@@ -3956,6 +3957,21 @@ Options:
 - `--work-order <path>`: Prepared EvaluatorWorkOrder JSON path.
 - `--result <path>`: EVALUATOR-produced EvaluatorSgrResult JSON path.
 - `--json`: Emit machine-readable recorded paths. (default=false)
+
+### evaluator execute
+
+Run one read-only EVALUATOR provider episode and apply its typed result.
+
+Usage:
+
+```text
+agentplane evaluator execute <task-id> [options]
+```
+
+Options:
+
+- `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
+- `--json`: Emit machine-readable episode and recorded artifact paths. (default=false)
 
 ### evaluator list
 

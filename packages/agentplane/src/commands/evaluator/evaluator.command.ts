@@ -12,8 +12,10 @@ import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import {
+  evaluatorExecuteSpec,
   evaluatorSpec,
   type EvaluatorApplyParsed,
+  type EvaluatorExecuteParsed,
   type EvaluatorListParsed,
   type EvaluatorPrepareParsed,
   type EvaluatorRunParsed,
@@ -24,9 +26,14 @@ import {
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
+import {
+  executePreparedEvaluatorEpisode,
+  writeEvaluatorEpisodeReceipt,
+} from "./evaluator-episode.js";
 
 export {
   evaluatorApplySpec,
+  evaluatorExecuteSpec,
   evaluatorListSpec,
   evaluatorPrepareSpec,
   evaluatorRunSpec,
@@ -283,6 +290,45 @@ export const runEvaluatorApply: CommandHandler<EvaluatorApplyParsed> = async (ct
           : null,
       report: applied.report_path,
       result: applied.result_path,
+      recorded: true,
+    },
+  });
+  return 0;
+};
+
+export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async (ctx, p) => {
+  const { command, task, evaluator } = await loadEvaluatorReviewContext({
+    ctx,
+    taskId: p.taskId,
+    evaluatorId: p.evaluator,
+  });
+  const prepared = await prepareEvaluatorReview({
+    ctx: command,
+    task,
+    evaluator,
+    provenance: "evaluator_supplied",
+  });
+  const episode = await executePreparedEvaluatorEpisode({ ctx: command, prepared });
+  const currentTask = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+  const applied = await applyEvaluatorSgrReview({
+    ctx: command,
+    task: currentTask,
+    workOrderPath: prepared.work_order_path,
+    result: episode.result,
+  });
+  const receiptPath = await writeEvaluatorEpisodeReceipt({ prepared, receipt: episode.receipt });
+  printEvaluatorPayload({
+    json: p.json,
+    title: `evaluator execute ${p.taskId}`,
+    payload: {
+      work_order_id: prepared.work_order.work_order_id,
+      evaluator: prepared.work_order.evaluator.id,
+      provider: episode.receipt.provider,
+      sandbox: episode.receipt.authority.sandbox,
+      verdict: episode.result.verdict,
+      report: applied.report_path,
+      result: applied.result_path,
+      receipt: relativeToProject(command.resolvedProject.gitRoot, receiptPath),
       recorded: true,
     },
   });

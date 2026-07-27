@@ -548,8 +548,8 @@ export async function assertWorkOrderCurrent(opts: {
 }
 
 export function qualityState(
-  verdict: Exclude<EvaluatorRunVerdict, "human_review">,
-): "pass" | "rework" | "blocked" {
+  verdict: EvaluatorRunVerdict,
+): "pass" | "rework" | "blocked" | "human_review" {
   return verdict;
 }
 
