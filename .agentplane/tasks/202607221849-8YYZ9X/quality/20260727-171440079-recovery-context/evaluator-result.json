@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The rework updates only the critical test expectation to the generated candidate: source_tasks includes RF-12b, and the CLI/context surface digests match the approved candidate.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-171440079-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted CI must still independently validate the final PR head."
+  ]
+}
