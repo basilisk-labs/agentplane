@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221849-TBTX8X-8ba66e98522e69627d43f93d",
+  "prepared_at": "2026-07-27T15:05:32.041Z",
+  "task": {
+    "id": "202607221849-TBTX8X",
+    "revision": 35,
+    "objective": "Prepare and apply typed evaluator results\n\nRF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence.",
+    "acceptance_criteria": [
+      "bun run lifecycle:invariants",
+      "bun run schemas:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: EvaluatorWorkOrder preparation, existing EvaluatorSgrResult validation, typed in-process prepare/apply results, read-only authority, frozen evidence, staleness rejection, finding evidence refs, and compatibility recording facade.\n- Out of scope: launching/calibrating the EVALUATOR model episode, which is the next task.",
+      "1. Prepare evaluator input from immutable acceptance, revision, SHA, observed receipt, diff, policy, blueprint, and knowledge refs.\n2. Return typed use-case data rather than reading/writing verdicts through CLI args/stdout.\n3. Validate EvaluatorSgrResult schema, evidence refs, uncertainty, and action recommendations.\n4. Apply only against the exact frozen fingerprint and reject evaluator attempts to mutate implementation.\n5. Preserve an explicit human-record compatibility path with provenance.",
+      "1. Prepare evaluator evidence for code, docs, metadata-only, and context tasks. Expected: frozen revision/SHA, actual diff/checks, acceptance, and semantic criteria are complete.\n2. Apply valid, stale, missing-evidence, and mutation-attempt results. Expected: only the valid read-only result changes quality state.\n3. Call the use cases in-process. Expected: no stdout capture or rendered shell command is required.\n4. Record a human verdict through compatibility mode. Expected: it is distinguishable from an EVALUATOR result.\n5. Run schema, evaluator, lifecycle, and type checks."
+    ]
+  },
+  "evaluated_sha": "51489229c618f5c5a66d34f763f26339a3be2d47",
+  "blueprint_digest": "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221849-TBTX8X/README.md",
+      "sha256": "sha256:c545da972cab21755fae9a8dc826a26f2989cd5d641b9fa06cdcaa5beabe01fd",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-150532041-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:7c02dec27d9db76cd1ac97d9e50dd2df0250a6df595bb0f3385034c9b747caba",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-150532041-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:70937b18323a51342018667350756744dc4060667bff0fba47dd51489da77666",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-150532041-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:08581c5f63660be76cc14dd84320f4e0e9145dc443b22eeefa34a83c74db0e75",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

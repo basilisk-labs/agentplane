@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "finding.legacy-compatibility-regression",
+      "severity": "low",
+      "summary": "The direct compatibility regression preserves evaluator-supplied reviews when legacy callers omit reworkContext; the facade defaults the optional field without changing the resulting pass record.",
+      "broken_invariant": "Legacy evaluator run inputs must remain recordable while typed prepare/apply enforcement stays strict.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-150532041-recovery-context/evaluator-diff.patch"
+        },
+        {
+          "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-150532041-recovery-context/evaluator-observed-checks.json"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Hosted CI on the refreshed PR head remains the integration gate."
+}

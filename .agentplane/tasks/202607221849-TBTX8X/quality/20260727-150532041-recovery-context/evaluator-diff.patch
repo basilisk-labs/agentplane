@@ -1,0 +1,110 @@
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+index be3feb180..c5e5af017 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+@@ -4,9 +4,9 @@
+  .../evaluator/evaluator-quality-artifacts.ts       |  46 +-
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+- .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
++ .../evaluator/evaluator-run.command.test.ts        | 201 +++++++-
+  .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
+  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1537 insertions(+), 221 deletions(-)
++ 11 files changed, 1569 insertions(+), 221 deletions(-)
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+index 022099f4a..b1c7dd31c 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+@@ -40,12 +40,12 @@ reviewed compatibility ratchet passed.
+  .../evaluator/evaluator-quality-artifacts.ts       |  46 +-
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+- .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
++ .../evaluator/evaluator-run.command.test.ts        | 201 +++++++-
+  .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
+  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1537 insertions(+), 221 deletions(-)
++ 11 files changed, 1569 insertions(+), 221 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+index 065388b4a..5615f92cb 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results",
+   "created_at": "2026-07-27T12:39:26.919Z",
+-  "diffstat_sha256": "sha256:c421dc5f2ae73eb703c17788069b219317ec7c07e741ebd088872bc70c254b33",
++  "diffstat_sha256": "sha256:d55c0a5572298f491c0a8af8c2a8e85986697398f89f7009fe7b83d6ef61b32a",
+   "last_verified_at": "2026-07-27T13:56:01.444Z",
+   "last_verified_diffstat_sha256": "sha256:2b586e04c68639c03af63668eacb6af3e2a9f62b3c7b69345c74803a3492968d",
+   "pr_number": 4642,
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+index c9db0d7c6..c993634a7 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+@@ -35,12 +35,12 @@ Created: 2026-07-27T12:39:26.919Z
+  .../evaluator/evaluator-quality-artifacts.ts       |  46 +-
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+- .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
++ .../evaluator/evaluator-run.command.test.ts        | 201 +++++++-
+  .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
+  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1537 insertions(+), 221 deletions(-)
++ 11 files changed, 1569 insertions(+), 221 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index 12845a5a1..429797494 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -228,6 +228,38 @@ describe("evaluator run command", () => {
+     ).rejects.toThrow("EVALUATOR rework requires at least one --finding.");
+   });
+ 
++  it("keeps the evaluator compatibility facade tolerant of a legacy input without reworkContext", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202605240900-EV15";
++    await addTask(root, taskId);
++    await commitPath(root, "src/review-target.txt", "review target", "feat: review target");
++
++    await runEvaluatorRun(
++      { cwd: root, rootOverride: undefined },
++      {
++        taskId,
++        evaluator: "recovery-context",
++        provenance: "evaluator_supplied",
++        verdict: "pass",
++        summary: "The evaluator reviewed the committed target.",
++        findings: ["The evaluator compatibility facade preserved the supplied review."],
++        evidenceRefs: ["src/review-target.txt"],
++        missingTests: [],
++        hiddenAssumptions: [],
++        residualRisks: [],
++        json: false,
++        record: true,
++      },
++    );
++
++    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
++    expect(stored.frontmatter.quality_review).toMatchObject({
++      provenance: "evaluator_supplied",
++      state: "pass",
++    });
++  });
++
+   it("preserves supplied review values with explicit human provenance", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
