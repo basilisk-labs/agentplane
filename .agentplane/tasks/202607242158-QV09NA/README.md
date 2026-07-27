@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -50,20 +50,20 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T06:38:59.242Z"
+  updated_at: "2026-07-27T06:46:25.636Z"
   updated_by: "EVALUATOR"
-  note: "The implementation preserves the no-duplicate-execution boundary: typed immutable intents bind authority, fingerprints and claim generation; only the specialised stale-claim path retires a resolved effect; and not_applied resumes under a fresh operation key."
-  evaluated_sha: "1bf26e0701276bc5e4bd7038524edfb2ddb40350"
+  note: "The rework commit changes only Prettier layout in the resolution test; it introduces no semantic or execution-path change."
+  evaluated_sha: "90d33ac632e4181385fc8cf59b37c8badc3fa1d2"
   blueprint_digest: "75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f"
   evidence_refs:
     - ".agentplane/tasks/202607242158-QV09NA/README.md"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-063859242-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-063859242-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-063859242-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-064625636-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-064625636-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-064625636-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json"
     - "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
   findings:
-    - "Reviewed the durable resolution, active-claim retirement and replay paths against the task criteria. Generic recovery remains blocked for unresolved effects, identical concurrent resolution converges, and an opposing verdict conflicts before provider invocation."
+    - "Reviewed the exact diff and reran formatter plus the effect-resolution suite. The hosted failure is addressed without altering authority binding, retirement, or replay behaviour."
 commit:
   hash: "1bf26e0701276bc5e4bd7038524edfb2ddb40350"
   message: "✨ QV09NA effect-in-doubt: resolve uncertain runner effects"
