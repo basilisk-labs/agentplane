@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on:
@@ -41,27 +41,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T18:02:13.276Z"
+  updated_at: "2026-07-27T19:41:04.517Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "e40a266e7f570792354831cbc2625ee0a67579f8"
+  evaluated_sha: "fd7d2cf98e9abc425a6ddf3b065bd4629f79c702"
   blueprint_digest: "4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f"
   evidence_refs:
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221849-8YYZ9X/README.md"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-180213038-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-194103600-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The six helpers reported by Knip are internal implementation details; removing their exports preserves the externally used EvaluatorEpisodeProvider, EvaluatorEpisodeReceipt, executePreparedEvaluatorEpisode, and writeEvaluatorEpisodeReceipt contracts."
+    - "The prior hosted failure was isolated to concurrent recovery-lease reads outside RF-12b semantics; the merged bounded retry preserves strict stable-file validation and the exact failed effect-resolution scenario now passes."
 commit:
   hash: "92231a093805168013038e8a8a4ba733e48271a0"
   message: "📚 8YYZ9X task: record static-gate closure authority"
