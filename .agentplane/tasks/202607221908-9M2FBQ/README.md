@@ -1,10 +1,11 @@
 ---
 id: "202607221908-9M2FBQ"
 title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -72,8 +73,8 @@ quality_review:
     - "No product-code path differs from the rebased main lineage; the task diff is limited to milestone evidence and PR metadata."
     - "The required publish-or-do-not-publish decision is now explicit: alpha.2 is deferred to a dedicated release task after hosted confirmation."
 commit:
-  hash: "5b71fa6261472160e6b37bb952e72125494e3a59"
-  message: "🧭 9M2FBQ task: record alpha decision rework"
+  hash: "7aa5af3d0e340ccf67d40172227c6dafd5cfc8a2"
+  message: "🧭 9M2FBQ task: approve alpha qualification review"
 comments:
   -
     author: "TESTER"
@@ -84,6 +85,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation rework: recorded the explicit do-not-publish decision for alpha.2; no product code changed."
+  -
+    author: "TESTER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -112,9 +116,16 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework: recorded the explicit do-not-publish decision for alpha.2; no product code changed."
+  -
+    type: "status"
+    at: "2026-07-27T21:22:23.432Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T21:21:03.445Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-27T21:22:23.432Z"
+doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
   Summary: |-
@@ -196,6 +207,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:33df9125a48875c4bbde39a49778a388b9aa8dedcd3520f41a2bcc089ac6b31a"
+      -
+        actor: "USER"
+        at: "2026-07-27T21:22:02.919Z"
+        authorityDigest: "sha256:847f4b66e89053f4eaadafbcdf8ce358254241ecc31c17ff5de9cab54cb49246"
+        digest: "sha256:e31c13aa2a9c8fd6366c291c076a81d2af8fcd3979bf46c3ce6b055428aa2853"
+        operationDigest: "sha256:150a02d90db4c709f51dc1896d0b8a81eaa18590dca404a4be605a55c9795b98"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:c05ab9ca527235d399d88398a7a5642a13e51678fa9856f83c16f779b0247316"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:8837e63ec4deee5b8c49efdb5ced2bd495456e867214fadc586a3152149246c0"
     grants:
       -
         actor: "USER"
@@ -210,7 +234,23 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:33df9125a48875c4bbde39a49778a388b9aa8dedcd3520f41a2bcc089ac6b31a"
         stateScopeDigest: "sha256:9d327bf28a02a298fefa111cd8f237da01fc6e0db640d167a030272452ee3a16"
+      -
+        actor: "USER"
+        digest: "sha256:847f4b66e89053f4eaadafbcdf8ce358254241ecc31c17ff5de9cab54cb49246"
+        expiresAt: "2026-07-27T21:37:02.919Z"
+        id: "authority-1de66fdb-945d-442a-8188-0d403b676815"
+        issuedAt: "2026-07-27T21:22:02.919Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:150a02d90db4c709f51dc1896d0b8a81eaa18590dca404a4be605a55c9795b98"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:8837e63ec4deee5b8c49efdb5ced2bd495456e867214fadc586a3152149246c0"
+        stateScopeDigest: "sha256:9ad618dc1a5016dc9d652196d695f27bc169ea77e8fb89e2a535bad133e6c4b2"
     schemaVersion: 1
+  implementation_commit:
+    hash: "70b2c119fc127f432b4d4b2df80fd9fb7dc39657"
+    message: "🧩 9M2FBQ task: record alpha publication decision"
   workflow_route_baseline:
     start_head_sha: "56e0d620fad82ca93bb9a2f6deddbd48c87c1a55"
     version: 1
