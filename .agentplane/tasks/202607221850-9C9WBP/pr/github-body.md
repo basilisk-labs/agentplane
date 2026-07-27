@@ -15,13 +15,12 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified 5f48099a: TaskEpisodeView serializes one task view; required context fails or records an
-omission; localized schema headings retain priority. Passed focused vitest (47 tests), guards,
-typecheck, test:critical, and ci:contract.
+Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError
+through task?.metadata access in effect-operation and overlay prompt paths.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -44,7 +43,8 @@ typecheck, test:critical, and ci:contract.
  .../adapters/execution-receipt-runtime.test.ts     |   4 +-
  .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
  packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
- .../src/runner/context/overlay-prompt-blocks.ts    |   8 +-
+ .../src/runner/context/base-prompts.test.ts        |  36 ++--
+ .../src/runner/context/overlay-prompt-blocks.ts    |  13 +-
  .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
  .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
  .../src/runner/effect-operation-contract.ts        |   2 +-
@@ -76,7 +76,7 @@ typecheck, test:critical, and ci:contract.
  packages/agentplane/src/runner/write-scope.test.ts |   6 +-
  packages/testkit/src/runner.ts                     |  65 ++++--
  scripts/baselines/trust-boundary-violations.json   |  90 ---------
- 43 files changed, 583 insertions(+), 304 deletions(-)
+ 44 files changed, 607 insertions(+), 321 deletions(-)
 ```
 
 </details>

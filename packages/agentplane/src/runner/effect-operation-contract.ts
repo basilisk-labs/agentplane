@@ -29,7 +29,7 @@ export function runnerEffectRuntimeError(
 }
 
 function taskIdFromRunnerEffectBundle(bundle: RunnerContextBundle): string {
-  const taskId = bundle.task?.metadata.task_id ?? bundle.target.task_id;
+  const taskId = bundle.task?.metadata?.task_id ?? bundle.target.task_id;
   if (!taskId) throw new Error("Runner effect operation requires a task-bound invocation.");
   return taskId;
 }
