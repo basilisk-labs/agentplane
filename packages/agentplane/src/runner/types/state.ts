@@ -1,5 +1,6 @@
 import type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
 import type {
+  RunnerEffectOperationRef,
   StateFingerprint,
   StateFingerprintPolicy,
   StateFingerprintPreconditionDiagnostic,
@@ -153,6 +154,11 @@ export type RunnerRunState = {
   prepared_metadata?: RunnerPreparedMetadata;
   supervision?: RunnerSupervisionState;
   state_fingerprint?: RunnerStateFingerprintRecord;
+  /**
+   * Additive modern marker. Its absence remains readable for legacy runs;
+   * when present it binds this run to the immutable pre-effect operation.
+   */
+  effect_operation?: RunnerEffectOperationRef;
   result?: RunnerResult;
 };
 

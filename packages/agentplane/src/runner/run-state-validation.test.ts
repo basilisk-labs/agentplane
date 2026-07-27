@@ -1,5 +1,7 @@
 import {
   buildStateFingerprint,
+  createRunnerEffectOperation,
+  createRunnerEffectOperationRef,
   evaluateStateFingerprintPrecondition,
   type StateFingerprint,
   type StateFingerprintPolicy,
@@ -117,6 +119,24 @@ function successfulResult() {
   };
 }
 
+function effectOperationMarker(runId = "run-1") {
+  const operation = createRunnerEffectOperation({
+    task_id: "T-1",
+    origin_run_id: runId,
+    adapter_id: "custom",
+    work_order_id: "work-order-1",
+    authority_ref: "runner:T-1",
+    authority_digest: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    precondition_fingerprint_digest:
+      "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    precondition_policy_digest:
+      "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    invocation_digest: "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    expected_postconditions: ["runner.result.recorded"],
+  });
+  return createRunnerEffectOperationRef({ run_id: runId, operation });
+}
+
 function parse(state: unknown): RunnerRunState {
   return parseRunnerRunState(JSON.stringify(state), "/run/state.json");
 }
@@ -130,6 +150,23 @@ describe("runner run-state validation", () => {
     });
     expect(parsed).not.toHaveProperty("state_fingerprint");
     expect(parsed).not.toHaveProperty("supervision");
+  });
+
+  it("accepts a typed modern effect marker but rejects a run-id mismatch", () => {
+    expect(
+      parse({
+        ...baseState(),
+        effect_operation: effectOperationMarker(),
+      }),
+    ).toMatchObject({
+      effect_operation: { run_id: "run-1" },
+    });
+    expect(() =>
+      parse({
+        ...baseState(),
+        effect_operation: effectOperationMarker("another-run"),
+      }),
+    ).toThrow("invalid supervisor contract");
   });
 
   it("validates a present legacy result without requiring it to exist", () => {

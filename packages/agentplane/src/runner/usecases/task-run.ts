@@ -1,4 +1,5 @@
 import {
+  digestRunnerEffectValue,
   type StateFingerprint,
   type StateFingerprintPolicy,
   type StateFingerprintPreconditionDiagnostic,
@@ -19,6 +20,12 @@ import { readRecipeRunProfile } from "../adapters/recipe-run-profile.js";
 import { applyRunnerPolicyRefusal, buildRunnerPolicyDecision } from "../policy-decision.js";
 import { buildRunnerExecutionPlaybookContract } from "../playbooks.js";
 import { RunnerRunRepository } from "../run-repository.js";
+import {
+  advanceRunnerEffectJournal,
+  prepareRunnerEffectOperation,
+  startRunnerEffectOperation,
+  type StartedRunnerEffectOperation,
+} from "../effect-operation.js";
 import { createRunnerRunId, resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 import { resolveRunnerSandboxPolicy, resolveRunnerWriteScopePolicy } from "../sandbox-policy.js";
 import {
@@ -137,6 +144,7 @@ export async function prepareTaskRunnerExecution(opts: {
   include_remote?: boolean;
   include_route_runner_state?: boolean;
   sandbox_override?: string;
+  effect_source_run_id?: string | null;
 }): Promise<PreparedTaskRunnerExecution> {
   const command =
     opts.ctx ??
@@ -314,10 +322,28 @@ export async function prepareTaskRunnerExecution(opts: {
     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
     invocation,
   });
+  if (!state.state_fingerprint) {
+    throw new Error(
+      `Runner prepared state is missing effect-journal fingerprint authority for ` +
+        `${opts.task_id}:${invocation.run_id}.`,
+    );
+  }
+  const effectOperation = await prepareRunnerEffectOperation({
+    bundle,
+    invocation,
+    state_fingerprint: state.state_fingerprint,
+    ...(opts.effect_source_run_id ? { source_run_id: opts.effect_source_run_id } : {}),
+  });
+  const stateWithEffectOperation = {
+    ...state,
+    effect_operation: effectOperation.reference,
+    updated_at: new Date().toISOString(),
+  };
+  await repository.writeState(stateWithEffectOperation);
   return {
     bundle,
     invocation,
-    state,
+    state: stateWithEffectOperation,
     precondition_fingerprint,
     precondition_policy,
   };
@@ -390,6 +416,9 @@ export async function executeTaskRunnerExecution(opts: {
         ...(opts.include_remote ? { include_remote: true } : {}),
         include_route_runner_state: opts.include_route_runner_state,
         sandbox_override: opts.sandbox_override,
+        ...(opts.replay_provenance
+          ? { effect_source_run_id: opts.replay_provenance.source_run_id }
+          : {}),
       });
     } catch (err) {
       if (err instanceof RunnerPreparationCliError) {
@@ -422,6 +451,7 @@ export async function executeTaskRunnerExecution(opts: {
     releaseActiveClaim = false;
     const adapter = createRunnerAdapter(ctx.config);
     const replayProvenance = opts.replay_provenance;
+    let effectOperation: StartedRunnerEffectOperation | null = null;
     let guardedExecution;
     try {
       guardedExecution = await executeStateBoundRunnerInvocation({
@@ -451,6 +481,12 @@ export async function executeTaskRunnerExecution(opts: {
             lease: activeClaim,
             allow_claimed_run: true,
           });
+          effectOperation = await startRunnerEffectOperation({
+            bundle: prepared.bundle,
+            invocation: prepared.invocation,
+            state_fingerprint: stateFingerprint,
+            ...(replayProvenance ? { source_run_id: replayProvenance.source_run_id } : {}),
+          });
           await persistRunnerStateFingerprintEffectStarted({
             ctx,
             task_id: opts.task_id,
@@ -459,6 +495,18 @@ export async function executeTaskRunnerExecution(opts: {
           });
         },
         on_apply_error: async ({ error, state_fingerprint: stateFingerprint }) => {
+          if (effectOperation) {
+            await advanceRunnerEffectJournal({
+              session: effectOperation,
+              phase: "effect_unknown",
+              evidence: {
+                code: "runner_adapter_effect_error",
+                digest: digestRunnerEffectValue({
+                  message: error instanceof Error ? error.message : String(error),
+                }),
+              },
+            });
+          }
           await persistRunnerStateFingerprintEffectUnknown({
             ctx,
             task_id: opts.task_id,
@@ -469,6 +517,20 @@ export async function executeTaskRunnerExecution(opts: {
           });
         },
         on_post_state_error: async ({ result, state_fingerprint: stateFingerprint }) => {
+          if (effectOperation) {
+            await advanceRunnerEffectJournal({
+              session: effectOperation,
+              phase: "post_state_unknown",
+              evidence: {
+                code: "runner_post_state_observation_unavailable",
+                digest: digestRunnerEffectValue({
+                  status: result.status,
+                  exit_code: result.exit_code,
+                  ended_at: result.ended_at,
+                }),
+              },
+            });
+          }
           await persistRunnerStateFingerprintPostStateUnknown({
             ctx,
             task_id: opts.task_id,
@@ -495,14 +557,48 @@ export async function executeTaskRunnerExecution(opts: {
     const preconditionFingerprint = guardedExecution.precondition_fingerprint;
     const preconditionPolicy = guardedExecution.precondition_policy;
     const result = guardedExecution.result;
-    const state = await persistRunnerStateFingerprintSuccess({
-      ctx,
-      task_id: opts.task_id,
-      bundle: prepared.bundle,
-      invocation: prepared.invocation,
-      prepared_state: prepared.state,
-      result,
-      state_fingerprint: guardedExecution.state_fingerprint,
+    if (!effectOperation) {
+      throw new Error(
+        `Runner adapter returned without a durable effect operation for ` +
+          `${opts.task_id}:${prepared.invocation.run_id}.`,
+      );
+    }
+    let state;
+    try {
+      state = await persistRunnerStateFingerprintSuccess({
+        ctx,
+        task_id: opts.task_id,
+        bundle: prepared.bundle,
+        invocation: prepared.invocation,
+        prepared_state: prepared.state,
+        result,
+        state_fingerprint: guardedExecution.state_fingerprint,
+      });
+    } catch (error) {
+      await advanceRunnerEffectJournal({
+        session: effectOperation,
+        phase: "post_state_unknown",
+        evidence: {
+          code: "runner_post_effect_persistence_unavailable",
+          digest: digestRunnerEffectValue({
+            message: error instanceof Error ? error.message : String(error),
+          }),
+        },
+      });
+      throw error;
+    }
+    await advanceRunnerEffectJournal({
+      session: effectOperation,
+      phase: "accepted",
+      evidence: {
+        code: "runner_post_state_observed",
+        digest: digestRunnerEffectValue({
+          status: result.status,
+          exit_code: result.exit_code,
+          ended_at: result.ended_at,
+          state_fingerprint: guardedExecution.state_fingerprint.state_after?.digest ?? null,
+        }),
+      },
     });
     const claimedRunAuthority = await inspectTaskRunnerClaimedRunAuthority(
       {

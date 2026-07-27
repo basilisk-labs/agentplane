@@ -15,6 +15,7 @@ import { cloudProjectionIdentitySha256 } from "../../backends/task-backend/cloud
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { CustomRunnerAdapter } from "../adapters/custom.js";
+import { resolveRunnerEffectOperationPaths } from "../effect-operation.js";
 import { captureGitSnapshot } from "../observation/git-snapshot.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import {
@@ -190,6 +191,11 @@ describe("task-run state fingerprint precondition", () => {
     const originalExecute = CustomRunnerAdapter.prototype.execute;
     let effectJournalState: Awaited<ReturnType<RunnerRunRepository["readState"]>> = null;
     let effectJournalEvents = "";
+    let effectOperationAtFirstAdapterInstruction: {
+      operation: Record<string, unknown>;
+      journal: Record<string, unknown>;
+      reference: Record<string, unknown>;
+    } | null = null;
     const executeSpy = vi
       .spyOn(CustomRunnerAdapter.prototype, "execute")
       .mockImplementation(async function (invocation) {
@@ -202,6 +208,24 @@ describe("task-run state fingerprint precondition", () => {
         });
         effectJournalState = await repository.readState();
         effectJournalEvents = await readFile(invocation.events_path, "utf8");
+        const reference = JSON.parse(
+          await readFile(path.join(invocation.run_dir, ".runner-effect-operation.json"), "utf8"),
+        ) as Record<string, unknown>;
+        const paths = resolveRunnerEffectOperationPaths({
+          run_dir: invocation.run_dir,
+          operation_key: String(reference.operation_key),
+        });
+        effectOperationAtFirstAdapterInstruction = {
+          operation: JSON.parse(await readFile(paths.operation_path, "utf8")) as Record<
+            string,
+            unknown
+          >,
+          journal: JSON.parse(await readFile(paths.journal_path, "utf8")) as Record<
+            string,
+            unknown
+          >,
+          reference,
+        };
         return await originalExecute.call(this, invocation);
       });
 
@@ -221,6 +245,33 @@ describe("task-run state fingerprint precondition", () => {
       post_state_reason_code: null,
     });
     expect(effectJournalEvents).toContain('"type":"runner_effect_started"');
+    expect(effectOperationAtFirstAdapterInstruction).toMatchObject({
+      operation: {
+        task_id: taskId,
+        origin_run_id: "run-state-fingerprint-success",
+        adapter_id: "custom",
+        enforcement: "supervisor_single_spawn",
+      },
+      journal: { phase: "started" },
+      reference: {
+        run_id: "run-state-fingerprint-success",
+        enforcement: "supervisor_single_spawn",
+      },
+    });
+    expect(effectOperationAtFirstAdapterInstruction?.operation.idempotency_key).toEqual(
+      `runner-effect:${effectOperationAtFirstAdapterInstruction?.operation.operation_key}`,
+    );
+    expect(effectOperationAtFirstAdapterInstruction?.journal.operation_key).toBe(
+      effectOperationAtFirstAdapterInstruction?.operation.operation_key,
+    );
+    expect(effectOperationAtFirstAdapterInstruction?.journal.claim_generation).toBe(
+      effectOperationAtFirstAdapterInstruction?.operation.claim_generation,
+    );
+    expect(effectJournalState?.effect_operation).toMatchObject({
+      run_id: "run-state-fingerprint-success",
+      operation_key: effectOperationAtFirstAdapterInstruction?.operation.operation_key,
+      claim_generation: effectOperationAtFirstAdapterInstruction?.operation.claim_generation,
+    });
     expect(executed.precondition).toMatchObject({
       status: "fresh",
       reason_code: "state_fingerprint_fresh",
