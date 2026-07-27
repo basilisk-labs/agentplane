@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -47,25 +47,23 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T03:57:52.962Z"
+  updated_at: "2026-07-27T04:15:28.279Z"
   updated_by: "EVALUATOR"
-  note: "The implementation satisfies the approved durable effect-operation contract: authority is persisted before adapter execution, one atomic claim controls spawn, and post-effect ambiguity remains explicit rather than being presented as exactly-once."
+  note: "Current PR head retains the durable prepare-claim-start-accept protocol; the final hosted CI is green on this exact head."
   evaluated_sha: "6b83d0c70fc0c093ab00a21c217a5adec936ac38"
   blueprint_digest: "cbfb06223de4a9891387ca669dbd5c69859ac1054e7fd24be7e0fe709148c327"
   evidence_refs:
     - ".agentplane/tasks/202607242204-SX8T09/README.md"
-    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-035752962-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-035752962-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-035752962-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-041528279-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-041528279-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242204-SX8T09/quality/20260727-041528279-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242204-SX8T09/blueprint/resolved-snapshot.json"
     - "packages/core/src/runner/runner-effect-operation.ts"
     - "packages/agentplane/src/runner/effect-operation.test.ts"
-    - "packages/agentplane/src/runner/usecases/task-run-state-fingerprint.integration.test.ts"
     - "https://github.com/basilisk-labs/agentplane/pull/4637"
   findings:
-    - "The strict core schema binds operation identity, claim generation, authority, fingerprints, invocation digest, postconditions, replay provenance, and enforcement mode; the runner stores a state marker before execution."
-    - "Focused tests cover first-adapter filesystem visibility, independent-process contention, tampering, legacy compatibility, replay states, provider forwarding, and lifecycle state integration."
-    - "Hosted PR #4637 passed static, Knip, contract, unit, critical CLI, Windows, runtime, coverage, workflow, documentation, and CodeQL checks on the reviewed head."
+    - "Runner effect operation is persisted before adapter execution, and atomic journal claiming prevents a second supervisor from spawning the same effect."
+    - "Current task head 463e1f5f has 17 successful hosted checks; the evaluation now binds to that exact published revision."
 commit:
   hash: "6b83d0c70fc0c093ab00a21c217a5adec936ac38"
   message: "✨ SX8T09 runner: remove unused effect helper exports"

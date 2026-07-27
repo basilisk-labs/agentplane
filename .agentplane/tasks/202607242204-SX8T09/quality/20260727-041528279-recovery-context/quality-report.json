@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607242204-SX8T09",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T04:15:28.279Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Current PR head retains the durable prepare-claim-start-accept protocol; the final hosted CI is green on this exact head.",
+  "evaluated_sha": "6b83d0c70fc0c093ab00a21c217a5adec936ac38",
+  "blueprint_digest": "cbfb06223de4a9891387ca669dbd5c69859ac1054e7fd24be7e0fe709148c327",
+  "findings": [
+    "Runner effect operation is persisted before adapter execution, and atomic journal claiming prevents a second supervisor from spawning the same effect.",
+    "Current task head 463e1f5f has 17 successful hosted checks; the evaluation now binds to that exact published revision."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607242204-SX8T09/README.md",
+    "packages/core/src/runner/runner-effect-operation.ts",
+    "packages/agentplane/src/runner/effect-operation.test.ts",
+    "https://github.com/basilisk-labs/agentplane/pull/4637"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "External effect interruption after adapter entry remains deliberately classified as effect_unknown; replay is refused rather than falsely claiming exactly-once completion."
+  ]
+}
