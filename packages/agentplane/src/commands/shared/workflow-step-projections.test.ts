@@ -894,11 +894,14 @@ describe("WorkflowStep execution projections", () => {
     const step = await stabilizeWorkflowStepAfterFingerprint({
       state: grantedState,
       draft,
-      capture: async () => fullFingerprint,
+      capture: () => Promise.resolve(fullFingerprint),
     });
     expect(step).toMatchObject({
       kind: "cli_operation",
-      operation: { id: operation.id, authorityRef: expect.stringContaining("authority:") },
+      operation: {
+        id: operation.id,
+        authorityRef: expect.stringContaining("authority:") as unknown as string,
+      },
       preconditionFingerprint: { digest: fullFingerprint.digest },
     });
   });

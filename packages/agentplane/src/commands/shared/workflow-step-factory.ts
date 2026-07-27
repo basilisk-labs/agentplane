@@ -8,7 +8,6 @@ import {
   routeBlockerFor,
   routeBlockerSnapshot,
   selectedRouteBlocker,
-  workSlug,
 } from "./workflow-step-common.js";
 import {
   type WorkflowCheckout,

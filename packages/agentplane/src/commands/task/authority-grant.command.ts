@@ -95,7 +95,10 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
       }
     }
     const ttl = raw.opts["ttl-minutes"];
-    if (ttl !== undefined && (!/^\d+$/u.test(String(ttl)) || Number(ttl) < 1 || Number(ttl) > 60)) {
+    if (
+      ttl !== undefined &&
+      (typeof ttl !== "string" || !/^\d+$/u.test(ttl) || Number(ttl) < 1 || Number(ttl) > 60)
+    ) {
       throw usageError({
         spec: taskAuthorityGrantSpec,
         message: "--ttl-minutes must be an integer from 1 through 60.",
@@ -109,14 +112,14 @@ export const taskAuthorityGrantSpec: CommandSpec<TaskAuthorityGrantParsed> = {
     stateFingerprintDigest: String(raw.opts["state-fingerprint"]).trim(),
     stateScopeDigest: String(raw.opts["state-scope-digest"]).trim(),
     by: String(raw.opts.by).trim(),
-    ttlMinutes: raw.opts["ttl-minutes"] === undefined ? 15 : Number(raw.opts["ttl-minutes"]),
+    ttlMinutes: typeof raw.opts["ttl-minutes"] === "string" ? Number(raw.opts["ttl-minutes"]) : 15,
     remote: raw.opts.remote === true,
   }),
 };
 
 function requestedOperation(decision: Awaited<ReturnType<typeof buildTaskRouteDecision>>) {
   const request = decision.workflowStep.kind === "approval" ? decision.workflowStep.request : null;
-  if (!request || request.type !== "side_effect") {
+  if (request?.type !== "side_effect") {
     throw usageError({
       spec: taskAuthorityGrantSpec,
       message: "The current task route does not require a side-effect authority grant.",

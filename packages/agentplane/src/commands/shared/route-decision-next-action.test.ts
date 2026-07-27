@@ -306,7 +306,9 @@ describe("branch_pr pre-integration safety gates", () => {
 
     expect(action).toMatchObject({
       code: "open_pr",
-      command: expect.stringContaining("agentplane task authority grant T-1 --operation pr.open"),
+      command: expect.stringContaining(
+        "agentplane task authority grant T-1 --operation pr.open",
+      ) as unknown as string,
     });
   });
 

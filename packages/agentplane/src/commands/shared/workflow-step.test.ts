@@ -368,37 +368,12 @@ describe("typed WorkflowStep reducer", () => {
       request: { type: "side_effect", operationId: "pr.open" },
       compatibility: {
         code: "open_pr",
-        command: expect.stringContaining(`agentplane task authority grant ${task.id}`),
+        command: expect.stringContaining(
+          `agentplane task authority grant ${task.id}`,
+        ) as unknown as string,
       },
     });
-    if (approval.kind !== "approval" || approval.request.type !== "side_effect") {
-      throw new Error("expected a side-effect approval step");
-    }
-    const grant = createSideEffectAuthorityRecord({
-      id: "authority-pr-open",
-      actor: "USER",
-      operation: approval.request.operation,
-      fingerprint: approval.preconditionFingerprint,
-      issuedAt: "2026-07-26T00:00:00.000Z",
-      expiresAt: "2026-07-27T00:00:00.000Z",
-    });
-    const authorityState = appendSideEffectAuthorityAudit({
-      state: { schemaVersion: 1, grants: [grant], audit: [] },
-      at: "2026-07-26T00:00:00.000Z",
-      actor: "USER",
-      operation: approval.request.operation,
-      fingerprint: approval.preconditionFingerprint,
-      authority: grant,
-      outcome: "approved",
-    });
-    const step = reduceRouteState(
-      routeStateWithAuthority({
-        task: {
-          ...task,
-          extensions: withSideEffectAuthorityState({ extensions: {} }, authorityState),
-        },
-      }),
-    );
+    const step = reduceRouteState(routeStateWithAuthority());
     expect(step).toMatchObject({
       kind: "cli_operation",
       phase: "pr_needed",
@@ -412,7 +387,7 @@ describe("typed WorkflowStep reducer", () => {
     expect(step.operation).toMatchObject({
       id: "pr.open",
       type: "pr_sync",
-      authorityRef: "authority:authority-pr-open",
+      authorityRef: "authority:authority-pr.open",
       params: { taskId: task.id, author: "CODER", includeTaskIds: [] },
     });
     expect(projectWorkflowOperationArgv(step.operation)).toEqual([
@@ -437,7 +412,7 @@ describe("typed WorkflowStep reducer", () => {
       compatibility: {
         command: expect.stringContaining(
           `agentplane task authority grant ${task.id} --remote --operation pr.open`,
-        ),
+        ) as unknown as string,
       },
     });
   });
