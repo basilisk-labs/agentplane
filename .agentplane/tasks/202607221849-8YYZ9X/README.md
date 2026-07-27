@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on:
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The prior hosted failure was isolated to concurrent recovery-lease reads outside RF-12b semantics; the merged bounded retry preserves strict stable-file validation and the exact failed effect-resolution scenario now passes."
 commit:
-  hash: "92231a093805168013038e8a8a4ba733e48271a0"
-  message: "📚 8YYZ9X task: record static-gate closure authority"
+  hash: "e77226f79a8185a65511a31438b018cc0ec17841"
+  message: "📚 8YYZ9X task: authorize rebased pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -175,8 +178,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T19:42:39.887Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T18:03:50.874Z"
+doc_updated_at: "2026-07-27T19:42:39.888Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
@@ -704,7 +714,7 @@ extensions:
         stateScopeDigest: "sha256:d60d3060877504c582c82bd1bb52a872c7966679a17e220e467dc6f445bf5572"
     schemaVersion: 1
   implementation_commit:
-    hash: "e40a266e7f570792354831cbc2625ee0a67579f8"
+    hash: "fd7d2cf98e9abc425a6ddf3b065bd4629f79c702"
     message: "🧪 8YYZ9X evaluator: keep episode helpers module-private"
   workflow_route_baseline:
     start_head_sha: "8c863087669ef21c562e8c230e851bc94a12e8a4"
