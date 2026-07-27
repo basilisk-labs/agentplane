@@ -3,9 +3,11 @@ import os from "node:os";
 import path from "node:path";
 
 import { buildExecutionProfile, defaultConfig } from "@agentplaneorg/core/config";
+import { makeRunnerContextBundle } from "@agentplane/testkit/runner";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { resolveExecutionProfileRuntime } from "../../runtime/execution-profile/index.js";
+import type { RunnerTaskContext } from "../types.js";
 import {
   collectRunnerBasePrompts,
   compileRunnerPromptModuleGraph,
@@ -504,21 +506,13 @@ describe("collectRunnerBasePrompts", () => {
       ),
     );
 
-    const task = {
-      task_id: "TASK-1",
-      data: {
-        id: "TASK-1",
-        title: "Fix runner",
-        status: "DOING",
-        owner: "CODER",
-        tags: ["bug"],
-      },
-      frontmatter: {},
-      doc: "",
-      sections: {},
-      comments: [],
-      events: [],
-    };
+    const task = makeRunnerContextBundle({
+      taskId: "TASK-1",
+      title: "Fix runner",
+      status: "DOING",
+      owner: "CODER",
+      tags: ["bug"],
+    }).task;
 
     const taskRunPrompts = await collectRunnerBasePrompts({
       git_root: root,
@@ -537,5 +531,17 @@ describe("collectRunnerBasePrompts", () => {
     expect(taskRunPrompts.map((prompt) => prompt.id)).not.toContain("overlay.viewer.scenario-run");
     expect(scenarioPrompts.map((prompt) => prompt.id)).toContain("overlay.viewer.scenario-run");
     expect(scenarioPrompts.map((prompt) => prompt.id)).not.toContain("overlay.viewer.task-run");
+
+    const incompleteTask = { task_id: "TASK-1" } as unknown as RunnerTaskContext;
+    const incompleteTaskPrompts = await collectRunnerBasePrompts({
+      git_root: root,
+      owner_id: "CODER",
+      task: incompleteTask,
+      command: "task run",
+    });
+
+    expect(incompleteTaskPrompts.map((prompt) => prompt.id)).not.toContain(
+      "overlay.viewer.task-run",
+    );
   });
 });

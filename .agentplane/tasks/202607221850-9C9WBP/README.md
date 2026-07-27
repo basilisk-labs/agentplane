@@ -2,10 +2,10 @@
 id: "202607221850-9C9WBP"
 title: "Normalize runner task inputs into TaskEpisodeView"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-27T22:27:24.490Z"
+  state: "needs_rework"
+  updated_at: "2026-07-27T22:40:18.777Z"
   updated_by: "TESTER"
-  note: "Verified 5f48099a: TaskEpisodeView serializes one task view; required context fails or records an omission; localized schema headings retain priority. Passed focused vitest (47 tests), guards, typecheck, test:critical, and ci:contract."
-  attempts: 0
+  note: "Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -62,9 +62,7 @@ quality_review:
   findings:
     - "The current runner transport remains bounded to TaskEpisodeView at the implementation commit; the closure commit changes only task evidence and policy incident projections."
     - "The promoted incident is a transparent limitation record, not a synthetic role heuristic: current schema supplies structural headings, and a later blueprint/schema task must author per-role policy."
-commit:
-  hash: "df380750d7c9fcd2a3410b2ad0bf910e47e41895"
-  message: "✨ 9C9WBP task: record closure authority"
+commit: null
 comments:
   -
     author: "CODER"
@@ -113,8 +111,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-27T22:40:18.777Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths."
 doc_version: 3
-doc_updated_at: "2026-07-27T22:32:17.809Z"
+doc_updated_at: "2026-07-27T22:40:19.605Z"
 doc_updated_by: "CODER"
 description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
 sections:
@@ -168,6 +172,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-27T22:40:18.777Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:32:17.809Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+    - old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -183,6 +217,10 @@ sections:
     - Observation: task-context tests assert a >=30% serialized-byte reduction, explicit required-section receipts/errors, and non-English structural ordering; full contract exit=0.
       Impact: Runner no longer transports duplicate TaskData/document projections to the agent episode.
       Resolution: Accepted for PR quality and hosted verification.
+
+    - Observation: GitHub verify-unit: 10 failures (effect-operation.test.ts and base-prompts.test.ts); all originate from dereferencing missing metadata on legacy/partial task views.
+      Impact: RF-21 breaks compatibility for callers that provide a task identity or legacy shape without TaskEpisodeView.metadata.
+      Resolution: Restore null-safe metadata access with target task-id fallback and add focused regression coverage before re-verification.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -359,6 +397,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-27T22:40:18.777Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:32:17.809Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
+- old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -378,3 +446,7 @@ DecisionContextRef:
 - Observation: task-context tests assert a >=30% serialized-byte reduction, explicit required-section receipts/errors, and non-English structural ordering; full contract exit=0.
   Impact: Runner no longer transports duplicate TaskData/document projections to the agent episode.
   Resolution: Accepted for PR quality and hosted verification.
+
+- Observation: GitHub verify-unit: 10 failures (effect-operation.test.ts and base-prompts.test.ts); all originate from dereferencing missing metadata on legacy/partial task views.
+  Impact: RF-21 breaks compatibility for callers that provide a task identity or legacy shape without TaskEpisodeView.metadata.
+  Resolution: Restore null-safe metadata access with target task-id fallback and add focused regression coverage before re-verification.
