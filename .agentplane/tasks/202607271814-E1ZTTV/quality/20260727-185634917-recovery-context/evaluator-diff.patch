@@ -1,0 +1,280 @@
+diff --git a/.agentplane/tasks/202607271814-E1ZTTV/pr/diffstat.txt b/.agentplane/tasks/202607271814-E1ZTTV/pr/diffstat.txt
+index e69de29bb..d55904589 100644
+--- a/.agentplane/tasks/202607271814-E1ZTTV/pr/diffstat.txt
++++ b/.agentplane/tasks/202607271814-E1ZTTV/pr/diffstat.txt
+@@ -0,0 +1,5 @@
++ .../task-run-active-claim-concurrency.test.ts      | 40 ++++++++++++
++ .../task-run-active-claim-recovery-lease.ts        | 72 ++++++++++++++--------
++ .../usecases/task-run-active-claim.testkit.ts      |  4 +-
++ .../usecases/task-run-lifecycle-cancel.testkit.ts  |  4 +-
++ 4 files changed, 92 insertions(+), 28 deletions(-)
+diff --git a/.agentplane/tasks/202607271814-E1ZTTV/pr/github-body.md b/.agentplane/tasks/202607271814-E1ZTTV/pr/github-body.md
+index 97f9f6597..61630e3e5 100644
+--- a/.agentplane/tasks/202607271814-E1ZTTV/pr/github-body.md
++++ b/.agentplane/tasks/202607271814-E1ZTTV/pr/github-body.md
+@@ -22,12 +22,16 @@ Prevent transient read-stability races from failing concurrent runner effect-res
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T18:15:07.909Z
++- Updated: 2026-07-27T18:54:44.324Z
+ - Branch: task/202607271814-E1ZTTV/stabilize-concurrent-recovery-lease-reads
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../task-run-active-claim-concurrency.test.ts      | 40 ++++++++++++
++ .../task-run-active-claim-recovery-lease.ts        | 72 ++++++++++++++--------
++ .../usecases/task-run-active-claim.testkit.ts      |  4 +-
++ .../usecases/task-run-lifecycle-cancel.testkit.ts  |  4 +-
++ 4 files changed, 92 insertions(+), 28 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607271814-E1ZTTV/pr/meta.json b/.agentplane/tasks/202607271814-E1ZTTV/pr/meta.json
+index ccccbdc0e..bcbef879b 100644
+--- a/.agentplane/tasks/202607271814-E1ZTTV/pr/meta.json
++++ b/.agentplane/tasks/202607271814-E1ZTTV/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607271814-E1ZTTV/stabilize-concurrent-recovery-lease-reads",
+   "created_at": "2026-07-27T18:15:07.909Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:e66c970f3774145cfe8e517caed57f0ba40093eb3b597b8c1acefe2c0b0188b0",
+   "last_verified_at": null,
++  "pr_number": 4644,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4644",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607271814-E1ZTTV",
+-  "updated_at": "2026-07-27T18:15:07.909Z",
++  "updated_at": "2026-07-27T18:54:44.324Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607271814-E1ZTTV/pr/review.md b/.agentplane/tasks/202607271814-E1ZTTV/pr/review.md
+index 1d6a9f188..229f059ff 100644
+--- a/.agentplane/tasks/202607271814-E1ZTTV/pr/review.md
++++ b/.agentplane/tasks/202607271814-E1ZTTV/pr/review.md
+@@ -24,12 +24,16 @@ Created: 2026-07-27T18:15:07.909Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T18:15:07.909Z
++- Updated: 2026-07-27T18:54:44.324Z
+ - Branch: task/202607271814-E1ZTTV/stabilize-concurrent-recovery-lease-reads
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../task-run-active-claim-concurrency.test.ts      | 40 ++++++++++++
++ .../task-run-active-claim-recovery-lease.ts        | 72 ++++++++++++++--------
++ .../usecases/task-run-active-claim.testkit.ts      |  4 +-
++ .../usecases/task-run-lifecycle-cancel.testkit.ts  |  4 +-
++ 4 files changed, 92 insertions(+), 28 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts b/packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts
+index 8a8bfc0b6..222fbb350 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-active-claim-concurrency.test.ts
+@@ -8,12 +8,17 @@ import { installRunCliIntegrationHarness, waitForCondition } from "@agentplane/t
+ import { CustomRunnerAdapter } from "../adapters/custom.js";
+ import { readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
+ import * as processSupervision from "../process-supervision/signals.js";
++import * as stableFile from "../stable-file.js";
+ import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
+ 
+ import {
+   acquireTaskRunnerActiveClaim,
+   releaseTaskRunnerActiveClaim,
+ } from "./task-run-active-claim.js";
++import {
++  acquireTaskRunnerActiveClaimRecoveryLease,
++  releaseTaskRunnerActiveClaimRecoveryLease,
++} from "./task-run-active-claim-recovery-lease.js";
+ import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
+ import { executeTaskRunnerExecution, type ExecutedTaskRunnerExecution } from "./task-run.js";
+ import {
+@@ -37,6 +42,41 @@ afterEach(() => {
+ });
+ 
+ describe("task-run supervisor active claim", () => {
++  it("retries a transient recovery-lease read collision without accepting an unstable observation", async () => {
++    const root = await mkGitRepoRoot();
++    const originalRead = stableFile.readStableRegularTextNoFollow;
++    let recoveryLeaseReadCount = 0;
++    vi.spyOn(stableFile, "readStableRegularTextNoFollow").mockImplementation(async (...args) => {
++      if (args[1] === "runner active-claim recovery lease") {
++        recoveryLeaseReadCount += 1;
++        if (recoveryLeaseReadCount === 1) {
++          throw new Error(
++            `runner active-claim recovery lease changed while it was being read: ${args[0]}`,
++          );
++        }
++      }
++      return await originalRead(...args);
++    });
++
++    const acquired = await acquireTaskRunnerActiveClaimRecoveryLease({
++      git_root: root,
++      workflow_dir: ".agentplane/tasks",
++      task_id: "TASK-RECOVERY-LEASE-READ-COLLISION",
++      target_generation: "generation-read-collision",
++    });
++    try {
++      expect(acquired.status).toBe("acquired");
++      expect(recoveryLeaseReadCount).toBe(2);
++    } finally {
++      if (acquired.status === "acquired") {
++        await releaseTaskRunnerActiveClaimRecoveryLease({
++          lease: acquired.lease,
++          succeeded: false,
++        });
++      }
++    }
++  });
++
+   it("reports a live competing claim before inspecting mutable supervisor history", async () => {
+     const root = await mkGitRepoRoot();
+     const taskId = "TASK-LIVE-CLAIM-PRECEDENCE";
+diff --git a/packages/agentplane/src/runner/usecases/task-run-active-claim-recovery-lease.ts b/packages/agentplane/src/runner/usecases/task-run-active-claim-recovery-lease.ts
+index 030881c65..5063a4e35 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-active-claim-recovery-lease.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-active-claim-recovery-lease.ts
+@@ -20,6 +20,7 @@ import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
+ import { inspectTaskRunnerOwnerIdentity } from "./task-run-active-claim-authority.js";
+ 
+ const MAX_RECOVERY_LEASE_BYTES = 4096;
++const RECOVERY_LEASE_READ_ATTEMPTS = 4;
+ 
+ type FileIdentity = { dev: bigint; ino: bigint };
+ 
+@@ -45,6 +46,16 @@ type ObservedRecoveryLease = {
+   identity: FileIdentity;
+ };
+ 
++function isTransientRecoveryLeaseReadCollision(error: unknown): boolean {
++  const message = error instanceof Error ? error.message : String(error);
++  return (
++    message.startsWith("runner active-claim recovery lease ") &&
++    (message.includes(" changed before it could be read:") ||
++      message.includes(" changed while it was being read:") ||
++      message.includes(" path changed while it was being read:"))
++  );
++}
++
+ export type TaskRunnerActiveClaimRecoveryLease = {
+   directory: RecoveryLeaseDirectory;
+   record: RecoveryLeaseRecord;
+@@ -232,34 +243,43 @@ async function resolveRecoveryLeaseDirectory(opts: {
+ async function readRecoveryLease(
+   directory: RecoveryLeaseDirectory,
+ ): Promise<ObservedRecoveryLease | null> {
+-  await directory.boundary.assertStable("before reading active-claim recovery lease");
+-  try {
+-    const before = await lstat(directory.marker_path, { bigint: true });
+-    const raw = await readStableRegularTextNoFollow(
+-      directory.marker_path,
+-      "runner active-claim recovery lease",
+-      { max_bytes: MAX_RECOVERY_LEASE_BYTES },
+-    );
+-    const after = await lstat(directory.marker_path, { bigint: true });
+-    if (
+-      !before.isFile() ||
+-      before.isSymbolicLink() ||
+-      !after.isFile() ||
+-      after.isSymbolicLink() ||
+-      !sameIdentity(identity(before), identity(after))
+-    ) {
+-      throw invalidRecoveryLease(directory.marker_path);
++  for (let attempt = 0; attempt < RECOVERY_LEASE_READ_ATTEMPTS; attempt += 1) {
++    await directory.boundary.assertStable("before reading active-claim recovery lease");
++    try {
++      const before = await lstat(directory.marker_path, { bigint: true });
++      const raw = await readStableRegularTextNoFollow(
++        directory.marker_path,
++        "runner active-claim recovery lease",
++        { max_bytes: MAX_RECOVERY_LEASE_BYTES },
++      );
++      const after = await lstat(directory.marker_path, { bigint: true });
++      if (
++        !before.isFile() ||
++        before.isSymbolicLink() ||
++        !after.isFile() ||
++        after.isSymbolicLink() ||
++        !sameIdentity(identity(before), identity(after))
++      ) {
++        throw invalidRecoveryLease(directory.marker_path);
++      }
++      await directory.boundary.assertStable("after reading active-claim recovery lease");
++      return {
++        record: parseRecoveryLease(raw, directory.marker_path, directory.target_generation),
++        identity: identity(after),
++      };
++    } catch (error) {
++      await directory.boundary.assertStable("after reading active-claim recovery lease");
++      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
++      if (
++        !isTransientRecoveryLeaseReadCollision(error) ||
++        attempt === RECOVERY_LEASE_READ_ATTEMPTS - 1
++      ) {
++        throw error;
++      }
++      await new Promise<void>((resolve) => setImmediate(resolve));
+     }
+-    return {
+-      record: parseRecoveryLease(raw, directory.marker_path, directory.target_generation),
+-      identity: identity(after),
+-    };
+-  } catch (error) {
+-    if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
+-    return null;
+-  } finally {
+-    await directory.boundary.assertStable("after reading active-claim recovery lease");
+   }
++  return null;
+ }
+ 
+ export async function inspectTaskRunnerActiveClaimRecoveryLease(opts: {
+diff --git a/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts b/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts
+index a7c8522ad..ed8ab270c 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-active-claim.testkit.ts
+@@ -226,10 +226,12 @@ export function gateRunnerScript(): string[] {
+   ];
+ }
+ 
++const RUNNER_CLAIM_START_TIMEOUT_MS = 30_000;
++
+ export async function waitForStartedRun(markerPath: string): Promise<string> {
+   return await waitForCondition({
+     description: "custom runner claim marker",
+-    timeoutMs: 10_000,
++    timeoutMs: RUNNER_CLAIM_START_TIMEOUT_MS,
+     pollMs: 10,
+     read: async () => await readFile(markerPath, "utf8").catch(() => ""),
+     predicate: (contents) => contents.trim().length > 0,
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.testkit.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.testkit.ts
+index ee4baffbd..f990ea675 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.testkit.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-cancel.testkit.ts
+@@ -9,6 +9,8 @@ import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
+ 
+ import { createDoingRunnerTask } from "./task-run-lifecycle.testkit.js";
+ 
++const RUNNER_STATE_WAIT_TIMEOUT_MS = 30_000;
++
+ export async function createDoingTask(root: string, title: string): Promise<string> {
+   return await createDoingRunnerTask({
+     root,
+@@ -33,7 +35,7 @@ export async function configureCustomRunner(root: string, scriptLines: string[])
+ export async function waitForState(
+   statePath: string,
+   predicate: (state: Awaited<ReturnType<typeof readRunnerRunState>>) => boolean,
+-  timeoutMs = 5000,
++  timeoutMs = RUNNER_STATE_WAIT_TIMEOUT_MS,
+ ): Promise<Awaited<ReturnType<typeof readRunnerRunState>>> {
+   return await waitForCondition({
+     description: `runner state in ${statePath}`,

@@ -4,7 +4,7 @@ title: "Stabilize concurrent recovery-lease reads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,26 @@ verification:
   updated_by: "TESTER"
   note: "Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T18:56:35.491Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "9804dae6bdb5c97ab068ca435483573d1c6ff744"
+  blueprint_digest: "1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc"
+  evidence_refs:
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/README.md"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185634917-recovery-context/evaluator-blueprint.json"
+  findings:
+    - "The retry classification exactly mirrors the existing runner-state atomic-replacement guard; directory and inode validation still run on every attempt."
 commit:
   hash: "2fa8ca98733263e3e3a688afff63e5f3385d4ead"
   message: "🐛 E1ZTTV reliability: stabilize concurrent recovery-lease reads"
