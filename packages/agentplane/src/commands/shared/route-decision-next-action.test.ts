@@ -223,6 +223,7 @@ describe("branch_pr pre-integration safety gates", () => {
   const doingTask = {
     ...task,
     status: "DOING",
+    commit: { hash: "1111111111111111111111111111111111111111", message: "feat: implementation" },
     plan_approval: {
       state: "approved" as const,
       approved_by: "ORCHESTRATOR",

@@ -502,6 +502,14 @@ describe("typed WorkflowStep reducer", () => {
     const openPr = prFlow("OPEN");
     const step = reduceRouteState(
       routeState({
+        task: {
+          ...task,
+          verification: { state: "ok" },
+          commit: {
+            hash: "2222222222222222222222222222222222222222",
+            message: "feat: implementation",
+          },
+        },
         prFlow: {
           ...openPr,
           branch: { ...openPr.branch, name: null },

@@ -34,11 +34,14 @@ Created: 2026-07-27T05:36:45.894Z
  .../src/cli/run-cli/command-loaders/task.ts        |   8 +
  .../src/commands/shared/route-decision-blockers.ts |  11 +-
  .../route-decision-blockers.worktree.test.ts       |  28 +-
+ .../shared/route-decision-next-action.test.ts      |   1 +
  .../src/commands/shared/route-decision.ts          |  14 +-
  .../src/commands/shared/workflow-step-branch.ts    |   7 +
  .../src/commands/shared/workflow-step-factory.ts   |  25 +
  .../workflow-step-projections-routing.test.ts      | 162 ++++++
+ ...rkflow-step-projections.conflict-rework.test.ts |  13 +-
  .../shared/workflow-step-projections.test.ts       |  79 +--
+ .../src/commands/shared/workflow-step.test.ts      |   8 +
  .../agentplane/src/commands/task/run-render.ts     |   7 +
  .../agentplane/src/commands/task/run.command.ts    |   7 +
  .../task/task-run-effect-resolution.command.ts     | 282 ++++++++++
@@ -54,7 +57,7 @@ Created: 2026-07-27T05:36:45.894Z
  .../runner/usecases/task-run-effect-resolution.ts  | 594 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-replay.ts   |  48 ++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   9 +-
- .../src/runner/usecases/task-run-lifecycle.ts      |   2 +
+ .../src/runner/usecases/task-run-lifecycle.ts      |   1 +
  .../src/runner/usecases/task-run-replay-anchor.ts  |   8 +-
  .../agentplane/src/runner/usecases/task-run.ts     |   8 +
  packages/core/src/index.ts                         |  23 +
@@ -63,7 +66,7 @@ Created: 2026-07-27T05:36:45.894Z
  packages/core/src/schemas/index.ts                 |  23 +
  .../baselines/v0.7-compatibility-candidate.json    | 376 ++++++++++++-
  .../check-compatibility-contract-baseline.mjs      | 184 +++++++
- 34 files changed, 2763 insertions(+), 82 deletions(-)
+ 37 files changed, 2783 insertions(+), 83 deletions(-)
 ```
 
 </details>

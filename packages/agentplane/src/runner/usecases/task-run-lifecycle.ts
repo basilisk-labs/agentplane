@@ -6,7 +6,6 @@ export {
 } from "./task-run-lifecycle-replay.js";
 export type {
   CancelledTaskRunnerExecution,
-  EffectResumedTaskRunnerExecution,
   ResumedTaskRunnerExecution,
   RetriedTaskRunnerExecution,
 } from "./task-run-lifecycle-shared.js";
