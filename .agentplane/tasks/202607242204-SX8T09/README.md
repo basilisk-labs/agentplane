@@ -1,10 +1,10 @@
 ---
 id: "202607242204-SX8T09"
 title: "Persist typed runner effect operations before execution"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +44,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: map the runner effect boundary, then implement the durable operation journal and single-spawn claim."
+events:
+  -
+    type: "status"
+    at: "2026-07-27T02:12:20.737Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: map the runner effect boundary, then implement the durable operation journal and single-spawn claim."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:06:08.773Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-27T02:12:20.737Z"
+doc_updated_by: "CODER"
 description: "Define strict versioned runner effect operation and journal contracts, persist operation identity, idempotency, authority, StateFingerprint and expected postconditions before adapter execution, and make crash/restart/replay refuse a second spawn for the same operation key."
 sections:
   Summary: |-
@@ -87,6 +97,66 @@ sections:
   Findings: |-
     - Exactly-once for arbitrary external effects is not generally provable. This leaf guarantees no second AgentPlane adapter spawn for one operation key; stronger provider guarantees are recorded only when the key is actually forwarded.
     - Operator resolution is a separate verification boundary because it has different authority, concurrency and crash-recovery semantics.
+extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-27T02:12:44.179Z"
+        authorityDigest: "sha256:d4ec71e928b5cef1a85134623c4a60bf0c26fa6c03af0163f6857d064fc2895d"
+        digest: "sha256:f583b6111e218aad812cc3c8bc9475e94b12e28d31147a9438494867bcee190d"
+        operationDigest: "sha256:32613629ea92f5874435d2a44bb911763bfea22fd654766935d471eae9a98e18"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:04e43060f17001e34c47812d4cee8446cba297d2b3a55636b9bc3777285923b3"
+      -
+        actor: "USER"
+        at: "2026-07-27T02:13:04.426Z"
+        authorityDigest: "sha256:767bcf0153ea16fc1a334a4b16b13c076a2ece4a569c4c1747bc6b9da7d1bd14"
+        digest: "sha256:8d7c5583e983533bf694828b2617ca944997e7d4f523144f396866038e8670e2"
+        operationDigest: "sha256:32613629ea92f5874435d2a44bb911763bfea22fd654766935d471eae9a98e18"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:f583b6111e218aad812cc3c8bc9475e94b12e28d31147a9438494867bcee190d"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:e7606306197afa484774f4b5d4505997581666e0b9a97147eaec279d1ef541cf"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:d4ec71e928b5cef1a85134623c4a60bf0c26fa6c03af0163f6857d064fc2895d"
+        expiresAt: "2026-07-27T02:27:44.179Z"
+        id: "authority-a803f1a2-af75-489c-8bc3-056692ad483d"
+        issuedAt: "2026-07-27T02:12:44.179Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:32613629ea92f5874435d2a44bb911763bfea22fd654766935d471eae9a98e18"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:04e43060f17001e34c47812d4cee8446cba297d2b3a55636b9bc3777285923b3"
+        stateScopeDigest: "sha256:5a555f440ccac3dbc228116dbe3cfa7f72617972edaf555ab4e76175eee8aaf0"
+      -
+        actor: "USER"
+        digest: "sha256:767bcf0153ea16fc1a334a4b16b13c076a2ece4a569c4c1747bc6b9da7d1bd14"
+        expiresAt: "2026-07-27T02:28:04.426Z"
+        id: "authority-a6693fad-2a6d-49f9-8dae-cce20995d906"
+        issuedAt: "2026-07-27T02:13:04.426Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:32613629ea92f5874435d2a44bb911763bfea22fd654766935d471eae9a98e18"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:e7606306197afa484774f4b5d4505997581666e0b9a97147eaec279d1ef541cf"
+        stateScopeDigest: "sha256:09044b071b0dafa9af22e448c62a19c1ac1ccd05a15e3eb90b2d72f46f628775"
+    schemaVersion: 1
+  workflow_route_baseline:
+    start_head_sha: "e080b180b13f9d138b9a8eee0e5d73a18517722b"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
