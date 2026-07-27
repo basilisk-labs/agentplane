@@ -8,10 +8,10 @@
   "pr_number": 4633,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4633",
   "pre_merge_closure": {
-    "basis_commit": "e3ad5bc54772c6da8dcd2c0f0f1ef7dd4b01641f",
+    "basis_commit": "a9a91de3265e65e7450546f0e3cc9d5ac0d6c6e0",
     "branch": "task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records",
     "pr_number": 4633,
-    "recorded_at": "2026-07-26T23:36:23.883Z",
+    "recorded_at": "2026-07-27T00:22:55.556Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
