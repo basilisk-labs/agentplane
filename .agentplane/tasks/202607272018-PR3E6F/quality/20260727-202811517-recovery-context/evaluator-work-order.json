@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607272018-PR3E6F-1292e3ed11308647a27b85d3",
+  "prepared_at": "2026-07-27T20:28:11.517Z",
+  "task": {
+    "id": "202607272018-PR3E6F",
+    "revision": 8,
+    "objective": "Synchronize evaluator verification guidance for alpha.2 qualification\n\nFix the bootstrap contract drift where AGENTS.md and its packaged asset still prescribe evaluator execute while the generated bootstrap contract requires evaluator run. Keep the change limited to canonical guidance, derived asset synchronization, and the failing freshness/contract checks.",
+    "acceptance_criteria": [
+      "- In scope: Fix the bootstrap contract drift where AGENTS.md and its packaged asset still prescribe evaluator execute while the generated bootstrap contract requires evaluator run. Keep the change limited to canonical guidance, derived asset synchronization, and the failing freshness/contract checks.\n- Out of scope: unrelated refactors not required for \"Synchronize evaluator verification guidance for alpha.2 qualification\".",
+      "1. Compare BOOTSTRAP_VERIFICATION_COMMANDS with the canonical AGENTS.md Verification block and change only the stale evaluator recording command from evaluator execute to evaluator run. Keep the branch_pr lifecycle provider-execution command unchanged.\n2. Run the repository agent-template synchronizer so packages/agentplane/assets/AGENTS.md remains derived from the canonical root file.\n3. Confirm generated bootstrap guidance and packaged assets are fresh, then run the contract gate that originally failed.\n4. Record the rebase-merge-safe limitation that task-local historical commit hashes are not expected to be main ancestors.",
+      "1. Run bun run docs:bootstrap:check. Expected: AGENTS.md Verification block exactly matches BOOTSTRAP_VERIFICATION_COMMANDS.\n2. Run bun run agents:check. Expected: packages/agentplane/assets/AGENTS.md is synchronized with AGENTS.md.\n3. Verify that branch_pr lifecycle guidance still contains evaluator execute and that only verification-record guidance uses evaluator run. Expected: provider execution and result recording remain distinct.\n4. Run bun run ci:contract. Expected: the original alpha.2 blocking gate passes without unrelated changes."
+    ]
+  },
+  "evaluated_sha": "cec3c7fd8cecc1f3016791eb624d77aefc51ce36",
+  "blueprint_digest": "a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607272018-PR3E6F/README.md",
+      "sha256": "sha256:2fa003432e04b27764090a09b0c9eedb1536f0ceff20628eecb4ccc84133d9e6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:8d9a03a9b910f30dbf6c85c7a93184cd60378eec89f7840cc39db24a4e13baf5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:cf55eed687cad0c55af150acd6d825c1ba1c6ae99400503f50049b96261a2185",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:a32e4706e833da4877b06330e523098e112492ce1b942de2507dd3dd30b18e5e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607272018-PR3E6F",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T20:28:11.625Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "cec3c7fd8cecc1f3016791eb624d77aefc51ce36",
+  "blueprint_digest": "a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296",
+  "findings": [
+    "Reviewed the one-line guidance change against BOOTSTRAP_VERIFICATION_COMMANDS, the generated bootstrap document, and the full ci:contract result; no semantic or safety regression found."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

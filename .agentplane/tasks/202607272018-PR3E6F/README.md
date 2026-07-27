@@ -1,10 +1,11 @@
 ---
 id: "202607272018-PR3E6F"
 title: "Synchronize evaluator verification guidance for alpha.2 qualification"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -21,16 +22,47 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T20:27:45.834Z"
+  updated_by: "TESTER"
+  note: "Verified: the bootstrap verification block now matches the generated contract; focused docs/template/routing checks and the full ci:contract gate passed."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T20:28:11.625Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "cec3c7fd8cecc1f3016791eb624d77aefc51ce36"
+  blueprint_digest: "a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296"
+  evidence_refs:
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607272018-PR3E6F/README.md"
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607272018-PR3E6F/quality/20260727-202811517-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/dod.docs.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "Reviewed the one-line guidance change against BOOTSTRAP_VERIFICATION_COMMANDS, the generated bootstrap document, and the full ci:contract result; no semantic or safety regression found."
+commit:
+  hash: "cec3c7fd8cecc1f3016791eb624d77aefc51ce36"
+  message: "📚 PR3E6F task: synchronize evaluator verification guidance"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: synchronized the verification-record guidance with BOOTSTRAP_VERIFICATION_COMMANDS while preserving the separate evaluator execute provider path."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -39,8 +71,28 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-27T20:27:11.442Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: synchronized the verification-record guidance with BOOTSTRAP_VERIFICATION_COMMANDS while preserving the separate evaluator execute provider path."
+  -
+    type: "verify"
+    at: "2026-07-27T20:27:45.834Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: the bootstrap verification block now matches the generated contract; focused docs/template/routing checks and the full ci:contract gate passed."
+  -
+    type: "status"
+    at: "2026-07-27T20:28:48.503Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T20:20:49.746Z"
+doc_updated_at: "2026-07-27T20:28:48.504Z"
 doc_updated_by: "CODER"
 description: "Fix the bootstrap contract drift where AGENTS.md and its packaged asset still prescribe evaluator execute while the generated bootstrap contract requires evaluator run. Keep the change limited to canonical guidance, derived asset synchronization, and the failing freshness/contract checks."
 sections:
@@ -63,11 +115,44 @@ sections:
     4. Run bun run ci:contract. Expected: the original alpha.2 blocking gate passes without unrelated changes.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T20:27:45.834Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: the bootstrap verification block now matches the generated contract; focused docs/template/routing checks and the full ci:contract gate passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T20:27:11.442Z, excerpt_hash=sha256:4f051d1c2c819cfc1fd9935b9b9661fbb0aac281dfed9e290ae09426f0cdf4a6
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-clone.9d6Aq6/.agentplane/worktrees/202607272018-PR3E6F-synchronize-evaluator-verification-guidance-for/.agentplane/tasks/202607272018-PR3E6F/blueprint/resolved-snapshot.json
+    - old_digest: a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296
+    - current_digest: a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607272018-PR3E6F
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607272018-PR3E6F
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: ci:contract previously failed because AGENTS verification guidance used evaluator execute while BOOTSTRAP_VERIFICATION_COMMANDS rendered evaluator run.
+      Impact: The alpha.2 qualification gate could not proceed because bootstrap documentation freshness was false.
+      Resolution: Updated only the verification-record command in the symlinked bundled AGENTS asset; the branch_pr provider-execution command remains evaluator execute.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -84,6 +169,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:efe8ff07733db915b7358c4206761fd47411aca26d0a05990c2e30ae4526332c"
+      -
+        actor: "USER"
+        at: "2026-07-27T20:28:31.854Z"
+        authorityDigest: "sha256:fec6033db4fea6ad3b4b277603acfde8b415a1dab633e5675a0de8fd1d9d9106"
+        digest: "sha256:260164f75e0d2131fbd0c5f93fc15d866c2ea4d4b9a92c7cc68e4ec4bf955fe6"
+        operationDigest: "sha256:09674863391b8f09201f7f70da11aefa77fb5e0584443c63ec7f10df46ed86fe"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:e67054a76f32c7ca76441503398274dfd8aaf8ce79b3c3c75ee594ba00579ad6"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:0e5dbad64d9ee6aa394868d51af1a85d2ff42738f642bcd907280e3894986ddb"
     grants:
       -
         actor: "USER"
@@ -98,6 +196,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:efe8ff07733db915b7358c4206761fd47411aca26d0a05990c2e30ae4526332c"
         stateScopeDigest: "sha256:7e78a4bb257fe0ff0939cd6187908bb311c731a8546e2b069f58f8da3d2176a3"
+      -
+        actor: "USER"
+        digest: "sha256:fec6033db4fea6ad3b4b277603acfde8b415a1dab633e5675a0de8fd1d9d9106"
+        expiresAt: "2026-07-27T20:43:31.854Z"
+        id: "authority-16fe470b-2535-48ac-bc19-75d186924a99"
+        issuedAt: "2026-07-27T20:28:31.854Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:09674863391b8f09201f7f70da11aefa77fb5e0584443c63ec7f10df46ed86fe"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:0e5dbad64d9ee6aa394868d51af1a85d2ff42738f642bcd907280e3894986ddb"
+        stateScopeDigest: "sha256:e78af4b173507bb31444cf67e298d86ff31cc37e4abc835ca1f23e59aaf2e4f4"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "56e0d620fad82ca93bb9a2f6deddbd48c87c1a55"
@@ -132,6 +243,36 @@ Fix the bootstrap contract drift where AGENTS.md and its packaged asset still pr
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T20:27:45.834Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: the bootstrap verification block now matches the generated contract; focused docs/template/routing checks and the full ci:contract gate passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T20:27:11.442Z, excerpt_hash=sha256:4f051d1c2c819cfc1fd9935b9b9661fbb0aac281dfed9e290ae09426f0cdf4a6
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-clone.9d6Aq6/.agentplane/worktrees/202607272018-PR3E6F-synchronize-evaluator-verification-guidance-for/.agentplane/tasks/202607272018-PR3E6F/blueprint/resolved-snapshot.json
+- old_digest: a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296
+- current_digest: a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607272018-PR3E6F
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607272018-PR3E6F
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -140,3 +281,7 @@ Fix the bootstrap contract drift where AGENTS.md and its packaged asset still pr
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: ci:contract previously failed because AGENTS verification guidance used evaluator execute while BOOTSTRAP_VERIFICATION_COMMANDS rendered evaluator run.
+  Impact: The alpha.2 qualification gate could not proceed because bootstrap documentation freshness was false.
+  Resolution: Updated only the verification-record command in the symlinked bundled AGENTS asset; the branch_pr provider-execution command remains evaluator execute.

@@ -1,0 +1,12 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-27T20:27:45.834Z",
+    "updated_by": "TESTER",
+    "note": "Verified: the bootstrap verification block now matches the generated contract; focused docs/template/routing checks and the full ci:contract gate passed."
+  },
+  "runner_history": []
+}

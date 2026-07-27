@@ -1,0 +1,486 @@
+diff --git a/.agentplane/tasks/202607272018-PR3E6F/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607272018-PR3E6F/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..3ed08b933
+--- /dev/null
++++ b/.agentplane/tasks/202607272018-PR3E6F/blueprint/resolved-snapshot.json
+@@ -0,0 +1,399 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607272018-PR3E6F",
++    "title": "Synchronize evaluator verification guidance for alpha.2 qualification",
++    "description": "Fix the bootstrap contract drift where AGENTS.md and its packaged asset still prescribe evaluator execute while the generated bootstrap contract requires evaluator run. Keep the change limited to canonical guidance, derived asset synchronization, and the failing freshness/contract checks.",
++    "tags": [
++      "alpha2",
++      "documentation",
++      "evaluator",
++      "rework",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "docs",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "docs.change",
++    "version": 1,
++    "title": "Documentation change",
++    "taskKinds": [
++      "docs"
++    ],
++    "workflowModes": [
++      "direct",
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "docs.change",
++    "blueprintVersion": 1,
++    "title": "Documentation change",
++    "taskId": "202607272018-PR3E6F",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "docs"
++    },
++    "whySelected": [
++      "task kind resolved to docs",
++      "workflow mode: branch_pr",
++      "mutation scope: docs"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.docs.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "deterministic_check",
++        "kind": "deterministic_check",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "artifact_write",
++        "kind": "artifact_write",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "docs.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed documentation paths."
++      },
++      {
++        "id": "docs.check",
++        "kind": "check_result",
++        "producedBy": "deterministic_check",
++        "required": true,
++        "description": "Documentation checks."
++      },
++      {
++        "id": "docs.artifact",
++        "kind": "artifact",
++        "producedBy": "artifact_write",
++        "required": true,
++        "description": "Updated documentation artifact."
++      },
++      {
++        "id": "docs.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/dod.docs.md",
++      ".agentplane/policy/security.must.md"
++    ],
++    "allowedCommands": [
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "documentation checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 3,
++      "maxPromptBlocks": 10,
++      "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.docs.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "deterministic_check",
++      "kind": "deterministic_check",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "artifact_write",
++      "kind": "artifact_write",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "docs.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed documentation paths."
++    },
++    {
++      "id": "docs.check",
++      "kind": "check_result",
++      "producedBy": "deterministic_check",
++      "required": true,
++      "description": "Documentation checks."
++    },
++    {
++      "id": "docs.artifact",
++      "kind": "artifact",
++      "producedBy": "artifact_write",
++      "required": true,
++      "description": "Updated documentation artifact."
++    },
++    {
++      "id": "docs.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/dod.docs.md",
++    ".agentplane/policy/security.must.md"
++  ],
++  "allowedCommands": [
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "documentation checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 3,
++    "maxPromptBlocks": 10,
++    "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to docs",
++    "workflow mode: branch_pr",
++    "mutation scope: docs"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "a8619e0551a447c3fecf93b6fd82f233866da0726a47b26bb3ada95b70372296"
++  }
++}
+diff --git a/.agentplane/tasks/202607272018-PR3E6F/pr/diffstat.txt b/.agentplane/tasks/202607272018-PR3E6F/pr/diffstat.txt
+index e69de29bb..8c50119d9 100644
+--- a/.agentplane/tasks/202607272018-PR3E6F/pr/diffstat.txt
++++ b/.agentplane/tasks/202607272018-PR3E6F/pr/diffstat.txt
+@@ -0,0 +1,2 @@
++ packages/agentplane/assets/AGENTS.md | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
+diff --git a/.agentplane/tasks/202607272018-PR3E6F/pr/github-body.md b/.agentplane/tasks/202607272018-PR3E6F/pr/github-body.md
+index 55e8ef533..a825356ac 100644
+--- a/.agentplane/tasks/202607272018-PR3E6F/pr/github-body.md
++++ b/.agentplane/tasks/202607272018-PR3E6F/pr/github-body.md
+@@ -22,12 +22,13 @@ Fix the bootstrap contract drift where AGENTS.md and its packaged asset still pr
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T20:20:49.958Z
++- Updated: 2026-07-27T20:21:29.432Z
+ - Branch: task/202607272018-PR3E6F/synchronize-evaluator-verification-guidance-for
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ packages/agentplane/assets/AGENTS.md | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607272018-PR3E6F/pr/meta.json b/.agentplane/tasks/202607272018-PR3E6F/pr/meta.json
+index 28bafd526..20f73282c 100644
+--- a/.agentplane/tasks/202607272018-PR3E6F/pr/meta.json
++++ b/.agentplane/tasks/202607272018-PR3E6F/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607272018-PR3E6F/synchronize-evaluator-verification-guidance-for",
+   "created_at": "2026-07-27T20:20:49.958Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:658faa475f1bf817065940fbb47146b64033c11973ebcee335d1fdf60dcd6f44",
+   "last_verified_at": null,
++  "pr_number": 4646,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4646",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607272018-PR3E6F",
+-  "updated_at": "2026-07-27T20:20:49.958Z",
++  "updated_at": "2026-07-27T20:21:29.432Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607272018-PR3E6F/pr/review.md b/.agentplane/tasks/202607272018-PR3E6F/pr/review.md
+index e52cc2347..467b60b11 100644
+--- a/.agentplane/tasks/202607272018-PR3E6F/pr/review.md
++++ b/.agentplane/tasks/202607272018-PR3E6F/pr/review.md
+@@ -24,12 +24,13 @@ Created: 2026-07-27T20:20:49.958Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T20:20:49.958Z
++- Updated: 2026-07-27T20:21:29.432Z
+ - Branch: task/202607272018-PR3E6F/synchronize-evaluator-verification-guidance-for
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ packages/agentplane/assets/AGENTS.md | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/assets/AGENTS.md b/packages/agentplane/assets/AGENTS.md
+index 98f9a9fd1..e421c5cae 100644
+--- a/packages/agentplane/assets/AGENTS.md
++++ b/packages/agentplane/assets/AGENTS.md
+@@ -104,7 +104,7 @@ ap finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "..." --
+ ```bash
+ ap vshow <task-id>
+ ap verify <task-id> --ok|--rework --by <ROLE> --note "..." [--observation "..." --impact "..." --resolution "..."] [--local-only]
+-ap evaluator execute <task-id> --evaluator <id>
++ap evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review --summary "..." --finding "..." --evidence <path-or-check> [--missing-test "..." --hidden-assumption "..." --residual-risk "..."]
+ ap incidents advise <task-id>
+ ap incidents collect <task-id> --check
+ ap doctor
