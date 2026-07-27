@@ -4,7 +4,7 @@ title: "Stabilize concurrent recovery-lease reads"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T18:55:40.772Z"
+  updated_by: "TESTER"
+  note: "Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch."
   attempts: 0
 commit:
   hash: "2fa8ca98733263e3e3a688afff63e5f3385d4ead"
@@ -47,8 +47,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: bounded recovery-lease read retries, deterministic collision coverage, and resilient runner test waits passed the full fast CI."
+  -
+    type: "verify"
+    at: "2026-07-27T18:55:40.772Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch."
 doc_version: 3
-doc_updated_at: "2026-07-27T18:55:11.055Z"
+doc_updated_at: "2026-07-27T18:55:42.193Z"
 doc_updated_by: "CODER"
 description: "Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability."
 sections:
@@ -68,11 +74,44 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T18:55:40.772Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T18:55:11.055Z, excerpt_hash=sha256:596f2837052b262a38f7863e1faa9c226328800459a3f30780d720a3653b9f66
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607271814-E1ZTTV-stabilize-concurrent-recovery-lease-reads/.agentplane/tasks/202607271814-E1ZTTV/blueprint/resolved-snapshot.json
+    - old_digest: 1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc
+    - current_digest: 1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607271814-E1ZTTV
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607271814-E1ZTTV
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: bun run ci:local:fast passed: 474 test files, 3289 tests, and all 11 critical CLI chunks.
+      Impact: Concurrent runner scenarios no longer fail on a transient stable-read collision or short local scheduling delay.
+      Resolution: Added bounded retry only for the known recovery-lease read collision, deterministic coverage, and 30-second test-harness waits.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -135,6 +174,36 @@ PLANNER fallback scaffold for "Stabilize concurrent recovery-lease reads". Repla
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T18:55:40.772Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified recovery-lease collision retry, runner wait resilience, and full fast CI on the committed task branch.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T18:55:11.055Z, excerpt_hash=sha256:596f2837052b262a38f7863e1faa9c226328800459a3f30780d720a3653b9f66
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607271814-E1ZTTV-stabilize-concurrent-recovery-lease-reads/.agentplane/tasks/202607271814-E1ZTTV/blueprint/resolved-snapshot.json
+- old_digest: 1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc
+- current_digest: 1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607271814-E1ZTTV
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607271814-E1ZTTV
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -143,3 +212,7 @@ PLANNER fallback scaffold for "Stabilize concurrent recovery-lease reads". Repla
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: bun run ci:local:fast passed: 474 test files, 3289 tests, and all 11 critical CLI chunks.
+  Impact: Concurrent runner scenarios no longer fail on a transient stable-read collision or short local scheduling delay.
+  Resolution: Added bounded retry only for the known recovery-lease read collision, deterministic coverage, and 30-second test-harness waits.
