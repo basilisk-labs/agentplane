@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 39
 origin:
   system: "manual"
 depends_on:
@@ -42,26 +42,25 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-26T23:35:28.189Z"
+  updated_at: "2026-07-27T00:21:41.323Z"
   updated_by: "EVALUATOR"
-  note: "Reviewed the latest authority-digest repair. The exception is limited to the self-advancing pre-merge commit parameter; semantic scope and every remaining operation parameter remain fail-closed."
-  evaluated_sha: "e8e2c315fef1194a3f10fc29fb4481346427fdec"
+  note: "Pass: external workflow operations are explicitly classified and require scoped, expiring authority; the route resumes only for an exact valid grant."
+  evaluated_sha: "96e569f7d32491cf05647f62d5dc78125b20fa9e"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-233528189-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-233528189-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260726-233528189-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-002141323-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-002141323-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-002141323-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
+    - "bun run ci:contract: pass"
+    - "bun run test:fast: 470 files / 3260 tests pass"
+    - "bun run test:critical: 11 critical chunks pass"
     - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
-    - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
-    - "bun run test:fast: 469 files, 3260 tests passed"
-    - "bun run test:critical: 11 of 11 groups passed"
-    - "bun run typecheck"
-    - "bun run bench:compatibility:check"
   findings:
-    - "The authority digest ignores commit only for task.pre_merge_close, while taskId, author, body, result, force, policy, and state scope remain exact-match bound."
-    - "The regression test proves a technical authority-only head advance is allowed and a changed closure result is denied."
+    - "Reviewed authority boundary: the exhaustive policy table classifies every formal operation, and external effects emit typed approval steps rather than executing."
+    - "Reviewed integrity and freshness: grants bind operation and state scope, malformed audit state fails closed, and technical grant commits do not invalidate the semantic scope."
+    - "Reviewed semantic boundary: authority records contain actor and policy metadata only; verdicts, summaries, and implementation decisions remain outside the authority mechanism."
 commit:
   hash: "e3ad5bc54772c6da8dcd2c0f0f1ef7dd4b01641f"
   message: "🔐 NWVCAG task: authorize remote pre-merge closure"
