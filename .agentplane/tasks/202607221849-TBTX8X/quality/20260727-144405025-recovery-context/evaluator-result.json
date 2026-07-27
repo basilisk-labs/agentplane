@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "finding.formatting-only-repair",
+      "severity": "low",
+      "summary": "The follow-up change only normalizes the compatibility conditional to the repository Prettier style; it does not change the optional reworkContext behavior that the focused evaluator regression tests cover.",
+      "broken_invariant": "Every changed source file must satisfy the repository formatting gate before its review result is published.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-diff.patch"
+        },
+        {
+          "path": ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-144405025-recovery-context/evaluator-observed-checks.json"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "recovery_context": "Hosted CI on the refreshed PR head remains the integration gate. The formatting repair passed bun run format:check; prior focused evaluator, critical CLI, schemas, lifecycle invariants, typecheck, Knip, and CLI-reference checks remain applicable."
+}

@@ -1,0 +1,139 @@
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/README.md b/.agentplane/tasks/202607221849-TBTX8X/README.md
+index d2ec8676e..924292103 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/README.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/README.md
+@@ -2,10 +2,10 @@
+ id: "202607221849-TBTX8X"
+ title: "Prepare and apply typed evaluator results"
+ result_summary: "pre-merge closure"
+-status: "DONE"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 30
++revision: 31
+ origin:
+   system: "manual"
+ depends_on:
+@@ -90,6 +90,9 @@ comments:
+   -
+     author: "CODER"
+     body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Reopened before merge: hosted verify-contract found Prettier drift in evaluator.command.ts. Restore formatting, repeat format check, and refresh the PR head."
+ events:
+   -
+     type: "status"
+@@ -152,8 +155,15 @@ events:
+     from: "DOING"
+     to: "DONE"
+     note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "status"
++    at: "2026-07-27T14:42:10.204Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DOING"
++    note: "Reopened before merge: hosted verify-contract found Prettier drift in evaluator.command.ts. Restore formatting, repeat format check, and refresh the PR head."
+ doc_version: 3
+-doc_updated_at: "2026-07-27T14:37:05.376Z"
++doc_updated_at: "2026-07-27T14:42:10.204Z"
+ doc_updated_by: "CODER"
+ description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
+ sections:
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+index 83e1ca073..be3feb180 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+@@ -5,8 +5,8 @@
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
+- .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
++ .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
+  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1539 insertions(+), 221 deletions(-)
++ 11 files changed, 1537 insertions(+), 221 deletions(-)
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+index 5fe89e985..022099f4a 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+@@ -41,11 +41,11 @@ reviewed compatibility ratchet passed.
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
+- .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
++ .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
+  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1539 insertions(+), 221 deletions(-)
++ 11 files changed, 1537 insertions(+), 221 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt b/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt
+index a77bcf8dd..9a10e85d9 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/github-title.txt
+@@ -1 +1 @@
+-✅ TBTX8X task: Prepare and apply typed evaluator results [202607221849-TBTX8X]
++🚧 TBTX8X task: Prepare and apply typed evaluator results [202607221849-TBTX8X]
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+index f9b508c99..065388b4a 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results",
+   "created_at": "2026-07-27T12:39:26.919Z",
+-  "diffstat_sha256": "sha256:10981a3b3f696d7385d8878d28e1f39adc04cdf921fd0af68cac9e645fc2fe4b",
++  "diffstat_sha256": "sha256:c421dc5f2ae73eb703c17788069b219317ec7c07e741ebd088872bc70c254b33",
+   "last_verified_at": "2026-07-27T13:56:01.444Z",
+   "last_verified_diffstat_sha256": "sha256:2b586e04c68639c03af63668eacb6af3e2a9f62b3c7b69345c74803a3492968d",
+   "pr_number": 4642,
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+index e88522026..c9db0d7c6 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+@@ -6,7 +6,7 @@ Created: 2026-07-27T12:39:26.919Z
+ 
+ - Task: `202607221849-TBTX8X`
+ - Title: Prepare and apply typed evaluator results
+-- Status: DONE
++- Status: DOING
+ - Branch: `task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results`
+ - Canonical task record: `.agentplane/tasks/202607221849-TBTX8X/README.md`
+ 
+@@ -36,11 +36,11 @@ Created: 2026-07-27T12:39:26.919Z
+  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
+  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
+  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
+- .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
++ .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
+  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
+  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
+  .../check-compatibility-contract-baseline.mjs      |  85 ++++
+- 11 files changed, 1539 insertions(+), 221 deletions(-)
++ 11 files changed, 1537 insertions(+), 221 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index 56ebb89e0..5bc31034c 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -324,9 +324,7 @@ function compatibilityResult(opts: {
+     })),
+     missing_tests: opts.parsed.missingTests,
+     hidden_assumptions: opts.parsed.hiddenAssumptions,
+-    ...(reworkContext.length > 0
+-      ? { recovery_context: reworkContext.join("\n") }
+-      : {}),
++    ...(reworkContext.length > 0 ? { recovery_context: reworkContext.join("\n") } : {}),
+   };
+ }
+ 
