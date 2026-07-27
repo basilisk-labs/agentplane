@@ -4,7 +4,11 @@ import { makeTaskBackendDouble, makeTaskCommandContext } from "@agentplane/testk
 import type { TaskData } from "../backends/task-backend.js";
 import type { GitSnapshot } from "./observation/git-snapshot.js";
 import type { RunnerStateFingerprintProbes } from "./state-fingerprint.js";
-import type { RunnerContextBundle, RunnerInvocation } from "./types.js";
+import type {
+  RunnerContextBundle,
+  RunnerInvocation,
+  RunnerTaskContextCompaction,
+} from "./types.js";
 
 const DEFAULT_APPROVALS: NonNullable<RunnerContextBundle["execution"]["approvals"]> = {
   require_plan: false,
@@ -13,13 +17,22 @@ const DEFAULT_APPROVALS: NonNullable<RunnerContextBundle["execution"]["approvals
   require_force: false,
 };
 
-const EMPTY_TASK_CONTEXT_PROJECTIONS = {
-  frontmatter: {},
-  doc: "",
-  sections: {},
-  comments: [],
-  events: [],
-} satisfies Omit<NonNullable<RunnerContextBundle["task"]>, "task_id" | "data">;
+function emptyTaskEpisodeCompaction(): RunnerTaskContextCompaction {
+  const emptyEntry = {
+    original_bytes: 0,
+    emitted_bytes: 0,
+    original_count: 0,
+    emitted_count: 0,
+    truncated: false,
+  };
+  return {
+    sections: { ...emptyEntry },
+    comments: { ...emptyEntry },
+    events: { ...emptyEntry },
+    omissions: [],
+    serialized: { source_bytes: 0, emitted_bytes: 0, duplicate_bytes_removed: 0 },
+  };
+}
 
 export function task(overrides: Partial<TaskData> = {}): TaskData {
   return {
@@ -99,9 +112,28 @@ export function bundle(taskData = task()): RunnerContextBundle {
       head_commit: "a".repeat(40),
     },
     task: {
-      task_id: taskData.id,
-      data: taskData,
-      ...EMPTY_TASK_CONTEXT_PROJECTIONS,
+      schema_version: 1,
+      kind: "agentplane.task_episode_view",
+      metadata: {
+        task_id: taskData.id,
+        revision: taskData.revision ?? null,
+        status: taskData.status,
+        owner: taskData.owner ?? null,
+        priority: taskData.priority ?? null,
+        tags: [...(taskData.tags ?? [])],
+        task_kind: taskData.task_kind ?? null,
+        mutation_scope: taskData.mutation_scope ?? null,
+        blueprint_request: taskData.blueprint_request ?? null,
+      },
+      narrative: {
+        title: taskData.title,
+        description: taskData.description,
+        sections: [],
+      },
+      verification: { commands: [...taskData.verify] },
+      section_policy: { source: "task_document_schema", required_sections: [] },
+      history: { comments: [], events: [] },
+      compaction: emptyTaskEpisodeCompaction(),
     },
     blueprint: {
       schemaVersion: 1,

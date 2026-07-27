@@ -118,11 +118,11 @@ export function buildCodexInvocation(opts: {
   const sandboxPolicy =
     execution.sandbox_policy ??
     resolveRunnerSandboxPolicy({
-      task: opts.bundle.task?.data,
+      task: opts.bundle.task?.metadata,
       recipe: opts.bundle.recipe,
     });
   const sandbox = resolveCodexSandbox(sandboxPolicy.requested, sandboxPolicy.authority);
-  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.task_id);
+  const recipeEnv = buildRecipeRunnerEnv(opts.bundle.recipe, opts.bundle.task?.metadata.task_id);
   const workspaceWrite = sandbox === RUNNER_WORKSPACE_WRITE_SANDBOX;
   const resultTransportPaths = resolveCodexResultTransportPaths(execution.artifact_paths.run_dir);
   return {

@@ -61,7 +61,7 @@ async function prepareObservation(
     status: "DOING",
     mode: "execute",
   });
-  bundle.task!.data.mutation_scope = selectedWriteScope.mutation_scope;
+  bundle.task!.metadata.mutation_scope = selectedWriteScope.mutation_scope;
   bundle.execution.write_scope = selectedWriteScope;
   bundle.execution.sandbox_policy = {
     requested: nativeReadOnly ? "read-only" : "workspace-write",
@@ -241,7 +241,7 @@ describe("execution receipt protected filesystem observation", () => {
 
     expect(finalized.result.execution_receipt?.path).toBe(
       createSupervisorExecutionReceiptLocator({
-        task_id: prepared.observationBefore.bundle!.task!.task_id,
+        task_id: prepared.observationBefore.bundle!.task!.metadata.task_id,
         run_id: prepared.invocation.run_id,
       }),
     );

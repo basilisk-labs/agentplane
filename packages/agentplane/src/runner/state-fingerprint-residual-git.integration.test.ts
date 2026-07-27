@@ -166,7 +166,7 @@ async function expectExactlyChanged(opts: {
   try {
     await executeStateBoundRunnerInvocation({
       ctx: opts.ctx,
-      task_id: opts.prepared.bundle.task?.task_id ?? "",
+      task_id: opts.prepared.bundle.task?.metadata.task_id ?? "",
       bundle: opts.prepared.bundle,
       invocation: opts.prepared.invocation,
       precondition_fingerprint: opts.prepared.precondition_fingerprint,

@@ -64,7 +64,7 @@ export async function persistReplayAnchorBeforeExecution(opts: {
       : opts.provenance.action === "retry"
         ? "runner_retry_created"
         : "runner_effect_resume_created";
-  const expectedTaskRevision = opts.bundle.task?.data.revision;
+  const expectedTaskRevision = opts.bundle.task?.metadata.revision;
   if (
     typeof expectedTaskRevision !== "number" ||
     !Number.isInteger(expectedTaskRevision) ||

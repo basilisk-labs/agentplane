@@ -260,7 +260,7 @@ describe("context task runner integration", () => {
       source: "role_default",
       role: "CURATOR",
     });
-    expect(executed.bundle.task?.data.owner).toBe("CURATOR");
+    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
     expect(executed.bundle.execution.write_scope).toMatchObject({
       mutation_scope: "context",
       writable_roots: [".agentplane/context", "context"],
@@ -318,7 +318,7 @@ describe("context task runner integration", () => {
       source: "role_default",
       role: "CURATOR",
     });
-    expect(executed.bundle.task?.data.owner).toBe("CURATOR");
+    expect(executed.bundle.task?.metadata.owner).toBe("CURATOR");
     expect(executed.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
       requested: "workspace-write",
       effective: "workspace-write",

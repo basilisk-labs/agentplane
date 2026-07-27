@@ -63,7 +63,7 @@ export type RunnerStateFingerprintProbes = RunnerStateFingerprintComponentProbes
 };
 
 function runnerTaskId(bundle: RunnerContextBundle): string {
-  const taskId = bundle.task?.task_id ?? bundle.target.task_id;
+  const taskId = bundle.task?.metadata.task_id ?? bundle.target.task_id;
   if (!taskId) {
     throw new Error("Runner state fingerprint requires a task id.");
   }

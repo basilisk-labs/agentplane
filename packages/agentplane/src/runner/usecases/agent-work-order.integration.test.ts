@@ -427,7 +427,7 @@ describe("AgentWorkOrder v2 surface integration", () => {
     };
 
     const taskPrepared = await prepare();
-    const frozenTitle = taskPrepared.task_envelope.task.data.title;
+    const frozenTitle = taskPrepared.task_envelope.task.narrative.title;
     const persistedTask = await commandCtx.taskBackend.getTask(taskId);
     expect(persistedTask).toBeTruthy();
     await commandCtx.taskBackend.writeTask({

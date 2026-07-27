@@ -99,8 +99,7 @@ export function assertRunnerBundleMatchesTask(
   runId: string,
 ): void {
   const bundleTaskIds = [
-    bundle.task?.task_id,
-    bundle.task?.data.id,
+    bundle.task?.metadata.task_id,
     bundle.target.kind === "task" ? bundle.target.task_id : bundle.target.task_id,
   ].filter((value): value is string => typeof value === "string" && value.length > 0);
   if (bundle.execution.run_id !== runId) {

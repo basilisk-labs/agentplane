@@ -22,8 +22,8 @@ async function detectRepoTypes(gitRoot: string): Promise<string[]> {
 }
 
 function inferTaskKind(task: RunnerTaskContext | undefined): string | undefined {
-  const tags = Array.isArray(task?.data.tags)
-    ? task.data.tags.filter((tag): tag is string => typeof tag === "string")
+  const tags = Array.isArray(task?.metadata.tags)
+    ? task.metadata.tags.filter((tag): tag is string => typeof tag === "string")
     : [];
   if (tags.includes("docs")) return "docs";
   if (tags.includes("refactor")) return "refactor";
@@ -43,8 +43,8 @@ export async function collectOverlayPromptBlocks(opts: {
   });
   if (!bundle) return [];
   const repoTypes = await detectRepoTypes(opts.git_root);
-  const tags = Array.isArray(opts.task?.data.tags)
-    ? opts.task.data.tags.filter((tag): tag is string => typeof tag === "string")
+  const tags = Array.isArray(opts.task?.metadata.tags)
+    ? opts.task.metadata.tags.filter((tag): tag is string => typeof tag === "string")
     : [];
   const taskKind = inferTaskKind(opts.task);
   const blocks: RunnerPromptBlock[] = [];

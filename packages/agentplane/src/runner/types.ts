@@ -30,6 +30,9 @@ export type {
   RunnerTaskContext,
   RunnerTaskContextCompaction,
   RunnerTaskContextCompactionEntry,
+  TaskEpisodeOmissionReceipt,
+  TaskEpisodeSection,
+  TaskEpisodeView,
   RunnerTracePolicy,
 } from "./types/context.js";
 export type {

@@ -176,12 +176,12 @@ export async function prepareTaskRunnerExecution(opts: {
     run_id,
   });
   const sandbox_policy = resolveRunnerSandboxPolicy({
-    task: taskEnvelope.task.data,
+    task: taskEnvelope.source_task,
     recipe: opts.recipe,
     danger_authority: opts.danger_authority,
     execution_role:
       opts.execution_role ??
-      taskEnvelope.task.data.owner ??
+      taskEnvelope.source_task.owner ??
       route_decision.executionPacket.recommendedRole ??
       undefined,
     requested_sandbox: opts.sandbox_override,
@@ -190,7 +190,7 @@ export async function prepareTaskRunnerExecution(opts: {
   const write_scope = resolveRunnerWriteScopePolicy({
     sandbox: sandbox_policy,
     protected_path_groups: executionContext.harness.policy.protected_paths,
-    task: taskEnvelope.task.data,
+    task: taskEnvelope.source_task,
     recipe: opts.recipe,
   });
   const bundle: RunnerContextBundle = {

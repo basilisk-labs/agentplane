@@ -172,7 +172,7 @@ export async function persistRunnerOutcomeToTask(opts: {
   backend_projection_transition?: RunnerBackendProjectionTransitionRequest;
 }): Promise<TaskData | null> {
   if (opts.bundle?.execution.mode === "dry_run" || opts.state.mode === "dry_run") {
-    return opts.bundle?.task?.data ?? null;
+    return await loadTaskFromContext({ ctx: opts.ctx, taskId: opts.task_id });
   }
 
   const backend = opts.ctx.taskBackend;

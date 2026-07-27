@@ -130,7 +130,7 @@ export async function routePacket(opts: {
       ...(opts.includeRemote ? { include_remote: true } : {}),
     }),
   );
-  const fullTask = preparedWorkOrder.task_envelope.task.data;
+  const fullTask = preparedWorkOrder.task_envelope.source_task;
   const decision = preparedWorkOrder.route_decision;
   const shouldProjectRunner = routeNeedsRunnerProjection(decision) || Boolean(fullTask.runner);
   const runner = shouldProjectRunner

@@ -238,8 +238,8 @@ function hasRemoteProviderEvidence(route: TaskRouteDecision): boolean {
 export function projectTaskBriefFromPreparedWorkOrder(
   preparedWorkOrder: PreparedAgentWorkOrder,
 ): TaskBriefWithWorkflowStep {
-  const task = preparedWorkOrder.task_envelope.task.data;
-  const doc = preparedWorkOrder.task_envelope.task.doc;
+  const task = preparedWorkOrder.task_envelope.source_task;
+  const doc = typeof task.doc === "string" ? task.doc : "";
   const verifySteps = (extractDocSection(doc, "Verify Steps") ?? "").trim();
   const verifyQuality = verifyStepsQuality(verifySteps);
   const route = preparedWorkOrder.route_decision;

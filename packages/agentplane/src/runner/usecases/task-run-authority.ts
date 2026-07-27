@@ -25,7 +25,7 @@ export function assertRunnerPolicyCompatibility(bundle: RunnerContextBundle): vo
   const sandboxPolicy =
     bundle.execution.sandbox_policy ??
     resolveRunnerSandboxPolicy({
-      task: bundle.task?.data,
+      task: bundle.task?.metadata,
       recipe: bundle.recipe,
     });
 
@@ -155,13 +155,13 @@ export async function assertRunnerCheckoutAuthority(opts: {
 export function assertRunnerTaskExecutable(bundle: RunnerContextBundle): void {
   const task = bundle.task;
   if (!task) return;
-  const status = normalizeTaskStatus(task.data.status);
+  const status = normalizeTaskStatus(task.metadata.status);
   if (status === "DOING") return;
   throw new CliError({
     exitCode: 2,
     code: "E_USAGE",
     message:
-      `${task.task_id}: runner execution requires task status DOING ` +
-      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.task_id} --author <ROLE> --body "Start: ..."\` first).`,
+      `${task.metadata.task_id}: runner execution requires task status DOING ` +
+      `(current=${JSON.stringify(status)}; use \`agentplane task start-ready ${task.metadata.task_id} --author <ROLE> --body "Start: ..."\` first).`,
   });
 }

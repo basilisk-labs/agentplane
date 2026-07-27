@@ -4,7 +4,7 @@ title: "Normalize runner task inputs into TaskEpisodeView"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -50,7 +50,7 @@ events:
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-27T21:31:31.540Z"
+doc_updated_at: "2026-07-27T22:25:16.226Z"
 doc_updated_by: "CODER"
 description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
 sections:
@@ -79,7 +79,12 @@ sections:
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
     - Restore the previous compatibility path behind an explicit feature/compatibility boundary.
     - Re-run lifecycle, focused, and type checks before resuming dependent work.
-  Findings: ""
+  Findings: |-
+    - Observation: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (tasks.doc.required_sections) as the structural authority.
+      Impact: Required context is prioritized without English heading heuristics and localized/custom headings are covered, but a dedicated per-role section policy requires an explicit later blueprint/schema extension.
+      Resolution: Keep RF-21 narrow: record the source as task_document_schema, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -154,3 +159,9 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
 - Re-run lifecycle, focused, and type checks before resuming dependent work.
 
 ## Findings
+
+- Observation: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (tasks.doc.required_sections) as the structural authority.
+  Impact: Required context is prioritized without English heading heuristics and localized/custom headings are covered, but a dedicated per-role section policy requires an explicit later blueprint/schema extension.
+  Resolution: Keep RF-21 narrow: record the source as task_document_schema, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task.
+  Promotion: incident-candidate
+  Fixability: repo-fixable

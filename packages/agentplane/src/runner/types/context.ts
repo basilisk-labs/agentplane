@@ -11,7 +11,7 @@ import type {
   StateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
 
-import type { TaskData, TaskEvent } from "../../backends/task-backend.js";
+import type { TaskEvent } from "../../backends/task-backend.js";
 import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
 import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
 import type { AgentplaneCapabilityRegistry } from "../../runtime/capabilities/index.js";
@@ -47,18 +47,64 @@ export type RunnerDependencyState = {
   completed: string[];
 };
 
-export type RunnerTaskContext = {
+export type TaskEpisodeSection = {
+  name: string;
+  text: string;
+  required: boolean;
+};
+
+export type TaskEpisodeOmissionReceipt = {
+  section: string;
+  required: boolean;
+  reason_code: "section_budget_exhausted" | "required_section_unavailable";
+};
+
+type TaskEpisodeMetadata = {
   task_id: string;
-  data: TaskData;
-  frontmatter: Record<string, unknown>;
-  doc: string;
-  sections: Record<string, string>;
-  comments: { author: string; body: string }[];
-  events: TaskEvent[];
+  revision: number | null;
+  status: string;
+  owner: string | null;
+  priority: string | number | null;
+  tags: string[];
+  task_kind: string | null;
+  mutation_scope: string | null;
+  blueprint_request: string | null;
+};
+
+/**
+ * The only task representation serialized into a semantic runner episode.
+ *
+ * The backend TaskData object is intentionally not part of this view: it is
+ * lifecycle state owned by the CLI, whereas an agent needs only the selected
+ * semantic narrative and the compact history for its single episode.
+ */
+export type TaskEpisodeView = {
+  schema_version: 1;
+  kind: "agentplane.task_episode_view";
+  metadata: TaskEpisodeMetadata;
+  narrative: {
+    title: string;
+    description: string;
+    sections: TaskEpisodeSection[];
+  };
+  verification: {
+    commands: string[];
+  };
+  section_policy: {
+    source: "task_document_schema";
+    required_sections: string[];
+  };
+  history: {
+    comments: { author: string; body: string }[];
+    events: TaskEvent[];
+  };
   readme_path?: string;
   dependency_state?: RunnerDependencyState;
-  compaction?: RunnerTaskContextCompaction;
+  compaction: RunnerTaskContextCompaction;
 };
+
+/** @deprecated Use TaskEpisodeView; retained as a type-only compatibility alias. */
+export type RunnerTaskContext = TaskEpisodeView;
 
 export type RunnerTaskContextCompactionEntry = {
   original_bytes: number;
@@ -69,10 +115,15 @@ export type RunnerTaskContextCompactionEntry = {
 };
 
 export type RunnerTaskContextCompaction = {
-  doc: RunnerTaskContextCompactionEntry;
   sections: RunnerTaskContextCompactionEntry;
   comments: RunnerTaskContextCompactionEntry;
   events: RunnerTaskContextCompactionEntry;
+  omissions: TaskEpisodeOmissionReceipt[];
+  serialized: {
+    source_bytes: number;
+    emitted_bytes: number;
+    duplicate_bytes_removed: number;
+  };
 };
 
 export type RunnerRecipeContext = {

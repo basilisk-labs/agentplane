@@ -303,7 +303,7 @@ describe("task-run fresh replay security", () => {
         destinationRunId: `run-${action}-current-authority`,
       });
 
-      expect(replayed.bundle.task?.data.owner).toBe("REVIEWER");
+      expect(replayed.bundle.task?.metadata.owner).toBe("REVIEWER");
       expect(replayed.bundle.execution.sandbox_policy).toMatchObject({
         requested: "read-only",
         source: "role_default",

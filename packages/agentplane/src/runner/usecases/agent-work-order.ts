@@ -167,7 +167,7 @@ export async function prepareAgentWorkOrder(opts: {
     });
     const basePrompts = await collectRunnerBasePrompts({
       git_root: executionContext.repo.git_root,
-      owner_id: taskEnvelope.task.data.owner,
+      owner_id: taskEnvelope.source_task.owner,
       agents_dir: executionContext.harness.workflow.paths.agents_dir,
       task: taskEnvelope.task,
       command: opts.runner_command ?? "task run",
