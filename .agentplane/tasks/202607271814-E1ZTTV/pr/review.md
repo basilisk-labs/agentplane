@@ -6,7 +6,7 @@ Created: 2026-07-27T18:15:07.909Z
 
 - Task: `202607271814-E1ZTTV`
 - Title: Stabilize concurrent recovery-lease reads
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607271814-E1ZTTV/stabilize-concurrent-recovery-lease-reads`
 - Canonical task record: `.agentplane/tasks/202607271814-E1ZTTV/README.md`
 
