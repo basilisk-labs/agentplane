@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
   "created_at": "2026-07-27T15:40:36.124Z",
-  "diffstat_sha256": "sha256:b6fe686c453fcdce4f910858a5ff9bc4cade7b571991e1d0f68e4926e4957704",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:f61095436de0e0818037011a5c84ef554a2c8047f765ea5cef3fdb3b3b4feb77",
+  "last_verified_at": "2026-07-27T16:25:58.504Z",
+  "last_verified_diffstat_sha256": "sha256:b6fe686c453fcdce4f910858a5ff9bc4cade7b571991e1d0f68e4926e4957704",
   "pr_number": 4643,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4643",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607221849-8YYZ9X",
   "updated_at": "2026-07-27T16:23:01.398Z",
   "verify": {
-    "status": "skipped"
+    "status": "fail"
   }
 }

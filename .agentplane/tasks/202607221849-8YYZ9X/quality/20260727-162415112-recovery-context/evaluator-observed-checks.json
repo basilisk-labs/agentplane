@@ -1,0 +1,17 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "pending",
+    "attempts": 0,
+    "updated_at": null,
+    "updated_by": null,
+    "note": null
+  },
+  "runner_history": []
+}

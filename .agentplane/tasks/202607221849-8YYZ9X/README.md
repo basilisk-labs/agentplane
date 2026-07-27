@@ -4,7 +4,7 @@ title: "Execute and calibrate EVALUATOR episodes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -32,16 +32,19 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-27T16:25:58.504Z"
+  updated_by: "TESTER"
+  note: "Focused calibration, compatibility, type, lint, build, and critical CLI checks pass; the real read-only Codex episode failed before a typed response."
+  attempts: 1
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: e17d1cc56. Read-only EVALUATOR execution, strict result application, calibration coverage, docs, and compatibility contract are ready for verification."
 events:
   -
     type: "status"
@@ -50,8 +53,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-27T16:23:44.418Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: e17d1cc56. Read-only EVALUATOR execution, strict result application, calibration coverage, docs, and compatibility contract are ready for verification."
+  -
+    type: "verify"
+    at: "2026-07-27T16:25:58.504Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Focused calibration, compatibility, type, lint, build, and critical CLI checks pass; the real read-only Codex episode failed before a typed response."
 doc_version: 3
-doc_updated_at: "2026-07-27T15:40:35.719Z"
+doc_updated_at: "2026-07-27T16:26:00.444Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
@@ -76,12 +92,45 @@ sections:
     5. Run focused evaluator tests, workflow coverage, lifecycle invariants, and typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T16:25:58.504Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Focused calibration, compatibility, type, lint, build, and critical CLI checks pass; the real read-only Codex episode failed before a typed response.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T16:23:44.418Z, excerpt_hash=sha256:520611ddb34ae6455bc539b221ce9f07a6ffba8eade3a225423af7361407c138
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-8YYZ9X-execute-and-calibrate-evaluator-episodes/.agentplane/tasks/202607221849-8YYZ9X/blueprint/resolved-snapshot.json
+    - old_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+    - current_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221849-8YYZ9X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221849-8YYZ9X
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: Codex provider exited while parsing its local model cache; AgentPlane surfaced provider stderr as E_INTERNAL.
+      Impact: The episode correctly did not apply a result, but the caller cannot distinguish provider availability and receives provider internals.
+      Resolution: Classify provider launch failures as E_RUNTIME, withhold raw stderr, add regression coverage, then rerun one fresh episode.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -148,6 +197,36 @@ RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T16:25:58.504Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Focused calibration, compatibility, type, lint, build, and critical CLI checks pass; the real read-only Codex episode failed before a typed response.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T16:23:44.418Z, excerpt_hash=sha256:520611ddb34ae6455bc539b221ce9f07a6ffba8eade3a225423af7361407c138
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-8YYZ9X-execute-and-calibrate-evaluator-episodes/.agentplane/tasks/202607221849-8YYZ9X/blueprint/resolved-snapshot.json
+- old_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+- current_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221849-8YYZ9X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221849-8YYZ9X
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -157,3 +236,7 @@ RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its 
 - Re-run focused contract, migration, and type checks.
 
 ## Findings
+
+- Observation: Codex provider exited while parsing its local model cache; AgentPlane surfaced provider stderr as E_INTERNAL.
+  Impact: The episode correctly did not apply a result, but the caller cannot distinguish provider availability and receives provider internals.
+  Resolution: Classify provider launch failures as E_RUNTIME, withhold raw stderr, add regression coverage, then rerun one fresh episode.

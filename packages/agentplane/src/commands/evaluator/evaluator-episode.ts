@@ -271,7 +271,7 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
       if (code !== 0 || signal) {
         finish(
           new Error(
-            `Codex evaluator exited with code=${code ?? "null"} signal=${signal ?? "none"}: ${stderrTail}`,
+            `Codex evaluator exited before returning a typed result (code=${code ?? "null"} signal=${signal ?? "none"}); provider diagnostics were withheld.`,
           ),
         );
         return;
@@ -304,9 +304,22 @@ export async function executePreparedEvaluatorEpisode(opts: {
     prepared: opts.prepared,
   });
   const before = await readWorkspaceState(invocation.repository_root);
-  const providerResult = await (opts.executor ?? executeCodexEvaluatorEpisode)(invocation);
+  let providerResult: EvaluatorEpisodeProviderResult | null = null;
+  let providerFailure: unknown = null;
+  try {
+    providerResult = await (opts.executor ?? executeCodexEvaluatorEpisode)(invocation);
+  } catch (error) {
+    providerFailure = error;
+  }
   const after = await readWorkspaceState(invocation.repository_root);
   assertUnchangedWorkspace({ before, after });
+  if (providerFailure !== null || providerResult === null) {
+    throw new CliError({
+      code: "E_RUNTIME",
+      message:
+        "Codex evaluator provider failed before returning a typed result. The typed result was not applied.",
+    });
+  }
   const result = validateStrictEvaluatorResult(providerResult.raw_result);
   if (result.evaluator_id !== opts.prepared.work_order.evaluator.id) {
     throw new CliError({
