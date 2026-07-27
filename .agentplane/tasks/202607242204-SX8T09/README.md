@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
     - "Runner effect operation is persisted before adapter execution, and atomic journal claiming prevents a second supervisor from spawning the same effect."
     - "Current task head 463e1f5f has 17 successful hosted checks; the evaluation now binds to that exact published revision."
 commit:
-  hash: "6b83d0c70fc0c093ab00a21c217a5adec936ac38"
-  message: "✨ SX8T09 runner: remove unused effect helper exports"
+  hash: "3aff0045b9dcc52042f617937605f3288df02318"
+  message: "✨ SX8T09 task: record pre-merge closure authority"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -95,8 +98,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T04:17:10.994Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T03:58:40.359Z"
+doc_updated_at: "2026-07-27T04:17:10.994Z"
 doc_updated_by: "CODER"
 description: "Define strict versioned runner effect operation and journal contracts, persist operation identity, idempotency, authority, StateFingerprint and expected postconditions before adapter execution, and make crash/restart/replay refuse a second spawn for the same operation key."
 sections:
@@ -535,6 +545,9 @@ extensions:
         stateFingerprintDigest: "sha256:f397b207fa5efcf91253ec5325147c680217824a4e115425aa427e2599e15f70"
         stateScopeDigest: "sha256:798aac71b0d0182e3c032035943a9dff89124cdd058d19fe8e02da8052f63f00"
     schemaVersion: 1
+  implementation_commit:
+    hash: "6b83d0c70fc0c093ab00a21c217a5adec936ac38"
+    message: "✨ SX8T09 runner: remove unused effect helper exports"
   workflow_route_baseline:
     start_head_sha: "e080b180b13f9d138b9a8eee0e5d73a18517722b"
     version: 1
