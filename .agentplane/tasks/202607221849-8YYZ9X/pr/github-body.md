@@ -39,7 +39,7 @@ changed beyond the tested expectation.
  docs/user/task-lifecycle.mdx                       |   8 +-
  packages/agentplane/assets/AGENTS.md               |   4 +-
  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
- ...-cli.critical.agent-efficiency-baseline.test.ts |  49 ++-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  53 ++-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
@@ -53,7 +53,7 @@ changed beyond the tested expectation.
  .../src/shared/builtin-assets.generated.ts         |   8 +-
  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
- 20 files changed, 1185 insertions(+), 87 deletions(-)
+ 20 files changed, 1189 insertions(+), 87 deletions(-)
 ```
 
 </details>
