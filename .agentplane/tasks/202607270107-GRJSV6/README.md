@@ -4,7 +4,7 @@ title: "Preserve authority-only tails during merged cleanup"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -22,6 +22,28 @@ verification:
   updated_by: null
   note: null
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T01:33:05.928Z"
+  updated_by: "EVALUATOR"
+  note: "Cleanup proof remains fail-closed: only a provider-merged ancestor followed solely by authority-extension README advances may be cleaned."
+  evaluated_sha: "d97c8521e502c765af00ebe5b4cc467edf812aa2"
+  blueprint_digest: "72eb0b2dea0be880388750fb4948c2139ce32e084ac338bcbba56c4f93f2946d"
+  evidence_refs:
+    - ".agentplane/tasks/202607270107-GRJSV6/README.md"
+    - ".agentplane/tasks/202607270107-GRJSV6/quality/20260727-013305928-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607270107-GRJSV6/quality/20260727-013305928-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607270107-GRJSV6/quality/20260727-013305928-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607270107-GRJSV6/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts (31 focused tests)"
+    - "packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+    - "bun run ci:contract"
+    - "GitHub PR #4636 first hosted pass for semantic head 540ed68d883224b84211743e0c98bc04faa44938"
+  findings:
+    - "Accepted path is covered by a targeted provider-receipt fixture with an authority-only descendant chain."
+    - "Rejected path is covered by a semantic post-merge tail fixture; no non-authority changes are accepted."
+    - "Hosted-close finalization is local reversible only after protected merge and pre-merge closure evidence are already durable."
 commit: null
 comments:
   -
