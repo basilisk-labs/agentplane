@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 51
+revision: 52
 origin:
   system: "manual"
 depends_on:
@@ -67,8 +67,8 @@ quality_review:
   findings:
     - "The previous CI failure was test/static drift, not a defect in the QV effect-resolution safety contract. The corrected fixtures now preserve the fail-safe branch route for genuinely uncommitted work."
 commit:
-  hash: "000da2f558f03a633b474888ce682f0542396e92"
-  message: "📋 QV09NA effect-in-doubt: authorize pre-merge closure"
+  hash: "0fde260b678e29d655ad04ada1f96d9f14c46afc"
+  message: "📋 QV09NA effect-in-doubt: authorize refreshed verification closure"
 comments:
   -
     author: "CODER"
@@ -79,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -153,8 +156,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified current QV09NA implementation and closure: bun run test:fast (474 files, 3284 tests), lint, arch, Knip, typecheck, critical CLI, compatibility baseline, explicit resolve-effect/resume-effect help, and GitHub PR #4639 hosted checks all passed."
+  -
+    type: "status"
+    at: "2026-07-27T12:06:43.406Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T12:03:03.854Z"
+doc_updated_at: "2026-07-27T12:06:43.408Z"
 doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
