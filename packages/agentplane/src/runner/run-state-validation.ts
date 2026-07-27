@@ -2,6 +2,7 @@ import { isDeepStrictEqual } from "node:util";
 
 import {
   evaluateStateFingerprintPrecondition,
+  validateRunnerEffectOperationRef,
   validateStateFingerprint,
   validateStateFingerprintPolicy,
 } from "@agentplaneorg/core/schemas";
@@ -321,6 +322,14 @@ function isRunnerStateFingerprintRecord(value: unknown, target: RunnerTarget): b
   }
 }
 
+function isRunnerEffectOperationMarker(value: unknown, runId: string): boolean {
+  try {
+    return validateRunnerEffectOperationRef(value).run_id === runId;
+  } catch {
+    return false;
+  }
+}
+
 export type RunnerRunStateParseOptions = {
   profile?: RunnerRecordProfile;
 };
@@ -373,7 +382,9 @@ function hasValidRunnerRunStateShape(
           isRunnerProcessTree(supervision.process_tree)))) &&
     hasValidRunnerResultContract(value, stateFingerprint) &&
     (stateFingerprint === undefined ||
-      isRunnerStateFingerprintRecord(stateFingerprint, value.target))
+      isRunnerStateFingerprintRecord(stateFingerprint, value.target)) &&
+    (value.effect_operation === undefined ||
+      isRunnerEffectOperationMarker(value.effect_operation, value.run_id))
   );
 }
 

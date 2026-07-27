@@ -27,12 +27,22 @@ Define strict versioned runner effect operation and journal contracts, persist o
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T02:12:20.863Z
+- Updated: 2026-07-27T02:14:01.139Z
 - Branch: task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../agentplane/src/runner/effect-operation.test.ts | 436 ++++++++++++++
+ packages/agentplane/src/runner/effect-operation.ts | 649 +++++++++++++++++++++
+ .../src/runner/run-state-validation.test.ts        |  37 ++
+ .../agentplane/src/runner/run-state-validation.ts  |  13 +-
+ packages/agentplane/src/runner/types/state.ts      |   6 +
+ .../task-run-state-fingerprint.integration.test.ts |  51 ++
+ .../agentplane/src/runner/usecases/task-run.ts     | 114 +++-
+ packages/core/src/index.ts                         |  28 +
+ .../core/src/runner/runner-effect-operation.ts     | 370 ++++++++++++
+ packages/core/src/schemas/index.ts                 |  31 +
+ 10 files changed, 1725 insertions(+), 10 deletions(-)
 ```
 
 </details>

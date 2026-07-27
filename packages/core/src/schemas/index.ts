@@ -77,6 +77,37 @@ export {
 } from "../runner/execution-receipt.js";
 
 export {
+  RUNNER_EFFECT_CLAIM_KIND,
+  RUNNER_EFFECT_CLAIM_ZOD_SCHEMA,
+  RUNNER_EFFECT_ENFORCEMENT_VALUES,
+  RUNNER_EFFECT_JOURNAL_KIND,
+  RUNNER_EFFECT_JOURNAL_PHASE_VALUES,
+  RUNNER_EFFECT_JOURNAL_ZOD_SCHEMA,
+  RUNNER_EFFECT_OPERATION_KIND,
+  RUNNER_EFFECT_OPERATION_REF_KIND,
+  RUNNER_EFFECT_OPERATION_REF_ZOD_SCHEMA,
+  RUNNER_EFFECT_REPLAY_DISPOSITION_VALUES,
+  RUNNER_EFFECT_OPERATION_SCHEMA_VERSION,
+  RUNNER_EFFECT_OPERATION_ZOD_SCHEMA,
+  createRunnerEffectClaim,
+  createRunnerEffectJournal,
+  createRunnerEffectOperation,
+  createRunnerEffectOperationRef,
+  digestRunnerEffectValue,
+  validateRunnerEffectClaim,
+  validateRunnerEffectJournal,
+  validateRunnerEffectOperation,
+  validateRunnerEffectOperationRef,
+  type RunnerEffectClaim,
+  type RunnerEffectEnforcement,
+  type RunnerEffectJournal,
+  type RunnerEffectJournalPhase,
+  type RunnerEffectOperation,
+  type RunnerEffectOperationRef,
+  type RunnerEffectReplayDisposition,
+} from "../runner/runner-effect-operation.js";
+
+export {
   STATE_FINGERPRINT_COMPONENT_NAMES,
   STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
   STATE_FINGERPRINT_KIND,
