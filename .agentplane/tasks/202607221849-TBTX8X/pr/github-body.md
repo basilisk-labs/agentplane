@@ -41,11 +41,11 @@ reviewed compatibility ratchet passed.
  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
- .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
+ .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
  .../check-compatibility-contract-baseline.mjs      |  85 ++++
- 11 files changed, 1539 insertions(+), 221 deletions(-)
+ 11 files changed, 1537 insertions(+), 221 deletions(-)
 ```
 
 </details>

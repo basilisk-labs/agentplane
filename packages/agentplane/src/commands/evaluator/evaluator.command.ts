@@ -324,9 +324,7 @@ function compatibilityResult(opts: {
     })),
     missing_tests: opts.parsed.missingTests,
     hidden_assumptions: opts.parsed.hiddenAssumptions,
-    ...(reworkContext.length > 0
-      ? { recovery_context: reworkContext.join("\n") }
-      : {}),
+    ...(reworkContext.length > 0 ? { recovery_context: reworkContext.join("\n") } : {}),
   };
 }
 

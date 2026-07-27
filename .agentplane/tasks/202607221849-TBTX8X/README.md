@@ -2,10 +2,10 @@
 id: "202607221849-TBTX8X"
 title: "Prepare and apply typed evaluator results"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -90,6 +90,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Reopened before merge: hosted verify-contract found Prettier drift in evaluator.command.ts. Restore formatting, repeat format check, and refresh the PR head."
 events:
   -
     type: "status"
@@ -152,8 +155,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T14:42:10.204Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Reopened before merge: hosted verify-contract found Prettier drift in evaluator.command.ts. Restore formatting, repeat format check, and refresh the PR head."
 doc_version: 3
-doc_updated_at: "2026-07-27T14:37:05.376Z"
+doc_updated_at: "2026-07-27T14:42:10.204Z"
 doc_updated_by: "CODER"
 description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
 sections:

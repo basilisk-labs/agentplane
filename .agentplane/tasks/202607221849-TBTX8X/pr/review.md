@@ -6,7 +6,7 @@ Created: 2026-07-27T12:39:26.919Z
 
 - Task: `202607221849-TBTX8X`
 - Title: Prepare and apply typed evaluator results
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results`
 - Canonical task record: `.agentplane/tasks/202607221849-TBTX8X/README.md`
 
@@ -36,11 +36,11 @@ Created: 2026-07-27T12:39:26.919Z
  .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
  .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
  .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
- .../src/commands/evaluator/evaluator.command.ts    | 397 ++++++++-------
+ .../src/commands/evaluator/evaluator.command.ts    | 395 ++++++++-------
  .../src/commands/evaluator/evaluator.spec.ts       |  99 +++-
  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
  .../check-compatibility-contract-baseline.mjs      |  85 ++++
- 11 files changed, 1539 insertions(+), 221 deletions(-)
+ 11 files changed, 1537 insertions(+), 221 deletions(-)
 ```
 
 </details>
