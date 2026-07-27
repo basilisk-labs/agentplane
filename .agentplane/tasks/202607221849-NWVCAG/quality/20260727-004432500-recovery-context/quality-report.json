@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T00:44:32.500Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Integration authority now remains bound to stable PR identity and semantic source state across its own persisted PR-head update; live eligibility remains route-gated.",
+  "evaluated_sha": "4fa0f7eb7c02c3876f69000b457b633343b79908",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "The pre-merge authority path is exercised end to end; provider head and check churn no longer self-invalidates a durable grant."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "bun run ci:contract; bun run test:critical; packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

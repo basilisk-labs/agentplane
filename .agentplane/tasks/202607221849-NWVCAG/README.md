@@ -2,10 +2,10 @@
 id: "202607221849-NWVCAG"
 title: "Bind side effects to explicit authority records"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 50
 origin:
   system: "manual"
 depends_on:
@@ -34,34 +34,31 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-27T00:35:09.687Z"
+  state: "ok"
+  updated_at: "2026-07-27T00:44:43.872Z"
   updated_by: "TESTER"
-  note: "RF13 end-to-end authority route rework required"
-  attempts: 1
+  note: "Verified RF13 integration authority scope recovery"
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T00:21:41.323Z"
+  updated_at: "2026-07-27T00:44:32.500Z"
   updated_by: "EVALUATOR"
-  note: "Pass: external workflow operations are explicitly classified and require scoped, expiring authority; the route resumes only for an exact valid grant."
-  evaluated_sha: "96e569f7d32491cf05647f62d5dc78125b20fa9e"
+  note: "Integration authority now remains bound to stable PR identity and semantic source state across its own persisted PR-head update; live eligibility remains route-gated."
+  evaluated_sha: "4fa0f7eb7c02c3876f69000b457b633343b79908"
   blueprint_digest: "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49"
   evidence_refs:
     - ".agentplane/tasks/202607221849-NWVCAG/README.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-002141323-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-002141323-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-002141323-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-004432500-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-004432500-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-NWVCAG/quality/20260727-004432500-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json"
-    - "bun run ci:contract: pass"
-    - "bun run test:fast: 470 files / 3260 tests pass"
-    - "bun run test:critical: 11 critical chunks pass"
-    - "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+    - "bun run ci:contract; bun run test:critical; packages/agentplane/src/commands/shared/side-effect-authority.test.ts"
   findings:
-    - "Reviewed authority boundary: the exhaustive policy table classifies every formal operation, and external effects emit typed approval steps rather than executing."
-    - "Reviewed integrity and freshness: grants bind operation and state scope, malformed audit state fails closed, and technical grant commits do not invalidate the semantic scope."
-    - "Reviewed semantic boundary: authority records contain actor and policy metadata only; verdicts, summaries, and implementation decisions remain outside the authority mechanism."
-commit: null
+    - "The pre-merge authority path is exercised end to end; provider head and check churn no longer self-invalidates a durable grant."
+commit:
+  hash: "4fa0f7eb7c02c3876f69000b457b633343b79908"
+  message: "🐛 NWVCAG code: stabilize integration authority scope"
 comments:
   -
     author: "CODER"
@@ -75,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -140,8 +140,21 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "RF13 end-to-end authority route rework required"
+  -
+    type: "verify"
+    at: "2026-07-27T00:44:43.872Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified RF13 integration authority scope recovery"
+  -
+    type: "status"
+    at: "2026-07-27T00:45:23.659Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T00:35:11.369Z"
+doc_updated_at: "2026-07-27T00:45:23.660Z"
 doc_updated_by: "CODER"
 description: "RF-13: classify local, external reversible, external high-risk, and semantic operations; require typed authority/approval records and audit actor, policy rule, digest, and scope."
 sections:
@@ -346,6 +359,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-27T00:44:43.872Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified RF13 integration authority scope recovery
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T00:35:11.369Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+    - old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -363,6 +406,10 @@ sections:
     - Observation: A durable integration authority changes the hosted PR head and reruns checks, but the provider component still binds volatile head and check state.
       Impact: The approved integration authority can expire before the protected merge operation becomes eligible.
       Resolution: Normalize the integration authority scope to stable PR identity and re-run the full RF13 verification path.
+
+    - Observation: Durable authority survives its own technical PR-head update while source changes still invalidate the scope.
+      Impact: Integration can proceed only after fresh live route eligibility, without approval self-invalidation.
+      Resolution: Passed ci:contract, test:critical, focused authority and workflow tests, and a fresh evaluator pass.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -626,6 +673,19 @@ extensions:
         schemaVersion: 1
         sequence: 20
         stateFingerprintDigest: "sha256:8de447711413dc26f13460aa0c4e4b071ea3afb684307bab262415c9830dd91d"
+      -
+        actor: "USER"
+        at: "2026-07-27T00:45:05.425Z"
+        authorityDigest: "sha256:f7ab4fd13732fc2b8b50b50efc6495770b4c2d92f6cde617efd9e03f587d8145"
+        digest: "sha256:c1aa6291d67947b4e9ee34c6579b989d43654713ef296d9c5702fc5d4bafe36c"
+        operationDigest: "sha256:0b2ca40e2063688dd56173c4d24a3c3c84ed96157b8ee0ac9619fe6a6a5c4654"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:a9304ec9391e44bd1a3ed6c9169fab37527dd1d03725c317a5c660bb45a80995"
+        schemaVersion: 1
+        sequence: 21
+        stateFingerprintDigest: "sha256:95d1d1420181b1a74fe94b05c8a8e63e4322f8ac94f190a9ed1be4f2b93114f0"
     grants:
       -
         actor: "USER"
@@ -887,6 +947,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:8de447711413dc26f13460aa0c4e4b071ea3afb684307bab262415c9830dd91d"
         stateScopeDigest: "sha256:cf30c237c7817d1e1b8a507698a2ef8cc3cad2c4880628277e602ed3f3add2f0"
+      -
+        actor: "USER"
+        digest: "sha256:f7ab4fd13732fc2b8b50b50efc6495770b4c2d92f6cde617efd9e03f587d8145"
+        expiresAt: "2026-07-27T01:00:05.425Z"
+        id: "authority-599cb519-c469-4426-8991-466b3d4a369d"
+        issuedAt: "2026-07-27T00:45:05.425Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:0b2ca40e2063688dd56173c4d24a3c3c84ed96157b8ee0ac9619fe6a6a5c4654"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:95d1d1420181b1a74fe94b05c8a8e63e4322f8ac94f190a9ed1be4f2b93114f0"
+        stateScopeDigest: "sha256:4c20ff1f928dd9ecebac5806b8783a29d5c6668a9ec2dc6c13ad170fce277e1b"
     schemaVersion: 1
   implementation_commit:
     hash: "96e569f7d32491cf05647f62d5dc78125b20fa9e"
@@ -1106,6 +1179,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-27T00:44:43.872Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified RF13 integration authority scope recovery
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T00:35:11.369Z, excerpt_hash=sha256:b339f71535fe8e5a8d50993c0125b581ebc30ad2905592177531f036143c88a3
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/worktrees/base-main-for-XS41ZV/.agentplane/worktrees/202607221849-NWVCAG-bind-side-effects-to-explicit-authority-records/.agentplane/tasks/202607221849-NWVCAG/blueprint/resolved-snapshot.json
+- old_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- current_digest: 166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221849-NWVCAG
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1127,3 +1230,7 @@ DecisionContextRef:
 - Observation: A durable integration authority changes the hosted PR head and reruns checks, but the provider component still binds volatile head and check state.
   Impact: The approved integration authority can expire before the protected merge operation becomes eligible.
   Resolution: Normalize the integration authority scope to stable PR identity and re-run the full RF13 verification path.
+
+- Observation: Durable authority survives its own technical PR-head update while source changes still invalidate the scope.
+  Impact: Integration can proceed only after fresh live route eligibility, without approval self-invalidation.
+  Resolution: Passed ci:contract, test:critical, focused authority and workflow tests, and a fresh evaluator pass.
