@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607270445-Y3V80T",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T05:06:11.196Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Pass: the current pre-merge implementation preserves complete archive evidence, clears only resolved registry entries, and requires concrete release-incident verification.",
+  "evaluated_sha": "6dc83ad8c2bb40f61c44068174a39a59dd16d4ef",
+  "blueprint_digest": "189b6d781f3470c6bdd5d347a3bafa5e58ef5d46ab8177649b57b432a04efe3c",
+  "findings": [
+    "The review is tied to the current task implementation head after the verification artifact refresh; no runtime, version, or agentplane-loops file is changed.",
+    "Active registry and packaged mirror are identical and empty, while the archive retains source-task, commit, and deterministic enforcement evidence for both incidents.",
+    "The PR has stable successful hosted checks and the task verification contract now names the required release, policy, guard, schema, and formatting commands."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607270445-Y3V80T/README.md",
+    "docs/developer/incident-archive.mdx",
+    ".agentplane/policy/incidents.md",
+    "packages/agentplane/assets/policy/incidents.md",
+    "node scripts/check-release-incidents.mjs (pass)",
+    "gh pr checks 4638 on b5e79fe4 (all required checks passed)"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Future active incidents will deliberately re-block release planning until a dedicated archival or fix task supplies fresh evidence."
+  ]
+}

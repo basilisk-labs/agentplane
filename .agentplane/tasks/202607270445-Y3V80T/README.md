@@ -1,10 +1,11 @@
 ---
 id: "202607270445-Y3V80T"
 title: "Reconcile resolved release incidents after SX8T09 integration"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -33,16 +34,16 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T05:04:11.981Z"
+  updated_at: "2026-07-27T05:06:11.196Z"
   updated_by: "EVALUATOR"
-  note: "Pass: the task archives only resolved incidents, preserves evidence, and makes the release gate enforceable through concrete verification commands."
-  evaluated_sha: "583c15fa3f03c02cbac6f7d4c528476298e611b6"
+  note: "Pass: the current pre-merge implementation preserves complete archive evidence, clears only resolved registry entries, and requires concrete release-incident verification."
+  evaluated_sha: "6dc83ad8c2bb40f61c44068174a39a59dd16d4ef"
   blueprint_digest: "189b6d781f3470c6bdd5d347a3bafa5e58ef5d46ab8177649b57b432a04efe3c"
   evidence_refs:
     - ".agentplane/tasks/202607270445-Y3V80T/README.md"
-    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050411981-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050411981-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050411981-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050611196-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050611196-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050611196-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607270445-Y3V80T/blueprint/resolved-snapshot.json"
     - "docs/developer/incident-archive.mdx"
     - ".agentplane/policy/incidents.md"
@@ -50,14 +51,19 @@ quality_review:
     - "node scripts/check-release-incidents.mjs (pass)"
     - "gh pr checks 4638 on b5e79fe4 (all required checks passed)"
   findings:
-    - "The current main state contains the canonical KnowledgeRef guard and synchronized task-handoff schemas; deterministic guard and schema checks pass."
-    - "Both active-registry copies are empty and identical after archival, while the archive preserves source-task, commit, and enforcement evidence for future diagnosis."
-    - "The task now declares concrete verification commands, so branch_pr integration cannot treat the incident cleanup as unverified."
-commit: null
+    - "The review is tied to the current task implementation head after the verification artifact refresh; no runtime, version, or agentplane-loops file is changed."
+    - "Active registry and packaged mirror are identical and empty, while the archive retains source-task, commit, and deterministic enforcement evidence for both incidents."
+    - "The PR has stable successful hosted checks and the task verification contract now names the required release, policy, guard, schema, and formatting commands."
+commit:
+  hash: "4706468fa89b2ea6e8ed660f76f7d902844cdae0"
+  message: "🧩 Y3V80T task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
     body: "Start: reconcile the two resolved release incidents in the dedicated task worktree with archive evidence and release-gate verification."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -72,8 +78,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: release incident, policy, guard, schema, formatting, and hosted PR checks passed on b5e79fe4."
+  -
+    type: "status"
+    at: "2026-07-27T05:07:26.807Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T05:03:28.884Z"
+doc_updated_at: "2026-07-27T05:07:26.807Z"
 doc_updated_by: "CODER"
 description: "Verify that the two active release incidents are already fixed on main, archive their final evidence, clear only resolved entries from the active incident registry, and restore the release incident gate without changing runtime behavior."
 sections:
@@ -172,6 +185,19 @@ extensions:
         schemaVersion: 1
         sequence: 3
         stateFingerprintDigest: "sha256:e170bd6175b1be05ab79f43e76a5fd15fdc45fc3bcc85d90a74bacee97c442ba"
+      -
+        actor: "USER"
+        at: "2026-07-27T05:07:04.663Z"
+        authorityDigest: "sha256:93dece3b2918429e4da2f0c63e1c1325dbeb319b4b0409d8a5e374590b0edd99"
+        digest: "sha256:5c2e8cd2a52356a18f3a60712c9c9644ee36f3cb74824524f17a4f09f33f24e0"
+        operationDigest: "sha256:1dca870bdf84c3c03f6de5bef934e9f4f9d81734dc413c503985ee80b1500327"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:5367ebacad916a409a26ee0c35d30791e22c035f76000c7d66f84efd209dd619"
+        schemaVersion: 1
+        sequence: 4
+        stateFingerprintDigest: "sha256:ba55b949780e2db69718f287bad78176786185bc44d6c0e4f9a94efcd195a817"
     grants:
       -
         actor: "USER"
@@ -212,7 +238,23 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:e170bd6175b1be05ab79f43e76a5fd15fdc45fc3bcc85d90a74bacee97c442ba"
         stateScopeDigest: "sha256:fe951bee7d72cb1bf189ddc901734484a25915aa0799918eb0a266276a270882"
+      -
+        actor: "USER"
+        digest: "sha256:93dece3b2918429e4da2f0c63e1c1325dbeb319b4b0409d8a5e374590b0edd99"
+        expiresAt: "2026-07-27T05:22:04.663Z"
+        id: "authority-d348dca3-bf21-4b99-8ce0-a3e6f71c668d"
+        issuedAt: "2026-07-27T05:07:04.663Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:1dca870bdf84c3c03f6de5bef934e9f4f9d81734dc413c503985ee80b1500327"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:ba55b949780e2db69718f287bad78176786185bc44d6c0e4f9a94efcd195a817"
+        stateScopeDigest: "sha256:5512bf0ce20cdd245d5ef3c2b2a19dac404377411f01e7d3b9a9f125166a4402"
     schemaVersion: 1
+  implementation_commit:
+    hash: "6dc83ad8c2bb40f61c44068174a39a59dd16d4ef"
+    message: "🧾 Y3V80T incidents: require release incident checks"
   workflow_route_baseline:
     start_head_sha: "3ce4e39a8165415ac126619fbba5eaf1003ddd24"
     version: 1
