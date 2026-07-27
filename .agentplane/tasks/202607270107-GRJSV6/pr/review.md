@@ -6,7 +6,7 @@ Created: 2026-07-27T01:22:25.252Z
 
 - Task: `202607270107-GRJSV6`
 - Title: Preserve authority-only tails during merged cleanup
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607270107-GRJSV6/preserve-authority-only-tails-during-merged-clea`
 - Canonical task record: `.agentplane/tasks/202607270107-GRJSV6/README.md`
 
