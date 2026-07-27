@@ -1,1 +1,1 @@
-🚧 GRJSV6 task: Preserve authority-only tails during merged cleanup [202607270107-GRJSV6]
+✅ GRJSV6 task: Preserve authority-only tails during merged cleanup [202607270107-GRJSV6]
