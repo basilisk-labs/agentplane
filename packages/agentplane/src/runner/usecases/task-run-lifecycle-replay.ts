@@ -12,6 +12,7 @@ import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
 import { executeTaskRunnerExecution, type ExecutedTaskRunnerExecution } from "./task-run.js";
 import {
   assertCurrentTaskDoing,
+  type EffectResumedTaskRunnerExecution,
   runnerReplayDangerAuthoritySource,
   type ResumedTaskRunnerExecution,
   type RetriedTaskRunnerExecution,
@@ -253,6 +254,34 @@ async function executeFreshReplay(opts: {
     run_id: opts.run_id,
     task,
   });
+  if (opts.action === "resume_effect") {
+    const sourceRepository = await RunnerRunRepository.openExistingTaskRun({
+      git_root: ctx.resolvedProject.gitRoot,
+      workflow_dir: ctx.config.paths.workflow_dir,
+      task_id: opts.task_id,
+      run_id: source.run_id,
+      storage: "supervisor",
+    });
+    const sourceRecord = await sourceRepository.readRequiredRecord({
+      task_id: opts.task_id,
+      run_id: source.run_id,
+    });
+    if (sourceRecord.state.effect_resolution?.verdict !== "not_applied") {
+      throw new CliError({
+        exitCode: 8,
+        code: "E_RUNTIME",
+        message:
+          `runner resume-effect requires a durably attached operator not_applied verdict for ` +
+          `${opts.task_id}:${source.run_id}.`,
+        context: {
+          reason: "runner_effect_resume_not_applied_resolution_required",
+          task_id: opts.task_id,
+          run_id: source.run_id,
+          observed_verdict: sourceRecord.state.effect_resolution?.verdict ?? null,
+        },
+      });
+    }
+  }
   assertFreshReplayDangerAuthority(opts);
   const destinationRunId = resolveFreshReplayRunId({
     action: opts.action,
@@ -329,4 +358,23 @@ export async function retryTaskRunnerExecution(opts: {
     ...opts,
     action: "retry",
   });
+}
+
+export async function resumeTaskRunnerEffectExecution(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string | null;
+  task_id: string;
+  run_id: string;
+  new_run_id?: string;
+  danger_authority?: RunnerDangerFullAccessAuthority | null;
+}): Promise<EffectResumedTaskRunnerExecution> {
+  const resumed = await executeFreshReplay({
+    ...opts,
+    action: "resume_effect",
+  });
+  return {
+    ...resumed,
+    previous_status: resumed.source_status,
+  };
 }

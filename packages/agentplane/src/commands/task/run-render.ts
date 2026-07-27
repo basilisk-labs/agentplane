@@ -112,6 +112,7 @@ type TaskRunnerNextSafeAction =
   | "inspect_run_state"
   | "inspect_spawn_authority"
   | "manual_repair_required"
+  | "resolve_effect"
   | "task_reclaim"
   | "task_run_reconcile"
   | "wait_for_active_run"
@@ -152,6 +153,12 @@ function taskRunnerNextSafeAction(
   }
   if (inspection.claimed_run_authority === "spawn_authorized_but_unconfirmed") {
     return "inspect_spawn_authority";
+  }
+  if (
+    inspection.claimed_run_authority === "effect_in_doubt" ||
+    inspection.claimed_run_authority === "effect_resolution_pending_retirement"
+  ) {
+    return "resolve_effect";
   }
   return "inspect_run_state";
 }

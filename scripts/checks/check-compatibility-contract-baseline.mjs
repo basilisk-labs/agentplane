@@ -317,6 +317,7 @@ function validateReviewedCandidate({
     "202607221848-0ZAB1F",
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
+    "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -332,6 +333,7 @@ function validateReviewedCandidate({
     "202607221848-1HWR0R",
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
+    "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
   ];
@@ -811,6 +813,182 @@ function validateReviewedCandidate({
   const removedCommands = cliTopologyDelta.removed_command_descriptors.map((command) =>
     command.id.join(" "),
   );
+  const effectResolutionCommandDescriptors = [
+    {
+      id: ["task", "run", "resolve-effect"],
+      visibility: "internal",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "run-id", kind: "string", valueHint: "<run-id>", required: true },
+        {
+          name: "verdict",
+          kind: "string",
+          valueHint: "<applied|not_applied>",
+          required: true,
+          choices: ["applied", "not_applied"],
+        },
+        { name: "actor", kind: "string", valueHint: "<operator>", required: true },
+        { name: "observed-at", kind: "string", valueHint: "<ISO-8601>", required: true },
+        { name: "authority-ref", kind: "string", valueHint: "<ref>", required: true },
+        { name: "authority-digest", kind: "string", valueHint: "<sha256:...>", required: true },
+        {
+          name: "precondition-fingerprint-digest",
+          kind: "string",
+          valueHint: "<sha256:...>",
+          required: true,
+        },
+        {
+          name: "precondition-policy-digest",
+          kind: "string",
+          valueHint: "<sha256:...>",
+          required: true,
+        },
+        { name: "evidence-ref", kind: "string", valueHint: "<ref>", required: true },
+        { name: "evidence-text", kind: "string", valueHint: "<text>", required: true },
+        { name: "claim-generation", kind: "string", valueHint: "<generation>", required: true },
+        { name: "accept-legacy", kind: "boolean", valueHint: null, default: false },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
+      id: ["task", "run", "resume-effect"],
+      visibility: "internal",
+      group: "Task",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "run-id", kind: "string", valueHint: "<run-id>", required: true },
+        { name: "new-run-id", kind: "string", valueHint: "<run-id>" },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+  ];
+  const effectResolutionAddedOptions = [
+    {
+      command: "task run resolve-effect",
+      name: "accept-legacy",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "actor",
+      kind: "string",
+      valueHint: "<operator>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "authority-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "authority-ref",
+      kind: "string",
+      valueHint: "<ref>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "claim-generation",
+      kind: "string",
+      valueHint: "<generation>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "evidence-ref",
+      kind: "string",
+      valueHint: "<ref>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "evidence-text",
+      kind: "string",
+      valueHint: "<text>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "observed-at",
+      kind: "string",
+      valueHint: "<ISO-8601>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "precondition-fingerprint-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "precondition-policy-digest",
+      kind: "string",
+      valueHint: "<sha256:...>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "run-id",
+      kind: "string",
+      valueHint: "<run-id>",
+      required: true,
+    },
+    {
+      command: "task run resolve-effect",
+      name: "verdict",
+      kind: "string",
+      valueHint: "<applied|not_applied>",
+      required: true,
+      choices: ["applied", "not_applied"],
+    },
+    {
+      command: "task run resume-effect",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "task run resume-effect",
+      name: "new-run-id",
+      kind: "string",
+      valueHint: "<run-id>",
+    },
+    {
+      command: "task run resume-effect",
+      name: "run-id",
+      kind: "string",
+      valueHint: "<run-id>",
+      required: true,
+    },
+  ];
+  const effectResolutionCommandSources = [
+    { kind: "command", command: "task run resolve-effect", source_task: "202607242158-QV09NA" },
+    { kind: "command", command: "task run resume-effect", source_task: "202607242158-QV09NA" },
+  ];
+  const effectResolutionOptionSources = [
+    ...effectResolutionAddedOptions.map((option) => ({
+      kind: "option",
+      command: option.command,
+      name: option.name,
+      source_task: "202607242158-QV09NA",
+    })),
+  ];
   const expectedAddedCommandDescriptors = [
     {
       id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
@@ -885,6 +1063,7 @@ function validateReviewedCandidate({
       ],
       options: [{ name: "json", kind: "boolean", valueHint: null, default: false }],
     },
+    ...effectResolutionCommandDescriptors,
     {
       id: ["workflow", "migrate"],
       visibility: "user",
@@ -1041,6 +1220,7 @@ function validateReviewedCandidate({
       valueHint: null,
       default: false,
     },
+    ...effectResolutionAddedOptions,
     {
       command: "workflow migrate",
       name: "dry-run",
@@ -1076,6 +1256,7 @@ function validateReviewedCandidate({
       command: "task run reconcile",
       source_task: "202607221846-9XC1H0",
     },
+    ...effectResolutionCommandSources,
     { kind: "command", command: "workflow migrate", source_task: "202607221846-4VB97J" },
     {
       kind: "option",
@@ -1203,6 +1384,7 @@ function validateReviewedCandidate({
       name: "json",
       source_task: "202607221846-9XC1H0",
     },
+    ...effectResolutionOptionSources,
     {
       kind: "option",
       command: "workflow migrate",
@@ -1251,6 +1433,8 @@ function validateReviewedCandidate({
         "pr conflict-rework",
         "task authority grant",
         "task run reconcile",
+        "task run resolve-effect",
+        "task run resume-effect",
         "workflow migrate",
       ]),
     "unexpected CLI addition",

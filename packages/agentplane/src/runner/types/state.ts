@@ -1,6 +1,7 @@
 import type { RunnerTimeoutReason } from "@agentplaneorg/core/config";
 import type {
   RunnerEffectOperationRef,
+  RunnerEffectResolutionRef,
   StateFingerprint,
   StateFingerprintPolicy,
   StateFingerprintPreconditionDiagnostic,
@@ -159,6 +160,12 @@ export type RunnerRunState = {
    * when present it binds this run to the immutable pre-effect operation.
    */
   effect_operation?: RunnerEffectOperationRef;
+  /**
+   * An immutable, operator-supplied disposition for a terminal uncertain
+   * effect. Its presence allows retirement only for the exact active claim it
+   * names; it never represents provider confirmation.
+   */
+  effect_resolution?: RunnerEffectResolutionRef;
   result?: RunnerResult;
 };
 

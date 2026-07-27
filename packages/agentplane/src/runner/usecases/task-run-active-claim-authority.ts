@@ -11,6 +11,7 @@ export type TaskRunnerActiveClaimOwnerStatus = "active" | "stale" | "unverified"
 export type TaskRunnerClaimedRunAuthority =
   | "absent"
   | "effect_in_doubt"
+  | "effect_resolution_pending_retirement"
   | "terminal"
   | "terminal_cleanup_unverified"
   | "incomplete_pre_provider"
@@ -28,12 +29,14 @@ export type TaskRunnerActiveClaimAuthorityPaths = {
   task_id: string;
 };
 
-export function isRunnerEffectInDoubt(state: Pick<RunnerRunState, "state_fingerprint">): boolean {
-  return (
+export function isRunnerEffectInDoubt(
+  state: Pick<RunnerRunState, "state_fingerprint" | "effect_resolution">,
+): boolean {
+  const uncertain =
     state.state_fingerprint?.outcome === "effect_started" ||
     state.state_fingerprint?.outcome === "effect_unknown" ||
-    state.state_fingerprint?.outcome === "post_state_unknown"
-  );
+    state.state_fingerprint?.outcome === "post_state_unknown";
+  return uncertain && state.effect_resolution === undefined;
 }
 
 function isTimestamp(value: string | null): value is string {
@@ -134,6 +137,11 @@ export async function inspectTaskRunnerClaimedRunAuthority(
     run_id: claim.run_id,
   });
   state = record.state;
+  const uncertainEffect =
+    state.state_fingerprint?.outcome === "effect_started" ||
+    state.state_fingerprint?.outcome === "effect_unknown" ||
+    state.state_fingerprint?.outcome === "post_state_unknown";
+  if (uncertainEffect && state.effect_resolution) return "effect_resolution_pending_retirement";
   if (isRunnerEffectInDoubt(state)) return "effect_in_doubt";
   if (state.status === "prepared") {
     await repository.assertBoundary("before reading runner child spawn claim authority");

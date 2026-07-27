@@ -13,6 +13,7 @@
     "202607221848-1HWR0R",
     "202607221848-VC4VVS",
     "202607221849-NWVCAG",
+    "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH"
   ],
@@ -23,9 +24,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "ad0d45e920d24af843a41f490e7b142f4418a24c71c2b66ead0f0f660bf7aadd",
+    "surface_sha256": "2f7706489b6eebd2b25cdd64aa95ad1f1557e3804a5a1fd831a365c1db742723",
     "section_digests": {
-      "cli_topology": "8606be181fb1d7d39a3eda0cf7d9eb805089b512f1ae5756339f0917e1c805c5",
+      "cli_topology": "ef8a9646d0f7027fd9fe619290c9edda5925dc668839e2eb6f70c7c9acc04610",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -355,22 +356,34 @@
         "202607221848-0ZAB1F",
         "202607221848-VC4VVS",
         "202607221849-NWVCAG",
+        "202607242158-QV09NA",
         "202607260007-DQM6AW",
         "202607260532-9M7RNH"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "8606be181fb1d7d39a3eda0cf7d9eb805089b512f1ae5756339f0917e1c805c5",
+      "to_sha256": "ef8a9646d0f7027fd9fe619290c9edda5925dc668839e2eb6f70c7c9acc04610",
       "classification": "additive",
-      "summary": "Adds a read-only provider-conflict context packet, an explicit legacy protected-conflict adoption receipt command, safe task-run reconciliation without provider invocation or process signals, workflow migration controls, explicit evaluator provenance, task-scoped merged cleanup, typed task-run sandbox authority, a scoped side-effect authority grant with exact operation and state fingerprints, and explicit --remote context preservation for grants derived from hosted routes, while keeping provider context request-scoped and local-first by default; no command or option is removed or mutated.",
+      "summary": "Adds explicit, operator-supplied resolution for typed runner effects in doubt, a non-releasing legacy acknowledgement, and a dedicated not_applied resume surface that always creates a fresh operation key; no command or option is removed or mutated.",
       "evidence": {
-        "command_count": { "from": 243, "to": 248 },
-        "positional_count": { "from": 165, "to": 169 },
-        "option_count": { "from": 767, "to": 790 },
+        "command_count": {
+          "from": 243,
+          "to": 250
+        },
+        "positional_count": {
+          "from": 165,
+          "to": 171
+        },
+        "option_count": {
+          "from": 767,
+          "to": 806
+        },
         "added_commands": [
           "integrate queue adopt-legacy-protected-conflict",
           "pr conflict-rework",
           "task authority grant",
           "task run reconcile",
+          "task run resolve-effect",
+          "task run resume-effect",
           "workflow migrate"
         ],
         "removed_commands": [],
@@ -490,6 +503,132 @@
               }
             ],
             "options": [
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
+          {
+            "id": ["task", "run", "resolve-effect"],
+            "visibility": "internal",
+            "group": "Task",
+            "args": [
+              {
+                "name": "task-id",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "run-id",
+                "kind": "string",
+                "valueHint": "<run-id>",
+                "required": true
+              },
+              {
+                "name": "verdict",
+                "kind": "string",
+                "valueHint": "<applied|not_applied>",
+                "required": true,
+                "choices": ["applied", "not_applied"]
+              },
+              {
+                "name": "actor",
+                "kind": "string",
+                "valueHint": "<operator>",
+                "required": true
+              },
+              {
+                "name": "observed-at",
+                "kind": "string",
+                "valueHint": "<ISO-8601>",
+                "required": true
+              },
+              {
+                "name": "authority-ref",
+                "kind": "string",
+                "valueHint": "<ref>",
+                "required": true
+              },
+              {
+                "name": "authority-digest",
+                "kind": "string",
+                "valueHint": "<sha256:...>",
+                "required": true
+              },
+              {
+                "name": "precondition-fingerprint-digest",
+                "kind": "string",
+                "valueHint": "<sha256:...>",
+                "required": true
+              },
+              {
+                "name": "precondition-policy-digest",
+                "kind": "string",
+                "valueHint": "<sha256:...>",
+                "required": true
+              },
+              {
+                "name": "evidence-ref",
+                "kind": "string",
+                "valueHint": "<ref>",
+                "required": true
+              },
+              {
+                "name": "evidence-text",
+                "kind": "string",
+                "valueHint": "<text>",
+                "required": true
+              },
+              {
+                "name": "claim-generation",
+                "kind": "string",
+                "valueHint": "<generation>",
+                "required": true
+              },
+              {
+                "name": "accept-legacy",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              },
+              {
+                "name": "json",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
+              }
+            ]
+          },
+          {
+            "id": ["task", "run", "resume-effect"],
+            "visibility": "internal",
+            "group": "Task",
+            "args": [
+              {
+                "name": "task-id",
+                "required": true,
+                "variadic": false,
+                "valueHint": "<task-id>"
+              }
+            ],
+            "options": [
+              {
+                "name": "run-id",
+                "kind": "string",
+                "valueHint": "<run-id>",
+                "required": true
+              },
+              {
+                "name": "new-run-id",
+                "kind": "string",
+                "valueHint": "<run-id>"
+              },
               {
                 "name": "json",
                 "kind": "boolean",
@@ -666,6 +805,118 @@
             "default": false
           },
           {
+            "command": "task run resolve-effect",
+            "name": "accept-legacy",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "actor",
+            "kind": "string",
+            "valueHint": "<operator>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "authority-digest",
+            "kind": "string",
+            "valueHint": "<sha256:...>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "authority-ref",
+            "kind": "string",
+            "valueHint": "<ref>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "claim-generation",
+            "kind": "string",
+            "valueHint": "<generation>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "evidence-ref",
+            "kind": "string",
+            "valueHint": "<ref>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "evidence-text",
+            "kind": "string",
+            "valueHint": "<text>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "observed-at",
+            "kind": "string",
+            "valueHint": "<ISO-8601>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "precondition-fingerprint-digest",
+            "kind": "string",
+            "valueHint": "<sha256:...>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "precondition-policy-digest",
+            "kind": "string",
+            "valueHint": "<sha256:...>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "run-id",
+            "kind": "string",
+            "valueHint": "<run-id>",
+            "required": true
+          },
+          {
+            "command": "task run resolve-effect",
+            "name": "verdict",
+            "kind": "string",
+            "valueHint": "<applied|not_applied>",
+            "required": true,
+            "choices": ["applied", "not_applied"]
+          },
+          {
+            "command": "task run resume-effect",
+            "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "task run resume-effect",
+            "name": "new-run-id",
+            "kind": "string",
+            "valueHint": "<run-id>"
+          },
+          {
+            "command": "task run resume-effect",
+            "name": "run-id",
+            "kind": "string",
+            "valueHint": "<run-id>",
+            "required": true
+          },
+          {
             "command": "workflow migrate",
             "name": "dry-run",
             "kind": "boolean",
@@ -701,6 +952,16 @@
             "kind": "command",
             "command": "task run reconcile",
             "source_task": "202607221846-9XC1H0"
+          },
+          {
+            "kind": "command",
+            "command": "task run resolve-effect",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "command",
+            "command": "task run resume-effect",
+            "source_task": "202607242158-QV09NA"
           },
           {
             "kind": "command",
@@ -835,6 +1096,102 @@
           },
           {
             "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "accept-legacy",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "actor",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "authority-digest",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "authority-ref",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "claim-generation",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "evidence-ref",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "evidence-text",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "json",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "observed-at",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "precondition-fingerprint-digest",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "precondition-policy-digest",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "run-id",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resolve-effect",
+            "name": "verdict",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resume-effect",
+            "name": "json",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resume-effect",
+            "name": "new-run-id",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
+            "command": "task run resume-effect",
+            "name": "run-id",
+            "source_task": "202607242158-QV09NA"
+          },
+          {
+            "kind": "option",
             "command": "workflow migrate",
             "name": "dry-run",
             "source_task": "202607221846-4VB97J"
@@ -925,7 +1282,10 @@
       "summary": "Publishes the generated workflow, KnowledgeRef, and AgentWorkOrder v2 schemas from the core package; no package source file is removed.",
       "evidence": {
         "package": "@agentplaneorg/core",
-        "source_file_count": { "from": 17, "to": 20 },
+        "source_file_count": {
+          "from": 17,
+          "to": 20
+        },
         "added_source_files": [
           "schemas/agent-work-order-v2.schema.json",
           "schemas/knowledge-ref.schema.json",

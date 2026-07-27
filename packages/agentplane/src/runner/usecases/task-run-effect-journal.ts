@@ -23,6 +23,7 @@ export async function persistPreparedTaskRunnerEffectOperation(opts: {
   state: RunnerRunState;
   task_id: string;
   source_run_id?: string | null;
+  resolved_not_applied_source?: boolean;
 }): Promise<RunnerRunState> {
   if (!opts.state.state_fingerprint) {
     throw new Error(
@@ -35,6 +36,7 @@ export async function persistPreparedTaskRunnerEffectOperation(opts: {
     invocation: opts.invocation,
     state_fingerprint: opts.state.state_fingerprint,
     ...(opts.source_run_id ? { source_run_id: opts.source_run_id } : {}),
+    ...(opts.resolved_not_applied_source ? { resolved_not_applied_source: true } : {}),
   });
   const state = {
     ...opts.state,
@@ -50,6 +52,7 @@ export async function startTaskRunnerEffectOperation(opts: {
   invocation: RunnerInvocation;
   state_fingerprint: RunnerStateFingerprintRecord;
   source_run_id?: string | null;
+  resolved_not_applied_source?: boolean;
 }): Promise<StartedRunnerEffectOperation> {
   return await startRunnerEffectOperation(opts);
 }

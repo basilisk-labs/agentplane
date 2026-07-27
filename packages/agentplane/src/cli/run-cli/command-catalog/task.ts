@@ -51,6 +51,8 @@ import {
   taskRunInspectSpec,
   taskRunLogsSpec,
   taskRunReconcileSpec,
+  taskRunResolveEffectSpec,
+  taskRunResumeEffectSpec,
   taskRunSpec,
   taskRunStatusSpec,
 } from "../../../commands/task/run.command.js";
@@ -101,6 +103,8 @@ import {
   loadTaskRunInspectSpec,
   loadTaskRunLogsSpec,
   loadTaskRunReconcileSpec,
+  loadTaskRunResolveEffectSpec,
+  loadTaskRunResumeEffectSpec,
   loadTaskRunSpec,
   loadTaskRunStatusSpec,
   loadTaskCompleteSpec,
@@ -201,6 +205,16 @@ export const TASK_COMMANDS = [
   }),
   declareCommand(taskRunReconcileSpec, {
     load: loadTaskRunReconcileSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskRunResolveEffectSpec, {
+    load: loadTaskRunResolveEffectSpec,
+    surface: "internal",
+    helpGroup: "Maintenance",
+  }),
+  declareCommand(taskRunResumeEffectSpec, {
+    load: loadTaskRunResumeEffectSpec,
     surface: "internal",
     helpGroup: "Maintenance",
   }),

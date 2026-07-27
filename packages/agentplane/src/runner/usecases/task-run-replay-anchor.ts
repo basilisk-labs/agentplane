@@ -13,7 +13,7 @@ import {
 import type { RunnerContextBundle, RunnerRunState } from "../types.js";
 
 export type TaskRunnerReplayProvenance = {
-  action: "resume" | "retry";
+  action: "resume" | "retry" | "resume_effect";
   source_run_id: string;
   source_status: RunnerRunState["status"];
 };
@@ -59,7 +59,11 @@ export async function persistReplayAnchorBeforeExecution(opts: {
   });
   const recordedAt = new Date().toISOString();
   const eventType =
-    opts.provenance.action === "resume" ? "runner_resume_created" : "runner_retry_created";
+    opts.provenance.action === "resume"
+      ? "runner_resume_created"
+      : opts.provenance.action === "retry"
+        ? "runner_retry_created"
+        : "runner_effect_resume_created";
   const expectedTaskRevision = opts.bundle.task?.data.revision;
   if (
     typeof expectedTaskRevision !== "number" ||

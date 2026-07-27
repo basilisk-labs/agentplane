@@ -7,6 +7,10 @@ export const RUNNER_EFFECT_OPERATION_KIND = "runner_effect_operation" as const;
 export const RUNNER_EFFECT_JOURNAL_KIND = "runner_effect_journal" as const;
 export const RUNNER_EFFECT_CLAIM_KIND = "runner_effect_claim" as const;
 export const RUNNER_EFFECT_OPERATION_REF_KIND = "runner_effect_operation_ref" as const;
+export const RUNNER_EFFECT_RESOLUTION_INTENT_KIND = "runner_effect_resolution_intent" as const;
+export const RUNNER_EFFECT_RESOLUTION_LEASE_KIND = "runner_effect_resolution_lease" as const;
+export const RUNNER_EFFECT_RESOLUTION_KIND = "runner_effect_resolution" as const;
+export const RUNNER_EFFECT_RESOLUTION_REF_KIND = "runner_effect_resolution_ref" as const;
 
 export const RUNNER_EFFECT_JOURNAL_PHASE_VALUES = [
   "prepared",
@@ -21,7 +25,14 @@ export const RUNNER_EFFECT_ENFORCEMENT_VALUES = [
   "provider_key_forwarded",
 ] as const;
 
-export const RUNNER_EFFECT_REPLAY_DISPOSITION_VALUES = ["legacy_fresh", "prepared_fresh"] as const;
+export const RUNNER_EFFECT_REPLAY_DISPOSITION_VALUES = [
+  "legacy_fresh",
+  "prepared_fresh",
+  "resolved_not_applied_fresh",
+] as const;
+
+export const RUNNER_EFFECT_RESOLUTION_VERDICT_VALUES = ["applied", "not_applied"] as const;
+export const RUNNER_EFFECT_RESOLUTION_PROVENANCE = "operator_supplied" as const;
 
 const SHA256_DIGEST_SCHEMA = z.string().regex(/^sha256:[0-9a-f]{64}$/u);
 const NON_EMPTY_STRING = z.string().trim().min(1).max(4096);
@@ -106,14 +117,89 @@ export const RUNNER_EFFECT_OPERATION_REF_ZOD_SCHEMA = z
   })
   .strict();
 
+/**
+ * This is an operator statement, not a provider observation.  The content of
+ * the evidence is deliberately represented only by its canonical digest: the
+ * durable runner record must not copy potentially sensitive operator material.
+ */
+export const RUNNER_EFFECT_RESOLUTION_INTENT_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(RUNNER_EFFECT_OPERATION_SCHEMA_VERSION),
+    kind: z.literal(RUNNER_EFFECT_RESOLUTION_INTENT_KIND),
+    operation_key: SHA256_DIGEST_SCHEMA,
+    operation_digest: SHA256_DIGEST_SCHEMA,
+    effect_claim_generation: SHA256_DIGEST_SCHEMA,
+    active_claim_generation: NON_EMPTY_STRING,
+    authority_ref: NON_EMPTY_STRING,
+    authority_digest: SHA256_DIGEST_SCHEMA,
+    precondition_fingerprint_digest: SHA256_DIGEST_SCHEMA,
+    precondition_policy_digest: SHA256_DIGEST_SCHEMA,
+    verdict: z.enum(RUNNER_EFFECT_RESOLUTION_VERDICT_VALUES),
+    actor: NON_EMPTY_STRING,
+    provenance: z.literal(RUNNER_EFFECT_RESOLUTION_PROVENANCE),
+    observed_at: ISO_UTC_TIMESTAMP_SCHEMA,
+    evidence_ref: NON_EMPTY_STRING,
+    evidence_digest: SHA256_DIGEST_SCHEMA,
+    digest: SHA256_DIGEST_SCHEMA,
+  })
+  .strict();
+
+export const RUNNER_EFFECT_RESOLUTION_LEASE_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(RUNNER_EFFECT_OPERATION_SCHEMA_VERSION),
+    kind: z.literal(RUNNER_EFFECT_RESOLUTION_LEASE_KIND),
+    operation_key: SHA256_DIGEST_SCHEMA,
+    intent_digest: SHA256_DIGEST_SCHEMA,
+    lease_generation: SHA256_DIGEST_SCHEMA,
+    digest: SHA256_DIGEST_SCHEMA,
+  })
+  .strict();
+
+export const RUNNER_EFFECT_RESOLUTION_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(RUNNER_EFFECT_OPERATION_SCHEMA_VERSION),
+    kind: z.literal(RUNNER_EFFECT_RESOLUTION_KIND),
+    operation_key: SHA256_DIGEST_SCHEMA,
+    operation_digest: SHA256_DIGEST_SCHEMA,
+    intent_digest: SHA256_DIGEST_SCHEMA,
+    lease_generation: SHA256_DIGEST_SCHEMA,
+    verdict: z.enum(RUNNER_EFFECT_RESOLUTION_VERDICT_VALUES),
+    digest: SHA256_DIGEST_SCHEMA,
+  })
+  .strict();
+
+export const RUNNER_EFFECT_RESOLUTION_REF_ZOD_SCHEMA = z
+  .object({
+    schema_version: z.literal(RUNNER_EFFECT_OPERATION_SCHEMA_VERSION),
+    kind: z.literal(RUNNER_EFFECT_RESOLUTION_REF_KIND),
+    run_id: NON_EMPTY_STRING,
+    operation_key: SHA256_DIGEST_SCHEMA,
+    operation_digest: SHA256_DIGEST_SCHEMA,
+    active_claim_generation: NON_EMPTY_STRING,
+    intent_digest: SHA256_DIGEST_SCHEMA,
+    lease_generation: SHA256_DIGEST_SCHEMA,
+    resolution_digest: SHA256_DIGEST_SCHEMA,
+    verdict: z.enum(RUNNER_EFFECT_RESOLUTION_VERDICT_VALUES),
+    digest: SHA256_DIGEST_SCHEMA,
+  })
+  .strict();
+
 export type RunnerEffectOperation = z.infer<typeof RUNNER_EFFECT_OPERATION_ZOD_SCHEMA>;
 export type RunnerEffectJournal = z.infer<typeof RUNNER_EFFECT_JOURNAL_ZOD_SCHEMA>;
 export type RunnerEffectClaim = z.infer<typeof RUNNER_EFFECT_CLAIM_ZOD_SCHEMA>;
 export type RunnerEffectOperationRef = z.infer<typeof RUNNER_EFFECT_OPERATION_REF_ZOD_SCHEMA>;
+export type RunnerEffectResolutionIntent = z.infer<
+  typeof RUNNER_EFFECT_RESOLUTION_INTENT_ZOD_SCHEMA
+>;
+export type RunnerEffectResolutionLease = z.infer<typeof RUNNER_EFFECT_RESOLUTION_LEASE_ZOD_SCHEMA>;
+export type RunnerEffectResolution = z.infer<typeof RUNNER_EFFECT_RESOLUTION_ZOD_SCHEMA>;
+export type RunnerEffectResolutionRef = z.infer<typeof RUNNER_EFFECT_RESOLUTION_REF_ZOD_SCHEMA>;
 export type RunnerEffectJournalPhase = (typeof RUNNER_EFFECT_JOURNAL_PHASE_VALUES)[number];
 export type RunnerEffectEnforcement = (typeof RUNNER_EFFECT_ENFORCEMENT_VALUES)[number];
 export type RunnerEffectReplayDisposition =
   (typeof RUNNER_EFFECT_REPLAY_DISPOSITION_VALUES)[number];
+export type RunnerEffectResolutionVerdict =
+  (typeof RUNNER_EFFECT_RESOLUTION_VERDICT_VALUES)[number];
 
 function canonicalJson(value: unknown): string {
   const serialized = canonicalize(value);
@@ -364,6 +450,181 @@ export function validateRunnerEffectOperationRef(input: unknown): RunnerEffectOp
   if (digest !== expected) {
     throw new Error(
       `Runner effect operation reference digest mismatch: expected ${expected}, observed ${digest}.`,
+    );
+  }
+  return parsed;
+}
+
+export function createRunnerEffectResolutionIntent(input: {
+  operation: RunnerEffectOperation;
+  active_claim_generation: string;
+  verdict: RunnerEffectResolutionVerdict;
+  actor: string;
+  observed_at: string;
+  evidence_ref: string;
+  evidence_digest: string;
+}): RunnerEffectResolutionIntent {
+  const intent = {
+    schema_version: RUNNER_EFFECT_OPERATION_SCHEMA_VERSION,
+    kind: RUNNER_EFFECT_RESOLUTION_INTENT_KIND,
+    operation_key: input.operation.operation_key,
+    operation_digest: input.operation.digest,
+    effect_claim_generation: input.operation.claim_generation,
+    active_claim_generation: input.active_claim_generation.trim(),
+    authority_ref: input.operation.authority_ref,
+    authority_digest: input.operation.authority_digest,
+    precondition_fingerprint_digest: input.operation.precondition_fingerprint_digest,
+    precondition_policy_digest: input.operation.precondition_policy_digest,
+    verdict: input.verdict,
+    actor: input.actor.trim(),
+    provenance: RUNNER_EFFECT_RESOLUTION_PROVENANCE,
+    observed_at: input.observed_at,
+    evidence_ref: input.evidence_ref.trim(),
+    evidence_digest: input.evidence_digest,
+  } as const;
+  return validateRunnerEffectResolutionIntent({
+    ...intent,
+    digest: digestRunnerEffectValue(intent),
+  });
+}
+
+export function validateRunnerEffectResolutionIntent(input: unknown): RunnerEffectResolutionIntent {
+  const parsed = RUNNER_EFFECT_RESOLUTION_INTENT_ZOD_SCHEMA.parse(input);
+  const { digest, ...payload } = parsed;
+  const expected = digestRunnerEffectValue(payload);
+  if (digest !== expected) {
+    throw new Error(
+      `Runner effect resolution intent digest mismatch: expected ${expected}, observed ${digest}.`,
+    );
+  }
+  return parsed;
+}
+
+export function createRunnerEffectResolutionLease(input: {
+  operation_key: string;
+  intent_digest: string;
+}): RunnerEffectResolutionLease {
+  const lease = {
+    schema_version: RUNNER_EFFECT_OPERATION_SCHEMA_VERSION,
+    kind: RUNNER_EFFECT_RESOLUTION_LEASE_KIND,
+    operation_key: input.operation_key,
+    intent_digest: input.intent_digest,
+    lease_generation: digestRunnerEffectValue({
+      kind: "runner_effect_resolution_lease_generation",
+      operation_key: input.operation_key,
+      intent_digest: input.intent_digest,
+    }),
+  } as const;
+  return validateRunnerEffectResolutionLease({
+    ...lease,
+    digest: digestRunnerEffectValue(lease),
+  });
+}
+
+export function validateRunnerEffectResolutionLease(input: unknown): RunnerEffectResolutionLease {
+  const parsed = RUNNER_EFFECT_RESOLUTION_LEASE_ZOD_SCHEMA.parse(input);
+  const { digest, lease_generation, ...identity } = parsed;
+  const expectedGeneration = digestRunnerEffectValue({
+    kind: "runner_effect_resolution_lease_generation",
+    operation_key: identity.operation_key,
+    intent_digest: identity.intent_digest,
+  });
+  if (lease_generation !== expectedGeneration) {
+    throw new Error("Runner effect resolution lease generation does not bind the selected intent.");
+  }
+  const expected = digestRunnerEffectValue({ ...identity, lease_generation });
+  if (digest !== expected) {
+    throw new Error(
+      `Runner effect resolution lease digest mismatch: expected ${expected}, observed ${digest}.`,
+    );
+  }
+  return parsed;
+}
+
+export function createRunnerEffectResolution(input: {
+  operation: RunnerEffectOperation;
+  intent: RunnerEffectResolutionIntent;
+  lease: RunnerEffectResolutionLease;
+}): RunnerEffectResolution {
+  if (
+    input.intent.operation_key !== input.operation.operation_key ||
+    input.intent.operation_digest !== input.operation.digest ||
+    input.lease.operation_key !== input.operation.operation_key ||
+    input.lease.intent_digest !== input.intent.digest
+  ) {
+    throw new Error(
+      "Runner effect resolution inputs do not bind one immutable operation and intent.",
+    );
+  }
+  const resolution = {
+    schema_version: RUNNER_EFFECT_OPERATION_SCHEMA_VERSION,
+    kind: RUNNER_EFFECT_RESOLUTION_KIND,
+    operation_key: input.operation.operation_key,
+    operation_digest: input.operation.digest,
+    intent_digest: input.intent.digest,
+    lease_generation: input.lease.lease_generation,
+    verdict: input.intent.verdict,
+  } as const;
+  return validateRunnerEffectResolution({
+    ...resolution,
+    digest: digestRunnerEffectValue(resolution),
+  });
+}
+
+export function validateRunnerEffectResolution(input: unknown): RunnerEffectResolution {
+  const parsed = RUNNER_EFFECT_RESOLUTION_ZOD_SCHEMA.parse(input);
+  const { digest, ...payload } = parsed;
+  const expected = digestRunnerEffectValue(payload);
+  if (digest !== expected) {
+    throw new Error(
+      `Runner effect resolution digest mismatch: expected ${expected}, observed ${digest}.`,
+    );
+  }
+  return parsed;
+}
+
+export function createRunnerEffectResolutionRef(input: {
+  run_id: string;
+  active_claim_generation: string;
+  operation: RunnerEffectOperation;
+  intent: RunnerEffectResolutionIntent;
+  lease: RunnerEffectResolutionLease;
+  resolution: RunnerEffectResolution;
+}): RunnerEffectResolutionRef {
+  if (
+    input.resolution.operation_key !== input.operation.operation_key ||
+    input.resolution.operation_digest !== input.operation.digest ||
+    input.resolution.intent_digest !== input.intent.digest ||
+    input.resolution.lease_generation !== input.lease.lease_generation ||
+    input.resolution.verdict !== input.intent.verdict
+  ) {
+    throw new Error("Runner effect resolution reference does not bind the immutable resolution.");
+  }
+  const reference = {
+    schema_version: RUNNER_EFFECT_OPERATION_SCHEMA_VERSION,
+    kind: RUNNER_EFFECT_RESOLUTION_REF_KIND,
+    run_id: input.run_id.trim(),
+    operation_key: input.operation.operation_key,
+    operation_digest: input.operation.digest,
+    active_claim_generation: input.active_claim_generation.trim(),
+    intent_digest: input.intent.digest,
+    lease_generation: input.lease.lease_generation,
+    resolution_digest: input.resolution.digest,
+    verdict: input.resolution.verdict,
+  } as const;
+  return validateRunnerEffectResolutionRef({
+    ...reference,
+    digest: digestRunnerEffectValue(reference),
+  });
+}
+
+export function validateRunnerEffectResolutionRef(input: unknown): RunnerEffectResolutionRef {
+  const parsed = RUNNER_EFFECT_RESOLUTION_REF_ZOD_SCHEMA.parse(input);
+  const { digest, ...payload } = parsed;
+  const expected = digestRunnerEffectValue(payload);
+  if (digest !== expected) {
+    throw new Error(
+      `Runner effect resolution reference digest mismatch: expected ${expected}, observed ${digest}.`,
     );
   }
   return parsed;
