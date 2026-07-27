@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-TBTX8X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T13:57:24.580Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "5e6f72cb38a9306004ca674ca1d08a1f94432cd1",
+  "blueprint_digest": "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53",
+  "findings": [
+    "The typed EVALUATOR boundary is satisfied: a result is schema-checked, limited to frozen evidence paths, and cannot carry lifecycle or implementation mutations."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "External provider dispatch and calibration are intentionally deferred to RF-12b; this task establishes only the typed prepare/apply boundary."
+  ],
+  "residual_risks": []
+}

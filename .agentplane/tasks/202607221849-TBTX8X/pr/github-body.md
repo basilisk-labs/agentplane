@@ -15,8 +15,15 @@ RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over froze
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified RF-12a against all five task steps: 14 focused evaluator tests cover prepared frozen
+evidence, strict typed apply, staleness and mutation rejection, in-process use cases, and distinct
+human provenance. schema check, lifecycle invariants, agentplane typecheck, policy routing, and the
+reviewed compatibility ratchet passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

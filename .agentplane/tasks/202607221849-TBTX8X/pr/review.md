@@ -6,14 +6,14 @@ Created: 2026-07-27T12:39:26.919Z
 
 - Task: `202607221849-TBTX8X`
 - Title: Prepare and apply typed evaluator results
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results`
 - Canonical task record: `.agentplane/tasks/202607221849-TBTX8X/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified RF-12a against all five task steps: 14 focused evaluator tests cover prepared frozen evidence, strict typed apply, staleness and mutation rejection, in-process use cases, and distinct human provenance. schema check, lifecycle invariants, agentplane typecheck, policy routing, and the reviewed compatibility ratchet passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

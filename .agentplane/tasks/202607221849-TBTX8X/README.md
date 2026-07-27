@@ -1,10 +1,11 @@
 ---
 id: "202607221849-TBTX8X"
 title: "Prepare and apply typed evaluator results"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -35,16 +36,48 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T13:56:01.444Z"
+  updated_by: "TESTER"
+  note: "Verified RF-12a against all five task steps: 14 focused evaluator tests cover prepared frozen evidence, strict typed apply, staleness and mutation rejection, in-process use cases, and distinct human provenance. schema check, lifecycle invariants, agentplane typecheck, policy routing, and the reviewed compatibility ratchet passed."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T13:57:24.580Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "5e6f72cb38a9306004ca674ca1d08a1f94432cd1"
+  blueprint_digest: "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53"
+  evidence_refs:
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/README.md"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The typed EVALUATOR boundary is satisfied: a result is schema-checked, limited to frozen evidence paths, and cannot carry lifecycle or implementation mutations."
+commit:
+  hash: "5e6f72cb38a9306004ca674ca1d08a1f94432cd1"
+  message: "✨ TBTX8X task: prepare typed evaluator results"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: added frozen EVALUATOR work-order preparation, strict typed result application, stale and frozen-evidence rejection, and a human-provenance compatibility facade. Added evaluator prepare/apply CLI surfaces and recorded their reviewed additive compatibility delta. Checks: focused evaluator and route tests, agentplane typecheck, lifecycle invariants, schemas, compatibility ratchet, policy routing, and touched-file lint."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -53,8 +86,28 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-27T13:54:47.732Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: added frozen EVALUATOR work-order preparation, strict typed result application, stale and frozen-evidence rejection, and a human-provenance compatibility facade. Added evaluator prepare/apply CLI surfaces and recorded their reviewed additive compatibility delta. Checks: focused evaluator and route tests, agentplane typecheck, lifecycle invariants, schemas, compatibility ratchet, policy routing, and touched-file lint."
+  -
+    type: "verify"
+    at: "2026-07-27T13:56:01.444Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified RF-12a against all five task steps: 14 focused evaluator tests cover prepared frozen evidence, strict typed apply, staleness and mutation rejection, in-process use cases, and distinct human provenance. schema check, lifecycle invariants, agentplane typecheck, policy routing, and the reviewed compatibility ratchet passed."
+  -
+    type: "status"
+    at: "2026-07-27T13:58:15.547Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T12:39:26.802Z"
+doc_updated_at: "2026-07-27T13:58:15.547Z"
 doc_updated_by: "CODER"
 description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
 sections:
@@ -79,12 +132,45 @@ sections:
     5. Run schema, evaluator, lifecycle, and type checks.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T13:56:01.444Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified RF-12a against all five task steps: 14 focused evaluator tests cover prepared frozen evidence, strict typed apply, staleness and mutation rejection, in-process use cases, and distinct human provenance. schema check, lifecycle invariants, agentplane typecheck, policy routing, and the reviewed compatibility ratchet passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T13:54:47.732Z, excerpt_hash=sha256:188ee92348d41c7804af84cdcded4e552bb72d26005880802f0c3af4076e68d8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-TBTX8X-prepare-and-apply-typed-evaluator-results/.agentplane/tasks/202607221849-TBTX8X/blueprint/resolved-snapshot.json
+    - old_digest: f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53
+    - current_digest: f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221849-TBTX8X
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221849-TBTX8X
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
     - Restore the previous compatibility view or persisted contract version.
     - Re-run focused contract, migration, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: Focused evaluator suite: 14 passed; schemas, lifecycle invariants, typecheck, policy routing, and compatibility baseline passed.
+      Impact: Prepared evaluator work orders and typed result application meet the task acceptance criteria without stdout coupling or evaluator mutation authority.
+      Resolution: Record OK verification and hand off to the EVALUATOR quality gate.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -114,6 +200,19 @@ extensions:
         schemaVersion: 1
         sequence: 2
         stateFingerprintDigest: "sha256:7900a275d609a627926949796cfee406ce995e8bd532050ad79137c33a1f3dae"
+      -
+        actor: "USER"
+        at: "2026-07-27T13:57:45.002Z"
+        authorityDigest: "sha256:d9837156416e3a7db6506e66be20072f3f26a7fec9e3f92ea8f547fad51f263e"
+        digest: "sha256:2deca4dd94ac7a07c62a7822cb7ba08deaed9cdd14210965e4d2727b0847df9e"
+        operationDigest: "sha256:097c27defeecda2b05aa9aafe68863ea165adefc9ec1080e6c2c5e20a03a01b0"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:ef7a052056b630b115958723cd17d689da1ef81c789c33c1fd3c8c041786f62e"
+        schemaVersion: 1
+        sequence: 3
+        stateFingerprintDigest: "sha256:474ae5403fe85f9b493afa9418554985a193d88cbbe32594299f5a649ef9f50b"
     grants:
       -
         actor: "USER"
@@ -141,6 +240,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:7900a275d609a627926949796cfee406ce995e8bd532050ad79137c33a1f3dae"
         stateScopeDigest: "sha256:4b24092296d1df3b5312fed6bae80d1cca5b75782afcfd4c0f2043d275155875"
+      -
+        actor: "USER"
+        digest: "sha256:d9837156416e3a7db6506e66be20072f3f26a7fec9e3f92ea8f547fad51f263e"
+        expiresAt: "2026-07-27T14:12:45.002Z"
+        id: "authority-17290cd7-a44c-4ac0-b5af-a986b81673fa"
+        issuedAt: "2026-07-27T13:57:45.002Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:097c27defeecda2b05aa9aafe68863ea165adefc9ec1080e6c2c5e20a03a01b0"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:474ae5403fe85f9b493afa9418554985a193d88cbbe32594299f5a649ef9f50b"
+        stateScopeDigest: "sha256:71e3ca58fb88ddac1b173c577c06d0f6f6c08bd4bf433aeec95f83affa86c01c"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "f5b987c4b7aabd4830b202c0b6e902211f8abdc4"
@@ -177,6 +289,36 @@ RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over froze
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T13:56:01.444Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified RF-12a against all five task steps: 14 focused evaluator tests cover prepared frozen evidence, strict typed apply, staleness and mutation rejection, in-process use cases, and distinct human provenance. schema check, lifecycle invariants, agentplane typecheck, policy routing, and the reviewed compatibility ratchet passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T13:54:47.732Z, excerpt_hash=sha256:188ee92348d41c7804af84cdcded4e552bb72d26005880802f0c3af4076e68d8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-TBTX8X-prepare-and-apply-typed-evaluator-results/.agentplane/tasks/202607221849-TBTX8X/blueprint/resolved-snapshot.json
+- old_digest: f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53
+- current_digest: f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221849-TBTX8X
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221849-TBTX8X
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -186,3 +328,7 @@ RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over froze
 - Re-run focused contract, migration, and type checks.
 
 ## Findings
+
+- Observation: Focused evaluator suite: 14 passed; schemas, lifecycle invariants, typecheck, policy routing, and compatibility baseline passed.
+  Impact: Prepared evaluator work orders and typed result application meet the task acceptance criteria without stdout coupling or evaluator mutation authority.
+  Resolution: Record OK verification and hand off to the EVALUATOR quality gate.

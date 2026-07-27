@@ -1,0 +1,2706 @@
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221849-TBTX8X/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..10d0c6dd1
+--- /dev/null
++++ b/.agentplane/tasks/202607221849-TBTX8X/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221849-TBTX8X",
++    "title": "Prepare and apply typed evaluator results",
++    "description": "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence.",
++    "tags": [
++      "evaluator",
++      "milestone-alpha2",
++      "refactor",
++      "rf-12",
++      "rf-25",
++      "use-case",
++      "v0.7",
++      "wave-contracts"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221849-TBTX8X",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53"
++  }
++}
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+index e69de29bb..8309ce27c 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/diffstat.txt
+@@ -0,0 +1,11 @@
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/cli/run-cli/command-catalog/project.ts     |   4 +
++ .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
++ .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
++ .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
++ .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
++ .../src/commands/evaluator/evaluator.command.ts    | 396 ++++++++-------
++ .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
++ .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
++ .../check-compatibility-contract-baseline.mjs      |  85 ++++
++ 10 files changed, 1503 insertions(+), 206 deletions(-)
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+index 27671bfc0..7ccecdaaa 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/github-body.md
+@@ -22,12 +22,22 @@ RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over froze
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T12:39:26.919Z
++- Updated: 2026-07-27T12:46:00.307Z
+ - Branch: task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/cli/run-cli/command-catalog/project.ts     |   4 +
++ .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
++ .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
++ .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
++ .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
++ .../src/commands/evaluator/evaluator.command.ts    | 396 ++++++++-------
++ .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
++ .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
++ .../check-compatibility-contract-baseline.mjs      |  85 ++++
++ 10 files changed, 1503 insertions(+), 206 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+index 47746b1fe..55a10c746 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results",
+   "created_at": "2026-07-27T12:39:26.919Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:2b586e04c68639c03af63668eacb6af3e2a9f62b3c7b69345c74803a3492968d",
+   "last_verified_at": null,
++  "pr_number": 4642,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4642",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607221849-TBTX8X",
+-  "updated_at": "2026-07-27T12:39:26.919Z",
++  "updated_at": "2026-07-27T12:46:00.307Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+index b77a510e6..81c16375f 100644
+--- a/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
++++ b/.agentplane/tasks/202607221849-TBTX8X/pr/review.md
+@@ -24,12 +24,22 @@ Created: 2026-07-27T12:39:26.919Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T12:39:26.919Z
++- Updated: 2026-07-27T12:46:00.307Z
+ - Branch: task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
++ .../src/cli/run-cli/command-catalog/project.ts     |   4 +
++ .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
++ .../commands/evaluator/evaluator-review-apply.ts   | 211 ++++++++
++ .../commands/evaluator/evaluator-review-usecase.ts | 558 +++++++++++++++++++++
++ .../evaluator/evaluator-run.command.test.ts        | 169 ++++++-
++ .../src/commands/evaluator/evaluator.command.ts    | 396 ++++++++-------
++ .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
++ .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
++ .../check-compatibility-contract-baseline.mjs      |  85 ++++
++ 10 files changed, 1503 insertions(+), 206 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 4910e6b63..34148b7b0 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("250commands/171args/806options");
++      expect(compatibility.stdout).toContain("252commands/173args/811options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -174,16 +174,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607221848-1HWR0R",
+           "202607221848-VC4VVS",
+           "202607221849-NWVCAG",
++          "202607221849-TBTX8X",
+           "202607242158-QV09NA",
+           "202607260007-DQM6AW",
+           "202607260532-9M7RNH",
+         ],
+         candidate: {
+-          surface_sha256: "2f7706489b6eebd2b25cdd64aa95ad1f1557e3804a5a1fd831a365c1db742723",
++          surface_sha256: "bc9d2678e72c8e8478afb48ac7b18284c9daf9d85cbb02697423d0f2b2b161a8",
+           section_digests: {
+             agent_facing_context_contracts:
+               "5e5cf440852bb118c3771115090399a4e4ab46caf5a856ff57742884749dafec",
+-            cli_topology: "ef8a9646d0f7027fd9fe619290c9edda5925dc668839e2eb6f70c7c9acc04610",
++            cli_topology: "1a97bc1e6b715304e07172db86a5e12d22626b7e391d74cba7a0cfc6d158ee5f",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+index b1d87dda5..c9d0c3685 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+@@ -138,7 +138,9 @@ import {
+   contextLearnTasksSpec,
+ } from "../../../commands/context/context.learn.spec.js";
+ import {
++  evaluatorApplySpec,
+   evaluatorListSpec,
++  evaluatorPrepareSpec,
+   evaluatorRunSpec,
+   evaluatorShowSpec,
+   evaluatorSpec,
+@@ -253,6 +255,8 @@ export const PROJECT_COMMANDS = [
+   fromCommandsEvaluatorCommand(evaluatorSpec, "runEvaluatorGroup", { needs: "none" }),
+   fromCommandsEvaluatorCommand(evaluatorListSpec, "runEvaluatorList", { needs: "none" }),
+   fromCommandsEvaluatorCommand(evaluatorShowSpec, "runEvaluatorShow", { needs: "none" }),
++  fromCommandsEvaluatorCommand(evaluatorPrepareSpec, "runEvaluatorPrepare"),
++  fromCommandsEvaluatorCommand(evaluatorApplySpec, "runEvaluatorApply"),
+   fromCommandsEvaluatorCommand(evaluatorRunSpec, "runEvaluatorRun"),
+   fromCommandsBlueprintsCommand(blueprintsSpec, "runBlueprints", { needs: "none" }),
+   fromCommandsBlueprintsCommand(blueprintsCatalogSpec, "runBlueprintsCatalog", { needs: "none" }),
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts b/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
+index b805822d4..cd05daabd 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
+@@ -59,29 +59,38 @@ export function renderEvaluatorPrompt(opts: {
+   evaluator: EvaluatorModule;
+   taskId: string;
+   taskReadmePath: string;
++  workOrderPath: string;
++  resultPath: string;
+   reportPath: string;
+   provenance: EvaluatorRunProvenance;
+ }): string {
+   return [
+-    "# AgentPlane semantic quality review record",
++    "# AgentPlane EVALUATOR episode",
+     "",
+-    "AgentPlane records supplied review values here; this command does not execute an evaluator.",
+-    "Use the evaluator module below as the review procedure before supplying a result.",
+-    "Do not edit implementation files. Inspect task scope, diff, verification evidence, and residual risk.",
++    "AgentPlane prepared and froze the authoritative review input. Perform the semantic evaluation; do not reproduce CLI discovery or lifecycle work.",
++    "This prompt does not execute an evaluator. A caller must run the evaluator in the work-order authority boundary and persist its returned typed result at the declared output path.",
++    "Do not edit implementation, task lifecycle, policy, or evidence files. You may read the frozen evidence and run read-only checks only.",
+     "",
+     `- task_id: ${opts.taskId}`,
+     `- task_readme: ${opts.taskReadmePath}`,
++    `- work_order: ${opts.workOrderPath}`,
++    `- result_output: ${opts.resultPath}`,
+     `- report_path: ${opts.reportPath}`,
+     `- provenance: ${opts.provenance}`,
+     "",
+-    "Required report fields:",
+-    "- verdict: pass | rework | blocked | human_review",
+-    "- summary: concise judgement",
+-    "- findings: non-empty list for pass/rework/blocked",
+-    "- evidence_refs: concrete files, checks, PRs, traces, or reports inspected",
+-    "- missing_tests: tests or checks that should exist but do not",
+-    "- hidden_assumptions: assumptions the implementation relies on",
+-    "- residual_risks: known remaining risks",
++    "## Required result",
++    "",
++    "Return exactly one `sgr.evaluator_result.v1` JSON object through the evaluator result channel. The caller, not the read-only evaluator, persists it at `result_output`. It must contain:",
++    "- schema_version: 1",
++    "- kind: evaluator_result",
++    "- evaluator_id: the evaluator id from the work order",
++    "- verdict: pass | rework | blocked",
++    "- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs",
++    "- missing_tests and hidden_assumptions: string arrays",
++    "- recovery_context: optional string",
++    "",
++    "Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.",
++    "The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.",
+     "",
+     "## Evaluator module",
+     "",
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+new file mode 100644
+index 000000000..0d4b87179
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+@@ -0,0 +1,211 @@
++import { readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
++import type { EvaluatorSgrResult } from "../../evaluators/sgr-result.js";
++import { CliError } from "../../shared/errors.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
++import { setTaskFieldsIntent } from "../shared/task-store.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++import {
++  renderOpinionMarkdown,
++  type EvaluatorQualityReport,
++} from "./evaluator-quality-artifacts.js";
++import {
++  assertResultEvidenceIsFrozen,
++  assertWorkOrderCurrent,
++  evaluatorSummary,
++  isWithinRoot,
++  qualityState,
++  readWorkOrder,
++  relative,
++  reportPaths,
++  uniqueStrings,
++  validateStrictEvaluatorResult,
++  type EvaluatorWorkOrder,
++  type HumanEvaluatorReviewInput,
++} from "./evaluator-review-usecase.js";
++
++async function persistReview(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  workOrder: EvaluatorWorkOrder;
++  workOrderPath: string;
++  report: EvaluatorQualityReport;
++  resultPayload: EvaluatorSgrResult | null;
++}): Promise<{
++  report_path: string;
++  prompt_path: string;
++  opinion_path: string;
++  result_path: string | null;
++}> {
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const reviewDir = path.dirname(opts.workOrderPath);
++  const paths = reportPaths(reviewDir);
++  if (!isWithinRoot(gitRoot, reviewDir)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evaluator work order path is outside the project root.",
++    });
++  }
++  if (opts.resultPayload !== null) {
++    await writeFile(paths.result_path, `${JSON.stringify(opts.resultPayload, null, 2)}\n`, "utf8");
++  }
++  await writeFile(paths.report_path, `${JSON.stringify(opts.report, null, 2)}\n`, "utf8");
++  await writeFile(paths.opinion_path, renderOpinionMarkdown(opts.report), "utf8");
++  const contextReportPath = await projectEvaluatorQualityReportToContext({
++    root: gitRoot,
++    task: opts.task,
++    report: opts.report,
++    reportPath: relative(gitRoot, paths.report_path),
++  });
++  const evidenceRefs = uniqueStrings([
++    relative(gitRoot, opts.workOrderPath),
++    relative(gitRoot, paths.report_path),
++    relative(gitRoot, paths.prompt_path),
++    relative(gitRoot, paths.opinion_path),
++    ...(opts.resultPayload === null ? [] : [relative(gitRoot, paths.result_path)]),
++    ...opts.workOrder.evidence.map((entry) => entry.path),
++    ...opts.report.evidence_refs,
++    ...(contextReportPath ? [contextReportPath] : []),
++  ]);
++  await applyTaskMutation({
++    ctx: opts.ctx,
++    taskId: opts.task.id,
++    policyAction: "task_verify",
++    phase: "verify",
++    build: () => ({
++      intents: setTaskFieldsIntent({
++        quality_review: {
++          state: opts.report.verdict,
++          provenance: opts.report.provenance,
++          updated_at: opts.report.generated_at,
++          updated_by: opts.report.provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
++          note: opts.report.summary,
++          evaluated_sha: opts.report.evaluated_sha,
++          blueprint_digest: opts.report.blueprint_digest,
++          evidence_refs: evidenceRefs,
++          findings: opts.report.findings,
++        },
++      }),
++    }),
++  });
++  return {
++    report_path: relative(gitRoot, paths.report_path),
++    prompt_path: relative(gitRoot, paths.prompt_path),
++    opinion_path: relative(gitRoot, paths.opinion_path),
++    result_path: opts.resultPayload === null ? null : relative(gitRoot, paths.result_path),
++  };
++}
++
++export async function applyEvaluatorSgrReview(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  workOrderPath: string;
++  result: unknown;
++}): Promise<{ work_order: EvaluatorWorkOrder; report_path: string; result_path: string }> {
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const workOrderPath = path.resolve(gitRoot, opts.workOrderPath);
++  if (!isWithinRoot(gitRoot, workOrderPath)) {
++    throw new CliError({
++      code: "E_USAGE",
++      message: "Evaluator work order must be inside the project root.",
++    });
++  }
++  const workOrder = readWorkOrder(JSON.parse(await readFile(workOrderPath, "utf8")));
++  if (workOrder.task.id !== opts.task.id) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evaluator work order task does not match the requested task.",
++    });
++  }
++  const result = validateStrictEvaluatorResult(opts.result);
++  if (result.evaluator_id !== workOrder.evaluator.id) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evaluator result id does not match the prepared work order.",
++    });
++  }
++  assertResultEvidenceIsFrozen({ workOrder, result });
++  await assertWorkOrderCurrent({ ctx: opts.ctx, task: opts.task, workOrder });
++  const at = new Date().toISOString();
++  const report: EvaluatorQualityReport = {
++    schema_version: 1,
++    task_id: opts.task.id,
++    evaluator_id: result.evaluator_id,
++    evaluator_profile: workOrder.evaluator.profile,
++    generated_at: at,
++    provenance: "evaluator_supplied",
++    verdict: qualityState(result.verdict),
++    summary: evaluatorSummary(result),
++    evaluated_sha: workOrder.evaluated_sha,
++    blueprint_digest: workOrder.blueprint_digest,
++    findings: result.findings.map((finding) => finding.summary),
++    evidence_refs: uniqueStrings(
++      result.findings.flatMap((finding) => finding.evidence_refs.map((entry) => entry.path)),
++    ),
++    missing_tests: result.missing_tests,
++    hidden_assumptions: result.hidden_assumptions,
++    residual_risks: result.recovery_context ? [result.recovery_context] : [],
++  };
++  const persisted = await persistReview({
++    ctx: opts.ctx,
++    task: opts.task,
++    workOrder,
++    workOrderPath,
++    report,
++    resultPayload: result,
++  });
++  return {
++    work_order: workOrder,
++    report_path: persisted.report_path,
++    result_path: persisted.result_path!,
++  };
++}
++
++export async function applyHumanEvaluatorReview(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  workOrderPath: string;
++  input: HumanEvaluatorReviewInput;
++}): Promise<{ work_order: EvaluatorWorkOrder; report_path: string }> {
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const workOrderPath = path.resolve(gitRoot, opts.workOrderPath);
++  const workOrder = readWorkOrder(JSON.parse(await readFile(workOrderPath, "utf8")));
++  if (workOrder.task.id !== opts.task.id) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evaluator work order task does not match the requested task.",
++    });
++  }
++  await assertWorkOrderCurrent({ ctx: opts.ctx, task: opts.task, workOrder });
++  const at = new Date().toISOString();
++  const report: EvaluatorQualityReport = {
++    schema_version: 1,
++    task_id: opts.task.id,
++    evaluator_id: workOrder.evaluator.id,
++    evaluator_profile: workOrder.evaluator.profile,
++    generated_at: at,
++    provenance: "human_supplied",
++    verdict: opts.input.verdict,
++    summary: opts.input.summary,
++    evaluated_sha: workOrder.evaluated_sha,
++    blueprint_digest: workOrder.blueprint_digest,
++    findings: opts.input.findings,
++    evidence_refs: opts.input.evidence_refs,
++    missing_tests: opts.input.missing_tests,
++    hidden_assumptions: opts.input.hidden_assumptions,
++    residual_risks: opts.input.residual_risks,
++  };
++  const persisted = await persistReview({
++    ctx: opts.ctx,
++    task: opts.task,
++    workOrder,
++    workOrderPath,
++    report,
++    resultPayload: null,
++  });
++  return { work_order: workOrder, report_path: persisted.report_path };
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+new file mode 100644
+index 000000000..49489845d
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -0,0 +1,558 @@
++import { createHash } from "node:crypto";
++import { mkdir, readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { z } from "zod";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import {
++  validateEvaluatorSgrResult,
++  type EvaluatorSgrResult,
++} from "../../evaluators/sgr-result.js";
++import { CliError } from "../../shared/errors.js";
++import {
++  checkTaskBlueprintSnapshotDrift,
++  buildTaskBlueprintResolvedSnapshot,
++} from "../blueprint/snapshot-artifact.js";
++import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
++import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++import type { EvaluatorModule } from "../../evaluators/catalog.js";
++import {
++  EVALUATOR_OPINION_FILE,
++  EVALUATOR_PROMPT_FILE,
++  QUALITY_REPORT_FILE,
++  relativeArtifactPath,
++  renderEvaluatorPrompt,
++  safePathSegment,
++  timestampPathSegment,
++} from "./evaluator-quality-artifacts.js";
++import type { EvaluatorRunProvenance, EvaluatorRunVerdict } from "./evaluator.spec.js";
++
++export const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
++export const EVALUATOR_RESULT_FILE = "evaluator-result.json";
++const EVALUATOR_DIFF_FILE = "evaluator-diff.patch";
++const EVALUATOR_OBSERVED_CHECKS_FILE = "evaluator-observed-checks.json";
++const EVALUATOR_BLUEPRINT_FILE = "evaluator-blueprint.json";
++
++const EVALUATOR_WORK_ORDER_SCHEMA = z
++  .object({
++    schema_version: z.literal(1),
++    kind: z.literal("evaluator_work_order"),
++    work_order_id: z.string().trim().min(1),
++    prepared_at: z.string().datetime({ offset: true }),
++    task: z
++      .object({
++        id: z.string().trim().min(1),
++        revision: z.number().int().positive().nullable(),
++        objective: z.string().trim().min(1),
++        acceptance_criteria: z.array(z.string().trim().min(1)).min(1),
++      })
++      .strict(),
++    evaluated_sha: z.string().trim().min(1).nullable(),
++    blueprint_digest: z.string().trim().min(1).nullable(),
++    evaluator: z
++      .object({
++        id: z.string().trim().min(1),
++        profile: z.string().trim().min(1),
++        prompt_module_path: z.string().trim().min(1),
++      })
++      .strict(),
++    authority: z
++      .object({
++        sandbox: z.literal("read-only"),
++        writable_roots: z.array(z.string()).length(0),
++        allowed_tool_classes: z.array(
++          z.enum(["repository_read", "git_read", "run_checks", "report_result"]),
++        ),
++        external_side_effects: z.array(z.string()).length(0),
++      })
++      .strict(),
++    result_contract: z.literal("sgr.evaluator_result.v1"),
++    evidence: z
++      .array(
++        z
++          .object({
++            id: z.string().trim().min(1),
++            kind: z.enum([
++              "task_document",
++              "actual_diff",
++              "observed_checks",
++              "blueprint",
++              "policy_module",
++              "knowledge_ref",
++            ]),
++            path: z.string().trim().min(1),
++            sha256: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
++            required: z.boolean(),
++          })
++          .strict(),
++      )
++      .min(3),
++  })
++  .strict();
++
++export type EvaluatorWorkOrder = z.infer<typeof EVALUATOR_WORK_ORDER_SCHEMA>;
++
++export type PreparedEvaluatorReview = {
++  work_order: EvaluatorWorkOrder;
++  work_order_path: string;
++  report_path: string;
++  prompt_path: string;
++  opinion_path: string;
++  result_path: string;
++};
++
++export type HumanEvaluatorReviewInput = {
++  verdict: EvaluatorRunVerdict;
++  summary: string;
++  findings: string[];
++  evidence_refs: string[];
++  missing_tests: string[];
++  hidden_assumptions: string[];
++  residual_risks: string[];
++};
++
++function sha256(value: string | Buffer): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++export function relative(gitRoot: string, target: string): string {
++  return relativeArtifactPath(gitRoot, target);
++}
++
++export function isWithinRoot(root: string, target: string): boolean {
++  const value = path.relative(root, target);
++  return (
++    value !== "" && !value.startsWith(`..${path.sep}`) && value !== ".." && !path.isAbsolute(value)
++  );
++}
++
++function taskSection(task: TaskData, name: string): string | null {
++  const section = task.sections?.[name];
++  return typeof section === "string" && section.trim() ? section.trim() : null;
++}
++
++export function uniqueStrings(values: readonly string[]): string[] {
++  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
++}
++
++function acceptanceCriteria(task: TaskData): string[] {
++  const criteria = uniqueStrings([
++    ...(task.verify ?? []),
++    taskSection(task, "Scope") ?? "",
++    taskSection(task, "Plan") ?? "",
++    taskSection(task, "Verify Steps") ?? "",
++  ]).slice(0, 64);
++  return criteria.length > 0 ? criteria : [`Review the approved outcome for ${task.title}.`];
++}
++
++function evaluatorObjective(task: TaskData): string {
++  return taskSection(task, "Summary") ?? task.description?.trim() ?? task.title;
++}
++
++function qualityDir(opts: {
++  ctx: CommandContext;
++  taskId: string;
++  evaluatorId: string;
++  at: string;
++}): string {
++  return path.join(
++    opts.ctx.resolvedProject.gitRoot,
++    opts.ctx.config.paths.workflow_dir,
++    opts.taskId,
++    "quality",
++    `${timestampPathSegment(opts.at)}-${safePathSegment(opts.evaluatorId) || "evaluator"}`,
++  );
++}
++
++export async function readFileDigest(filePath: string): Promise<`sha256:${string}`> {
++  return sha256(await readFile(filePath));
++}
++
++async function freezeFile(opts: {
++  gitRoot: string;
++  id: string;
++  kind: EvaluatorWorkOrder["evidence"][number]["kind"];
++  filePath: string;
++  required: boolean;
++}): Promise<EvaluatorWorkOrder["evidence"][number]> {
++  return {
++    id: opts.id,
++    kind: opts.kind,
++    path: relative(opts.gitRoot, opts.filePath),
++    sha256: await readFileDigest(opts.filePath),
++    required: opts.required,
++  };
++}
++
++async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
++  if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
++  try {
++    const { stdout } = await execFileAsync(
++      "git",
++      ["show", "--format=", "--find-renames", "--binary", evaluatedSha],
++      { cwd: gitRoot, maxBuffer: 1024 * 1024 },
++    );
++    return stdout || "No file diff was recorded for the evaluated commit.\n";
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Unable to freeze the actual diff for evaluator review: ${
++        error instanceof Error ? error.message : String(error)
++      }`,
++    });
++  }
++}
++
++async function assertTaskReviewWorkspaceClean(opts: {
++  ctx: CommandContext;
++  taskId: string;
++}): Promise<void> {
++  const [staged, unstaged] = await Promise.all([
++    opts.ctx.git.statusStagedPaths(),
++    opts.ctx.git.statusUnstagedTrackedPaths(),
++  ]);
++  const taskPrefix = `${opts.ctx.config.paths.workflow_dir.replaceAll(/\/+$/gu, "")}/${opts.taskId}/`;
++  const blocking = [...staged, ...unstaged].filter(
++    (entry) => !entry.replaceAll("\\", "/").startsWith(taskPrefix),
++  );
++  if (blocking.length === 0) return;
++  throw new CliError({
++    code: "E_VALIDATION",
++    message:
++      "Evaluator preparation requires committed implementation evidence; tracked paths outside the current task artifact subtree are dirty.",
++    context: { task_id: opts.taskId, blocking_paths: uniqueStrings(blocking) },
++  });
++}
++
++function workOrderId(opts: {
++  taskId: string;
++  revision: number | null;
++  evaluatedSha: string | null;
++  evidence: EvaluatorWorkOrder["evidence"];
++}): string {
++  const digest = sha256(
++    JSON.stringify({
++      task_id: opts.taskId,
++      revision: opts.revision,
++      evaluated_sha: opts.evaluatedSha,
++      evidence: opts.evidence.map((entry) => [entry.id, entry.sha256]),
++    }),
++  ).slice("sha256:".length, "sha256:".length + 24);
++  const task = opts.taskId.replaceAll(/[^A-Za-z0-9_.-]/gu, "-").slice(0, 96) || "task";
++  return `evaluator-work-order-${task}-${digest}`;
++}
++
++export function reportPaths(reviewDir: string): Omit<PreparedEvaluatorReview, "work_order"> {
++  return {
++    work_order_path: path.join(reviewDir, EVALUATOR_WORK_ORDER_FILE),
++    report_path: path.join(reviewDir, QUALITY_REPORT_FILE),
++    prompt_path: path.join(reviewDir, EVALUATOR_PROMPT_FILE),
++    opinion_path: path.join(reviewDir, EVALUATOR_OPINION_FILE),
++    result_path: path.join(reviewDir, EVALUATOR_RESULT_FILE),
++  };
++}
++
++export async function prepareEvaluatorReview(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  evaluator: EvaluatorModule;
++  provenance: EvaluatorRunProvenance;
++  at?: string;
++}): Promise<PreparedEvaluatorReview> {
++  await assertTaskReviewWorkspaceClean({ ctx: opts.ctx, taskId: opts.task.id });
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const at = opts.at ?? new Date().toISOString();
++  const reviewDir = qualityDir({
++    ctx: opts.ctx,
++    taskId: opts.task.id,
++    evaluatorId: opts.evaluator.id,
++    at,
++  });
++  const paths = reportPaths(reviewDir);
++  const taskReadmePath = path.join(
++    gitRoot,
++    opts.ctx.config.paths.workflow_dir,
++    opts.task.id,
++    "README.md",
++  );
++  const evaluatedSha = await resolveQualityReviewTargetSha({
++    gitRoot,
++    workflowDir: opts.ctx.config.paths.workflow_dir,
++    taskId: opts.task.id,
++    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
++    previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
++  });
++  const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
++  const observedChecks = {
++    task_status: opts.task.status,
++    declared_checks: opts.task.verify ?? [],
++    verification: opts.task.verification ?? null,
++    runner_history: opts.task.runner?.history ?? [],
++  };
++
++  await mkdir(reviewDir, { recursive: true });
++  await writeFile(
++    path.join(reviewDir, EVALUATOR_DIFF_FILE),
++    await renderActualDiff(gitRoot, evaluatedSha),
++    "utf8",
++  );
++  await writeFile(
++    path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
++    `${JSON.stringify(observedChecks, null, 2)}\n`,
++    "utf8",
++  );
++  await writeFile(
++    path.join(reviewDir, EVALUATOR_BLUEPRINT_FILE),
++    `${JSON.stringify(blueprint, null, 2)}\n`,
++    "utf8",
++  );
++
++  const evidence: EvaluatorWorkOrder["evidence"] = [
++    await freezeFile({
++      gitRoot,
++      id: "task-document",
++      kind: "task_document",
++      filePath: taskReadmePath,
++      required: true,
++    }),
++    await freezeFile({
++      gitRoot,
++      id: "actual-diff",
++      kind: "actual_diff",
++      filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),
++      required: true,
++    }),
++    await freezeFile({
++      gitRoot,
++      id: "observed-checks",
++      kind: "observed_checks",
++      filePath: path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
++      required: true,
++    }),
++    await freezeFile({
++      gitRoot,
++      id: "blueprint",
++      kind: "blueprint",
++      filePath: path.join(reviewDir, EVALUATOR_BLUEPRINT_FILE),
++      required: true,
++    }),
++  ];
++  for (const [index, policyModule] of blueprint.policyModules.entries()) {
++    const policyPath = path.join(gitRoot, policyModule);
++    try {
++      evidence.push(
++        await freezeFile({
++          gitRoot,
++          id: `policy-${index + 1}`,
++          kind: "policy_module",
++          filePath: policyPath,
++          required: true,
++        }),
++      );
++    } catch (error) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Unable to freeze required evaluator policy module ${policyModule}: ${
++          error instanceof Error ? error.message : String(error)
++        }`,
++      });
++    }
++  }
++
++  const workOrder = EVALUATOR_WORK_ORDER_SCHEMA.parse({
++    schema_version: 1,
++    kind: "evaluator_work_order",
++    work_order_id: workOrderId({
++      taskId: opts.task.id,
++      revision: opts.task.revision ?? null,
++      evaluatedSha,
++      evidence,
++    }),
++    prepared_at: at,
++    task: {
++      id: opts.task.id,
++      revision: opts.task.revision ?? null,
++      objective: evaluatorObjective(opts.task),
++      acceptance_criteria: acceptanceCriteria(opts.task),
++    },
++    evaluated_sha: evaluatedSha,
++    blueprint_digest: blueprint.digest.value,
++    evaluator: {
++      id: opts.evaluator.id,
++      profile: opts.evaluator.profile,
++      prompt_module_path: relative(gitRoot, opts.evaluator.path),
++    },
++    authority: {
++      sandbox: "read-only",
++      writable_roots: [],
++      allowed_tool_classes: ["repository_read", "git_read", "run_checks", "report_result"],
++      external_side_effects: [],
++    },
++    result_contract: "sgr.evaluator_result.v1",
++    evidence,
++  });
++  await writeFile(paths.work_order_path, `${JSON.stringify(workOrder, null, 2)}\n`, "utf8");
++  await writeFile(
++    paths.prompt_path,
++    renderEvaluatorPrompt({
++      evaluator: opts.evaluator,
++      taskId: opts.task.id,
++      taskReadmePath: relative(gitRoot, taskReadmePath),
++      workOrderPath: relative(gitRoot, paths.work_order_path),
++      resultPath: relative(gitRoot, paths.result_path),
++      reportPath: relative(gitRoot, paths.report_path),
++      provenance: opts.provenance,
++    }),
++    "utf8",
++  );
++  return { work_order: workOrder, ...paths };
++}
++
++function assertExactKeys(
++  value: unknown,
++  keys: readonly string[],
++  field: string,
++): asserts value is Record<string, unknown> {
++  if (!value || typeof value !== "object" || Array.isArray(value)) {
++    throw new CliError({ code: "E_VALIDATION", message: `${field} must be an object.` });
++  }
++  const unexpected = Object.keys(value).filter((key) => !keys.includes(key));
++  if (unexpected.length > 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `${field} contains forbidden fields: ${unexpected.join(", ")}. Evaluator results are read-only.`,
++    });
++  }
++}
++
++export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult {
++  assertExactKeys(
++    raw,
++    [
++      "schema_version",
++      "kind",
++      "evaluator_id",
++      "verdict",
++      "findings",
++      "missing_tests",
++      "hidden_assumptions",
++      "recovery_context",
++    ],
++    "EvaluatorSgrResult",
++  );
++  const record = raw as Record<string, unknown>;
++  if (Array.isArray(record.findings)) {
++    for (const [index, finding] of record.findings.entries()) {
++      assertExactKeys(
++        finding,
++        ["id", "severity", "summary", "broken_invariant", "evidence_refs"],
++        `EvaluatorSgrResult.findings[${index}]`,
++      );
++      if (
++        finding &&
++        typeof finding === "object" &&
++        Array.isArray((finding as Record<string, unknown>).evidence_refs)
++      ) {
++        for (const [evidenceIndex, evidence] of (
++          (finding as Record<string, unknown>).evidence_refs as unknown[]
++        ).entries()) {
++          assertExactKeys(
++            evidence,
++            ["path", "sha256", "line", "lines", "section"],
++            `EvaluatorSgrResult.findings[${index}].evidence_refs[${evidenceIndex}]`,
++          );
++        }
++      }
++    }
++  }
++  return validateEvaluatorSgrResult(raw);
++}
++
++export function readWorkOrder(raw: unknown): EvaluatorWorkOrder {
++  try {
++    return EVALUATOR_WORK_ORDER_SCHEMA.parse(raw);
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Invalid EvaluatorWorkOrder: ${error instanceof Error ? error.message : String(error)}`,
++    });
++  }
++}
++
++export function assertResultEvidenceIsFrozen(opts: {
++  workOrder: EvaluatorWorkOrder;
++  result: EvaluatorSgrResult;
++}): void {
++  const allowed = new Set(opts.workOrder.evidence.map((entry) => entry.path));
++  for (const finding of opts.result.findings) {
++    for (const evidence of finding.evidence_refs) {
++      if (!allowed.has(evidence.path)) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: `Evaluator finding ${finding.id} refers to evidence outside the frozen work order: ${evidence.path}`,
++        });
++      }
++    }
++  }
++}
++
++export async function assertWorkOrderCurrent(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  workOrder: EvaluatorWorkOrder;
++}): Promise<void> {
++  const currentRevision = opts.task.revision ?? null;
++  if (currentRevision !== opts.workOrder.task.revision) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evaluator work order is stale because the task revision changed after preparation.",
++    });
++  }
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const currentSha = await resolveQualityReviewTargetSha({
++    gitRoot,
++    workflowDir: opts.ctx.config.paths.workflow_dir,
++    taskId: opts.task.id,
++    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
++    previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
++  });
++  if (currentSha !== opts.workOrder.evaluated_sha) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Evaluator work order is stale because the evaluated SHA changed after preparation.",
++    });
++  }
++  const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: opts.ctx, task: opts.task });
++  if (snapshot.current.digest !== opts.workOrder.blueprint_digest) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Evaluator work order is stale because the resolved blueprint changed after preparation.",
++    });
++  }
++  for (const evidence of opts.workOrder.evidence) {
++    const evidencePath = path.resolve(gitRoot, evidence.path);
++    if (
++      !isWithinRoot(gitRoot, evidencePath) ||
++      (await readFileDigest(evidencePath)) !== evidence.sha256
++    ) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Evaluator work order is stale because frozen evidence changed: ${evidence.path}`,
++      });
++    }
++  }
++}
++
++export function qualityState(
++  verdict: Exclude<EvaluatorRunVerdict, "human_review">,
++): "pass" | "rework" | "blocked" {
++  return verdict;
++}
++
++export function evaluatorSummary(result: EvaluatorSgrResult): string {
++  return `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`;
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index 83f08b653..12845a5a1 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -7,12 +7,18 @@ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+ import { describe, expect, it } from "vitest";
+ 
+ import { parseCommandArgv } from "../../cli/spec/parse.js";
+-import { loadCommandContext } from "../shared/task-backend.js";
++import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+ import { applyTaskMutation } from "../shared/task-mutation.js";
+ import { setTaskFieldsIntent } from "../shared/task-store.js";
+ import { cmdTaskAdd } from "../workflow.js";
++import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
+ 
+ import { runEvaluatorRun } from "./evaluator.command.js";
++import {
++  prepareEvaluatorReview,
++  type PreparedEvaluatorReview,
++} from "./evaluator-review-usecase.js";
++import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
+ import { evaluatorRunSpec } from "./evaluator.spec.js";
+ 
+ const execFileAsync = promisify(execFile);
+@@ -91,6 +97,57 @@ async function setPrimaryBatchOwnership(
+   });
+ }
+ 
++async function prepareTypedReview(
++  root: string,
++  taskId: string,
++): Promise<{
++  command: Awaited<ReturnType<typeof loadCommandContext>>;
++  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
++  prepared: PreparedEvaluatorReview;
++}> {
++  const command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const task = await loadTaskFromContext({ ctx: command, taskId });
++  const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
++  const evaluator = catalog.find((entry) => entry.id === "recovery-context");
++  if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
++  return {
++    command,
++    task,
++    prepared: await prepareEvaluatorReview({
++      ctx: command,
++      task,
++      evaluator,
++      provenance: "evaluator_supplied",
++    }),
++  };
++}
++
++function typedEvaluatorResult(
++  prepared: PreparedEvaluatorReview,
++  overrides: Record<string, unknown> = {},
++) {
++  const diff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
++  if (!diff) throw new Error("Missing frozen actual-diff evidence.");
++  return {
++    schema_version: 1,
++    kind: "evaluator_result",
++    evaluator_id: prepared.work_order.evaluator.id,
++    verdict: "pass",
++    findings: [
++      {
++        id: "finding-1",
++        severity: "low",
++        summary: "The frozen implementation evidence satisfies the declared review contract.",
++        broken_invariant: "none",
++        evidence_refs: [{ path: diff.path }],
++      },
++    ],
++    missing_tests: [],
++    hidden_assumptions: [],
++    ...overrides,
++  };
++}
++
+ describe("evaluator run command", () => {
+   it("parses structured review evidence and findings as repeatable fields", () => {
+     const { parsed } = parseCommandArgv(evaluatorRunSpec, [
+@@ -491,4 +548,114 @@ describe("evaluator run command", () => {
+ 
+     expect(await readEvaluatedSha(root, taskId)).toBeNull();
+   });
++
++  it("prepares a frozen read-only work order and applies only the matching typed evaluator result", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202605240900-EV12";
++    await addTask(root, taskId);
++    const implementationSha = await commitPath(
++      root,
++      "src/evaluated.ts",
++      "export const evaluated = true;\n",
++      "feat: evaluator target",
++    );
++
++    const { command, task, prepared } = await prepareTypedReview(root, taskId);
++    expect(prepared.work_order).toMatchObject({
++      task: { id: taskId, revision: task.revision },
++      evaluated_sha: implementationSha,
++      authority: { sandbox: "read-only", writable_roots: [], external_side_effects: [] },
++      result_contract: "sgr.evaluator_result.v1",
++    });
++    expect(prepared.work_order.evidence.map((entry) => entry.kind)).toEqual(
++      expect.arrayContaining(["task_document", "actual_diff", "observed_checks", "blueprint"]),
++    );
++    const prompt = await readFile(prepared.prompt_path, "utf8");
++    expect(prompt).toContain("# AgentPlane EVALUATOR episode");
++    expect(prompt).toContain("sgr.evaluator_result.v1");
++    expect(prompt).toContain("caller, not the read-only evaluator, persists it");
++    expect(prompt).toContain(`result_output: ${path.relative(root, prepared.result_path)}`);
++
++    const applied = await applyEvaluatorSgrReview({
++      ctx: command,
++      task,
++      workOrderPath: prepared.work_order_path,
++      result: typedEvaluatorResult(prepared),
++    });
++
++    expect(applied.report_path).toContain(`.agentplane/tasks/${taskId}/quality/`);
++    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
++    expect(stored.frontmatter.quality_review).toMatchObject({
++      state: "pass",
++      provenance: "evaluator_supplied",
++      updated_by: "EVALUATOR",
++      evaluated_sha: implementationSha,
++    });
++  });
++
++  it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202605240900-EV13";
++    await addTask(root, taskId);
++    await commitPath(
++      root,
++      "src/evaluated.ts",
++      "export const version = 1;\n",
++      "feat: initial target",
++    );
++    const { command, task, prepared } = await prepareTypedReview(root, taskId);
++    await commitPath(root, "src/evaluated.ts", "export const version = 2;\n", "feat: newer target");
++
++    await expect(
++      applyEvaluatorSgrReview({
++        ctx: command,
++        task,
++        workOrderPath: prepared.work_order_path,
++        result: typedEvaluatorResult(prepared),
++      }),
++    ).rejects.toThrow("evaluated SHA changed");
++  });
++
++  it("rejects unfrozen evidence and mutation-shaped evaluator results before task state changes", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202605240900-EV14";
++    await addTask(root, taskId);
++    await commitPath(root, "src/evaluated.ts", "export const target = true;\n", "feat: target");
++    const { command, task, prepared } = await prepareTypedReview(root, taskId);
++
++    const unfrozen = typedEvaluatorResult(prepared, {
++      findings: [
++        {
++          id: "unfrozen",
++          severity: "high",
++          summary: "Unfrozen evidence must not be accepted.",
++          broken_invariant: "frozen evidence only",
++          evidence_refs: [{ path: "src/not-frozen.ts" }],
++        },
++      ],
++    });
++    await expect(
++      applyEvaluatorSgrReview({
++        ctx: command,
++        task,
++        workOrderPath: prepared.work_order_path,
++        result: unfrozen,
++      }),
++    ).rejects.toThrow("outside the frozen work order");
++
++    await expect(
++      applyEvaluatorSgrReview({
++        ctx: command,
++        task,
++        workOrderPath: prepared.work_order_path,
++        result: { ...typedEvaluatorResult(prepared), patch: "src/evaluated.ts" },
++      }),
++    ).rejects.toThrow("forbidden fields");
++
++    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
++    expect(stored.frontmatter.quality_review).toBeUndefined();
++  });
+ });
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index af9f35147..384d88732 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -1,4 +1,4 @@
+-import { mkdir, writeFile } from "node:fs/promises";
++import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ import { findGitRoot, resolveProject } from "@agentplaneorg/core/project";
+ 
+@@ -10,34 +10,25 @@ import {
+ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
+ import { CliError, GitError } from "../../shared/errors.js";
+ import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
+-import { projectEvaluatorQualityReportToContext } from "../../context/evaluator-projection.js";
+-import { checkTaskBlueprintSnapshotDrift } from "../blueprint/snapshot-artifact.js";
+-import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
+ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+-import { applyTaskMutation } from "../shared/task-mutation.js";
+-import { setTaskFieldsIntent } from "../shared/task-store.js";
+ import {
+   evaluatorSpec,
++  type EvaluatorApplyParsed,
+   type EvaluatorListParsed,
++  type EvaluatorPrepareParsed,
+   type EvaluatorRunParsed,
+   type EvaluatorShowParsed,
+ } from "./evaluator.spec.js";
+ import {
+-  EVALUATOR_OPINION_FILE,
+-  EVALUATOR_PROMPT_FILE,
+-  QUALITY_REPORT_FILE,
+-  pathsOutsideTaskArtifacts,
+-  relativeArtifactPath,
+-  renderEvaluatorPrompt,
+-  renderOpinionMarkdown,
+-  safePathSegment,
+-  timestampPathSegment,
+-  type EvaluatorQualityReport,
+-} from "./evaluator-quality-artifacts.js";
++  prepareEvaluatorReview,
++  type PreparedEvaluatorReview,
++} from "./evaluator-review-usecase.js";
++import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
+ 
+ export {
++  evaluatorApplySpec,
+   evaluatorListSpec,
++  evaluatorPrepareSpec,
+   evaluatorRunSpec,
+   evaluatorShowSpec,
+   evaluatorSpec,
+@@ -173,187 +164,232 @@ export const runEvaluatorShow: CommandHandler<EvaluatorShowParsed> = async (ctx,
+   return 0;
+ };
+ 
+-export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p) => {
+-  assertRunnableReviewInput(p);
+-  const provenance = p.provenance;
+-  const rows = await loadCatalogForCommand(ctx, true);
+-  const evaluator = rows.find((row) => row.id === p.evaluator);
++async function loadEvaluatorReviewContext(opts: {
++  ctx: CommandCtx;
++  taskId: string;
++  evaluatorId: string;
++}): Promise<{
++  command: Awaited<ReturnType<typeof loadCommandContext>>;
++  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
++  evaluator: EvaluatorModule;
++}> {
++  const rows = await loadCatalogForCommand(opts.ctx, true);
++  const evaluator = rows.find((row) => row.id === opts.evaluatorId);
+   if (!evaluator) {
+     throw new CliError({
+       exitCode: 2,
+       code: "E_USAGE",
+-      message: `Unknown evaluator id: ${p.evaluator}`,
++      message: `Unknown evaluator id: ${opts.evaluatorId}`,
+     });
+   }
+-
+   const command = await loadCommandContext({
+-    cwd: ctx.cwd,
+-    rootOverride: ctx.rootOverride ?? null,
++    cwd: opts.ctx.cwd,
++    rootOverride: opts.ctx.rootOverride ?? null,
+   });
+-  const task = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+-  const gitRoot = command.resolvedProject.gitRoot;
+-  if (p.record) {
+-    const staged = await command.git.statusStagedPaths();
+-    const unstaged = await command.git.statusUnstagedTrackedPaths();
+-    const stagedBlocking = pathsOutsideTaskArtifacts(
+-      staged,
+-      command.config.paths.workflow_dir,
+-      p.taskId,
+-    );
+-    const unstagedBlocking = pathsOutsideTaskArtifacts(
+-      unstaged,
+-      command.config.paths.workflow_dir,
+-      p.taskId,
+-    );
+-    if (stagedBlocking.length > 0 || unstagedBlocking.length > 0) {
+-      throw new CliError({
+-        exitCode: 2,
+-        code: "E_USAGE",
+-        message: [
+-          "Recording EVALUATOR quality_review requires no dirty tracked paths outside the current task artifact subtree.",
+-          `task=${p.taskId}`,
+-          `staged_blocking=${stagedBlocking.length}`,
+-          `unstaged_blocking=${unstagedBlocking.length}`,
+-          "Commit or revert tracked changes first, then rerun evaluator run.",
+-          "Batch recovery: for related tasks, run evaluator -> finish -> commit for one task subtree before recording the next task review.",
+-          "Use --no-record only for artifact-generation smoke checks.",
+-        ].join("\n"),
+-      });
+-    }
++  const task = await loadTaskFromContext({ ctx: command, taskId: opts.taskId });
++  return { command, task, evaluator };
++}
++
++function printEvaluatorPayload(opts: {
++  json: boolean;
++  title: string;
++  payload: Record<string, unknown>;
++}): void {
++  if (opts.json) {
++    process.stdout.write(`${JSON.stringify(opts.payload, null, 2)}\n`);
++    return;
+   }
+-  const taskReadmePath = path.join(
+-    gitRoot,
+-    command.config.paths.workflow_dir,
+-    p.taskId,
+-    "README.md",
++  process.stdout.write(
++    [
++      opts.title,
++      ...Object.entries(opts.payload)
++        .filter(([, value]) => value !== null && value !== undefined)
++        .map(([key, value]) => `${key.replaceAll("_", " ")}: ${String(value)}`),
++    ].join("\n") + "\n",
+   );
+-  const at = new Date().toISOString();
+-  const stamp = timestampPathSegment(at);
+-  const reviewDir = path.join(
+-    gitRoot,
+-    command.config.paths.workflow_dir,
+-    p.taskId,
+-    "quality",
+-    `${stamp}-${safePathSegment(evaluator.id) || "evaluator"}`,
+-  );
+-  await mkdir(reviewDir, { recursive: true });
++}
++
++function projectPath(gitRoot: string, value: string, label: string): string {
++  const absolute = path.resolve(gitRoot, value);
++  const relative = path.relative(gitRoot, absolute);
++  if (
++    !relative ||
++    relative === ".." ||
++    relative.startsWith(`..${path.sep}`) ||
++    path.isAbsolute(relative)
++  ) {
++    throw new CliError({ code: "E_USAGE", message: `${label} must be inside the project root.` });
++  }
++  return absolute;
++}
+ 
+-  const evaluatedSha = await resolveQualityReviewTargetSha({
+-    gitRoot,
+-    workflowDir: command.config.paths.workflow_dir,
++export const runEvaluatorPrepare: CommandHandler<EvaluatorPrepareParsed> = async (ctx, p) => {
++  const { command, task, evaluator } = await loadEvaluatorReviewContext({
++    ctx,
+     taskId: p.taskId,
+-    taskIds: [p.taskId, ...normalizeBranchPrBatchIncludedTaskIds(task, p.taskId)],
+-    previousEvaluatedSha: task.quality_review?.evaluated_sha ?? null,
++    evaluatorId: p.evaluator,
+   });
+-  const snapshot = await checkTaskBlueprintSnapshotDrift({ ctx: command, task }).catch(() => null);
+-  const reportPath = path.join(reviewDir, QUALITY_REPORT_FILE);
+-  const promptPath = path.join(reviewDir, EVALUATOR_PROMPT_FILE);
+-  const opinionPath = path.join(reviewDir, EVALUATOR_OPINION_FILE);
+-  const rel = (absPath: string) => relativeArtifactPath(gitRoot, absPath);
+-  const report: EvaluatorQualityReport = {
+-    schema_version: 1,
+-    task_id: p.taskId,
+-    evaluator_id: evaluator.id,
+-    evaluator_profile: evaluator.profile,
+-    generated_at: at,
+-    provenance,
+-    verdict: p.verdict,
+-    summary: p.summary,
+-    evaluated_sha: evaluatedSha,
+-    blueprint_digest: snapshot?.current.digest ?? null,
+-    findings: p.findings,
+-    evidence_refs: [...new Set([rel(taskReadmePath), ...p.evidenceRefs])],
+-    missing_tests: p.missingTests,
+-    hidden_assumptions: p.hiddenAssumptions,
+-    residual_risks: p.residualRisks,
+-  };
++  const prepared = await prepareEvaluatorReview({
++    ctx: command,
++    task,
++    evaluator,
++    provenance: "evaluator_supplied",
++  });
++  printEvaluatorPayload({
++    json: p.json,
++    title: `evaluator prepare ${p.taskId}`,
++    payload: {
++      work_order_id: prepared.work_order.work_order_id,
++      work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
++      prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
++      evaluated_sha: prepared.work_order.evaluated_sha,
++      sandbox: prepared.work_order.authority.sandbox,
++    },
++  });
++  return 0;
++};
+ 
+-  await writeFile(
+-    promptPath,
+-    renderEvaluatorPrompt({
+-      evaluator,
+-      taskId: p.taskId,
+-      taskReadmePath: rel(taskReadmePath),
+-      reportPath: rel(reportPath),
+-      provenance,
+-    }),
+-    "utf8",
+-  );
+-  await writeFile(reportPath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
+-  await writeFile(opinionPath, renderOpinionMarkdown(report), "utf8");
++export const runEvaluatorApply: CommandHandler<EvaluatorApplyParsed> = async (ctx, p) => {
++  const command = await loadCommandContext({
++    cwd: ctx.cwd,
++    rootOverride: ctx.rootOverride ?? null,
++  });
++  const task = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
++  const resultPath = projectPath(command.resolvedProject.gitRoot, p.resultPath, "Evaluator result");
++  let rawResult: unknown;
++  try {
++    rawResult = JSON.parse(await readFile(resultPath, "utf8"));
++  } catch (error) {
++    throw new CliError({
++      code: "E_USAGE",
++      message: `Unable to read EvaluatorSgrResult JSON: ${error instanceof Error ? error.message : String(error)}`,
++    });
++  }
++  const applied = await applyEvaluatorSgrReview({
++    ctx: command,
++    task,
++    workOrderPath: p.workOrderPath,
++    result: rawResult,
++  });
++  printEvaluatorPayload({
++    json: p.json,
++    title: `evaluator apply ${p.taskId}`,
++    payload: {
++      work_order_id: applied.work_order.work_order_id,
++      evaluator: applied.work_order.evaluator.id,
++      verdict:
++        rawResult && typeof rawResult === "object"
++          ? (rawResult as { verdict?: unknown }).verdict
++          : null,
++      report: applied.report_path,
++      result: applied.result_path,
++      recorded: true,
++    },
++  });
++  return 0;
++};
+ 
+-  const contextEvaluatorReportPath = p.record
+-    ? await projectEvaluatorQualityReportToContext({
+-        root: gitRoot,
+-        task,
+-        report,
+-        reportPath: rel(reportPath),
+-      })
+-    : null;
++function relativeToProject(gitRoot: string, absolutePath: string): string {
++  return path.relative(gitRoot, absolutePath).replaceAll("\\", "/");
++}
+ 
+-  const evidenceRefs = [
+-    rel(taskReadmePath),
+-    rel(reportPath),
+-    rel(promptPath),
+-    rel(opinionPath),
+-    ...(snapshot?.path
+-      ? [path.isAbsolute(snapshot.path) ? rel(snapshot.path) : snapshot.path]
+-      : []),
+-    ...p.evidenceRefs,
+-    ...(contextEvaluatorReportPath ? [contextEvaluatorReportPath] : []),
+-  ];
+-  if (p.record) {
+-    await applyTaskMutation({
+-      ctx: command,
+-      taskId: p.taskId,
+-      policyAction: "task_verify",
+-      phase: "verify",
+-      build: () => ({
+-        intents: setTaskFieldsIntent({
+-          quality_review: {
+-            state: p.verdict,
+-            provenance,
+-            updated_at: at,
+-            updated_by: provenance === "human_supplied" ? "HUMAN" : "EVALUATOR",
+-            note: p.summary,
+-            evaluated_sha: evaluatedSha,
+-            blueprint_digest: snapshot?.current.digest ?? null,
+-            evidence_refs: [...new Set(evidenceRefs)],
+-            findings: p.findings,
+-          },
+-        }),
+-      }),
++function compatibilityResult(opts: {
++  parsed: EvaluatorRunParsed;
++  prepared: PreparedEvaluatorReview;
++}) {
++  if (opts.parsed.verdict === "human_review") {
++    throw new CliError({
++      exitCode: 2,
++      code: "E_USAGE",
++      message: "evaluator_supplied cannot record human_review; use --provenance human_supplied.",
+     });
+   }
+-
+-  const payload = {
+-    task_id: p.taskId,
+-    evaluator_id: evaluator.id,
+-    provenance,
+-    verdict: p.verdict,
+-    recorded: p.record,
+-    report_path: rel(reportPath),
+-    prompt_path: rel(promptPath),
+-    opinion_path: rel(opinionPath),
+-    context_evaluator_report_path: contextEvaluatorReportPath,
++  const frozenEvidence = opts.prepared.work_order.evidence.find(
++    (entry) => entry.kind === "actual_diff",
++  );
++  if (!frozenEvidence)
++    throw new Error("Prepared evaluator work order is missing actual diff evidence.");
++  return {
++    schema_version: 1,
++    kind: "evaluator_result",
++    evaluator_id: opts.prepared.work_order.evaluator.id,
++    verdict: opts.parsed.verdict,
++    findings: opts.parsed.findings.map((summary, index) => ({
++      id: `compatibility-finding-${index + 1}`,
++      severity: "medium",
++      summary,
++      broken_invariant: "Compatibility evaluator facade requires independent review evidence.",
++      evidence_refs: [{ path: frozenEvidence.path }],
++    })),
++    missing_tests: opts.parsed.missingTests,
++    hidden_assumptions: opts.parsed.hiddenAssumptions,
++    ...(opts.parsed.reworkContext.length > 0
++      ? { recovery_context: opts.parsed.reworkContext.join("\n") }
++      : {}),
+   };
+-  if (p.json) {
+-    process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+-  } else {
+-    process.stdout.write(
+-      [
+-        `evaluator run ${p.taskId}`,
+-        `provenance: ${provenance}`,
+-        `verdict: ${p.verdict}`,
+-        `recorded: ${String(p.record)}`,
+-        `report: ${payload.report_path}`,
+-        `prompt: ${payload.prompt_path}`,
+-        `opinion: ${payload.opinion_path}`,
+-        ...(contextEvaluatorReportPath
+-          ? [`context evaluator report: ${contextEvaluatorReportPath}`]
+-          : []),
+-      ].join("\n") + "\n",
+-    );
++}
++
++export const runEvaluatorRun: CommandHandler<EvaluatorRunParsed> = async (ctx, p) => {
++  assertRunnableReviewInput(p);
++  const { command, task, evaluator } = await loadEvaluatorReviewContext({
++    ctx,
++    taskId: p.taskId,
++    evaluatorId: p.evaluator,
++  });
++  const prepared = await prepareEvaluatorReview({
++    ctx: command,
++    task,
++    evaluator,
++    provenance: p.provenance,
++  });
++  if (!p.record) {
++    printEvaluatorPayload({
++      json: p.json,
++      title: `evaluator run ${p.taskId}`,
++      payload: {
++        provenance: p.provenance,
++        verdict: p.verdict,
++        recorded: false,
++        work_order: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
++        prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
++      },
++    });
++    return 0;
+   }
++  const applied =
++    p.provenance === "human_supplied"
++      ? await applyHumanEvaluatorReview({
++          ctx: command,
++          task,
++          workOrderPath: prepared.work_order_path,
++          input: {
++            verdict: p.verdict,
++            summary: p.summary,
++            findings: p.findings,
++            evidence_refs: p.evidenceRefs,
++            missing_tests: p.missingTests,
++            hidden_assumptions: p.hiddenAssumptions,
++            residual_risks: p.residualRisks,
++          },
++        })
++      : await applyEvaluatorSgrReview({
++          ctx: command,
++          task,
++          workOrderPath: prepared.work_order_path,
++          result: compatibilityResult({ parsed: p, prepared }),
++        });
++  printEvaluatorPayload({
++    json: p.json,
++    title: `evaluator run ${p.taskId}`,
++    payload: {
++      provenance: p.provenance,
++      verdict: p.verdict,
++      recorded: true,
++      work_order_id: applied.work_order.work_order_id,
++      report: applied.report_path,
++      prompt: relativeToProject(command.resolvedProject.gitRoot, prepared.prompt_path),
++      opinion: relativeToProject(command.resolvedProject.gitRoot, prepared.opinion_path),
++    },
++  });
+   return 0;
+ };
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.spec.ts b/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
+index 953a6620a..1fab6095b 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
+@@ -32,6 +32,19 @@ export type EvaluatorRunParsed = {
+   record: boolean;
+ };
+ 
++export type EvaluatorPrepareParsed = {
++  taskId: string;
++  evaluator: string;
++  json: boolean;
++};
++
++export type EvaluatorApplyParsed = {
++  taskId: string;
++  workOrderPath: string;
++  resultPath: string;
++  json: boolean;
++};
++
+ function parseBuiltinFlag(value: unknown): boolean {
+   return value !== "false";
+ }
+@@ -52,9 +65,9 @@ function toStringList(value: unknown): string[] {
+ export const evaluatorSpec: CommandSpec<GroupCommandParsed> = {
+   id: ["evaluator"],
+   group: "Evaluators",
+-  summary: "List, inspect, and run evaluator quality reviews.",
++  summary: "Prepare, apply, inspect, and record evaluator quality reviews.",
+   description:
+-    "This is a command group. Use `agentplane evaluator list`, `agentplane evaluator show <id>`, or `agentplane evaluator run <task-id>`.",
++    "This is a command group. Use `agentplane evaluator prepare`, `agentplane evaluator apply`, `agentplane evaluator list`, `agentplane evaluator show <id>`, or the compatibility `agentplane evaluator run <task-id>` facade.",
+   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
+   examples: [
+     { cmd: "agentplane evaluator list", why: "Show available evaluator prompt modules." },
+@@ -66,10 +79,88 @@ export const evaluatorSpec: CommandSpec<GroupCommandParsed> = {
+   parse: (raw) => parseGroupCommand(raw),
+ };
+ 
++export const evaluatorPrepareSpec: CommandSpec<EvaluatorPrepareParsed> = {
++  id: ["evaluator", "prepare"],
++  group: "Evaluators",
++  summary: "Freeze bounded evidence and build a read-only EVALUATOR work order.",
++  args: [{ name: "taskId", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "evaluator",
++      valueHint: "<id>",
++      default: "recovery-context",
++      description: "Evaluator prompt module id to use.",
++    },
++    {
++      kind: "boolean",
++      name: "json",
++      default: false,
++      description: "Emit machine-readable work-order paths.",
++    },
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args.taskId ?? "").trim(),
++    evaluator:
++      typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
++    json: raw.opts.json === true,
++  }),
++};
++
++export const evaluatorApplySpec: CommandSpec<EvaluatorApplyParsed> = {
++  id: ["evaluator", "apply"],
++  group: "Evaluators",
++  summary: "Validate and record a typed EVALUATOR result against a frozen work order.",
++  args: [{ name: "taskId", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "work-order",
++      valueHint: "<path>",
++      description: "Prepared EvaluatorWorkOrder JSON path.",
++    },
++    {
++      kind: "string",
++      name: "result",
++      valueHint: "<path>",
++      description: "EVALUATOR-produced EvaluatorSgrResult JSON path.",
++    },
++    {
++      kind: "boolean",
++      name: "json",
++      default: false,
++      description: "Emit machine-readable recorded paths.",
++    },
++  ],
++  validateRaw: (raw) => {
++    if (
++      !raw.args.taskId ||
++      typeof raw.opts["work-order"] !== "string" ||
++      typeof raw.opts.result !== "string"
++    ) {
++      throw usageError({
++        spec: evaluatorApplySpec,
++        command: "evaluator apply",
++        message: "Provide a task id, --work-order, and --result.",
++      });
++    }
++  },
++  parse: (raw) => {
++    const workOrderPath = raw.opts["work-order"];
++    const resultPath = raw.opts.result;
++    return {
++      taskId: String(raw.args.taskId ?? "").trim(),
++      workOrderPath: typeof workOrderPath === "string" ? workOrderPath.trim() : "",
++      resultPath: typeof resultPath === "string" ? resultPath.trim() : "",
++      json: raw.opts.json === true,
++    };
++  },
++};
++
+ export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
+   id: ["evaluator", "run"],
+   group: "Evaluators",
+-  summary: "Create and record a structured EVALUATOR quality review report.",
++  summary: "Compatibility facade for preparing and recording a structured quality review.",
+   args: [{ name: "taskId", required: true, valueHint: "<task-id>" }],
+   options: [
+     {
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 2f2a0571e..cbbe598d0 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -13,6 +13,7 @@
+     "202607221848-1HWR0R",
+     "202607221848-VC4VVS",
+     "202607221849-NWVCAG",
++    "202607221849-TBTX8X",
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH"
+@@ -24,9 +25,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "2f7706489b6eebd2b25cdd64aa95ad1f1557e3804a5a1fd831a365c1db742723",
++    "surface_sha256": "bc9d2678e72c8e8478afb48ac7b18284c9daf9d85cbb02697423d0f2b2b161a8",
+     "section_digests": {
+-      "cli_topology": "ef8a9646d0f7027fd9fe619290c9edda5925dc668839e2eb6f70c7c9acc04610",
++      "cli_topology": "1a97bc1e6b715304e07172db86a5e12d22626b7e391d74cba7a0cfc6d158ee5f",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -356,28 +357,31 @@
+         "202607221848-0ZAB1F",
+         "202607221848-VC4VVS",
+         "202607221849-NWVCAG",
++        "202607221849-TBTX8X",
+         "202607242158-QV09NA",
+         "202607260007-DQM6AW",
+         "202607260532-9M7RNH"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "ef8a9646d0f7027fd9fe619290c9edda5925dc668839e2eb6f70c7c9acc04610",
++      "to_sha256": "1a97bc1e6b715304e07172db86a5e12d22626b7e391d74cba7a0cfc6d158ee5f",
+       "classification": "additive",
+-      "summary": "Adds explicit, operator-supplied resolution for typed runner effects in doubt, a non-releasing legacy acknowledgement, and a dedicated not_applied resume surface that always creates a fresh operation key; no command or option is removed or mutated.",
++      "summary": "Adds frozen EVALUATOR work-order preparation and typed-result application alongside the existing additive workflow, authority, and runner recovery surfaces; no command or option is removed or mutated.",
+       "evidence": {
+         "command_count": {
+           "from": 243,
+-          "to": 250
++          "to": 252
+         },
+         "positional_count": {
+           "from": 165,
+-          "to": 171
++          "to": 173
+         },
+         "option_count": {
+           "from": 767,
+-          "to": 806
++          "to": 811
+         },
+         "added_commands": [
++          "evaluator apply",
++          "evaluator prepare",
+           "integrate queue adopt-legacy-protected-conflict",
+           "pr conflict-rework",
+           "task authority grant",
+@@ -388,6 +392,64 @@
+         ],
+         "removed_commands": [],
+         "added_command_descriptors": [
++          {
++            "id": ["evaluator", "apply"],
++            "visibility": "user",
++            "group": "Evaluators",
++            "args": [
++              {
++                "name": "taskId",
++                "required": true,
++                "variadic": false,
++                "valueHint": "<task-id>"
++              }
++            ],
++            "options": [
++              {
++                "name": "work-order",
++                "kind": "string",
++                "valueHint": "<path>"
++              },
++              {
++                "name": "result",
++                "kind": "string",
++                "valueHint": "<path>"
++              },
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
++          {
++            "id": ["evaluator", "prepare"],
++            "visibility": "user",
++            "group": "Evaluators",
++            "args": [
++              {
++                "name": "taskId",
++                "required": true,
++                "variadic": false,
++                "valueHint": "<task-id>"
++              }
++            ],
++            "options": [
++              {
++                "name": "evaluator",
++                "kind": "string",
++                "valueHint": "<id>",
++                "default": "recovery-context"
++              },
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
+           {
+             "id": ["integrate", "queue", "adopt-legacy-protected-conflict"],
+             "visibility": "user",
+@@ -681,6 +743,39 @@
+             "valueHint": "<task-id>",
+             "repeatable": true
+           },
++          {
++            "command": "evaluator apply",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "evaluator apply",
++            "name": "result",
++            "kind": "string",
++            "valueHint": "<path>"
++          },
++          {
++            "command": "evaluator apply",
++            "name": "work-order",
++            "kind": "string",
++            "valueHint": "<path>"
++          },
++          {
++            "command": "evaluator prepare",
++            "name": "evaluator",
++            "kind": "string",
++            "valueHint": "<id>",
++            "default": "recovery-context"
++          },
++          {
++            "command": "evaluator prepare",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
+           {
+             "command": "evaluator run",
+             "name": "provenance",
+@@ -933,6 +1028,16 @@
+         "removed_options": [],
+         "mutated_options": [],
+         "addition_sources": [
++          {
++            "kind": "command",
++            "command": "evaluator apply",
++            "source_task": "202607221849-TBTX8X"
++          },
++          {
++            "kind": "command",
++            "command": "evaluator prepare",
++            "source_task": "202607221849-TBTX8X"
++          },
+           {
+             "kind": "command",
+             "command": "integrate queue adopt-legacy-protected-conflict",
+@@ -986,6 +1091,36 @@
+             "name": "task-id",
+             "source_task": "202607230554-YFYT83"
+           },
++          {
++            "kind": "option",
++            "command": "evaluator apply",
++            "name": "json",
++            "source_task": "202607221849-TBTX8X"
++          },
++          {
++            "kind": "option",
++            "command": "evaluator apply",
++            "name": "result",
++            "source_task": "202607221849-TBTX8X"
++          },
++          {
++            "kind": "option",
++            "command": "evaluator apply",
++            "name": "work-order",
++            "source_task": "202607221849-TBTX8X"
++          },
++          {
++            "kind": "option",
++            "command": "evaluator prepare",
++            "name": "evaluator",
++            "source_task": "202607221849-TBTX8X"
++          },
++          {
++            "kind": "option",
++            "command": "evaluator prepare",
++            "name": "json",
++            "source_task": "202607221849-TBTX8X"
++          },
+           {
+             "kind": "option",
+             "command": "evaluator run",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index bd79e4b75..6a629e024 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -317,6 +317,7 @@ function validateReviewedCandidate({
+     "202607221848-0ZAB1F",
+     "202607221848-VC4VVS",
+     "202607221849-NWVCAG",
++    "202607221849-TBTX8X",
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+@@ -333,6 +334,7 @@ function validateReviewedCandidate({
+     "202607221848-1HWR0R",
+     "202607221848-VC4VVS",
+     "202607221849-NWVCAG",
++    "202607221849-TBTX8X",
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+@@ -990,6 +992,27 @@ function validateReviewedCandidate({
+     })),
+   ];
+   const expectedAddedCommandDescriptors = [
++    {
++      id: ["evaluator", "apply"],
++      visibility: "user",
++      group: "Evaluators",
++      args: [{ name: "taskId", required: true, variadic: false, valueHint: "<task-id>" }],
++      options: [
++        { name: "work-order", kind: "string", valueHint: "<path>" },
++        { name: "result", kind: "string", valueHint: "<path>" },
++        { name: "json", kind: "boolean", valueHint: null, default: false },
++      ],
++    },
++    {
++      id: ["evaluator", "prepare"],
++      visibility: "user",
++      group: "Evaluators",
++      args: [{ name: "taskId", required: true, variadic: false, valueHint: "<task-id>" }],
++      options: [
++        { name: "evaluator", kind: "string", valueHint: "<id>", default: "recovery-context" },
++        { name: "json", kind: "boolean", valueHint: null, default: false },
++      ],
++    },
+     {
+       id: ["integrate", "queue", "adopt-legacy-protected-conflict"],
+       visibility: "user",
+@@ -1097,6 +1120,34 @@ function validateReviewedCandidate({
+       valueHint: "<task-id>",
+       repeatable: true,
+     },
++    {
++      command: "evaluator apply",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    { command: "evaluator apply", name: "result", kind: "string", valueHint: "<path>" },
++    {
++      command: "evaluator apply",
++      name: "work-order",
++      kind: "string",
++      valueHint: "<path>",
++    },
++    {
++      command: "evaluator prepare",
++      name: "evaluator",
++      kind: "string",
++      valueHint: "<id>",
++      default: "recovery-context",
++    },
++    {
++      command: "evaluator prepare",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "evaluator run",
+       name: "provenance",
+@@ -1236,6 +1287,8 @@ function validateReviewedCandidate({
+     },
+   ];
+   const expectedAdditionSources = [
++    { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
++    { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
+     {
+       kind: "command",
+       command: "integrate queue adopt-legacy-protected-conflict",
+@@ -1276,6 +1329,36 @@ function validateReviewedCandidate({
+       name: "task-id",
+       source_task: "202607230554-YFYT83",
+     },
++    {
++      kind: "option",
++      command: "evaluator apply",
++      name: "json",
++      source_task: "202607221849-TBTX8X",
++    },
++    {
++      kind: "option",
++      command: "evaluator apply",
++      name: "result",
++      source_task: "202607221849-TBTX8X",
++    },
++    {
++      kind: "option",
++      command: "evaluator apply",
++      name: "work-order",
++      source_task: "202607221849-TBTX8X",
++    },
++    {
++      kind: "option",
++      command: "evaluator prepare",
++      name: "evaluator",
++      source_task: "202607221849-TBTX8X",
++    },
++    {
++      kind: "option",
++      command: "evaluator prepare",
++      name: "json",
++      source_task: "202607221849-TBTX8X",
++    },
+     {
+       kind: "option",
+       command: "evaluator run",
+@@ -1429,6 +1512,8 @@ function validateReviewedCandidate({
+   assert(
+     hashJson(addedCommands) ===
+       hashJson([
++        "evaluator apply",
++        "evaluator prepare",
+         "integrate queue adopt-legacy-protected-conflict",
+         "pr conflict-rework",
+         "task authority grant",

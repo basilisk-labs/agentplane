@@ -3,14 +3,22 @@
   "branch": "task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results",
   "created_at": "2026-07-27T12:39:26.919Z",
   "diffstat_sha256": "sha256:2b586e04c68639c03af63668eacb6af3e2a9f62b3c7b69345c74803a3492968d",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-27T13:56:01.444Z",
+  "last_verified_diffstat_sha256": "sha256:2b586e04c68639c03af63668eacb6af3e2a9f62b3c7b69345c74803a3492968d",
   "pr_number": 4642,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4642",
+  "pre_merge_closure": {
+    "basis_commit": "5e6f72cb38a9306004ca674ca1d08a1f94432cd1",
+    "branch": "task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results",
+    "pr_number": 4642,
+    "recorded_at": "2026-07-27T13:58:15.610Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221849-TBTX8X",
   "updated_at": "2026-07-27T12:46:00.307Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
