@@ -18,7 +18,6 @@ import {
 } from "./workflow-step.js";
 export { cliOperationStep } from "./workflow-step-authority.js";
 export {
-  authorityRef,
   commonExecution,
   routeBlockerFor,
   routeBlockerSnapshot,

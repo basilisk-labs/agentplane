@@ -516,12 +516,5 @@ export {
   WORKFLOW_OPERATION_EFFECTS,
   workflowOperationMutatesState,
 } from "./workflow-operation-effects.js";
-export {
-  SIDE_EFFECT_AUTHORITY_EXTENSION_KEY,
-  WORKFLOW_OPERATION_AUTHORITY_POLICY,
-  evaluateWorkflowOperationAuthority,
-  workflowAuthorityStateScopeDigest,
-  workflowOperationAuthorityDigest,
-  workflowOperationAuthorityRequirement,
-} from "./side-effect-authority.js";
+export { WORKFLOW_OPERATION_AUTHORITY_POLICY } from "./side-effect-authority.js";
 export { WORKFLOW_OPERATION_ARGV_PREFIX } from "./workflow-operation-prefix.js";
