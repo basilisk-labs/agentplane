@@ -25,6 +25,7 @@ import {
   taskCloseAlreadyRecordedOnBase,
   taskPreMergeClosureRecordedOnBase,
 } from "../task/close-tail-state.js";
+import { isAuthorityOnlyTaskReadmeAdvance } from "../shared/quality-review-target.js";
 
 type CleanupBranchKind = "task" | "task-close";
 
@@ -172,14 +173,19 @@ async function validateMergedProviderReceipt(opts: {
   baseBranch: string;
   branchHead: string;
   result: GithubPrLookupResult;
-}): Promise<{ prNumber: number | null; reason: string | null }> {
+}): Promise<{ prNumber: number | null; reason: string | null; observedHeadSha: string | null }> {
   if (opts.result.state === "not_found") {
-    return { prNumber: null, reason: "provider PR was not found for the exact branch and base" };
+    return {
+      prNumber: null,
+      reason: "provider PR was not found for the exact branch and base",
+      observedHeadSha: null,
+    };
   }
   if (opts.result.state === "unavailable") {
     return {
       prNumber: null,
       reason: `provider lookup is unavailable: ${opts.result.reason}`,
+      observedHeadSha: null,
     };
   }
   const observed = opts.result.pr;
@@ -187,18 +193,14 @@ async function validateMergedProviderReceipt(opts: {
     return {
       prNumber: observed.prNumber,
       reason: `provider PR #${observed.prNumber} is ${observed.status.toLowerCase()}, not merged`,
+      observedHeadSha: null,
     };
   }
   if ((observed.base?.trim() ?? "") !== opts.baseBranch) {
     return {
       prNumber: observed.prNumber,
       reason: `provider base mismatch: expected=${opts.baseBranch} observed=${observed.base ?? "-"}`,
-    };
-  }
-  if (!observed.headSha?.trim() || observed.headSha.trim() !== opts.branchHead) {
-    return {
-      prNumber: observed.prNumber,
-      reason: `provider head mismatch: local=${opts.branchHead} observed=${observed.headSha ?? "-"}`,
+      observedHeadSha: null,
     };
   }
   const mergeCommit = observed.mergeCommit?.trim() ?? "";
@@ -206,9 +208,66 @@ async function validateMergedProviderReceipt(opts: {
     return {
       prNumber: observed.prNumber,
       reason: `provider merge commit is not on ${opts.baseBranch}: ${mergeCommit || "-"}`,
+      observedHeadSha: null,
     };
   }
-  return { prNumber: observed.prNumber, reason: null };
+  const observedHeadSha = observed.headSha?.trim() ?? "";
+  if (!observedHeadSha || observedHeadSha !== opts.branchHead) {
+    return {
+      prNumber: observed.prNumber,
+      reason: `provider head mismatch: local=${opts.branchHead} observed=${observed.headSha ?? "-"}`,
+      observedHeadSha: observedHeadSha || null,
+    };
+  }
+  return { prNumber: observed.prNumber, reason: null, observedHeadSha };
+}
+
+/**
+ * A durable authority record can be written after the provider has merged the
+ * task branch but before local cleanup runs. The record must not let arbitrary
+ * post-merge work masquerade as merged content, so accept only a non-empty
+ * descendant chain whose every commit changes this task README solely by its
+ * authority extension and revision.
+ */
+async function hasAuthorityOnlyPostMergeTail(opts: {
+  gitRoot: string;
+  workflowDir: string;
+  taskId: string;
+  providerHeadSha: string;
+  branchHeadSha: string;
+}): Promise<boolean> {
+  if (!(await gitIsAncestor(opts.gitRoot, opts.providerHeadSha, opts.branchHeadSha))) {
+    return false;
+  }
+  const { stdout } = await execFileAsync(
+    "git",
+    ["rev-list", "--reverse", `${opts.providerHeadSha}..${opts.branchHeadSha}`],
+    { cwd: opts.gitRoot, env: gitEnv() },
+  );
+  const commits = stdout
+    .split("\n")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (commits.length === 0) return false;
+
+  const taskReadme = path.posix.join(opts.workflowDir, opts.taskId, "README.md");
+  for (const current of commits) {
+    const { stdout: parentOutput } = await execFileAsync("git", ["rev-parse", `${current}^`], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    });
+    const parent = parentOutput.trim();
+    const changed = await gitDiffNames(opts.gitRoot, parent, current);
+    const authorityOnly = await isAuthorityOnlyTaskReadmeAdvance({
+      gitRoot: opts.gitRoot,
+      parent,
+      current,
+      changed,
+      taskRelativePath: (name) => (name === taskReadme ? "README.md" : null),
+    });
+    if (!authorityOnly) return false;
+  }
+  return true;
 }
 
 async function targetedCleanupProof(opts: {
@@ -252,12 +311,26 @@ async function targetedCleanupProof(opts: {
     baseBranch: opts.baseBranch,
     prNumber: recordedPrNumber,
   });
-  const providerReceipt = await validateMergedProviderReceipt({
+  let providerReceipt = await validateMergedProviderReceipt({
     gitRoot: opts.gitRoot,
     baseBranch: opts.baseBranch,
     branchHead,
     result: providerResult,
   });
+
+  if (
+    providerReceipt.reason &&
+    providerReceipt.observedHeadSha &&
+    (await hasAuthorityOnlyPostMergeTail({
+      gitRoot: opts.gitRoot,
+      workflowDir: opts.workflowDir,
+      taskId: opts.taskId,
+      providerHeadSha: providerReceipt.observedHeadSha,
+      branchHeadSha: branchHead,
+    }))
+  ) {
+    providerReceipt = { ...providerReceipt, reason: null };
+  }
 
   if (opts.kind === "task") {
     if (providerReceipt.reason) return result(null, providerReceipt.reason);

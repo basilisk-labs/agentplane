@@ -67,7 +67,10 @@ export const WORKFLOW_OPERATION_AUTHORITY_POLICY = {
   "task.pre_merge_close": EXTERNAL_HIGH_RISK,
   "integration.enqueue": EXTERNAL_HIGH_RISK,
   "task.hosted_close.open": EXTERNAL_REVERSIBLE,
-  "task.hosted_close.finalize": EXTERNAL_HIGH_RISK,
+  // The protected merge and task completion have already been recorded before
+  // this route. `cleanup merged --finalize` only fast-forwards the local base
+  // and removes proven merged local worktrees/branches.
+  "task.hosted_close.finalize": LOCAL_REVERSIBLE,
   "task.worktree.cleanup": LOCAL_REVERSIBLE,
   "pr.sync_or_verify": EXTERNAL_REVERSIBLE,
 } as const satisfies Record<WorkflowOperationId, AuthorityRequirement>;
