@@ -20,6 +20,7 @@ import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 import { inspectTaskRunnerOwnerIdentity } from "./task-run-active-claim-authority.js";
 
 const MAX_RECOVERY_LEASE_BYTES = 4096;
+const RECOVERY_LEASE_READ_ATTEMPTS = 4;
 
 type FileIdentity = { dev: bigint; ino: bigint };
 
@@ -44,6 +45,16 @@ type ObservedRecoveryLease = {
   record: RecoveryLeaseRecord;
   identity: FileIdentity;
 };
+
+function isTransientRecoveryLeaseReadCollision(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.startsWith("runner active-claim recovery lease ") &&
+    (message.includes(" changed before it could be read:") ||
+      message.includes(" changed while it was being read:") ||
+      message.includes(" path changed while it was being read:"))
+  );
+}
 
 export type TaskRunnerActiveClaimRecoveryLease = {
   directory: RecoveryLeaseDirectory;
@@ -232,34 +243,43 @@ async function resolveRecoveryLeaseDirectory(opts: {
 async function readRecoveryLease(
   directory: RecoveryLeaseDirectory,
 ): Promise<ObservedRecoveryLease | null> {
-  await directory.boundary.assertStable("before reading active-claim recovery lease");
-  try {
-    const before = await lstat(directory.marker_path, { bigint: true });
-    const raw = await readStableRegularTextNoFollow(
-      directory.marker_path,
-      "runner active-claim recovery lease",
-      { max_bytes: MAX_RECOVERY_LEASE_BYTES },
-    );
-    const after = await lstat(directory.marker_path, { bigint: true });
-    if (
-      !before.isFile() ||
-      before.isSymbolicLink() ||
-      !after.isFile() ||
-      after.isSymbolicLink() ||
-      !sameIdentity(identity(before), identity(after))
-    ) {
-      throw invalidRecoveryLease(directory.marker_path);
+  for (let attempt = 0; attempt < RECOVERY_LEASE_READ_ATTEMPTS; attempt += 1) {
+    await directory.boundary.assertStable("before reading active-claim recovery lease");
+    try {
+      const before = await lstat(directory.marker_path, { bigint: true });
+      const raw = await readStableRegularTextNoFollow(
+        directory.marker_path,
+        "runner active-claim recovery lease",
+        { max_bytes: MAX_RECOVERY_LEASE_BYTES },
+      );
+      const after = await lstat(directory.marker_path, { bigint: true });
+      if (
+        !before.isFile() ||
+        before.isSymbolicLink() ||
+        !after.isFile() ||
+        after.isSymbolicLink() ||
+        !sameIdentity(identity(before), identity(after))
+      ) {
+        throw invalidRecoveryLease(directory.marker_path);
+      }
+      await directory.boundary.assertStable("after reading active-claim recovery lease");
+      return {
+        record: parseRecoveryLease(raw, directory.marker_path, directory.target_generation),
+        identity: identity(after),
+      };
+    } catch (error) {
+      await directory.boundary.assertStable("after reading active-claim recovery lease");
+      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+      if (
+        !isTransientRecoveryLeaseReadCollision(error) ||
+        attempt === RECOVERY_LEASE_READ_ATTEMPTS - 1
+      ) {
+        throw error;
+      }
+      await new Promise<void>((resolve) => setImmediate(resolve));
     }
-    return {
-      record: parseRecoveryLease(raw, directory.marker_path, directory.target_generation),
-      identity: identity(after),
-    };
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
-    return null;
-  } finally {
-    await directory.boundary.assertStable("after reading active-claim recovery lease");
   }
+  return null;
 }
 
 export async function inspectTaskRunnerActiveClaimRecoveryLease(opts: {

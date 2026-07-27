@@ -8,12 +8,17 @@ import { installRunCliIntegrationHarness, waitForCondition } from "@agentplane/t
 import { CustomRunnerAdapter } from "../adapters/custom.js";
 import { readRunnerRunState, writeRunnerRunState } from "../artifacts.js";
 import * as processSupervision from "../process-supervision/signals.js";
+import * as stableFile from "../stable-file.js";
 import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 
 import {
   acquireTaskRunnerActiveClaim,
   releaseTaskRunnerActiveClaim,
 } from "./task-run-active-claim.js";
+import {
+  acquireTaskRunnerActiveClaimRecoveryLease,
+  releaseTaskRunnerActiveClaimRecoveryLease,
+} from "./task-run-active-claim-recovery-lease.js";
 import { resumeTaskRunnerExecution, retryTaskRunnerExecution } from "./task-run-lifecycle.js";
 import { executeTaskRunnerExecution, type ExecutedTaskRunnerExecution } from "./task-run.js";
 import {
@@ -37,6 +42,41 @@ afterEach(() => {
 });
 
 describe("task-run supervisor active claim", () => {
+  it("retries a transient recovery-lease read collision without accepting an unstable observation", async () => {
+    const root = await mkGitRepoRoot();
+    const originalRead = stableFile.readStableRegularTextNoFollow;
+    let recoveryLeaseReadCount = 0;
+    vi.spyOn(stableFile, "readStableRegularTextNoFollow").mockImplementation(async (...args) => {
+      if (args[1] === "runner active-claim recovery lease") {
+        recoveryLeaseReadCount += 1;
+        if (recoveryLeaseReadCount === 1) {
+          throw new Error(
+            `runner active-claim recovery lease changed while it was being read: ${args[0]}`,
+          );
+        }
+      }
+      return await originalRead(...args);
+    });
+
+    const acquired = await acquireTaskRunnerActiveClaimRecoveryLease({
+      git_root: root,
+      workflow_dir: ".agentplane/tasks",
+      task_id: "TASK-RECOVERY-LEASE-READ-COLLISION",
+      target_generation: "generation-read-collision",
+    });
+    try {
+      expect(acquired.status).toBe("acquired");
+      expect(recoveryLeaseReadCount).toBe(2);
+    } finally {
+      if (acquired.status === "acquired") {
+        await releaseTaskRunnerActiveClaimRecoveryLease({
+          lease: acquired.lease,
+          succeeded: false,
+        });
+      }
+    }
+  });
+
   it("reports a live competing claim before inspecting mutable supervisor history", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "TASK-LIVE-CLAIM-PRECEDENCE";

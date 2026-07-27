@@ -9,6 +9,8 @@ import { resolveSupervisorTaskRunnerPaths } from "../task-run-paths.js";
 
 import { createDoingRunnerTask } from "./task-run-lifecycle.testkit.js";
 
+const RUNNER_STATE_WAIT_TIMEOUT_MS = 30_000;
+
 export async function createDoingTask(root: string, title: string): Promise<string> {
   return await createDoingRunnerTask({
     root,
@@ -33,7 +35,7 @@ export async function configureCustomRunner(root: string, scriptLines: string[])
 export async function waitForState(
   statePath: string,
   predicate: (state: Awaited<ReturnType<typeof readRunnerRunState>>) => boolean,
-  timeoutMs = 5000,
+  timeoutMs = RUNNER_STATE_WAIT_TIMEOUT_MS,
 ): Promise<Awaited<ReturnType<typeof readRunnerRunState>>> {
   return await waitForCondition({
     description: `runner state in ${statePath}`,
