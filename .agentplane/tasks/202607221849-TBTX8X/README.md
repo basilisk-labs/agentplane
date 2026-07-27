@@ -2,10 +2,10 @@
 id: "202607221849-TBTX8X"
 title: "Prepare and apply typed evaluator results"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -66,8 +66,8 @@ quality_review:
   findings:
     - "The typed EVALUATOR boundary is satisfied: a result is schema-checked, limited to frozen evidence paths, and cannot carry lifecycle or implementation mutations."
 commit:
-  hash: "5e6f72cb38a9306004ca674ca1d08a1f94432cd1"
-  message: "✨ TBTX8X task: prepare typed evaluator results"
+  hash: "48954b67db186c32ad3d3c3b4cd3a5bcbbb0965d"
+  message: "✨ TBTX8X task: record integration authority"
 comments:
   -
     author: "CODER"
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Reopened before merge: GitHub verify-contract found the generated CLI reference stale after the additive evaluator prepare/apply command surface. Regenerate the reference and repeat verification and quality review."
 events:
   -
     type: "status"
@@ -106,8 +109,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T14:09:54.199Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Reopened before merge: GitHub verify-contract found the generated CLI reference stale after the additive evaluator prepare/apply command surface. Regenerate the reference and repeat verification and quality review."
 doc_version: 3
-doc_updated_at: "2026-07-27T13:58:15.547Z"
+doc_updated_at: "2026-07-27T14:09:54.199Z"
 doc_updated_by: "CODER"
 description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
 sections:
