@@ -6,18 +6,21 @@
  .../src/commands/shared/route-decision.ts          |  14 +-
  .../src/commands/shared/workflow-step-branch.ts    |   7 +
  .../src/commands/shared/workflow-step-factory.ts   |  25 +
- .../shared/workflow-step-projections.test.ts       |  69 ++-
+ .../workflow-step-projections-routing.test.ts      | 162 ++++++
+ .../shared/workflow-step-projections.test.ts       |  79 +--
  .../agentplane/src/commands/task/run-render.ts     |   7 +
- .../agentplane/src/commands/task/run.command.ts    | 280 ++++++++++
+ .../agentplane/src/commands/task/run.command.ts    |   7 +
+ .../task/task-run-effect-resolution.command.ts     | 282 ++++++++++
  packages/agentplane/src/runner/effect-operation.ts |  47 +-
  .../agentplane/src/runner/run-state-validation.ts  |  29 +-
  packages/agentplane/src/runner/types/state.ts      |   7 +
  .../usecases/task-run-active-claim-authority.ts    |  16 +-
  .../usecases/task-run-active-claim-record.ts       |   8 +-
- .../src/runner/usecases/task-run-active-claim.ts   | 128 +++++
+ .../src/runner/usecases/task-run-active-claim.ts   |   8 +-
  .../src/runner/usecases/task-run-effect-journal.ts |   3 +
+ .../usecases/task-run-effect-resolution-claim.ts   | 142 +++++
  .../usecases/task-run-effect-resolution.test.ts    | 320 +++++++++++
- .../runner/usecases/task-run-effect-resolution.ts  | 596 +++++++++++++++++++++
+ .../runner/usecases/task-run-effect-resolution.ts  | 594 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-replay.ts   |  48 ++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   9 +-
  .../src/runner/usecases/task-run-lifecycle.ts      |   2 +
@@ -29,4 +32,4 @@
  packages/core/src/schemas/index.ts                 |  23 +
  .../baselines/v0.7-compatibility-candidate.json    | 376 ++++++++++++-
  .../check-compatibility-contract-baseline.mjs      | 184 +++++++
- 31 files changed, 2602 insertions(+), 41 deletions(-)
+ 34 files changed, 2762 insertions(+), 82 deletions(-)
