@@ -2,15 +2,19 @@
 id: "202607271814-E1ZTTV"
 title: "Stabilize concurrent recovery-lease reads"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 16
 origin:
   system: "manual"
 depends_on: []
 tags:
   - "reliability"
+  - "code"
+task_kind: "code"
+mutation_scope: "code"
+blueprint_request: "code.branch_pr"
 verify: []
 plan_approval:
   state: "approved"
@@ -59,6 +63,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "ORCHESTRATOR"
+    body: "Reopened: correct task intent to code mutation and regenerate the branch_pr blueprint after PR review P1."
 events:
   -
     type: "status"
@@ -94,9 +101,16 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T19:13:01.212Z"
+    author: "ORCHESTRATOR"
+    from: "DONE"
+    to: "DOING"
+    note: "Reopened: correct task intent to code mutation and regenerate the branch_pr blueprint after PR review P1."
 doc_version: 3
-doc_updated_at: "2026-07-27T19:00:57.788Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-27T19:13:01.212Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability."
 sections:
   Summary: |-
@@ -108,11 +122,10 @@ sections:
     - Out of scope: unrelated refactors not required for "Stabilize concurrent recovery-lease reads".
   Plan: "1. Inspect the recovery-lease read and retirement protocol plus both failing concurrent tests. 2. Add the smallest bounded retry or contention classification that never accepts an unstable file and preserves identity/boundary validation. 3. Add deterministic tests for a transient concurrent replacement/read collision. 4. Run focused runner tests repeatedly, static/type/lint gates, then publish a narrow PR and require hosted checks before integrating RF-12b."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Stabilize concurrent recovery-lease reads". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Stabilize concurrent recovery-lease reads". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run bun run ci:local:fast. Expected: all test files and critical CLI chunks pass.
+    2. Run bun run typecheck and bun run lint:core. Expected: both exit successfully.
+    3. Confirm the recovery-lease retry accepts only the known transient collision and preserves per-attempt directory, regular-file, and inode validation.
+    4. Publish the task branch and require green hosted checks before integration.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-27T18:55:40.772Z — VERIFY — ok
@@ -287,11 +300,10 @@ Prevent transient read-stability races from failing concurrent runner effect-res
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Stabilize concurrent recovery-lease reads". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Stabilize concurrent recovery-lease reads". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run bun run ci:local:fast. Expected: all test files and critical CLI chunks pass.
+2. Run bun run typecheck and bun run lint:core. Expected: both exit successfully.
+3. Confirm the recovery-lease retry accepts only the known transient collision and preserves per-attempt directory, regular-file, and inode validation.
+4. Publish the task branch and require green hosted checks before integration.
 
 ## Verification
 
