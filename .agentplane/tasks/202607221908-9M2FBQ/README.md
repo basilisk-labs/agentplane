@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -46,6 +46,31 @@ verification:
   updated_by: "TESTER"
   note: "Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T21:20:18.982Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "246d402f597333e8c5bf09f02391eca614721426"
+  blueprint_digest: "6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b"
+  evidence_refs:
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/README.md"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Verify Step 4 requires a recorded publish decision; README currently records verification and residual risk but no decision."
 commit:
   hash: "b84ae3fa29f6f01716d101905cf69d9e369d7e7f"
   message: "🧪 9M2FBQ task: persist alpha qualification context"

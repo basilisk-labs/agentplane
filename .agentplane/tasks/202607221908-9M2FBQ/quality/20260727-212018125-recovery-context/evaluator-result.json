@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Verify Step 4 requires a recorded publish decision; README currently records verification and residual risk but no decision.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A green hosted PR would implicitly authorize optional alpha.2 publication."
+  ],
+  "recovery_context": "Record an explicit do-not-publish or publish decision for alpha.2, with rationale and the hosted-gate condition; then refresh task verification."
+}

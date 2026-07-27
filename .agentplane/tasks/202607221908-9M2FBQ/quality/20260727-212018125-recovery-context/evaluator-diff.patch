@@ -1,0 +1,210 @@
+diff --git a/.agentplane/tasks/202607221908-9M2FBQ/README.md b/.agentplane/tasks/202607221908-9M2FBQ/README.md
+index b6af3eba6..290c34912 100644
+--- a/.agentplane/tasks/202607221908-9M2FBQ/README.md
++++ b/.agentplane/tasks/202607221908-9M2FBQ/README.md
+@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
+ status: "DOING"
+ priority: "high"
+ owner: "TESTER"
+-revision: 12
++revision: 13
+ origin:
+   system: "manual"
+ depends_on:
+@@ -41,10 +41,10 @@ plan_approval:
+   updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
+-  note: null
++  state: "ok"
++  updated_at: "2026-07-27T21:18:51.505Z"
++  updated_by: "TESTER"
++  note: "Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration."
+   attempts: 0
+ commit:
+   hash: "b84ae3fa29f6f01716d101905cf69d9e369d7e7f"
+@@ -71,8 +71,14 @@ events:
+     from: "DOING"
+     to: "DOING"
+     note: "Implementation: rebased alpha.2 qualification onto main at 5ae5c5b13; schemas and lifecycle invariants passed; critical suite completed without reported failure; ci:contract completed locally but the terminal transport did not return its final exit code, so hosted PR checks remain mandatory evidence."
++  -
++    type: "verify"
++    at: "2026-07-27T21:18:51.505Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration."
+ doc_version: 3
+-doc_updated_at: "2026-07-27T21:18:01.204Z"
++doc_updated_at: "2026-07-27T21:18:54.161Z"
+ doc_updated_by: "CODER"
+ description: "Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
+ sections:
+@@ -96,12 +102,45 @@ sections:
+     4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-27T21:18:51.505Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T21:18:01.204Z, excerpt_hash=sha256:f01de43b3312a7d5eb09d00f58019e892977ccca2757d72d8155296abf62942e
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-clone.9d6Aq6/.agentplane/worktrees/202607221908-9M2FBQ-qualify-the-agentplane-0-7-0-alpha-2-milestone/.agentplane/tasks/202607221908-9M2FBQ/blueprint/resolved-snapshot.json
++    - old_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
++    - current_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221908-9M2FBQ
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607221908-9M2FBQ
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Do not mutate product state during qualification beyond evidence artifacts.
+     - If a prerelease was not published, revert only the gate evidence through its task branch.
+     - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
+-  Findings: ""
++  Findings: |-
++    - Observation: Local terminal transport did not emit the final exit record for the two long aggregate commands after their child processes completed.
++      Impact: Local aggregate exit-code evidence is weaker than the deterministic check output.
++      Resolution: Require a green hosted PR gate for the published final head before queueing or qualifying the milestone.
+ extensions:
+   agentplane.side_effect_authority:
+     audit:
+@@ -167,6 +206,36 @@ Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is D
+ ## Verification
+ 
+ <!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-27T21:18:51.505Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T21:18:01.204Z, excerpt_hash=sha256:f01de43b3312a7d5eb09d00f58019e892977ccca2757d72d8155296abf62942e
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-clone.9d6Aq6/.agentplane/worktrees/202607221908-9M2FBQ-qualify-the-agentplane-0-7-0-alpha-2-milestone/.agentplane/tasks/202607221908-9M2FBQ/blueprint/resolved-snapshot.json
++- old_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
++- current_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221908-9M2FBQ
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607221908-9M2FBQ
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -176,3 +245,7 @@ Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is D
+ - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
+ 
+ ## Findings
++
++- Observation: Local terminal transport did not emit the final exit record for the two long aggregate commands after their child processes completed.
++  Impact: Local aggregate exit-code evidence is weaker than the deterministic check output.
++  Resolution: Require a green hosted PR gate for the published final head before queueing or qualifying the milestone.
+diff --git a/.agentplane/tasks/202607221908-9M2FBQ/pr/github-body.md b/.agentplane/tasks/202607221908-9M2FBQ/pr/github-body.md
+index 88171ff85..ef8c6a362 100644
+--- a/.agentplane/tasks/202607221908-9M2FBQ/pr/github-body.md
++++ b/.agentplane/tasks/202607221908-9M2FBQ/pr/github-body.md
+@@ -15,14 +15,20 @@ Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is D
+ 
+ ## Verification
+ 
+-- State: pending
+-- Note: Not recorded yet.
++- State: ok
++- Note:
++
++```text
++Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle
++invariants passed; critical and full contract runs completed without observed failure. Hosted PR
++checks remain mandatory independent confirmation before integration.
++```
+ - Canonical workflow state lives in the task README.
+ 
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T20:10:45.718Z
++- Updated: 2026-07-27T20:11:23.957Z
+ - Branch: task/202607221908-9M2FBQ/qualify-the-agentplane-0-7-0-alpha-2-milestone
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+diff --git a/.agentplane/tasks/202607221908-9M2FBQ/pr/meta.json b/.agentplane/tasks/202607221908-9M2FBQ/pr/meta.json
+index 1bba111e3..5a94b1623 100644
+--- a/.agentplane/tasks/202607221908-9M2FBQ/pr/meta.json
++++ b/.agentplane/tasks/202607221908-9M2FBQ/pr/meta.json
+@@ -3,7 +3,8 @@
+   "branch": "task/202607221908-9M2FBQ/qualify-the-agentplane-0-7-0-alpha-2-milestone",
+   "created_at": "2026-07-27T20:10:45.718Z",
+   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+-  "last_verified_at": null,
++  "last_verified_at": "2026-07-27T21:18:51.505Z",
++  "last_verified_diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "pr_number": 4645,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4645",
+   "schema_version": 1,
+@@ -11,6 +12,6 @@
+   "task_id": "202607221908-9M2FBQ",
+   "updated_at": "2026-07-27T20:11:23.957Z",
+   "verify": {
+-    "status": "skipped"
++    "status": "pass"
+   }
+ }
+diff --git a/.agentplane/tasks/202607221908-9M2FBQ/pr/review.md b/.agentplane/tasks/202607221908-9M2FBQ/pr/review.md
+index bfad657f8..4791bdda9 100644
+--- a/.agentplane/tasks/202607221908-9M2FBQ/pr/review.md
++++ b/.agentplane/tasks/202607221908-9M2FBQ/pr/review.md
+@@ -12,8 +12,8 @@ Created: 2026-07-27T20:10:45.718Z
+ 
+ ## Verification
+ 
+-- State: pending
+-- Note: Not recorded yet.
++- State: ok
++- Note: Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+@@ -24,7 +24,7 @@ Created: 2026-07-27T20:10:45.718Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T20:10:45.718Z
++- Updated: 2026-07-27T20:11:23.957Z
+ - Branch: task/202607221908-9M2FBQ/qualify-the-agentplane-0-7-0-alpha-2-milestone
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 

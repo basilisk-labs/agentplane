@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221908-9M2FBQ-c04f8f0d28c95b156de1ea35",
+  "task_id": "202607221908-9M2FBQ",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Record an explicit do-not-publish or publish decision for alpha.2, with rationale and the hosted-gate condition; then refresh task verification.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "Verify Step 4 requires a recorded publish decision; README currently records verification and residual risk but no decision.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-result.json"
+}
