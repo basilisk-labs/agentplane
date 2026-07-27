@@ -1,0 +1,200 @@
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt b/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
+index 8178c0735..1201c2e47 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/diffstat.txt
+@@ -6,16 +6,16 @@
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
+  ...-cli.critical.agent-efficiency-baseline.test.ts |  53 ++-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
++ .../evaluator-episode.calibration.test.ts          | 384 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+  .../evaluator/evaluator-quality-artifacts.ts       |   5 +-
+  .../commands/evaluator/evaluator-review-apply.ts   |  58 ++++
+  .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
+- .../src/commands/evaluator/evaluator.command.ts    |  46 +++
++ .../src/commands/evaluator/evaluator.command.ts    |  45 +++
+  .../src/commands/evaluator/evaluator.spec.ts       |  45 ++-
+  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 +-
+  .../agentplane/src/runtime/sgr/contract-types.ts   |   2 +-
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 20 files changed, 1189 insertions(+), 87 deletions(-)
++ 20 files changed, 1194 insertions(+), 87 deletions(-)
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md b/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
+index e683cef48..a2b1d7459 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/github-body.md
+@@ -41,19 +41,19 @@ changed beyond the tested expectation.
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
+  ...-cli.critical.agent-efficiency-baseline.test.ts |  53 ++-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
++ .../evaluator-episode.calibration.test.ts          | 384 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+  .../evaluator/evaluator-quality-artifacts.ts       |   5 +-
+  .../commands/evaluator/evaluator-review-apply.ts   |  58 ++++
+  .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
+- .../src/commands/evaluator/evaluator.command.ts    |  46 +++
++ .../src/commands/evaluator/evaluator.command.ts    |  45 +++
+  .../src/commands/evaluator/evaluator.spec.ts       |  45 ++-
+  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 +-
+  .../agentplane/src/runtime/sgr/contract-types.ts   |   2 +-
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 20 files changed, 1189 insertions(+), 87 deletions(-)
++ 20 files changed, 1194 insertions(+), 87 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json b/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
+index 44812ba94..93a1478f0 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes",
+   "created_at": "2026-07-27T15:40:36.124Z",
+-  "diffstat_sha256": "sha256:1eccac02b84626293acd1899377e2c27cb70527e988ebf4896bd36a5098fe414",
++  "diffstat_sha256": "sha256:753b1cccd4ebcd7e43eee84235f8e80048d8f4bf0c6f3efcf45ec116a14ea408",
+   "last_verified_at": "2026-07-27T17:01:13.971Z",
+   "last_verified_diffstat_sha256": "sha256:272ee674c831edfb268f44cebdaf9c0f433bd7bd230514c16a3fc32284fabff0",
+   "pr_number": 4643,
+diff --git a/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md b/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
+index be7c43e9f..aa967357a 100644
+--- a/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
++++ b/.agentplane/tasks/202607221849-8YYZ9X/pr/review.md
+@@ -37,19 +37,19 @@ Created: 2026-07-27T15:40:36.124Z
+  packages/agentplane/assets/agents/EVALUATOR.json   |   8 +-
+  ...-cli.critical.agent-efficiency-baseline.test.ts |  53 ++-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../evaluator-episode.calibration.test.ts          | 378 +++++++++++++++++++++
++ .../evaluator-episode.calibration.test.ts          | 384 +++++++++++++++++++++
+  .../src/commands/evaluator/evaluator-episode.ts    | 368 ++++++++++++++++++++
+  .../evaluator/evaluator-quality-artifacts.ts       |   5 +-
+  .../commands/evaluator/evaluator-review-apply.ts   |  58 ++++
+  .../commands/evaluator/evaluator-review-usecase.ts |   4 +-
+- .../src/commands/evaluator/evaluator.command.ts    |  46 +++
++ .../src/commands/evaluator/evaluator.command.ts    |  45 +++
+  .../src/commands/evaluator/evaluator.spec.ts       |  45 ++-
+  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 +-
+  .../agentplane/src/runtime/sgr/contract-types.ts   |   2 +-
+  .../src/shared/builtin-assets.generated.ts         |   8 +-
+  .../baselines/v0.7-compatibility-candidate.json    | 130 +++++--
+  .../check-compatibility-contract-baseline.mjs      | 103 +++++-
+- 20 files changed, 1189 insertions(+), 87 deletions(-)
++ 20 files changed, 1194 insertions(+), 87 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 508db11aa..f45780270 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -319,12 +319,12 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+               path: "packages/agentplane/src/runtime/sgr/contract-types.ts",
+               change: "adds evaluator human_review as a typed semantic escalation verdict",
+               before: {
+-                normalized_bytes: 6_471,
++                normalized_bytes: 6471,
+                 normalized_sha256:
+                   "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
+               },
+               after: {
+-                normalized_bytes: 6_488,
++                normalized_bytes: 6488,
+                 normalized_sha256:
+                   "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a",
+               },
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+index 13dd41b71..528d54aed 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+@@ -117,15 +117,15 @@ function provider(
+   rawResult: unknown,
+   inspect?: (invocation: Parameters<EvaluatorEpisodeProvider>[0]) => void,
+ ): EvaluatorEpisodeProvider {
+-  return async (invocation) => {
++  return (invocation) => {
+     inspect?.(invocation);
+-    return {
++    return Promise.resolve({
+       raw_result: rawResult,
+       started_at: "2026-07-27T00:00:00.000Z",
+       ended_at: "2026-07-27T00:00:01.000Z",
+       stdout_bytes: 12,
+       stderr_bytes: 0,
+-    };
++    });
+   };
+ }
+ 
+@@ -242,9 +242,10 @@ describe("evaluator episode calibration", () => {
+ 
+       const { stored } = await applyFixture({ root, taskId, verdict: "human_review" });
+       expect(stored.frontmatter.quality_review?.state).toBe("human_review");
+-      expect(
+-        getHumanInputState({ extensions: stored.frontmatter.extensions }).openQuestion,
+-      ).toMatchObject({
++      const humanInput = getHumanInputState({
++        extensions: (stored.frontmatter.extensions ?? {}) as Record<string, unknown>,
++      });
++      expect(humanInput.openQuestion).toMatchObject({
+         askedBy: "EVALUATOR",
+         question:
+           "Which of the two mutually incompatible acceptance interpretations should govern this task?",
+@@ -358,13 +359,18 @@ describe("evaluator episode calibration", () => {
+     await addTask(root, taskId);
+     await commitTarget(root);
+     const { command, prepared } = await prepare(root, taskId);
+-    const failure = await executePreparedEvaluatorEpisode({
+-      ctx: command,
+-      prepared,
+-      executor: async () => {
+-        throw new Error("provider cache failed at /private/provider-diagnostics");
+-      },
+-    }).catch((error: unknown) => error);
++    let failure: unknown = null;
++    try {
++      await executePreparedEvaluatorEpisode({
++        ctx: command,
++        prepared,
++        executor: () => {
++          throw new Error("provider cache failed at /private/provider-diagnostics");
++        },
++      });
++    } catch (error: unknown) {
++      failure = error;
++    }
+ 
+     expect(failure).toMatchObject({ code: "E_RUNTIME" });
+     expect(failure).toHaveProperty(
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index d208fb5ef..3e8807d3f 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -12,7 +12,6 @@ import { CliError, GitError } from "../../shared/errors.js";
+ import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
+ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+ import {
+-  evaluatorExecuteSpec,
+   evaluatorSpec,
+   type EvaluatorApplyParsed,
+   type EvaluatorExecuteParsed,
+@@ -33,13 +32,13 @@ import {
+ 
+ export {
+   evaluatorApplySpec,
+-  evaluatorExecuteSpec,
+   evaluatorListSpec,
+   evaluatorPrepareSpec,
+   evaluatorRunSpec,
+   evaluatorShowSpec,
+   evaluatorSpec,
+ } from "./evaluator.spec.js";
++export { evaluatorExecuteSpec } from "./evaluator.spec.js";
+ 
+ export async function runEvaluatorGroup(_ctx: CommandCtx, p: GroupCommandParsed): Promise<number> {
+   return throwGroupCommandUsage({

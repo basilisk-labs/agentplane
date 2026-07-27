@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The change is bounded to test typing/formatting and command-spec re-export hygiene: provider fixtures still return promises, startup failures remain redacted as E_RUNTIME, and evaluator execute remains exported from the public command specification.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-173359139-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted CI must independently validate the final published PR head."
+  ]
+}
