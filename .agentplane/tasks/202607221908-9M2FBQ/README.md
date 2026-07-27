@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -47,30 +47,30 @@ verification:
   note: "Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T21:20:18.982Z"
+  updated_at: "2026-07-27T21:21:35.548Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "246d402f597333e8c5bf09f02391eca614721426"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "70b2c119fc127f432b4d4b2df80fd9fb7dc39657"
   blueprint_digest: "6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b"
   evidence_refs:
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221908-9M2FBQ/README.md"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212018125-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221908-9M2FBQ/quality/20260727-212134889-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Verify Step 4 requires a recorded publish decision; README currently records verification and residual risk but no decision."
+    - "No product-code path differs from the rebased main lineage; the task diff is limited to milestone evidence and PR metadata."
+    - "The required publish-or-do-not-publish decision is now explicit: alpha.2 is deferred to a dedicated release task after hosted confirmation."
 commit:
   hash: "5b71fa6261472160e6b37bb952e72125494e3a59"
   message: "🧭 9M2FBQ task: record alpha decision rework"
