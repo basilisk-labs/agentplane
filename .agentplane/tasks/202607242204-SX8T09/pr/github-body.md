@@ -20,8 +20,14 @@ Define strict versioned runner effect operation and journal contracts, persist o
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused runner effect suites passed (91 tests); typecheck, lifecycle invariants, guards, critical
+CLI suite, hotspot baseline, lint, and Knip baseline passed. Hosted PR #4637 is green on the
+published head.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

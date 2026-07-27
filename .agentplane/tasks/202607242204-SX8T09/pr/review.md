@@ -6,14 +6,14 @@ Created: 2026-07-27T02:12:20.863Z
 
 - Task: `202607242204-SX8T09`
 - Title: Persist typed runner effect operations before execution
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607242204-SX8T09/persist-typed-runner-effect-operations-before-ex`
 - Canonical task record: `.agentplane/tasks/202607242204-SX8T09/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused runner effect suites passed (91 tests); typecheck, lifecycle invariants, guards, critical CLI suite, hotspot baseline, lint, and Knip baseline passed. Hosted PR #4637 is green on the published head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
