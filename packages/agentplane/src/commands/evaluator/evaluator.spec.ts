@@ -32,6 +32,19 @@ export type EvaluatorRunParsed = {
   record: boolean;
 };
 
+export type EvaluatorPrepareParsed = {
+  taskId: string;
+  evaluator: string;
+  json: boolean;
+};
+
+export type EvaluatorApplyParsed = {
+  taskId: string;
+  workOrderPath: string;
+  resultPath: string;
+  json: boolean;
+};
+
 function parseBuiltinFlag(value: unknown): boolean {
   return value !== "false";
 }
@@ -52,9 +65,9 @@ function toStringList(value: unknown): string[] {
 export const evaluatorSpec: CommandSpec<GroupCommandParsed> = {
   id: ["evaluator"],
   group: "Evaluators",
-  summary: "List, inspect, and run evaluator quality reviews.",
+  summary: "Prepare, apply, inspect, and record evaluator quality reviews.",
   description:
-    "This is a command group. Use `agentplane evaluator list`, `agentplane evaluator show <id>`, or `agentplane evaluator run <task-id>`.",
+    "This is a command group. Use `agentplane evaluator prepare`, `agentplane evaluator apply`, `agentplane evaluator list`, `agentplane evaluator show <id>`, or the compatibility `agentplane evaluator run <task-id>` facade.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [
     { cmd: "agentplane evaluator list", why: "Show available evaluator prompt modules." },
@@ -66,10 +79,88 @@ export const evaluatorSpec: CommandSpec<GroupCommandParsed> = {
   parse: (raw) => parseGroupCommand(raw),
 };
 
+export const evaluatorPrepareSpec: CommandSpec<EvaluatorPrepareParsed> = {
+  id: ["evaluator", "prepare"],
+  group: "Evaluators",
+  summary: "Freeze bounded evidence and build a read-only EVALUATOR work order.",
+  args: [{ name: "taskId", required: true, valueHint: "<task-id>" }],
+  options: [
+    {
+      kind: "string",
+      name: "evaluator",
+      valueHint: "<id>",
+      default: "recovery-context",
+      description: "Evaluator prompt module id to use.",
+    },
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit machine-readable work-order paths.",
+    },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args.taskId ?? "").trim(),
+    evaluator:
+      typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
+    json: raw.opts.json === true,
+  }),
+};
+
+export const evaluatorApplySpec: CommandSpec<EvaluatorApplyParsed> = {
+  id: ["evaluator", "apply"],
+  group: "Evaluators",
+  summary: "Validate and record a typed EVALUATOR result against a frozen work order.",
+  args: [{ name: "taskId", required: true, valueHint: "<task-id>" }],
+  options: [
+    {
+      kind: "string",
+      name: "work-order",
+      valueHint: "<path>",
+      description: "Prepared EvaluatorWorkOrder JSON path.",
+    },
+    {
+      kind: "string",
+      name: "result",
+      valueHint: "<path>",
+      description: "EVALUATOR-produced EvaluatorSgrResult JSON path.",
+    },
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit machine-readable recorded paths.",
+    },
+  ],
+  validateRaw: (raw) => {
+    if (
+      !raw.args.taskId ||
+      typeof raw.opts["work-order"] !== "string" ||
+      typeof raw.opts.result !== "string"
+    ) {
+      throw usageError({
+        spec: evaluatorApplySpec,
+        command: "evaluator apply",
+        message: "Provide a task id, --work-order, and --result.",
+      });
+    }
+  },
+  parse: (raw) => {
+    const workOrderPath = raw.opts["work-order"];
+    const resultPath = raw.opts.result;
+    return {
+      taskId: String(raw.args.taskId ?? "").trim(),
+      workOrderPath: typeof workOrderPath === "string" ? workOrderPath.trim() : "",
+      resultPath: typeof resultPath === "string" ? resultPath.trim() : "",
+      json: raw.opts.json === true,
+    };
+  },
+};
+
 export const evaluatorRunSpec: CommandSpec<EvaluatorRunParsed> = {
   id: ["evaluator", "run"],
   group: "Evaluators",
-  summary: "Create and record a structured EVALUATOR quality review report.",
+  summary: "Compatibility facade for preparing and recording a structured quality review.",
   args: [{ name: "taskId", required: true, valueHint: "<task-id>" }],
   options: [
     {
