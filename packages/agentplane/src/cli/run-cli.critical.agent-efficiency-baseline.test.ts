@@ -319,12 +319,12 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
               path: "packages/agentplane/src/runtime/sgr/contract-types.ts",
               change: "adds evaluator human_review as a typed semantic escalation verdict",
               before: {
-                normalized_bytes: 6_471,
+                normalized_bytes: 6471,
                 normalized_sha256:
                   "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
               },
               after: {
-                normalized_bytes: 6_488,
+                normalized_bytes: 6488,
                 normalized_sha256:
                   "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a",
               },

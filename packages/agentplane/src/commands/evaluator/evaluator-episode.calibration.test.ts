@@ -117,15 +117,15 @@ function provider(
   rawResult: unknown,
   inspect?: (invocation: Parameters<EvaluatorEpisodeProvider>[0]) => void,
 ): EvaluatorEpisodeProvider {
-  return async (invocation) => {
+  return (invocation) => {
     inspect?.(invocation);
-    return {
+    return Promise.resolve({
       raw_result: rawResult,
       started_at: "2026-07-27T00:00:00.000Z",
       ended_at: "2026-07-27T00:00:01.000Z",
       stdout_bytes: 12,
       stderr_bytes: 0,
-    };
+    });
   };
 }
 
@@ -242,9 +242,10 @@ describe("evaluator episode calibration", () => {
 
       const { stored } = await applyFixture({ root, taskId, verdict: "human_review" });
       expect(stored.frontmatter.quality_review?.state).toBe("human_review");
-      expect(
-        getHumanInputState({ extensions: stored.frontmatter.extensions }).openQuestion,
-      ).toMatchObject({
+      const humanInput = getHumanInputState({
+        extensions: (stored.frontmatter.extensions ?? {}) as Record<string, unknown>,
+      });
+      expect(humanInput.openQuestion).toMatchObject({
         askedBy: "EVALUATOR",
         question:
           "Which of the two mutually incompatible acceptance interpretations should govern this task?",
@@ -358,13 +359,18 @@ describe("evaluator episode calibration", () => {
     await addTask(root, taskId);
     await commitTarget(root);
     const { command, prepared } = await prepare(root, taskId);
-    const failure = await executePreparedEvaluatorEpisode({
-      ctx: command,
-      prepared,
-      executor: async () => {
-        throw new Error("provider cache failed at /private/provider-diagnostics");
-      },
-    }).catch((error: unknown) => error);
+    let failure: unknown = null;
+    try {
+      await executePreparedEvaluatorEpisode({
+        ctx: command,
+        prepared,
+        executor: () => {
+          throw new Error("provider cache failed at /private/provider-diagnostics");
+        },
+      });
+    } catch (error: unknown) {
+      failure = error;
+    }
 
     expect(failure).toMatchObject({ code: "E_RUNTIME" });
     expect(failure).toHaveProperty(
