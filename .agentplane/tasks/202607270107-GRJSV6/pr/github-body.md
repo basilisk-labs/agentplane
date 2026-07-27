@@ -15,8 +15,13 @@ Follow up RF13: permit targeted merged cleanup only when a local post-merge tail
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified targeted cleanup acceptance, authority classification, ci:contract, and the complete hosted
+PR #4636 gate.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

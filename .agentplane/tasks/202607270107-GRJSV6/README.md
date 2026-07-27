@@ -4,7 +4,7 @@ title: "Preserve authority-only tails during merged cleanup"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -17,10 +17,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T01:49:26.181Z"
+  updated_by: "TESTER"
+  note: "Verified targeted cleanup acceptance, authority classification, ci:contract, and the complete hosted PR #4636 gate."
   attempts: 0
 quality_review:
   state: "pass"
@@ -57,8 +57,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: approved post-merge cleanup authority follow-up."
+  -
+    type: "verify"
+    at: "2026-07-27T01:49:26.181Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified targeted cleanup acceptance, authority classification, ci:contract, and the complete hosted PR #4636 gate."
 doc_version: 3
-doc_updated_at: "2026-07-27T01:21:15.474Z"
+doc_updated_at: "2026-07-27T01:49:26.850Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Follow up RF13: permit targeted merged cleanup only when a local post-merge tail is proven authority-only against the provider-merged head, and classify hosted close finalization as local reversible after the merge and pre-merge closure are already durable."
 sections:
@@ -77,6 +83,38 @@ sections:
     4. Re-run RF13 targeted cleanup after integration. Expected: the previously blocked local authority-only tail is removed by the CLI, while no unrelated worktree or branch is touched.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T01:49:26.181Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified targeted cleanup acceptance, authority classification, ci:contract, and the complete hosted PR #4636 gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T01:21:15.474Z, excerpt_hash=sha256:a7f74adf4ab205b81f8995477b77230d92d5941956f20437d38e3c84bfd278e4
+
+    Details:
+
+    Focused Vitest: 31/31 passed (cleanup provider proof, authority-only tail, semantic-tail rejection, authority policy). Local: format, lint, typecheck, ci:contract. Hosted head 2601cd40: CodeQL, docs, runtime packages, contract, static, unit, critical CLI, workflow, coverage, and Windows all passed.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607270107-GRJSV6-preserve-authority-only-tails-during-merged-clea/.agentplane/tasks/202607270107-GRJSV6/blueprint/resolved-snapshot.json
+    - old_digest: 72eb0b2dea0be880388750fb4948c2139ce32e084ac338bcbba56c4f93f2946d
+    - current_digest: 72eb0b2dea0be880388750fb4948c2139ce32e084ac338bcbba56c4f93f2946d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607270107-GRJSV6
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -273,6 +311,38 @@ Follow up RF13: permit targeted merged cleanup only when a local post-merge tail
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T01:49:26.181Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified targeted cleanup acceptance, authority classification, ci:contract, and the complete hosted PR #4636 gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T01:21:15.474Z, excerpt_hash=sha256:a7f74adf4ab205b81f8995477b77230d92d5941956f20437d38e3c84bfd278e4
+
+Details:
+
+Focused Vitest: 31/31 passed (cleanup provider proof, authority-only tail, semantic-tail rejection, authority policy). Local: format, lint, typecheck, ci:contract. Hosted head 2601cd40: CodeQL, docs, runtime packages, contract, static, unit, critical CLI, workflow, coverage, and Windows all passed.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607270107-GRJSV6-preserve-authority-only-tails-during-merged-clea/.agentplane/tasks/202607270107-GRJSV6/blueprint/resolved-snapshot.json
+- old_digest: 72eb0b2dea0be880388750fb4948c2139ce32e084ac338bcbba56c4f93f2946d
+- current_digest: 72eb0b2dea0be880388750fb4948c2139ce32e084ac338bcbba56c4f93f2946d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607270107-GRJSV6
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
