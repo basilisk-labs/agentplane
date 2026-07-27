@@ -4,7 +4,7 @@ title: "Reconcile resolved release incidents after SX8T09 integration"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,34 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T05:03:27.922Z"
+  updated_by: "TESTER"
+  note: "Verified: release incident, policy, guard, schema, formatting, and hosted PR checks passed on b5e79fe4."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T05:04:11.981Z"
+  updated_by: "EVALUATOR"
+  note: "Pass: the task archives only resolved incidents, preserves evidence, and makes the release gate enforceable through concrete verification commands."
+  evaluated_sha: "583c15fa3f03c02cbac6f7d4c528476298e611b6"
+  blueprint_digest: "189b6d781f3470c6bdd5d347a3bafa5e58ef5d46ab8177649b57b432a04efe3c"
+  evidence_refs:
+    - ".agentplane/tasks/202607270445-Y3V80T/README.md"
+    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050411981-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050411981-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607270445-Y3V80T/quality/20260727-050411981-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607270445-Y3V80T/blueprint/resolved-snapshot.json"
+    - "docs/developer/incident-archive.mdx"
+    - ".agentplane/policy/incidents.md"
+    - "packages/agentplane/assets/policy/incidents.md"
+    - "node scripts/check-release-incidents.mjs (pass)"
+    - "gh pr checks 4638 on b5e79fe4 (all required checks passed)"
+  findings:
+    - "The current main state contains the canonical KnowledgeRef guard and synchronized task-handoff schemas; deterministic guard and schema checks pass."
+    - "Both active-registry copies are empty and identical after archival, while the archive preserves source-task, commit, and enforcement evidence for future diagnosis."
+    - "The task now declares concrete verification commands, so branch_pr integration cannot treat the incident cleanup as unverified."
 commit: null
 comments:
   -
@@ -43,8 +66,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reconcile the two resolved release incidents in the dedicated task worktree with archive evidence and release-gate verification."
+  -
+    type: "verify"
+    at: "2026-07-27T05:03:27.922Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: release incident, policy, guard, schema, formatting, and hosted PR checks passed on b5e79fe4."
 doc_version: 3
-doc_updated_at: "2026-07-27T04:46:25.439Z"
+doc_updated_at: "2026-07-27T05:03:28.884Z"
 doc_updated_by: "CODER"
 description: "Verify that the two active release incidents are already fixed on main, archive their final evidence, clear only resolved entries from the active incident registry, and restore the release incident gate without changing runtime behavior."
 sections:
@@ -64,6 +93,38 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T05:03:27.922Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: release incident, policy, guard, schema, formatting, and hosted PR checks passed on b5e79fe4.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T04:46:25.439Z, excerpt_hash=sha256:887a3c405fd61ec67704926aac9d867ae08a58a4b7458e5b805a92379e3fcdb6
+
+    Details:
+
+    Command: node scripts/check-release-incidents.mjs; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor; bun run guards:check; bun run schemas:check; bun run format:changed; gh pr checks 4638. Result: pass. Evidence: release gate, routing, doctor, shared guards, schema synchronization, and formatting passed locally; Docs, CodeQL, package runtime, unit, static, CLI critical, workflow, coverage, Windows, and PR verification passed on hosted SHA b5e79fe4. Scope: active incident registry, packaged mirror, archive, and task verification contract. Links: docs/developer/incident-archive.mdx; .agentplane/policy/incidents.md; packages/agentplane/assets/policy/incidents.md.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607270445-Y3V80T-reconcile-resolved-release-incidents-after-sx8t0/.agentplane/tasks/202607270445-Y3V80T/blueprint/resolved-snapshot.json
+    - old_digest: 189b6d781f3470c6bdd5d347a3bafa5e58ef5d46ab8177649b57b432a04efe3c
+    - current_digest: 189b6d781f3470c6bdd5d347a3bafa5e58ef5d46ab8177649b57b432a04efe3c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607270445-Y3V80T
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -98,6 +159,19 @@ extensions:
         schemaVersion: 1
         sequence: 2
         stateFingerprintDigest: "sha256:43b11381c3faa3dddd0b45a8a044059615b6c1ac3d8b830fb179ec85579433ce"
+      -
+        actor: "USER"
+        at: "2026-07-27T04:55:49.479Z"
+        authorityDigest: "sha256:0f20bad058e26e6724d4774947bdbfa7bbcac0fa6a339536d288211e2d70a648"
+        digest: "sha256:5367ebacad916a409a26ee0c35d30791e22c035f76000c7d66f84efd209dd619"
+        operationDigest: "sha256:cd7b7f0b2d6b9faff95b254ad0dc4f5b13b5390f577564b239c7d1a5bea65b9f"
+        operationId: "pr.head.publish"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:d7aa6e3a9fa4b410c8303a4a0669d69bb333b3895d9000be9b73f53d6d150a33"
+        schemaVersion: 1
+        sequence: 3
+        stateFingerprintDigest: "sha256:e170bd6175b1be05ab79f43e76a5fd15fdc45fc3bcc85d90a74bacee97c442ba"
     grants:
       -
         actor: "USER"
@@ -125,6 +199,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:43b11381c3faa3dddd0b45a8a044059615b6c1ac3d8b830fb179ec85579433ce"
         stateScopeDigest: "sha256:8c9642b87ed9be972f8fdc24692f153fe6635df6855a571fdcf56038c429af5f"
+      -
+        actor: "USER"
+        digest: "sha256:0f20bad058e26e6724d4774947bdbfa7bbcac0fa6a339536d288211e2d70a648"
+        expiresAt: "2026-07-27T05:10:49.479Z"
+        id: "authority-b8de4eef-401a-4a85-9895-d8ca1ba9989a"
+        issuedAt: "2026-07-27T04:55:49.479Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:cd7b7f0b2d6b9faff95b254ad0dc4f5b13b5390f577564b239c7d1a5bea65b9f"
+        operationId: "pr.head.publish"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:e170bd6175b1be05ab79f43e76a5fd15fdc45fc3bcc85d90a74bacee97c442ba"
+        stateScopeDigest: "sha256:fe951bee7d72cb1bf189ddc901734484a25915aa0799918eb0a266276a270882"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "3ce4e39a8165415ac126619fbba5eaf1003ddd24"
@@ -157,6 +244,38 @@ PLANNER fallback scaffold for "Reconcile resolved release incidents after SX8T09
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T05:03:27.922Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: release incident, policy, guard, schema, formatting, and hosted PR checks passed on b5e79fe4.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T04:46:25.439Z, excerpt_hash=sha256:887a3c405fd61ec67704926aac9d867ae08a58a4b7458e5b805a92379e3fcdb6
+
+Details:
+
+Command: node scripts/check-release-incidents.mjs; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor; bun run guards:check; bun run schemas:check; bun run format:changed; gh pr checks 4638. Result: pass. Evidence: release gate, routing, doctor, shared guards, schema synchronization, and formatting passed locally; Docs, CodeQL, package runtime, unit, static, CLI critical, workflow, coverage, Windows, and PR verification passed on hosted SHA b5e79fe4. Scope: active incident registry, packaged mirror, archive, and task verification contract. Links: docs/developer/incident-archive.mdx; .agentplane/policy/incidents.md; packages/agentplane/assets/policy/incidents.md.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607270445-Y3V80T-reconcile-resolved-release-incidents-after-sx8t0/.agentplane/tasks/202607270445-Y3V80T/blueprint/resolved-snapshot.json
+- old_digest: 189b6d781f3470c6bdd5d347a3bafa5e58ef5d46ab8177649b57b432a04efe3c
+- current_digest: 189b6d781f3470c6bdd5d347a3bafa5e58ef5d46ab8177649b57b432a04efe3c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607270445-Y3V80T
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
