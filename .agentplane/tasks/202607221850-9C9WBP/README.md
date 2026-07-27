@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -40,28 +40,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T22:30:07.119Z"
+  updated_at: "2026-07-27T23:13:43.702Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "91edc7d8080ab6518f3ca0054efe6b06b312b60d"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "6f18f3796dd7d31d7c9697841a5b55fc2b5376a1"
   blueprint_digest: "cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-9C9WBP/README.md"
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-223006990-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-9C9WBP/quality/20260727-231343569-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The current runner transport remains bounded to TaskEpisodeView at the implementation commit; the closure commit changes only task evidence and policy incident projections."
-    - "The promoted incident is a transparent limitation record, not a synthetic role heuristic: current schema supplies structural headings, and a later blueprint/schema task must author per-role policy."
+    - "Reviewed task-context compaction: only the canonical BEGIN/END verification envelope is reclassified as optional; localized configured required sections and oversized semantic sections retain their structural validation behavior."
 commit: null
 comments:
   -

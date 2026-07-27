@@ -1,0 +1,514 @@
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/README.md b/.agentplane/tasks/202607221850-9C9WBP/README.md
+index d58d0ec05..98ab14c96 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/README.md
++++ b/.agentplane/tasks/202607221850-9C9WBP/README.md
+@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 19
++revision: 21
+ origin:
+   system: "manual"
+ depends_on:
+@@ -32,11 +32,11 @@ plan_approval:
+   updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+-  state: "needs_rework"
+-  updated_at: "2026-07-27T22:40:18.777Z"
++  state: "ok"
++  updated_at: "2026-07-27T23:12:53.569Z"
+   updated_by: "TESTER"
+-  note: "Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths."
+-  attempts: 1
++  note: "Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents."
++  attempts: 0
+ quality_review:
+   state: "pass"
+   provenance: "evaluator_supplied"
+@@ -117,8 +117,20 @@ events:
+     author: "TESTER"
+     state: "needs_rework"
+     note: "Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths."
++  -
++    type: "verify"
++    at: "2026-07-27T22:51:23.280Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified locally: task episode consumers tolerate incomplete legacy-shaped task inputs without restoring raw TaskData transport."
++  -
++    type: "verify"
++    at: "2026-07-27T23:12:53.569Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents."
+ doc_version: 3
+-doc_updated_at: "2026-07-27T22:40:19.605Z"
++doc_updated_at: "2026-07-27T23:12:54.310Z"
+ doc_updated_by: "CODER"
+ description: "RF-21: replace full TaskData plus duplicate projections with one authoritative role-specific episode view, required-section policy, relevant history, and compaction receipt."
+ sections:
+@@ -202,6 +214,66 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    ### 2026-07-27T22:51:23.280Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified locally: task episode consumers tolerate incomplete legacy-shaped task inputs without restoring raw TaskData transport.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:40:19.605Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
++    - old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++    - current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-27T23:12:53.569Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:51:24.222Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
++    - old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++    - current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
+@@ -221,6 +293,14 @@ sections:
+     - Observation: GitHub verify-unit: 10 failures (effect-operation.test.ts and base-prompts.test.ts); all originate from dereferencing missing metadata on legacy/partial task views.
+       Impact: RF-21 breaks compatibility for callers that provide a task identity or legacy shape without TaskEpisodeView.metadata.
+       Resolution: Restore null-safe metadata access with target task-id fallback and add focused regression coverage before re-verification.
++
++    - Observation: Focused runner tests, test:fast, test:critical, typecheck, guards, formatting, and ci:contract all passed after commit 7957097d079f122b9d3bcf797cded794cf400e82.
++      Impact: The hosted verify-unit failure is addressed while preserving TaskEpisodeView as the only semantic runner task representation.
++      Resolution: Publish the rework head, then rerun hosted PR verification and quality closure.
++
++    - Observation: Focused runner tests (26), test:fast, test:critical, lint, typecheck, guards, and ci:contract passed after the Verification-marker regression fix.
++      Impact: Long lifecycle evidence no longer blocks task-route or evaluator preparation, and it is not silently lost from the compact episode view.
++      Resolution: Commit the verified rework, refresh evaluator quality evidence, publish the PR head, and wait for hosted checks.
+ extensions:
+   agentplane.side_effect_authority:
+     audit:
+@@ -427,6 +507,66 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++### 2026-07-27T22:51:23.280Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified locally: task episode consumers tolerate incomplete legacy-shaped task inputs without restoring raw TaskData transport.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:40:19.605Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
++- old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++- current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-27T23:12:53.569Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T22:51:24.222Z, excerpt_hash=sha256:36ec1ea31702962a5ec511494e35cd6da4dafe7951dde09a685164bb9d8fb5d3
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-lane.j4s9FS/.agentplane/worktrees/202607221850-9C9WBP-normalize-runner-task-inputs-into-taskepisodevie/.agentplane/tasks/202607221850-9C9WBP/blueprint/resolved-snapshot.json
++- old_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++- current_digest: cdd33e73504cc9ac7f4422ecaf4c5e410e7be5212752ce9f54b42c0fddd33073
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221850-9C9WBP
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -450,3 +590,11 @@ DecisionContextRef:
+ - Observation: GitHub verify-unit: 10 failures (effect-operation.test.ts and base-prompts.test.ts); all originate from dereferencing missing metadata on legacy/partial task views.
+   Impact: RF-21 breaks compatibility for callers that provide a task identity or legacy shape without TaskEpisodeView.metadata.
+   Resolution: Restore null-safe metadata access with target task-id fallback and add focused regression coverage before re-verification.
++
++- Observation: Focused runner tests, test:fast, test:critical, typecheck, guards, formatting, and ci:contract all passed after commit 7957097d079f122b9d3bcf797cded794cf400e82.
++  Impact: The hosted verify-unit failure is addressed while preserving TaskEpisodeView as the only semantic runner task representation.
++  Resolution: Publish the rework head, then rerun hosted PR verification and quality closure.
++
++- Observation: Focused runner tests (26), test:fast, test:critical, lint, typecheck, guards, and ci:contract passed after the Verification-marker regression fix.
++  Impact: Long lifecycle evidence no longer blocks task-route or evaluator preparation, and it is not silently lost from the compact episode view.
++  Resolution: Commit the verified rework, refresh evaluator quality evidence, publish the PR head, and wait for hosted checks.
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt b/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt
+index 1a3f4897b..a70f94d6d 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/diffstat.txt
+@@ -9,10 +9,10 @@
+  .../adapters/execution-receipt-runtime.test.ts     |   4 +-
+  .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
+  packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
+- .../src/runner/context/base-prompts.test.ts        |  36 ++--
++ .../src/runner/context/base-prompts.test.ts        |  36 +--
+  .../src/runner/context/overlay-prompt-blocks.ts    |  13 +-
+- .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
+- .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
++ .../src/runner/context/task-context.test.ts        | 191 ++++++++++++++--
++ .../agentplane/src/runner/context/task-context.ts  | 248 +++++++++++++++------
+  .../src/runner/effect-operation-contract.ts        |   2 +-
+  packages/agentplane/src/runner/playbooks.ts        |   8 +-
+  .../src/runner/run-repository-contract.ts          |   3 +-
+@@ -24,8 +24,8 @@
+  .../agentplane/src/runner/state-fingerprint.ts     |   2 +-
+  packages/agentplane/src/runner/task-state.ts       |   2 +-
+  packages/agentplane/src/runner/types.ts            |   3 +
+- packages/agentplane/src/runner/types/context.ts    |  71 ++++++-
+- .../src/runner/usecases/agent-work-order-build.ts  |  46 +++--
++ packages/agentplane/src/runner/types/context.ts    |  71 +++++-
++ .../src/runner/usecases/agent-work-order-build.ts  |  46 ++--
+  .../usecases/agent-work-order.integration.test.ts  |   2 +-
+  .../src/runner/usecases/agent-work-order.ts        |   2 +-
+  .../usecases/task-run-active-claim-runtime.ts      |   2 +-
+@@ -41,5 +41,5 @@
+  .../agentplane/src/runner/usecases/task-run.ts     |   6 +-
+  packages/agentplane/src/runner/write-scope.test.ts |   6 +-
+  packages/testkit/src/runner.ts                     |  65 ++++--
+- scripts/baselines/trust-boundary-violations.json   |  90 ---------
+- 44 files changed, 607 insertions(+), 321 deletions(-)
++ scripts/baselines/trust-boundary-violations.json   |  90 --------
++ 44 files changed, 685 insertions(+), 321 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md b/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md
+index 231cb4c25..5bac01623 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/github-body.md
+@@ -15,12 +15,12 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
+ 
+ ## Verification
+ 
+-- State: needs_rework
++- State: ok
+ - Note:
+ 
+ ```text
+-Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError
+-through task?.metadata access in effect-operation and overlay prompt paths.
++Rework verified: CLI-managed verification history is bounded optional episode context, while
++structural semantic sections and TaskEpisodeView remain authoritative for agents.
+ ```
+ - Canonical workflow state lives in the task README.
+ 
+@@ -43,10 +43,10 @@ through task?.metadata access in effect-operation and overlay prompt paths.
+  .../adapters/execution-receipt-runtime.test.ts     |   4 +-
+  .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
+  packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
+- .../src/runner/context/base-prompts.test.ts        |  36 ++--
++ .../src/runner/context/base-prompts.test.ts        |  36 +--
+  .../src/runner/context/overlay-prompt-blocks.ts    |  13 +-
+- .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
+- .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
++ .../src/runner/context/task-context.test.ts        | 191 ++++++++++++++--
++ .../agentplane/src/runner/context/task-context.ts  | 248 +++++++++++++++------
+  .../src/runner/effect-operation-contract.ts        |   2 +-
+  packages/agentplane/src/runner/playbooks.ts        |   8 +-
+  .../src/runner/run-repository-contract.ts          |   3 +-
+@@ -58,8 +58,8 @@ through task?.metadata access in effect-operation and overlay prompt paths.
+  .../agentplane/src/runner/state-fingerprint.ts     |   2 +-
+  packages/agentplane/src/runner/task-state.ts       |   2 +-
+  packages/agentplane/src/runner/types.ts            |   3 +
+- packages/agentplane/src/runner/types/context.ts    |  71 ++++++-
+- .../src/runner/usecases/agent-work-order-build.ts  |  46 +++--
++ packages/agentplane/src/runner/types/context.ts    |  71 +++++-
++ .../src/runner/usecases/agent-work-order-build.ts  |  46 ++--
+  .../usecases/agent-work-order.integration.test.ts  |   2 +-
+  .../src/runner/usecases/agent-work-order.ts        |   2 +-
+  .../usecases/task-run-active-claim-runtime.ts      |   2 +-
+@@ -75,8 +75,8 @@ through task?.metadata access in effect-operation and overlay prompt paths.
+  .../agentplane/src/runner/usecases/task-run.ts     |   6 +-
+  packages/agentplane/src/runner/write-scope.test.ts |   6 +-
+  packages/testkit/src/runner.ts                     |  65 ++++--
+- scripts/baselines/trust-boundary-violations.json   |  90 ---------
+- 44 files changed, 607 insertions(+), 321 deletions(-)
++ scripts/baselines/trust-boundary-violations.json   |  90 --------
++ 44 files changed, 685 insertions(+), 321 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json b/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json
+index 399f5884d..d4298dc1f 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/meta.json
+@@ -2,9 +2,9 @@
+   "base": "main",
+   "branch": "task/202607221850-9C9WBP/normalize-runner-task-inputs-into-taskepisodevie",
+   "created_at": "2026-07-27T21:31:31.669Z",
+-  "diffstat_sha256": "sha256:5743af6893c74c6a95888f69df2924d3b475174f167ac34b6d8204111f6abca0",
+-  "last_verified_at": "2026-07-27T22:40:18.777Z",
+-  "last_verified_diffstat_sha256": "sha256:72d51d302fbbbc1884815a29272268d969db887ddac724124237550fe5a3e6b8",
++  "diffstat_sha256": "sha256:59d84d39e8c353d0e24075a20c8170188586409abe26bf6dbd071f9d66837cc6",
++  "last_verified_at": "2026-07-27T23:12:53.569Z",
++  "last_verified_diffstat_sha256": "sha256:5743af6893c74c6a95888f69df2924d3b475174f167ac34b6d8204111f6abca0",
+   "pr_number": 4647,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4647",
+   "schema_version": 1,
+@@ -12,6 +12,6 @@
+   "task_id": "202607221850-9C9WBP",
+   "updated_at": "2026-07-27T21:32:51.170Z",
+   "verify": {
+-    "status": "fail"
++    "status": "pass"
+   }
+ }
+diff --git a/.agentplane/tasks/202607221850-9C9WBP/pr/review.md b/.agentplane/tasks/202607221850-9C9WBP/pr/review.md
+index c53a7bfab..b73cbe192 100644
+--- a/.agentplane/tasks/202607221850-9C9WBP/pr/review.md
++++ b/.agentplane/tasks/202607221850-9C9WBP/pr/review.md
+@@ -12,8 +12,8 @@ Created: 2026-07-27T21:31:31.669Z
+ 
+ ## Verification
+ 
+-- State: needs_rework
+-- Note: Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError through task?.metadata access in effect-operation and overlay prompt paths.
++- State: ok
++- Note: Rework verified: CLI-managed verification history is bounded optional episode context, while structural semantic sections and TaskEpisodeView remain authoritative for agents.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+@@ -40,10 +40,10 @@ Created: 2026-07-27T21:31:31.669Z
+  .../adapters/execution-receipt-runtime.test.ts     |   4 +-
+  .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
+  packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
+- .../src/runner/context/base-prompts.test.ts        |  36 ++--
++ .../src/runner/context/base-prompts.test.ts        |  36 +--
+  .../src/runner/context/overlay-prompt-blocks.ts    |  13 +-
+- .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
+- .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
++ .../src/runner/context/task-context.test.ts        | 191 ++++++++++++++--
++ .../agentplane/src/runner/context/task-context.ts  | 248 +++++++++++++++------
+  .../src/runner/effect-operation-contract.ts        |   2 +-
+  packages/agentplane/src/runner/playbooks.ts        |   8 +-
+  .../src/runner/run-repository-contract.ts          |   3 +-
+@@ -55,8 +55,8 @@ Created: 2026-07-27T21:31:31.669Z
+  .../agentplane/src/runner/state-fingerprint.ts     |   2 +-
+  packages/agentplane/src/runner/task-state.ts       |   2 +-
+  packages/agentplane/src/runner/types.ts            |   3 +
+- packages/agentplane/src/runner/types/context.ts    |  71 ++++++-
+- .../src/runner/usecases/agent-work-order-build.ts  |  46 +++--
++ packages/agentplane/src/runner/types/context.ts    |  71 +++++-
++ .../src/runner/usecases/agent-work-order-build.ts  |  46 ++--
+  .../usecases/agent-work-order.integration.test.ts  |   2 +-
+  .../src/runner/usecases/agent-work-order.ts        |   2 +-
+  .../usecases/task-run-active-claim-runtime.ts      |   2 +-
+@@ -72,8 +72,8 @@ Created: 2026-07-27T21:31:31.669Z
+  .../agentplane/src/runner/usecases/task-run.ts     |   6 +-
+  packages/agentplane/src/runner/write-scope.test.ts |   6 +-
+  packages/testkit/src/runner.ts                     |  65 ++++--
+- scripts/baselines/trust-boundary-violations.json   |  90 ---------
+- 44 files changed, 607 insertions(+), 321 deletions(-)
++ scripts/baselines/trust-boundary-violations.json   |  90 --------
++ 44 files changed, 685 insertions(+), 321 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/runner/context/task-context.test.ts b/packages/agentplane/src/runner/context/task-context.test.ts
+index a20224733..a1befd42b 100644
+--- a/packages/agentplane/src/runner/context/task-context.test.ts
++++ b/packages/agentplane/src/runner/context/task-context.test.ts
+@@ -254,6 +254,7 @@ describe("assembleRunnerTaskContext", () => {
+       verify: [],
+     });
+     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    ctx.config.tasks.doc.required_sections = ["Summary"];
+     const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
+     const sections = { ...(loaded.sections ?? {}), Summary: "required ".repeat(500) };
+     await ctx.taskBackend.writeTask({
+@@ -319,4 +320,55 @@ describe("assembleRunnerTaskContext", () => {
+       { name: "Проверка", text: "Обязательная проверка.", required: true },
+     ]);
+   });
++
++  it("keeps CLI-managed verification history out of required episode input", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    await writeLocalBackendConfig(root);
++    const task = await createTask({
++      cwd: root,
++      rootOverride: root,
++      title: "Verification history budget fixture",
++      description: "Formal verification history stays outside the required semantic core.",
++      owner: "CODER",
++      priority: "high",
++      tags: ["runner"],
++      dependsOn: [],
++      verify: [],
++    });
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const loaded = await loadTaskFromContext({ ctx, taskId: task.id });
++    const sections = {
++      ...(loaded.sections ?? {}),
++      Summary: "Required semantic summary.",
++      Scope: "Required semantic scope.",
++      Plan: "Required semantic plan.",
++      "Verify Steps": "Required semantic acceptance checks.",
++      Verification: [
++        "<!-- BEGIN VERIFICATION RESULTS -->",
++        "Formal lifecycle record ".repeat(400),
++        "<!-- END VERIFICATION RESULTS -->",
++      ].join("\n"),
++    };
++    await ctx.taskBackend.writeTask({
++      ...loaded,
++      doc: renderTaskDocFromSections(sections),
++      sections,
++    });
++
++    const assembled = await assembleRunnerTaskContext({
++      ctx,
++      cwd: root,
++      rootOverride: root,
++      task_id: task.id,
++    });
++
++    expect(assembled.task.section_policy.required_sections).not.toContain("Verification");
++    const verificationSection = assembled.task.narrative.sections.find(
++      (section) => section.name === "Verification",
++    );
++    expect(verificationSection).toMatchObject({ name: "Verification", required: false });
++    expect(verificationSection?.text).toContain("Formal lifecycle record");
++    expect(assembled.task.compaction.sections.truncated).toBe(true);
++  });
+ });
+diff --git a/packages/agentplane/src/runner/context/task-context.ts b/packages/agentplane/src/runner/context/task-context.ts
+index 68257cc68..19b805769 100644
+--- a/packages/agentplane/src/runner/context/task-context.ts
++++ b/packages/agentplane/src/runner/context/task-context.ts
+@@ -27,6 +27,8 @@ export type RunnerTaskContextEnvelope = {
+ };
+ 
+ const TRUNCATED_MARKER = "\n\n[TRUNCATED]";
++const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
++const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
+ 
+ export const RUNNER_TASK_CONTEXT_BUDGETS = {
+   section_max_bytes: 3072,
+@@ -111,6 +113,26 @@ function sectionKey(section: string): string {
+   return section.trim().replaceAll(/\s+/gu, " ").toLocaleLowerCase();
+ }
+ 
++function isCliManagedVerificationSection(text: string | undefined): boolean {
++  return (
++    typeof text === "string" &&
++    text.includes(VERIFICATION_RESULTS_BEGIN) &&
++    text.includes(VERIFICATION_RESULTS_END)
++  );
++}
++
++function semanticRequiredSections(opts: {
++  required_sections: readonly string[];
++  sections: Record<string, string>;
++}): string[] {
++  const sectionsByKey = new Map(
++    Object.entries(opts.sections).map(([section, text]) => [sectionKey(section), text]),
++  );
++  return opts.required_sections.filter(
++    (section) => !isCliManagedVerificationSection(sectionsByKey.get(sectionKey(section))),
++  );
++}
++
+ function compactSections(opts: {
+   task_id: string;
+   sections: Record<string, string>;
+@@ -332,10 +354,14 @@ export async function assembleRunnerTaskContext(opts: {
+           ? renderTaskDocFromSections(task.sections)
+           : "";
+     const baseSections = task.sections ?? (baseDoc ? taskDocToSectionMap(baseDoc) : {});
++    const requiredSections = semanticRequiredSections({
++      required_sections: ctx.config.tasks.doc.required_sections,
++      sections: baseSections,
++    });
+     const compactedSections = compactSections({
+       task_id: task.id,
+       sections: baseSections,
+-      required_sections: ctx.config.tasks.doc.required_sections,
++      required_sections: requiredSections,
+     });
+     const compactedComments = compactComments(task.comments ?? []);
+     const compactedEvents = compactEvents(task.events ?? []);
+@@ -380,7 +406,7 @@ export async function assembleRunnerTaskContext(opts: {
+       },
+       section_policy: {
+         source: "task_document_schema",
+-        required_sections: [...ctx.config.tasks.doc.required_sections],
++        required_sections: requiredSections,
+       },
+       history: {
+         comments: compactedComments.comments,
