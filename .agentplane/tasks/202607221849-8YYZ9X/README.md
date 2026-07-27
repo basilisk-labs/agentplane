@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-27T17:01:13.971Z"
+  updated_at: "2026-07-27T19:53:50.944Z"
   updated_by: "TESTER"
-  note: "Reverification after the hosted critical-CI fix: critical-cli suite now accepts the reviewed 253commands/174args/813options surface; compatibility ratchet remains green. No production behavior changed beyond the tested expectation."
+  note: "Verified: the rebased final branch passed full local CI and fresh hosted PR checks, including the recovered runner race regression."
   attempts: 0
 quality_review:
   state: "pass"
@@ -185,8 +185,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-27T19:53:50.944Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: the rebased final branch passed full local CI and fresh hosted PR checks, including the recovered runner race regression."
 doc_version: 3
-doc_updated_at: "2026-07-27T19:42:39.888Z"
+doc_updated_at: "2026-07-27T19:53:53.230Z"
 doc_updated_by: "CODER"
 description: "RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its typed result, turn rework into the next semantic episode, and calibrate human escalation on golden scenarios."
 sections:
@@ -301,6 +307,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-27T19:53:50.944Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified: the rebased final branch passed full local CI and fresh hosted PR checks, including the recovered runner race regression.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T19:42:39.888Z, excerpt_hash=sha256:520611ddb34ae6455bc539b221ce9f07a6ffba8eade3a225423af7361407c138
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-8YYZ9X-execute-and-calibrate-evaluator-episodes/.agentplane/tasks/202607221849-8YYZ9X/blueprint/resolved-snapshot.json
+    - old_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+    - current_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221849-8YYZ9X
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the task implementation commit(s) while preserving unrelated task and migration state.
@@ -318,6 +354,10 @@ sections:
     - Observation: The earlier hosted failure was a stale expected count in the critical baseline, not a compatibility-ratchet regression.
       Impact: The hosted gate now evaluates the intended RF-12b public CLI surface.
       Resolution: Publish this exact head and require a fresh hosted run before integration.
+
+    - Observation: The prior hosted unit failure was the recovery-lease read race fixed on main and included by the rebase.
+      Impact: Without refreshed PR verification metadata, protected integration correctly rejects the otherwise green branch.
+      Resolution: Record fresh verification against the rebased branch, sync PR artifacts, then require hosted checks on the final metadata head.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -893,6 +933,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-27T19:53:50.944Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: the rebased final branch passed full local CI and fresh hosted PR checks, including the recovered runner race regression.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T19:42:39.888Z, excerpt_hash=sha256:520611ddb34ae6455bc539b221ce9f07a6ffba8eade3a225423af7361407c138
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607221849-8YYZ9X-execute-and-calibrate-evaluator-episodes/.agentplane/tasks/202607221849-8YYZ9X/blueprint/resolved-snapshot.json
+- old_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+- current_digest: 4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221849-8YYZ9X
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -914,3 +984,7 @@ DecisionContextRef:
 - Observation: The earlier hosted failure was a stale expected count in the critical baseline, not a compatibility-ratchet regression.
   Impact: The hosted gate now evaluates the intended RF-12b public CLI surface.
   Resolution: Publish this exact head and require a fresh hosted run before integration.
+
+- Observation: The prior hosted unit failure was the recovery-lease read race fixed on main and included by the rebase.
+  Impact: Without refreshed PR verification metadata, protected integration correctly rejects the otherwise green branch.
+  Resolution: Record fresh verification against the rebased branch, sync PR artifacts, then require hosted checks on the final metadata head.

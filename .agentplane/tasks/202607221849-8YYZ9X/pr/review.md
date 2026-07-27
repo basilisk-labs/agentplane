@@ -13,7 +13,7 @@ Created: 2026-07-27T15:40:36.124Z
 ## Verification
 
 - State: ok
-- Note: Reverification after the hosted critical-CI fix: critical-cli suite now accepts the reviewed 253commands/174args/813options surface; compatibility ratchet remains green. No production behavior changed beyond the tested expectation.
+- Note: Verified: the rebased final branch passed full local CI and fresh hosted PR checks, including the recovered runner race regression.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -19,9 +19,8 @@ RF-12b: launch a read-only EVALUATOR against the prepared work order, apply its 
 - Note:
 
 ```text
-Reverification after the hosted critical-CI fix: critical-cli suite now accepts the reviewed
-253commands/174args/813options surface; compatibility ratchet remains green. No production behavior
-changed beyond the tested expectation.
+Verified: the rebased final branch passed full local CI and fresh hosted PR checks, including the
+recovered runner race regression.
 ```
 - Canonical workflow state lives in the task README.
 
