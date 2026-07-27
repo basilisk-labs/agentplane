@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -46,11 +46,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "b84ae3fa29f6f01716d101905cf69d9e369d7e7f"
+  message: "🧪 9M2FBQ task: persist alpha qualification context"
 comments:
   -
     author: "TESTER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: rebased alpha.2 qualification onto main at 5ae5c5b13; schemas and lifecycle invariants passed; critical suite completed without reported failure; ci:contract completed locally but the terminal transport did not return its final exit code, so hosted PR checks remain mandatory evidence."
 events:
   -
     type: "status"
@@ -59,9 +64,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-27T21:18:01.204Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: rebased alpha.2 qualification onto main at 5ae5c5b13; schemas and lifecycle invariants passed; critical suite completed without reported failure; ci:contract completed locally but the terminal transport did not return its final exit code, so hosted PR checks remain mandatory evidence."
 doc_version: 3
-doc_updated_at: "2026-07-27T20:10:45.464Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-07-27T21:18:01.204Z"
+doc_updated_by: "CODER"
 description: "Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
   Summary: |-
