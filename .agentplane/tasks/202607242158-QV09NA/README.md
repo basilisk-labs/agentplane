@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on:
@@ -67,8 +67,8 @@ quality_review:
   findings:
     - "The previous CI failure was test/static drift, not a defect in the QV effect-resolution safety contract. The corrected fixtures now preserve the fail-safe branch route for genuinely uncommitted work."
 commit:
-  hash: "e669a5a45438a25e7c45ceab5a6a61efab12d91a"
-  message: "📋 QV09NA task: authorize refreshed pre-merge closure"
+  hash: "000da2f558f03a633b474888ce682f0542396e92"
+  message: "📋 QV09NA effect-in-doubt: authorize pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -79,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -137,8 +140,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T11:47:31.894Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T11:19:37.612Z"
+doc_updated_at: "2026-07-27T11:47:31.895Z"
 doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
@@ -631,8 +641,8 @@ extensions:
         stateScopeDigest: "sha256:1ed37c4083b4bb914bd2e2532e3fdde6ed1201dd786d2865bc46a2c7cd9d5b60"
     schemaVersion: 1
   implementation_commit:
-    hash: "bcf068d13b4f1fe8c342246f0fdce98ff57cc0e1"
-    message: "🐛 QV09NA effect-in-doubt: satisfy static test safety"
+    hash: "4aa3d6f36e621a7446fbb96c9f2b2ee7f180f8d7"
+    message: "🐛 QV09NA effect-in-doubt: align static and route fixtures"
   workflow_route_baseline:
     start_head_sha: "cae1a43c6aadbe44325f842254f0f60c78882b84"
     version: 1
