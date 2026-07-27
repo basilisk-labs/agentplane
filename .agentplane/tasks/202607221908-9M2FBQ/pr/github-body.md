@@ -15,14 +15,20 @@ Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is D
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle
+invariants passed; critical and full contract runs completed without observed failure. Hosted PR
+checks remain mandatory independent confirmation before integration.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T20:10:45.718Z
+- Updated: 2026-07-27T20:11:23.957Z
 - Branch: task/202607221908-9M2FBQ/qualify-the-agentplane-0-7-0-alpha-2-milestone
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

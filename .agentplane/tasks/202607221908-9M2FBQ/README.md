@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-alpha.2 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -41,10 +41,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T21:18:51.505Z"
+  updated_by: "TESTER"
+  note: "Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration."
   attempts: 0
 commit:
   hash: "b84ae3fa29f6f01716d101905cf69d9e369d7e7f"
@@ -71,8 +71,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation: rebased alpha.2 qualification onto main at 5ae5c5b13; schemas and lifecycle invariants passed; critical suite completed without reported failure; ci:contract completed locally but the terminal transport did not return its final exit code, so hosted PR checks remain mandatory evidence."
+  -
+    type: "verify"
+    at: "2026-07-27T21:18:51.505Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration."
 doc_version: 3
-doc_updated_at: "2026-07-27T21:18:01.204Z"
+doc_updated_at: "2026-07-27T21:18:54.161Z"
 doc_updated_by: "CODER"
 description: "Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -96,12 +102,45 @@ sections:
     4. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T21:18:51.505Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T21:18:01.204Z, excerpt_hash=sha256:f01de43b3312a7d5eb09d00f58019e892977ccca2757d72d8155296abf62942e
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-clone.9d6Aq6/.agentplane/worktrees/202607221908-9M2FBQ-qualify-the-agentplane-0-7-0-alpha-2-milestone/.agentplane/tasks/202607221908-9M2FBQ/blueprint/resolved-snapshot.json
+    - old_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
+    - current_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-9M2FBQ
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221908-9M2FBQ
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Do not mutate product state during qualification beyond evidence artifacts.
     - If a prerelease was not published, revert only the gate evidence through its task branch.
     - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
-  Findings: ""
+  Findings: |-
+    - Observation: Local terminal transport did not emit the final exit record for the two long aggregate commands after their child processes completed.
+      Impact: Local aggregate exit-code evidence is weaker than the deterministic check output.
+      Resolution: Require a green hosted PR gate for the published final head before queueing or qualifying the milestone.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -167,6 +206,36 @@ Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is D
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T21:18:51.505Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rebased alpha.2 qualification was checked on the updated main lineage: schemas and lifecycle invariants passed; critical and full contract runs completed without observed failure. Hosted PR checks remain mandatory independent confirmation before integration.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T21:18:01.204Z, excerpt_hash=sha256:f01de43b3312a7d5eb09d00f58019e892977ccca2757d72d8155296abf62942e
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf12b-integration-clone.9d6Aq6/.agentplane/worktrees/202607221908-9M2FBQ-qualify-the-agentplane-0-7-0-alpha-2-milestone/.agentplane/tasks/202607221908-9M2FBQ/blueprint/resolved-snapshot.json
+- old_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
+- current_digest: 6765cacbeec3c1e0ce586155e78f71b47a81d9e1bde74dcf21654796deaa956b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-9M2FBQ
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221908-9M2FBQ
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -176,3 +245,7 @@ Run the executable fan-in gate for 0.7.0-alpha.2, prove every included leaf is D
 - If a prerelease was published, preserve it and route fixes through a new prerelease version; never overwrite the tag/package.
 
 ## Findings
+
+- Observation: Local terminal transport did not emit the final exit record for the two long aggregate commands after their child processes completed.
+  Impact: Local aggregate exit-code evidence is weaker than the deterministic check output.
+  Resolution: Require a green hosted PR gate for the published final head before queueing or qualifying the milestone.
