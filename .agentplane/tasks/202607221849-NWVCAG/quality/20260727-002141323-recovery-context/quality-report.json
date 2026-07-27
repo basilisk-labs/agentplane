@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-NWVCAG",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T00:21:41.323Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Pass: external workflow operations are explicitly classified and require scoped, expiring authority; the route resumes only for an exact valid grant.",
+  "evaluated_sha": "96e569f7d32491cf05647f62d5dc78125b20fa9e",
+  "blueprint_digest": "166b25d862b184759dd0216e260cdf201f6e4f449a00c226c5e95be1ae316b49",
+  "findings": [
+    "Reviewed authority boundary: the exhaustive policy table classifies every formal operation, and external effects emit typed approval steps rather than executing.",
+    "Reviewed integrity and freshness: grants bind operation and state scope, malformed audit state fails closed, and technical grant commits do not invalidate the semantic scope.",
+    "Reviewed semantic boundary: authority records contain actor and policy metadata only; verdicts, summaries, and implementation decisions remain outside the authority mechanism."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-NWVCAG/README.md",
+    "bun run ci:contract: pass",
+    "bun run test:fast: 470 files / 3260 tests pass",
+    "bun run test:critical: 11 critical chunks pass",
+    "packages/agentplane/src/commands/shared/side-effect-authority.ts"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "USER actor authority is supplied through the authenticated operator interaction boundary rather than verified by a local cryptographic credential."
+  ],
+  "residual_risks": [
+    "The audit chain is tamper-evident under repository integrity, not independently immutable; a cryptographic signer is intentionally deferred for alpha2."
+  ]
+}
