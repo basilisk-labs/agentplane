@@ -95,12 +95,27 @@ function providerComponent(state: WorkflowRouteStateInput): StateFingerprintComp
   if (!flow) {
     return unavailableComponent("workflow_route", "provider_not_observed", state.cleanupProbe);
   }
+  const authorityScope = {
+    observationState: flow.providerObservation?.state ?? "metadata_only",
+    pr: {
+      provider: flow.pr.provider,
+      state: flow.pr.state,
+      ...(flow.pr.state === "not_found"
+        ? {}
+        : {
+            prNumber: flow.pr.prNumber,
+            prUrl: flow.pr.prUrl,
+            base: flow.pr.base,
+          }),
+    },
+    branch: { name: flow.branch.name },
+    closeTail: { state: flow.closeTail.state },
+    queue: { present: flow.queue.present },
+  };
   const evidence = {
+    authorityScope,
     observation: flow.providerObservation ?? null,
     pr: flow.pr,
-    // The local branch heads are already bound by the Git component. Keeping
-    // them here would make an authority record invalidate itself when its
-    // persisted task-state commit advances the local branch.
     branch: { name: flow.branch.name },
     closeTail: flow.closeTail,
     hostedChecks: flow.hostedChecks,
@@ -118,7 +133,15 @@ function providerComponent(state: WorkflowRouteStateInput): StateFingerprintComp
   if (flow.pr.source !== "lookup" && !flow.providerObservation) {
     return unavailableComponent("workflow_route_provider", "provider_metadata_only", evidence);
   }
-  return presentComponent("workflow_route_provider", evidence);
+  /**
+   * State fingerprints retain a component digest, not its raw value. The
+   * provider component must therefore be stable across the authority record's
+   * own technical PR-head update. It binds PR identity and lifecycle state;
+   * route construction and the protected command still re-evaluate volatile
+   * hosted checks, review threads, and queue eligibility immediately before
+   * executing a side effect.
+   */
+  return presentComponent("workflow_route_provider", authorityScope);
 }
 
 function checkoutPath(checkout: WorkflowCheckout, paths: WorkflowFingerprintPaths): string | null {

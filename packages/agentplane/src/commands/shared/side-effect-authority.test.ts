@@ -46,6 +46,48 @@ function fingerprint(gitHead = "a".repeat(40), trackedContent = gitHead): StateF
   });
 }
 
+function workflowProviderFingerprint(opts: {
+  gitHead?: string;
+  trackedContent?: string;
+}): StateFingerprint {
+  return buildStateFingerprint({
+    task_id: taskId,
+    task_revision: 4,
+    git_head: opts.gitHead ?? "a".repeat(40),
+    worktree: "/repo/.agentplane/worktrees/auth",
+    components: {
+      task: { state: "present", source: "fixture", value: { title: "Authority fixture" } },
+      git: {
+        state: "present",
+        source: "fixture",
+        value: { trackedContent: opts.trackedContent ?? "source-tree" },
+      },
+      backend_projection: { state: "present", source: "fixture", value: { backend: "local" } },
+      policy: { state: "present", source: "fixture", value: { rule: "workflow" } },
+      blueprint: { state: "present", source: "fixture", value: { digest: "blueprint" } },
+      knowledge: { state: "present", source: "fixture", value: { digest: "knowledge" } },
+      provider: {
+        state: "present",
+        source: "workflow_route_provider",
+        value: {
+          observationState: "present",
+          pr: {
+            provider: "github",
+            state: "OPEN",
+            prNumber: 4633,
+            prUrl: "https://example.test/pull/4633",
+            base: "main",
+          },
+          branch: { name: "task/authority" },
+          closeTail: { state: "not_applicable" },
+          queue: { present: false },
+        },
+      },
+      authority: { state: "present", source: "fixture", value: { route: "integration.enqueue" } },
+    },
+  });
+}
+
 function preMergeOperation(
   commit: string,
   result = "pre-merge closure",
@@ -203,6 +245,52 @@ describe("side-effect authority", () => {
         task,
         operation,
         fingerprint: fingerprint("b".repeat(40), "changed-source"),
+        now: new Date("2026-07-26T12:01:00.000Z"),
+      }),
+    ).toMatchObject({ state: "approval_required" });
+  });
+
+  it("keeps integration authority valid across its persisted PR-head update", () => {
+    const integration = {
+      id: "integration.enqueue",
+      type: "integration_enqueue",
+      params: { taskId, branch: "task/authority" },
+    } as Pick<WorkflowOperation, "id" | "type" | "params">;
+    const beforePersist = workflowProviderFingerprint({});
+    const afterPersist = workflowProviderFingerprint({
+      gitHead: "b".repeat(40),
+    });
+    const grant = createSideEffectAuthorityRecord({
+      id: "authority-integration",
+      actor: "USER",
+      operation: integration,
+      fingerprint: beforePersist,
+      issuedAt: "2026-07-26T12:00:00.000Z",
+      expiresAt: "2026-07-26T12:15:00.000Z",
+    });
+    const task = {
+      extensions: withSideEffectAuthorityState(
+        { extensions: {} },
+        { schemaVersion: 1, grants: [grant], audit: [] },
+      ),
+    };
+
+    expect(workflowAuthorityStateScopeDigest(afterPersist)).toBe(
+      workflowAuthorityStateScopeDigest(beforePersist),
+    );
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation: integration,
+        fingerprint: afterPersist,
+        now: new Date("2026-07-26T12:01:00.000Z"),
+      }),
+    ).toMatchObject({ state: "allowed", authorityRef: "authority:authority-integration" });
+    expect(
+      evaluateWorkflowOperationAuthority({
+        task,
+        operation: integration,
+        fingerprint: workflowProviderFingerprint({ trackedContent: "changed-source" }),
         now: new Date("2026-07-26T12:01:00.000Z"),
       }),
     ).toMatchObject({ state: "approval_required" });

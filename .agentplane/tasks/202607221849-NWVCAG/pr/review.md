@@ -6,14 +6,14 @@ Created: 2026-07-26T10:58:46.358Z
 
 - Task: `202607221849-NWVCAG`
 - Title: Bind side effects to explicit authority records
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221849-NWVCAG/bind-side-effects-to-explicit-authority-records`
 - Canonical task record: `.agentplane/tasks/202607221849-NWVCAG/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Verified remote authority-grant context preservation: approvals emitted from hosted routes now rebuild the same remote route before validating their exact scope. Passed focused authority-grant and workflow-step tests, compatibility ratchet, test:fast (469 files, 3259 tests), test:critical (11 chunks, 72 tests), typecheck, and format:changed.
+- State: needs_rework
+- Note: RF13 end-to-end authority route rework required
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
