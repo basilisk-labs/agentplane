@@ -95,7 +95,7 @@ export async function recordTaskRunnerPostStateUnknown(opts: {
   });
 }
 
-export async function recordTaskRunnerEffectAccepted(opts: {
+async function recordTaskRunnerEffectAccepted(opts: {
   session: StartedRunnerEffectOperation;
   result: RunnerResult;
   state_fingerprint: RunnerStateFingerprintRecord;
