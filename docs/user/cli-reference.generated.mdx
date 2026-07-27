@@ -205,7 +205,9 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [context wiki new](#context-wiki-new)
   - [context wiki report](#context-wiki-report)
 - Evaluators
+  - [evaluator apply](#evaluator-apply)
   - [evaluator list](#evaluator-list)
+  - [evaluator prepare](#evaluator-prepare)
   - [evaluator run](#evaluator-run)
   - [evaluator show](#evaluator-show)
 - Evidence
@@ -3939,6 +3941,22 @@ agentplane context wiki report [<path>]
 
 ## Evaluators
 
+### evaluator apply
+
+Validate and record a typed EVALUATOR result against a frozen work order.
+
+Usage:
+
+```text
+agentplane evaluator apply <task-id> [options]
+```
+
+Options:
+
+- `--work-order <path>`: Prepared EvaluatorWorkOrder JSON path.
+- `--result <path>`: EVALUATOR-produced EvaluatorSgrResult JSON path.
+- `--json`: Emit machine-readable recorded paths. (default=false)
+
 ### evaluator list
 
 List evaluator prompt modules from .agentplane/evaluators.
@@ -3974,9 +3992,24 @@ agentplane evaluator list --builtin false
 
 - Show project-local evaluators only.
 
+### evaluator prepare
+
+Freeze bounded evidence and build a read-only EVALUATOR work order.
+
+Usage:
+
+```text
+agentplane evaluator prepare <task-id> [options]
+```
+
+Options:
+
+- `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
+- `--json`: Emit machine-readable work-order paths. (default=false)
+
 ### evaluator run
 
-Create and record a structured EVALUATOR quality review report.
+Compatibility facade for preparing and recording a structured quality review.
 
 Usage:
 

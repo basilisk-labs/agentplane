@@ -6,7 +6,7 @@ Created: 2026-07-27T12:39:26.919Z
 
 - Task: `202607221849-TBTX8X`
 - Title: Prepare and apply typed evaluator results
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results`
 - Canonical task record: `.agentplane/tasks/202607221849-TBTX8X/README.md`
 
@@ -29,6 +29,7 @@ Created: 2026-07-27T12:39:26.919Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |  35 +-
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   4 +
  .../evaluator/evaluator-quality-artifacts.ts       |  33 +-
@@ -39,7 +40,7 @@ Created: 2026-07-27T12:39:26.919Z
  .../src/commands/evaluator/evaluator.spec.ts       |  97 +++-
  .../baselines/v0.7-compatibility-candidate.json    | 149 +++++-
  .../check-compatibility-contract-baseline.mjs      |  85 ++++
- 10 files changed, 1503 insertions(+), 206 deletions(-)
+ 11 files changed, 1537 insertions(+), 207 deletions(-)
 ```
 
 </details>
