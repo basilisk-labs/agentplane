@@ -24,7 +24,7 @@ Created: 2026-07-27T01:22:25.252Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T01:22:25.252Z
+- Updated: 2026-07-27T01:23:26.428Z
 - Branch: task/202607270107-GRJSV6/preserve-authority-only-tails-during-merged-clea
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
