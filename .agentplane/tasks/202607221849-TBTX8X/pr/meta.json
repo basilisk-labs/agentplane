@@ -8,10 +8,10 @@
   "pr_number": 4642,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4642",
   "pre_merge_closure": {
-    "basis_commit": "5e6f72cb38a9306004ca674ca1d08a1f94432cd1",
+    "basis_commit": "b2e021901539a60c0e3a727e197654f464c5a21a",
     "branch": "task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results",
     "pr_number": 4642,
-    "recorded_at": "2026-07-27T13:58:15.610Z",
+    "recorded_at": "2026-07-27T14:12:07.278Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

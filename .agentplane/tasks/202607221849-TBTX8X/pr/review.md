@@ -6,7 +6,7 @@ Created: 2026-07-27T12:39:26.919Z
 
 - Task: `202607221849-TBTX8X`
 - Title: Prepare and apply typed evaluator results
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221849-TBTX8X/prepare-and-apply-typed-evaluator-results`
 - Canonical task record: `.agentplane/tasks/202607221849-TBTX8X/README.md`
 

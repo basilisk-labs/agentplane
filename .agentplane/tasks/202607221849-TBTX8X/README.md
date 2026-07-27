@@ -2,10 +2,10 @@
 id: "202607221849-TBTX8X"
 title: "Prepare and apply typed evaluator results"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -44,30 +44,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T13:57:24.580Z"
+  updated_at: "2026-07-27T14:11:07.957Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "5e6f72cb38a9306004ca674ca1d08a1f94432cd1"
+  evaluated_sha: "b2e021901539a60c0e3a727e197654f464c5a21a"
   blueprint_digest: "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53"
   evidence_refs:
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221849-TBTX8X/README.md"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-135724083-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The typed EVALUATOR boundary is satisfied: a result is schema-checked, limited to frozen evidence paths, and cannot carry lifecycle or implementation mutations."
+    - "The generated user-facing CLI reference now exposes the two reviewed additive commands, so the public CLI contract and its documentation are synchronized."
 commit:
-  hash: "48954b67db186c32ad3d3c3b4cd3a5bcbbb0965d"
-  message: "✨ TBTX8X task: record integration authority"
+  hash: "b2e021901539a60c0e3a727e197654f464c5a21a"
+  message: "📚 TBTX8X task: refresh CLI reference"
 comments:
   -
     author: "CODER"
@@ -81,6 +81,9 @@ comments:
   -
     author: "CODER"
     body: "Reopened before merge: GitHub verify-contract found the generated CLI reference stale after the additive evaluator prepare/apply command surface. Regenerate the reference and repeat verification and quality review."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -116,8 +119,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Reopened before merge: GitHub verify-contract found the generated CLI reference stale after the additive evaluator prepare/apply command surface. Regenerate the reference and repeat verification and quality review."
+  -
+    type: "status"
+    at: "2026-07-27T14:12:07.086Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T14:09:54.199Z"
+doc_updated_at: "2026-07-27T14:12:07.089Z"
 doc_updated_by: "CODER"
 description: "RF-12a/RF-25a: split evaluator into typed prepare and apply use cases over frozen task revision, evaluated SHA, actual diff, observed checks, acceptance, policy, blueprint, and knowledge evidence."
 sections:
@@ -262,6 +272,19 @@ extensions:
         schemaVersion: 1
         sequence: 6
         stateFingerprintDigest: "sha256:1f138dd353b0a721749f634f8d3caae6e48f868ef5f94e6951cd1dfcec956b43"
+      -
+        actor: "USER"
+        at: "2026-07-27T14:11:31.376Z"
+        authorityDigest: "sha256:e35653d55584fb26e19626f9e29d87a8726e8775b505f5f6f36f5bcc2b4f237c"
+        digest: "sha256:6ed85c4751683e49978e833940cce30d827a432352ff85837a35c6d21e3a5ed1"
+        operationDigest: "sha256:097c27defeecda2b05aa9aafe68863ea165adefc9ec1080e6c2c5e20a03a01b0"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:18480a8459081e3643e94263c7f8b0f0d10b468950787ff20587dfd1cbf967a6"
+        schemaVersion: 1
+        sequence: 7
+        stateFingerprintDigest: "sha256:5f1be812fb74d9d98215ec5c8068471e562ef758a6b2f4e539113f2e3aa7972b"
     grants:
       -
         actor: "USER"
@@ -341,6 +364,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:1f138dd353b0a721749f634f8d3caae6e48f868ef5f94e6951cd1dfcec956b43"
         stateScopeDigest: "sha256:903d0703d247196aab44ecd34de064349ee46c1fdb138cf33dae0cfaabc0b7c4"
+      -
+        actor: "USER"
+        digest: "sha256:e35653d55584fb26e19626f9e29d87a8726e8775b505f5f6f36f5bcc2b4f237c"
+        expiresAt: "2026-07-27T14:26:31.376Z"
+        id: "authority-284fa716-69c1-42ac-968d-97adfce7a26e"
+        issuedAt: "2026-07-27T14:11:31.376Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:097c27defeecda2b05aa9aafe68863ea165adefc9ec1080e6c2c5e20a03a01b0"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:5f1be812fb74d9d98215ec5c8068471e562ef758a6b2f4e539113f2e3aa7972b"
+        stateScopeDigest: "sha256:042b2b998653e7cd8f8487eaf984e2e5a3de3ae7ba8e2721468a43427617ff0c"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "f5b987c4b7aabd4830b202c0b6e902211f8abdc4"

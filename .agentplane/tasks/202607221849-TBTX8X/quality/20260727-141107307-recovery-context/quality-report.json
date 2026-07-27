@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-TBTX8X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T14:11:07.957Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "b2e021901539a60c0e3a727e197654f464c5a21a",
+  "blueprint_digest": "f51d20f20e8dc6bd8b451f07f90c56218d7fa8709e0505633fe075ab9f5a9f53",
+  "findings": [
+    "The generated user-facing CLI reference now exposes the two reviewed additive commands, so the public CLI contract and its documentation are synchronized."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-TBTX8X/quality/20260727-141107307-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The prior typed evaluator implementation review remains applicable because this follow-up changes only generated command reference documentation."
+  ],
+  "residual_risks": []
+}
