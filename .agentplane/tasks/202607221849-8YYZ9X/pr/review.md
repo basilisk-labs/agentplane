@@ -6,14 +6,14 @@ Created: 2026-07-27T15:40:36.124Z
 
 - Task: `202607221849-8YYZ9X`
 - Title: Execute and calibrate EVALUATOR episodes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221849-8YYZ9X/execute-and-calibrate-evaluator-episodes`
 - Canonical task record: `.agentplane/tasks/202607221849-8YYZ9X/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Focused calibration, compatibility, type, lint, build, and critical CLI checks pass; the real read-only Codex episode failed before a typed response.
+- State: ok
+- Note: All deterministic calibration scenarios pass: pass/rework/blocked/human_review provenance, stale revision rejection, success and failure-path no-write enforcement, and safe provider-failure classification. Typecheck, lint, compatibility ratchet, assets, docs, and policy routing pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
