@@ -459,7 +459,18 @@ describe("WorkflowStep conflict rework projections", () => {
       handoff: { present: false },
       nextAction: "wait hosted checks",
     } satisfies PrFlowStatusReport;
-    const state = routeState({ prFlow: openPrFlow, conflictRework: null });
+    const state = routeState({
+      task: {
+        ...task,
+        verification: { state: "ok" },
+        commit: {
+          hash: "2222222222222222222222222222222222222222",
+          message: "feat: implementation",
+        },
+      },
+      prFlow: openPrFlow,
+      conflictRework: null,
+    });
     const step = reduceRouteState(state);
 
     expect(step).toMatchObject({
