@@ -15,12 +15,12 @@ RF-21: replace full TaskData plus duplicate projections with one authoritative r
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted verify-unit failed on 80955ecf: legacy partial RunnerTaskContext fixtures trigger TypeError
-through task?.metadata access in effect-operation and overlay prompt paths.
+Rework verified: CLI-managed verification history is bounded optional episode context, while
+structural semantic sections and TaskEpisodeView remain authoritative for agents.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -43,10 +43,10 @@ through task?.metadata access in effect-operation and overlay prompt paths.
  .../adapters/execution-receipt-runtime.test.ts     |   4 +-
  .../runner/adapters/execution-receipt-runtime.ts   |   4 +-
  packages/agentplane/src/runner/artifacts.test.ts   |  55 +++--
- .../src/runner/context/base-prompts.test.ts        |  36 ++--
+ .../src/runner/context/base-prompts.test.ts        |  36 +--
  .../src/runner/context/overlay-prompt-blocks.ts    |  13 +-
- .../src/runner/context/task-context.test.ts        | 139 +++++++++++--
- .../agentplane/src/runner/context/task-context.ts  | 222 ++++++++++++++-------
+ .../src/runner/context/task-context.test.ts        | 191 ++++++++++++++--
+ .../agentplane/src/runner/context/task-context.ts  | 248 +++++++++++++++------
  .../src/runner/effect-operation-contract.ts        |   2 +-
  packages/agentplane/src/runner/playbooks.ts        |   8 +-
  .../src/runner/run-repository-contract.ts          |   3 +-
@@ -58,8 +58,8 @@ through task?.metadata access in effect-operation and overlay prompt paths.
  .../agentplane/src/runner/state-fingerprint.ts     |   2 +-
  packages/agentplane/src/runner/task-state.ts       |   2 +-
  packages/agentplane/src/runner/types.ts            |   3 +
- packages/agentplane/src/runner/types/context.ts    |  71 ++++++-
- .../src/runner/usecases/agent-work-order-build.ts  |  46 +++--
+ packages/agentplane/src/runner/types/context.ts    |  71 +++++-
+ .../src/runner/usecases/agent-work-order-build.ts  |  46 ++--
  .../usecases/agent-work-order.integration.test.ts  |   2 +-
  .../src/runner/usecases/agent-work-order.ts        |   2 +-
  .../usecases/task-run-active-claim-runtime.ts      |   2 +-
@@ -75,8 +75,8 @@ through task?.metadata access in effect-operation and overlay prompt paths.
  .../agentplane/src/runner/usecases/task-run.ts     |   6 +-
  packages/agentplane/src/runner/write-scope.test.ts |   6 +-
  packages/testkit/src/runner.ts                     |  65 ++++--
- scripts/baselines/trust-boundary-violations.json   |  90 ---------
- 44 files changed, 607 insertions(+), 321 deletions(-)
+ scripts/baselines/trust-boundary-violations.json   |  90 --------
+ 44 files changed, 685 insertions(+), 321 deletions(-)
 ```
 
 </details>
