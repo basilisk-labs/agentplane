@@ -22,12 +22,16 @@ Prevent transient read-stability races from failing concurrent runner effect-res
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T18:15:07.909Z
+- Updated: 2026-07-27T18:54:44.324Z
 - Branch: task/202607271814-E1ZTTV/stabilize-concurrent-recovery-lease-reads
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../task-run-active-claim-concurrency.test.ts      | 40 ++++++++++++
+ .../task-run-active-claim-recovery-lease.ts        | 72 ++++++++++++++--------
+ .../usecases/task-run-active-claim.testkit.ts      |  4 +-
+ .../usecases/task-run-lifecycle-cancel.testkit.ts  |  4 +-
+ 4 files changed, 92 insertions(+), 28 deletions(-)
 ```
 
 </details>

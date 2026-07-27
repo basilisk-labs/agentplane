@@ -226,10 +226,12 @@ export function gateRunnerScript(): string[] {
   ];
 }
 
+const RUNNER_CLAIM_START_TIMEOUT_MS = 30_000;
+
 export async function waitForStartedRun(markerPath: string): Promise<string> {
   return await waitForCondition({
     description: "custom runner claim marker",
-    timeoutMs: 10_000,
+    timeoutMs: RUNNER_CLAIM_START_TIMEOUT_MS,
     pollMs: 10,
     read: async () => await readFile(markerPath, "utf8").catch(() => ""),
     predicate: (contents) => contents.trim().length > 0,
