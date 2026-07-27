@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607271814-E1ZTTV-4fa8c942e3b78032ae6ce130",
+  "prepared_at": "2026-07-27T18:59:55.437Z",
+  "task": {
+    "id": "202607271814-E1ZTTV",
+    "revision": 9,
+    "objective": "Stabilize concurrent recovery-lease reads\n\nPrevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability.",
+    "acceptance_criteria": [
+      "- In scope: Prevent transient read-stability races from failing concurrent runner effect-resolution and active-claim retry flows; preserve strict file-integrity checks and verify repeatability.\n- Out of scope: unrelated refactors not required for \"Stabilize concurrent recovery-lease reads\".",
+      "1. Inspect the recovery-lease read and retirement protocol plus both failing concurrent tests. 2. Add the smallest bounded retry or contention classification that never accepts an unstable file and preserves identity/boundary validation. 3. Add deterministic tests for a transient concurrent replacement/read collision. 4. Run focused runner tests repeatedly, static/type/lint gates, then publish a narrow PR and require hosted checks before integrating RF-12b.",
+      "PLANNER fallback scaffold for \"Stabilize concurrent recovery-lease reads\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Stabilize concurrent recovery-lease reads\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "8b3d06c90f00a7da9ef6573b3fe4a8420e571783",
+  "blueprint_digest": "1766a97a9f5dc03821b7af809d044d41903d47e3cd2a1edeb1774df74a3519cc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/README.md",
+      "sha256": "sha256:7b9f416abda7e5db0d8f738499b60ef582d569c8927690e2b53fd47989419884",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:06d93b89bcfe2b2783716f4b4b6772e80dd632b80ef0d2827c8989d4d685e091",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:8be8f6810b4920cdc1a1cda41ea45f07a5b31205443db6a94dc21445682cde03",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:e3847481d8f07f8094a835ce06024cd346c01014ba6935609a70637ddb109f5b",
+      "required": true
+    }
+  ]
+}

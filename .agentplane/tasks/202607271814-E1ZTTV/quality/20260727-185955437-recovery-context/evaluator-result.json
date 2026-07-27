@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The recovery-lease reader retries only the existing atomic-replacement collision signature; each attempt retains directory-boundary, regular-file, and inode validation before accepting lease state.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607271814-E1ZTTV/quality/20260727-185955437-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "A 30-second bounded test-harness wait remains sufficient under saturated local and hosted worker scheduling."
+  ]
+}
