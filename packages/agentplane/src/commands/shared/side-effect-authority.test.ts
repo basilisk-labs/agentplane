@@ -126,8 +126,8 @@ describe("side-effect authority", () => {
       actor: "USER",
       policyRule: "workflow.external_reversible",
       operationId: "pr.open",
-      authorityDigest: expect.stringMatching(/^sha256:/u),
-      stateFingerprintDigest: expect.stringMatching(/^sha256:/u),
+      authorityDigest: expect.stringMatching(/^sha256:/u) as unknown as string,
+      stateFingerprintDigest: expect.stringMatching(/^sha256:/u) as unknown as string,
       outcome: "approved",
     });
     expect(
@@ -153,7 +153,7 @@ describe("side-effect authority", () => {
 
     const tampered = structuredClone(task);
     const raw = tampered.extensions?.["agentplane.side_effect_authority"] as {
-      grants: Array<{ actor: string }>;
+      grants: { actor: string }[];
     };
     raw.grants[0]!.actor = "OTHER";
     expect(
@@ -241,7 +241,7 @@ describe("side-effect authority", () => {
   it("fails closed when the append-only audit chain is tampered", () => {
     const task = approvedTask();
     const raw = task.extensions?.["agentplane.side_effect_authority"] as {
-      audit: Array<{ previousDigest: string | null }>;
+      audit: { previousDigest: string | null }[];
     };
     raw.audit[0]!.previousDigest = "sha256:" + "0".repeat(64);
 

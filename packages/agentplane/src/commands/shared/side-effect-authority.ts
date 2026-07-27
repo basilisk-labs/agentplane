@@ -236,9 +236,9 @@ export function readSideEffectAuthorityState(
   ) {
     return null;
   }
-  const grants = raw.grants.map(parseGrant);
-  const audit = raw.audit.map(parseAuditEntry);
-  if (grants.some((entry) => entry === null) || audit.some((entry) => entry === null)) return null;
+  const grants = raw.grants.map((value) => parseGrant(value));
+  const audit = raw.audit.map((value) => parseAuditEntry(value));
+  if (grants.includes(null) || audit.includes(null)) return null;
   const resolvedAudit = audit as SideEffectAuthorityAuditEntry[];
   const chainIsValid = resolvedAudit.every((entry, index) => {
     const previous = resolvedAudit[index - 1] ?? null;

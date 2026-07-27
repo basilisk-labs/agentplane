@@ -623,7 +623,9 @@ describe("WorkflowStep conflict rework projections", () => {
       id: "approval.pr.head.publish",
       compatibility: {
         code: "publish_pr_head",
-        command: expect.stringContaining(`agentplane task authority grant ${task.id}`),
+        command: expect.stringContaining(
+          `agentplane task authority grant ${task.id}`,
+        ) as unknown as string,
       },
       request: { type: "side_effect", operationId: "pr.head.publish" },
     });
@@ -631,7 +633,9 @@ describe("WorkflowStep conflict rework projections", () => {
     expect(oracle).toMatchObject({
       phase: "side_effect_authority_required",
       authoritativeCheckout: "task_worktree",
-      nextCommand: expect.stringContaining(`agentplane task authority grant ${task.id}`),
+      nextCommand: expect.stringContaining(
+        `agentplane task authority grant ${task.id}`,
+      ) as unknown as string,
     });
     expect(packet).toMatchObject({
       actionKind: "provider_action",
