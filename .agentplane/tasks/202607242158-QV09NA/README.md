@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on:
@@ -50,24 +50,24 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-27T07:02:42.678Z"
+  updated_at: "2026-07-27T11:18:28.816Z"
   updated_by: "EVALUATOR"
-  note: "Reviewed 7f6761b: hot-path extraction preserves the explicit operator-resolution boundary and restores all enforced module-size budgets."
-  evaluated_sha: "7f6761be42d40ba041572448685f0888a23b17be"
+  note: "Reviewed bcf068d: the static-analysis repair only narrows an already asserted rejected result to CliError before reading its typed context."
+  evaluated_sha: "bcf068d13b4f1fe8c342246f0fdce98ff57cc0e1"
   blueprint_digest: "75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f"
   evidence_refs:
     - ".agentplane/tasks/202607242158-QV09NA/README.md"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-070242678-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-070242678-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-070242678-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-111828816-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-111828816-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-111828816-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json"
-    - "git diff --find-renames --find-copies --stat 7f6761b^ 7f6761b"
-    - "bunx vitest run task-run-active-claim-{concurrency,history-safe,reconciliation}.test.ts task-run-active-claim.test.ts task-run-effect-resolution.test.ts task-run-lifecycle-cancel-effect-in-doubt.test.ts (67 passed)"
-    - "bun run hotspots:check (runtime threshold and oversized-test baseline passed)"
+    - "git diff bcf068d^ bcf068d -- packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
+    - "bun run lint:core"
+    - "bunx vitest run packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts (7 passed)"
     - "bun run typecheck && bun run lifecycle:invariants && bun run guards:check && bun run format:check && bun run test:critical"
   findings:
-    - "The dedicated retirement module remains reachable only from effect resolution; it requires an exact durable resolution reference before stale-claim retirement."
-    - "The resolve-effect and resume-effect command contracts are re-exported unchanged from the stable task-run command module; direct CLI help and focused regression suites preserve the public surface."
+    - "The concurrent opposite-verdict test still requires one fulfilled result and one runner_effect_resolution_intent_conflict; the new narrowing removes unsafe any traversal without weakening the assertion."
+    - "The test still proves no adapter invocation after both identical and opposing concurrent resolution attempts."
 commit:
   hash: "0c5c5b0d6d390d45bb051087102bb3051ac02186"
   message: "📋 QV09NA task: authorize pre-merge closure"
