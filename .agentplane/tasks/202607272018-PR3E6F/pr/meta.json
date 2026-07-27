@@ -3,14 +3,22 @@
   "branch": "task/202607272018-PR3E6F/synchronize-evaluator-verification-guidance-for",
   "created_at": "2026-07-27T20:20:49.958Z",
   "diffstat_sha256": "sha256:658faa475f1bf817065940fbb47146b64033c11973ebcee335d1fdf60dcd6f44",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-27T20:27:45.834Z",
+  "last_verified_diffstat_sha256": "sha256:658faa475f1bf817065940fbb47146b64033c11973ebcee335d1fdf60dcd6f44",
   "pr_number": 4646,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4646",
+  "pre_merge_closure": {
+    "basis_commit": "cec3c7fd8cecc1f3016791eb624d77aefc51ce36",
+    "branch": "task/202607272018-PR3E6F/synchronize-evaluator-verification-guidance-for",
+    "pr_number": 4646,
+    "recorded_at": "2026-07-27T20:28:48.568Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607272018-PR3E6F",
   "updated_at": "2026-07-27T20:21:29.432Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -6,14 +6,14 @@ Created: 2026-07-27T20:20:49.958Z
 
 - Task: `202607272018-PR3E6F`
 - Title: Synchronize evaluator verification guidance for alpha.2 qualification
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607272018-PR3E6F/synchronize-evaluator-verification-guidance-for`
 - Canonical task record: `.agentplane/tasks/202607272018-PR3E6F/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified: the bootstrap verification block now matches the generated contract; focused docs/template/routing checks and the full ci:contract gate passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

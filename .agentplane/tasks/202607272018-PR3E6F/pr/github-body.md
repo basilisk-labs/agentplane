@@ -15,8 +15,13 @@ Fix the bootstrap contract drift where AGENTS.md and its packaged asset still pr
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: the bootstrap verification block now matches the generated contract; focused
+docs/template/routing checks and the full ci:contract gate passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
