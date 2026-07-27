@@ -1,10 +1,10 @@
 ---
 id: "202607242158-QV09NA"
 title: "Resolve durable runner effects in doubt without duplicate execution"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -47,11 +47,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-27T05:36:45.776Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:08:14.118Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-27T05:36:45.776Z"
+doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
   Summary: |-
@@ -91,6 +101,40 @@ sections:
     - Split from effect journal creation after read-only design audit showed one combined task would cross schema/persistence and operator-resolution verification boundaries and likely repeat RF-06 scale.
     - Contract guarantee is no duplicate AgentPlane adapter spawn for one operation key; generic exactly-once external effects require provider-key support and are never implied.
     - This task intentionally waits for RF-06b, RF-13, RF-03, the journal leaf and the graph amendment.
+extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-27T05:37:15.133Z"
+        authorityDigest: "sha256:7146841a04e3a6c3af492be635d5611df3be13ef7d7ca088e953a5e8d0c30306"
+        digest: "sha256:e660bbf6ca10d6f7edcc3cc461f3bacb52ef900f2b07e069edc81f298a627e69"
+        operationDigest: "sha256:0ab7ef4840f3381d328d0f7c4bfb504c3732f12dff9d017cf2965fc267830187"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:fec7405d99827d96190f0d4852553bf04a3bb22ce516cb137ea155781c903353"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:7146841a04e3a6c3af492be635d5611df3be13ef7d7ca088e953a5e8d0c30306"
+        expiresAt: "2026-07-27T05:52:15.133Z"
+        id: "authority-b90a3cd6-65dd-4374-a4f2-d9c5d1c6b3af"
+        issuedAt: "2026-07-27T05:37:15.133Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:0ab7ef4840f3381d328d0f7c4bfb504c3732f12dff9d017cf2965fc267830187"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:fec7405d99827d96190f0d4852553bf04a3bb22ce516cb137ea155781c903353"
+        stateScopeDigest: "sha256:056b09d305ad6fb504b81b86b549ae2425687219ed4d94dbf8c7ba13e3fccd09"
+    schemaVersion: 1
+  workflow_route_baseline:
+    start_head_sha: "cae1a43c6aadbe44325f842254f0f60c78882b84"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
