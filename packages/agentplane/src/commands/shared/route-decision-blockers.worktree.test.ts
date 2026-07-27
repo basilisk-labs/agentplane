@@ -42,7 +42,7 @@ describe("route task-worktree blockers", () => {
     ]);
   });
 
-  it("keeps legacy DONE tasks with pending verification out of integration", () => {
+  it("keeps a DOING task with a recorded implementation and pending verification out of integration", () => {
     const blockers: RouteBlocker[] = [];
     addVerificationRequiredBlocker({
       blockers,
@@ -50,7 +50,34 @@ describe("route task-worktree blockers", () => {
         id: "T-1",
         title: "Task",
         description: "Task",
-        status: "DONE",
+        status: "DOING",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: ["bun test"],
+        verification: { state: "pending" },
+        commit: { hash: "abc123", message: "feat: implementation" },
+      },
+    });
+
+    expect(blockers).toEqual([
+      {
+        code: "verification_required",
+        summary: "the recorded task implementation does not have a passing verification record",
+      },
+    ]);
+  });
+
+  it("keeps an unrecorded DOING task with CODER instead of sending it to verification", () => {
+    const blockers: RouteBlocker[] = [];
+    addVerificationRequiredBlocker({
+      blockers,
+      task: {
+        id: "T-1",
+        title: "Task",
+        description: "Task",
+        status: "DOING",
         priority: "med",
         owner: "CODER",
         depends_on: [],
@@ -60,12 +87,7 @@ describe("route task-worktree blockers", () => {
       },
     });
 
-    expect(blockers).toEqual([
-      {
-        code: "verification_required",
-        summary: "the committed task implementation does not have a passing verification record",
-      },
-    ]);
+    expect(blockers).toEqual([]);
   });
 
   it("requires every path to be clean once the route reaches integration", () => {

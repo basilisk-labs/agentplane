@@ -24,12 +24,18 @@ Created: 2026-07-27T05:36:45.894Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T05:36:45.894Z
+- Updated: 2026-07-27T05:40:19.493Z
 - Branch: task/202607242158-QV09NA/resolve-durable-runner-effects-in-doubt-without
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/shared/route-decision-blockers.ts | 11 +++-
+ .../route-decision-blockers.worktree.test.ts       | 28 ++++++++-
+ .../src/commands/shared/route-decision.ts          |  9 ---
+ .../src/commands/shared/workflow-step-branch.ts    |  7 +++
+ .../src/commands/shared/workflow-step-factory.ts   | 25 ++++++++
+ .../shared/workflow-step-projections.test.ts       | 69 +++++++++++++++++++++-
+ 6 files changed, 134 insertions(+), 15 deletions(-)
 ```
 
 </details>

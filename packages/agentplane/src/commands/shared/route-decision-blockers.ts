@@ -270,13 +270,17 @@ export function addVerificationRequiredBlocker(opts: {
   task: TaskData;
 }): void {
   const status = String(opts.task.status).toUpperCase();
-  if ((status !== "DOING" && status !== "DONE") || opts.task.verification?.state === "ok") {
+  const hasRecordedImplementationCommit =
+    typeof opts.task.commit?.hash === "string" && opts.task.commit.hash.trim().length > 0;
+  const requiresVerification =
+    status === "DONE" || (status === "DOING" && hasRecordedImplementationCommit);
+  if (!requiresVerification || opts.task.verification?.state === "ok") {
     return;
   }
   addBlocker(
     opts.blockers,
     "verification_required",
-    "the committed task implementation does not have a passing verification record",
+    "the recorded task implementation does not have a passing verification record",
   );
 }
 
@@ -306,6 +310,9 @@ export async function deriveBlockers(opts: {
       tasksPath: opts.ctx.config.paths.tasks_path,
       requireAllChanges: normalizedTaskStatus === "DONE",
     });
+  }
+  if (opts.workflowMode === "branch_pr") {
+    addVerificationRequiredBlocker({ blockers, task: opts.task });
   }
   if (opts.workflowMode === "branch_pr") {
     addConflictReworkBlockers(blockers, opts.conflictRework);
