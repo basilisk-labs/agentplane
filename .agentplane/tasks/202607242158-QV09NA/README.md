@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "Reviewed the exact diff and reran formatter plus the effect-resolution suite. The hosted failure is addressed without altering authority binding, retirement, or replay behaviour."
 commit:
-  hash: "1bf26e0701276bc5e4bd7038524edfb2ddb40350"
-  message: "✨ QV09NA effect-in-doubt: resolve uncertain runner effects"
+  hash: "2d735bbb41c251281b9239d730bc22ae6fc42c76"
+  message: "✨ QV09NA task: record renewed closure authority"
 comments:
   -
     author: "CODER"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -105,8 +108,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-27T06:47:44.140Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T06:39:30.103Z"
+doc_updated_at: "2026-07-27T06:47:44.141Z"
 doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
@@ -338,6 +348,9 @@ extensions:
         stateFingerprintDigest: "sha256:703197c5a17cfb6e0480322eb2bb76d449977d7702029aef2bd1aa10699af59f"
         stateScopeDigest: "sha256:8ee2a13a49567aea24754ea9fb5600132cd3600b90e1107702376ff1345fde0f"
     schemaVersion: 1
+  implementation_commit:
+    hash: "90d33ac632e4181385fc8cf59b37c8badc3fa1d2"
+    message: "🐛 QV09NA effect-in-doubt: format resolution coverage"
   workflow_route_baseline:
     start_head_sha: "cae1a43c6aadbe44325f842254f0f60c78882b84"
     version: 1
