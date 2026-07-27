@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221849-8YYZ9X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T16:36:39.992Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8bb85d54f98547be17d5cf28e6b86c0a06f808da",
+  "blueprint_digest": "4a11775235c3ab0f2b415162964bf85f45ac4b86e2fe6f2771b669c5d0f8463f",
+  "findings": [
+    "The evaluator episode snapshots repository state both after CLI preparation and after a provider failure, rejects any mutation before a verdict can be applied, and maps launch failures to a safe E_RUNTIME response."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221849-8YYZ9X/quality/20260727-163639147-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
