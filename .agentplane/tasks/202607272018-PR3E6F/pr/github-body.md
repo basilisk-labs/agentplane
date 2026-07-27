@@ -22,12 +22,13 @@ Fix the bootstrap contract drift where AGENTS.md and its packaged asset still pr
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T20:20:49.958Z
+- Updated: 2026-07-27T20:21:29.432Z
 - Branch: task/202607272018-PR3E6F/synchronize-evaluator-verification-guidance-for
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ packages/agentplane/assets/AGENTS.md | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
 </details>
