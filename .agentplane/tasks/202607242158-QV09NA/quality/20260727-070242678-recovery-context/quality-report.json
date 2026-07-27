@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607242158-QV09NA",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-27T07:02:42.678Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "Reviewed 7f6761b: hot-path extraction preserves the explicit operator-resolution boundary and restores all enforced module-size budgets.",
+  "evaluated_sha": "7f6761be42d40ba041572448685f0888a23b17be",
+  "blueprint_digest": "75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f",
+  "findings": [
+    "The dedicated retirement module remains reachable only from effect resolution; it requires an exact durable resolution reference before stale-claim retirement.",
+    "The resolve-effect and resume-effect command contracts are re-exported unchanged from the stable task-run command module; direct CLI help and focused regression suites preserve the public surface."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607242158-QV09NA/README.md",
+    "git diff --find-renames --find-copies --stat 7f6761b^ 7f6761b",
+    "bunx vitest run task-run-active-claim-{concurrency,history-safe,reconciliation}.test.ts task-run-active-claim.test.ts task-run-effect-resolution.test.ts task-run-lifecycle-cancel-effect-in-doubt.test.ts (67 passed)",
+    "bun run hotspots:check (runtime threshold and oversized-test baseline passed)",
+    "bun run typecheck && bun run lifecycle:invariants && bun run guards:check && bun run format:check && bun run test:critical"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Hosted CI must still validate the published PR head; no provider execution was performed by this review."
+  ]
+}
