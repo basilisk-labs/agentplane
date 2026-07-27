@@ -6,14 +6,14 @@ Created: 2026-07-27T05:36:45.894Z
 
 - Task: `202607242158-QV09NA`
 - Title: Resolve durable runner effects in doubt without duplicate execution
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607242158-QV09NA/resolve-durable-runner-effects-in-doubt-without`
 - Canonical task record: `.agentplane/tasks/202607242158-QV09NA/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck, compatibility baseline, formatter, and diff check. Concurrent identical intents converge; conflicting verdicts reject without adapter execution.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

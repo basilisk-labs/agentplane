@@ -1,10 +1,11 @@
 ---
 id: "202607242158-QV09NA"
 title: "Resolve durable runner effects in doubt without duplicate execution"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -41,16 +42,41 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved as the explicit operator-resolution and claim-retirement boundary after typed effect journals and authority contracts."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-27T06:38:24.275Z"
+  updated_by: "TESTER"
+  note: "Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck, compatibility baseline, formatter, and diff check. Concurrent identical intents converge; conflicting verdicts reject without adapter execution."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-27T06:38:59.242Z"
+  updated_by: "EVALUATOR"
+  note: "The implementation preserves the no-duplicate-execution boundary: typed immutable intents bind authority, fingerprints and claim generation; only the specialised stale-claim path retires a resolved effect; and not_applied resumes under a fresh operation key."
+  evaluated_sha: "1bf26e0701276bc5e4bd7038524edfb2ddb40350"
+  blueprint_digest: "75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f"
+  evidence_refs:
+    - ".agentplane/tasks/202607242158-QV09NA/README.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-063859242-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-063859242-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242158-QV09NA/quality/20260727-063859242-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json"
+    - "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts"
+  findings:
+    - "Reviewed the durable resolution, active-claim retirement and replay paths against the task criteria. Generic recovery remains blocked for unresolved effects, identical concurrent resolution converges, and an opposing verdict conflicts before provider invocation."
+commit:
+  hash: "1bf26e0701276bc5e4bd7038524edfb2ddb40350"
+  message: "✨ QV09NA effect-in-doubt: resolve uncertain runner effects"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: durable operator-supplied effect resolution, isolated claim retirement, and dedicated fresh-key resume after not_applied."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -59,8 +85,28 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-27T06:36:34.484Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: durable operator-supplied effect resolution, isolated claim retirement, and dedicated fresh-key resume after not_applied."
+  -
+    type: "verify"
+    at: "2026-07-27T06:38:24.275Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck, compatibility baseline, formatter, and diff check. Concurrent identical intents converge; conflicting verdicts reject without adapter execution."
+  -
+    type: "status"
+    at: "2026-07-27T06:39:30.103Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T05:36:45.776Z"
+doc_updated_at: "2026-07-27T06:39:30.103Z"
 doc_updated_by: "CODER"
 description: "Resolve a durable typed effect_in_doubt journal through an explicit operator-supplied applied or not_applied verdict, authority/evidence validation and an exclusive resumable generation lease; retire the claim exactly once without ever invoking the adapter or automatically releasing uncertainty."
 sections:
@@ -92,6 +138,36 @@ sections:
     6. Run focused effect-resolution/lease/CLI suites, bun run lifecycle:invariants, bun run guards:check, bun run test:critical and bun run typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-27T06:38:24.275Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck, compatibility baseline, formatter, and diff check. Concurrent identical intents converge; conflicting verdicts reject without adapter execution.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T06:36:34.484Z, excerpt_hash=sha256:36c83d45021296a1a33d2c8b29198a53b6f5104ea1fee8a63c5e13ae454acc25
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242158-QV09NA-resolve-durable-runner-effects-in-doubt-without/.agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json
+    - old_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+    - current_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242158-QV09NA
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607242158-QV09NA
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the implementation commits while retaining this task and the RF-06 fail-closed guards.
@@ -130,6 +206,19 @@ extensions:
         schemaVersion: 1
         sequence: 2
         stateFingerprintDigest: "sha256:e5c4c64ecb9036243a3f4e2c03616fec6929ff5ee417046a57f261bda8e153e6"
+      -
+        actor: "USER"
+        at: "2026-07-27T06:39:12.065Z"
+        authorityDigest: "sha256:6f8d5cfebd9dcb5eacc63f4c546027eed78595ba5caa0b4a40eb5f7b2092a938"
+        digest: "sha256:f6f7f661c11fb445adf9abfc65cc57e0dcfe5a69e1d227e4e187acba8db44df1"
+        operationDigest: "sha256:ad973ccca9732c052c5e63e0a8dd3b7d714b321966cf5f73ac6b4b913848f13b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:2190db5e5f91e6dcd59a23815691c4f9e4597c79eedd900147cf0919a4d9c488"
+        schemaVersion: 1
+        sequence: 3
+        stateFingerprintDigest: "sha256:c886e578174b1e82c1e22f8118c1ab21041c14c76eab6d18e99fba1bbb059257"
     grants:
       -
         actor: "USER"
@@ -157,6 +246,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:e5c4c64ecb9036243a3f4e2c03616fec6929ff5ee417046a57f261bda8e153e6"
         stateScopeDigest: "sha256:1235a3b8ddb3c9524d4372c6f8027f3c1b9ec0291282a9575cfc811607e91493"
+      -
+        actor: "USER"
+        digest: "sha256:6f8d5cfebd9dcb5eacc63f4c546027eed78595ba5caa0b4a40eb5f7b2092a938"
+        expiresAt: "2026-07-27T06:54:12.065Z"
+        id: "authority-9baa32ad-a8bb-4996-9eb5-a9a684aa1e53"
+        issuedAt: "2026-07-27T06:39:12.065Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:ad973ccca9732c052c5e63e0a8dd3b7d714b321966cf5f73ac6b4b913848f13b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:c886e578174b1e82c1e22f8118c1ab21041c14c76eab6d18e99fba1bbb059257"
+        stateScopeDigest: "sha256:7e76632026b9f2102791cfec8702eb6fe3d691d03fe26fdd6d59d87100de9a78"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "cae1a43c6aadbe44325f842254f0f60c78882b84"
@@ -200,6 +302,36 @@ Consume the typed effect journal produced by 202607242204-SX8T09 and resolve it 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-27T06:38:24.275Z — VERIFY — ok
+
+By: TESTER
+
+Note: Local verification passed: 65 focused resolution/operation/state tests, 32 unresolved-effect cancel/reconcile/concurrency tests, critical CLI suite, lifecycle invariants, guards, typecheck, compatibility baseline, formatter, and diff check. Concurrent identical intents converge; conflicting verdicts reject without adapter execution.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-27T06:36:34.484Z, excerpt_hash=sha256:36c83d45021296a1a33d2c8b29198a53b6f5104ea1fee8a63c5e13ae454acc25
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf05b-integration-base/.agentplane/worktrees/202607242158-QV09NA-resolve-durable-runner-effects-in-doubt-without/.agentplane/tasks/202607242158-QV09NA/blueprint/resolved-snapshot.json
+- old_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+- current_digest: 75a878e6fa748741215c6aa80666e64b74720ea6a76c75ddb6420687f27fc05f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242158-QV09NA
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607242158-QV09NA
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

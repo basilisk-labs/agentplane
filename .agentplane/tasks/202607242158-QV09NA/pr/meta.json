@@ -3,14 +3,22 @@
   "branch": "task/202607242158-QV09NA/resolve-durable-runner-effects-in-doubt-without",
   "created_at": "2026-07-27T05:36:45.894Z",
   "diffstat_sha256": "sha256:d4730a63b96774efce99db488d1f49df77bf1c817ef872e2933c194afd682ca0",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-27T06:38:24.275Z",
+  "last_verified_diffstat_sha256": "sha256:d4730a63b96774efce99db488d1f49df77bf1c817ef872e2933c194afd682ca0",
   "pr_number": 4639,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4639",
+  "pre_merge_closure": {
+    "basis_commit": "1bf26e0701276bc5e4bd7038524edfb2ddb40350",
+    "branch": "task/202607242158-QV09NA/resolve-durable-runner-effects-in-doubt-without",
+    "pr_number": 4639,
+    "recorded_at": "2026-07-27T06:39:30.156Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607242158-QV09NA",
   "updated_at": "2026-07-27T05:40:19.493Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
