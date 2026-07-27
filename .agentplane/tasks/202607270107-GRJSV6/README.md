@@ -1,10 +1,11 @@
 ---
 id: "202607270107-GRJSV6"
 title: "Preserve authority-only tails during merged cleanup"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -44,11 +45,16 @@ quality_review:
     - "Accepted path is covered by a targeted provider-receipt fixture with an authority-only descendant chain."
     - "Rejected path is covered by a semantic post-merge tail fixture; no non-authority changes are accepted."
     - "Hosted-close finalization is local reversible only after protected merge and pre-merge closure evidence are already durable."
-commit: null
+commit:
+  hash: "9af398bb45bbfcb5b9898c13612a4d14e9776c83"
+  message: "🔐 GRJSV6 task: authorize pre-merge closure"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: approved post-merge cleanup authority follow-up."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -63,9 +69,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified targeted cleanup acceptance, authority classification, ci:contract, and the complete hosted PR #4636 gate."
+  -
+    type: "status"
+    at: "2026-07-27T01:50:22.277Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-27T01:49:26.850Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-07-27T01:50:22.277Z"
+doc_updated_by: "CODER"
 description: "Follow up RF13: permit targeted merged cleanup only when a local post-merge tail is proven authority-only against the provider-merged head, and classify hosted close finalization as local reversible after the merge and pre-merge closure are already durable."
 sections:
   Summary: |-
@@ -307,6 +320,9 @@ extensions:
         stateFingerprintDigest: "sha256:443c314eed9460d32d629a5525d34e7224621db9fafb475f5525eb785dc41bc0"
         stateScopeDigest: "sha256:fa192646b5c515733d0c408fc0327f7dbea15462bbf3e55f848a47aba477e088"
     schemaVersion: 1
+  implementation_commit:
+    hash: "d97c8521e502c765af00ebe5b4cc467edf812aa2"
+    message: "🐛 GRJSV6 task: preserve authority-only cleanup tails"
   workflow_route_baseline:
     start_head_sha: "518f9f4a62e09016262af2cbbeb89947550be2e0"
     version: 1
