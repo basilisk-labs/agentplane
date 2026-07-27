@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -398,6 +398,19 @@ extensions:
         schemaVersion: 1
         sequence: 9
         stateFingerprintDigest: "sha256:9e97451cdc27686eefff5cc4e4a4e38ecbb098ed8515cce37c522c676d8b943c"
+      -
+        actor: "USER"
+        at: "2026-07-27T17:15:25.638Z"
+        authorityDigest: "sha256:e68e91defeee9a73f33e83661866a8db7945f77cb2b131120317f8c3488419fc"
+        digest: "sha256:33cd3e5c57a4811a966284bc0014a679fa1c9f59f55c16fdcf60b2e4ecd96a57"
+        operationDigest: "sha256:531df2dc6e76e23a19a6aeda1c74ff55e46effbe7bd8a5e9012274ca88667537"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:75f6517e7192efe4805f5925ef2f919afa6abb669bcb1b700b171606fc696fef"
+        schemaVersion: 1
+        sequence: 10
+        stateFingerprintDigest: "sha256:583a4826adef979c71d3de0608d18ed21c4d6ddff0144912bd040bdcc31ecae1"
     grants:
       -
         actor: "USER"
@@ -516,6 +529,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:9e97451cdc27686eefff5cc4e4a4e38ecbb098ed8515cce37c522c676d8b943c"
         stateScopeDigest: "sha256:6aa0ca7e68c0d3ed48735ebeec5dd7e70dde7240e1d2d55298973acbc395b002"
+      -
+        actor: "USER"
+        digest: "sha256:e68e91defeee9a73f33e83661866a8db7945f77cb2b131120317f8c3488419fc"
+        expiresAt: "2026-07-27T17:30:25.638Z"
+        id: "authority-b99c5188-84b5-4101-ae0b-1ca502bb9988"
+        issuedAt: "2026-07-27T17:15:25.638Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:531df2dc6e76e23a19a6aeda1c74ff55e46effbe7bd8a5e9012274ca88667537"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:583a4826adef979c71d3de0608d18ed21c4d6ddff0144912bd040bdcc31ecae1"
+        stateScopeDigest: "sha256:bec8889a1e6c88aaac7668a1e89da204b11fb6252f5d0fd6f327f668295607d0"
     schemaVersion: 1
   implementation_commit:
     hash: "665d84dd02d38c4bb9b7f870288198d00fb1266a"
