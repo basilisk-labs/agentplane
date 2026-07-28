@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:2fb491b187efd0db2d41367ef4ee180f5af2bdc25efe09991199304e0876978f",
   "pr_number": 4661,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4661",
+  "pre_merge_closure": {
+    "basis_commit": "21f0b21a56d85f458dd508d2e5b71797e14e4712",
+    "branch": "task/202607281506-WWNFXE/enforce-evaluator-pass-findings",
+    "pr_number": 4661,
+    "recorded_at": "2026-07-28T15:52:31.414Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607281506-WWNFXE",
