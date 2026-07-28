@@ -4,7 +4,7 @@ title: "Enforce non-empty EVALUATOR pass findings"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -34,11 +34,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "e76ab8e333faa1417a7b0de3188b98d361a09be5"
+  message: "Enforce evaluator pass findings"
 comments:
   -
     author: "CODER"
     body: "Start: enforce evidence-backed EVALUATOR pass findings across the output schema and strict SGR validation."
+  -
+    author: "CODER"
+    body: "Implemented: every EVALUATOR verdict now requires one frozen, evidence-backed finding in both the provider schema and strict SGR validator; fixtures cover pass, rework, blocked, and human_review empty-result rejection."
 events:
   -
     type: "status"
@@ -47,8 +52,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: enforce evidence-backed EVALUATOR pass findings across the output schema and strict SGR validation."
+  -
+    type: "status"
+    at: "2026-07-28T15:09:52.323Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: every EVALUATOR verdict now requires one frozen, evidence-backed finding in both the provider schema and strict SGR validator; fixtures cover pass, rework, blocked, and human_review empty-result rejection."
 doc_version: 3
-doc_updated_at: "2026-07-28T15:06:48.124Z"
+doc_updated_at: "2026-07-28T15:09:52.323Z"
 doc_updated_by: "CODER"
 description: "Quality-gate follow-up: align the Codex output schema and strict evaluator SGR validation with the branch_pr requirement that a pass review contains at least one evidence-backed finding, so an empty pass cannot leave a task permanently quality-stale."
 sections:
