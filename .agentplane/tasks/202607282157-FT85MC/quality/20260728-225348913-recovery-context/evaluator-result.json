@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The final frozen verification evidence does not contain the required check results; it only records an unsubstantiated success note.",
+      "broken_invariant": "The approved contract requires focused tests, formatting, typecheck, policy routing, and doctor results to be frozen as durable machine-readable evidence so the evaluator can assess them without relying on narrative summaries. The sole admitted verification record has details=null, while observed checks declares no checks or runner history.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728225329224-09b45351c8dd8de9.json",
+          "sha256": "sha256:b7b499e49479d47c47cdfbb3c8c616c370357ce8877cc3c4c899475fdbdb9ff9",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-225348913-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d695dec3507dd2261972252d365e381bed3422e70e237f6fecd2e209d193f8e0",
+          "section": "declared_checks and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:abbe243a21172109063168b21e7fff4cfbcfe29fe12d13d48db7644af9372d70",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Prepare a final evaluator work order after verification and assert that its admitted verification record contains concrete command, result, and scope entries for focused tests, formatting, typecheck, policy routing, and doctor.",
+    "Reject or flag an ok verification record with null/empty details when the task's Verify Steps require named checks."
+  ],
+  "hidden_assumptions": [
+    "A verification note stating that rework was verified is assumed to prove the underlying required checks even though the authoritative record contains no check details.",
+    "Earlier narrative verification entries in the task README are assumed to remain sufficient after record discovery intentionally narrows frozen evidence to the single current verification record."
+  ],
+  "recovery_context": "Record a new current verification through the supported path with durable details for every required check, then prepare a fresh evaluator work order and confirm that the admitted verification evidence exposes those concrete results."
+}
