@@ -33,7 +33,8 @@ Created: 2026-07-28T16:57:04.791Z
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
  .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
- .../commands/evaluator/evaluator-review-usecase.ts |  34 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
+ .../evaluator/evaluator-verification-records.ts    |  15 +
  .../src/commands/evaluator/evaluator.command.ts    |   1 +
  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
  .../shared/supervisor-execution-episode.ts         | 133 ++++++--
@@ -42,7 +43,7 @@ Created: 2026-07-28T16:57:04.791Z
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
  .../check-compatibility-contract-baseline.mjs      |  16 +
- 13 files changed, 851 insertions(+), 48 deletions(-)
+ 14 files changed, 852 insertions(+), 48 deletions(-)
 ```
 
 </details>

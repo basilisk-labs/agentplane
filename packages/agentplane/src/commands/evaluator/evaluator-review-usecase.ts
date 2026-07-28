@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.j
 import type { CommandContext } from "../shared/task-backend.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
+import { verificationRecordPaths } from "./evaluator-verification-records.js";
 import {
   EVALUATOR_OPINION_FILE,
   EVALUATOR_PROMPT_FILE,
@@ -188,19 +189,6 @@ async function freezeFile(opts: {
   };
 }
 
-async function verificationRecordPaths(taskRoot: string): Promise<string[]> {
-  try {
-    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
-      .map((entry) => path.join(taskRoot, "verification", entry.name))
-      .toSorted();
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
-    throw error;
-  }
-}
-
 async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
   try {
@@ -292,7 +280,6 @@ export async function prepareEvaluatorReview(opts: {
     opts.task.id,
     "README.md",
   );
-  const taskRoot = path.dirname(taskReadmePath);
   const evaluatedSha = await resolveQualityReviewTargetSha({
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
@@ -301,7 +288,7 @@ export async function prepareEvaluatorReview(opts: {
     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
   });
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
-  const recordPaths = await verificationRecordPaths(taskRoot);
+  const recordPaths = await verificationRecordPaths(path.dirname(taskReadmePath));
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>
       freezeFile({
@@ -323,7 +310,6 @@ export async function prepareEvaluatorReview(opts: {
     })),
     runner_history: opts.task.runner?.history ?? [],
   };
-
   await mkdir(reviewDir, { recursive: true });
   await writeFile(
     path.join(reviewDir, EVALUATOR_DIFF_FILE),
