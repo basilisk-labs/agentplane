@@ -236,7 +236,12 @@ export async function runContextSuperviseTask(
     },
     {
       runEvaluator: async () =>
-        await runEvaluatorExecute(_ctx, { taskId: p.taskId, evaluator: p.evaluator, json: p.json }),
+        await runEvaluatorExecute(_ctx, {
+          taskId: p.taskId,
+          evaluator: p.evaluator,
+          replacement: false,
+          json: p.json,
+        }),
       createAcr: async () => {
         const generated = await generateAcr({
           ctx: command,
