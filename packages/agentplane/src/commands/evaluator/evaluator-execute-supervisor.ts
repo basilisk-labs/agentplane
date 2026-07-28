@@ -275,23 +275,33 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       evaluator: opts.evaluator,
       provenance: "evaluator_supplied",
     });
-    const started = startSupervisorExecutionEpisode({
-      journal,
-      role: "EVALUATOR",
-      kind: "evaluator_episode",
-      operation_identity: {
-        evaluator_id: prepared.work_order.evaluator.id,
-        work_order_id: prepared.work_order.work_order_id,
-      },
-      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-      authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
-      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
-      work_order_ref: relativeToProject(
-        opts.command.resolvedProject.gitRoot,
-        prepared.work_order_path,
-      ),
-      effect_ref: prepared.work_order.work_order_id,
-    });
+    const start = () =>
+      startSupervisorExecutionEpisode({
+        journal,
+        role: "EVALUATOR",
+        kind: "evaluator_episode",
+        operation_identity: {
+          evaluator_id: prepared.work_order.evaluator.id,
+          work_order_id: prepared.work_order.work_order_id,
+        },
+        precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
+        authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+        work_order_ref: relativeToProject(
+          opts.command.resolvedProject.gitRoot,
+          prepared.work_order_path,
+        ),
+        effect_ref: prepared.work_order.work_order_id,
+      });
+    let started = start();
+    if (started.status === "stopped" && started.stop.reason === "stale_state") {
+      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+        journal: started.journal,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      });
+      await opened.store.write(journal);
+      started = start();
+    }
     if (started.status !== "started") {
       await opened.store.write(started.journal);
       throw new CliError({

@@ -1,0 +1,6 @@
+ .../evaluator/evaluator-execute-supervisor.ts      |  8 +++
+ .../evaluator/evaluator-execute.command.test.ts    | 47 +++++++++++++++
+ .../runner/supervisor-execution-episode.test.ts    | 70 ++++++++++++++++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 36 +++++++++++
+ packages/core/src/schemas/index.ts                 |  1 +
+ 5 files changed, 162 insertions(+)

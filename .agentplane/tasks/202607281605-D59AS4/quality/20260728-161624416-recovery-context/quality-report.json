@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281605-D59AS4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T16:17:17.030Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "395c5c3248bc87364098cfa7f7d51f2987025489",
+  "blueprint_digest": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6",
+  "findings": [
+    "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion.",
+    "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281605-D59AS4/README.md",
+    ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "Run and record the declared repeated live evaluator episode, proving that a second read-only provider invocation succeeds and cumulative episodes, agent_runs, and total_tokens increase without reset.",
+    "Record independently attributable results for the focused tests, typecheck, formatting check, and routing validation, including key output and behavioral scope."
+  ],
+  "hidden_assumptions": [
+    "The fake-Codex command regression is assumed to represent the real provider recovery path despite the explicit live-episode requirement.",
+    "The aggregate TESTER note is assumed to prove every declared command although the frozen evidence contains no command executions or runner history."
+  ],
+  "residual_risks": [
+    "Implementation-level positive and terminal-stop regressions are present, but the required live repeat episode and command-level verification evidence must be executed and frozen before this review can pass."
+  ]
+}
