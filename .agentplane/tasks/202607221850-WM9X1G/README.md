@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -40,27 +40,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T08:33:11.546Z"
+  updated_at: "2026-07-28T08:40:27.353Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "22606dfb114fc274dd427efff859b73c9bf47196"
+  evaluated_sha: "e95335eaf093b1d360a6772649f4d0a4b823eacc"
   blueprint_digest: "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-WM9X1G/README.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083311235-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-084027131-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The P1 and P2 review fixes are already bound to commit 98b1aa740 and no subsequent source code change occurred."
+    - "Execution lease logic moved verbatim into a focused module; journal is now 544 lines, and lint, typecheck, and focused regression tests pass."
 commit:
   hash: "e95335eaf093b1d360a6772649f4d0a4b823eacc"
   message: "refactor: isolate ingest execution lease"
