@@ -1,8 +1,9 @@
- .../evaluator/evaluator-execute-supervisor.ts      |  29 +++++
- .../evaluator/evaluator-execute.command.test.ts    |  96 +++++++++++++++-
+ .../evaluator/evaluator-execute-supervisor.ts      |  66 +++++++-
+ .../evaluator/evaluator-execute.command.test.ts    | 171 ++++++++++++++++++++-
  .../src/commands/evaluator/evaluator.command.ts    |   1 +
  .../src/commands/evaluator/evaluator.spec.ts       |   9 ++
- .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++++++++++++++
- .../src/runner/supervisor-execution-episode.ts     | 102 +++++++++++++++-
+ .../shared/supervisor-execution-episode.ts         | 133 ++++++++++++----
+ .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 102 +++++++++++-
  packages/core/src/schemas/index.ts                 |   1 +
- 7 files changed, 363 insertions(+), 3 deletions(-)
+ 8 files changed, 574 insertions(+), 37 deletions(-)

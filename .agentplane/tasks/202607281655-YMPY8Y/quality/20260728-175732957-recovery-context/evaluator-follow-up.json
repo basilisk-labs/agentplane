@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607281655-YMPY8Y-236ddbaa2678476dfe09f271",
+  "task_id": "202607281655-YMPY8Y",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Persist or atomically reserve the exact pending replacement before provider preparation, enforce stale-write rejection so only one caller can consume it, and add an interleaving test. Then freeze command-level verification records and complete the declared real post-integration replacement episode before requesting pass.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Concurrent replacement commands can independently authorize and start from the same failed journal because the pending replacement state is not persisted before provider preparation and start.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:448fe8a952fa7c6d7b091ea082d7216ae9830e88aa18b981e40b25d4d41e2531",
+          "section": "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts and packages/core/src/runner/supervisor-execution-episode.ts"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "Frozen verification evidence contains asserted outcomes but no command-level execution records, and the required real replacement-provider episode remains outstanding.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "verification and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:32796ed72f5b60fd8a16eba307d0e1e88beb79b71fa732f40b8b48ab06b1e214",
+          "section": "Verify Steps and Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-result.json"
+}
