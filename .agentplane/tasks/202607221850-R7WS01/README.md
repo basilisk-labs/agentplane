@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -293,6 +293,19 @@ extensions:
         schemaVersion: 1
         sequence: 5
         stateFingerprintDigest: "sha256:f8ed7f6a1642f121b030666cf790bc2c5916dc36ffff86d5dac1331125870f2d"
+      -
+        actor: "USER"
+        at: "2026-07-28T02:36:59.462Z"
+        authorityDigest: "sha256:28a45e5cc9a5736da81c0a43b7b772e0e402ff1a68408b8c87956cf907ef6bda"
+        digest: "sha256:3c2226dc25ce8a63c4201f931e383576964108667b7532288a1e04d1ad9e7660"
+        operationDigest: "sha256:039e56089b32d9e6ac23685f7be4a4ddb2d49ac92f981c6b09d05a20b5018d0f"
+        operationId: "route.remote.refresh"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:ade0d5c4c0d0535f130b08ac036404a22d3cebf7dea5de1b833db746b1779e37"
+        schemaVersion: 1
+        sequence: 6
+        stateFingerprintDigest: "sha256:468574a137bee1db39c200c3e1a29461b1badc261a26eb0a01e0acbcd6505e08"
     grants:
       -
         actor: "USER"
@@ -359,6 +372,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:f8ed7f6a1642f121b030666cf790bc2c5916dc36ffff86d5dac1331125870f2d"
         stateScopeDigest: "sha256:3ba21a8ded336b327105940ead18f67f1d70e16095fcad93a8a7310490cae1ee"
+      -
+        actor: "USER"
+        digest: "sha256:28a45e5cc9a5736da81c0a43b7b772e0e402ff1a68408b8c87956cf907ef6bda"
+        expiresAt: "2026-07-28T02:51:59.462Z"
+        id: "authority-a0db5a50-241c-4bcf-ab00-d1d45e4bc39a"
+        issuedAt: "2026-07-28T02:36:59.462Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:039e56089b32d9e6ac23685f7be4a4ddb2d49ac92f981c6b09d05a20b5018d0f"
+        operationId: "route.remote.refresh"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:468574a137bee1db39c200c3e1a29461b1badc261a26eb0a01e0acbcd6505e08"
+        stateScopeDigest: "sha256:ec4b0b391c8099a28632a8db47702745506b2bee3a05c91315c729df028f3a20"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"
