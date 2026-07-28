@@ -322,31 +322,22 @@ describe("hermes adapter commands", () => {
       expect(payload.execution.allowed).toBe(true);
       expect(payload.execution.result.detail).toContain(taskId);
       expect(payload.execution.result.exit_code).toBeNull();
-      expect(payload.execution.result.operation_result).toMatchObject({
-        kind: "runner_lifecycle",
-        value: {
-          schema: "agentplane.task_runner_lifecycle_result.v1",
-          phase: "prepared",
-          task_id: taskId,
-          lifecycle: {
-            effect: {
-              state: "not_recorded",
-              authority: {
-                ref: expect.stringContaining("work-order:"),
-                digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
-              },
-              observed_evidence: {
-                code: "runner_effect_operation_prepared",
-                digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
-              },
-              claim_generation: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
-            },
-          },
-        },
-      });
-      expect(payload.execution.result.operation_result.value.invocation.work_order_id).toContain(
-        taskId,
-      );
+      const operationResult = payload.execution.result.operation_result;
+      const lifecycle = operationResult.value;
+      const effect = lifecycle.lifecycle.effect;
+      expect(operationResult.kind).toBe("runner_lifecycle");
+      expect(lifecycle.schema).toBe("agentplane.task_runner_lifecycle_result.v1");
+      expect(lifecycle.phase).toBe("prepared");
+      expect(lifecycle.task_id).toBe(taskId);
+      expect(effect.state).toBe("not_recorded");
+      expect(effect.authority).not.toBeNull();
+      expect(effect.authority?.ref).toContain("work-order:");
+      expect(effect.authority?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
+      expect(effect.observed_evidence).not.toBeNull();
+      expect(effect.observed_evidence?.code).toBe("runner_effect_operation_prepared");
+      expect(effect.observed_evidence?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
+      expect(effect.claim_generation).toMatch(/^sha256:[0-9a-f]{64}$/u);
+      expect(lifecycle.invocation.work_order_id).toContain(taskId);
       expect(payload.workflow_supervision.audit.map((entry) => entry.event)).toEqual([
         "decision_observed",
         "operation_executed",
