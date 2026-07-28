@@ -1,0 +1,9 @@
+ .../src/commands/hermes/hermes.command.test.ts     |  18 +-
+ .../src/commands/hermes/hermes.command.ts          |  53 +-
+ .../shared/supervisor-execution-episode.test.ts    | 130 +++++
+ .../shared/supervisor-execution-episode.ts         | 258 +++++++++
+ .../supervisor-execution-episode-migration.ts      |  87 ++++
+ .../runner/supervisor-execution-episode.test.ts    | 211 ++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 574 +++++++++++++++++++++
+ packages/core/src/schemas/index.ts                 |  36 ++
+ 8 files changed, 1348 insertions(+), 19 deletions(-)

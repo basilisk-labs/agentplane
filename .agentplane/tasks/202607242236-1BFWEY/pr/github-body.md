@@ -14,19 +14,32 @@ Define a durable supervisor episode journal and hard execution budgets for bound
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full
+task contract remains incomplete.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T03:32:16.784Z
+- Updated: 2026-07-28T03:32:40.568Z
 - Branch: task/202607242236-1BFWEY/persist-bounded-supervisor-execution-episodes
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/hermes/hermes.command.test.ts     |  18 +-
+ .../src/commands/hermes/hermes.command.ts          |  53 +-
+ .../shared/supervisor-execution-episode.test.ts    | 130 +++++
+ .../shared/supervisor-execution-episode.ts         | 258 +++++++++
+ .../supervisor-execution-episode-migration.ts      |  87 ++++
+ .../runner/supervisor-execution-episode.test.ts    | 211 ++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 574 +++++++++++++++++++++
+ packages/core/src/schemas/index.ts                 |  36 ++
+ 8 files changed, 1348 insertions(+), 19 deletions(-)
 ```
 
 </details>
