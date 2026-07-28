@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T22:55:43.061Z"
+  updated_at: "2026-07-28T23:01:16.841Z"
   updated_by: "TESTER"
-  note: "Rework verified with durable command-level evidence for the current evaluator review."
+  note: "Rework verified with concrete, evaluator-admissible command evidence."
   attempts: 0
 quality_review:
   state: "rework"
@@ -169,8 +169,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rework verified with durable command-level evidence for the current evaluator review."
+  -
+    type: "verify"
+    at: "2026-07-28T23:01:16.841Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verified with concrete, evaluator-admissible command evidence."
 doc_version: 3
-doc_updated_at: "2026-07-28T22:55:43.752Z"
+doc_updated_at: "2026-07-28T23:01:17.549Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -513,6 +519,76 @@ sections:
 
     Command: git diff --check
     Result: pass
+    Scope: current task worktree
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T23:01:16.841Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verified with concrete, evaluator-admissible command evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:55:43.752Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+    Details:
+
+    Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Evidence: All matched files use Prettier code style.
+    Scope: evaluator verification-record admission and its regression test
+
+    Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Evidence: exit code 0; no lint findings.
+    Scope: evaluator verification-record admission and its regression test
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Evidence: Test Files 4 passed; Tests 50 passed.
+    Scope: verification durability, concurrency, workflow hooks, evaluator evidence discovery
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
+    Scope: repository TypeScript build
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
+    Scope: runtime and test file-size policy
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: repository policy routing
+
+    Command: agentplane doctor
+    Result: pass
+    Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
+    Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
+
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace errors.
     Scope: current task worktree
 
     BlueprintSnapshotRef:
@@ -904,6 +980,76 @@ Scope: workflow, workspace, branch_pr, runtime, blueprint, prompt graph, archive
 
 Command: git diff --check
 Result: pass
+Scope: current task worktree
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T23:01:16.841Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verified with concrete, evaluator-admissible command evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:55:43.752Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+Details:
+
+Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Evidence: All matched files use Prettier code style.
+Scope: evaluator verification-record admission and its regression test
+
+Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Evidence: exit code 0; no lint findings.
+Scope: evaluator verification-record admission and its regression test
+
+Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Evidence: Test Files 4 passed; Tests 50 passed.
+Scope: verification durability, concurrency, workflow hooks, evaluator evidence discovery
+
+Command: bun run typecheck
+Result: pass
+Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
+Scope: repository TypeScript build
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
+Scope: runtime and test file-size policy
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: repository policy routing
+
+Command: agentplane doctor
+Result: pass
+Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
+Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace errors.
 Scope: current task worktree
 
 BlueprintSnapshotRef:
