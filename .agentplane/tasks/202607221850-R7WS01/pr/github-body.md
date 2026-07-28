@@ -21,8 +21,8 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
 - Note:
 
 ```text
-PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero
-failure for incomplete active-claim cleanup.
+PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as
+runner, renderer, and Hermes regression checks.
 ```
 - Canonical workflow state lives in the task README.
 

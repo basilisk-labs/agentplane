@@ -1,0 +1,152 @@
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt b/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt
+index ef33244b2..ee0ce4dff 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt
+@@ -1,14 +1,14 @@
+  .../src/cli/run-cli.core.task-run.test.ts          |   6 +
+  .../src/commands/hermes/hermes-runtime.ts          |  19 ++-
+- .../src/commands/hermes/hermes.command.test.ts     | 107 ++++++++++++-
++ .../src/commands/hermes/hermes.command.test.ts     | 109 ++++++++++++-
+  .../src/commands/shared/workflow-supervisor.ts     |   8 +
+- .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
+- .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
++ .../src/commands/task/run-render.test.ts           | 138 +++++++++++++++++
++ .../agentplane/src/commands/task/run-render.ts     |  91 ++++++++++-
+  .../agentplane/src/commands/task/run.command.ts    |  41 ++---
+  .../task/task-run-effect-resolution.command.ts     |  28 ++--
+  .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
+  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
+- .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
++ .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
+  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
+  .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
+- 13 files changed, 613 insertions(+), 63 deletions(-)
++ 13 files changed, 612 insertions(+), 69 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md b/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md
+index 31835ffe1..20c2bfadd 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md
+@@ -36,18 +36,18 @@ failure for incomplete active-claim cleanup.
+ ```text
+  .../src/cli/run-cli.core.task-run.test.ts          |   6 +
+  .../src/commands/hermes/hermes-runtime.ts          |  19 ++-
+- .../src/commands/hermes/hermes.command.test.ts     | 107 ++++++++++++-
++ .../src/commands/hermes/hermes.command.test.ts     | 109 ++++++++++++-
+  .../src/commands/shared/workflow-supervisor.ts     |   8 +
+- .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
+- .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
++ .../src/commands/task/run-render.test.ts           | 138 +++++++++++++++++
++ .../agentplane/src/commands/task/run-render.ts     |  91 ++++++++++-
+  .../agentplane/src/commands/task/run.command.ts    |  41 ++---
+  .../task/task-run-effect-resolution.command.ts     |  28 ++--
+  .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
+  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
+- .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
++ .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
+  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
+  .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
+- 13 files changed, 613 insertions(+), 63 deletions(-)
++ 13 files changed, 612 insertions(+), 69 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/meta.json b/.agentplane/tasks/202607221850-R7WS01/pr/meta.json
+index d382d0075..e67cce766 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/meta.json
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221850-R7WS01/return-typed-runner-lifecycle-results",
+   "created_at": "2026-07-28T01:55:50.166Z",
+-  "diffstat_sha256": "sha256:65d97a5753250f37a246a401fcbc4accf833ce3f83665209a24340b616f3cba4",
++  "diffstat_sha256": "sha256:673a68f99342c6f9fd6c21b3ff265f37f8a32a4e959ade1cd6b8677af44bac00",
+   "last_verified_at": "2026-07-28T02:36:22.966Z",
+   "last_verified_diffstat_sha256": "sha256:65d97a5753250f37a246a401fcbc4accf833ce3f83665209a24340b616f3cba4",
+   "pr_number": 4650,
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/review.md b/.agentplane/tasks/202607221850-R7WS01/pr/review.md
+index ad606d7e9..e0bf61f4a 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/review.md
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/review.md
+@@ -31,18 +31,18 @@ Created: 2026-07-28T01:55:50.166Z
+ ```text
+  .../src/cli/run-cli.core.task-run.test.ts          |   6 +
+  .../src/commands/hermes/hermes-runtime.ts          |  19 ++-
+- .../src/commands/hermes/hermes.command.test.ts     | 107 ++++++++++++-
++ .../src/commands/hermes/hermes.command.test.ts     | 109 ++++++++++++-
+  .../src/commands/shared/workflow-supervisor.ts     |   8 +
+- .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
+- .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
++ .../src/commands/task/run-render.test.ts           | 138 +++++++++++++++++
++ .../agentplane/src/commands/task/run-render.ts     |  91 ++++++++++-
+  .../agentplane/src/commands/task/run.command.ts    |  41 ++---
+  .../task/task-run-effect-resolution.command.ts     |  28 ++--
+  .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
+  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
+- .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
++ .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
+  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
+  .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
+- 13 files changed, 613 insertions(+), 63 deletions(-)
++ 13 files changed, 612 insertions(+), 69 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.test.ts b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+index 1e01bc660..d9b4950c4 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.test.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+@@ -344,7 +344,9 @@ describe("hermes adapter commands", () => {
+           },
+         },
+       });
+-      expect(payload.execution.result.operation_result.value.invocation.work_order_id).toContain(taskId);
++      expect(payload.execution.result.operation_result.value.invocation.work_order_id).toContain(
++        taskId,
++      );
+       expect(payload.workflow_supervision.audit.map((entry) => entry.event)).toEqual([
+         "decision_observed",
+         "operation_executed",
+diff --git a/packages/agentplane/src/commands/task/run-render.ts b/packages/agentplane/src/commands/task/run-render.ts
+index 3b8b69c58..26b8d1527 100644
+--- a/packages/agentplane/src/commands/task/run-render.ts
++++ b/packages/agentplane/src/commands/task/run-render.ts
+@@ -411,10 +411,7 @@ export async function loadRunnerLogText(
+   });
+ }
+ 
+-export function reportPreparedTaskRun(
+-  payload: TaskRunRendererPayload,
+-  taskId: string,
+-): void {
++export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
+   createCliEmitter().report(
+     [
+       { label: "task", value: payload.task_id },
+@@ -447,10 +444,7 @@ export function reportPreparedTaskRun(
+   );
+ }
+ 
+-export function reportExecutedTaskRun(
+-  payload: TaskRunRendererPayload,
+-  taskId: string,
+-): void {
++export function reportExecutedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
+   createCliEmitter().report(
+     [
+       { label: "task", value: payload.task_id },
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
+index 4b8a3ccdf..c3a543f55 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
+@@ -2,10 +2,7 @@ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
+ 
+ import type { TaskRunnerActiveClaimCleanupDiagnostic } from "./task-run-active-claim-runtime.js";
+ import type { TaskRunnerEffectOperationSnapshot } from "./task-run-effect-journal.js";
+-import type {
+-  ExecutedTaskRunnerExecution,
+-  PreparedTaskRunnerExecution,
+-} from "./task-run.js";
++import type { ExecutedTaskRunnerExecution, PreparedTaskRunnerExecution } from "./task-run.js";
+ import type {
+   RunnerInvocation,
+   RunnerLifecycleStatus,

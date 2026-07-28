@@ -13,7 +13,7 @@ Created: 2026-07-28T01:55:50.166Z
 ## Verification
 
 - State: ok
-- Note: PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup.
+- Note: PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as runner, renderer, and Hermes regression checks.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

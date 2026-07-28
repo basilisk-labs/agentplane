@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-R7WS01",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T02:43:41.960Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "96ff9bab8db6e431077c9a7f60b357735e011f80",
+  "blueprint_digest": "97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328",
+  "findings": [
+    "The only source changes are Prettier-normalized wrapping and import grouping in the previously reviewed lifecycle paths; targeted regression tests and format:check pass."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
