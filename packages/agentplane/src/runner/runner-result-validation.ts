@@ -19,9 +19,6 @@ const METRICS_KEYS = new Set([
   "stdout_bytes",
   "stderr_bytes",
   "output_last_message_bytes",
-  "input_tokens",
-  "output_tokens",
-  "total_tokens",
 ]);
 const OBSERVED_CHECK_KEYS = new Set(["id", "status"]);
 const EVIDENCE_KEYS = new Set([
@@ -111,10 +108,7 @@ function isRunnerResultMetrics(value: unknown): boolean {
     (value.stderr_bytes === undefined || isNonNegativeInteger(value.stderr_bytes)) &&
     (value.output_last_message_bytes === undefined ||
       value.output_last_message_bytes === null ||
-      isNonNegativeInteger(value.output_last_message_bytes)) &&
-    (value.input_tokens === undefined || isNonNegativeInteger(value.input_tokens)) &&
-    (value.output_tokens === undefined || isNonNegativeInteger(value.output_tokens)) &&
-    (value.total_tokens === undefined || isNonNegativeInteger(value.total_tokens))
+      isNonNegativeInteger(value.output_last_message_bytes))
   );
 }
 

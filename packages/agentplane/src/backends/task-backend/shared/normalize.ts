@@ -163,15 +163,6 @@ function normalizeTaskRunnerMetrics(value: unknown): TaskRunnerExecutionMetrics 
   ) {
     metrics.output_last_message_bytes = value.output_last_message_bytes;
   }
-  for (const field of ["input_tokens", "output_tokens", "total_tokens"] as const) {
-    if (
-      typeof value[field] === "number" &&
-      Number.isSafeInteger(value[field]) &&
-      value[field] >= 0
-    ) {
-      metrics[field] = value[field];
-    }
-  }
   return Object.keys(metrics).length > 0 ? metrics : null;
 }
 

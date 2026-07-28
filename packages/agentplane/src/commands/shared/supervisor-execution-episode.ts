@@ -18,6 +18,7 @@ import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
+import { readCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
 import {
   superviseWorkflowStep,
   type WorkflowSupervisorExecution,
@@ -151,10 +152,11 @@ function observedRunnerUsage(opts: {
   }
   const metrics = lifecycle.result.metrics;
   const evidence = lifecycle.result.evidence;
+  const providerUsage = readCodexProviderUsageForResult(lifecycle.result);
   const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
   const missing: string[] = [];
   for (const field of ["input_tokens", "output_tokens", "total_tokens"] as const) {
-    if (isNonNegativeInteger(metrics?.[field])) usage[field] = metrics[field];
+    if (isNonNegativeInteger(providerUsage?.[field])) usage[field] = providerUsage[field];
     else if (opts.budget[`max_${field}`] !== null) missing.push(`${field}_telemetry`);
   }
   if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;

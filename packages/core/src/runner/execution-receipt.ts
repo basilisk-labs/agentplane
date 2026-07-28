@@ -79,9 +79,6 @@ const EXECUTION_RECEIPT_PROCESS_METRICS_ZOD_SCHEMA = z
     stdout_bytes: NON_NEGATIVE_INTEGER,
     stderr_bytes: NON_NEGATIVE_INTEGER,
     output_last_message_bytes: NON_NEGATIVE_INTEGER.nullable().optional(),
-    input_tokens: NON_NEGATIVE_INTEGER.optional(),
-    output_tokens: NON_NEGATIVE_INTEGER.optional(),
-    total_tokens: NON_NEGATIVE_INTEGER.optional(),
   })
   .strict();
 

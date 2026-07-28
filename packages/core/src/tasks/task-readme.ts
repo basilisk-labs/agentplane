@@ -240,9 +240,6 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
                         "stdout_bytes",
                         "stderr_bytes",
                         "output_last_message_bytes",
-                        "input_tokens",
-                        "output_tokens",
-                        "total_tokens",
                       ] as const)
                     : key === "commit"
                       ? (["hash", "message"] as const)
