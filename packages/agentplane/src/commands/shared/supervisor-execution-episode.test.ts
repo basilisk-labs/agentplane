@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+import {
+  buildStateFingerprint,
+  completeSupervisorExecutionEpisode,
+  createSupervisorExecutionEpisodeJournal,
+  startSupervisorExecutionEpisode,
+} from "@agentplaneorg/core/schemas";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
@@ -189,6 +194,73 @@ describe("persisted supervisor execution episodes", () => {
     expect(outcome.journal_path).toEqual(
       await resolveSupervisorExecutionEpisodePath({ git_root: root, task_id: taskId }),
     );
+  });
+
+  it("advances a recovered completed episode without replaying its provider", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const refreshed = fixtureDecision(root, 2);
+    const budget = {
+      max_episodes: 2,
+      max_agent_runs: 2,
+      max_input_tokens: null,
+      max_output_tokens: null,
+      max_total_tokens: null,
+      max_wall_time_ms: null,
+      max_changed_files: null,
+      max_diff_lines: null,
+      max_no_progress_episodes: null,
+    } as const;
+    const created = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: 1,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      budget,
+    });
+    const started = startSupervisorExecutionEpisode({
+      journal: created,
+      role: "EXECUTOR",
+      kind: "agent_episode",
+      operation_identity: decision.workflowStep.operation,
+      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    if (started.status !== "started") throw new Error("expected a started fixture episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: started.journal,
+      operation_key: started.operation_key,
+      result: { status: "succeeded" },
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    await createSupervisorEpisodeStore(journalPath).write(completed);
+    let executions = 0;
+
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: () => {
+        executions += 1;
+        return Promise.reject(new Error("the completed provider must not replay"));
+      },
+      refresh: () => Promise.resolve(refreshed),
+      budget,
+    });
+
+    expect(executions).toBe(0);
+    expect(outcome.journal).toMatchObject({
+      status: "running",
+      cursor: { phase: "ready", operation_key: null },
+      state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
+      operations: [
+        {
+          status: "completed",
+          postcondition_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
+        },
+      ],
+    });
   });
 
   it("projects supervisor-observed provider and execution usage into the journal", async () => {
