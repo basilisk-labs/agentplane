@@ -23,6 +23,15 @@ import {
   mergeCompleteSourceInventory,
 } from "./ingest-sources.js";
 import { cmdContextReindex } from "./reindex.js";
+import {
+  acquireContextIngestRun,
+  advanceContextIngestRun,
+  assertContextIngestRunManifest,
+  assertContextIngestRunSourceSet,
+  contextIngestManifestFingerprint,
+  releaseContextIngestRunLease,
+  type ContextIngestRunPhase,
+} from "./ingest-run-journal.js";
 
 export type { ContextIngestParsed, ManifestEntry } from "./ingest-manifest.js";
 
@@ -32,6 +41,7 @@ export async function cmdContextIngest(opts: {
   rootOverride?: string;
   parsed: ContextIngestParsed;
   createTask?: typeof runTaskNewParsed;
+  afterJournalPhase?: (phase: ContextIngestRunPhase) => Promise<void> | void;
   writeTaskPack?: typeof writeContextTaskPack;
 }): Promise<number> {
   const ctx =
@@ -74,9 +84,8 @@ export async function cmdContextIngest(opts: {
       wiki_scaffold: lock.wiki_scaffold,
       sources: completeRows,
     };
-    await writeManifest(root, sourceLockedManifest);
-
     if (opts.parsed.indexOnly) {
+      await writeManifest(root, sourceLockedManifest);
       return cmdContextReindex({
         cwd: root,
         rootOverride: opts.rootOverride,
@@ -88,36 +97,161 @@ export async function cmdContextIngest(opts: {
       });
     }
 
-    if (indexModeRows.length === 0) {
+    const run = await acquireContextIngestRun({
+      allowCreate: indexModeRows.length > 0,
+      manifest: sourceLockedManifest,
+      parsed: opts.parsed,
+      previousManifest: lock,
+      root,
+      selected: indexModeRows,
+    });
+    if (run === null) {
+      await writeManifest(root, sourceLockedManifest);
       process.stdout.write("no new or changed sources detected for context assimilation\n");
       return 0;
     }
+    assertContextIngestRunSourceSet(run, completeRows);
 
-    const workspaceMode = await readContextWorkspaceMode(root);
-    const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows, workspaceMode);
-    const createTask = opts.createTask ?? runTaskNewParsed;
-    const contextCreated: TaskCreationResult = await createTask({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      parsed: taskParsed,
-    });
-    await writeContextTaskCreationReceipt({ root, result: contextCreated });
-    const writeTaskPack = opts.writeTaskPack ?? writeContextTaskPack;
-    const pack = await writeTaskPack({
-      root,
-      taskId: contextCreated.task_id,
-      sources: indexModeRows,
-      creation: contextCreated,
-    });
+    if (run.phase === "task_creating") {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message:
+          `context ingest run ${run.run_id} has an unknown task creation outcome. ` +
+          "Run context doctor and inspect the task backend before retrying.",
+      });
+    }
 
-    process.stdout.write(
-      `context ingestion task created: ${contextCreated.task_id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${pack.spanCount})\n`,
-    );
+    if (run.phase !== "planned") {
+      assertContextIngestRunManifest(run, lock);
+    }
 
-    return 0;
+    if (run.phase === "planned") {
+      const currentFingerprint = contextIngestManifestFingerprint(lock);
+      if (
+        currentFingerprint !== run.source_set.previous_manifest_fingerprint &&
+        currentFingerprint !== run.source_set.manifest_fingerprint
+      ) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message:
+            `context ingest run ${run.run_id} cannot lock sources because the manifest changed concurrently. ` +
+            "Run context doctor before retrying.",
+        });
+      }
+      if (currentFingerprint !== run.source_set.manifest_fingerprint) {
+        await writeManifest(root, run.source_set.manifest);
+      }
+      const locked = await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
+      await opts.afterJournalPhase?.(locked.phase);
+      return await continueContextIngest(opts, ctx, root, locked);
+    }
+
+    return await continueContextIngest(opts, ctx, root, run);
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "context ingest", root: opts.rootOverride ?? null });
   }
+}
+
+async function continueContextIngest(
+  opts: {
+    cwd: string;
+    rootOverride?: string;
+    parsed: ContextIngestParsed;
+    createTask?: typeof runTaskNewParsed;
+    afterJournalPhase?: (phase: ContextIngestRunPhase) => Promise<void> | void;
+    writeTaskPack?: typeof writeContextTaskPack;
+  },
+  ctx: CommandContext,
+  root: string,
+  initialRun: Exclude<Awaited<ReturnType<typeof acquireContextIngestRun>>, null>,
+): Promise<number> {
+  let run = initialRun;
+  if (run.phase === "source_set_locked") {
+    run = await advanceContextIngestRun(root, run, { phase: "task_creating" });
+    const workspaceMode = await readContextWorkspaceMode(root);
+    const taskParsed = createTaskNewParsed(opts.parsed, run.source_set.selected, workspaceMode);
+    const createTask = opts.createTask ?? runTaskNewParsed;
+    let contextCreated: TaskCreationResult;
+    try {
+      contextCreated = await createTask({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        parsed: taskParsed,
+      });
+    } catch (error) {
+      await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
+      throw error;
+    }
+    run = await advanceContextIngestRun(root, run, {
+      phase: "task_created",
+      task: contextCreated,
+    });
+    await opts.afterJournalPhase?.(run.phase);
+  }
+
+  if (run.phase === "task_created") {
+    if (run.task === undefined) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `context ingest run ${run.run_id} is missing its task creation receipt.`,
+      });
+    }
+    await writeContextTaskCreationReceipt({ root, result: run.task });
+    run = await advanceContextIngestRun(root, run, { phase: "pack_writing" });
+    await opts.afterJournalPhase?.(run.phase);
+  }
+
+  if (run.phase === "pack_writing") {
+    if (run.task === undefined) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `context ingest run ${run.run_id} cannot write a task pack without a task receipt.`,
+      });
+    }
+    const writeTaskPack = opts.writeTaskPack ?? writeContextTaskPack;
+    let pack: Awaited<ReturnType<typeof writeContextTaskPack>>;
+    try {
+      pack = await writeTaskPack({
+        root,
+        taskId: run.task.task_id,
+        sources: run.source_set.selected,
+        creation: run.task,
+      });
+    } catch (error) {
+      await advanceContextIngestRun(root, run, { phase: "task_created" });
+      throw error;
+    }
+    run = await advanceContextIngestRun(root, run, {
+      pack: { span_count: pack.spanCount },
+      phase: "pack_written",
+    });
+    await opts.afterJournalPhase?.(run.phase);
+    await releaseContextIngestRunLease(root, run);
+  }
+
+  if (run.phase === "pack_written") {
+    if (run.task === undefined || run.pack === undefined) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `context ingest run ${run.run_id} is missing completed task-pack evidence.`,
+      });
+    }
+    process.stdout.write(
+      `context ingestion task created: ${run.task.task_id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${run.pack.span_count})\n`,
+    );
+    return 0;
+  }
+
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message: `context ingest run ${run.run_id} is not resumable from phase ${run.phase}.`,
+  });
 }

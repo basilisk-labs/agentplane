@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CommandContext } from "../commands/shared/task-backend.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
 import { cmdContextIngest } from "./ingest.js";
+import { inspectContextIngestRuns } from "./ingest-run-journal.js";
 
 let tempRoots: string[] = [];
 
@@ -339,5 +340,292 @@ describe("context ingest task pack", () => {
       backend_id: "local",
       artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
     });
+  });
+
+  it("resumes a journaled task creation after task-pack failure without creating a duplicate task", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/retry.md", "# Retry\n\nPersisted source.\n");
+    const taskId = "202607021202-RETRY1";
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const createTask = vi.fn(() =>
+      Promise.resolve({
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      }),
+    );
+    let packAttempt = 0;
+    const writeTaskPack = vi.fn(() => {
+      packAttempt += 1;
+      if (packAttempt === 1) throw new Error("forced task-pack failure");
+      return Promise.resolve({
+        taskDir: path.join(root, ".agentplane/tasks", taskId),
+        spanCount: 1,
+      });
+    });
+    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
+
+    await expect(
+      cmdContextIngest({ ctx, cwd: root, parsed, createTask, writeTaskPack }),
+    ).rejects.toThrow(/forced task-pack failure/u);
+    await expect(
+      cmdContextIngest({ ctx, cwd: root, parsed, createTask, writeTaskPack }),
+    ).resolves.toBe(0);
+
+    expect(createTask).toHaveBeenCalledTimes(1);
+    expect(writeTaskPack).toHaveBeenCalledTimes(2);
+    const ingestRunDirectory = await readdir(path.join(root, ".agentplane/context/ingest-runs"));
+    const journalFiles = ingestRunDirectory.filter((entry) => entry.endsWith(".json"));
+    expect(journalFiles).toHaveLength(1);
+    await expect(
+      readJson<{ phase: string }>(root, `.agentplane/context/ingest-runs/${journalFiles[0]}`),
+    ).resolves.toMatchObject({
+      phase: "pack_written",
+    });
+  });
+
+  for (const crashPhase of [
+    "source_set_locked",
+    "task_created",
+    "pack_writing",
+    "pack_written",
+  ] as const) {
+    it(`resumes safely after a crash at the ${crashPhase} journal boundary`, async () => {
+      const root = await tempRoot();
+      await write(
+        root,
+        `context/raw/${crashPhase}.md`,
+        `# ${crashPhase}\n\nPersist this source.\n`,
+      );
+      const taskId = `20260702120-${crashPhase.slice(0, 6)}`;
+      const ctx = {
+        resolvedProject: { gitRoot: root },
+        config: { paths: { workflow_dir: ".agentplane/tasks" } },
+        taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+        backendId: "local",
+        backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+        memo: {},
+      } as unknown as CommandContext;
+      const createTask = vi.fn(() =>
+        Promise.resolve({
+          task_id: taskId,
+          revision: 1,
+          backend_id: "local",
+          artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+        }),
+      );
+      const writeTaskPack = vi.fn(() =>
+        Promise.resolve({ taskDir: path.join(root, ".agentplane/tasks", taskId), spanCount: 1 }),
+      );
+      const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
+
+      await expect(
+        cmdContextIngest({
+          ctx,
+          cwd: root,
+          parsed,
+          createTask,
+          writeTaskPack,
+          afterJournalPhase: (phase) => {
+            if (phase === crashPhase) throw new Error(`forced ${crashPhase} crash`);
+          },
+        }),
+      ).rejects.toThrow(`forced ${crashPhase} crash`);
+      await expect(
+        cmdContextIngest({ ctx, cwd: root, parsed, createTask, writeTaskPack }),
+      ).resolves.toBe(0);
+
+      expect(createTask).toHaveBeenCalledTimes(1);
+      expect(writeTaskPack).toHaveBeenCalledTimes(1);
+    });
+  }
+
+  it("rejects a resume when the journaled source fingerprint changed", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/fingerprint.md", "# Fingerprint\n\nFirst version.\n");
+    const taskId = "202607021203-FINGER";
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const createTask = vi.fn(() =>
+      Promise.resolve({
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      }),
+    );
+    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed,
+        createTask,
+        writeTaskPack: () => Promise.reject(new Error("forced task-pack failure")),
+      }),
+    ).rejects.toThrow(/forced task-pack failure/u);
+    await write(root, "context/raw/fingerprint.md", "# Fingerprint\n\nChanged version.\n");
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed,
+        createTask,
+        writeTaskPack: vi.fn(),
+      }),
+    ).rejects.toThrow(/selected source fingerprint changed/u);
+    expect(createTask).toHaveBeenCalledTimes(1);
+  });
+
+  it("diagnoses manifest/run divergence before a resumable task creation continues", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/manifest.md", "# Manifest\n\nKeep the locked source set.\n");
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed,
+        afterJournalPhase: (phase) => {
+          if (phase === "source_set_locked") throw new Error("forced source-lock crash");
+        },
+      }),
+    ).rejects.toThrow(/forced source-lock crash/u);
+    await write(
+      root,
+      ".agentplane/context/manifest.lock.json",
+      JSON.stringify({
+        version: 1,
+        generated_at: new Date(0).toISOString(),
+        workspace_hash: "sha256:manually-diverged",
+        sources: [],
+      }),
+    );
+
+    await expect(cmdContextIngest({ ctx, cwd: root, parsed })).rejects.toThrow(
+      /manifest\/run fingerprints diverged/u,
+    );
+    const diagnostics = await inspectContextIngestRuns(root);
+    expect(
+      diagnostics.some(
+        (diagnostic) =>
+          diagnostic.level === "issue" && diagnostic.message.includes("manifest/run divergence"),
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps a single source-set lock while a different ingestion request is incomplete", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/first.md", "# First\n\nFirst ingestion request.\n");
+    await write(root, "context/raw/second.md", "# Second\n\nSecond ingestion request.\n");
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const createTask = vi.fn();
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed: {
+          sources: ["context/raw/first.md"],
+          mode: "sources",
+          dryRun: false,
+          indexOnly: false,
+        },
+        createTask,
+        afterJournalPhase: (phase) => {
+          if (phase === "source_set_locked") throw new Error("forced source-lock crash");
+        },
+      }),
+    ).rejects.toThrow(/forced source-lock crash/u);
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed: {
+          sources: ["context/raw/second.md"],
+          mode: "sources",
+          dryRun: false,
+          indexOnly: false,
+        },
+        createTask,
+      }),
+    ).rejects.toThrow(/owns the source-set lock/u);
+    expect(createTask).not.toHaveBeenCalled();
+    await expect(
+      readdir(path.join(root, ".agentplane/context/ingest-runs/active")),
+    ).resolves.toEqual(["source-set.lock.json"]);
+  });
+
+  it("reports task and receipt divergence after a crash at the task-created boundary", async () => {
+    const root = await tempRoot();
+    await write(root, "context/raw/divergence.md", "# Divergence\n\nKeep evidence.\n");
+    const taskId = "202607021204-DIVRGN";
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
+        createTask: () =>
+          Promise.resolve({
+            task_id: taskId,
+            revision: 1,
+            backend_id: "local",
+            artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+          }),
+        afterJournalPhase: (phase) => {
+          if (phase === "task_created") throw new Error("forced task-created crash");
+        },
+      }),
+    ).rejects.toThrow(/forced task-created crash/u);
+
+    const diagnostics = await inspectContextIngestRuns(root);
+    expect(
+      diagnostics.some(
+        (diagnostic) =>
+          diagnostic.level === "issue" && diagnostic.message.includes("task/receipt divergence"),
+      ),
+    ).toBe(true);
   });
 });

@@ -3,8 +3,11 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { CommandContext } from "../shared/task-backend.js";
+import { inspectContextIngestRuns } from "../../context/ingest-run-journal.js";
 import { cmdContextExtractionApply } from "./extraction.js";
 import { cmdContextGraphValidate } from "./graph.js";
+import { cmdContextIngest } from "./ingest.js";
 
 let tempRoots: string[] = [];
 
@@ -32,13 +35,15 @@ describe("context extraction apply", () => {
   it("materializes facts, graph rows, provenance, and coverage from context_extraction SGR", async () => {
     const root = await tempRoot();
     const otherCwd = await tempRoot();
+    const taskId = "202605130501-CTXMAX";
+    await write(root, "context/raw/research/source.md", "# Source\n\nMaximum assimilation.\n");
     await write(
       root,
       "context/extraction.json",
       JSON.stringify({
         schema_version: 1,
         kind: "context_extraction",
-        task_id: "202605130501-CTXMAX",
+        task_id: taskId,
         reasoning: [{ label: "entity-first", summary: "Extract before wiki synthesis." }],
         source_refs: [{ path: "context/raw/research/source.md", lines: "1-6" }],
         extracted_items: [
@@ -110,10 +115,30 @@ describe("context extraction apply", () => {
     );
 
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const context = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    await cmdContextIngest({
+      ctx: context,
+      cwd: root,
+      parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
+      createTask: () =>
+        Promise.resolve({
+          task_id: taskId,
+          revision: 1,
+          backend_id: "local",
+          artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+        }),
+    });
     await cmdContextExtractionApply({
       cwd: otherCwd,
       rootOverride: root,
-      parsed: { file: "context/extraction.json", taskId: "202605130501-CTXMAX", dryRun: false },
+      parsed: { file: "context/extraction.json", taskId, dryRun: false },
     });
     await cmdContextGraphValidate({ cwd: root, parsed: {} });
 
@@ -147,6 +172,13 @@ describe("context extraction apply", () => {
     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
       "items=5 input_source_paths=1 source_paths=1 source_refs=5 facts=1 entities=2 edges=1",
     );
+    const diagnostics = await inspectContextIngestRuns(root);
+    expect(
+      diagnostics.some(
+        (diagnostic) =>
+          diagnostic.level === "warning" && diagnostic.message.includes("artifacts_applied"),
+      ),
+    ).toBe(true);
   });
 
   it("reports input source scope separately from applied extraction source paths", async () => {

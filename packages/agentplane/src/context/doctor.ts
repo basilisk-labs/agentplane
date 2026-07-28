@@ -13,6 +13,7 @@ import { readHarvestReport } from "./harvest-tasks-artifacts.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
 import { validateContextCrossSurfaceIntegrity } from "./integrity.js";
+import { inspectContextIngestRuns } from "./ingest-run-journal.js";
 
 export async function cmdContextDoctor(opts: {
   cwd: string;
@@ -143,6 +144,10 @@ export async function cmdContextDoctor(opts: {
   }
 
   const manifestSources = await collectManifestSources(root);
+  for (const diagnostic of await inspectContextIngestRuns(root)) {
+    if (diagnostic.level === "issue") issues.push(diagnostic.message);
+    else warnings.push(diagnostic.message);
+  }
   await checkWikiSourceRefs(root, manifestSources, issues);
   for (const file of [
     ".agentplane/context/derived/facts/facts.jsonl",
