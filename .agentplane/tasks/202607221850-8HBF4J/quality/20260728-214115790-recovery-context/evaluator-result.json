@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "A different or stale semantic result can be accepted after the ingest journal has advanced beyond semantic_result_received, while completed mechanical phases are reused without applying or validating that result.",
+      "broken_invariant": "A semantic fingerprint must remain bound to every durable mechanical phase; stale or replacement semantic output must be rejected unless the run is explicitly awaiting semantic rework.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214115790-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:e86a5938b99e63c8e4ee313e4a71422c5a54e1c97bdd3e939db7adb607a8cbcc",
+          "line": 766,
+          "lines": "766-767, 930-1039, 1786-1799",
+          "section": "phaseIsComplete and semantic_result operation"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
+          "sha256": "sha256:4ef7b3787b693e253b78423b21542f6b2cf8061f5315cccd6971b72e7a191114",
+          "line": 77,
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "The verification evidence does not demonstrate the required per-gate failure matrix, repeated semantic-rework limits, or stale-result scenario; the added supervisor tests exercise only one mechanical failure and one rework round.",
+      "broken_invariant": "Pass requires positive, negative, crash/retry, concurrency-sensitive, stale-result, and bounded repeated-rework evidence required by the approved task contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214115790-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:e86a5938b99e63c8e4ee313e4a71422c5a54e1c97bdd3e939db7adb607a8cbcc",
+          "line": 1431,
+          "lines": "1431-1554",
+          "section": "context assimilation supervisor tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214115790-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
+          "line": 1,
+          "section": "verification_records and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
+          "sha256": "sha256:4ef7b3787b693e253b78423b21542f6b2cf8061f5315cccd6971b72e7a191114",
+          "line": 77,
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Reject a different semantic fingerprint when the run is already past semantic_result_received and is not in semantic_rework_requested.",
+    "Fail and resume every registered mechanical gate, proving that only the failed operation is retried and prior effects are not duplicated.",
+    "Exercise multiple evaluator-rework rounds through episode, token, and no-progress exhaustion while preserving the shared durable cursor and usage.",
+    "Exercise a corrected semantic result after semantic_rework_requested and prove that all result-dependent mechanical phases are rerun against the new fingerprint."
+  ],
+  "hidden_assumptions": [
+    "The extraction file supplied on resume is assumed to contain the same semantic result already recorded in the ingest journal.",
+    "Phase rank is assumed to prove that completed effects correspond to the currently supplied semantic fingerprint.",
+    "A single wiki_lint retry is assumed to represent retry safety for all mechanical operations.",
+    "One evaluator-rework round is assumed to establish bounded behavior across repeated rounds."
+  ],
+  "recovery_context": "Bind the supplied semantic fingerprint to resume eligibility before consulting phase completion. Reject fingerprint drift unless the journal is in semantic_rework_requested; after an accepted replacement result, invalidate or restart every result-dependent mechanical phase. Add the full per-gate retry, stale-result, corrected-result, and repeated-rework budget tests required by the task Verify Steps."
+}

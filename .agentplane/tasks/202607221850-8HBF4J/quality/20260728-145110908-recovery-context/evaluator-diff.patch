@@ -1,0 +1,2488 @@
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..e1fb22478
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+@@ -0,0 +1,585 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221850-8HBF4J",
++    "title": "Supervise context assimilation post-processing",
++    "description": "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations.",
++    "tags": [
++      "context",
++      "curator",
++      "milestone-beta1",
++      "refactor",
++      "rf-11",
++      "rf-25",
++      "supervisor",
++      "v0.7",
++      "wave-supervisor"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221850-8HBF4J",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde"
++  }
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+index cf802ccad..3f3dfd23f 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+@@ -4,9 +4,12 @@
+   "created_at": "2026-07-28T13:53:55.558Z",
+   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "last_verified_at": null,
++  "pr_number": 4659,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4659",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607221850-8HBF4J",
+-  "updated_at": "2026-07-28T13:53:55.558Z",
++  "updated_at": "2026-07-28T13:53:59.240Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index f45780270..deeb17b2c 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("253commands/174args/813options");
++      expect(compatibility.stdout).toContain("254commands/175args/817options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -176,16 +176,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607221849-NWVCAG",
+           "202607221849-TBTX8X",
+           "202607221849-8YYZ9X",
++          "202607221850-8HBF4J",
+           "202607242158-QV09NA",
+           "202607260007-DQM6AW",
+           "202607260532-9M7RNH",
+         ],
+         candidate: {
+-          surface_sha256: "cae67e3c40031c35350d6bae212a060528d3256ac4d924d8354fba589674e32a",
++          surface_sha256: "f0f2e977c72f8adb277f9780bd156f12855b52c8ef4c5317c2391b61f9cf5f12",
+           section_digests: {
+             agent_facing_context_contracts:
+               "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
+-            cli_topology: "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
++            cli_topology: "f8457555bbe16c702d09be0881645855998a37decf053879d6c81c15d2a85227",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+diff --git a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+index a34e7505c..9a592a8d9 100644
+--- a/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
++++ b/packages/agentplane/src/cli/run-cli/command-catalog/project.ts
+@@ -107,6 +107,7 @@ import {
+   contextDoctorSpec,
+   contextFinalizeTaskSpec,
+   contextExtractionApplySpec,
++  contextSuperviseTaskSpec,
+   contextGraphNeighborsSpec,
+   contextGraphExportSpec,
+   contextGraphShowSpec,
+@@ -314,6 +315,7 @@ export const PROJECT_COMMANDS = [
+   fromCommandsContextCommand(contextWikiReportSpec, "runContextWikiReport"),
+   fromCommandsContextCommand(contextDoctorSpec, "runContextDoctor", { surface: "advanced" }),
+   fromCommandsContextCommand(contextFinalizeTaskSpec, "runContextFinalizeTask"),
++  fromCommandsContextCommand(contextSuperviseTaskSpec, "runContextSuperviseTask"),
+   fromCommandsContextCommand(contextVerifyTaskSpec, "runContextVerifyTask", {
+     surface: "advanced",
+   }),
+diff --git a/packages/agentplane/src/commands/context/assimilation-supervisor.ts b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+new file mode 100644
+index 000000000..5448b3e7e
+--- /dev/null
++++ b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+@@ -0,0 +1,601 @@
++import { mkdir, readFile } from "node:fs/promises";
++import path from "node:path";
++
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  digestSupervisorEpisodeValue,
++  retryFailedSupervisorExecutionEpisode,
++  startSupervisorExecutionEpisode,
++  type SupervisorEpisodeOperationKind,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import { atomicWriteFile } from "@agentplaneorg/core/fs";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { CommandCtx } from "../../cli/spec/spec.js";
++import {
++  advanceContextIngestRunForTask,
++  contextIngestRunPhaseRank,
++  contextIngestSemanticFingerprint,
++  findContextIngestRunForTask,
++  requestContextIngestSemanticRework,
++  type ContextIngestRunJournal,
++  type ContextIngestRunPhase,
++} from "../../context/ingest-run-journal.js";
++import { validateContextExtractionSgrResult } from "../../context/sgr-extraction.js";
++import { CliError } from "../../shared/errors.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++
++import { cmdContextDoctor } from "./doctor.js";
++import { cmdContextExtractionApply } from "./extraction.js";
++import { cmdContextGraphValidate } from "./graph.js";
++import { cmdContextReindex } from "./reindex.js";
++import { cmdContextSearch } from "./search.js";
++import { cmdContextVerifyTask } from "./verify-task.js";
++import { cmdContextWikiIndex, cmdContextWikiLint } from "./wiki.js";
++import { cmdContextWikiReport } from "./wiki-reports.js";
++
++export const CONTEXT_ASSIMILATION_OPERATION_IDS = [
++  "semantic_result",
++  "apply",
++  "wiki_report_seed",
++  "wiki_index",
++  "wiki_report",
++  "wiki_lint",
++  "reindex",
++  "graph_validate",
++  "task_verify",
++  "doctor",
++  "smoke_search",
++  "evaluator_request",
++  "evaluator_result",
++  "acr_generate",
++  "acr_check",
++  "semantic_rework",
++  "finalize",
++] as const;
++
++export type ContextAssimilationOperationId = (typeof CONTEXT_ASSIMILATION_OPERATION_IDS)[number];
++
++type ContextAssimilationOperation = {
++  id: ContextAssimilationOperationId;
++  kind: SupervisorEpisodeOperationKind;
++  phase: ContextIngestRunPhase;
++  run: () => Promise<unknown>;
++};
++
++type EpisodeState = { fingerprint: string; task_revision: number | null };
++
++export type ContextAssimilationSupervisorDependencies = {
++  createAcr?: () => Promise<unknown>;
++  checkAcr?: () => Promise<unknown>;
++  getEpisodeState?: () => Promise<EpisodeState>;
++  loadTask?: () => Promise<TaskData>;
++  runEvaluator?: () => Promise<unknown>;
++  operations?: Partial<Record<ContextAssimilationOperationId, () => Promise<unknown>>>;
++};
++
++export type ContextAssimilationSupervisorResult = {
++  episode: SupervisorExecutionEpisodeJournal;
++  episode_path: string;
++  phase: ContextIngestRunPhase;
++  rework_work_order: string | null;
++  status: "finalized" | "awaiting_semantic_rework";
++};
++
++type SupervisorInput = {
++  command: CommandContext;
++  ctx: CommandCtx;
++  extractionFile: string;
++  smokeQuery?: string;
++  taskId: string;
++};
++
++function phaseIsComplete(run: ContextIngestRunJournal, phase: ContextIngestRunPhase): boolean {
++  if (run.phase === "semantic_rework_requested") return false;
++  return contextIngestRunPhaseRank(run.phase) >= contextIngestRunPhaseRank(phase);
++}
++
++function operationRole(kind: SupervisorEpisodeOperationKind): "CURATOR" | "EXECUTOR" {
++  return kind === "agent_episode" ? "CURATOR" : "EXECUTOR";
++}
++
++function boundedText(value: string | null | undefined, max = 1000): string | null {
++  if (!value) return null;
++  const compact = value.replaceAll(/\s+/gu, " ").trim();
++  return compact.length <= max ? compact : `${compact.slice(0, Math.max(0, max - 1))}…`;
++}
++
++function smokeQueryFromSemantic(raw: unknown): string {
++  const semantic = validateContextExtractionSgrResult(raw);
++  for (const item of semantic.extracted_items) {
++    const entity = item.entity;
++    if (entity?.label?.trim()) return entity.label.trim();
++    if (entity?.aliases?.[0]?.trim()) return entity.aliases[0].trim();
++  }
++  const summary = semantic.extracted_items[0]?.summary?.trim();
++  if (summary) return summary.split(/\s+/u).slice(0, 6).join(" ");
++  throw new CliError({
++    code: "E_VALIDATION",
++    message: "Context extraction has no usable semantic term for the supervisor smoke search.",
++  });
++}
++
++async function readSemanticResult(
++  root: string,
++  extractionFile: string,
++): Promise<{
++  fingerprint: string;
++  raw: unknown;
++  smoke_query: string;
++}> {
++  const file = path.resolve(root, extractionFile);
++  const text = await readFile(file, "utf8");
++  const raw = JSON.parse(text) as unknown;
++  validateContextExtractionSgrResult(raw);
++  return {
++    fingerprint: contextIngestSemanticFingerprint(text),
++    raw,
++    smoke_query: smokeQueryFromSemantic(raw),
++  };
++}
++
++async function defaultEpisodeState(input: SupervisorInput): Promise<EpisodeState> {
++  const [task, decision] = await Promise.all([
++    loadTaskFromContext({ ctx: input.command, taskId: input.taskId }),
++    buildTaskRouteDecision({
++      ctx: input.command,
++      cwd: input.ctx.cwd,
++      rootOverride: input.ctx.rootOverride ?? null,
++      taskId: input.taskId,
++      includeRemote: false,
++    }),
++  ]);
++  return {
++    fingerprint: decision.workflowStep.preconditionFingerprint.digest,
++    task_revision: task.revision ?? null,
++  };
++}
++
++async function writeReworkWorkOrder(opts: {
++  root: string;
++  run: ContextIngestRunJournal;
++  semanticFingerprint: string;
++  task: TaskData;
++}): Promise<{ feedback_digest: string; work_order_file: string }> {
++  const review = opts.task.quality_review;
++  if (review?.state !== "rework") {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: "Context semantic rework requires an evaluator quality_review=rework result.",
++    });
++  }
++  const cursor = (opts.run.supervision?.rework.length ?? 0) + 1;
++  const feedback = {
++    verdict: review.state,
++    note: boundedText(review.note),
++    findings: review.findings.slice(0, 12).map((finding) => boundedText(finding, 500) ?? ""),
++    evidence_refs: review.evidence_refs.slice(0, 16),
++  };
++  const workOrder = {
++    schema_version: 1,
++    kind: "context_semantic_rework",
++    task_id: opts.task.id,
++    run_id: opts.run.run_id,
++    cursor,
++    replaces_semantic_fingerprint: opts.semanticFingerprint,
++    input: {
++      context_pack: `.agentplane/tasks/${opts.task.id}/context-pack.md`,
++      extraction_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
++      canonical_catalog: `.agentplane/tasks/${opts.task.id}/canonical-entity-catalog.json`,
++    },
++    semantic_feedback: feedback,
++    required_output: {
++      kind: "context_extraction",
++      schema_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
++      instruction:
++        "Return one corrected, schema-valid semantic SGR result. Do not run lifecycle, indexing, validation, evaluator, ACR, or finalization commands.",
++    },
++    stop_rules: [
++      "Do not resolve ambiguity by lexical similarity or identifiers alone.",
++      "Preserve unresolved or conflicting identity decisions explicitly.",
++      "Stop and return the SGR result when the semantic correction is complete; CLI owns all mechanical processing.",
++    ],
++  };
++  const workOrderFile = `.agentplane/tasks/${opts.task.id}/context-rework/${String(cursor).padStart(3, "0")}.json`;
++  await mkdir(path.dirname(path.join(opts.root, workOrderFile)), { recursive: true });
++  await atomicWriteFile(
++    path.join(opts.root, workOrderFile),
++    `${JSON.stringify(workOrder, null, 2)}\n`,
++    "utf8",
++  );
++  return {
++    feedback_digest: digestSupervisorEpisodeValue(feedback),
++    work_order_file: workOrderFile,
++  };
++}
++
++function stoppedError(journal: SupervisorExecutionEpisodeJournal): CliError {
++  return new CliError({
++    code: "E_RUNTIME",
++    message:
++      `Context assimilation supervisor stopped: ${journal.stop?.reason ?? "unknown"}` +
++      ` (${journal.stop?.exhausted_dimensions.join(",") || "none"}).`,
++  });
++}
++
++/**
++ * Execute only deterministic context post-processing. CURATOR work is recorded
++ * as an already-produced semantic SGR result; it is never re-run here.
++ */
++export async function runContextAssimilationSupervisor(
++  input: SupervisorInput,
++  dependencies: ContextAssimilationSupervisorDependencies = {},
++): Promise<ContextAssimilationSupervisorResult> {
++  const root = path.resolve(input.command.resolvedProject.gitRoot);
++  const semantic = await readSemanticResult(root, input.extractionFile);
++  const getEpisodeState = dependencies.getEpisodeState ?? (() => defaultEpisodeState(input));
++  const loadTask =
++    dependencies.loadTask ??
++    (() => loadTaskFromContext({ ctx: input.command, taskId: input.taskId }));
++  let reworkWorkOrder: string | null = null;
++
++  const operation = async (
++    definition: ContextAssimilationOperation,
++  ): Promise<SupervisorExecutionEpisodeJournal> => {
++    const run = await findContextIngestRunForTask(root, input.taskId);
++    if (run === null) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `No context ingest journal exists for task ${input.taskId}.`,
++      });
++    }
++    const alreadyComplete = phaseIsComplete(run, definition.phase);
++    const before = await getEpisodeState();
++    const opened = await openSupervisorExecutionEpisode({
++      git_root: root,
++      task_id: input.taskId,
++      task_revision: before.task_revision,
++      state_fingerprint_digest: before.fingerprint,
++      recover_intent: false,
++    });
++    let journal = opened.journal;
++    if (journal.status === "stopped" && journal.stop?.reason === "operation_failed") {
++      journal = retryFailedSupervisorExecutionEpisode({
++        journal,
++        state_fingerprint_digest: before.fingerprint,
++        next_kind: definition.kind,
++      });
++      await opened.store.write(journal);
++    }
++    if (journal.status === "stopped") throw stoppedError(journal);
++    if (journal.cursor.phase === "completed") {
++      journal = advanceSupervisorExecutionEpisodeState({
++        journal,
++        state_fingerprint_digest: before.fingerprint,
++        route_observation: { operation: definition.id, resumed: true },
++      });
++      await opened.store.write(journal);
++    }
++    if (journal.state_fingerprint_digest !== before.fingerprint) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Context assimilation state changed before ${definition.id}; refresh the task route before retrying.`,
++      });
++    }
++
++    let operationKey: string;
++    if (journal.cursor.phase === "intent_recorded") {
++      const pending = journal.operations.at(-1);
++      if (alreadyComplete && pending?.effect_ref !== definition.id) return journal;
++      if (!pending || pending.effect_ref !== definition.id || pending.operation_key === null) {
++        throw new CliError({
++          code: "E_RUNTIME",
++          message: "Context assimilation supervisor has an unrelated effect in doubt.",
++        });
++      }
++      operationKey = pending.operation_key;
++    } else {
++      if (alreadyComplete) return journal;
++      const started = startSupervisorExecutionEpisode({
++        journal,
++        role: operationRole(definition.kind),
++        kind: definition.kind,
++        operation_identity: { context_assimilation_operation: definition.id, run_id: run.run_id },
++        precondition_fingerprint_digest: before.fingerprint,
++        authority_ref: `context-assimilation:${definition.id}`,
++        authority_digest: before.fingerprint,
++        effect_ref: definition.id,
++      });
++      journal = started.journal;
++      await opened.store.write(journal);
++      if (started.status !== "started") throw stoppedError(journal);
++      operationKey = started.operation_key;
++    }
++
++    let result: unknown = { resumed: true };
++    try {
++      if (!alreadyComplete) {
++        result = await definition.run();
++        await advanceContextIngestRunForTask(root, input.taskId, { phase: definition.phase });
++      }
++    } catch (error) {
++      journal = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: operationKey,
++        result: {
++          operation: definition.id,
++          error: error instanceof Error ? error.name : "unknown",
++        },
++        failed: true,
++      });
++      await opened.store.write(journal);
++      throw error;
++    }
++
++    journal = completeSupervisorExecutionEpisode({
++      journal,
++      operation_key: operationKey,
++      result: { operation: definition.id, result },
++      progress: {
++        operation: definition.id,
++        phase: definition.phase,
++        semantic: semantic.fingerprint,
++      },
++    });
++    await opened.store.write(journal);
++    if (journal.status === "stopped") throw stoppedError(journal);
++    const after = await getEpisodeState();
++    journal = advanceSupervisorExecutionEpisodeState({
++      journal,
++      state_fingerprint_digest: after.fingerprint,
++      route_observation: { operation: definition.id, phase: definition.phase },
++    });
++    await opened.store.write(journal);
++    return journal;
++  };
++
++  const invoke = (id: ContextAssimilationOperationId, fallback: () => Promise<unknown>) =>
++    dependencies.operations?.[id] ?? fallback;
++  const smokeQuery = input.smokeQuery?.trim() || semantic.smoke_query;
++  let latest: SupervisorExecutionEpisodeJournal | null = null;
++  const run = async (
++    id: ContextAssimilationOperationId,
++    kind: SupervisorEpisodeOperationKind,
++    phase: ContextIngestRunPhase,
++    fallback: () => Promise<unknown>,
++  ) => {
++    latest = await operation({ id, kind, phase, run: invoke(id, fallback) });
++  };
++
++  await run("semantic_result", "agent_episode", "semantic_result_received", async () => {
++    const existing = await findContextIngestRunForTask(root, input.taskId);
++    const attempt = (existing?.supervision?.rework.length ?? 0) + 1;
++    await advanceContextIngestRunForTask(root, input.taskId, {
++      phase: "semantic_result_received",
++      semantic: {
++        extraction_file: input.extractionFile,
++        extraction_fingerprint: semantic.fingerprint,
++        attempt,
++      },
++    });
++    return { extraction_fingerprint: semantic.fingerprint, attempt };
++  });
++  await run(
++    "apply",
++    "cli_operation",
++    "artifacts_applied",
++    async () =>
++      await cmdContextExtractionApply({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: {
++          file: input.extractionFile,
++          taskId: input.taskId,
++          dryRun: false,
++          synthesizeWiki: true,
++        },
++      }),
++  );
++  await run(
++    "wiki_report_seed",
++    "cli_operation",
++    "wiki_report_started",
++    async () =>
++      await cmdContextWikiReport({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: { path: "context/wiki" },
++      }),
++  );
++  await run(
++    "wiki_index",
++    "cli_operation",
++    "wiki_indexed",
++    async () =>
++      await cmdContextWikiIndex({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: { path: "context/wiki" },
++      }),
++  );
++  await run(
++    "wiki_report",
++    "cli_operation",
++    "wiki_reported",
++    async () =>
++      await cmdContextWikiReport({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: { path: "context/wiki" },
++      }),
++  );
++  await run(
++    "wiki_lint",
++    "cli_operation",
++    "wiki_linted",
++    async () =>
++      await cmdContextWikiLint({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: { path: "context/wiki" },
++      }),
++  );
++  await run(
++    "reindex",
++    "cli_operation",
++    "reindexed",
++    async () =>
++      await cmdContextReindex({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: { includeTasks: false, includeRaw: false, reset: false },
++      }),
++  );
++  await run(
++    "graph_validate",
++    "cli_operation",
++    "graph_validated",
++    async () =>
++      await cmdContextGraphValidate({ cwd: input.ctx.cwd, rootOverride: root, parsed: {} }),
++  );
++  await run(
++    "task_verify",
++    "cli_operation",
++    "task_verified",
++    async () =>
++      await cmdContextVerifyTask({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: { taskId: input.taskId },
++      }),
++  );
++  await run(
++    "doctor",
++    "cli_operation",
++    "doctor_checked",
++    async () =>
++      await cmdContextDoctor({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: { fix: false, label: "doctor" },
++      }),
++  );
++  await run(
++    "smoke_search",
++    "cli_operation",
++    "smoke_checked",
++    async () =>
++      await cmdContextSearch({
++        cwd: input.ctx.cwd,
++        rootOverride: root,
++        parsed: {
++          query: smokeQuery,
++          scope: "context/wiki,.agentplane/context/derived",
++          format: "json",
++          explain: false,
++        },
++      }),
++  );
++  await run("evaluator_request", "cli_operation", "evaluator_requested", async () => ({
++    requested: true,
++  }));
++
++  const afterRequest = await findContextIngestRunForTask(root, input.taskId);
++  if (afterRequest === null)
++    throw new Error("Context ingest journal disappeared before evaluator.");
++  if (!phaseIsComplete(afterRequest, "evaluated")) {
++    if (!dependencies.runEvaluator) {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: "Context assimilation supervisor requires an EVALUATOR execution dependency.",
++      });
++    }
++    await dependencies.runEvaluator();
++  }
++  await run("evaluator_result", "cli_operation", "evaluated", async () => {
++    const task = await loadTask();
++    if (!task.quality_review || task.quality_review.state === "pending") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: "Evaluator did not record a quality review.",
++      });
++    }
++    return { state: task.quality_review.state, evidence: task.quality_review.evidence_refs };
++  });
++
++  const evaluatedTask = await loadTask();
++  if (evaluatedTask.quality_review?.state === "rework") {
++    const reworkDefinition: ContextAssimilationOperation = {
++      id: "semantic_rework",
++      kind: "cli_operation",
++      phase: "semantic_rework_requested",
++      run: async () => {
++        const current = await findContextIngestRunForTask(root, input.taskId);
++        if (current === null)
++          throw new Error("Context ingest journal disappeared while writing rework order.");
++        const created = await writeReworkWorkOrder({
++          root,
++          run: current,
++          semanticFingerprint: semantic.fingerprint,
++          task: evaluatedTask,
++        });
++        reworkWorkOrder = created.work_order_file;
++        await requestContextIngestSemanticRework(root, input.taskId, created);
++        return { work_order: created.work_order_file };
++      },
++    };
++    latest = await operation(reworkDefinition);
++    return {
++      episode: latest,
++      episode_path: (
++        await openSupervisorExecutionEpisode({
++          git_root: root,
++          task_id: input.taskId,
++          task_revision: (await getEpisodeState()).task_revision,
++          state_fingerprint_digest: (await getEpisodeState()).fingerprint,
++          recover_intent: false,
++        })
++      ).journal_path,
++      phase: "semantic_rework_requested",
++      rework_work_order: reworkWorkOrder,
++      status: "awaiting_semantic_rework",
++    };
++  }
++  if (evaluatedTask.quality_review?.state !== "pass") {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: `Evaluator stopped context assimilation with quality_review=${evaluatedTask.quality_review?.state ?? "missing"}.`,
++    });
++  }
++
++  await run("acr_generate", "cli_operation", "acr_generated", async () => {
++    if (!dependencies.createAcr) return { skipped: "acr_dependency_unavailable" };
++    return await dependencies.createAcr();
++  });
++  await run("acr_check", "cli_operation", "acr_checked", async () => {
++    if (!dependencies.checkAcr) return { skipped: "acr_dependency_unavailable" };
++    return await dependencies.checkAcr();
++  });
++  await run("finalize", "cli_operation", "finalized", async () => ({ finalized: true }));
++  if (latest === null)
++    throw new Error("Context assimilation supervisor completed without a journal.");
++  return {
++    episode: latest,
++    episode_path: (
++      await openSupervisorExecutionEpisode({
++        git_root: root,
++        task_id: input.taskId,
++        task_revision: (await getEpisodeState()).task_revision,
++        state_fingerprint_digest: (await getEpisodeState()).fingerprint,
++        recover_intent: false,
++      })
++    ).journal_path,
++    phase: "finalized",
++    rework_work_order: null,
++    status: "finalized",
++  };
++}
+diff --git a/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts b/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+new file mode 100644
+index 000000000..fd093ef34
+--- /dev/null
++++ b/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+@@ -0,0 +1,279 @@
++import { execFile as execFileCallback } from "node:child_process";
++import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { afterEach, describe, expect, it, vi } from "vitest";
++import { startSupervisorExecutionEpisode } from "@agentplaneorg/core/schemas";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { CommandCtx } from "../../cli/spec/spec.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++
++import {
++  CONTEXT_ASSIMILATION_OPERATION_IDS,
++  runContextAssimilationSupervisor,
++  type ContextAssimilationOperationId,
++} from "./assimilation-supervisor.js";
++
++const execFile = promisify(execFileCallback);
++const FINGERPRINT = `sha256:${"a".repeat(64)}`;
++let roots: string[] = [];
++
++afterEach(async () => {
++  vi.restoreAllMocks();
++  await Promise.all(roots.map(async (root) => await rm(root, { recursive: true, force: true })));
++  roots = [];
++});
++
++async function fixtureRoot(): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-context-supervisor-"));
++  roots.push(root);
++  await execFile("git", ["init", "--quiet"], { cwd: root });
++  const taskId = "202607281900-SUPERV";
++  await mkdir(path.join(root, ".agentplane/context/ingest-runs"), { recursive: true });
++  await writeFile(
++    path.join(root, ".agentplane/context/ingest-runs/run-supervisor.json"),
++    `${JSON.stringify(
++      {
++        version: 1,
++        run_id: "run-supervisor",
++        created_at: "2026-07-28T00:00:00.000Z",
++        updated_at: "2026-07-28T00:00:00.000Z",
++        phase: "pack_written",
++        request: {
++          fingerprint: "sha256:request",
++          mode: "sources",
++          sources: ["context/raw/source.md"],
++        },
++        source_set: {
++          full_inventory: [],
++          manifest: { version: 1, sources: [], workspace_hash: "sha256:manifest" },
++          manifest_fingerprint: "sha256:manifest",
++          previous_manifest_fingerprint: "sha256:manifest",
++          selected: [],
++          selected_fingerprint: "sha256:selected",
++        },
++        task: { task_id: taskId, revision: 1, backend_id: "local", artifact_paths: [] },
++      },
++      null,
++      2,
++    )}\n`,
++  );
++  await mkdir(path.join(root, "context"), { recursive: true });
++  await writeFile(
++    path.join(root, "context/result.json"),
++    `${JSON.stringify({
++      schema_version: 2,
++      kind: "context_extraction",
++      task_id: taskId,
++      reasoning: [{ label: "semantic", summary: "A CURATOR result." }],
++      source_refs: [{ path: "context/raw/source.md", lines: "1-2" }],
++      extracted_items: [
++        {
++          id: "entity.supervisor",
++          kind: "graph_entity",
++          summary: "A supervisor owns mechanical follow-up.",
++          source_refs: [{ path: "context/raw/source.md", lines: "1-2" }],
++          confidence: 0.9,
++          status: "accepted",
++          entity: { id: "entity.supervisor", kind: "concept", label: "Supervisor" },
++        },
++        {
++          id: "coverage.source",
++          kind: "coverage",
++          summary: "Source coverage.",
++          source_refs: [{ path: "context/raw/source.md", lines: "1-2" }],
++          confidence: 0.9,
++          status: "accepted",
++          coverage: {
++            source_path: "context/raw/source.md",
++            status: "covered",
++            reason: "Semantic result covers the selected source.",
++            covered_item_ids: ["entity.supervisor"],
++          },
++        },
++      ],
++    })}\n`,
++  );
++  return root;
++}
++
++function task(
++  state: NonNullable<TaskData["quality_review"]>["state"] | undefined = undefined,
++): TaskData {
++  return {
++    id: "202607281900-SUPERV",
++    title: "Context fixture",
++    status: "DOING",
++    priority: "med",
++    owner: "CURATOR",
++    revision: 1,
++    description: "fixture",
++    verify: [],
++    ...(state
++      ? {
++          quality_review: {
++            state,
++            provenance: "evaluator_supplied",
++            updated_at: "2026-07-28T00:00:00.000Z",
++            updated_by: "EVALUATOR",
++            note: "bounded feedback",
++            evaluated_sha: null,
++            blueprint_digest: null,
++            evidence_refs: ["quality/report.json"],
++            findings: ["Semantic reconciliation needs one correction."],
++          },
++        }
++      : {}),
++  } as TaskData;
++}
++
++function overriddenOperations(calls: string[], fail?: ContextAssimilationOperationId) {
++  return Object.fromEntries(
++    CONTEXT_ASSIMILATION_OPERATION_IDS.filter((id) => id !== "semantic_result").map((id) => [
++      id,
++      async () => {
++        calls.push(id);
++        if (id === fail) throw new Error(`${id}-failed`);
++        return { id };
++      },
++    ]),
++  ) as Partial<Record<ContextAssimilationOperationId, () => Promise<unknown>>>;
++}
++
++function input(root: string) {
++  return {
++    command: { resolvedProject: { gitRoot: root } } as CommandContext,
++    ctx: { cwd: root, rootOverride: root } as CommandCtx,
++    extractionFile: "context/result.json",
++    taskId: "202607281900-SUPERV",
++  };
++}
++
++describe("context assimilation supervisor", () => {
++  it("rejects an invalid semantic result before any CLI-owned operation starts", async () => {
++    const root = await fixtureRoot();
++    await writeFile(path.join(root, "context/result.json"), '{"kind":"not-context-extraction"}\n');
++    const calls: string[] = [];
++
++    await expect(
++      runContextAssimilationSupervisor(input(root), {
++        operations: overriddenOperations(calls),
++        getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
++        loadTask: async () => task(),
++        runEvaluator: async () => undefined,
++      }),
++    ).rejects.toThrow(/context extraction SGR result/u);
++
++    expect(calls).toEqual([]);
++  });
++
++  it("retries only the failed mechanical operation and preserves the CURATOR result", async () => {
++    const root = await fixtureRoot();
++    const calls: string[] = [];
++    let currentTask = task();
++    const firstOperations = overriddenOperations(calls, "wiki_lint");
++
++    await expect(
++      runContextAssimilationSupervisor(input(root), {
++        operations: firstOperations,
++        getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
++        loadTask: async () => currentTask,
++        runEvaluator: async () => {
++          currentTask = task("pass");
++        },
++      }),
++    ).rejects.toThrow("wiki_lint-failed");
++
++    const secondOperations = overriddenOperations(calls);
++    const result = await runContextAssimilationSupervisor(input(root), {
++      operations: secondOperations,
++      getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
++      loadTask: async () => currentTask,
++      runEvaluator: async () => {
++        currentTask = task("pass");
++      },
++    });
++
++    expect(result.status).toBe("finalized");
++    expect(calls.filter((id) => id === "apply")).toHaveLength(1);
++    expect(calls.filter((id) => id === "wiki_lint")).toHaveLength(2);
++    expect(calls.filter((id) => id === "evaluator_request")).toHaveLength(1);
++  });
++
++  it("confirms a durable completed phase after a crash without replaying that operation", async () => {
++    const root = await fixtureRoot();
++    const journalPath = path.join(root, ".agentplane/context/ingest-runs/run-supervisor.json");
++    const run = JSON.parse(await readFile(journalPath, "utf8")) as { phase: string };
++    run.phase = "wiki_linted";
++    await writeFile(journalPath, `${JSON.stringify(run, null, 2)}\n`);
++    const episode = await openSupervisorExecutionEpisode({
++      git_root: root,
++      task_id: "202607281900-SUPERV",
++      task_revision: 1,
++      state_fingerprint_digest: FINGERPRINT,
++      recover_intent: false,
++    });
++    const pending = startSupervisorExecutionEpisode({
++      journal: episode.journal,
++      role: "EXECUTOR",
++      kind: "cli_operation",
++      operation_identity: { context_assimilation_operation: "wiki_lint" },
++      precondition_fingerprint_digest: FINGERPRINT,
++      authority_ref: "context-assimilation:wiki_lint",
++      authority_digest: FINGERPRINT,
++      effect_ref: "wiki_lint",
++    });
++    if (pending.status !== "started")
++      throw new Error("expected a durable pending wiki_lint intent");
++    await episode.store.write(pending.journal);
++
++    const calls: string[] = [];
++    let currentTask = task();
++    const result = await runContextAssimilationSupervisor(input(root), {
++      operations: overriddenOperations(calls),
++      getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
++      loadTask: async () => currentTask,
++      runEvaluator: async () => {
++        currentTask = task("pass");
++      },
++    });
++
++    expect(result.status).toBe("finalized");
++    expect(calls).not.toContain("wiki_lint");
++    expect(
++      result.episode.operations.find((entry) => entry.effect_ref === "wiki_lint"),
++    ).toMatchObject({
++      status: "completed",
++    });
++  });
++
++  it("turns evaluator rework into a bounded CURATOR work order without lifecycle commands", async () => {
++    const root = await fixtureRoot();
++    const calls: string[] = [];
++    let currentTask = task();
++    const result = await runContextAssimilationSupervisor(input(root), {
++      operations: overriddenOperations(calls),
++      getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
++      loadTask: async () => currentTask,
++      runEvaluator: async () => {
++        currentTask = task("rework");
++      },
++    });
++
++    expect(result).toMatchObject({
++      status: "awaiting_semantic_rework",
++      phase: "semantic_rework_requested",
++      rework_work_order: ".agentplane/tasks/202607281900-SUPERV/context-rework/001.json",
++    });
++    const workOrder = await readFile(path.join(root, result.rework_work_order ?? ""), "utf8");
++    expect(workOrder).toContain('"kind": "context_semantic_rework"');
++    expect(workOrder).not.toContain("agentplane context ");
++    expect(workOrder).not.toContain("agentplane evaluator ");
++    expect(calls).not.toContain("acr_generate");
++    expect(calls).not.toContain("finalize");
++  });
++});
+diff --git a/packages/agentplane/src/commands/context/context-runner.ts b/packages/agentplane/src/commands/context/context-runner.ts
+index a129a3cbf..2d493efd6 100644
+--- a/packages/agentplane/src/commands/context/context-runner.ts
++++ b/packages/agentplane/src/commands/context/context-runner.ts
+@@ -1,4 +1,8 @@
+ import type { CommandCtx } from "../../cli/spec/spec.js";
++import { generateAcr, validateAcrTarget, writeAcrFile } from "../acr/acr.command.js";
++import { runEvaluatorExecute } from "../evaluator/evaluator.command.js";
++import { loadCommandContext } from "../shared/task-backend.js";
++import { runContextAssimilationSupervisor } from "./assimilation-supervisor.js";
+ import { cmdContextIngest, type ContextIngestParsed } from "./ingest.js";
+ import { cmdContextMigrate } from "./migrate.js";
+ import { cmdContextReindex } from "./reindex.js";
+@@ -208,6 +212,75 @@ export async function runContextFinalizeTask(
+   });
+ }
+
++export async function runContextSuperviseTask(
++  _ctx: CommandCtx,
++  p: {
++    taskId: string;
++    extractionFile: string;
++    smokeQuery: string;
++    evaluator: string;
++    json: boolean;
++  },
++): Promise<number> {
++  const command = await loadCommandContext({
++    cwd: _ctx.cwd,
++    rootOverride: _ctx.rootOverride ?? null,
++  });
++  const result = await runContextAssimilationSupervisor(
++    {
++      command,
++      ctx: _ctx,
++      extractionFile: p.extractionFile,
++      smokeQuery: p.smokeQuery,
++      taskId: p.taskId,
++    },
++    {
++      runEvaluator: async () =>
++        await runEvaluatorExecute(_ctx, { taskId: p.taskId, evaluator: p.evaluator, json: p.json }),
++      createAcr: async () => {
++        const generated = await generateAcr({
++          ctx: command,
++          cwd: _ctx.cwd,
++          rootOverride: _ctx.rootOverride,
++          taskId: p.taskId,
++          workCommit: "HEAD",
++          write: true,
++          refresh: true,
++        });
++        if (!generated.acrPath) throw new Error("ACR generation did not resolve an output path.");
++        await writeAcrFile({
++          acrPath: generated.acrPath,
++          record: generated.record,
++          refresh: true,
++        });
++        return { path: generated.acrPath, warnings: generated.warnings };
++      },
++      checkAcr: async () =>
++        await validateAcrTarget({
++          ctx: command,
++          target: p.taskId,
++          mode: "local",
++          strict: true,
++          allowManualOverride: false,
++          allowWaivedVerification: false,
++          requirePlanApproved: false,
++          requirePolicyPass: false,
++          requireVerification: false,
++        }),
++    },
++  );
++  if (p.json) process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
++  else {
++    process.stdout.write(
++      `context supervise-task ${p.taskId}: ${result.status} phase=${result.phase} ` +
++        `episode=${result.episode_path}` +
++        (result.rework_work_order ? ` rework=${result.rework_work_order}` : "") +
++        "\n",
++    );
++  }
++  return 0;
++}
++
+ export async function runContextWikiNew(
+   _ctx: CommandCtx,
+   p: Parameters<typeof cmdContextWikiNew>[0]["parsed"],
+@@ -360,6 +433,7 @@ export {
+   contextDashboardSpec,
+   contextDoctorSpec,
+   contextExtractionApplySpec,
++  contextSuperviseTaskSpec,
+   contextGraphExportSpec,
+   contextGraphNeighborsSpec,
+   contextGraphShowSpec,
+diff --git a/packages/agentplane/src/commands/context/context.spec.ts b/packages/agentplane/src/commands/context/context.spec.ts
+index ec767dac6..6116f7716 100644
+--- a/packages/agentplane/src/commands/context/context.spec.ts
++++ b/packages/agentplane/src/commands/context/context.spec.ts
+@@ -670,6 +670,51 @@ export const contextFinalizeTaskSpec: CommandSpec<{ taskId: string }> = {
+   parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
+ };
+
++export const contextSuperviseTaskSpec: CommandSpec<{
++  taskId: string;
++  extractionFile: string;
++  smokeQuery: string;
++  evaluator: string;
++  json: boolean;
++}> = {
++  id: ["context", "supervise-task"],
++  group: "Context",
++  summary: "Run resumable CLI-owned post-processing for one CURATOR context result.",
++  description:
++    "Records the already-produced semantic SGR result, then applies, validates, indexes, evaluates, records ACR, and finalizes deterministic context work under one bounded supervisor episode.",
++  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
++  options: [
++    {
++      kind: "string",
++      name: "extraction",
++      required: true,
++      valueHint: "<sgr-json>",
++      description: "CURATOR-produced schema-valid context_extraction SGR file.",
++    },
++    {
++      kind: "string",
++      name: "smoke-query",
++      valueHint: "<query>",
++      description: "Optional retrieval check; defaults to a semantic entity from the SGR.",
++    },
++    {
++      kind: "string",
++      name: "evaluator",
++      default: "recovery-context",
++      valueHint: "<id>",
++      description: "Read-only evaluator module id.",
++    },
++    { kind: "boolean", name: "json", default: false, description: "Emit machine-readable result." },
++  ],
++  parse: (raw) => ({
++    taskId: String(raw.args["task-id"]),
++    extractionFile: String(raw.opts.extraction ?? ""),
++    smokeQuery: typeof raw.opts["smoke-query"] === "string" ? raw.opts["smoke-query"] : "",
++    evaluator: typeof raw.opts.evaluator === "string" ? raw.opts.evaluator : "recovery-context",
++    json: raw.opts.json === true,
++  }),
++};
++
+ export const contextCapabilitySpec: CommandSpec<GroupCommandParsed> = {
+   id: ["context", "capability"],
+   group: "Context",
+diff --git a/packages/agentplane/src/context/ingest-run-journal.ts b/packages/agentplane/src/context/ingest-run-journal.ts
+index 1656d1e45..79827a57d 100644
+--- a/packages/agentplane/src/context/ingest-run-journal.ts
++++ b/packages/agentplane/src/context/ingest-run-journal.ts
+@@ -29,13 +29,30 @@ const CONTEXT_INGEST_RUN_PHASES = [
+   "curator_running",
+   "semantic_result_received",
+   "artifacts_applied",
++  "wiki_report_started",
++  "wiki_indexed",
++  "wiki_reported",
++  "wiki_linted",
++  "reindexed",
++  "graph_validated",
++  "task_verified",
++  "doctor_checked",
++  "smoke_checked",
+   "validated",
++  "evaluator_requested",
+   "evaluated",
++  "acr_generated",
++  "acr_checked",
+   "finalized",
++  "semantic_rework_requested",
+ ] as const;
+
+ export type ContextIngestRunPhase = (typeof CONTEXT_INGEST_RUN_PHASES)[number];
+
++export function contextIngestRunPhaseRank(phase: ContextIngestRunPhase): number {
++  return CONTEXT_INGEST_RUN_PHASES.indexOf(phase);
++}
++
+ type ContextIngestRequest = {
+   fingerprint: string;
+   mode: ContextIngestParsed["mode"];
+@@ -57,8 +74,19 @@ export type ContextIngestRunJournal = {
+   phase: ContextIngestRunPhase;
+   request: ContextIngestRequest;
+   run_id: string;
+-  semantic?: { extraction_file: string; extraction_fingerprint?: string };
++  semantic?: {
++    extraction_file: string;
++    extraction_fingerprint?: string;
++    attempt?: number;
++  };
+   source_set: ContextIngestSourceSet;
++  supervision?: {
++    rework: Array<{
++      feedback_digest: string;
++      requested_at: string;
++      work_order_file: string;
++    }>;
++  };
+   task?: TaskCreationResult;
+   updated_at: string;
+   version: 1;
+@@ -204,6 +232,7 @@ export async function advanceContextIngestRun(
+     pack?: { span_count: number };
+     phase: ContextIngestRunPhase;
+     semantic?: { extraction_file: string };
++    supervision?: ContextIngestRunJournal["supervision"];
+     task?: TaskCreationResult;
+   },
+ ): Promise<ContextIngestRunJournal> {
+@@ -211,6 +240,7 @@ export async function advanceContextIngestRun(
+     ...run,
+     ...(update.pack === undefined ? {} : { pack: update.pack }),
+     ...(update.semantic === undefined ? {} : { semantic: update.semantic }),
++    ...(update.supervision === undefined ? {} : { supervision: update.supervision }),
+     ...(update.task === undefined ? {} : { task: update.task }),
+     phase: update.phase,
+     updated_at: new Date().toISOString(),
+@@ -224,7 +254,7 @@ export async function advanceContextIngestRunForTask(
+   taskId: string,
+   update: {
+     phase: ContextIngestRunPhase;
+-    semantic?: { extraction_file: string; extraction_fingerprint: string };
++    semantic?: { extraction_file: string; extraction_fingerprint: string; attempt?: number };
+   },
+ ): Promise<ContextIngestRunJournal | null> {
+   const runs = await readContextIngestRuns(root);
+@@ -234,7 +264,12 @@ export async function advanceContextIngestRunForTask(
+   const run = matches.at(-1);
+   if (run === undefined) return null;
+
++  const acceptsReworkResult =
++    run.phase === "semantic_rework_requested" &&
++    update.phase === "semantic_result_received" &&
++    update.semantic !== undefined;
+   if (
++    !acceptsReworkResult &&
+     update.semantic !== undefined &&
+     run.semantic !== undefined &&
+     run.semantic.extraction_fingerprint !== update.semantic.extraction_fingerprint
+@@ -248,12 +283,48 @@ export async function advanceContextIngestRunForTask(
+     });
+   }
+
+-  const currentIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(run.phase);
+-  const requestedIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(update.phase);
+-  if (requestedIndex <= currentIndex) return run;
++  if (!acceptsReworkResult) {
++    const currentIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(run.phase);
++    const requestedIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(update.phase);
++    if (requestedIndex <= currentIndex) return run;
++  }
+   return await advanceContextIngestRun(root, run, update);
+ }
+
++export async function requestContextIngestSemanticRework(
++  root: string,
++  taskId: string,
++  rework: { feedback_digest: string; work_order_file: string },
++): Promise<ContextIngestRunJournal | null> {
++  const run = await findContextIngestRunForTask(root, taskId);
++  if (run === null) return null;
++  const requested_at = new Date().toISOString();
++  return await advanceContextIngestRun(root, run, {
++    phase: "semantic_rework_requested",
++    supervision: {
++      rework: [
++        ...(run.supervision?.rework ?? []),
++        {
++          feedback_digest: rework.feedback_digest,
++          requested_at,
++          work_order_file: rework.work_order_file,
++        },
++      ],
++    },
++  });
++}
++
++export async function findContextIngestRunForTask(
++  root: string,
++  taskId: string,
++): Promise<ContextIngestRunJournal | null> {
++  const runs = await readContextIngestRuns(root);
++  const matches = runs
++    .filter((run) => run.task?.task_id === taskId)
++    .toSorted((left, right) => left.updated_at.localeCompare(right.updated_at));
++  return matches.at(-1) ?? null;
++}
++
+ export async function releaseContextIngestRunLease(
+   root: string,
+   run: ContextIngestRunJournal,
+@@ -313,21 +384,45 @@ export async function inspectContextIngestRuns(
+         level: "warning",
+         message:
+           `context ingest run ${run.run_id} received semantic output for ${taskId}; ` +
+-          `repeat context extraction apply for ${extraction} if artifacts were not applied.`,
++          `resume CLI-owned post-processing with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
++      });
++      continue;
++    }
++    if (run.phase === "semantic_rework_requested" && taskId !== undefined) {
++      const workOrder =
++        run.supervision?.rework.at(-1)?.work_order_file ?? "the recorded rework work order";
++      diagnostics.push({
++        level: "warning",
++        message:
++          `context ingest run ${run.run_id} awaits a new CURATOR semantic result for ${taskId}; ` +
++          `use ${workOrder} and do not replay completed CLI operations.`,
+       });
+       continue;
+     }
+     if (
+       (run.phase === "artifacts_applied" ||
++        run.phase === "wiki_report_started" ||
++        run.phase === "wiki_indexed" ||
++        run.phase === "wiki_reported" ||
++        run.phase === "wiki_linted" ||
++        run.phase === "reindexed" ||
++        run.phase === "graph_validated" ||
++        run.phase === "task_verified" ||
++        run.phase === "doctor_checked" ||
++        run.phase === "smoke_checked" ||
+         run.phase === "validated" ||
+-        run.phase === "evaluated") &&
++        run.phase === "evaluator_requested" ||
++        run.phase === "evaluated" ||
++        run.phase === "acr_generated" ||
++        run.phase === "acr_checked") &&
+       taskId !== undefined
+     ) {
++      const extraction = run.semantic?.extraction_file ?? "<sgr-json>";
+       diagnostics.push({
+         level: "warning",
+         message:
+           `context ingest run ${run.run_id} is incomplete at ${run.phase}; ` +
+-          `continue with agentplane context finalize-task ${taskId}.`,
++          `resume with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
+       });
+       continue;
+     }
+diff --git a/packages/agentplane/src/context/ingest-task-prompt.ts b/packages/agentplane/src/context/ingest-task-prompt.ts
+index 63acaf37a..d5b4c6652 100644
+--- a/packages/agentplane/src/context/ingest-task-prompt.ts
++++ b/packages/agentplane/src/context/ingest-task-prompt.ts
+@@ -43,42 +43,32 @@ export function buildContextAssimilationPromptModule(
+       "- `extraction-contract.json`: authoritative SGR v2 payload fields and a complete valid example.",
+       "- `expected-artifacts.json`: finish contract.",
+       "",
+-      "## Execute in order",
++      "## Semantic work",
+       "",
+-      "1. Reconcile semantically: compare each source term with the complete canonical entity catalog, then run `agentplane context search`, `agentplane context graph show`, and `agentplane context graph neighbors` for plausible candidates. CURATOR owns this judgment; deterministic AgentPlane code must not infer equivalence from spelling, identifiers, embeddings, or heuristics.",
++      "1. Reconcile semantically: compare each source term with the complete canonical entity catalog and the task-bound evidence for plausible candidates. CURATOR owns this judgment; deterministic AgentPlane code must not infer equivalence from spelling, identifiers, embeddings, or heuristics.",
+       "2. For every entity-bearing term, compare kind, scope, time/validity, ownership, defining properties, aliases, source evidence, wiki use, and graph neighborhood. Record candidates checked, decision dimensions, evidence for and against, rationale, and unresolved questions in one `entity_resolution` row.",
+       "3. Choose exactly one resolution: `same_as`, `alias_of`, `distinct_entity`, `possibly_same_as`, or `new_entity_proposal`. `same_as` and `alias_of` must reuse `canonical_entity_id` and must not emit a duplicate `graph_entity`. `possibly_same_as` must preserve both identities and state what evidence is missing. `new_entity_proposal` requires evidence that checked candidates do not match.",
+       "4. Classify every selected span as significant, boilerplate, redacted, duplicate, conflict, out-of-scope, or unresolved.",
+       "5. Extract entities, aliases, typed claims, relations, conflicts, open questions, page decisions, a source-shaped topology decision, and coverage into one SGR v2 `context_extraction` JSON file matching `extraction-contract.json`.",
+-      "6. Compile the formal layer and linked wiki atomically with `agentplane context extraction apply <sgr-json> --task-id <task-id> --synthesize-wiki`. Do not hand-edit writer-owned JSONL or managed wiki blocks when the supported writer can materialize them.",
+-      "7. Review the compiled `context/wiki/**` pages. The compiler updates existing canonical pages before creating new ones, preserves human prose outside managed blocks, records stable atoms and graph references, and appends an idempotent entry to `context/wiki/log.md`. Create page decisions only for reusable concepts/entities/decisions/requirements/policies/risks/definitions/workflows/modules; keep local detail under stable headings.",
+-      "8. Link first meaningful mentions with case-stable Obsidian wikilinks such as `[[canonical-page|Label]]` or `[[canonical-page#Stable Heading|Label]]`. Use Markdown links for source refs and external/file links. Keep `context/wiki/glossary.md` a thin alias/navigation index over canonical pages/entities.",
+-      "9. Cite source-backed prose with numeric notes and put line-addressed raw Markdown links in a trailing `## Sources`. Preserve modality, validity, status, scope, supersession, confidence, visibility, and contradictions; never overwrite conflicting knowledge silently.",
+-      "10. Refresh indexes and reports, then evaluate practical retrieval through wiki/derived entrypoints. The result must remain useful if raw files disappear, while private/sensitive source content must not leak into public wiki/task/ACR surfaces.",
++      "6. Return only that semantic result and its evidence-bearing decisions. CLI supervision materializes the formal layer and linked wiki, validates every deterministic gate, performs retrieval checks, invokes independent evaluation, records ACR, and finalizes the run.",
++      "7. If a later semantic rework work order arrives, use only its bounded evaluator feedback plus the task-bound inputs to return a new corrected SGR. Do not replay or operate lifecycle steps.",
+       "",
+       "## Required quality",
+       "",
+       "- The topology decision must name the source shape, rationale, evidence spans, canonical page families, path templates, creation rules, and page-vs-heading rules. Do not emit a familiar default scaffold without source evidence.",
+-      "- Wiki pages require YAML frontmatter for stable identity, modality/status, source refs, aliases, tags, and graph refs.",
+-      "- `context/wiki/index.md` must expose one-line page summaries and source counts; `context/wiki/log.md` is append-only and parseable by humans and agents.",
++      "- Page decisions must support stable identity, modality/status, source refs, aliases, tags, graph refs, summaries, and an append-only parseable history.",
+       "- Every significant span needs a coverage row or an explicit reason. Every factual output needs precise `source_refs`; every new/changed page needs page-creation and topology support.",
+       "- Graph entities must be reconciled before creation and linked by useful edges. Semantic identity requires comparative evidence; stable IDs and lexical similarity are lookup keys, not proof. Aliases must resolve to one canonical entity unless explicitly uncertain.",
+       "- Stop rather than merge when kind, scope, validity, ownership, or defining properties conflict. Keep `possibly_same_as` and `distinct_entity` decisions visible for later review.",
+       "- Record stale, conflict, unresolved, or no-derived-record outcomes explicitly. Do not promote weak claims, invent canonical terms, flatten contradictions, or claim completeness from raw-only recall.",
+       "- If work stalls or ownership changes, record a handoff with source set, changed files, verification state, and next action.",
+       "",
+-      "## Verify",
++      "## Output and stop rules",
+       "",
+-      "Run after the final content change:",
+-      "- `agentplane context reindex --include-raw`",
+-      "- `agentplane context wiki lint context/wiki`",
+-      "- `agentplane context wiki index context/wiki`",
+-      "- `agentplane context wiki report context/wiki`",
+-      "- `agentplane context graph validate`",
+-      "- `agentplane context verify-task <task-id>`",
+-      "- `agentplane context doctor`",
+-      "- a smoke `agentplane context search` using exact source terminology",
+-      "- `agentplane evaluator run <task-id> --provenance evaluator_supplied ...` with evidence for topology, granularity, links, provenance, coverage, alias safety, raw-deletion resilience, and leakage review.",
++      "- Output: one schema-valid `context_extraction` SGR under the task-owned `semantic-results/` directory. Include all required entity-resolution evidence, source refs, topology/page decisions, graph relations, conflicts, open questions, and coverage rows.",
++      "- Evidence: preserve modality, validity, status, scope, supersession, confidence, visibility, and contradictions; never overwrite conflicting knowledge silently.",
++      "- Stop: do not apply artifacts, rebuild indexes, run checks, invoke evaluators, write ACR, or finalize. Those are CLI-owned mechanical operations.",
++      "- Budget: one CURATOR semantic result per work order. A semantic rework is a new bounded work order with only the relevant evaluator feedback.",
+     ].join("\n"),
+     mutability: "replaceable",
+     merge: { mode: "pick_one", conflict: "error", precedence: 100 },
+diff --git a/packages/agentplane/src/context/ingest-task.test.ts b/packages/agentplane/src/context/ingest-task.test.ts
+index bfbd36824..9ace08240 100644
+--- a/packages/agentplane/src/context/ingest-task.test.ts
++++ b/packages/agentplane/src/context/ingest-task.test.ts
+@@ -65,21 +65,18 @@ describe("context ingest task creation", () => {
+     expect(context.allowed_outputs).toContain(
+       ".agentplane/tasks/${taskId}/extraction-contract.json",
+     );
++    expect(context.allowed_outputs).toContain(".agentplane/tasks/${taskId}/semantic-results/**");
++    expect(context.allowed_outputs).toContain(".agentplane/tasks/${taskId}/context-rework/**");
+     expect(task.verify).toEqual(
+       expect.arrayContaining([
+-        "agentplane context wiki report context/wiki",
+-        expect.stringContaining("agentplane evaluator run <created-task-id>"),
+-        "agentplane context finalize-task <created-task-id>",
++        expect.stringContaining("schema-valid context_extraction SGR"),
++        expect.stringContaining("shared durable episode journal"),
+       ]),
+     );
+-    const qualityReviewStep = task.verify.find((step) => step.includes("evaluator run"));
+-    expect(qualityReviewStep).toContain("--provenance human_supplied");
+-    expect(qualityReviewStep).toContain("--verdict <pass|rework|blocked|human_review>");
+-    expect(qualityReviewStep).not.toContain("--verdict pass");
+-    expect(qualityReviewStep).not.toContain("Maximum-assimilation context lifecycle verified.");
+-    expect(qualityReviewStep).not.toContain(
+-      "Curated context, topology, coverage, and evaluator scenarios satisfy the task contract.",
+-    );
++    expect(task.verify.join("\n")).not.toContain("agentplane context ");
++    expect(task.verify.join("\n")).not.toContain("agentplane evaluator ");
++    expect(context.prompt_modules?.[0]?.content).not.toContain("agentplane context ");
++    expect(context.prompt_modules?.[0]?.content).not.toContain("agentplane evaluator ");
+   });
+
+   it("records deprecated workspace mode aliases without weakening the task", () => {
+diff --git a/packages/agentplane/src/context/ingest-task.ts b/packages/agentplane/src/context/ingest-task.ts
+index ccfe8a8aa..e1e54990d 100644
+--- a/packages/agentplane/src/context/ingest-task.ts
++++ b/packages/agentplane/src/context/ingest-task.ts
+@@ -78,21 +78,14 @@ function buildIngestMetadata(
+     ...deprecatedModeNote(workspaceMode),
+     "",
+     "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
+-    "Execute semantic entity reconciliation -> SGR extraction -> atomic formal+wiki compilation -> coverage/reports -> verification. CURATOR owns every identity decision; deterministic code only prepares evidence, validates the decision record, and applies canonical identifiers. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
++    "CURATOR owns semantic entity reconciliation and returns one schema-valid SGR extraction. The CLI supervisor owns validation, atomic materialization, indexes, reports, retrieval checks, evaluation, ACR, and finalization. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
+   ].join("\n");
+   return {
+     title,
+     description,
+     verify: [
+-      "agentplane context reindex --include-raw",
+-      "agentplane context wiki report context/wiki",
+-      "agentplane context wiki index context/wiki",
+-      "agentplane context wiki lint context/wiki",
+-      'agentplane evaluator run <created-task-id> --provenance human_supplied --verdict <pass|rework|blocked|human_review> --summary "<human-supplied-summary>" --finding "<human-supplied-finding>" --evidence context/wiki/reports/topology.md --evidence context/wiki/reports/coverage.md --evidence "raw-deletion-resilience: curated-only reindex and smoke search result"',
+-      "agentplane context finalize-task <created-task-id>",
+-      'agentplane context search "<smoke-query>" --format json',
+-      "agentplane acr generate <created-task-id> --write",
+-      "agentplane acr check <created-task-id>",
++      "Return one schema-valid context_extraction SGR with semantic reconciliation evidence and complete source coverage.",
++      "CLI supervisor records every deterministic post-processing gate, evaluator result, ACR, and finalization in the shared durable episode journal.",
+     ],
+   };
+ }
+@@ -102,18 +95,16 @@ function buildContextTaskDocSections(): NonNullable<TaskNewParsed["taskDocSectio
+     Plan: [
+       "1. Read every task-bound input and lock the selected source/canonical baseline before writing.",
+       "2. Let CURATOR reconcile each entity-bearing term against the complete canonical catalog and record evidence-bearing same_as, alias_of, distinct_entity, possibly_same_as, or new_entity_proposal decisions.",
+-      "3. Classify source spans and produce one schema-valid SGR extraction containing semantic decisions, atomic claims, graph relations, topology/page decisions, and coverage.",
+-      "4. Apply the extraction atomically with wiki synthesis; review preserved human prose, canonical identifiers, links, aliases, conflicts, and open questions.",
+-      "5. Refresh reports/indexes, prove curated-only retrieval and raw-deletion resilience, obtain a separate semantic review, record its explicit provenance, run task verification, and record residual uncertainty.",
++      "3. Classify source spans and return one schema-valid SGR extraction containing semantic decisions, atomic claims, graph relations, topology/page decisions, and coverage.",
++      "4. State unresolved identity, conflict, or evidence gaps in the SGR instead of deciding them mechanically.",
++      "5. Stop after the semantic SGR result. CLI supervision owns all materialization, validation, retrieval, evaluation, ACR, and finalization gates.",
+     ].join("\n"),
+     "Verify Steps": [
+       "1. Inspect `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
+       "2. Validate the SGR extraction before apply. Expected: every entity-bearing term has exactly one supported semantic resolution with candidates checked, comparison dimensions, evidence for and against, rationale, and explicit unresolved questions where needed; same_as/alias_of reuse an existing canonical ID and add no duplicate graph entity.",
+-      "3. Run `agentplane context extraction apply <sgr-json> --task-id <task-id> --synthesize-wiki`. Expected: formal and Wiki artifacts commit atomically and stay within allowed_outputs.",
+-      "4. Run `agentplane context reindex --include-raw`, `agentplane context wiki report context/wiki`, `agentplane context wiki index context/wiki`, `agentplane context wiki lint context/wiki`, and `agentplane context graph validate`. Expected: indexes, topology, links, entity references, and reports are valid.",
+-      '5. Run `agentplane context verify-task <task-id>` and a task-specific `agentplane context search "<smoke-query>" --format json`. Expected: task contract passes and exact source terminology retrieves the canonical entity/page.',
+-      "6. Reindex without relying on raw source content and repeat the smoke search. Expected: significant meaning and canonical identity remain retrievable; private content does not leak.",
+-      "7. Obtain a separate semantic review, record the supplied result through the declared evaluator command, then run `agentplane context finalize-task <task-id>`, `agentplane acr generate <task-id> --write`, and `agentplane acr check <task-id>`. Expected: the review records human or EVALUATOR provenance and covers semantic reconciliation, topology, provenance, coverage, uncertainty, and raw-deletion resilience; closure artifacts pass.",
++      "3. Return the SGR without applying, indexing, validating, evaluating, or finalizing it. Expected: only semantic output and evidence-bearing decisions are produced by CURATOR.",
++      "4. Expected from the CLI supervisor: formal and Wiki artifacts are atomically materialized, indexes/reports/graph/task checks pass, and curated retrieval remains useful without raw source dependence.",
++      "5. Expected from the CLI supervisor: an independent evaluator records explicit provenance; semantic rework returns a separate bounded CURATOR work order; ACR and finalization artifacts are recorded only after a passing semantic review.",
+     ].join("\n"),
+     "Rollback Plan":
+       "Revert only this task's context and task-artifact commit, restore the previous canonical/derived files, reindex, and rerun the smoke search. Never reverse an accepted semantic merge by inventing a new identity; restore the prior evidence-backed resolution or record a new CURATOR correction task.",
+@@ -151,6 +142,8 @@ export function createTaskNewParsed(
+     ".agentplane/tasks/${taskId}/source-set.lock.json",
+     ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
+     ".agentplane/tasks/${taskId}/expected-artifacts.json",
++    ".agentplane/tasks/${taskId}/semantic-results/**",
++    ".agentplane/tasks/${taskId}/context-rework/**",
+   ];
+   if (allowCapabilities) {
+     allowedOutputs.push("context/capabilities/**", ".agentplane/context/derived/capabilities/**");
+diff --git a/packages/core/src/runner/supervisor-execution-episode.test.ts b/packages/core/src/runner/supervisor-execution-episode.test.ts
+index 800743d6c..823ad1847 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.test.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.test.ts
+@@ -5,6 +5,7 @@ import {
+   createSupervisorExecutionEpisodeJournal,
+   advanceSupervisorExecutionEpisodeState,
+   recoverSupervisorExecutionEpisodeJournal,
++  retryFailedSupervisorExecutionEpisode,
+   startSupervisorExecutionEpisode,
+   validateSupervisorExecutionEpisodeJournal,
+   type SupervisorExecutionBudget,
+@@ -145,6 +146,39 @@ describe("SupervisorExecutionEpisodeJournal", () => {
+     });
+   });
+
++  it("retries only a durably failed CLI operation without resetting shared usage", () => {
++    const first = start({ journal: journal(), kind: "cli_operation" });
++    if (first.status !== "started") throw new Error("expected started CLI operation");
++    const failed = completeSupervisorExecutionEpisode({
++      journal: first.journal,
++      operation_key: first.operation_key,
++      result: { code: "lint_failed" },
++      failed: true,
++      now: "2026-07-28T00:00:01.000Z",
++    });
++    const retried = retryFailedSupervisorExecutionEpisode({
++      journal: failed,
++      state_fingerprint_digest: FINGERPRINT,
++      next_kind: "cli_operation",
++      now: "2026-07-28T00:00:02.000Z",
++    });
++    const second = start({
++      journal: retried,
++      kind: "cli_operation",
++      now: "2026-07-28T00:00:03.000Z",
++    });
++
++    expect(failed.stop).toMatchObject({ reason: "operation_failed" });
++    expect(retried).toMatchObject({
++      status: "running",
++      stop: null,
++      cursor: { phase: "ready", operation_key: null },
++      usage: { episodes: 1, agent_runs: 0 },
++    });
++    expect(second.status).toBe("started");
++    if (second.status === "started") expect(second.journal.usage.episodes).toBe(2);
++  });
++
+   it("preserves a completed outcome for a later postcondition refresh", () => {
+     const first = start({ journal: journal() });
+     if (first.status !== "started") throw new Error("expected started episode");
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index 16fac92ab..523748e6b 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -554,6 +554,61 @@ export function completeSupervisorExecutionEpisode(opts: {
+     : completed;
+ }
+
++/**
++ * Re-open only a durably failed CLI operation.  The previous failed attempt
++ * stays in the history and continues to count against the shared budget; the
++ * caller must supply the unchanged precondition before it can record a new
++ * intent for that same registry operation.
++ */
++export function retryFailedSupervisorExecutionEpisode(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  state_fingerprint_digest: string;
++  next_kind: SupervisorEpisodeOperationKind;
++  now?: string;
++}): SupervisorExecutionEpisodeJournal {
++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
++  const now = opts.now ?? new Date().toISOString();
++  const last = journal.operations.at(-1);
++  if (
++    journal.status !== "stopped" ||
++    journal.stop?.reason !== "operation_failed" ||
++    last?.status !== "failed"
++  ) {
++    return journal;
++  }
++  if (journal.state_fingerprint_digest !== opts.state_fingerprint_digest) {
++    return stoppedJournal({
++      journal,
++      reason: "stale_state",
++      exhausted_dimensions: ["state_fingerprint"],
++      at: now,
++    });
++  }
++  const exhausted = exhaustedDimensions({
++    budget: journal.budget,
++    usage: journal.usage,
++    next_kind: opts.next_kind,
++    now,
++    started_at: journal.started_at,
++  });
++  if (exhausted.length > 0) {
++    return stoppedJournal({
++      journal,
++      reason: "budget_exhausted",
++      exhausted_dimensions: exhausted,
++      at: now,
++    });
++  }
++  return createJournal({
++    ...journal,
++    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
++    status: "running",
++    stop: null,
++    updated_at: now,
++    previous_digest: journal.digest,
++  });
++}
++
+ /**
+  * A new route fingerprint is accepted only after the current intent has a
+  * durable outcome. This lets the supervisor continue after its own observed
+diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
+index 4d8b419c5..a1b6ad1d5 100644
+--- a/packages/core/src/schemas/index.ts
++++ b/packages/core/src/schemas/index.ts
+@@ -147,6 +147,7 @@ export {
+   createSupervisorExecutionEpisodeJournal,
+   digestSupervisorEpisodeValue,
+   recoverSupervisorExecutionEpisodeJournal,
++  retryFailedSupervisorExecutionEpisode,
+   stopSupervisorExecutionEpisode,
+   startSupervisorExecutionEpisode,
+   validateSupervisorExecutionEpisodeJournal,
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 3e61a4e54..e5241204a 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -15,6 +15,7 @@
+     "202607221849-NWVCAG",
+     "202607221849-TBTX8X",
+     "202607221849-8YYZ9X",
++    "202607221850-8HBF4J",
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH"
+@@ -26,9 +27,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "cae67e3c40031c35350d6bae212a060528d3256ac4d924d8354fba589674e32a",
++    "surface_sha256": "f0f2e977c72f8adb277f9780bd156f12855b52c8ef4c5317c2391b61f9cf5f12",
+     "section_digests": {
+-      "cli_topology": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
++      "cli_topology": "f8457555bbe16c702d09be0881645855998a37decf053879d6c81c15d2a85227",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -360,28 +361,30 @@
+         "202607221849-NWVCAG",
+         "202607221849-TBTX8X",
+         "202607221849-8YYZ9X",
++        "202607221850-8HBF4J",
+         "202607242158-QV09NA",
+         "202607260007-DQM6AW",
+         "202607260532-9M7RNH"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
++      "to_sha256": "f8457555bbe16c702d09be0881645855998a37decf053879d6c81c15d2a85227",
+       "classification": "additive",
+-      "summary": "Adds a CLI-owned read-only EVALUATOR provider episode alongside frozen work-order preparation and typed-result application; no command or option is removed or mutated.",
++      "summary": "Adds a bounded CLI-owned context assimilation supervisor alongside the read-only EVALUATOR provider episode; no command or option is removed or mutated.",
+       "evidence": {
+         "command_count": {
+           "from": 243,
+-          "to": 253
++          "to": 254
+         },
+         "positional_count": {
+           "from": 165,
+-          "to": 174
++          "to": 175
+         },
+         "option_count": {
+           "from": 767,
+-          "to": 813
++          "to": 817
+         },
+         "added_commands": [
++          "context supervise-task",
+           "evaluator apply",
+           "evaluator execute",
+           "evaluator prepare",
+@@ -395,6 +398,44 @@
+         ],
+         "removed_commands": [],
+         "added_command_descriptors": [
++          {
++            "id": ["context", "supervise-task"],
++            "visibility": "user",
++            "group": "Context",
++            "args": [
++              {
++                "name": "task-id",
++                "required": true,
++                "variadic": false,
++                "valueHint": "<task-id>"
++              }
++            ],
++            "options": [
++              {
++                "name": "extraction",
++                "kind": "string",
++                "valueHint": "<sgr-json>",
++                "required": true
++              },
++              {
++                "name": "smoke-query",
++                "kind": "string",
++                "valueHint": "<query>"
++              },
++              {
++                "name": "evaluator",
++                "kind": "string",
++                "valueHint": "<id>",
++                "default": "recovery-context"
++              },
++              {
++                "name": "json",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              }
++            ]
++          },
+           {
+             "id": ["evaluator", "apply"],
+             "visibility": "user",
+@@ -773,6 +814,33 @@
+             "valueHint": "<task-id>",
+             "repeatable": true
+           },
++          {
++            "command": "context supervise-task",
++            "name": "evaluator",
++            "kind": "string",
++            "valueHint": "<id>",
++            "default": "recovery-context"
++          },
++          {
++            "command": "context supervise-task",
++            "name": "extraction",
++            "kind": "string",
++            "valueHint": "<sgr-json>",
++            "required": true
++          },
++          {
++            "command": "context supervise-task",
++            "name": "json",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
++          {
++            "command": "context supervise-task",
++            "name": "smoke-query",
++            "kind": "string",
++            "valueHint": "<query>"
++          },
+           {
+             "command": "evaluator apply",
+             "name": "json",
+@@ -1072,6 +1140,11 @@
+         "removed_options": [],
+         "mutated_options": [],
+         "addition_sources": [
++          {
++            "kind": "command",
++            "command": "context supervise-task",
++            "source_task": "202607221850-8HBF4J"
++          },
+           {
+             "kind": "command",
+             "command": "evaluator apply",
+@@ -1140,6 +1213,30 @@
+             "name": "task-id",
+             "source_task": "202607230554-YFYT83"
+           },
++          {
++            "kind": "option",
++            "command": "context supervise-task",
++            "name": "evaluator",
++            "source_task": "202607221850-8HBF4J"
++          },
++          {
++            "kind": "option",
++            "command": "context supervise-task",
++            "name": "extraction",
++            "source_task": "202607221850-8HBF4J"
++          },
++          {
++            "kind": "option",
++            "command": "context supervise-task",
++            "name": "json",
++            "source_task": "202607221850-8HBF4J"
++          },
++          {
++            "kind": "option",
++            "command": "context supervise-task",
++            "name": "smoke-query",
++            "source_task": "202607221850-8HBF4J"
++          },
+           {
+             "kind": "option",
+             "command": "evaluator apply",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 303a70c12..495f50f91 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -319,6 +319,7 @@ function validateReviewedCandidate({
+     "202607221849-NWVCAG",
+     "202607221849-TBTX8X",
+     "202607221849-8YYZ9X",
++    "202607221850-8HBF4J",
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+@@ -337,6 +338,7 @@ function validateReviewedCandidate({
+     "202607221849-NWVCAG",
+     "202607221849-TBTX8X",
+     "202607221849-8YYZ9X",
++    "202607221850-8HBF4J",
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+@@ -1029,6 +1031,18 @@ function validateReviewedCandidate({
+     })),
+   ];
+   const expectedAddedCommandDescriptors = [
++    {
++      id: ["context", "supervise-task"],
++      visibility: "user",
++      group: "Context",
++      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
++      options: [
++        { name: "extraction", kind: "string", valueHint: "<sgr-json>", required: true },
++        { name: "smoke-query", kind: "string", valueHint: "<query>" },
++        { name: "evaluator", kind: "string", valueHint: "<id>", default: "recovery-context" },
++        { name: "json", kind: "boolean", valueHint: null, default: false },
++      ],
++    },
+     {
+       id: ["evaluator", "apply"],
+       visibility: "user",
+@@ -1167,6 +1181,33 @@ function validateReviewedCandidate({
+       valueHint: "<task-id>",
+       repeatable: true,
+     },
++    {
++      command: "context supervise-task",
++      name: "evaluator",
++      kind: "string",
++      valueHint: "<id>",
++      default: "recovery-context",
++    },
++    {
++      command: "context supervise-task",
++      name: "extraction",
++      kind: "string",
++      valueHint: "<sgr-json>",
++      required: true,
++    },
++    {
++      command: "context supervise-task",
++      name: "json",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
++    {
++      command: "context supervise-task",
++      name: "smoke-query",
++      kind: "string",
++      valueHint: "<query>",
++    },
+     {
+       command: "evaluator apply",
+       name: "json",
+@@ -1348,6 +1389,7 @@ function validateReviewedCandidate({
+     },
+   ];
+   const expectedAdditionSources = [
++    { kind: "command", command: "context supervise-task", source_task: "202607221850-8HBF4J" },
+     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
+     { kind: "command", command: "evaluator execute", source_task: "202607221849-8YYZ9X" },
+     { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
+@@ -1391,6 +1433,30 @@ function validateReviewedCandidate({
+       name: "task-id",
+       source_task: "202607230554-YFYT83",
+     },
++    {
++      kind: "option",
++      command: "context supervise-task",
++      name: "evaluator",
++      source_task: "202607221850-8HBF4J",
++    },
++    {
++      kind: "option",
++      command: "context supervise-task",
++      name: "extraction",
++      source_task: "202607221850-8HBF4J",
++    },
++    {
++      kind: "option",
++      command: "context supervise-task",
++      name: "json",
++      source_task: "202607221850-8HBF4J",
++    },
++    {
++      kind: "option",
++      command: "context supervise-task",
++      name: "smoke-query",
++      source_task: "202607221850-8HBF4J",
++    },
+     {
+       kind: "option",
+       command: "evaluator apply",
+@@ -1586,6 +1652,7 @@ function validateReviewedCandidate({
+   assert(
+     hashJson(addedCommands) ===
+       hashJson([
++        "context supervise-task",
+         "evaluator apply",
+         "evaluator execute",
+         "evaluator prepare",
