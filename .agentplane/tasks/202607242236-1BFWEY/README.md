@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -52,27 +52,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T05:11:14.042Z"
+  updated_at: "2026-07-28T05:17:03.471Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "e639c4abae9ceb0f79c39f9f70d64738fdf2d643"
+  evaluated_sha: "edb373fa89ab1ca84d4dca56dadf1acea166a9a7"
   blueprint_digest: "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477"
   evidence_refs:
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607242236-1BFWEY/README.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The failure path preserves the pre-launch intent, records only classification/exit metadata through the typed runtime error, stores no provider stderr or model output in the journal, and keeps retry bounded by the stopped episode state."
+    - "The changed test assertion is equivalent and the local format gate now passes; no production code or evaluator work-order contract changed in this head."
 commit:
   hash: "e639c4abae9ceb0f79c39f9f70d64738fdf2d643"
   message: "Record evaluator provider failures safely"
