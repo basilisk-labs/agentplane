@@ -106,7 +106,10 @@ type EvaluatorEpisodeProviderResult = {
   provider_usage?: CodexProviderUsage | null;
 };
 
-type EvaluatorProviderFailureKind = "nonzero_exit" | "missing_structured_result";
+type EvaluatorProviderFailureKind =
+  | "nonzero_exit"
+  | "missing_structured_result"
+  | "stdin_write_failure";
 
 class EvaluatorProviderFailure extends Error {
   readonly kind: EvaluatorProviderFailureKind;
@@ -250,7 +253,7 @@ function tail(value: string, next: string, limit: number): string {
   return combined.length <= limit ? combined : combined.slice(-limit);
 }
 
-const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation) =>
+export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation) =>
   await new Promise<EvaluatorEpisodeProviderResult>((resolve, reject) => {
     const [command, ...args] = invocation.argv;
     if (!command) {
@@ -274,6 +277,7 @@ const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation
     let stderrTail = "";
     let stdoutBuffer = "";
     let limitError: Error | null = null;
+    let stdinError: Error | null = null;
     const timeout = setTimeout(() => {
       limitError = new Error(`Codex evaluator exceeded ${CODEX_EVALUATOR_TIMEOUT_MS}ms.`);
       child.kill("SIGKILL");
@@ -310,9 +314,24 @@ const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation
         child.kill("SIGKILL");
       }
     });
+    child.stdin.once("error", (error) => {
+      if (settled) return;
+      stdinError = error;
+      child.kill("SIGKILL");
+    });
     child.on("close", (code, signal) => {
       if (limitError) {
         finish(limitError);
+        return;
+      }
+      if (stdinError) {
+        finish(
+          new EvaluatorProviderFailure({
+            kind: "stdin_write_failure",
+            exit_code: code,
+            signal,
+          }),
+        );
         return;
       }
       if (code !== 0 || signal) {
