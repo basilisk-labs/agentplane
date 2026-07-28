@@ -1,0 +1,238 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/README.md b/.agentplane/tasks/202607281655-YMPY8Y/README.md
+index c37590f87..25dee418a 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/README.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/README.md
+@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
+ status: "DONE"
+ priority: "med"
+ owner: "CODER"
+-revision: 41
++revision: 42
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -29,9 +29,9 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-07-28T20:12:45.443Z"
++  updated_at: "2026-07-28T20:36:00.147Z"
+   updated_by: "TESTER"
+-  note: "Concurrent replacement verification passed for implementation 8be946fefff686fb72c2ba3ef1f06c4077f11c5f."
++  note: "Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5."
+   attempts: 0
+ quality_review:
+   state: "pass"
+@@ -204,8 +204,14 @@ events:
+     from: "DONE"
+     to: "DONE"
+     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++  -
++    type: "verify"
++    at: "2026-07-28T20:36:00.147Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T20:19:09.800Z"
++doc_updated_at: "2026-07-28T20:36:00.938Z"
+ doc_updated_by: "CODER"
+ description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
+ sections:
+@@ -515,6 +521,36 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    ### 2026-07-28T20:36:00.147Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T20:19:09.800Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
++    - old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++    - current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert task-related commit(s).
+@@ -543,6 +579,10 @@ sections:
+     - Observation: 22 focused supervisor and evaluator tests, typecheck, format, and routing passed.
+       Impact: The cross-process regression now checks durable provider and journal invariants rather than load-dependent exit-code ordering.
+       Resolution: Recorded verification evidence; independent EVALUATOR review remains required.
++
++    - Observation: 15 stress runs, 22 focused tests, and the full 3358-test fast suite passed.
++      Impact: Only the lease owner may prepare artifacts or invoke the provider, removing the workspace-attestation race.
++      Resolution: Recorded fresh verification evidence; refresh EVALUATOR quality and hosted checks.
+ extensions:
+   implementation_commit:
+     hash: "f51722c22e772c920eed46234e4f4fc3e8a52d74"
+@@ -868,6 +908,36 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++### 2026-07-28T20:36:00.147Z — VERIFY — ok
++
++By: TESTER
++
++Note: Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T20:19:09.800Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
++- old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++- current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -900,3 +970,7 @@ DecisionContextRef:
+ - Observation: 22 focused supervisor and evaluator tests, typecheck, format, and routing passed.
+   Impact: The cross-process regression now checks durable provider and journal invariants rather than load-dependent exit-code ordering.
+   Resolution: Recorded verification evidence; independent EVALUATOR review remains required.
++
++- Observation: 15 stress runs, 22 focused tests, and the full 3358-test fast suite passed.
++  Impact: Only the lease owner may prepare artifacts or invoke the provider, removing the workspace-attestation race.
++  Resolution: Recorded fresh verification evidence; refresh EVALUATOR quality and hosted checks.
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index 99697ceb7..8eeb1e6c3 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -16,7 +16,7 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
+ ## Verification
+ 
+ - State: ok
+-- Note: Concurrent replacement verification passed for implementation 8be946fefff686fb72c2ba3ef1f06c4077f11c5f.
++- Note: Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5.
+ - Canonical workflow state lives in the task README.
+ 
+ <details>
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index a1af76671..bac2a036b 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -3,8 +3,8 @@
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+   "diffstat_sha256": "sha256:76f5815ece37afb8cc7c30aa1c8268aca579568b465fe058b9d81b8825bfbf86",
+-  "last_verified_at": "2026-07-28T20:12:45.443Z",
+-  "last_verified_diffstat_sha256": "sha256:14fa98f251ebca4dfce8f6e810875544694959d3f7927c77d90ff55c8fbbc803",
++  "last_verified_at": "2026-07-28T20:36:00.147Z",
++  "last_verified_diffstat_sha256": "sha256:76f5815ece37afb8cc7c30aa1c8268aca579568b465fe058b9d81b8825bfbf86",
+   "pr_number": 4664,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4664",
+   "pre_merge_closure": {
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index 514795cc1..a42fcfe45 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -13,7 +13,7 @@ Created: 2026-07-28T16:57:04.791Z
+ ## Verification
+ 
+ - State: ok
+-- Note: Concurrent replacement verification passed for implementation 8be946fefff686fb72c2ba3ef1f06c4077f11c5f.
++- Note: Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/verification/20260728-203524-provider-preparation-lease.json b/.agentplane/tasks/202607281655-YMPY8Y/verification/20260728-203524-provider-preparation-lease.json
+new file mode 100644
+index 000000000..8697c61e4
+--- /dev/null
++++ b/.agentplane/tasks/202607281655-YMPY8Y/verification/20260728-203524-provider-preparation-lease.json
+@@ -0,0 +1,57 @@
++{
++  "schema_version": 1,
++  "kind": "agentplane_task_verification_record",
++  "task_id": "202607281655-YMPY8Y",
++  "recorded_at": "2026-07-28T20:35:24Z",
++  "scope": {
++    "implementation_commit": "6c021591eb0d054f478e6e73320a2aab6aa040a5",
++    "paths": [
++      "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
++      "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
++      "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
++    ],
++    "objective": "Prevent a losing concurrent evaluator process from writing preparation artifacts while the admitted provider is attesting its read-only workspace."
++  },
++  "checks": [
++    {
++      "id": "cross-process-replacement-stress",
++      "command": "for attempt in {1..15}; do bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testNamePattern 'allows exactly one provider start across independent replacement CLI processes' --testTimeout 60000 --reporter=dot || exit $?; done",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "15 independent runs passed. Each requires exactly one successful provider-owning process and one pre-provider refusal, while preserving failed history and a linked completed replacement.",
++      "evidence_scope": "cross-process evaluator preparation and provider admission"
++    },
++    {
++      "id": "focused-supervisor-suite",
++      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000 --reporter=verbose",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "2 test files and 22 tests passed, covering terminal failures, replacement authorization, durable resume, and independent-process admission.",
++      "evidence_scope": "supervisor journal and evaluator execution"
++    },
++    {
++      "id": "full-fast-suite",
++      "command": "bun run test:fast",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "481 test files and 3358 tests passed. This is the same full unit surface that previously exposed the race in hosted CI.",
++      "evidence_scope": "repository-wide unit regression"
++    },
++    {
++      "id": "static-contracts",
++      "command": "bun run typecheck && bunx eslint packages/agentplane/src/commands/shared/supervisor-execution-episode.ts packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts && bun run lint:core && bun run hotspots:check && bun run bench:compatibility:check && node .agentplane/policy/check-routing.mjs",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "Type safety, focused and core lint, hotspot limits, compatibility baseline, and policy routing passed.",
++      "evidence_scope": "static and compatibility gates"
++    },
++    {
++      "id": "post-integration-real-replacement",
++      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
++      "status": "not_run",
++      "exit_code": null,
++      "result": "Deferred until integration into main. The release gate remains: retain the original operation_failed record and prove exactly one linked completed replacement episode.",
++      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
++    }
++  ]
++}

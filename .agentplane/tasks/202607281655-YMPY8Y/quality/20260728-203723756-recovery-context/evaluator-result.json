@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The verification commit is traceable to implementation 6c021591 and demonstrates the previous hosted failure path is covered by 15 independent cross-process runs and the full 3358-test suite.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-203723756-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The real post-integration replacement episode remains deferred to the dependent task release gate."
+  ]
+}
