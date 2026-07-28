@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on:
@@ -36,9 +36,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T03:01:34.362Z"
+  updated_at: "2026-07-28T03:12:27.262Z"
   updated_by: "TESTER"
-  note: "PASS (static rework): stale type import removed after contract extraction; no runner lifecycle behavior changed."
+  note: "PASS (dead-code rework): lifecycle-only exports are private; the public typed result and supervisor operation contract remain unchanged."
   attempts: 0
 quality_review:
   state: "pass"
@@ -179,8 +179,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T03:12:27.262Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS (dead-code rework): lifecycle-only exports are private; the public typed result and supervisor operation contract remain unchanged."
 doc_version: 3
-doc_updated_at: "2026-07-28T03:02:39.662Z"
+doc_updated_at: "2026-07-28T03:12:27.990Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -359,6 +365,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T03:12:27.262Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS (dead-code rework): lifecycle-only exports are private; the public typed result and supervisor operation contract remain unchanged.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:02:39.662Z, excerpt_hash=sha256:02a389ca089e360cf76ff483bd84febcf2d5924eaa0f09fb89eb4a0ab64c794d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-R7WS01-return-typed-runner-lifecycle-results/.agentplane/tasks/202607221850-R7WS01/blueprint/resolved-snapshot.json
+    - old_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+    - current_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-R7WS01
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -384,6 +420,10 @@ sections:
 
     - Observation: format, typecheck, lint:core, hotspots:check, and 41 runner/Hermes/CLI assertions passed on 8339ca9dc.
       Impact: The final hosted static-analysis finding is resolved while the typed lifecycle contract remains covered.
+      Resolution: Refresh evaluator review and publish the final verified rework head.
+
+    - Observation: format, typecheck, lint:core, hotspots:check, knip:check, arch:check, and 41 runner/Hermes/CLI assertions passed on 9474725b5.
+      Impact: The final hosted static baseline finding is resolved without widening API surface or changing runner semantics.
       Resolution: Refresh evaluator review and publish the final verified rework head.
 extensions:
   agentplane.side_effect_authority:
@@ -1024,6 +1064,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T03:12:27.262Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS (dead-code rework): lifecycle-only exports are private; the public typed result and supervisor operation contract remain unchanged.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:02:39.662Z, excerpt_hash=sha256:02a389ca089e360cf76ff483bd84febcf2d5924eaa0f09fb89eb4a0ab64c794d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-R7WS01-return-typed-runner-lifecycle-results/.agentplane/tasks/202607221850-R7WS01/blueprint/resolved-snapshot.json
+- old_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+- current_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-R7WS01
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1053,4 +1123,8 @@ DecisionContextRef:
 
 - Observation: format, typecheck, lint:core, hotspots:check, and 41 runner/Hermes/CLI assertions passed on 8339ca9dc.
   Impact: The final hosted static-analysis finding is resolved while the typed lifecycle contract remains covered.
+  Resolution: Refresh evaluator review and publish the final verified rework head.
+
+- Observation: format, typecheck, lint:core, hotspots:check, knip:check, arch:check, and 41 runner/Hermes/CLI assertions passed on 9474725b5.
+  Impact: The final hosted static baseline finding is resolved without widening API surface or changing runner semantics.
   Resolution: Refresh evaluator review and publish the final verified rework head.
