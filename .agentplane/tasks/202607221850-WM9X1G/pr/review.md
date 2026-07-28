@@ -13,7 +13,7 @@ Created: 2026-07-28T08:13:34.859Z
 ## Verification
 
 - State: ok
-- Note: Review rework verified: focused context suite 26 passed; critical CLI suite 11/11 chunks passed; lint, typecheck, task-state, routing, and diff checks passed.
+- Note: Refreshed verification on current task head: task-state check and typecheck passed; focused resumable-ingestion suite passed (26 tests); ci:local:fast previously passed unchanged implementation head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
