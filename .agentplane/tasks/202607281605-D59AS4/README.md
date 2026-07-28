@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -31,11 +31,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "395c5c3248bc87364098cfa7f7d51f2987025489"
+  message: "fix(evaluator): reopen completed stale supervisor journals"
 comments:
   -
     author: "CODER"
     body: "Start: investigate and repair safe reopening of completed stale-state evaluator supervisor journals without weakening terminal protection for ambiguous provider effects."
+  -
+    author: "CODER"
+    body: "Implementation: reopened only completed stale-state evaluator journals; preserved failed and ambiguous-effect terminal stops; added focused regression coverage."
 events:
   -
     type: "status"
@@ -44,8 +49,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: investigate and repair safe reopening of completed stale-state evaluator supervisor journals without weakening terminal protection for ambiguous provider effects."
+  -
+    type: "status"
+    at: "2026-07-28T16:14:59.272Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: reopened only completed stale-state evaluator journals; preserved failed and ambiguous-effect terminal stops; added focused regression coverage."
 doc_version: 3
-doc_updated_at: "2026-07-28T16:13:50.135Z"
+doc_updated_at: "2026-07-28T16:14:59.272Z"
 doc_updated_by: "CODER"
 description: "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics."
 sections:
