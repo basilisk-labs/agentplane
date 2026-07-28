@@ -1,0 +1,80 @@
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt b/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
+index a7a302979..ab47a2027 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
+@@ -9,5 +9,5 @@
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+  .../usecases/task-run-effect-resolution.test.ts    |  39 +-
+  .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
+- packages/agentplane/src/shared/stable-file.ts      |   9 +
+- 12 files changed, 1377 insertions(+), 24 deletions(-)
++ packages/agentplane/src/shared/stable-file.ts      |  10 +
++ 12 files changed, 1378 insertions(+), 24 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+index 197b399cf..2740f5de6 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+@@ -43,8 +43,8 @@ ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+  .../usecases/task-run-effect-resolution.test.ts    |  39 +-
+  .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
+- packages/agentplane/src/shared/stable-file.ts      |   9 +
+- 12 files changed, 1377 insertions(+), 24 deletions(-)
++ packages/agentplane/src/shared/stable-file.ts      |  10 +
++ 12 files changed, 1378 insertions(+), 24 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+index 25fef4252..f5faeb9a6 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
+   "created_at": "2026-07-28T08:13:34.859Z",
+-  "diffstat_sha256": "sha256:d14b540137e6fa3a4f87a203b679a2993a000a4d1f05866afde6ef97fbe95cb3",
++  "diffstat_sha256": "sha256:8a8a10eaee1dba421aaa2eea049ba3f4ed0edd42d2e1005699e92c75ee9b423f",
+   "last_verified_at": "2026-07-28T08:57:37.751Z",
+   "last_verified_diffstat_sha256": "sha256:fd530a9156deff0e2169f6fa262100c4f458de413e857ee5a9df924825678457",
+   "pr_number": 4654,
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+index 96bb50a36..79e43b38b 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+@@ -40,8 +40,8 @@ Created: 2026-07-28T08:13:34.859Z
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+  .../usecases/task-run-effect-resolution.test.ts    |  39 +-
+  .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
+- packages/agentplane/src/shared/stable-file.ts      |   9 +
+- 12 files changed, 1377 insertions(+), 24 deletions(-)
++ packages/agentplane/src/shared/stable-file.ts      |  10 +
++ 12 files changed, 1378 insertions(+), 24 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+index 1652f7e61..e54728ccd 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+@@ -232,7 +232,7 @@ describe("task runner effect resolution", () => {
+           retirementWaitReads += 1;
+           if (!collisionInjected) {
+             collisionInjected = true;
+-            throw new Error(`runner active claim changed while it was being read: ${args[0]}`);
++            throw new Error(`runner active claim path changed before it could be read: ${args[0]}`);
+           }
+         }
+         return await originalRead(...args);
+diff --git a/packages/agentplane/src/shared/stable-file.ts b/packages/agentplane/src/shared/stable-file.ts
+index 560d6e1d0..02f170513 100644
+--- a/packages/agentplane/src/shared/stable-file.ts
++++ b/packages/agentplane/src/shared/stable-file.ts
+@@ -145,6 +145,7 @@ export function isStableFileReadCollision(error: unknown, label: string): boolea
+   const message = error instanceof Error ? error.message : String(error);
+   return [
+     "changed before it could be read:",
++    "path changed before it could be read:",
+     "changed while it was being read:",
+     "path changed while it was being read:",
+   ].some((detail) => message.startsWith(`${label} ${detail}`));
