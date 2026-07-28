@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Замороженный actual_diff не содержит изменений реализации: в нём есть только обновление README задачи, поэтому невозможно проверить поведение на evaluated_sha 20327772b02ab86f325009e4edcd4c313edc9d49.",
+      "broken_invariant": "Stop Rule требует blocked, когда отсутствует необходимый diff; pass допустим только после проверки реализации и положительных, отрицательных и конкурентных сценариев.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3f5e94a81fb202a01c70b52897185158adef12aa52bdd6c2f4a9045615d1ed55",
+          "line": 1,
+          "lines": "1-48",
+          "section": "Полный замороженный diff"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
+          "sha256": "sha256:7c10c201d12e5cc56fa30d6d283ae0647f6a92a95ae86e18fdcc2bc86ca00311",
+          "line": 126,
+          "section": "Plan и Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
+          "line": 14,
+          "lines": "14-15",
+          "section": "verification_records и runner_history"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Замороженные исполняемые свидетельства для матрицы отказов каждого механического этапа и возобновления после каждой durable-фазы.",
+    "Замороженный stale-result сценарий, доказывающий привязку семантического результата к журналу и запрет повторного использования завершённых механических фаз для другого результата.",
+    "Замороженные сценарии повторного evaluator rework до episode/token/no-progress лимитов с сохранением общего бюджета и cursor."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что metadata-only evaluator-diff.patch репрезентативен для изменений реализации на evaluated_sha.",
+    "Предполагается, что текстовая заметка TESTER достаточна вместо verification_records или runner_history с проверяемыми результатами команд."
+  ],
+  "recovery_context": "Повторно подготовить и заморозить work order с полным diff реализации для evaluated_sha 20327772b02ab86f325009e4edcd4c313edc9d49 и исполняемыми результатами обязательных отрицательных, retry/recovery, stale-result и повторных semantic-rework сценариев."
+}
