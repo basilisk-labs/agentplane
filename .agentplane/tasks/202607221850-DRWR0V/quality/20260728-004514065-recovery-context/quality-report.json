@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-DRWR0V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T00:45:14.195Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "2673df3ac280f981867d1e96e6682c276d4ed1d0",
+  "blueprint_digest": "718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102",
+  "findings": [
+    "The exact hosted Knip failure is covered locally without a baseline exception: module-private implementation symbols eliminate the two newly introduced unused-code entries while supervisor and Hermes behavior remains covered by 20 targeted tests."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
