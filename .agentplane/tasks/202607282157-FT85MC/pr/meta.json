@@ -3,8 +3,8 @@
   "branch": "task/202607282157-FT85MC/freeze-full-evaluator-evidence",
   "created_at": "2026-07-28T21:58:43.037Z",
   "diffstat_sha256": "sha256:8ff2117beb80872eb18a797d9e99a9c22074614bfaf74c81ba48eb24b3d8b68e",
-  "last_verified_at": "2026-07-28T22:55:43.061Z",
-  "last_verified_diffstat_sha256": "sha256:66e1bbf981037fb2335197ad9362022473a001aa4aa881ee3fb8da29643d4527",
+  "last_verified_at": "2026-07-28T23:01:16.841Z",
+  "last_verified_diffstat_sha256": "sha256:8ff2117beb80872eb18a797d9e99a9c22074614bfaf74c81ba48eb24b3d8b68e",
   "pr_number": 4666,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4666",
   "pre_merge_closure": {
