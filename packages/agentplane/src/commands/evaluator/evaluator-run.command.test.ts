@@ -711,6 +711,28 @@ describe("evaluator run command", () => {
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 
+  it("rejects an unresolved branch_pr base even when the evaluated commit is the repository root", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const rootSha = await commitPath(root, "README.md", "root\n", "chore: root commit");
+
+    await expect(
+      resolveEvaluatorDiffBase({
+        gitRoot: root,
+        evaluatedSha: rootSha,
+        baseRef: null,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+    await expect(
+      resolveEvaluatorDiffBase({
+        gitRoot: root,
+        evaluatedSha: rootSha,
+        baseRef: null,
+        allowSingleCommitFallback: true,
+      }),
+    ).resolves.toBeNull();
+  });
+
   it("freezes the durable verification record created through the supported verification path", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -19,9 +19,8 @@ RF-QUALITY: evaluator review must freeze the complete task branch diff against i
 - Note:
 
 ```text
-Independent verification passed after the fail-closed fix: a verification write failure cannot
-persist success, and concurrent verifies leave final task state matched to exactly one durable
-record.
+Independent verification passed for the hosted-contract rework: evaluator diff evidence is
+modularized and the durability test remains below the oversized-test baseline.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,14 +32,14 @@ record.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/evaluator/evaluator-diff-evidence.ts  | 102 ++++++++++++++++
- .../commands/evaluator/evaluator-review-usecase.ts |  42 +++----
- .../evaluator/evaluator-run.command.test.ts        | 128 +++++++++++++++++++++
- .../src/commands/task/verify-record-execute.ts     |  60 +++++++++-
- .../task/verify-record.durability.unit.test.ts     |  79 +++++++++++++
+ .../commands/evaluator/evaluator-diff-evidence.ts  | 100 ++++++++++++++
+ .../commands/evaluator/evaluator-review-usecase.ts |  42 +++---
+ .../evaluator/evaluator-run.command.test.ts        | 150 +++++++++++++++++++++
+ .../src/commands/task/verify-record-execute.ts     |  60 ++++++++-
+ .../task/verify-record.durability.unit.test.ts     |  79 +++++++++++
  .../src/commands/task/verify-record.unit.test.ts   |  10 +-
- .../src/commands/workflow.verify-hooks.test.ts     |  81 ++++++++++++-
- 7 files changed, 478 insertions(+), 24 deletions(-)
+ .../src/commands/workflow.verify-hooks.test.ts     |  81 ++++++++++-
+ 7 files changed, 498 insertions(+), 24 deletions(-)
 ```
 
 </details>
