@@ -4,7 +4,7 @@ title: "Enforce non-empty EVALUATOR pass findings"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -29,10 +29,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-28T15:10:42.273Z"
+  updated_by: "TESTER"
+  note: "Verified evaluator quality-gate consistency: every pass now carries an evidence-backed finding and empty findings are rejected by both the provider schema and strict SGR validator. Checks passed: focused evaluator/SGR suites (39), typecheck, format, routing validation."
   attempts: 0
 commit:
   hash: "e76ab8e333faa1417a7b0de3188b98d361a09be5"
@@ -59,8 +59,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implemented: every EVALUATOR verdict now requires one frozen, evidence-backed finding in both the provider schema and strict SGR validator; fixtures cover pass, rework, blocked, and human_review empty-result rejection."
+  -
+    type: "verify"
+    at: "2026-07-28T15:10:42.273Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified evaluator quality-gate consistency: every pass now carries an evidence-backed finding and empty findings are rejected by both the provider schema and strict SGR validator. Checks passed: focused evaluator/SGR suites (39), typecheck, format, routing validation."
 doc_version: 3
-doc_updated_at: "2026-07-28T15:09:52.323Z"
+doc_updated_at: "2026-07-28T15:10:43.516Z"
 doc_updated_by: "CODER"
 description: "Quality-gate follow-up: align the Codex output schema and strict evaluator SGR validation with the branch_pr requirement that a pass review contains at least one evidence-backed finding, so an empty pass cannot leave a task permanently quality-stale."
 sections:
@@ -83,11 +89,44 @@ sections:
     6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-28T15:10:42.273Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified evaluator quality-gate consistency: every pass now carries an evidence-backed finding and empty findings are rejected by both the provider schema and strict SGR validator. Checks passed: focused evaluator/SGR suites (39), typecheck, format, routing validation.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T15:09:52.323Z, excerpt_hash=sha256:c1164d8fc434c68489dbfb8585bc83864b1a2f5e473283020d5e046c7d972b7a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281506-WWNFXE-enforce-evaluator-pass-findings/.agentplane/tasks/202607281506-WWNFXE/blueprint/resolved-snapshot.json
+    - old_digest: edfb831e78039154d29beb2cc89346939a5bb0d6fc4ec5b909594544c10b079c
+    - current_digest: edfb831e78039154d29beb2cc89346939a5bb0d6fc4ec5b909594544c10b079c
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607281506-WWNFXE
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607281506-WWNFXE
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: An empty pass can no longer satisfy the provider while failing branch_pr quality freshness later.
+      Impact: Quality review becomes a finite gate rather than a stale-state loop.
+      Resolution: Recorded local verification; the next EVALUATOR episode will exercise the live structured-output path.
 extensions:
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
@@ -123,6 +162,36 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-28T15:10:42.273Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified evaluator quality-gate consistency: every pass now carries an evidence-backed finding and empty findings are rejected by both the provider schema and strict SGR validator. Checks passed: focused evaluator/SGR suites (39), typecheck, format, routing validation.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T15:09:52.323Z, excerpt_hash=sha256:c1164d8fc434c68489dbfb8585bc83864b1a2f5e473283020d5e046c7d972b7a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281506-WWNFXE-enforce-evaluator-pass-findings/.agentplane/tasks/202607281506-WWNFXE/blueprint/resolved-snapshot.json
+- old_digest: edfb831e78039154d29beb2cc89346939a5bb0d6fc4ec5b909594544c10b079c
+- current_digest: edfb831e78039154d29beb2cc89346939a5bb0d6fc4ec5b909594544c10b079c
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607281506-WWNFXE
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607281506-WWNFXE
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -131,3 +200,7 @@ PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLA
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: An empty pass can no longer satisfy the provider while failing branch_pr quality freshness later.
+  Impact: Quality review becomes a finite gate rather than a stale-state loop.
+  Resolution: Recorded local verification; the next EVALUATOR episode will exercise the live structured-output path.
