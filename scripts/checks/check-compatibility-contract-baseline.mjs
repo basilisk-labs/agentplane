@@ -322,6 +322,7 @@ function validateReviewedCandidate({
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
+    "202607281655-YMPY8Y",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -340,6 +341,7 @@ function validateReviewedCandidate({
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
+    "202607281655-YMPY8Y",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1047,6 +1049,7 @@ function validateReviewedCandidate({
       args: [{ name: "taskId", required: true, variadic: false, valueHint: "<task-id>" }],
       options: [
         { name: "evaluator", kind: "string", valueHint: "<id>", default: "recovery-context" },
+        { name: "replacement", kind: "boolean", valueHint: null, default: false },
         { name: "json", kind: "boolean", valueHint: null, default: false },
       ],
     },
@@ -1191,6 +1194,13 @@ function validateReviewedCandidate({
     {
       command: "evaluator execute",
       name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "evaluator execute",
+      name: "replacement",
       kind: "boolean",
       valueHint: null,
       default: false,
@@ -1420,6 +1430,12 @@ function validateReviewedCandidate({
       command: "evaluator execute",
       name: "json",
       source_task: "202607221849-8YYZ9X",
+    },
+    {
+      kind: "option",
+      command: "evaluator execute",
+      name: "replacement",
+      source_task: "202607281655-YMPY8Y",
     },
     {
       kind: "option",

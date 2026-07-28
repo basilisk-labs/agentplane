@@ -17,7 +17,8 @@
     "202607221849-8YYZ9X",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
-    "202607260532-9M7RNH"
+    "202607260532-9M7RNH",
+    "202607281655-YMPY8Y"
   ],
   "base": {
     "baseline_id": "agentplane.compatibility.v0.6.24",
@@ -26,9 +27,9 @@
     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
   },
   "candidate": {
-    "surface_sha256": "cae67e3c40031c35350d6bae212a060528d3256ac4d924d8354fba589674e32a",
+    "surface_sha256": "c4523f6e00dbb8c1e08041826416e97a644d6930efea137a5e295cdde8ff86e5",
     "section_digests": {
-      "cli_topology": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
+      "cli_topology": "37cdc4d84b93eeb3b423c1c5e2e832d101379009854af01b2d9eb83a85bde833",
       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
@@ -362,12 +363,13 @@
         "202607221849-8YYZ9X",
         "202607242158-QV09NA",
         "202607260007-DQM6AW",
-        "202607260532-9M7RNH"
+        "202607260532-9M7RNH",
+        "202607281655-YMPY8Y"
       ],
       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
-      "to_sha256": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
+      "to_sha256": "37cdc4d84b93eeb3b423c1c5e2e832d101379009854af01b2d9eb83a85bde833",
       "classification": "additive",
-      "summary": "Adds a CLI-owned read-only EVALUATOR provider episode alongside frozen work-order preparation and typed-result application; no command or option is removed or mutated.",
+      "summary": "Adds a CLI-owned read-only EVALUATOR provider episode alongside frozen work-order preparation and typed-result application, then adds explicit --replacement to bind one terminal known provider failure to one auditable successor; no command or option is removed or mutated.",
       "evidence": {
         "command_count": {
           "from": 243,
@@ -379,7 +381,7 @@
         },
         "option_count": {
           "from": 767,
-          "to": 813
+          "to": 814
         },
         "added_commands": [
           "evaluator apply",
@@ -444,6 +446,12 @@
                 "kind": "string",
                 "valueHint": "<id>",
                 "default": "recovery-context"
+              },
+              {
+                "name": "replacement",
+                "kind": "boolean",
+                "valueHint": null,
+                "default": false
               },
               {
                 "name": "json",
@@ -802,6 +810,13 @@
           {
             "command": "evaluator execute",
             "name": "json",
+            "kind": "boolean",
+            "valueHint": null,
+            "default": false
+          },
+          {
+            "command": "evaluator execute",
+            "name": "replacement",
             "kind": "boolean",
             "valueHint": null,
             "default": false
@@ -1169,6 +1184,12 @@
             "command": "evaluator execute",
             "name": "json",
             "source_task": "202607221849-8YYZ9X"
+          },
+          {
+            "kind": "option",
+            "command": "evaluator execute",
+            "name": "replacement",
+            "source_task": "202607281655-YMPY8Y"
           },
           {
             "kind": "option",

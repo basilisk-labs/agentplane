@@ -32,6 +32,7 @@ replacement remains the explicit post-integration gate.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
  .../evaluator/evaluator-execute.command.test.ts    | 368 ++++++++++++++++++++-
  .../commands/evaluator/evaluator-review-usecase.ts |  33 +-
@@ -41,7 +42,9 @@ replacement remains the explicit post-integration gate.
  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
  packages/core/src/schemas/index.ts                 |   1 +
- 9 files changed, 803 insertions(+), 38 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+ .../check-compatibility-contract-baseline.mjs      |  16 +
+ 12 files changed, 851 insertions(+), 48 deletions(-)
 ```
 
 </details>
