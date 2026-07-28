@@ -1,10 +1,11 @@
 ---
 id: "202607280900-WHE7JS"
 title: "Break authority-close lifecycle feedback loop"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -57,8 +58,8 @@ quality_review:
   findings:
     - "No scope-digest, expiry, stale-input, or protected-operation policy was relaxed. The focused route regression proves a granted pr.open advances to an executable operation with a clean worktree; full fast CI passed."
 commit:
-  hash: "03a98aa601a69dd8c89e5dc424ca2e0ed214d025"
-  message: "fix: commit branch-pr authority records"
+  hash: "6d40a20d583714656c5edbffbf4bd78c483902c7"
+  message: "🧩 WHE7JS task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -66,6 +67,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: committed branch_pr authority records automatically; added the route regression that proves the authorized PR operation remains executable."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -87,8 +91,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open."
+  -
+    type: "status"
+    at: "2026-07-28T09:23:47.147Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T09:22:59.880Z"
+doc_updated_at: "2026-07-28T09:23:47.147Z"
 doc_updated_by: "CODER"
 description: "v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration."
 sections:
@@ -208,6 +219,9 @@ extensions:
         stateFingerprintDigest: "sha256:7afab48f7c7b2d93739a50b4f8140cb60b0c262dbbe6aa4c831670dd61221ab4"
         stateScopeDigest: "sha256:9064b3f6cfd0821b09405717ece3ace8dee280f243c3be2224d1a6679a83630c"
     schemaVersion: 1
+  implementation_commit:
+    hash: "03a98aa601a69dd8c89e5dc424ca2e0ed214d025"
+    message: "fix: commit branch-pr authority records"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1

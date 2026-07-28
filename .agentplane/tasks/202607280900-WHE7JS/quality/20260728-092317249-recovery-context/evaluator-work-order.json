@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607280900-WHE7JS-f9750e68f2e445232be9340b",
+  "prepared_at": "2026-07-28T09:23:17.249Z",
+  "task": {
+    "id": "202607280900-WHE7JS",
+    "revision": 11,
+    "objective": "Break authority-close lifecycle feedback loop\n\nv0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.\n- Out of scope: unrelated refactors not required for \"Break authority-close lifecycle feedback loop\".",
+      "1. Trace the route predicates that classify task README and PR-artifact changes as verification/pre-merge invalidators.\n2. Introduce an explicit freshness boundary: implementation, verification, quality, and close-tail evidence remain content-addressed; authority grants and provider-sync metadata preserve auditability but do not invalidate unchanged implementation evidence.\n3. Preserve all high-risk gates: a protected provider operation still requires a matching current authority record; code/verification/quality changes still require fresh verification and pre-merge closure; final PR head and hosted checks must remain live and stable.\n4. Add deterministic regression coverage for authority grant -> pre-merge closure -> final head publication -> integration queue, proving the route reaches an executable integration step without another verification cycle when implementation is unchanged.\n5. Run focused route tests, task-state check, typecheck, critical tests, policy routing, and the relevant local CI selector; record residual compatibility risk in task Findings.",
+      "1. Add a deterministic route-level regression: authority grant, verification, evaluator pass, pre-merge closure, final-head publication, hosted-green refresh, integration queue. Expected: unchanged implementation and quality evidence reaches an executable integration action without another verification/close/publish loop.\n2. Exercise the negative boundary. Expected: a changed implementation commit, invalid or stale authority, or changed hosted state still invalidates the appropriate evidence and blocks integration.\n3. Inspect persisted task and authority artifacts. Expected: every protected operation retains a matching scoped authority record; no authority record widens an operation.\n4. Run focused lifecycle-route tests, bun run task-state:check, bun run typecheck, bun run test:critical, and node .agentplane/policy/check-routing.mjs. Expected: all pass.\n5. Publish a PR and require stable hosted checks before integrating. Expected: the PR head, review state, and merge queue agree; no manual provider merge is used."
+    ]
+  },
+  "evaluated_sha": "03a98aa601a69dd8c89e5dc424ca2e0ed214d025",
+  "blueprint_digest": "cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607280900-WHE7JS/README.md",
+      "sha256": "sha256:9f5900d8ba74dd7636fb97a6dbbd6a35f5817b07273b290590f978f3be3e920a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:70a0b4a7d661e4c565708d3d0254f67c951342a4a0c6711eb60de0f86ea06e6b",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:ee8a66fe977fdaaaf0c1dba327121b454538e34e69823fd67ced86a0cc05352d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:7527525c5ce96bc4bf6687be197b46e9d975a5241e4ace0981ce99e5ad947ec0",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607280900-WHE7JS",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T09:23:17.513Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Reviewed the authority-grant lifecycle boundary: branch_pr grants now commit only task packet artifacts through the existing PR artifact helper, preserving all authority validation before mutation.",
+  "evaluated_sha": "03a98aa601a69dd8c89e5dc424ca2e0ed214d025",
+  "blueprint_digest": "cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410",
+  "findings": [
+    "No scope-digest, expiry, stale-input, or protected-operation policy was relaxed. The focused route regression proves a granted pr.open advances to an executable operation with a clean worktree; full fast CI passed."
+  ],
+  "evidence_refs": [
+    "bun run ci:local:fast"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
