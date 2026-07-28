@@ -2,15 +2,23 @@
   "base": "main",
   "branch": "task/202607281455-147Q75/repair-evaluator-response-schema",
   "created_at": "2026-07-28T14:56:22.735Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:7b10d23b67d648d15fa1a62b935c84c12238d695b13a36e5e63bef51ddbb6f6d",
+  "last_verified_at": "2026-07-28T15:03:08.775Z",
+  "last_verified_diffstat_sha256": "sha256:7b10d23b67d648d15fa1a62b935c84c12238d695b13a36e5e63bef51ddbb6f6d",
   "pr_number": 4660,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4660",
+  "pre_merge_closure": {
+    "basis_commit": "2a83376fe1a6b69d98ece871ecd2b0c200a204ba",
+    "branch": "task/202607281455-147Q75/repair-evaluator-response-schema",
+    "pr_number": 4660,
+    "recorded_at": "2026-07-28T15:11:53.714Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607281455-147Q75",
   "updated_at": "2026-07-28T14:56:52.349Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

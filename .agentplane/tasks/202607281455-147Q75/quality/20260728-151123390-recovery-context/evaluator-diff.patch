@@ -1,0 +1,48 @@
+diff --git a/.agentplane/tasks/202607281455-147Q75/README.md b/.agentplane/tasks/202607281455-147Q75/README.md
+index cd7d916a3..6050db114 100644
+--- a/.agentplane/tasks/202607281455-147Q75/README.md
++++ b/.agentplane/tasks/202607281455-147Q75/README.md
+@@ -4,7 +4,7 @@ title: "Repair evaluator response schema for Codex structured output"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 4
++revision: 5
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -34,11 +34,16 @@ verification:
+   updated_by: null
+   note: null
+   attempts: 0
+-commit: null
++commit:
++  hash: "b5cad73384df973a4a0845521c97723347af56f8"
++  message: "Repair evaluator structured-output schema"
+ comments:
+   -
+     author: "CODER"
+     body: "Start: repair the evaluator structured-output schema compatibility defect and add a focused provider-schema regression without changing evaluator review semantics."
++  -
++    author: "CODER"
++    body: "Implemented: Codex-compatible evaluator output schema now requires nullable optional fields, the strict handoff normalizes nulls, and regression coverage proves the provider contract."
+ events:
+   -
+     type: "status"
+@@ -47,8 +52,15 @@ events:
+     from: "TODO"
+     to: "DOING"
+     note: "Start: repair the evaluator structured-output schema compatibility defect and add a focused provider-schema regression without changing evaluator review semantics."
++  -
++    type: "status"
++    at: "2026-07-28T15:02:06.041Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implemented: Codex-compatible evaluator output schema now requires nullable optional fields, the strict handoff normalizes nulls, and regression coverage proves the provider contract."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T14:56:22.566Z"
++doc_updated_at: "2026-07-28T15:02:06.041Z"
+ doc_updated_by: "CODER"
+ description: "Release-blocking follow-up: make the evaluator typed-result JSON Schema compatible with the current Codex structured-output validator, preserve optional evidence fields through explicit nullable values, and add a regression test proving evaluator execution reaches a typed result instead of failing before the provider turn."
+ sections:
