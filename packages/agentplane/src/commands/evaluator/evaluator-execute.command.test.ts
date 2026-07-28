@@ -97,7 +97,8 @@ async function writeVerificationRecord(root: string, taskId: string): Promise<st
   if (code !== 0) throw new Error(`failed to create verification record: ${io.stderr}`);
 
   const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
-  const files = (await readdir(verificationDir)).filter((file) => file.endsWith(".json"));
+  const entries = await readdir(verificationDir);
+  const files = entries.filter((file) => file.endsWith(".json"));
   expect(files).toHaveLength(1);
   return path.join(verificationDir, files[0]!);
 }

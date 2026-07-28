@@ -30,7 +30,7 @@ Created: 2026-07-28T21:58:43.037Z
 
 ```text
  .../commands/evaluator/evaluator-diff-evidence.ts  | 108 ++++++++++
- .../evaluator/evaluator-execute.command.test.ts    |  76 ++++---
+ .../evaluator/evaluator-execute.command.test.ts    |  77 ++++---
  .../commands/evaluator/evaluator-review-apply.ts   |   6 +-
  .../commands/evaluator/evaluator-review-usecase.ts |  63 +++---
  .../evaluator/evaluator-run.command.test.ts        | 224 ++++++++++++++++++++-
@@ -44,7 +44,7 @@ Created: 2026-07-28T21:58:43.037Z
  .../src/commands/task/verify-record.unit.test.ts   |  10 +-
  .../src/commands/workflow.verify-hooks.test.ts     |  81 +++++++-
  packages/testkit/src/cli-harness.ts                |   7 +
- 15 files changed, 790 insertions(+), 77 deletions(-)
+ 15 files changed, 791 insertions(+), 77 deletions(-)
 ```
 
 </details>
