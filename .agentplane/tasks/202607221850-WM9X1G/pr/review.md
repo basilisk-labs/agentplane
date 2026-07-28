@@ -13,7 +13,7 @@ Created: 2026-07-28T08:13:34.859Z
 ## Verification
 
 - State: ok
-- Note: Fresh lifecycle verification: no implementation paths changed after the prior focused suite and ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
+- Note: Verified: hosted Core CI passed for the fail-closed effect-resolution implementation; all commits after the reviewed implementation are task-local lifecycle artifacts.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
