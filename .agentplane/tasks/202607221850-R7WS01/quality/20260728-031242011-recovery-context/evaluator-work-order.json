@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221850-R7WS01-9aa2acc27d23ffbd92301c8e",
+  "prepared_at": "2026-07-28T03:12:42.011Z",
+  "task": {
+    "id": "202607221850-R7WS01",
+    "revision": 43,
+    "objective": "Return typed runner lifecycle results\n\nRF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing.",
+    "acceptance_criteria": [
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: typed runner use-case results, adapter ports, error/result union, human/JSON renderers, compatibility snapshots, and supervisor invocation without subprocess/stdout capture.\n- Consume the durable effect-resolution contract as typed `effect_in_doubt`, `applied` and `not_applied` states, preserving resolution provenance, authority/evidence identity and claim generation in every in-process result and renderer.\n- An unresolved `effect_in_doubt` result is terminally blocked for generic retry, replay, resume and restart paths; only the explicit resolution protocol from task 202607242158-QV09NA may transition it to `applied` or `not_applied`.\n- Out of scope: automating the complete direct route, delivered by the next task.",
+      "1. Define typed results for runner preparation, invocation, observation, evaluation handoff, and terminal outcomes.\n2. Separate rendering/exit mapping from use-case logic.\n3. Call runner phases in-process from the supervisor.\n4. Map durable journal/resolution input to typed `effect_in_doubt`, `applied` and `not_applied` outcomes with resolution provenance, and reject any generic retry path for unresolved effects.\n5. Preserve documented human and JSON output through compatibility renderers without dropping resolution provenance.\n6. Add result/renderer parity, adapter error, cancellation, timeout, stale-work-order and effect-resolution transition tests.",
+      "1. Invoke each runner phase in-process. Expected: structured results carry work-order/fingerprint/receipt identities without reading stdout.\n2. Render the same result to human and JSON formats. Expected: compatibility snapshots and exit codes remain stable.\n3. Feed durable journal states for `effect_in_doubt`, operator-resolved `applied` and operator-resolved `not_applied` into each runner/supervisor entry point. Expected: typed results and both renderers preserve the state, operator-supplied resolution provenance, evidence/authority digests and claim generation without stdout parsing.\n4. Invoke generic retry, replay, resume and restart against unresolved `effect_in_doubt`. Expected: every path returns the typed blocked outcome, performs no adapter invocation and directs callers only to the explicit operator-resolution protocol; no generic retry can reinterpret the effect as `not_applied`.\n5. Exercise cancellation, timeout, adapter crash, stale input, and policy denial. Expected: typed outcomes and observed receipts remain complete.\n6. Run runner/supervisor/lifecycle tests and typecheck."
+    ]
+  },
+  "evaluated_sha": "9474725b5ca119945c60338c7821e83f9fe40698",
+  "blueprint_digest": "97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221850-R7WS01/README.md",
+      "sha256": "sha256:a504b35e15c039855c268115218b2c2cc42dbf57eb64312c5dd26cb6439c48a9",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221850-R7WS01/quality/20260728-031242011-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d4423692535e81e16e262f84c84f43af42571b08908d1bd95a7ea5cae36db8f4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221850-R7WS01/quality/20260728-031242011-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:0af1ac39d0095e319c54c4dbd10decef6ec4403351fab1dbdcca6431e89ea6ab",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221850-R7WS01/quality/20260728-031242011-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d348dedab56fd1219b3127a4ff3da0570f1904829944b3609e64139f6309b3fb",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

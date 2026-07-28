@@ -1,0 +1,30 @@
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+index 8b433e5d6..d899bd27b 100644
+--- a/packages/agentplane/src/commands/shared/workflow-supervisor.ts
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+@@ -24,7 +24,7 @@ type WorkflowSupervisorAuditEntry = {
+   detail: string;
+ };
+ 
+-export type WorkflowSupervisorOperationPayload = {
++type WorkflowSupervisorOperationPayload = {
+   kind: "runner_lifecycle";
+   value: TaskRunnerLifecycleResult;
+ };
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
+index c3a543f55..6422fb137 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
+@@ -10,10 +10,9 @@ import type {
+   RunnerRunState,
+ } from "../types.js";
+ 
+-export const TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA =
+-  "agentplane.task_runner_lifecycle_result.v1" as const;
++const TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA = "agentplane.task_runner_lifecycle_result.v1" as const;
+ 
+-export type TaskRunnerLifecycleEffectState =
++type TaskRunnerLifecycleEffectState =
+   | "not_recorded"
+   | "effect_in_doubt"
+   | "applied"
