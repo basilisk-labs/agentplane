@@ -18,7 +18,6 @@ import {
 import {
   assertResultEvidenceIsFrozen,
   assertWorkOrderCurrent,
-  evaluatorSummary,
   isWithinRoot,
   readWorkOrder,
   relative,
@@ -196,7 +195,7 @@ export async function applyEvaluatorSgrReview(opts: {
     generated_at: at,
     provenance: "evaluator_supplied",
     verdict: result.verdict,
-    summary: evaluatorSummary(result),
+    summary: `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`,
     evaluated_sha: workOrder.evaluated_sha,
     blueprint_digest: workOrder.blueprint_digest,
     findings: result.findings.map((finding) => finding.summary),

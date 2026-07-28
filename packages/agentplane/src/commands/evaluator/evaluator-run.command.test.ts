@@ -640,6 +640,12 @@ describe("evaluator run command", () => {
     );
     const taskId = "202605240900-EV15";
     await addTask(root, taskId);
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/quality/previous-evaluator-diff.patch`,
+      "stale evaluator patch that must not recurse into the next evaluator diff\n",
+      "test: persist prior evaluator evidence",
+    );
     const prDir = path.join(root, `.agentplane/tasks/${taskId}/pr`);
     await mkdir(prDir, { recursive: true });
     await writeFile(
@@ -686,6 +692,7 @@ describe("evaluator run command", () => {
     expect(frozenDiff).toContain("GIT binary patch");
     expect(frozenDiff).toContain("rename from src/rename-before.ts");
     expect(frozenDiff).toContain("rename to src/rename-after.ts");
+    expect(frozenDiff).not.toContain("stale evaluator patch that must not recurse");
   });
 
   it("keeps no-work-unit evidence empty and fails closed when its configured base is missing", async () => {
