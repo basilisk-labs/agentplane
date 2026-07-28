@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 52
+revision: 53
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "The classifier accepts only the four exact stable-file collision messages for the runner active-claim label; unrelated observation failures still fail closed. The deterministic concurrent test injects a path-swap collision from the retirement-wait call and proves a second observation occurs."
 commit:
-  hash: "7199f70a58843ed024f97931bbce2d765408cbd6"
-  message: "🚧 WM9X1G task: record fresh pre-merge closure"
+  hash: "7a41ac8f29897a03713e25332c27002ff6f1e3f2"
+  message: "🚧 WM9X1G task: record refreshed pre-merge closure authority"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -196,8 +199,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T11:34:01.928Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T11:16:54.853Z"
+doc_updated_at: "2026-07-28T11:34:01.929Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -909,8 +919,8 @@ extensions:
         stateScopeDigest: "sha256:1097a579473c4ad8ad58fa87c9472b41eb358bfc5cc9b879d63421761e616748"
     schemaVersion: 1
   implementation_commit:
-    hash: "5ee3c3bb55e6a8a7905d7b9a6ee3f9595ffdebbb"
-    message: "🚧 WM9X1G task: repair journal API and claim observation"
+    hash: "c170a930d8649b4b0ff06a9bb56a6e060bfb4719"
+    message: "🚧 WM9X1G task: keep effect resolution below hotspot threshold"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
