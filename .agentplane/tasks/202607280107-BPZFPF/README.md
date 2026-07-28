@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -53,8 +53,8 @@ quality_review:
     - "The canonical package policy and repo-local policy both remove INC-20260727-01; the archival entry preserves source PR, current implementation evidence, and the explicit follow-up boundary."
     - "Focused TaskEpisodeView regression coverage and the release incident gate pass; template synchronization now has deterministic agents:check coverage."
 commit:
-  hash: "edbda105af747db96936f5419592ee025d8a3ed2"
-  message: "🛡️ BPZFPF policy: archive resolved task context incident"
+  hash: "96846aeaea3e1107478ec8c3df0012cfead22a13"
+  message: "🛡️ BPZFPF task: record closure authority"
 comments:
   -
     author: "CODER"
@@ -65,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -93,8 +96,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T01:29:22.994Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T01:13:10.703Z"
+doc_updated_at: "2026-07-28T01:29:22.994Z"
 doc_updated_by: "CODER"
 description: "Dedicated incident reconciliation for TaskEpisodeView section authority. Confirm the shipped RF-21 contract: task_document_schema is explicit, required-section omission or validation failure is enforced, and localized structural-heading coverage is present. Preserve final evidence in the historical archive and remove the active entry only after deterministic checks pass. Do not author a new semantic role or heading policy."
 sections:
@@ -364,6 +374,9 @@ extensions:
         stateFingerprintDigest: "sha256:ef272bbd8b7e7ef638f661db9ed885a08cd8c2a32a795891966c82c0806155fa"
         stateScopeDigest: "sha256:945488a426124dd7f4d05a927b55604d499d51fbf798d4152ccf974ed536c1ff"
     schemaVersion: 1
+  implementation_commit:
+    hash: "1cf2e800edcb40d20ffe16dfa5034832a19537c8"
+    message: "🛡️ BPZFPF policy: sync archived incident template"
   workflow_route_baseline:
     start_head_sha: "78b62230dda3ff6aec52db27e74c49e9a5926683"
     version: 1

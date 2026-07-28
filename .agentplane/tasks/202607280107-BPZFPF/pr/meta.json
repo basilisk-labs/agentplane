@@ -8,10 +8,10 @@
   "pr_number": 4649,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4649",
   "pre_merge_closure": {
-    "basis_commit": "edbda105af747db96936f5419592ee025d8a3ed2",
+    "basis_commit": "96846aeaea3e1107478ec8c3df0012cfead22a13",
     "branch": "task/202607280107-BPZFPF/reconcile-release-incident",
     "pr_number": 4649,
-    "recorded_at": "2026-07-28T01:13:10.753Z",
+    "recorded_at": "2026-07-28T01:29:23.047Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
