@@ -8,10 +8,10 @@
   "pr_number": 4655,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4655",
   "pre_merge_closure": {
-    "basis_commit": "6d40a20d583714656c5edbffbf4bd78c483902c7",
+    "basis_commit": "2e04b906f9d327f180b0dc11f0a3d9dd4e6a3088",
     "branch": "task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop",
     "pr_number": 4655,
-    "recorded_at": "2026-07-28T09:23:47.204Z",
+    "recorded_at": "2026-07-28T10:31:39.869Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
