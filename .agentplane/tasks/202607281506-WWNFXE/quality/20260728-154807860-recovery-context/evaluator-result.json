@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "pass-findings-enforced",
+      "severity": "low",
+      "summary": "The provider schema requires at least one finding, strict SGR validation rejects empty findings for every verdict, and focused regression coverage includes pass, rework, blocked, and human_review.",
+      "broken_invariant": "An evaluator verdict must not be accepted without at least one evidence-backed finding.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b98ffbffb5d009a4c98e9d1f9968ef63f81089aff507e4e5cd1c482f14f6e555",
+          "line": 627,
+          "lines": "627-727",
+          "section": "Evaluator schema, strict SGR validation, and regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:95d5e263f4ec50b11737ff47cab558c525f3b32ab3e44b2306aeddb7379a39de",
+          "line": 1,
+          "lines": "1-19",
+          "section": "Recorded verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen TESTER verification summary accurately represents the declared focused tests, typecheck, formatting, and routing-validation executions because the observed-checks artifact contains no runner history or raw command output."
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607281506-WWNFXE-fa5047b06c85a9768087a13a",
+  "prepared_at": "2026-07-28T15:48:07.860Z",
+  "task": {
+    "id": "202607281506-WWNFXE",
+    "revision": 6,
+    "objective": "Enforce non-empty EVALUATOR pass findings\n\nQuality-gate follow-up: align the Codex output schema and strict evaluator SGR validation with the branch_pr requirement that a pass review contains at least one evidence-backed finding, so an empty pass cannot leave a task permanently quality-stale.",
+    "acceptance_criteria": [
+      "bun run format:changed",
+      "bun run typecheck",
+      "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/runtime/sgr/contracts.test.ts",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Quality-gate follow-up: align the Codex output schema and strict evaluator SGR validation with the branch_pr requirement that a pass review contains at least one evidence-backed finding, so an empty pass cannot leave a task permanently quality-stale.\n- Out of scope: unrelated refactors not required for \"Enforce non-empty EVALUATOR pass findings\".",
+      "1. Make the Codex structured-output schema require at least one evaluator finding for every verdict. 2. Make strict evaluator SGR validation reject a pass with no evidence-backed finding, matching branch_pr freshness rules. 3. Update focused evaluator and SGR contract fixtures for a valid pass finding and add explicit empty-pass regression coverage. 4. Run the declared tests, typecheck, formatting, and routing validation; publish, verify, quality-review, and integrate the small PR before retrying task 202607281455-147Q75.",
+      "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/runtime/sgr/contracts.test.ts`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run format:changed`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Run `node .agentplane/policy/check-routing.mjs`. Expected: it succeeds and confirms the requested outcome for this task.\n5. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n6. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings."
+    ]
+  },
+  "evaluated_sha": "8dfcc1e90cd75db180f4fac4dff418f91af90e80",
+  "blueprint_digest": "edfb831e78039154d29beb2cc89346939a5bb0d6fc4ec5b909594544c10b079c",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607281506-WWNFXE/README.md",
+      "sha256": "sha256:f96457a2d555232da2cfce7542813043b757738b0dbb75869be97791c99f09c8",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:b98ffbffb5d009a4c98e9d1f9968ef63f81089aff507e4e5cd1c482f14f6e555",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:95d5e263f4ec50b11737ff47cab558c525f3b32ab3e44b2306aeddb7379a39de",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:7c75dcb061438408874382fd1244bee67f46b39a6baab64c72c43ccc5c4da6a0",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
