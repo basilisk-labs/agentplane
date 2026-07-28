@@ -32,11 +32,11 @@ test:fast, and local fast CI.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/shared/route-decision.ts          |  26 +++-
- .../shared/side-effect-authority-store.test.ts     | 144 +++++++++++++++++++++
- .../commands/shared/side-effect-authority-store.ts | 127 ++++++++++++++++++
- .../src/commands/task/authority-grant.command.ts   | 110 ++++++++--------
- 4 files changed, 347 insertions(+), 60 deletions(-)
+ .../src/commands/shared/route-decision.ts          |   8 +-
+ .../shared/side-effect-authority-store.test.ts     | 144 +++++++++++++++++++
+ .../commands/shared/side-effect-authority-store.ts | 154 +++++++++++++++++++++
+ .../src/commands/task/authority-grant.command.ts   | 110 +++++++--------
+ 4 files changed, 356 insertions(+), 60 deletions(-)
 ```
 
 </details>

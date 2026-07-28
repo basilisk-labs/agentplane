@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -29,32 +29,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-07-28T13:14:20.566Z"
+  updated_at: "2026-07-28T13:21:09.066Z"
   updated_by: "HUMAN"
-  note: "The change removes the authority-to-PR-head feedback loop while preserving exact operation, scope, expiry, audit-chain, and tamper checks."
-  evaluated_sha: "a03c556bcb65f44548297514f81741f111180f39"
+  note: "The CI correction only extracts authority hydration from the route orchestrator; it restores the enforced hotspot boundary without changing the authority decision semantics."
+  evaluated_sha: "7d0242a5a4fc311e0ab713316975078080ddffe2"
   blueprint_digest: "c7353729e4493adc49a18d511c920128c3f262b8451b1463e3a0e255dd128188"
   evidence_refs:
-    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-132108939-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-132108939-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-132108939-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-132108939-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607281303-81KQ3X/README.md"
-    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-132108939-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-132108939-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-132108939-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "commit:a03c556bcb65f44548297514f81741f111180f39"
-    - "packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts"
-    - "bun run typecheck; bun run test:fast; ci:local:fast"
+    - "commit:7d0242a5a4fc311e0ab713316975078080ddffe2"
+    - "bun run typecheck; bun run hotspots:check; focused authority tests"
   findings:
-    - "Persisted common-dir metadata is shared by linked task and base worktrees without changing refs/heads."
+    - "The shared-store load, invalid-state fail-closed branch, and route behavior remain covered by focused tests; route-decision is below the enforced 600-line maximum."
 commit:
-  hash: "a03c556bcb65f44548297514f81741f111180f39"
-  message: "fix: persist scoped authority outside PR head"
+  hash: "7d0242a5a4fc311e0ab713316975078080ddffe2"
+  message: "fix: keep route decision under hotspot limit"
 comments:
   -
     author: "CODER"
@@ -62,6 +61,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation: authority records now use the shared Git control-plane store and no longer move the PR head."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: hosted hotspot guard found route-decision.ts at 601 lines; authority hydration was extracted to the storage module."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -93,8 +98,22 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T13:20:49.959Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: hosted hotspot guard found route-decision.ts at 601 lines; authority hydration was extracted to the storage module."
+  -
+    type: "status"
+    at: "2026-07-28T13:21:37.462Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T13:15:00.740Z"
+doc_updated_at: "2026-07-28T13:21:37.463Z"
 doc_updated_by: "CODER"
 description: "Protected CI is invalidated when a scoped authority grant is written to the task README and auto-committed to the PR branch. Persist auditable, expiring authority metadata outside refs/heads while retaining exact operation and state-scope validation across task and integration checkouts."
 sections:

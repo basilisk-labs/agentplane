@@ -1,0 +1,91 @@
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index 17c1a60a2..669f026d9 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -45,11 +45,7 @@ import {
+   type TaskWorktreeCleanliness,
+ } from "./task-worktree-cleanliness.js";
+ import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+-import { loadSideEffectAuthorityState } from "./side-effect-authority-store.js";
+-import {
+-  SIDE_EFFECT_AUTHORITY_EXTENSION_KEY,
+-  withSideEffectAuthorityState,
+-} from "./side-effect-authority.js";
++import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
+ export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+ 
+ function isCliUsageOrIo(err: unknown): boolean {
+@@ -384,25 +380,11 @@ export async function buildTaskRouteDecision(opts: {
+     taskId: opts.taskId,
+     preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
+   });
+-  const authority = await loadSideEffectAuthorityState({
++  const task = await hydrateTaskSideEffectAuthority({
+     gitRoot: ctx.resolvedProject.gitRoot,
+     taskId: opts.taskId,
+     task: loadedTask,
+   });
+-  const task = authority.state
+-    ? {
+-        ...loadedTask,
+-        extensions: withSideEffectAuthorityState(loadedTask, authority.state),
+-      }
+-    : authority.source === "invalid"
+-      ? {
+-          ...loadedTask,
+-          extensions: {
+-            ...(loadedTask.extensions ?? {}),
+-            [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: null,
+-          },
+-        }
+-      : loadedTask;
+   const resume = await buildTaskResumeContext({
+     ctx,
+     cwd: opts.cwd,
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority-store.ts b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+index 3760a8681..9c75fbf07 100644
+--- a/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
++++ b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+@@ -7,8 +7,11 @@ import { gitRevParse } from "@agentplaneorg/core/git";
+ import { isRecord } from "../../shared/guards.js";
+ import {
+   readSideEffectAuthorityState,
++  SIDE_EFFECT_AUTHORITY_EXTENSION_KEY,
++  withSideEffectAuthorityState,
+   type SideEffectAuthorityState,
+ } from "./side-effect-authority.js";
++import type { TaskData } from "../../backends/task-backend.js";
+ 
+ const AUTHORITY_STORE_SCHEMA_VERSION = 1;
+ const AUTHORITY_STORE_DIR = ["agentplane", "side-effect-authority"];
+@@ -99,6 +102,30 @@ export async function loadSideEffectAuthorityState(opts: {
+     : { state: null, source: "invalid", reason: "task authority state is malformed" };
+ }
+ 
++export async function hydrateTaskSideEffectAuthority(opts: {
++  gitRoot: string;
++  taskId: string;
++  task: TaskData;
++}): Promise<TaskData> {
++  const authority = await loadSideEffectAuthorityState(opts);
++  if (authority.state) {
++    return {
++      ...opts.task,
++      extensions: withSideEffectAuthorityState(opts.task, authority.state),
++    };
++  }
++  if (authority.source === "invalid") {
++    return {
++      ...opts.task,
++      extensions: {
++        ...(opts.task.extensions ?? {}),
++        [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: null,
++      },
++    };
++  }
++  return opts.task;
++}
++
+ export async function persistSideEffectAuthorityState(opts: {
+   gitRoot: string;
+   taskId: string;
