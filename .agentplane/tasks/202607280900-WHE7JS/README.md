@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -60,7 +60,7 @@ quality_review:
   findings:
     - "Rebased scope preserves the narrow auto-commit behavior and route-level regression; it now includes the merged cancellation-intent retry that caused the prior hosted unit failure. Focused authority and runner regressions, typecheck, task-state, routing, and critical CLI 11/11 pass."
 commit:
-  hash: "6d40a20d583714656c5edbffbf4bd78c483902c7"
+  hash: "2e04b906f9d327f180b0dc11f0a3d9dd4e6a3088"
   message: "🧩 WHE7JS task: refresh task artifacts after commit"
 comments:
   -
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -106,8 +109,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "After rebasing onto main with the runner cancellation-intent retry, focused authority and runner regressions pass, typecheck/task-state/routing pass, and critical CLI matrix passes 11/11. Hosted CI must still validate the rebased PR head."
+  -
+    type: "status"
+    at: "2026-07-28T10:31:39.806Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T10:28:50.098Z"
+doc_updated_at: "2026-07-28T10:31:39.807Z"
 doc_updated_by: "CODER"
 description: "v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration."
 sections:
@@ -366,7 +376,7 @@ extensions:
         stateScopeDigest: "sha256:dda1fd7b75704e7c8e3e0d79fca0725cad7734b0387ca7e447ad6c2e274588c5"
     schemaVersion: 1
   implementation_commit:
-    hash: "03a98aa601a69dd8c89e5dc424ca2e0ed214d025"
+    hash: "b803b67e786127a849af228924ce35faff083247"
     message: "fix: commit branch-pr authority records"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
