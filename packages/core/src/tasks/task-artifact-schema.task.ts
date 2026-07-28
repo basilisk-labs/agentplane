@@ -136,9 +136,6 @@ const RUNNER_METRICS_SCHEMA = z
     stdout_bytes: z.number().optional(),
     stderr_bytes: z.number().optional(),
     output_last_message_bytes: z.number().nullable().optional(),
-    input_tokens: z.number().int().min(0).optional(),
-    output_tokens: z.number().int().min(0).optional(),
-    total_tokens: z.number().int().min(0).optional(),
   })
   .passthrough();
 

@@ -215,6 +215,19 @@ export type CodexProviderUsage = {
   total_tokens: number;
 };
 
+// Provider usage is process-local supervisor evidence. It deliberately stays
+// outside RunnerResult, receipts, and task projections so existing machine
+// contracts do not start retaining a provider-specific telemetry field.
+const CODEX_PROVIDER_USAGE_BY_RESULT = new WeakMap<object, CodexProviderUsage>();
+
+export function recordCodexProviderUsageForResult(result: object, usage: CodexProviderUsage): void {
+  CODEX_PROVIDER_USAGE_BY_RESULT.set(result, usage);
+}
+
+export function readCodexProviderUsageForResult(result: object): CodexProviderUsage | null {
+  return CODEX_PROVIDER_USAGE_BY_RESULT.get(result) ?? null;
+}
+
 function nonNegativeInteger(value: unknown): number | null {
   return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
 }

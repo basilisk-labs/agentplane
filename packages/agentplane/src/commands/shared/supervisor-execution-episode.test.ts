@@ -5,6 +5,7 @@ import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
 import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+import { recordCodexProviderUsageForResult } from "../../runner/adapters/codex-result-transport.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
 import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
 import {
@@ -80,14 +81,12 @@ function fixtureDecision(
 function executedLifecycle(opts: {
   decision: TaskRouteDecision;
   metrics?: {
-    input_tokens?: number;
-    output_tokens?: number;
-    total_tokens?: number;
     duration_ms?: number;
   };
+  provider_usage?: { input_tokens: number; output_tokens: number; total_tokens: number };
   files_changed_count?: number;
 }): TaskRunnerLifecycleResult {
-  return {
+  const lifecycle: TaskRunnerLifecycleResult = {
     schema: "agentplane.task_runner_lifecycle_result.v1",
     phase: "executed",
     task_id: opts.decision.task.id,
@@ -130,6 +129,10 @@ function executedLifecycle(opts: {
     },
     active_claim_cleanup: null,
   };
+  if (opts.provider_usage && lifecycle.phase === "executed" && lifecycle.result) {
+    recordCodexProviderUsageForResult(lifecycle.result, opts.provider_usage);
+  }
+  return lifecycle;
 }
 
 describe("persisted supervisor execution episodes", () => {
@@ -205,7 +208,8 @@ describe("persisted supervisor execution episodes", () => {
             kind: "runner_lifecycle" as const,
             value: executedLifecycle({
               decision,
-              metrics: { input_tokens: 3, output_tokens: 5, total_tokens: 8, duration_ms: 17 },
+              metrics: { duration_ms: 17 },
+              provider_usage: { input_tokens: 3, output_tokens: 5, total_tokens: 8 },
               files_changed_count: 2,
             }),
           },
@@ -253,7 +257,8 @@ describe("persisted supervisor execution episodes", () => {
             kind: "runner_lifecycle" as const,
             value: executedLifecycle({
               decision,
-              metrics: { input_tokens: 1, output_tokens: 1, total_tokens: 2, duration_ms: 1 },
+              metrics: { duration_ms: 1 },
+              provider_usage: { input_tokens: 1, output_tokens: 1, total_tokens: 2 },
               files_changed_count: 1,
             }),
           },

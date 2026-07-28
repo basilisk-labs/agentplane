@@ -31,6 +31,7 @@ import {
   CODEX_RESULT_TRANSPORT_ENV,
   createCodexResultEventCollector,
   materializeCodexResultTransport,
+  recordCodexProviderUsageForResult,
   renderCodexResultOutputSchemaJson,
 } from "./codex-result-transport.js";
 import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
@@ -157,10 +158,10 @@ export class CodexRunnerAdapter implements RunnerAdapter {
     return Promise.resolve(buildCodexInvocation({ adapterId: this.id, bundle }));
   }
 
-  execute(invocation: RunnerInvocation): Promise<RunnerResult> {
+  async execute(invocation: RunnerInvocation): Promise<RunnerResult> {
     const executionInvocation = structuredClone(invocation);
     const resultEventCollector = createCodexResultEventCollector();
-    return executeSupervisedRunnerAdapter({
+    const result = await executeSupervisedRunnerAdapter({
       invocation: executionInvocation,
       assertInvocation: assertCodexInvocation,
       observeStdoutLine: (rawLine) => resultEventCollector.observeStdoutLine(rawLine),
@@ -203,7 +204,6 @@ export class CodexRunnerAdapter implements RunnerAdapter {
       failureEventMessage: (result) => result.stderr_summary ?? "codex exec failed",
       buildBaseResult: ({ processResult, artifacts, output_paths }) => {
         const lastMessage = readOptionalCodexAgentMessage(resultEventCollector);
-        const providerUsage = readOptionalCodexUsage(resultEventCollector);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
         const timedOut = processResult.timeout_reason !== null;
@@ -212,7 +212,6 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           stdout_bytes: processResult.stdout_bytes,
           stderr_bytes: processResult.stderr_bytes,
           output_last_message_bytes: lastMessage === null ? null : byteLength(lastMessage),
-          ...(providerUsage ?? {}),
         };
         const baseResult = timedOut
           ? runnerAdapterFailureResult({
@@ -273,5 +272,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         };
       },
     });
+    const providerUsage = readOptionalCodexUsage(resultEventCollector);
+    if (providerUsage) recordCodexProviderUsageForResult(result, providerUsage);
+    return result;
   }
 }

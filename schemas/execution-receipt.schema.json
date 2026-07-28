@@ -221,21 +221,6 @@
                       "type": "null"
                     }
                   ]
-                },
-                "input_tokens": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "output_tokens": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "total_tokens": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
                 }
               },
               "required": ["duration_ms", "stdout_bytes", "stderr_bytes"],
@@ -900,21 +885,6 @@
                       "type": "null"
                     }
                   ]
-                },
-                "input_tokens": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "output_tokens": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
-                },
-                "total_tokens": {
-                  "type": "integer",
-                  "minimum": 0,
-                  "maximum": 9007199254740991
                 }
               },
               "required": ["duration_ms", "stdout_bytes", "stderr_bytes"],

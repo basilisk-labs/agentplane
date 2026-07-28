@@ -69,10 +69,6 @@ export type RunnerExecutionMetrics = {
   stdout_bytes?: number;
   stderr_bytes?: number;
   output_last_message_bytes?: number | null;
-  /** Provider-reported usage, retained as supervisor-observed numeric totals. */
-  input_tokens?: number;
-  output_tokens?: number;
-  total_tokens?: number;
 };
 
 type RunnerResultEvidence = {

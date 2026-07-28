@@ -14,6 +14,7 @@ import {
   writeRunnerExecutable,
 } from "@agentplane/testkit/runner";
 import { createRunnerAdapter } from "./index.js";
+import { readCodexProviderUsageForResult } from "./codex-result-transport.js";
 
 const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
@@ -289,7 +290,7 @@ describe("CodexRunnerAdapter", () => {
     expect(result.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
-    expect(result.metrics).toMatchObject({
+    expect(readCodexProviderUsageForResult(result)).toEqual({
       input_tokens: 100,
       output_tokens: 50,
       total_tokens: 150,
@@ -305,9 +306,6 @@ describe("CodexRunnerAdapter", () => {
         metrics?: {
           stdout_bytes?: number;
           output_last_message_bytes?: number | null;
-          input_tokens?: number;
-          output_tokens?: number;
-          total_tokens?: number;
         };
       };
     };
@@ -321,11 +319,7 @@ describe("CodexRunnerAdapter", () => {
     expect(state.result?.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(state.result?.metrics?.output_last_message_bytes).toBeGreaterThan(0);
-    expect(state.result?.metrics).toMatchObject({
-      input_tokens: 100,
-      output_tokens: 50,
-      total_tokens: 150,
-    });
+    expect(state.result?.metrics).not.toHaveProperty("input_tokens");
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       kind?: string;
       observed_by?: string;

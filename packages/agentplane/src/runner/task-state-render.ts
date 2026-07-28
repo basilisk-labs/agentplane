@@ -189,9 +189,6 @@ function renderRunnerMetrics(
         stdout_bytes?: number;
         stderr_bytes?: number;
         output_last_message_bytes?: number | null;
-        input_tokens?: number;
-        output_tokens?: number;
-        total_tokens?: number;
       }
     | null
     | undefined,
@@ -206,9 +203,6 @@ function renderRunnerMetrics(
     typeof metrics.output_last_message_bytes === "number"
   ) {
     pairs.push(`output_last_message_bytes=${metrics.output_last_message_bytes ?? "null"}`);
-  }
-  for (const field of ["input_tokens", "output_tokens", "total_tokens"] as const) {
-    if (typeof metrics[field] === "number") pairs.push(`${field}=${metrics[field]}`);
   }
   return pairs.length > 0 ? pairs.join(", ") : null;
 }
