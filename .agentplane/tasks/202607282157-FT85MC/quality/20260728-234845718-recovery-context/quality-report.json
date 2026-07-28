@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T23:48:45.929Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "bd91cba5b9925a5f098a01b936810dac4dd2a083",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "The delta after the prior independent pass is a non-semantic lint-compliance extraction; it preserves the same directory contents, JSON filtering predicate, assertion, and durable verification-record path."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
