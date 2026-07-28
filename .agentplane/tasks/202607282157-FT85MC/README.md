@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -29,28 +29,28 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T23:48:45.929Z"
+  updated_at: "2026-07-28T23:58:37.544Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "bd91cba5b9925a5f098a01b936810dac4dd2a083"
   blueprint_digest: "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9"
   evidence_refs:
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607282157-FT85MC/README.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/evaluator-observed-checks.json"
     - ".agentplane/tasks/202607282157-FT85MC/verification/20260728234729665-091784423278cb9a.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-234845718-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-235837294-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The delta after the prior independent pass is a non-semantic lint-compliance extraction; it preserves the same directory contents, JSON filtering predicate, assertion, and durable verification-record path."
+    - "The current implementation head is covered: the lint-compliance extraction is semantically neutral, while durable verification-record admission and multi-commit evaluator evidence remain exercised by focused and hosted checks."
 commit:
   hash: "e5d08a2525a0beb581ca141d9168033dad65f99d"
   message: "✅ FT85MC quality: review static-lint fixture correction"
