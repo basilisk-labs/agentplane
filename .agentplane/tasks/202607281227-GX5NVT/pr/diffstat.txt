@@ -1,0 +1,3 @@
+ .../evaluator/evaluator-episode.stdin.test.ts      | 55 ++++++++++++++++++++++
+ .../src/commands/evaluator/evaluator-episode.ts    | 23 ++++++++-
+ 2 files changed, 76 insertions(+), 2 deletions(-)

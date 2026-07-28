@@ -22,12 +22,14 @@ Prevent unhandled EPIPE when the evaluator provider closes stdin while the promp
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T12:28:33.723Z
+- Updated: 2026-07-28T12:29:58.601Z
 - Branch: task/202607281227-GX5NVT/handle-evaluator-stdin-epipe-without-unhandled-c
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../evaluator/evaluator-episode.stdin.test.ts      | 55 ++++++++++++++++++++++
+ .../src/commands/evaluator/evaluator-episode.ts    | 23 ++++++++-
+ 2 files changed, 76 insertions(+), 2 deletions(-)
 ```
 
 </details>
