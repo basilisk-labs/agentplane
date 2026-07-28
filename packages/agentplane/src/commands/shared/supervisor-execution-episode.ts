@@ -1,4 +1,5 @@
-import { mkdir, readFile, rm, stat } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -63,6 +64,10 @@ export type SupervisorEpisodeStore = {
 const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
 const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
 const JOURNAL_LOCK_WAIT_MS = 5000;
+// Provider execution has its own ten-minute hard timeout. A crashed owner is
+// therefore recoverable without allowing a second live provider to overlap it.
+const EXECUTION_LEASE_STALE_AFTER_MS = 11 * 60 * 1000;
+const EXECUTION_LEASE_OWNER_FILE = "owner";
 
 function persistedJournalDigest(
   value: unknown,
@@ -104,6 +109,56 @@ async function withJournalLock<T>(filePath: string, work: () => Promise<T>): Pro
   } finally {
     await rm(lockPath, { recursive: true, force: true });
   }
+}
+
+export type SupervisorExecutionLease = {
+  release: () => Promise<void>;
+};
+
+/**
+ * Claim the full prepare -> provider -> persist window for one task episode.
+ *
+ * The journal CAS admits only one provider intent, but evaluator preparation
+ * itself writes frozen task artifacts. Without this lease, a losing process
+ * can create those artifacts while the winner is attesting its read-only
+ * provider workspace and make the winner look like it changed the repository.
+ */
+export async function tryAcquireSupervisorExecutionLease(opts: {
+  journal_path: string;
+}): Promise<SupervisorExecutionLease | null> {
+  const leasePath = `${opts.journal_path}.execution`;
+  await mkdir(path.dirname(opts.journal_path), { recursive: true, mode: 0o700 });
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      await mkdir(leasePath, { mode: 0o700 });
+      const owner = randomUUID();
+      try {
+        await writeFile(path.join(leasePath, EXECUTION_LEASE_OWNER_FILE), `${owner}\n`, "utf8");
+      } catch (error) {
+        await rm(leasePath, { recursive: true, force: true });
+        throw error;
+      }
+      return {
+        release: async () => {
+          const observed = await readFile(
+            path.join(leasePath, EXECUTION_LEASE_OWNER_FILE),
+            "utf8",
+          ).catch(() => null);
+          if (observed?.trim() === owner) {
+            await rm(leasePath, { recursive: true, force: true });
+          }
+        },
+      };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+      const age = await stat(leasePath)
+        .then((entry) => Date.now() - entry.mtimeMs)
+        .catch(() => 0);
+      if (age <= EXECUTION_LEASE_STALE_AFTER_MS) return null;
+      await rm(leasePath, { recursive: true, force: true });
+    }
+  }
+  return null;
 }
 
 function safeTaskPathSegment(taskId: string): string {

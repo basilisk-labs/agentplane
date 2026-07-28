@@ -15,7 +15,10 @@ import type { CommandCtx } from "../../cli/spec/spec.js";
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import { CliError } from "../../shared/errors.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
-import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
+import {
+  openSupervisorExecutionEpisode,
+  tryAcquireSupervisorExecutionLease,
+} from "../shared/supervisor-execution-episode.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import {
@@ -224,200 +227,214 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
     state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
     recover_intent: false,
   });
-  let journal = opened.journal;
-  let replacementOfOperationKey: string | null = null;
-  if (opts.replacement) {
-    if (
-      journal.status === "running" &&
-      journal.cursor.phase === "ready" &&
-      journal.cursor.replacement_of_operation_key
-    ) {
-      replacementOfOperationKey = journal.cursor.replacement_of_operation_key;
-    } else {
-      try {
-        const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
-          journal,
-          state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        });
-        if (!(await opened.store.compareAndSwap(journal.digest, reserved))) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message:
-              "Evaluator replacement authorization changed concurrently; no provider episode was started. Retry after inspecting the journal.",
-          });
-        }
-        journal = reserved;
-        replacementOfOperationKey = reserved.cursor.replacement_of_operation_key ?? null;
-      } catch (error) {
-        if (error instanceof CliError) throw error;
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message:
-            "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
-          context: {
-            stop_reason: journal.stop?.reason ?? null,
-            cause: error instanceof Error ? error.message : String(error),
-          },
-        });
-      }
-    }
-  } else if (
-    journal.status === "running" &&
-    journal.cursor.phase === "ready" &&
-    journal.cursor.replacement_of_operation_key
-  ) {
+  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: opened.journal_path });
+  if (!lease) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
       message:
-        "Evaluator replacement authorization is pending; resume it with --replacement or resolve its typed stop before another provider invocation.",
+        "Another evaluator process owns this task's preparation or provider window; no provider episode was started.",
     });
   }
-  if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
-    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
-      journal,
-      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-    });
-    await opened.store.write(journal);
-  }
-  let outcome: CompletedEvaluatorOutcome;
-
-  if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
-    try {
-      outcome = await readCompletedEvaluatorOutcome({
-        git_root: opts.command.resolvedProject.gitRoot,
-        journal,
-      });
-    } catch {
-      journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
-      await opened.store.write(journal);
-      throw new CliError({
-        code: "E_RUNTIME",
-        message:
-          "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
-      });
-    }
-    const operationKey = journal.cursor.operation_key;
-    if (!operationKey) throw new Error("Evaluator supervisor intent is missing its operation key.");
-    journal = completePersistedEvaluatorEpisode({
-      journal,
-      operation_key: operationKey,
-      result: outcome.result,
-      receipt: outcome.receipt,
-    });
-    await opened.store.write(journal);
-  } else if (journal.status === "running" && journal.cursor.phase === "completed") {
-    outcome = await readCompletedEvaluatorOutcome({
-      git_root: opts.command.resolvedProject.gitRoot,
-      journal,
-    });
-  } else {
-    if (journal.status !== "running" || journal.cursor.phase !== "ready") {
-      throw new CliError({
-        code: "E_RUNTIME",
-        message:
-          "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
-      });
-    }
-    const prepared = await prepareEvaluatorReview({
-      ctx: opts.command,
-      task: opts.task,
-      evaluator: opts.evaluator,
-      provenance: "evaluator_supplied",
-    });
-    const replacementBinding = replacementOfOperationKey
-      ? { replacement_of_operation_key: replacementOfOperationKey }
-      : {};
-    const start = () =>
-      startSupervisorExecutionEpisode({
-        journal,
-        role: "EVALUATOR",
-        kind: "evaluator_episode",
-        operation_identity: {
-          evaluator_id: prepared.work_order.evaluator.id,
-          work_order_id: prepared.work_order.work_order_id,
-          ...replacementBinding,
-        },
-        precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-        authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
-        authority_digest: decision.workflowStep.preconditionFingerprint.digest,
-        work_order_ref: relativeToProject(
-          opts.command.resolvedProject.gitRoot,
-          prepared.work_order_path,
-        ),
-        effect_ref: prepared.work_order.work_order_id,
-        ...replacementBinding,
-      });
-    let started = start();
-    if (started.status === "stopped" && started.stop.reason === "stale_state") {
-      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
-        journal: started.journal,
-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-      });
-      await opened.store.write(journal);
-      started = start();
-    }
-    if (started.status !== "started") {
-      await opened.store.write(started.journal);
-      throw new CliError({
-        code: "E_RUNTIME",
-        message:
-          started.status === "effect_in_doubt"
-            ? "Evaluator supervisor journal has an effect in doubt; resolve it before retrying."
-            : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
-      });
-    }
-    if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
+  try {
+    let journal = opened.journal;
+    let replacementOfOperationKey: string | null = null;
+    if (opts.replacement) {
+      if (
+        journal.status === "running" &&
+        journal.cursor.phase === "ready" &&
+        journal.cursor.replacement_of_operation_key
+      ) {
+        replacementOfOperationKey = journal.cursor.replacement_of_operation_key;
+      } else {
+        try {
+          const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+            journal,
+            state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+          });
+          if (!(await opened.store.compareAndSwap(journal.digest, reserved))) {
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message:
+                "Evaluator replacement authorization changed concurrently; no provider episode was started. Retry after inspecting the journal.",
+            });
+          }
+          journal = reserved;
+          replacementOfOperationKey = reserved.cursor.replacement_of_operation_key ?? null;
+        } catch (error) {
+          if (error instanceof CliError) throw error;
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message:
+              "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
+            context: {
+              stop_reason: journal.stop?.reason ?? null,
+              cause: error instanceof Error ? error.message : String(error),
+            },
+          });
+        }
+      }
+    } else if (
+      journal.status === "running" &&
+      journal.cursor.phase === "ready" &&
+      journal.cursor.replacement_of_operation_key
+    ) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
         message:
-          "Evaluator supervisor journal changed before its provider intent was recorded; no provider episode was started.",
+          "Evaluator replacement authorization is pending; resume it with --replacement or resolve its typed stop before another provider invocation.",
       });
     }
-    journal = started.journal;
-    let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
-    try {
-      episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
-    } catch (error) {
-      journal = completeSupervisorExecutionEpisode({
+    if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
+      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
         journal,
-        operation_key: started.operation_key,
-        // Persist only a small classification. Provider stderr and model
-        // output can contain sensitive data and belong neither in the task
-        // record nor in the durable supervisor journal.
-        result: evaluatorProviderFailureRecord(error),
-        failed: true,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
       });
       await opened.store.write(journal);
-      throw error;
     }
-    outcome = {
-      result: episode.result,
-      receipt: episode.receipt,
-      work_order_path: prepared.work_order_path,
-      result_path: prepared.result_path,
-      report_path: prepared.report_path,
-    };
-    journal = completePersistedEvaluatorEpisode({
-      journal,
-      operation_key: started.operation_key,
-      result: outcome.result,
-      receipt: outcome.receipt,
-    });
-    await opened.store.write(journal);
-  }
+    let outcome: CompletedEvaluatorOutcome;
 
-  if (journal.status !== "running" || journal.cursor.phase !== "completed") {
-    throw new CliError({
-      code: "E_RUNTIME",
-      message:
-        "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
-    });
+    if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
+      try {
+        outcome = await readCompletedEvaluatorOutcome({
+          git_root: opts.command.resolvedProject.gitRoot,
+          journal,
+        });
+      } catch {
+        journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
+        await opened.store.write(journal);
+        throw new CliError({
+          code: "E_RUNTIME",
+          message:
+            "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
+        });
+      }
+      const operationKey = journal.cursor.operation_key;
+      if (!operationKey)
+        throw new Error("Evaluator supervisor intent is missing its operation key.");
+      journal = completePersistedEvaluatorEpisode({
+        journal,
+        operation_key: operationKey,
+        result: outcome.result,
+        receipt: outcome.receipt,
+      });
+      await opened.store.write(journal);
+    } else if (journal.status === "running" && journal.cursor.phase === "completed") {
+      outcome = await readCompletedEvaluatorOutcome({
+        git_root: opts.command.resolvedProject.gitRoot,
+        journal,
+      });
+    } else {
+      if (journal.status !== "running" || journal.cursor.phase !== "ready") {
+        throw new CliError({
+          code: "E_RUNTIME",
+          message:
+            "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
+        });
+      }
+      const prepared = await prepareEvaluatorReview({
+        ctx: opts.command,
+        task: opts.task,
+        evaluator: opts.evaluator,
+        provenance: "evaluator_supplied",
+      });
+      const replacementBinding = replacementOfOperationKey
+        ? { replacement_of_operation_key: replacementOfOperationKey }
+        : {};
+      const start = () =>
+        startSupervisorExecutionEpisode({
+          journal,
+          role: "EVALUATOR",
+          kind: "evaluator_episode",
+          operation_identity: {
+            evaluator_id: prepared.work_order.evaluator.id,
+            work_order_id: prepared.work_order.work_order_id,
+            ...replacementBinding,
+          },
+          precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+          authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
+          authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+          work_order_ref: relativeToProject(
+            opts.command.resolvedProject.gitRoot,
+            prepared.work_order_path,
+          ),
+          effect_ref: prepared.work_order.work_order_id,
+          ...replacementBinding,
+        });
+      let started = start();
+      if (started.status === "stopped" && started.stop.reason === "stale_state") {
+        journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+          journal: started.journal,
+          state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        });
+        await opened.store.write(journal);
+        started = start();
+      }
+      if (started.status !== "started") {
+        await opened.store.write(started.journal);
+        throw new CliError({
+          code: "E_RUNTIME",
+          message:
+            started.status === "effect_in_doubt"
+              ? "Evaluator supervisor journal has an effect in doubt; resolve it before retrying."
+              : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
+        });
+      }
+      if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message:
+            "Evaluator supervisor journal changed before its provider intent was recorded; no provider episode was started.",
+        });
+      }
+      journal = started.journal;
+      let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
+      try {
+        episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
+      } catch (error) {
+        journal = completeSupervisorExecutionEpisode({
+          journal,
+          operation_key: started.operation_key,
+          // Persist only a small classification. Provider stderr and model
+          // output can contain sensitive data and belong neither in the task
+          // record nor in the durable supervisor journal.
+          result: evaluatorProviderFailureRecord(error),
+          failed: true,
+        });
+        await opened.store.write(journal);
+        throw error;
+      }
+      outcome = {
+        result: episode.result,
+        receipt: episode.receipt,
+        work_order_path: prepared.work_order_path,
+        result_path: prepared.result_path,
+        report_path: prepared.report_path,
+      };
+      journal = completePersistedEvaluatorEpisode({
+        journal,
+        operation_key: started.operation_key,
+        result: outcome.result,
+        receipt: outcome.receipt,
+      });
+      await opened.store.write(journal);
+    }
+
+    if (journal.status !== "running" || journal.cursor.phase !== "completed") {
+      throw new CliError({
+        code: "E_RUNTIME",
+        message:
+          "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
+      });
+    }
+    return { ...outcome, journal, store: opened.store };
+  } finally {
+    await lease.release();
   }
-  return { ...outcome, journal, store: opened.store };
 }
 
 function relativeToProject(gitRoot: string, absolutePath: string): string {
