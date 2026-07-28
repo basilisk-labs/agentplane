@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion.",
+      "broken_invariant": "All declared Verify Steps must be executed and recorded, and pass requires evidence covering the real repeated provider episode with cumulative usage preserved.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281605-D59AS4/README.md",
+          "sha256": "sha256:2db4d9ac0a6f149072e05a47c65ff1abe77b4ee58a0d8698a83928646698477c",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
+          "section": "runner_history"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks.",
+      "broken_invariant": "The code DoD requires command-level verification records with Command, Result, Evidence, and Scope; a single aggregate note is insufficient.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run and record the declared repeated live evaluator episode, proving that a second read-only provider invocation succeeds and cumulative episodes, agent_runs, and total_tokens increase without reset.",
+    "Record independently attributable results for the focused tests, typecheck, formatting check, and routing validation, including key output and behavioral scope."
+  ],
+  "hidden_assumptions": [
+    "The fake-Codex command regression is assumed to represent the real provider recovery path despite the explicit live-episode requirement.",
+    "The aggregate TESTER note is assumed to prove every declared command although the frozen evidence contains no command executions or runner history."
+  ],
+  "recovery_context": "Implementation-level positive and terminal-stop regressions are present, but the required live repeat episode and command-level verification evidence must be executed and frozen before this review can pass."
+}

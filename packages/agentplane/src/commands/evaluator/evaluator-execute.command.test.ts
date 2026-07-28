@@ -213,21 +213,27 @@ describe("evaluator execute supervisor episode", () => {
     const initial = await runWithFakeCodex(root, taskId, fakeBin);
     expect(initial.code).toBe(0);
 
-    const journalPath = await resolveSupervisorExecutionEpisodePath({
-      git_root: root,
-      task_id: taskId,
-    });
-    const store = createSupervisorEpisodeStore(journalPath);
-    const completed = validateSupervisorExecutionEpisodeJournal(await store.read());
-    const stale = startSupervisorExecutionEpisode({
-      journal: completed,
-      role: "EVALUATOR",
-      kind: "evaluator_episode",
-      operation_identity: { retry: "after-state-change" },
-      precondition_fingerprint_digest: `sha256:${"f".repeat(64)}`,
-    });
-    if (stale.status !== "stopped") throw new Error("expected stale-state stop");
-    await store.write(stale.journal);
+    const docIo = captureStdIO();
+    try {
+      expect(
+        await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Findings",
+          "--text",
+          "Task state changed after the first evaluator episode.",
+          "--updated-by",
+          "CODER",
+          "--root",
+          root,
+        ]),
+      ).toBe(0);
+    } finally {
+      docIo.restore();
+    }
 
     const repeated = await runWithFakeCodex(root, taskId, fakeBin);
 
@@ -240,6 +246,11 @@ describe("evaluator execute supervisor episode", () => {
         usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
       },
     });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
     expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
       status: "running",
       usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
