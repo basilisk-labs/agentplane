@@ -24,12 +24,14 @@ Created: 2026-07-28T21:58:43.037Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T21:58:43.037Z
+- Updated: 2026-07-28T21:58:46.533Z
 - Branch: task/202607282157-FT85MC/freeze-full-evaluator-evidence
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/evaluator/evaluator-review-usecase.ts | 98 +++++++++++++++++++++-
+ .../evaluator/evaluator-run.command.test.ts        | 68 +++++++++++++++
+ 2 files changed, 162 insertions(+), 4 deletions(-)
 ```
 
 </details>
