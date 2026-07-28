@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -31,26 +31,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T01:12:43.813Z"
+  updated_at: "2026-07-28T01:22:53.242Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "edbda105af747db96936f5419592ee025d8a3ed2"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "1cf2e800edcb40d20ffe16dfa5034832a19537c8"
   blueprint_digest: "6e156dee17fb4c53b995e3a1cc1e4dd0d0b5876dfcda20942e9049d6afd8562b"
   evidence_refs:
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607280107-BPZFPF/README.md"
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The archived record correctly treats task_document_schema as structural authority and points to explicit omission or validation behavior, while preserving the deferred semantic-policy boundary."
+    - "The canonical package policy and repo-local policy both remove INC-20260727-01; the archival entry preserves source PR, current implementation evidence, and the explicit follow-up boundary."
+    - "Focused TaskEpisodeView regression coverage and the release incident gate pass; template synchronization now has deterministic agents:check coverage."
 commit:
   hash: "edbda105af747db96936f5419592ee025d8a3ed2"
   message: "🛡️ BPZFPF policy: archive resolved task context incident"

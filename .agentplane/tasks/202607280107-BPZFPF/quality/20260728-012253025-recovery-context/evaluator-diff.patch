@@ -1,0 +1,72 @@
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt b/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt
+index 1d78ab77a..f75a9698c 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt
+@@ -1,3 +1,4 @@
+- .agentplane/policy/incidents.md     | 3 ++-
+- docs/developer/incident-archive.mdx | 4 ++++
+- 2 files changed, 6 insertions(+), 1 deletion(-)
++ .agentplane/policy/incidents.md                | 3 ++-
++ docs/developer/incident-archive.mdx            | 4 ++++
++ packages/agentplane/assets/policy/incidents.md | 3 ++-
++ 3 files changed, 8 insertions(+), 2 deletions(-)
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md b/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md
+index e8143fe3e..647c71afe 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md
+@@ -32,9 +32,10 @@ policy routing, release incident gate, doctor, and diff checks passed.
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+- .agentplane/policy/incidents.md     | 3 ++-
+- docs/developer/incident-archive.mdx | 4 ++++
+- 2 files changed, 6 insertions(+), 1 deletion(-)
++ .agentplane/policy/incidents.md                | 3 ++-
++ docs/developer/incident-archive.mdx            | 4 ++++
++ packages/agentplane/assets/policy/incidents.md | 3 ++-
++ 3 files changed, 8 insertions(+), 2 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json b/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json
+index 549f630ff..84e3a31bc 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607280107-BPZFPF/reconcile-release-incident",
+   "created_at": "2026-07-28T01:07:40.176Z",
+-  "diffstat_sha256": "sha256:771335d65411f4cf8387a69986bd470f587de5733c3e4632eac33b579fc4abe7",
++  "diffstat_sha256": "sha256:03080115860f2b8d111f4231b87029dde44f7f694d9ecf63299e7b424acdd7d9",
+   "last_verified_at": "2026-07-28T01:12:14.139Z",
+   "last_verified_diffstat_sha256": "sha256:771335d65411f4cf8387a69986bd470f587de5733c3e4632eac33b579fc4abe7",
+   "pr_number": 4649,
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/review.md b/.agentplane/tasks/202607280107-BPZFPF/pr/review.md
+index d54e79a4e..73a1ea3f5 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/review.md
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/review.md
+@@ -29,9 +29,10 @@ Created: 2026-07-28T01:07:40.176Z
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+- .agentplane/policy/incidents.md     | 3 ++-
+- docs/developer/incident-archive.mdx | 4 ++++
+- 2 files changed, 6 insertions(+), 1 deletion(-)
++ .agentplane/policy/incidents.md                | 3 ++-
++ docs/developer/incident-archive.mdx            | 4 ++++
++ packages/agentplane/assets/policy/incidents.md | 3 ++-
++ 3 files changed, 8 insertions(+), 2 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/assets/policy/incidents.md b/packages/agentplane/assets/policy/incidents.md
+index 152162bca..6371b1a79 100644
+--- a/packages/agentplane/assets/policy/incidents.md
++++ b/packages/agentplane/assets/policy/incidents.md
+@@ -1,4 +1,5 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260727-01 | date: 2026-07-27 | scope: immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets. | tags: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor | match: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor, immutable, identity, state, metadata, semantic, narrative, blueprint, selected | failure: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (tasks.doc.required_sections) as the structural authority. | advice: Keep RF-21 narrow: record the source as task_document_schema, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task. | rule: Analogous immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets. work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607221850-9C9WBP; commit 5f48099a0104 | enforcement: manual | fixability: repo-fixable | state: open
++
++No active incidents.

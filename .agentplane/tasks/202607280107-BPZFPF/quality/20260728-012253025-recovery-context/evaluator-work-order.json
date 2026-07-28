@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607280107-BPZFPF-2595db692547683dfd1e08f3",
+  "prepared_at": "2026-07-28T01:22:53.025Z",
+  "task": {
+    "id": "202607280107-BPZFPF",
+    "revision": 16,
+    "objective": "Reconcile release incident INC-20260727-01\n\nDedicated incident review/fix for the release-blocking TaskEpisodeView section-authority entry. Verify the shipped RF-21 contract: task_document_schema is explicit, required-section omission or validation failure is enforced, and tests cover localized structural headings. Preserve final evidence in the incident archive and remove the active entry only after deterministic checks pass. Do not author a new semantic role/heading policy.",
+    "acceptance_criteria": [
+      "- In scope: Dedicated incident review/fix for the release-blocking TaskEpisodeView section-authority entry. Verify the shipped RF-21 contract: task_document_schema is explicit, required-section omission or validation failure is enforced, and tests cover localized structural headings. Preserve final evidence in the incident archive and remove the active entry only after deterministic checks pass. Do not author a new semantic role/heading policy.\n- Out of scope: unrelated refactors not required for \"Reconcile release incident INC-20260727-01\".",
+      "1. Re-read INC-20260727-01 and RF-21 evidence against the current main implementation; confirm TaskEpisodeView declares task_document_schema as its section authority and preserves explicit omission or validation failure. 2. Re-run the focused TaskEpisodeView regression suite plus the release-incident check; do not change semantic role or heading policy. 3. If the evidence is current and checks pass, move the complete incident record to docs/developer/incident-archive.mdx with task and command evidence, then remove it from the active registry. 4. Verify policy routing, doctor, and the release-incident gate; record residual risk that semantic role-policy remains intentionally deferred.",
+      "1. Run `bun test packages/agentplane/src/runner/context/task-context.test.ts`. Expected: TaskEpisodeView keeps `task_document_schema` as the stated authority; missing, oversized, and localized required sections retain explicit loss prevention.\n2. Run `node scripts/release/check-release-incidents.mjs` before archival. Expected: it fails only for `INC-20260727-01`, proving the active release blocker is precise.\n3. Archive the complete incident entry with current implementation, regression, and reconciliation evidence; remove it from `.agentplane/policy/incidents.md` only after step 1 passes.\n4. Run `node .agentplane/policy/check-routing.mjs`, `node scripts/release/check-release-incidents.mjs`, and `node packages/agentplane/bin/agentplane.js doctor`. Expected: policy routing, active-registry release gate, and repository diagnostics pass."
+    ]
+  },
+  "evaluated_sha": "1cf2e800edcb40d20ffe16dfa5034832a19537c8",
+  "blueprint_digest": "6e156dee17fb4c53b995e3a1cc1e4dd0d0b5876dfcda20942e9049d6afd8562b",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607280107-BPZFPF/README.md",
+      "sha256": "sha256:8b13a7d36071ae6fe7146d1f62bf59a57fc4f76d45e302f838a53f0f1285cdc7",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:89df3688057803afa611d0b8a2565876e51a441f007da7334afacce7c35c29de",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:6f6412bf3029daa4cda9336e4ed39b3f362fbcfa0233d46f19342bcb8994e41e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:80517d872ec61637d94d00e043ae9943335c994e507c7e1008eb0d313b3905f5",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}
