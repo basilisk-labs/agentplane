@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -64,8 +64,8 @@ quality_review:
   findings:
     - "The verification record covers the stable behavioral invariants: exactly one provider start, preserved failed history, one linked completed replacement, bounded journal usage, type safety, formatting, and policy routing."
 commit:
-  hash: "492cc88528576025cb85b297262e35226adfbe52"
-  message: "🔍 YMPY8Y evaluator: record fresh static lint quality pass"
+  hash: "7bbc3534216f6fe11ec1eb1a7f1a5d27a56e1ac1"
+  message: "🔍 YMPY8Y evaluator: refresh verification-commit quality pass"
 comments:
   -
     author: "CODER"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -194,8 +197,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Concurrent replacement verification passed for implementation 8be946fefff686fb72c2ba3ef1f06c4077f11c5f."
+  -
+    type: "status"
+    at: "2026-07-28T20:19:09.799Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T20:12:46.212Z"
+doc_updated_at: "2026-07-28T20:19:09.800Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -535,8 +545,8 @@ sections:
       Resolution: Recorded verification evidence; independent EVALUATOR review remains required.
 extensions:
   implementation_commit:
-    hash: "46008ad0693f0d94232392f4b384f2f5ecfde1f1"
-    message: "🧪 YMPY8Y task: freeze static lint rework verification"
+    hash: "f51722c22e772c920eed46234e4f4fc3e8a52d74"
+    message: "🧪 YMPY8Y task: freeze concurrent replacement verification"
   workflow_route_baseline:
     start_head_sha: "a9b9d6a834893013c30b5046d0c618cb23553638"
     version: 1
