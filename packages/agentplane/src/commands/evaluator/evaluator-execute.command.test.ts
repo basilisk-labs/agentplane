@@ -250,4 +250,39 @@ describe("evaluator execute supervisor episode", () => {
       supervisor_episode: { cursor: { phase: "ready" }, usage: { total_tokens: 150 } },
     });
   });
+
+  it("records a known read-only provider failure without reopening its intent", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE04";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    await replaceCodexWithFailure(fakeBin);
+
+    const failed = await runWithFakeCodex(root, taskId, fakeBin);
+    expect(failed.code).toBe(8);
+    expect(failed.stderr).toContain("Codex evaluator provider failed before returning a typed result");
+    expect(failed.stderr).toContain("classification=nonzero_exit exit_code=99 signal=none");
+
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const recorded = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(recorded).toMatchObject({
+      status: "stopped",
+      stop: { reason: "operation_failed" },
+      cursor: { phase: "stopped" },
+      usage: { episodes: 1, agent_runs: 1 },
+      operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "failed" }],
+    });
+    expect(JSON.stringify(recorded)).not.toContain("provider diagnostics");
+
+    const retry = await runWithFakeCodex(root, taskId, fakeBin);
+    expect(retry.code).toBe(8);
+    const afterRetry = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(afterRetry.usage).toMatchObject({ episodes: 1, agent_runs: 1 });
+  });
 });

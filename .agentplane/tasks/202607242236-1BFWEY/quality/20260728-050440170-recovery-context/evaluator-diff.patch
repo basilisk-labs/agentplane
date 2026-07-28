@@ -1,0 +1,784 @@
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+index 6f4f840a2..9779f643f 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+@@ -14,7 +14,6 @@ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.
+ import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
+ import {
+   executePreparedEvaluatorEpisode,
+-  writeEvaluatorEpisodeReceipt,
+   type EvaluatorEpisodeProvider,
+ } from "./evaluator-episode.js";
+ import {
+@@ -150,7 +149,6 @@ async function applyFixture(opts: {
+     workOrderPath: prepared.work_order_path,
+     result: episode.result,
+   });
+-  await writeEvaluatorEpisodeReceipt({ prepared, receipt: episode.receipt });
+   return {
+     prepared,
+     stored: await readTask({ cwd: opts.root, rootOverride: opts.root, taskId: opts.taskId }),
+@@ -180,6 +178,15 @@ describe("evaluator episode calibration", () => {
+       output_tokens: 50,
+       total_tokens: 150,
+     });
++    expect(JSON.parse(await readFile(prepared.result_path, "utf8"))).toEqual(episode.result);
++    expect(
++      JSON.parse(
++        await readFile(
++          path.join(path.dirname(prepared.work_order_path), "evaluator-episode.json"),
++          "utf8",
++        ),
++      ),
++    ).toEqual(episode.receipt);
+ 
+     expect(captured?.argv).toEqual([
+       "codex",
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+index d487ce5ee..6462e207e 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+@@ -343,23 +343,29 @@ export async function executePreparedEvaluatorEpisode(opts: {
+     });
+   }
+   const canonicalResult = `${JSON.stringify(result, null, 2)}\n`;
++  const receipt: EvaluatorEpisodeReceipt = {
++    schema_version: 1,
++    kind: "evaluator_episode_receipt",
++    work_order_id: invocation.work_order_id,
++    provider: "codex",
++    authority: { sandbox: "read-only", writable_roots: [] },
++    argv: invocation.argv,
++    started_at: providerResult.started_at,
++    ended_at: providerResult.ended_at,
++    stdout_bytes: providerResult.stdout_bytes,
++    stderr_bytes: providerResult.stderr_bytes,
++    provider_usage: providerResult.provider_usage ?? null,
++    workspace_state: "unchanged",
++    result_sha256: sha256(canonicalResult),
++  };
++  // These artifacts make a completed provider result recoverable before the
++  // task mutation that applies its verdict. A restart can validate and apply
++  // this outcome instead of asking the provider to repeat the evaluation.
++  await writeFile(opts.prepared.result_path, canonicalResult, "utf8");
++  await writeEvaluatorEpisodeReceipt({ prepared: opts.prepared, receipt });
+   return {
+     result,
+-    receipt: {
+-      schema_version: 1,
+-      kind: "evaluator_episode_receipt",
+-      work_order_id: invocation.work_order_id,
+-      provider: "codex",
+-      authority: { sandbox: "read-only", writable_roots: [] },
+-      argv: invocation.argv,
+-      started_at: providerResult.started_at,
+-      ended_at: providerResult.ended_at,
+-      stdout_bytes: providerResult.stdout_bytes,
+-      stderr_bytes: providerResult.stderr_bytes,
+-      provider_usage: providerResult.provider_usage ?? null,
+-      workspace_state: "unchanged",
+-      result_sha256: sha256(canonicalResult),
+-    },
++    receipt,
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+new file mode 100644
+index 000000000..28856545d
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -0,0 +1,253 @@
++import { execFile } from "node:child_process";
++import { chmod, mkdir, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import {
++  completeSupervisorExecutionEpisode,
++  createSupervisorExecutionEpisodeJournal,
++  startSupervisorExecutionEpisode,
++  validateSupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import { readTask } from "@agentplaneorg/core/tasks";
++import { captureStdIO, mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import { runCli } from "../../cli/run-cli.js";
++import {
++  createSupervisorEpisodeStore,
++  resolveSupervisorExecutionEpisodePath,
++} from "../shared/supervisor-execution-episode.js";
++import { cmdTaskAdd } from "../workflow.js";
++
++const execFileAsync = promisify(execFile);
++
++async function addTask(root: string, taskId: string): Promise<void> {
++  await cmdTaskAdd({
++    cwd: root,
++    taskIds: [taskId],
++    title: "Evaluator supervisor integration",
++    description: "Exercise one persisted EVALUATOR episode.",
++    status: "TODO",
++    priority: "med",
++    owner: "CODER",
++    tags: ["nodejs"],
++    dependsOn: [],
++    verify: [],
++    commentAuthor: null,
++    commentBody: null,
++  });
++}
++
++async function commitTarget(root: string): Promise<void> {
++  await mkdir(path.join(root, "src"), { recursive: true });
++  await writeFile(
++    path.join(root, "src", "evaluated.ts"),
++    "export const reviewed = true;\n",
++    "utf8",
++  );
++  await execFileAsync("git", ["add", "--", "src/evaluated.ts"], { cwd: root });
++  await execFileAsync("git", ["commit", "-m", "feat: evaluator execute fixture"], { cwd: root });
++}
++
++async function installFakeCodex(root: string): Promise<string> {
++  const bin = path.join(root, "fake-bin");
++  await mkdir(bin, { recursive: true });
++  const result = JSON.stringify({
++    schema_version: 1,
++    kind: "evaluator_result",
++    evaluator_id: "recovery-context",
++    verdict: "pass",
++    findings: [],
++    missing_tests: [],
++    hidden_assumptions: [],
++  });
++  const source = [
++    "#!/usr/bin/env node",
++    "process.stdin.resume();",
++    "process.stdin.on('end', () => {",
++    "  process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
++    `  process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: ${JSON.stringify(result)} } }) + '\\n');`,
++    "  process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 30, reasoning_output_tokens: 20 } }) + '\\n');",
++    "});",
++    "",
++  ].join("\n");
++  const command = path.join(bin, "codex");
++  await writeFile(command, source, "utf8");
++  await chmod(command, 0o755);
++  return bin;
++}
++
++async function replaceCodexWithFailure(fakeBin: string): Promise<void> {
++  await writeFile(path.join(fakeBin, "codex"), "#!/bin/sh\nexit 99\n", "utf8");
++  await chmod(path.join(fakeBin, "codex"), 0o755);
++}
++
++async function runWithFakeCodex(root: string, taskId: string, fakeBin: string) {
++  const previous = process.env.PATH;
++  process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
++  try {
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["evaluator", "execute", taskId, "--json", "--root", root]);
++      return { code, stdout: io.stdout, stderr: io.stderr };
++    } finally {
++      io.restore();
++    }
++  } finally {
++    if (previous === undefined) delete process.env.PATH;
++    else process.env.PATH = previous;
++  }
++}
++
++describe("evaluator execute supervisor episode", () => {
++  it("persists one bounded EVALUATOR episode and applies its durable result", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607280000-EE01";
++    await addTask(root, taskId);
++    await commitTarget(root);
++    const fakeBin = await installFakeCodex(root);
++
++    const execution = await runWithFakeCodex(root, taskId, fakeBin);
++
++    expect(execution.code).toBe(0);
++    expect(execution.stderr).toBe("");
++    const payload = JSON.parse(execution.stdout) as {
++      verdict: string;
++      supervisor_episode: {
++        status: string;
++        cursor: { phase: string };
++        usage: { episodes: number; agent_runs: number; total_tokens: number };
++      };
++    };
++    expect(payload).toMatchObject({
++      verdict: "pass",
++      supervisor_episode: {
++        status: "running",
++        cursor: { phase: "ready" },
++        usage: { episodes: 1, agent_runs: 1, total_tokens: 150 },
++      },
++    });
++    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
++    expect(stored.frontmatter.quality_review).toMatchObject({
++      state: "pass",
++      updated_by: "EVALUATOR",
++    });
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const journal = await createSupervisorEpisodeStore(journalPath).read();
++    expect(journal).toMatchObject({
++      status: "running",
++      cursor: { phase: "ready", operation_key: null },
++      usage: { episodes: 1, agent_runs: 1, total_tokens: 150 },
++      operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "completed" }],
++    });
++    expect(JSON.stringify(journal)).not.toContain("evaluator_result");
++  });
++
++  it("resumes a completed evaluator outcome without launching Codex again", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607280000-EE02";
++    await addTask(root, taskId);
++    await commitTarget(root);
++    const fakeBin = await installFakeCodex(root);
++    const initial = await runWithFakeCodex(root, taskId, fakeBin);
++    expect(initial.code).toBe(0);
++
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    const advanced = validateSupervisorExecutionEpisodeJournal(await store.read());
++    const operation = advanced.operations.at(-1);
++    if (!operation?.work_order_ref) throw new Error("missing evaluator work order reference");
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: taskId,
++      task_revision: advanced.task_revision,
++      state_fingerprint_digest: operation.precondition_fingerprint_digest,
++      budget: advanced.budget,
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { resume: operation.work_order_ref },
++      precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
++      authority_ref: operation.authority_ref,
++      authority_digest: operation.authority_digest,
++      work_order_ref: operation.work_order_ref,
++      effect_ref: operation.effect_ref,
++    });
++    if (started.status !== "started") throw new Error("expected evaluator fixture intent");
++    await store.write(
++      completeSupervisorExecutionEpisode({
++        journal: started.journal,
++        operation_key: started.operation_key,
++        result: { persisted: true },
++        usage: { input_tokens: 100, output_tokens: 50, total_tokens: 150 },
++      }),
++    );
++    await replaceCodexWithFailure(fakeBin);
++
++    const resumed = await runWithFakeCodex(root, taskId, fakeBin);
++
++    expect(resumed.code).toBe(0);
++    expect(JSON.parse(resumed.stdout)).toMatchObject({
++      verdict: "pass",
++      supervisor_episode: { cursor: { phase: "ready" }, usage: { total_tokens: 150 } },
++    });
++  });
++
++  it("completes an evaluator intent from its durable outcome without launching Codex again", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607280000-EE03";
++    await addTask(root, taskId);
++    await commitTarget(root);
++    const fakeBin = await installFakeCodex(root);
++    const initial = await runWithFakeCodex(root, taskId, fakeBin);
++    expect(initial.code).toBe(0);
++
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    const advanced = validateSupervisorExecutionEpisodeJournal(await store.read());
++    const operation = advanced.operations.at(-1);
++    if (!operation?.work_order_ref) throw new Error("missing evaluator work order reference");
++    const created = createSupervisorExecutionEpisodeJournal({
++      task_id: taskId,
++      task_revision: advanced.task_revision,
++      state_fingerprint_digest: operation.precondition_fingerprint_digest,
++      budget: advanced.budget,
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal: created,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { resume: operation.work_order_ref },
++      precondition_fingerprint_digest: operation.precondition_fingerprint_digest,
++      authority_ref: operation.authority_ref,
++      authority_digest: operation.authority_digest,
++      work_order_ref: operation.work_order_ref,
++      effect_ref: operation.effect_ref,
++    });
++    if (started.status !== "started") throw new Error("expected evaluator fixture intent");
++    await store.write(started.journal);
++    await replaceCodexWithFailure(fakeBin);
++
++    const resumed = await runWithFakeCodex(root, taskId, fakeBin);
++
++    expect(resumed.code).toBe(0);
++    expect(JSON.parse(resumed.stdout)).toMatchObject({
++      verdict: "pass",
++      supervisor_episode: { cursor: { phase: "ready" }, usage: { total_tokens: 150 } },
++    });
++  });
++});
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index 3e8807d3f..0f1861cf8 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -1,6 +1,14 @@
++import { createHash } from "node:crypto";
+ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ import { findGitRoot, resolveProject } from "@agentplaneorg/core/project";
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  startSupervisorExecutionEpisode,
++  stopSupervisorExecutionEpisode,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
+ 
+ import {
+   loadDirectSubcommandNames,
+@@ -11,6 +19,8 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
+ import { CliError, GitError } from "../../shared/errors.js";
+ import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
+ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
+ import {
+   evaluatorSpec,
+   type EvaluatorApplyParsed,
+@@ -22,12 +32,16 @@ import {
+ } from "./evaluator.spec.js";
+ import {
+   prepareEvaluatorReview,
++  isWithinRoot,
++  readWorkOrder,
++  reportPaths,
++  validateStrictEvaluatorResult,
+   type PreparedEvaluatorReview,
+ } from "./evaluator-review-usecase.js";
+ import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
+ import {
+   executePreparedEvaluatorEpisode,
+-  writeEvaluatorEpisodeReceipt,
++  type EvaluatorEpisodeReceipt,
+ } from "./evaluator-episode.js";
+ 
+ export {
+@@ -295,39 +309,356 @@ export const runEvaluatorApply: CommandHandler<EvaluatorApplyParsed> = async (ct
+   return 0;
+ };
+ 
++function sha256(value: string): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
++}
++
++function isNonNegativeInteger(value: unknown): value is number {
++  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
++}
++
++function assertPersistedEvaluatorReceipt(opts: {
++  value: unknown;
++  work_order_id: string;
++  canonical_result: string;
++}): asserts opts is {
++  value: EvaluatorEpisodeReceipt;
++  work_order_id: string;
++  canonical_result: string;
++} {
++  const receipt = opts.value;
++  if (!receipt || typeof receipt !== "object" || Array.isArray(receipt)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Persisted evaluator receipt is invalid.",
++    });
++  }
++  const value = receipt as Partial<EvaluatorEpisodeReceipt>;
++  const usage = value.provider_usage;
++  const usageIsValid =
++    usage === null ||
++    (typeof usage === "object" &&
++      usage !== null &&
++      isNonNegativeInteger(usage.input_tokens) &&
++      isNonNegativeInteger(usage.output_tokens) &&
++      isNonNegativeInteger(usage.total_tokens));
++  if (
++    value.schema_version !== 1 ||
++    value.kind !== "evaluator_episode_receipt" ||
++    value.work_order_id !== opts.work_order_id ||
++    value.provider !== "codex" ||
++    value.authority?.sandbox !== "read-only" ||
++    value.authority?.writable_roots?.length !== 0 ||
++    !usageIsValid ||
++    value.result_sha256 !== sha256(opts.canonical_result)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Persisted evaluator receipt does not attest the saved evaluator result.",
++    });
++  }
++  opts.value = value as EvaluatorEpisodeReceipt;
++}
++
++async function readCompletedEvaluatorOutcome(opts: {
++  git_root: string;
++  journal: SupervisorExecutionEpisodeJournal;
++}): Promise<{
++  result: ReturnType<typeof validateStrictEvaluatorResult>;
++  receipt: EvaluatorEpisodeReceipt;
++  work_order_path: string;
++  result_path: string;
++  report_path: string;
++}> {
++  const operation = opts.journal.operations.at(-1);
++  if (
++    (operation?.status !== "completed" && operation?.status !== "intent") ||
++    operation.role !== "EVALUATOR" ||
++    operation.kind !== "evaluator_episode" ||
++    !operation.work_order_ref
++  ) {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: "Supervisor journal completion is not an evaluator episode that can be resumed.",
++    });
++  }
++  const workOrderPath = path.resolve(opts.git_root, operation.work_order_ref);
++  if (!isWithinRoot(opts.git_root, workOrderPath)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Supervisor journal evaluator work order is outside the project root.",
++    });
++  }
++  const workOrder = readWorkOrder(JSON.parse(await readFile(workOrderPath, "utf8")) as unknown);
++  const paths = reportPaths(path.dirname(workOrderPath));
++  const result = validateStrictEvaluatorResult(
++    JSON.parse(await readFile(paths.result_path, "utf8")) as unknown,
++  );
++  const canonicalResult = `${JSON.stringify(result, null, 2)}\n`;
++  const receiptInput = JSON.parse(
++    await readFile(path.join(path.dirname(workOrderPath), "evaluator-episode.json"), "utf8"),
++  ) as unknown;
++  const receiptHolder = {
++    value: receiptInput,
++    work_order_id: workOrder.work_order_id,
++    canonical_result: canonicalResult,
++  };
++  assertPersistedEvaluatorReceipt(receiptHolder);
++  if (result.evaluator_id !== workOrder.evaluator.id) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Persisted evaluator result does not match its work order.",
++    });
++  }
++  return {
++    result,
++    receipt: receiptHolder.value,
++    work_order_path: workOrderPath,
++    result_path: paths.result_path,
++    report_path: paths.report_path,
++  };
++}
++
++function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
++  input_tokens?: number;
++  output_tokens?: number;
++  total_tokens?: number;
++  wall_time_ms: number;
++  changed_files: number;
++} {
++  const elapsed = Date.parse(receipt.ended_at) - Date.parse(receipt.started_at);
++  return {
++    ...(receipt.provider_usage ?? {}),
++    wall_time_ms: Number.isFinite(elapsed) ? Math.max(0, elapsed) : 0,
++    changed_files: 0,
++  };
++}
++
++function completePersistedEvaluatorEpisode(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  operation_key: string;
++  result: ReturnType<typeof validateStrictEvaluatorResult>;
++  receipt: EvaluatorEpisodeReceipt;
++}): SupervisorExecutionEpisodeJournal {
++  let journal = completeSupervisorExecutionEpisode({
++    journal: opts.journal,
++    operation_key: opts.operation_key,
++    result: opts.result,
++    usage: evaluatorUsage(opts.receipt),
++    progress: {
++      evaluator_id: opts.result.evaluator_id,
++      verdict: opts.result.verdict,
++      result_sha256: opts.receipt.result_sha256,
++    },
++    ...(opts.result.recovery_context
++      ? {
++          bounded_feedback: {
++            verdict: opts.result.verdict,
++            recovery_context: opts.result.recovery_context,
++          },
++        }
++      : {}),
++  });
++  if (opts.receipt.provider_usage === null) {
++    journal = stopSupervisorExecutionEpisode({
++      journal,
++      reason: "human_review",
++      exhausted_dimensions: [
++        "input_tokens_telemetry",
++        "output_tokens_telemetry",
++        "total_tokens_telemetry",
++      ],
++    });
++  }
++  return journal;
++}
++
+ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async (ctx, p) => {
+   const { command, task, evaluator } = await loadEvaluatorReviewContext({
+     ctx,
+     taskId: p.taskId,
+     evaluatorId: p.evaluator,
+   });
+-  const prepared = await prepareEvaluatorReview({
++  const decision = await buildTaskRouteDecision({
+     ctx: command,
+-    task,
+-    evaluator,
+-    provenance: "evaluator_supplied",
++    cwd: ctx.cwd,
++    rootOverride: ctx.rootOverride ?? null,
++    taskId: p.taskId,
++    includeRemote: false,
++  });
++  const opened = await openSupervisorExecutionEpisode({
++    git_root: command.resolvedProject.gitRoot,
++    task_id: p.taskId,
++    task_revision: task.revision ?? null,
++    state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++    recover_intent: false,
+   });
+-  const episode = await executePreparedEvaluatorEpisode({ ctx: command, prepared });
++  let journal = opened.journal;
++  let result: ReturnType<typeof validateStrictEvaluatorResult>;
++  let receipt: EvaluatorEpisodeReceipt;
++  let workOrderPath: string;
++  let resultPath: string;
++  let reportPath: string;
++
++  if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
++    let recovered: Awaited<ReturnType<typeof readCompletedEvaluatorOutcome>>;
++    try {
++      recovered = await readCompletedEvaluatorOutcome({
++        git_root: command.resolvedProject.gitRoot,
++        journal,
++      });
++    } catch {
++      journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
++      await opened.store.write(journal);
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
++      });
++    }
++    const operationKey = journal.cursor.operation_key;
++    if (!operationKey) throw new Error("Evaluator supervisor intent is missing its operation key.");
++    journal = completePersistedEvaluatorEpisode({
++      journal,
++      operation_key: operationKey,
++      result: recovered.result,
++      receipt: recovered.receipt,
++    });
++    await opened.store.write(journal);
++    result = recovered.result;
++    receipt = recovered.receipt;
++    workOrderPath = recovered.work_order_path;
++    resultPath = recovered.result_path;
++    reportPath = recovered.report_path;
++  } else if (journal.status === "running" && journal.cursor.phase === "completed") {
++    const resumed = await readCompletedEvaluatorOutcome({
++      git_root: command.resolvedProject.gitRoot,
++      journal,
++    });
++    result = resumed.result;
++    receipt = resumed.receipt;
++    workOrderPath = resumed.work_order_path;
++    resultPath = resumed.result_path;
++    reportPath = resumed.report_path;
++  } else {
++    if (journal.status !== "running" || journal.cursor.phase !== "ready") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
++      });
++    }
++    const prepared = await prepareEvaluatorReview({
++      ctx: command,
++      task,
++      evaluator,
++      provenance: "evaluator_supplied",
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: {
++        evaluator_id: prepared.work_order.evaluator.id,
++        work_order_id: prepared.work_order.work_order_id,
++      },
++      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
++      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
++      work_order_ref: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
++      effect_ref: prepared.work_order.work_order_id,
++    });
++    if (started.status !== "started") {
++      await opened.store.write(started.journal);
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          started.status === "effect_in_doubt"
++            ? "Evaluator supervisor journal has an effect in doubt; resolve it before retrying."
++            : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
++      });
++    }
++    journal = started.journal;
++    await opened.store.write(journal);
++    const episode = await executePreparedEvaluatorEpisode({ ctx: command, prepared });
++    result = episode.result;
++    receipt = episode.receipt;
++    workOrderPath = prepared.work_order_path;
++    resultPath = prepared.result_path;
++    reportPath = prepared.report_path;
++    journal = completePersistedEvaluatorEpisode({
++      journal,
++      operation_key: started.operation_key,
++      result,
++      receipt,
++    });
++    await opened.store.write(journal);
++    if (journal.status !== "running" || journal.cursor.phase !== "completed") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
++      });
++    }
++  }
++
++  if (journal.status !== "running" || journal.cursor.phase !== "completed") {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message:
++        "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
++    });
++  }
++
+   const currentTask = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+-  const applied = await applyEvaluatorSgrReview({
++  const resultRef = relativeToProject(command.resolvedProject.gitRoot, resultPath);
++  const alreadyApplied = currentTask.quality_review?.evidence_refs?.includes(resultRef) ?? false;
++  const applied = alreadyApplied
++    ? {
++        report_path: relativeToProject(command.resolvedProject.gitRoot, reportPath),
++        result_path: resultRef,
++      }
++    : await applyEvaluatorSgrReview({
++        ctx: command,
++        task: currentTask,
++        workOrderPath,
++        result,
++      });
++  const postDecision = await buildTaskRouteDecision({
+     ctx: command,
+-    task: currentTask,
+-    workOrderPath: prepared.work_order_path,
+-    result: episode.result,
++    cwd: ctx.cwd,
++    rootOverride: ctx.rootOverride ?? null,
++    taskId: p.taskId,
++    includeRemote: false,
++  });
++  journal = advanceSupervisorExecutionEpisodeState({
++    journal,
++    state_fingerprint_digest: postDecision.workflowStep.preconditionFingerprint.digest,
++    route_observation: { step_id: postDecision.workflowStep.id },
+   });
+-  const receiptPath = await writeEvaluatorEpisodeReceipt({ prepared, receipt: episode.receipt });
++  await opened.store.write(journal);
+   printEvaluatorPayload({
+     json: p.json,
+     title: `evaluator execute ${p.taskId}`,
+     payload: {
+-      work_order_id: prepared.work_order.work_order_id,
+-      evaluator: prepared.work_order.evaluator.id,
+-      provider: episode.receipt.provider,
+-      sandbox: episode.receipt.authority.sandbox,
+-      verdict: episode.result.verdict,
++      work_order_id: receipt.work_order_id,
++      evaluator: result.evaluator_id,
++      provider: receipt.provider,
++      sandbox: receipt.authority.sandbox,
++      verdict: result.verdict,
+       report: applied.report_path,
+       result: applied.result_path,
+-      receipt: relativeToProject(command.resolvedProject.gitRoot, receiptPath),
++      receipt: relativeToProject(
++        command.resolvedProject.gitRoot,
++        path.join(path.dirname(workOrderPath), "evaluator-episode.json"),
++      ),
++      supervisor_episode: {
++        status: journal.status,
++        cursor: journal.cursor,
++        usage: journal.usage,
++        stop: journal.stop,
++        digest: journal.digest,
++      },
+       recorded: true,
+     },
+   });
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 8c797a3f3..437a8ea58 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -105,6 +105,7 @@ export async function openSupervisorExecutionEpisode(opts: {
+   task_revision: number | null;
+   state_fingerprint_digest: string;
+   budget?: SupervisorExecutionBudget;
++  recover_intent?: boolean;
+ }): Promise<{
+   journal: SupervisorExecutionEpisodeJournal;
+   store: SupervisorEpisodeStore;
+@@ -126,7 +127,7 @@ export async function openSupervisorExecutionEpisode(opts: {
+     },
+   });
+   const journal =
+-    migration.source === "current"
++    migration.source === "current" && opts.recover_intent !== false
+       ? recoverSupervisorExecutionEpisodeJournal({
+           journal: migration.journal,
+           state_fingerprint_digest: opts.state_fingerprint_digest,

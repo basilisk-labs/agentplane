@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607242236-1BFWEY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T05:04:40.257Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "3f0c9de3cf19c8ce72bfb99d337c0be81d78fdc9",
+  "blueprint_digest": "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477",
+  "findings": [
+    "Evaluator execution persists intent before launch but turns a known nonzero provider exit into an effect-in-doubt recovery path; the next invocation cannot distinguish a graceful read-only provider failure from a crash."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Exercise a nonzero Codex evaluator exit through evaluator execute and assert a redacted terminal failure record plus an actionable classification."
+  ],
+  "hidden_assumptions": [
+    "A provider failure before a typed result is always indistinguishable from an external effect, although the evaluator authority is read-only."
+  ],
+  "residual_risks": [
+    "Record a bounded, redacted read-only provider failure before returning E_RUNTIME; preserve crash-time intent as effect_in_doubt, and add the matching restart and diagnostic tests."
+  ]
+}

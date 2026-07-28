@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607242236-1BFWEY-c7af7b73cca870857d6764b7",
+  "task_id": "202607242236-1BFWEY",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Record a bounded, redacted read-only provider failure before returning E_RUNTIME; preserve crash-time intent as effect_in_doubt, and add the matching restart and diagnostic tests.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "Evaluator execution persists intent before launch but turns a known nonzero provider exit into an effect-in-doubt recovery path; the next invocation cannot distinguish a graceful read-only provider failure from a crash.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-result.json"
+}

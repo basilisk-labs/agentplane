@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Evaluator execution persists intent before launch but turns a known nonzero provider exit into an effect-in-doubt recovery path; the next invocation cannot distinguish a graceful read-only provider failure from a crash.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Exercise a nonzero Codex evaluator exit through evaluator execute and assert a redacted terminal failure record plus an actionable classification."
+  ],
+  "hidden_assumptions": [
+    "A provider failure before a typed result is always indistinguishable from an external effect, although the evaluator authority is read-only."
+  ],
+  "recovery_context": "Record a bounded, redacted read-only provider failure before returning E_RUNTIME; preserve crash-time intent as effect_in_doubt, and add the matching restart and diagnostic tests."
+}

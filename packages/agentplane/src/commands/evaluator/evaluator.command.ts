@@ -40,6 +40,7 @@ import {
 } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
 import {
+  evaluatorProviderFailureRecord,
   executePreparedEvaluatorEpisode,
   type EvaluatorEpisodeReceipt,
 } from "./evaluator-episode.js";
@@ -580,7 +581,22 @@ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async
     }
     journal = started.journal;
     await opened.store.write(journal);
-    const episode = await executePreparedEvaluatorEpisode({ ctx: command, prepared });
+    let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
+    try {
+      episode = await executePreparedEvaluatorEpisode({ ctx: command, prepared });
+    } catch (error) {
+      journal = completeSupervisorExecutionEpisode({
+        journal,
+        operation_key: started.operation_key,
+        // Persist only a small classification. Provider stderr and model
+        // output can contain sensitive data and belong neither in the task
+        // record nor in the durable supervisor journal.
+        result: evaluatorProviderFailureRecord(error),
+        failed: true,
+      });
+      await opened.store.write(journal);
+      throw error;
+    }
     result = episode.result;
     receipt = episode.receipt;
     workOrderPath = prepared.work_order_path;
