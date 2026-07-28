@@ -30,7 +30,7 @@ Created: 2026-07-28T03:32:16.784Z
 
 ```text
  .../evaluator-episode.calibration.test.ts          |  22 +-
- .../src/commands/evaluator/evaluator-episode.ts    | 103 +++-
+ .../src/commands/evaluator/evaluator-episode.ts    | 105 +++-
  .../evaluator/evaluator-execute-supervisor.ts      | 343 ++++++++++++
  .../evaluator/evaluator-execute.command.test.ts    | 290 ++++++++++
  .../src/commands/evaluator/evaluator.command.ts    |  67 ++-
@@ -46,7 +46,7 @@ Created: 2026-07-28T03:32:16.784Z
  .../runner/supervisor-execution-episode.test.ts    | 267 +++++++++
  .../src/runner/supervisor-execution-episode.ts     | 594 +++++++++++++++++++++
  packages/core/src/schemas/index.ts                 |  37 ++
- 17 files changed, 2741 insertions(+), 69 deletions(-)
+ 17 files changed, 2742 insertions(+), 70 deletions(-)
 ```
 
 </details>
