@@ -34,11 +34,13 @@ Created: 2026-07-28T21:58:43.037Z
  .../commands/evaluator/evaluator-review-usecase.ts |  63 +++---
  .../evaluator/evaluator-run.command.test.ts        | 224 ++++++++++++++++++++-
  .../evaluator/evaluator-verification-records.ts    | 100 ++++++++-
+ .../commands/shared/quality-review-target.test.ts  |  27 +++
+ .../src/commands/shared/quality-review-target.ts   |   8 +-
  .../src/commands/task/verify-record-execute.ts     |  62 +++++-
  .../task/verify-record.durability.unit.test.ts     |  79 ++++++++
  .../src/commands/task/verify-record.unit.test.ts   |  10 +-
  .../src/commands/workflow.verify-hooks.test.ts     |  81 +++++++-
- 9 files changed, 690 insertions(+), 43 deletions(-)
+ 11 files changed, 723 insertions(+), 45 deletions(-)
 ```
 
 </details>

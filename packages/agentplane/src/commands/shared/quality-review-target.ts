@@ -13,7 +13,8 @@ function isManagedTaskArtifact(relativePath: string): boolean {
     relativePath === "README.md" ||
     relativePath.startsWith("quality/") ||
     relativePath.startsWith("pr/") ||
-    relativePath.startsWith("blueprint/")
+    relativePath.startsWith("blueprint/") ||
+    relativePath.startsWith("verification/")
   );
 }
 
@@ -156,7 +157,10 @@ export async function resolveQualityReviewTargetSha(opts: {
       });
       const touchesDerivedArtifacts = taskRelativePaths.some(
         (name) =>
-          name.startsWith("quality/") || name.startsWith("pr/") || name.startsWith("blueprint/"),
+          name.startsWith("quality/") ||
+          name.startsWith("pr/") ||
+          name.startsWith("blueprint/") ||
+          name.startsWith("verification/"),
       );
       const touchesOnlyManagedArtifacts = taskRelativePaths.every((name) =>
         isManagedTaskArtifact(name),
