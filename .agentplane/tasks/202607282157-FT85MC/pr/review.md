@@ -13,7 +13,7 @@ Created: 2026-07-28T21:58:43.037Z
 ## Verification
 
 - State: ok
-- Note: Rework verified with SHA- and scope-bound evaluator evidence.
+- Note: Rework verified with canonical, task-bound evaluator evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
