@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281605-D59AS4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T16:24:19.662Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "d74d6be94f2c5581daee824b0398adbd2138a59b",
+  "blueprint_digest": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6",
+  "findings": [
+    "The required second live evaluator episode and cumulative usage increase are not present in the frozen evidence; runner_history remains empty and the task document records only live episode 1.",
+    "The command regression changes task state before the second invocation, but it does not demonstrate that the newly added recovery branch for stale_state returned by the same start attempt is reached; the earlier journal-opening recovery path can satisfy the test."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281605-D59AS4/README.md",
+    ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Add a focused command-level test that deterministically makes startSupervisorExecutionEpisode return stale_state after preparation, proves the new same-attempt recovery branch is reached before provider intent persistence, and verifies cumulative usage remains intact.",
+    "Freeze evidence from a completed second live evaluator invocation showing increased episodes, agent_runs, and total_tokens without reset."
+  ],
+  "hidden_assumptions": [
+    "The task-state mutation before the second command is assumed to exercise the newly added same-start-attempt stale recovery branch rather than the pre-existing recovery performed immediately after opening the journal.",
+    "Successful completion of the current provider call is assumed to prove cumulative supervisor usage even though that post-call journal state is absent from the authoritative frozen evidence."
+  ],
+  "residual_risks": [
+    "The correction has an end-to-end regression and recorded local checks, but pass remains unavailable until the exact new stale-at-start branch is directly exercised and the completed repeated live episode with cumulative usage is frozen as evidence."
+  ]
+}

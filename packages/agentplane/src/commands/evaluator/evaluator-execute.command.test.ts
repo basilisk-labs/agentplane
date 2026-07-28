@@ -213,6 +213,19 @@ describe("evaluator execute supervisor episode", () => {
     const initial = await runWithFakeCodex(root, taskId, fakeBin);
     expect(initial.code).toBe(0);
 
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const readyBeforeStateChange = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(readyBeforeStateChange).toMatchObject({
+      status: "running",
+      stop: null,
+      cursor: { phase: "ready", operation_key: null },
+      usage: { episodes: 1, agent_runs: 1 },
+    });
+
     const docIo = captureStdIO();
     try {
       expect(
@@ -235,6 +248,13 @@ describe("evaluator execute supervisor episode", () => {
       docIo.restore();
     }
 
+    // task doc set changes the routed fingerprint but does not create a
+    // stopped journal. A successful retry must therefore take the
+    // stale-state branch returned by this command's own start attempt.
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toEqual(
+      readyBeforeStateChange,
+    );
+
     const repeated = await runWithFakeCodex(root, taskId, fakeBin);
 
     expect(repeated.code, repeated.stderr).toBe(0);
@@ -246,11 +266,6 @@ describe("evaluator execute supervisor episode", () => {
         usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
       },
     });
-    const journalPath = await resolveSupervisorExecutionEpisodePath({
-      git_root: root,
-      task_id: taskId,
-    });
-    const store = createSupervisorEpisodeStore(journalPath);
     expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
       status: "running",
       usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },

@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -34,29 +34,29 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T16:17:17.030Z"
+  updated_at: "2026-07-28T16:24:19.662Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "395c5c3248bc87364098cfa7f7d51f2987025489"
+  evaluated_sha: "d74d6be94f2c5581daee824b0398adbd2138a59b"
   blueprint_digest: "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6"
   evidence_refs:
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607281605-D59AS4/README.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion."
-    - "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks."
+    - "The required second live evaluator episode and cumulative usage increase are not present in the frozen evidence; runner_history remains empty and the task document records only live episode 1."
+    - "The command regression changes task state before the second invocation, but it does not demonstrate that the newly added recovery branch for stale_state returned by the same start attempt is reached; the earlier journal-opening recovery path can satisfy the test."
 commit:
   hash: "d74d6be94f2c5581daee824b0398adbd2138a59b"
   message: "fix(evaluator): recover stale journal at start"
@@ -99,7 +99,7 @@ events:
     to: "DOING"
     note: "Implementation correction: the evaluator now recovers stale_state returned by the same start attempt before any provider intent is persisted; the regression test changes real task state between episodes."
 doc_version: 3
-doc_updated_at: "2026-07-28T16:21:57.981Z"
+doc_updated_at: "2026-07-28T16:26:16.959Z"
 doc_updated_by: "CODER"
 description: "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics."
 sections:
@@ -128,12 +128,12 @@ sections:
     Expected: the second read-only provider episode succeeds and cumulative usage increases without reset.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
-    ### 2026-07-28T16:15Z — TESTER — local checks
+    ### 2026-07-28T16:25Z — TESTER — local checks
 
     - Command: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
       Result: pass
-      Evidence: core build succeeded; 2 files and 17 tests passed.
-      Scope: completed stale-state reopening, terminal effect guards, and a second fake-Codex evaluator episode with cumulative usage.
+      Evidence: core build succeeded; 2 files and 17 tests passed. The command test asserts the journal remains running and ready after task-state change, so its next success can only use the same-start stale recovery branch.
+      Scope: completed stale-state reopening, terminal effect guards, and the concrete stale response returned by the second start attempt.
 
     - Command: bun run typecheck
       Result: pass
@@ -156,6 +156,13 @@ sections:
       Result: provider completed; semantic verdict rework only because the second live episode was not yet recorded.
       Evidence: quality/20260728-161624416-recovery-context/evaluator-episode.json records read-only Codex usage input=167909, output=2091, total=170000 and unchanged workspace.
       Scope: first durable EVALUATOR supervisor episode and provider telemetry.
+
+    ### 2026-07-28T16:24Z — EVALUATOR — live episode 2 after stale-state recovery
+
+    - Command: ap evaluator execute 202607281605-D59AS4 --evaluator recovery-context --json
+      Result: provider completed; journal returned ready with episodes=2, agent_runs=2, input_tokens=543481, output_tokens=7534, total_tokens=551015.
+      Evidence: quality/20260728-162215312-recovery-context/evaluator-episode.json records the second read-only Codex invocation with input=375572, output=5443, total=381015 and unchanged workspace; CLI result recorded the cumulative journal totals.
+      Scope: real stale-state recovery before provider invocation, new episode creation, and preserved cumulative supervisor budget.
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -205,12 +212,12 @@ Expected: the second read-only provider episode succeeds and cumulative usage in
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
-### 2026-07-28T16:15Z — TESTER — local checks
+### 2026-07-28T16:25Z — TESTER — local checks
 
 - Command: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
   Result: pass
-  Evidence: core build succeeded; 2 files and 17 tests passed.
-  Scope: completed stale-state reopening, terminal effect guards, and a second fake-Codex evaluator episode with cumulative usage.
+  Evidence: core build succeeded; 2 files and 17 tests passed. The command test asserts the journal remains running and ready after task-state change, so its next success can only use the same-start stale recovery branch.
+  Scope: completed stale-state reopening, terminal effect guards, and the concrete stale response returned by the second start attempt.
 
 - Command: bun run typecheck
   Result: pass
@@ -233,6 +240,13 @@ Expected: the second read-only provider episode succeeds and cumulative usage in
   Result: provider completed; semantic verdict rework only because the second live episode was not yet recorded.
   Evidence: quality/20260728-161624416-recovery-context/evaluator-episode.json records read-only Codex usage input=167909, output=2091, total=170000 and unchanged workspace.
   Scope: first durable EVALUATOR supervisor episode and provider telemetry.
+
+### 2026-07-28T16:24Z — EVALUATOR — live episode 2 after stale-state recovery
+
+- Command: ap evaluator execute 202607281605-D59AS4 --evaluator recovery-context --json
+  Result: provider completed; journal returned ready with episodes=2, agent_runs=2, input_tokens=543481, output_tokens=7534, total_tokens=551015.
+  Evidence: quality/20260728-162215312-recovery-context/evaluator-episode.json records the second read-only Codex invocation with input=375572, output=5443, total=381015 and unchanged workspace; CLI result recorded the cumulative journal totals.
+  Scope: real stale-state recovery before provider invocation, new episode creation, and preserved cumulative supervisor budget.
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
