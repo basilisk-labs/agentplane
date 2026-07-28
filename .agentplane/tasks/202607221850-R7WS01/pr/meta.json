@@ -8,10 +8,10 @@
   "pr_number": 4650,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4650",
   "pre_merge_closure": {
-    "basis_commit": "e7465b7377c6a8af392c605de7aa4315bf107100",
+    "basis_commit": "f63905e9ace209c7dd772d564e016782ea0984ab",
     "branch": "task/202607221850-R7WS01/return-typed-runner-lifecycle-results",
     "pr_number": 4650,
-    "recorded_at": "2026-07-28T02:30:28.669Z",
+    "recorded_at": "2026-07-28T02:37:57.897Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
