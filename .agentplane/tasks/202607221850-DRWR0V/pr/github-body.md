@@ -15,12 +15,12 @@ RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop 
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files
-with zero errors and warnings.
+Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no
+behavioral test failure is reported.
 ```
 - Canonical workflow state lives in the task README.
 
