@@ -1,0 +1,1 @@
+🚧 PTG9C7 task: Prevent self-invalidating side-effect authority records [202607280606-PTG9C7]

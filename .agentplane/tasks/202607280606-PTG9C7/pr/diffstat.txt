@@ -1,0 +1,3 @@
+ .../agentplane/src/runner/context/task-context.ts  | 12 ++++-
+ .../usecases/agent-work-order.integration.test.ts  | 61 +++++++++++++++++++++-
+ 2 files changed, 70 insertions(+), 3 deletions(-)

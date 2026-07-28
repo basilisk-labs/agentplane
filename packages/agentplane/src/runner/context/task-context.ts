@@ -343,7 +343,17 @@ export async function assembleRunnerTaskContext(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const task = opts.task ?? (await loadTaskFromContext({ ctx, taskId: opts.task_id }));
+    // Route resolution treats the task worktree snapshot as authoritative in
+    // branch_pr mode. AgentWorkOrder preparation must read that same snapshot;
+    // otherwise a command invoked from the base checkout can combine an older
+    // task revision with the route fingerprint from the task branch.
+    const task =
+      opts.task ??
+      (await loadTaskFromContext({
+        ctx,
+        taskId: opts.task_id,
+        preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
+      }));
     const dependencyState = toRunnerDependencyState(
       await resolveTaskDependencyState(task, opts.dependency_backend ?? ctx.taskBackend),
     );
