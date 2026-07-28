@@ -96,19 +96,16 @@ function result(
         severity: nonPassing ? "high" : "low",
         summary: `${verdict} calibration finding from the frozen evaluator evidence.`,
         broken_invariant: nonPassing ? "calibration invariant" : "none",
-        evidence_refs: [{ path: diff.path }],
+        evidence_refs: [{ path: diff.path, sha256: null, line: null, lines: null, section: null }],
       },
     ],
     missing_tests: [],
     hidden_assumptions: [],
-    ...(nonPassing
-      ? {
-          recovery_context:
-            verdict === "human_review"
-              ? "Which of the two mutually incompatible acceptance interpretations should govern this task?"
-              : `Bounded ${verdict} follow-up required before another evaluator episode.`,
-        }
-      : {}),
+    recovery_context: nonPassing
+      ? verdict === "human_review"
+        ? "Which of the two mutually incompatible acceptance interpretations should govern this task?"
+        : `Bounded ${verdict} follow-up required before another evaluator episode.`
+      : null,
   };
 }
 
@@ -178,6 +175,14 @@ describe("evaluator episode calibration", () => {
       output_tokens: 50,
       total_tokens: 150,
     });
+    expect(episode.result.recovery_context).toBeUndefined();
+    expect(episode.result.findings[0]?.evidence_refs[0]).toEqual({
+      path: prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff")?.path,
+      sha256: undefined,
+      line: undefined,
+      lines: undefined,
+      section: undefined,
+    });
     expect(JSON.parse(await readFile(prepared.result_path, "utf8"))).toEqual(episode.result);
     expect(
       JSON.parse(
@@ -210,7 +215,37 @@ describe("evaluator episode calibration", () => {
     expect(captured?.prompt).toContain(
       "AgentPlane prepared and froze the authoritative review input",
     );
-    expect(await readFile(captured!.output_schema_path, "utf8")).toContain("human_review");
+    const outputSchema = JSON.parse(await readFile(captured!.output_schema_path, "utf8")) as {
+      required: string[];
+      properties: {
+        recovery_context: { type: string[] };
+        findings: {
+          items: {
+            properties: {
+              evidence_refs: {
+                items: {
+                  required: string[];
+                  properties: {
+                    sha256: { type: string[] };
+                    line: { type: string[] };
+                    lines: { type: string[] };
+                    section: { type: string[] };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+    const evidenceSchema = outputSchema.properties.findings.items.properties.evidence_refs.items;
+    expect(outputSchema.required).toContain("recovery_context");
+    expect(outputSchema.properties.recovery_context.type).toEqual(["string", "null"]);
+    expect(evidenceSchema.required).toEqual(["path", "sha256", "line", "lines", "section"]);
+    expect(evidenceSchema.properties.sha256.type).toEqual(["string", "null"]);
+    expect(evidenceSchema.properties.line.type).toEqual(["integer", "null"]);
+    expect(evidenceSchema.properties.lines.type).toEqual(["string", "null"]);
+    expect(evidenceSchema.properties.section.type).toEqual(["string", "null"]);
   });
 
   it.each([
@@ -275,7 +310,9 @@ describe("evaluator episode calibration", () => {
     await commitTarget(root);
     const { command, prepared } = await prepare(root, taskId);
     const invalid = result(prepared, "rework");
-    invalid.findings[0]!.evidence_refs = [{ path: "src/not-frozen.ts" }];
+    invalid.findings[0]!.evidence_refs = [
+      { path: "src/not-frozen.ts", sha256: null, line: null, lines: null, section: null },
+    ];
 
     await expect(
       executePreparedEvaluatorEpisode({ ctx: command, prepared, executor: provider(invalid) }),
