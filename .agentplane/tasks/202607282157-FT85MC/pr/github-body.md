@@ -16,7 +16,7 @@ RF-QUALITY: evaluator review must freeze the complete task branch diff against i
 ## Verification
 
 - State: ok
-- Note: Fixed hosted verify-unit regressions in durable verification fixtures.
+- Note: Fixed the hosted static lint failure in the evaluator fixture.
 - Canonical workflow state lives in the task README.
 
 <details>
