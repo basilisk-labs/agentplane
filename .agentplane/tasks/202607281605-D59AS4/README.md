@@ -1,10 +1,11 @@
 ---
 id: "202607281605-D59AS4"
 title: "Recover completed evaluator supervisor journals for new episodes"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 18
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +28,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T16:15:50.843Z"
-  updated_by: "TESTER"
-  note: "Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks passed; stale-state reopening preserves usage while terminal stops remain protected."
+  updated_at: "2026-07-28T16:33:09.902Z"
+  updated_by: "CODER"
+  note: "Verified: focused build, evaluator recovery tests, typecheck, formatting, routing, and a repeated live provider episode all passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -56,8 +57,8 @@ quality_review:
   findings:
     - "The metadata-only commit records task state and evidence; it adds no implementation behavior beyond the provider-reviewed recovery path."
 commit:
-  hash: "05b047545b610a5d7a75a125d50b9283de13b086"
-  message: "test(evaluator): prove stale start recovery"
+  hash: "f71ed6e16b2381c17cf96ad93176a26f12c640b6"
+  message: "🚧 D59AS4 task: record freshness review"
 comments:
   -
     author: "CODER"
@@ -71,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verification correction: direct command regression now proves a ready journal becomes stale only at the second start attempt, while two live read-only episodes preserve cumulative usage."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -106,8 +110,21 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Verification correction: direct command regression now proves a ready journal becomes stale only at the second start attempt, while two live read-only episodes preserve cumulative usage."
+  -
+    type: "verify"
+    at: "2026-07-28T16:33:09.902Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: focused build, evaluator recovery tests, typecheck, formatting, routing, and a repeated live provider episode all passed."
+  -
+    type: "status"
+    at: "2026-07-28T16:33:52.960Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T16:26:43.181Z"
+doc_updated_at: "2026-07-28T16:33:52.961Z"
 doc_updated_by: "CODER"
 description: "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics."
 sections:
@@ -171,6 +188,37 @@ sections:
       Result: provider completed; journal returned ready with episodes=2, agent_runs=2, input_tokens=543481, output_tokens=7534, total_tokens=551015.
       Evidence: quality/20260728-162215312-recovery-context/evaluator-episode.json records the second read-only Codex invocation with input=375572, output=5443, total=381015 and unchanged workspace; CLI result recorded the cumulative journal totals.
       Scope: real stale-state recovery before provider invocation, new episode creation, and preserved cumulative supervisor budget.
+
+    ### 2026-07-28T16:33:09.902Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: focused build, evaluator recovery tests, typecheck, formatting, routing, and a repeated live provider episode all passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T16:26:43.181Z, excerpt_hash=sha256:99eacc5453815375ee3809c5c5a449bfcb2efe45a6fc09c11289600860bd8027
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281605-D59AS4-recover-evaluator-supervisor-journals/.agentplane/tasks/202607281605-D59AS4/blueprint/resolved-snapshot.json
+    - old_digest: cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6
+    - current_digest: cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607281605-D59AS4
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -179,7 +227,14 @@ sections:
     - Observation: 17 focused tests passed, plus typecheck, changed-file formatting, and routing validation.
       Impact: A completed evaluator journal can now start a bounded follow-up episode after a state refresh without resetting budget usage.
       Resolution: Core guards reject failed and effect-in-doubt journals; evaluator command reopens only the completed stale-state form.
+
+    - Observation: The second live evaluator episode completed with cumulative usage retained at 904908 total tokens across three episodes.
+      Impact: Completed stale-state journals can resume a new evaluator episode without bypassing terminal operation protections.
+      Resolution: Reopen only stopped stale-state journals whose last operation completed; preserve usage and reject failed or effect-in-doubt journals.
 extensions:
+  implementation_commit:
+    hash: "7a23d981986df1babf5e4e682b71797e6206b099"
+    message: "chore(supervisor): record D59AS4 recovery proof"
   workflow_route_baseline:
     start_head_sha: "c8df32a5e5a1b160e9ab74e0ae6f3a97224d186f"
     version: 1
@@ -255,6 +310,37 @@ Expected: the second read-only provider episode succeeds and cumulative usage in
   Result: provider completed; journal returned ready with episodes=2, agent_runs=2, input_tokens=543481, output_tokens=7534, total_tokens=551015.
   Evidence: quality/20260728-162215312-recovery-context/evaluator-episode.json records the second read-only Codex invocation with input=375572, output=5443, total=381015 and unchanged workspace; CLI result recorded the cumulative journal totals.
   Scope: real stale-state recovery before provider invocation, new episode creation, and preserved cumulative supervisor budget.
+
+### 2026-07-28T16:33:09.902Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: focused build, evaluator recovery tests, typecheck, formatting, routing, and a repeated live provider episode all passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T16:26:43.181Z, excerpt_hash=sha256:99eacc5453815375ee3809c5c5a449bfcb2efe45a6fc09c11289600860bd8027
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281605-D59AS4-recover-evaluator-supervisor-journals/.agentplane/tasks/202607281605-D59AS4/blueprint/resolved-snapshot.json
+- old_digest: cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6
+- current_digest: cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607281605-D59AS4
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -267,3 +353,7 @@ Expected: the second read-only provider episode succeeds and cumulative usage in
 - Observation: 17 focused tests passed, plus typecheck, changed-file formatting, and routing validation.
   Impact: A completed evaluator journal can now start a bounded follow-up episode after a state refresh without resetting budget usage.
   Resolution: Core guards reject failed and effect-in-doubt journals; evaluator command reopens only the completed stale-state form.
+
+- Observation: The second live evaluator episode completed with cumulative usage retained at 904908 total tokens across three episodes.
+  Impact: Completed stale-state journals can resume a new evaluator episode without bypassing terminal operation protections.
+  Resolution: Reopen only stopped stale-state journals whose last operation completed; preserve usage and reject failed or effect-in-doubt journals.

@@ -19,8 +19,8 @@ Allow a completed evaluator supervisor episode stopped only for stale state to r
 - Note:
 
 ```text
-Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks
-passed; stale-state reopening preserves usage while terminal stops remain protected.
+Verified: focused build, evaluator recovery tests, typecheck, formatting, routing, and a repeated
+live provider episode all passed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,12 +32,12 @@ passed; stale-state reopening preserves usage while terminal stops remain protec
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-execute-supervisor.ts      |  8 +++
- .../evaluator/evaluator-execute.command.test.ts    | 47 +++++++++++++++
- .../runner/supervisor-execution-episode.test.ts    | 70 ++++++++++++++++++++++
+ .../evaluator/evaluator-execute-supervisor.ts      | 52 ++++++++++-----
+ .../evaluator/evaluator-execute.command.test.ts    | 73 ++++++++++++++++++++++
+ .../runner/supervisor-execution-episode.test.ts    | 70 +++++++++++++++++++++
  .../src/runner/supervisor-execution-episode.ts     | 36 +++++++++++
  packages/core/src/schemas/index.ts                 |  1 +
- 5 files changed, 162 insertions(+)
+ 5 files changed, 215 insertions(+), 17 deletions(-)
 ```
 
 </details>
