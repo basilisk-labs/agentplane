@@ -3,8 +3,8 @@
   "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
   "created_at": "2026-07-28T08:13:34.859Z",
   "diffstat_sha256": "sha256:fd530a9156deff0e2169f6fa262100c4f458de413e857ee5a9df924825678457",
-  "last_verified_at": "2026-07-28T08:32:16.737Z",
-  "last_verified_diffstat_sha256": "sha256:1005346f4d1fa56c44b06a895a366487d9df84c933691e7505919589ccd52fec",
+  "last_verified_at": "2026-07-28T08:51:30.504Z",
+  "last_verified_diffstat_sha256": "sha256:fd530a9156deff0e2169f6fa262100c4f458de413e857ee5a9df924825678457",
   "pr_number": 4654,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4654",
   "pre_merge_closure": {
