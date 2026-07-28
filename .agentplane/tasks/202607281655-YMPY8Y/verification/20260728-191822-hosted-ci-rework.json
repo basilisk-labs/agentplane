@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607281655-YMPY8Y",
+  "recorded_at": "2026-07-28T19:18:22Z",
+  "scope": {
+    "implementation_commit": "9ea452754fe4fbabf259cad263a0279aa78f3d2f",
+    "paths": [
+      "docs/user/cli-reference.generated.mdx",
+      "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+      "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
+    ],
+    "objective": "Resolve the hosted CI static-analysis and generated-CLI-reference failures without changing replacement semantics or the approved compatibility contract."
+  },
+  "checks": [
+    {
+      "id": "core-lint",
+      "command": "bun run lint:core",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "eslint packages scripts eslint.config.cjs vitest.config.ts completed with no findings.",
+      "evidence_scope": "hosted verify-static parity"
+    },
+    {
+      "id": "cli-reference-freshness",
+      "command": "bun run docs:cli:generate && bun run docs:cli:check",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "The generated CLI reference now includes evaluator execute --replacement and the freshness checker accepted the tracked document.",
+      "evidence_scope": "hosted verify-contract parity"
+    },
+    {
+      "id": "focused-supervisor-and-evaluator-tests",
+      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "2 test files passed; 22 tests passed, including pending-replacement recovery and independent-process provider admission.",
+      "evidence_scope": "replacement supervisor and evaluator execution"
+    },
+    {
+      "id": "critical-cli-baseline",
+      "command": "bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts --testTimeout 60000",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "1 test file passed; 7 tests passed, preserving the approved v0.7 cumulative contract candidate.",
+      "evidence_scope": "critical CLI compatibility and agent-efficiency baseline"
+    },
+    {
+      "id": "compatibility-contract-ratchet",
+      "command": "bun run bench:compatibility:check",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "The immutable v0.6.24 baseline remained unchanged and the approved v0.7 candidate accepted the sole additive replacement option.",
+      "evidence_scope": "public CLI compatibility contract"
+    },
+    {
+      "id": "typescript-build-and-format",
+      "command": "bun run typecheck && bun run format:changed",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "TypeScript build completed and all four changed files matched repository formatting.",
+      "evidence_scope": "repository type and formatting gates"
+    },
+    {
+      "id": "policy-routing",
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "policy routing OK.",
+      "evidence_scope": "AGENTS gateway and loaded code-task policy graph"
+    },
+    {
+      "id": "post-integration-real-replacement",
+      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "status": "not_run",
+      "exit_code": null,
+      "result": "Deferred until integration into main. The release gate remains: retain the original operation_failed record and prove exactly one linked completed replacement episode.",
+      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
+    }
+  ]
+}
