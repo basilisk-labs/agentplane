@@ -29,12 +29,29 @@ const CONTEXT_INGEST_RUN_PHASES = [
   "curator_running",
   "semantic_result_received",
   "artifacts_applied",
+  "wiki_report_started",
+  "wiki_indexed",
+  "wiki_reported",
+  "wiki_linted",
+  "reindexed",
+  "graph_validated",
+  "task_verified",
+  "doctor_checked",
+  "smoke_checked",
   "validated",
+  "evaluator_requested",
   "evaluated",
+  "acr_generated",
+  "acr_checked",
   "finalized",
+  "semantic_rework_requested",
 ] as const;
 
 export type ContextIngestRunPhase = (typeof CONTEXT_INGEST_RUN_PHASES)[number];
+
+export function contextIngestRunPhaseRank(phase: ContextIngestRunPhase): number {
+  return CONTEXT_INGEST_RUN_PHASES.indexOf(phase);
+}
 
 type ContextIngestRequest = {
   fingerprint: string;
@@ -57,8 +74,19 @@ export type ContextIngestRunJournal = {
   phase: ContextIngestRunPhase;
   request: ContextIngestRequest;
   run_id: string;
-  semantic?: { extraction_file: string; extraction_fingerprint?: string };
+  semantic?: {
+    extraction_file: string;
+    extraction_fingerprint?: string;
+    attempt?: number;
+  };
   source_set: ContextIngestSourceSet;
+  supervision?: {
+    rework: Array<{
+      feedback_digest: string;
+      requested_at: string;
+      work_order_file: string;
+    }>;
+  };
   task?: TaskCreationResult;
   updated_at: string;
   version: 1;
@@ -204,6 +232,7 @@ export async function advanceContextIngestRun(
     pack?: { span_count: number };
     phase: ContextIngestRunPhase;
     semantic?: { extraction_file: string };
+    supervision?: ContextIngestRunJournal["supervision"];
     task?: TaskCreationResult;
   },
 ): Promise<ContextIngestRunJournal> {
@@ -211,6 +240,7 @@ export async function advanceContextIngestRun(
     ...run,
     ...(update.pack === undefined ? {} : { pack: update.pack }),
     ...(update.semantic === undefined ? {} : { semantic: update.semantic }),
+    ...(update.supervision === undefined ? {} : { supervision: update.supervision }),
     ...(update.task === undefined ? {} : { task: update.task }),
     phase: update.phase,
     updated_at: new Date().toISOString(),
@@ -224,7 +254,7 @@ export async function advanceContextIngestRunForTask(
   taskId: string,
   update: {
     phase: ContextIngestRunPhase;
-    semantic?: { extraction_file: string; extraction_fingerprint: string };
+    semantic?: { extraction_file: string; extraction_fingerprint: string; attempt?: number };
   },
 ): Promise<ContextIngestRunJournal | null> {
   const runs = await readContextIngestRuns(root);
@@ -234,7 +264,12 @@ export async function advanceContextIngestRunForTask(
   const run = matches.at(-1);
   if (run === undefined) return null;
 
+  const acceptsReworkResult =
+    run.phase === "semantic_rework_requested" &&
+    update.phase === "semantic_result_received" &&
+    update.semantic !== undefined;
   if (
+    !acceptsReworkResult &&
     update.semantic !== undefined &&
     run.semantic !== undefined &&
     run.semantic.extraction_fingerprint !== update.semantic.extraction_fingerprint
@@ -248,10 +283,46 @@ export async function advanceContextIngestRunForTask(
     });
   }
 
-  const currentIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(run.phase);
-  const requestedIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(update.phase);
-  if (requestedIndex <= currentIndex) return run;
+  if (!acceptsReworkResult) {
+    const currentIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(run.phase);
+    const requestedIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(update.phase);
+    if (requestedIndex <= currentIndex) return run;
+  }
   return await advanceContextIngestRun(root, run, update);
+}
+
+export async function requestContextIngestSemanticRework(
+  root: string,
+  taskId: string,
+  rework: { feedback_digest: string; work_order_file: string },
+): Promise<ContextIngestRunJournal | null> {
+  const run = await findContextIngestRunForTask(root, taskId);
+  if (run === null) return null;
+  const requested_at = new Date().toISOString();
+  return await advanceContextIngestRun(root, run, {
+    phase: "semantic_rework_requested",
+    supervision: {
+      rework: [
+        ...(run.supervision?.rework ?? []),
+        {
+          feedback_digest: rework.feedback_digest,
+          requested_at,
+          work_order_file: rework.work_order_file,
+        },
+      ],
+    },
+  });
+}
+
+export async function findContextIngestRunForTask(
+  root: string,
+  taskId: string,
+): Promise<ContextIngestRunJournal | null> {
+  const runs = await readContextIngestRuns(root);
+  const matches = runs
+    .filter((run) => run.task?.task_id === taskId)
+    .toSorted((left, right) => left.updated_at.localeCompare(right.updated_at));
+  return matches.at(-1) ?? null;
 }
 
 export async function releaseContextIngestRunLease(
@@ -313,21 +384,45 @@ export async function inspectContextIngestRuns(
         level: "warning",
         message:
           `context ingest run ${run.run_id} received semantic output for ${taskId}; ` +
-          `repeat context extraction apply for ${extraction} if artifacts were not applied.`,
+          `resume CLI-owned post-processing with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
+      });
+      continue;
+    }
+    if (run.phase === "semantic_rework_requested" && taskId !== undefined) {
+      const workOrder =
+        run.supervision?.rework.at(-1)?.work_order_file ?? "the recorded rework work order";
+      diagnostics.push({
+        level: "warning",
+        message:
+          `context ingest run ${run.run_id} awaits a new CURATOR semantic result for ${taskId}; ` +
+          `use ${workOrder} and do not replay completed CLI operations.`,
       });
       continue;
     }
     if (
       (run.phase === "artifacts_applied" ||
+        run.phase === "wiki_report_started" ||
+        run.phase === "wiki_indexed" ||
+        run.phase === "wiki_reported" ||
+        run.phase === "wiki_linted" ||
+        run.phase === "reindexed" ||
+        run.phase === "graph_validated" ||
+        run.phase === "task_verified" ||
+        run.phase === "doctor_checked" ||
+        run.phase === "smoke_checked" ||
         run.phase === "validated" ||
-        run.phase === "evaluated") &&
+        run.phase === "evaluator_requested" ||
+        run.phase === "evaluated" ||
+        run.phase === "acr_generated" ||
+        run.phase === "acr_checked") &&
       taskId !== undefined
     ) {
+      const extraction = run.semantic?.extraction_file ?? "<sgr-json>";
       diagnostics.push({
         level: "warning",
         message:
           `context ingest run ${run.run_id} is incomplete at ${run.phase}; ` +
-          `continue with agentplane context finalize-task ${taskId}.`,
+          `resume with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
       });
       continue;
     }

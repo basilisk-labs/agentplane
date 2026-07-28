@@ -592,6 +592,61 @@ export function completeSupervisorExecutionEpisode(opts: {
 }
 
 /**
+ * Re-open only a durably failed CLI operation.  The previous failed attempt
+ * stays in the history and continues to count against the shared budget; the
+ * caller must supply the unchanged precondition before it can record a new
+ * intent for that same registry operation.
+ */
+export function retryFailedSupervisorExecutionEpisode(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  next_kind: SupervisorEpisodeOperationKind;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "operation_failed" ||
+    last?.status !== "failed"
+  ) {
+    return journal;
+  }
+  if (journal.state_fingerprint_digest !== opts.state_fingerprint_digest) {
+    return stoppedJournal({
+      journal,
+      reason: "stale_state",
+      exhausted_dimensions: ["state_fingerprint"],
+      at: now,
+    });
+  }
+  const exhausted = exhaustedDimensions({
+    budget: journal.budget,
+    usage: journal.usage,
+    next_kind: opts.next_kind,
+    now,
+    started_at: journal.started_at,
+  });
+  if (exhausted.length > 0) {
+    return stoppedJournal({
+      journal,
+      reason: "budget_exhausted",
+      exhausted_dimensions: exhausted,
+      at: now,
+    });
+  }
+  return createJournal({
+    ...journal,
+    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  });
+}
+
+/**
  * A new route fingerprint is accepted only after the current intent has a
  * durable outcome. This lets the supervisor continue after its own observed
  * postcondition while refusing a restart that finds a different state between

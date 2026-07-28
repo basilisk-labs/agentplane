@@ -319,6 +319,7 @@ function validateReviewedCandidate({
     "202607221849-NWVCAG",
     "202607221849-TBTX8X",
     "202607221849-8YYZ9X",
+    "202607221850-8HBF4J",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
@@ -338,6 +339,7 @@ function validateReviewedCandidate({
     "202607221849-NWVCAG",
     "202607221849-TBTX8X",
     "202607221849-8YYZ9X",
+    "202607221850-8HBF4J",
     "202607242158-QV09NA",
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
@@ -1032,6 +1034,18 @@ function validateReviewedCandidate({
   ];
   const expectedAddedCommandDescriptors = [
     {
+      id: ["context", "supervise-task"],
+      visibility: "user",
+      group: "Context",
+      args: [{ name: "task-id", required: true, variadic: false, valueHint: "<task-id>" }],
+      options: [
+        { name: "extraction", kind: "string", valueHint: "<sgr-json>", required: true },
+        { name: "smoke-query", kind: "string", valueHint: "<query>" },
+        { name: "evaluator", kind: "string", valueHint: "<id>", default: "recovery-context" },
+        { name: "json", kind: "boolean", valueHint: null, default: false },
+      ],
+    },
+    {
       id: ["evaluator", "apply"],
       visibility: "user",
       group: "Evaluators",
@@ -1169,6 +1183,33 @@ function validateReviewedCandidate({
       kind: "string",
       valueHint: "<task-id>",
       repeatable: true,
+    },
+    {
+      command: "context supervise-task",
+      name: "evaluator",
+      kind: "string",
+      valueHint: "<id>",
+      default: "recovery-context",
+    },
+    {
+      command: "context supervise-task",
+      name: "extraction",
+      kind: "string",
+      valueHint: "<sgr-json>",
+      required: true,
+    },
+    {
+      command: "context supervise-task",
+      name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "context supervise-task",
+      name: "smoke-query",
+      kind: "string",
+      valueHint: "<query>",
     },
     {
       command: "evaluator apply",
@@ -1358,6 +1399,7 @@ function validateReviewedCandidate({
     },
   ];
   const expectedAdditionSources = [
+    { kind: "command", command: "context supervise-task", source_task: "202607221850-8HBF4J" },
     { kind: "command", command: "evaluator apply", source_task: "202607221849-TBTX8X" },
     { kind: "command", command: "evaluator execute", source_task: "202607221849-8YYZ9X" },
     { kind: "command", command: "evaluator prepare", source_task: "202607221849-TBTX8X" },
@@ -1400,6 +1442,30 @@ function validateReviewedCandidate({
       command: "cleanup merged",
       name: "task-id",
       source_task: "202607230554-YFYT83",
+    },
+    {
+      kind: "option",
+      command: "context supervise-task",
+      name: "evaluator",
+      source_task: "202607221850-8HBF4J",
+    },
+    {
+      kind: "option",
+      command: "context supervise-task",
+      name: "extraction",
+      source_task: "202607221850-8HBF4J",
+    },
+    {
+      kind: "option",
+      command: "context supervise-task",
+      name: "json",
+      source_task: "202607221850-8HBF4J",
+    },
+    {
+      kind: "option",
+      command: "context supervise-task",
+      name: "smoke-query",
+      source_task: "202607221850-8HBF4J",
     },
     {
       kind: "option",
@@ -1602,6 +1668,7 @@ function validateReviewedCandidate({
   assert(
     hashJson(addedCommands) ===
       hashJson([
+        "context supervise-task",
         "evaluator apply",
         "evaluator execute",
         "evaluator prepare",
