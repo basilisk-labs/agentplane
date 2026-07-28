@@ -1,6 +1,7 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { createCliEmitter } from "../../cli/output.js";
+import { maybeAutoCommitTaskPrArtifacts } from "../pr/internal/auto-commit.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
   appendSideEffectAuthorityAudit,
@@ -155,7 +156,7 @@ export function makeRunTaskAuthorityGrantHandler(getCtx: (cmd: string) => Promis
     const issuedAt = now.toISOString();
     const expiresAt = new Date(now.getTime() + parsed.ttlMinutes * 60_000).toISOString();
     let grantId: string | null = null;
-    await applyTaskMutation({
+    const mutation = await applyTaskMutation({
       ctx: commandCtx,
       taskId: parsed.taskId,
       build: (task) => {
@@ -200,10 +201,21 @@ export function makeRunTaskAuthorityGrantHandler(getCtx: (cmd: string) => Promis
         return { nextTask: { ...task, extensions: withSideEffectAuthorityState(task, audited) } };
       },
     });
+    const branch = decision.workspace.prBranch;
+    const authorityArtifactCommitted =
+      mutation.changed && branch
+        ? await maybeAutoCommitTaskPrArtifacts({
+            ctx: commandCtx,
+            taskId: parsed.taskId,
+            branch,
+            baseBranch: decision.workspace.baseBranch,
+            strategy: "commit",
+          })
+        : false;
     createCliEmitter().success(
       "task authority grant",
       parsed.taskId,
-      `authority=${grantId ?? "recorded"} expires_at=${expiresAt}`,
+      `authority=${grantId ?? "recorded"} expires_at=${expiresAt}${authorityArtifactCommitted ? " committed" : ""}`,
     );
     return 0;
   };

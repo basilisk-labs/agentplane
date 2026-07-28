@@ -1,0 +1,1 @@
+🚧 WHE7JS task: Break authority-close lifecycle feedback loop [202607280900-WHE7JS]
