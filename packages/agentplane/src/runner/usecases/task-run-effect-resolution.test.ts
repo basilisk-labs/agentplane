@@ -227,7 +227,9 @@ describe("task runner effect resolution", () => {
       .mockImplementation(async (...args) => {
         const isRetirementWaitRead =
           args[1] === "runner active claim" &&
-          new Error().stack?.includes("waitForConcurrentResolutionRetirement");
+          new Error("capture retirement wait stack").stack?.includes(
+            "waitForConcurrentResolutionRetirement",
+          );
         if (isRetirementWaitRead) {
           retirementWaitReads += 1;
           if (!collisionInjected) {
