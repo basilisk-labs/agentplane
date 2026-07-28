@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281455-147Q75",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T15:36:51.396Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Independent review of the CI recovery patch: the null-normalization traversal now treats external arrays as unknown values before record narrowing, preserving the schema compatibility behavior while satisfying strict TypeScript safety.",
+  "evaluated_sha": "5fe3f261279c62fbcda629d4ee6cb539fdc956e1",
+  "blueprint_digest": "502c33075284ce6f9aa46423f98024e5cae094e841cac21d82f799f5898e4d05",
+  "findings": [
+    "The normalization path preserves its read-only semantics: only null placeholders are removed from copied records, while non-record and array values remain opaque unknown values."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+    "5fe3f261279c62fbcda629d4ee6cb539fdc956e1"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
