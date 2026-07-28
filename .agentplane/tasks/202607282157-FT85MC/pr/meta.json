@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607282157-FT85MC/freeze-full-evaluator-evidence",
   "created_at": "2026-07-28T21:58:43.037Z",
-  "diffstat_sha256": "sha256:8ff2117beb80872eb18a797d9e99a9c22074614bfaf74c81ba48eb24b3d8b68e",
+  "diffstat_sha256": "sha256:e25d7ffbf0d5d4b016f2e7c15be4d5b888d799316a5d8f6308baca120cc874d2",
   "last_verified_at": "2026-07-28T23:01:16.841Z",
   "last_verified_diffstat_sha256": "sha256:8ff2117beb80872eb18a797d9e99a9c22074614bfaf74c81ba48eb24b3d8b68e",
   "pr_number": 4666,

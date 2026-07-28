@@ -78,14 +78,22 @@ export async function renderActualDiff(
   gitRoot: string,
   evaluatedSha: string | null,
   diffBaseSha: string | null,
+  taskArtifactRoot?: string,
 ): Promise<string> {
   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
   try {
+    const artifactRoot = taskArtifactRoot?.trim().replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
+    const qualityExclude = artifactRoot
+      ? ["--", ".", `:(exclude,glob)${artifactRoot}/quality/**`]
+      : [];
     const { stdout } = await execFileAsync(
       "git",
-      diffBaseSha
-        ? ["diff", "--no-ext-diff", "--find-renames", "--binary", diffBaseSha, evaluatedSha]
-        : ["show", "--format=", "--root", "--find-renames", "--binary", evaluatedSha],
+      [
+        ...(diffBaseSha
+          ? ["diff", "--no-ext-diff", "--find-renames", "--binary", diffBaseSha, evaluatedSha]
+          : ["show", "--format=", "--root", "--find-renames", "--binary", evaluatedSha]),
+        ...qualityExclude,
+      ],
       { cwd: gitRoot, maxBuffer: 16 * 1024 * 1024 },
     );
     return stdout || "No file diff was recorded for the evaluated commit.\n";

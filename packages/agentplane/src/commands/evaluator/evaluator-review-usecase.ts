@@ -314,7 +314,12 @@ export async function prepareEvaluatorReview(opts: {
   await mkdir(reviewDir, { recursive: true });
   await writeFile(
     path.join(reviewDir, EVALUATOR_DIFF_FILE),
-    await renderActualDiff(gitRoot, evaluatedSha, diffBaseSha),
+    await renderActualDiff(
+      gitRoot,
+      evaluatedSha,
+      diffBaseSha,
+      path.join(opts.ctx.config.paths.workflow_dir, opts.task.id),
+    ),
     "utf8",
   );
   await writeFile(
@@ -589,8 +594,4 @@ export async function assertWorkOrderCurrent(opts: {
       });
     }
   }
-}
-
-export function evaluatorSummary(result: EvaluatorSgrResult): string {
-  return `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`;
 }
