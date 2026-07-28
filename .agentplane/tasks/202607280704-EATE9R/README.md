@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -26,27 +26,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T07:14:04.741Z"
+  updated_at: "2026-07-28T07:22:12.337Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "4e4708b49d94193df8aaa204f5b85b4a38042fdc"
+  evaluated_sha: "779fa87dd699d829d4990e0c5fddcc591da3fd99"
   blueprint_digest: "a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712"
   evidence_refs:
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607280704-EATE9R/README.md"
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-072212216-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The direct head-equality path is unchanged; mismatch is cleared only after authenticated provider commit-parent evidence proves a base-only branch update."
+    - "Current head retains the exact two-parent proof and passes the previously missed lint gate before publication."
 commit:
   hash: "4e4708b49d94193df8aaa204f5b85b4a38042fdc"
   message: "fix: prove cleanup after provider branch update"
