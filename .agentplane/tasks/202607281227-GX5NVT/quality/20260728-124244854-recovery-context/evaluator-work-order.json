@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607281227-GX5NVT-ebebf59a8b78944da4753e36",
+  "prepared_at": "2026-07-28T12:42:44.854Z",
+  "task": {
+    "id": "202607281227-GX5NVT",
+    "revision": 8,
+    "objective": "Handle evaluator stdin EPIPE without unhandled CI failures\n\nPrevent unhandled EPIPE when the evaluator provider closes stdin while the prompt is being dispatched; retain provider failure semantics and add a deterministic regression test.",
+    "acceptance_criteria": [
+      "- In scope: Prevent unhandled EPIPE when the evaluator provider closes stdin while the prompt is being dispatched; retain provider failure semantics and add a deterministic regression test.\n- Out of scope: unrelated refactors not required for \"Handle evaluator stdin EPIPE without unhandled CI failures\".",
+      "1. Add a deterministic regression case for evaluator stdin closing during prompt dispatch. 2. Make the evaluator subprocess boundary consume or classify EPIPE without producing an unhandled exception, while preserving the provider failure receipt. 3. Run focused evaluator tests, typecheck, and the fast unit suite; record the GitHub CI result.",
+      "1. Run the focused evaluator execution test, including a regression where stdin closes before or during prompt dispatch; expected: a structured provider failure is recorded and Vitest reports no unhandled EPIPE. 2. Run bun run typecheck; expected: pass. 3. Run bun run test:fast; expected: pass with zero unhandled errors. 4. Confirm the hosted PR Core CI reports a successful PR verification check."
+    ]
+  },
+  "evaluated_sha": "e8d2650798209554d4519eddcd9aba9999c34fd2",
+  "blueprint_digest": "01e50c6e6be52a0e7a2cebf32aa6f8a3d70ea438ee9bcb35e88fc07149a779b2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607281227-GX5NVT/README.md",
+      "sha256": "sha256:d6be7d2115ca7fd3a5153f746606ae5e8c7291a4ad8c30c7287429c7396ef264",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607281227-GX5NVT/quality/20260728-124244854-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:cf63e5344bfd3da4ac8b8f4d5aa816053d3adb5caf299e408867431779443175",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607281227-GX5NVT/quality/20260728-124244854-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:b435f13d7d575d96957841d23ffe7a8e7f02c8d361ffe6f3f260e25e9db8fa42",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607281227-GX5NVT/quality/20260728-124244854-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:36a314843da5d4cd01210f743355ace7a9413b3b0c5a25ff1b9ba9df53099df6",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

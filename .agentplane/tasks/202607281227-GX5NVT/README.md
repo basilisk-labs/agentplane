@@ -1,10 +1,11 @@
 ---
 id: "202607281227-GX5NVT"
 title: "Handle evaluator stdin EPIPE without unhandled CI failures"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -49,8 +50,8 @@ quality_review:
     - "Reviewed the close/error ordering: stdin errors are observed before prompt dispatch completion, terminate an unusable child, and are converted on close to stdin_write_failure with exit and signal metadata."
     - "Reviewed regression coverage: the mocked child emits EPIPE before close; the test requires a typed failure and proves the error listener prevents an unhandled stream error."
 commit:
-  hash: "e8d2650798209554d4519eddcd9aba9999c34fd2"
-  message: "🚧 GX5NVT task: handle closed evaluator stdin"
+  hash: "3ed27b61ad5a6dcf754a3f1cea51654ee3a1d20e"
+  message: "🧩 GX5NVT task: refresh task artifacts after commit"
 comments:
   -
     author: "CODER"
@@ -58,6 +59,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented typed stdin_write_failure handling for evaluator prompt dispatch; added deterministic EPIPE regression coverage. Checks: focused evaluator tests, bun run typecheck, and bun run test:fast (480 files, 3345 tests) passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -79,8 +83,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-episode.stdin.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts; Result: pass (2 files, 5 tests), deterministic EPIPE becomes stdin_write_failure with no unhandled error. Command: bun run typecheck; Result: pass. Command: bun run test:fast; Result: pass (480 files, 3345 tests) with no unhandled errors. Scope: evaluator stdin dispatch and repository fast regression suite. Residual risk: hosted PR verification remains required."
+  -
+    type: "status"
+    at: "2026-07-28T12:43:06.800Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T12:41:39.872Z"
+doc_updated_at: "2026-07-28T12:43:06.800Z"
 doc_updated_by: "CODER"
 description: "Prevent unhandled EPIPE when the evaluator provider closes stdin while the prompt is being dispatched; retain provider failure semantics and add a deterministic regression test."
 sections:
@@ -187,6 +198,9 @@ extensions:
         stateFingerprintDigest: "sha256:9c4a6c3585819d9483f829bb534a3c7bc1f8038f955863904ab7f401e0ed1929"
         stateScopeDigest: "sha256:4efaa023bb3508066c2f84cac092976b44a433f18eb0bf870e5b285bb7cd01db"
     schemaVersion: 1
+  implementation_commit:
+    hash: "e8d2650798209554d4519eddcd9aba9999c34fd2"
+    message: "🚧 GX5NVT task: handle closed evaluator stdin"
   workflow_route_baseline:
     start_head_sha: "47213e98e23ec136566a31bb1ef6c44f16d64690"
     version: 1

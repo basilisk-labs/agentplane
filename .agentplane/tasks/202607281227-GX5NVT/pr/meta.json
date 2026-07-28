@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:221a90aee8c8c011f6a989d0ac01eaf5c1112c8abc109619f429bd8ea93051f3",
   "pr_number": 4657,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4657",
+  "pre_merge_closure": {
+    "basis_commit": "3ed27b61ad5a6dcf754a3f1cea51654ee3a1d20e",
+    "branch": "task/202607281227-GX5NVT/handle-evaluator-stdin-epipe-without-unhandled-c",
+    "pr_number": 4657,
+    "recorded_at": "2026-07-28T12:43:06.854Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607281227-GX5NVT",
