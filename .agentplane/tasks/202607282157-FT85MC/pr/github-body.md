@@ -16,7 +16,7 @@ RF-QUALITY: evaluator review must freeze the complete task branch diff against i
 ## Verification
 
 - State: ok
-- Note: Rework verified with concrete, evaluator-admissible command evidence.
+- Note: Rework verified with bounded full diff and concrete evaluator evidence.
 - Canonical workflow state lives in the task README.
 
 <details>

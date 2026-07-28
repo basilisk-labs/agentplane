@@ -13,7 +13,7 @@ Created: 2026-07-28T21:58:43.037Z
 ## Verification
 
 - State: ok
-- Note: Rework verified with concrete, evaluator-admissible command evidence.
+- Note: Rework verified with bounded full diff and concrete evaluator evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
