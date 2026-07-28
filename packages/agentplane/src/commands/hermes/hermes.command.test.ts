@@ -313,7 +313,16 @@ describe("hermes adapter commands", () => {
             };
           };
         };
-        workflow_supervision: { audit: { event: string }[] };
+        workflow_supervision: {
+          audit: { event: string }[];
+          episode: {
+            status: string;
+            cursor: { phase: string; operation_key: string | null };
+            usage: { episodes: number; agent_runs: number };
+            stop: null;
+            digest: string;
+          } | null;
+        };
         refreshed_route: { task: { id: string } };
       };
       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
@@ -343,6 +352,13 @@ describe("hermes adapter commands", () => {
         "operation_executed",
         "route_refreshed",
       ]);
+      expect(payload.workflow_supervision.episode).toMatchObject({
+        status: "running",
+        cursor: { phase: "ready", operation_key: null },
+        usage: { episodes: 1, agent_runs: 1 },
+        stop: null,
+      });
+      expect(payload.workflow_supervision.episode?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
       expect(payload.refreshed_route.task.id).toBe(taskId);
     } finally {
       io.restore();
