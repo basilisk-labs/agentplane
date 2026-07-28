@@ -16,7 +16,7 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 ## Verification
 
 - State: ok
-- Note: Concurrent replacement verification passed for implementation 8be946fefff686fb72c2ba3ef1f06c4077f11c5f.
+- Note: Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5.
 - Canonical workflow state lives in the task README.
 
 <details>

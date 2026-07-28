@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T20:12:45.443Z"
+  updated_at: "2026-07-28T20:36:00.147Z"
   updated_by: "TESTER"
-  note: "Concurrent replacement verification passed for implementation 8be946fefff686fb72c2ba3ef1f06c4077f11c5f."
+  note: "Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5."
   attempts: 0
 quality_review:
   state: "pass"
@@ -204,8 +204,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T20:36:00.147Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5."
 doc_version: 3
-doc_updated_at: "2026-07-28T20:19:09.800Z"
+doc_updated_at: "2026-07-28T20:36:00.938Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -515,6 +521,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T20:36:00.147Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T20:19:09.800Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+    - old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -543,6 +579,10 @@ sections:
     - Observation: 22 focused supervisor and evaluator tests, typecheck, format, and routing passed.
       Impact: The cross-process regression now checks durable provider and journal invariants rather than load-dependent exit-code ordering.
       Resolution: Recorded verification evidence; independent EVALUATOR review remains required.
+
+    - Observation: 15 stress runs, 22 focused tests, and the full 3358-test fast suite passed.
+      Impact: Only the lease owner may prepare artifacts or invoke the provider, removing the workspace-attestation race.
+      Resolution: Recorded fresh verification evidence; refresh EVALUATOR quality and hosted checks.
 extensions:
   implementation_commit:
     hash: "f51722c22e772c920eed46234e4f4fc3e8a52d74"
@@ -868,6 +908,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T20:36:00.147Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T20:19:09.800Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+- old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -900,3 +970,7 @@ DecisionContextRef:
 - Observation: 22 focused supervisor and evaluator tests, typecheck, format, and routing passed.
   Impact: The cross-process regression now checks durable provider and journal invariants rather than load-dependent exit-code ordering.
   Resolution: Recorded verification evidence; independent EVALUATOR review remains required.
+
+- Observation: 15 stress runs, 22 focused tests, and the full 3358-test fast suite passed.
+  Impact: Only the lease owner may prepare artifacts or invoke the provider, removing the workspace-attestation race.
+  Resolution: Recorded fresh verification evidence; refresh EVALUATOR quality and hosted checks.
