@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The implementation freezes the complete merge-base-to-evaluated-SHA patch, excludes recursive quality artifacts, preserves explicit no-work-unit evidence, and fails closed when a branch_pr base cannot be resolved.",
+      "broken_invariant": "No invariant is broken; the approved full-branch evidence contract is satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:7f65fc67d593f9ac620f9ff2b9d9d4b77ee36dfdfe467ff3cb7a8eeed15aa465",
+          "section": "evaluator-diff-evidence implementation and regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:7ed3c870d46ae93f6cc4d554593965e1b338f26e6cdd972c8666433c5f903bd7",
+          "section": "verification_records"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728231233985-503fe218300f70e1.json",
+          "sha256": "sha256:b7399fdbcfc8307a5cad74f046e33e4dce8a798bb8c2504eeb8885b7b3549c2d",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The configured branch_pr base reference or task PR metadata continues to represent the intended integration base at evaluator preparation time."
+  ]
+}
