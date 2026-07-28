@@ -3,6 +3,10 @@ import { promisify } from "node:util";
 
 import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import {
+  executeTaskRunnerExecution,
+  prepareTaskRunnerExecution,
+} from "../../runner/usecases/task-run.js";
+import {
   prepareAgentWorkOrder,
   requirePreparedAgentWorkOrder,
 } from "../../runner/usecases/agent-work-order.js";
@@ -11,10 +15,10 @@ import {
   routeRunnerContextIsRelevant,
 } from "../shared/route-guidance.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
-import type { RouteExecutionPacket } from "../shared/route-oracle.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
+import type { WorkflowOperation } from "../shared/workflow-step.js";
 
-import { currentAgentplaneCommand } from "./hermes-environment.js";
 export {
   currentAgentplaneCommand,
   hermesEnvSnapshot,
@@ -29,19 +33,6 @@ export const HERMES_LIFECYCLE_ACTIONS = ["comment", "block", "complete", "heartb
 export type HermesLifecycleAction = (typeof HERMES_LIFECYCLE_ACTIONS)[number];
 
 export type HermesLocalProjection = Awaited<ReturnType<typeof routePacket>>;
-
-export type HermesRoutePacketForExecution = {
-  task: {
-    id: string;
-    title: string;
-    owner: string | null;
-  };
-  next_action: {
-    code: string;
-    summary: string;
-  };
-  execution_packet: Pick<RouteExecutionPacket, "actionKind" | "exactArgv" | "safeToMutate">;
-};
 
 function taskTerminalForHermesComplete(task: {
   status: string;
@@ -114,7 +105,7 @@ export function routeNeedsRunnerProjection(decision: TaskRouteDecision): boolean
   return routeRunnerContextIsRelevant(deriveRouteOperatorGuidance(decision));
 }
 
-export async function routePacket(opts: {
+export async function prepareHermesRoute(opts: {
   ctx: CommandContext;
   cwd: string;
   rootOverride: string | null;
@@ -151,7 +142,7 @@ export async function routePacket(opts: {
     agentplane_authority: "engineering_task_lifecycle",
     status_sync: "projection_only",
   };
-  return {
+  const packet = {
     task: {
       id: decision.task.id,
       title: decision.task.title,
@@ -200,6 +191,17 @@ export async function routePacket(opts: {
       authority: projectionBoundary,
     },
   };
+  return { decision, packet };
+}
+
+export async function routePacket(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride: string | null;
+  taskId: string;
+  includeRemote?: boolean;
+}) {
+  return (await prepareHermesRoute(opts)).packet;
 }
 
 export function buildHermesLifecycleRecommendation(
@@ -237,95 +239,59 @@ export function buildHermesLifecycleRecommendation(
   };
 }
 
-function typedAgentplaneArgs(packet: HermesRoutePacketForExecution): string[] | null {
-  if (packet.execution_packet.actionKind !== "local_command") return null;
-  const argv = packet.execution_packet.exactArgv;
-  if (argv?.[0] !== "agentplane") return null;
-  return argv.slice(1);
-}
-
-function blockedTypedStep(packet: HermesRoutePacketForExecution, reason: string) {
-  return {
-    code: packet.next_action.code,
-    args: null,
-    reason,
-  };
-}
-
-export function executableStepFor(packet: HermesRoutePacketForExecution): {
-  code: string;
-  args: string[] | null;
-  reason: string | null;
-} {
-  const taskId = packet.task.id;
-  const args = typedAgentplaneArgs(packet);
-  if (!args) {
-    return blockedTypedStep(
-      packet,
-      packet.next_action.code === "continue_direct"
-        ? "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command"
-        : "Agentplane route does not authorize a local typed command for Hermes execution",
-    );
-  }
-  if (
-    packet.execution_packet.safeToMutate &&
-    args.length === 3 &&
-    args[0] === "task" &&
-    args[1] === "run" &&
-    args[2] === taskId
-  ) {
-    return { code: packet.next_action.code, args, reason: null };
-  }
-  if (!packet.execution_packet.safeToMutate) {
-    return blockedTypedStep(
-      packet,
-      "Hermes may execute only a mutation-authorized typed task runner command",
-    );
-  }
-  return blockedTypedStep(
-    packet,
-    "Hermes allowlist permits only the exact typed task runner argv for the current task",
-  );
-}
-
-export async function runAgentplaneStep(args: string[], root: string, dryRun: boolean) {
-  const command = currentAgentplaneCommand();
-  const fullArgs = [...command.argsPrefix, ...args, "--root", root];
-  if (dryRun) {
+/**
+ * Hermes is only an adapter. It may invoke the shared runner use case for the
+ * one typed runner operation; it never reconstructs or spawns a CLI command.
+ */
+export async function executeHermesWorkflowOperation(opts: {
+  ctx: CommandContext;
+  cwd: string;
+  rootOverride: string | null;
+  includeRemote: boolean;
+  dryRun: boolean;
+  operation: WorkflowOperation;
+}): Promise<WorkflowSupervisorOperationResult> {
+  if (opts.operation.id !== "runner.follow" || opts.operation.params.mode !== "run") {
     return {
-      executed: false,
-      dry_run: true,
-      command: [command.command, ...fullArgs],
-      exit_code: null,
-      stdout: "",
-      stderr: "",
+      status: "failed",
+      observed_postconditions: [],
+      detail: `Hermes has no in-process executor for typed operation ${opts.operation.id}`,
+      exit_code: 1,
     };
   }
-  try {
-    const result = await execFileAsync(command.command, fullArgs, {
-      cwd: root,
-      env: process.env,
-      maxBuffer: 1024 * 1024 * 4,
+
+  const taskId = opts.operation.params.taskId;
+  if (opts.dryRun) {
+    const prepared = await prepareTaskRunnerExecution({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      task_id: taskId,
+      mode: "dry_run",
+      ...(opts.includeRemote ? { include_remote: true } : {}),
     });
     return {
-      executed: true,
-      dry_run: false,
-      command: [command.command, ...fullArgs],
-      exit_code: 0,
-      stdout: result.stdout,
-      stderr: result.stderr,
-    };
-  } catch (err) {
-    const maybe = err as { code?: unknown; stdout?: unknown; stderr?: unknown; message?: string };
-    return {
-      executed: true,
-      dry_run: false,
-      command: [command.command, ...fullArgs],
-      exit_code: typeof maybe.code === "number" ? maybe.code : 1,
-      stdout: typeof maybe.stdout === "string" ? maybe.stdout : "",
-      stderr: typeof maybe.stderr === "string" ? maybe.stderr : (maybe.message ?? String(err)),
+      status: "succeeded",
+      observed_postconditions: ["runner_state_observed"],
+      detail: `prepared runner invocation ${prepared.invocation.run_id} for ${taskId}`,
+      exit_code: null,
     };
   }
+
+  const executed = await executeTaskRunnerExecution({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    task_id: taskId,
+    ...(opts.includeRemote ? { include_remote: true } : {}),
+  });
+  const succeeded = executed.result.status === "success" && !executed.active_claim_cleanup;
+  return {
+    status: succeeded ? "succeeded" : "failed",
+    observed_postconditions: ["runner_state_observed"],
+    detail: executed.result.summary ?? `runner execution completed for ${taskId}`,
+    exit_code: executed.result.exit_code,
+  };
 }
 
 export function hermesCliCommand(): string {

@@ -3,11 +3,7 @@ import { describe, expect, it } from "vitest";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 
 import { runCli } from "../../cli/run-cli.js";
-import {
-  executableStepFor,
-  routeNeedsRunnerProjection,
-  runAgentplaneStep,
-} from "./hermes-runtime.js";
+import { routeNeedsRunnerProjection } from "./hermes-runtime.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
 import { chmod, mkdir, writeFile } from "node:fs/promises";
@@ -88,140 +84,6 @@ async function createRunnableDirectTask(root: string): Promise<string> {
 }
 
 describe("hermes adapter commands", () => {
-  it("allowlists same-task typed Agentplane task run actions only", () => {
-    const taskId = "202606010525-5TJNPS";
-    const packet = {
-      task: { id: taskId, title: "Hermes task run", owner: "CODER" },
-      next_action: {
-        code: "run_task",
-        summary: "Launch the configured task runner.",
-      },
-      execution_packet: {
-        actionKind: "local_command" as const,
-        safeToMutate: true,
-        exactArgv: ["agentplane", "task", "run", taskId],
-      },
-    };
-
-    expect(executableStepFor(packet).args).toEqual(["task", "run", taskId]);
-    expect(
-      executableStepFor({
-        ...packet,
-        execution_packet: {
-          ...packet.execution_packet,
-          exactArgv: ["agentplane", "task", "run", "202606010525-OTHER"],
-        },
-      }).args,
-    ).toBeNull();
-    expect(
-      executableStepFor({
-        ...packet,
-        execution_packet: {
-          ...packet.execution_packet,
-          exactArgv: ["agentplane", "task", "run", taskId, "--unsafe"],
-        },
-      }).args,
-    ).toBeNull();
-    expect(
-      executableStepFor({
-        ...packet,
-        execution_packet: {
-          ...packet.execution_packet,
-          safeToMutate: false,
-        },
-      }).args,
-    ).toBeNull();
-    expect(
-      executableStepFor({
-        ...packet,
-        next_action: { code: "open_pr", summary: "publish the task PR" },
-        execution_packet: {
-          ...packet.execution_packet,
-          exactArgv: ["agentplane", "pr", "open", taskId, "--author", "CODER"],
-        },
-      }).args,
-    ).toBeNull();
-    expect(
-      executableStepFor({
-        ...packet,
-        next_action: { code: "update_pr_artifacts", summary: "refresh task PR artifacts" },
-        execution_packet: {
-          ...packet.execution_packet,
-          exactArgv: ["agentplane", "pr", "update", taskId, "--include-task", "202606010525-OTHER"],
-        },
-      }).args,
-    ).toBeNull();
-    expect(
-      executableStepFor({
-        ...packet,
-        next_action: { code: "start_or_recover_worktree", summary: "prepare a task worktree" },
-        execution_packet: {
-          ...packet.execution_packet,
-          exactArgv: [
-            "agentplane",
-            "work",
-            "start",
-            taskId,
-            "--agent",
-            "CODER",
-            "--slug",
-            "hermes-task",
-            "--worktree",
-          ],
-        },
-      }).args,
-    ).toBeNull();
-  });
-
-  it("dry-runs a typed task run step without invoking a shell", async () => {
-    const root = await mkGitRepoRoot();
-    const taskId = "202606010525-5TJNPS";
-
-    const result = await runAgentplaneStep(["task", "run", taskId], root, true);
-
-    expect(result.executed).toBe(false);
-    expect(result.dry_run).toBe(true);
-    expect(result.exit_code).toBeNull();
-    expect(result.command).toContain("task");
-    expect(result.command).toContain("run");
-    expect(result.command).toContain(taskId);
-    expect(result.command).toContain("--root");
-    expect(result.command).toContain(root);
-  });
-
-  it("propagates child failure codes for typed task run steps", async () => {
-    const root = await mkGitRepoRoot();
-    const taskId = "202606010525-5TJNPS";
-    const fakeBin = path.join(root, "failing-agentplane.js");
-    await writeFile(
-      fakeBin,
-      "#!/usr/bin/env node\nconsole.error('task-run-failed');\nprocess.exit(9);\n",
-    );
-    await chmod(fakeBin, 0o755);
-
-    const previous = process.env.AGENTPLANE_BIN;
-    const previousArgs = process.env.AGENTPLANE_BIN_ARGS;
-    process.env.AGENTPLANE_BIN = process.execPath;
-    process.env.AGENTPLANE_BIN_ARGS = JSON.stringify([fakeBin]);
-    try {
-      const result = await runAgentplaneStep(["task", "run", taskId], root, false);
-      expect(result.executed).toBe(true);
-      expect(result.exit_code).toBe(9);
-      expect(result.stderr).toContain("task-run-failed");
-    } finally {
-      if (previous === undefined) {
-        delete process.env.AGENTPLANE_BIN;
-      } else {
-        process.env.AGENTPLANE_BIN = previous;
-      }
-      if (previousArgs === undefined) {
-        delete process.env.AGENTPLANE_BIN_ARGS;
-      } else {
-        process.env.AGENTPLANE_BIN_ARGS = previousArgs;
-      }
-    }
-  });
-
   it("renders a provider-safe enqueue projection", async () => {
     const root = await mkGitRepoRoot();
     const taskId = await createApprovedTask(root);
@@ -371,70 +233,53 @@ describe("hermes adapter commands", () => {
           requested: boolean;
           dry_run: boolean;
           allowed: boolean;
-          result: { command: string[] };
+          result: { detail: string; exit_code: number | null };
         };
+        workflow_supervision: { audit: Array<{ event: string }> };
+        refreshed_route: { task: { id: string } };
       };
       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
       expect(payload.execution.requested).toBe(true);
       expect(payload.execution.dry_run).toBe(true);
       expect(payload.execution.allowed).toBe(true);
-      expect(payload.execution.result.command).toContain(taskId);
+      expect(payload.execution.result.detail).toContain(taskId);
+      expect(payload.execution.result.exit_code).toBeNull();
+      expect(payload.workflow_supervision.audit.map((entry) => entry.event)).toEqual([
+        "decision_observed",
+        "operation_executed",
+        "route_refreshed",
+      ]);
+      expect(payload.refreshed_route.task.id).toBe(taskId);
     } finally {
       io.restore();
     }
   });
 
-  it("classifies same-task task run route steps as executable without raw shell", () => {
-    const step = executableStepFor({
-      task: {
-        id: "202606010530-BEYQXA",
-        title: "Hermes task launch",
-        owner: "CODER",
-      },
-      next_action: {
-        code: "run",
-        summary: "launch the Agentplane task runner",
-      },
-      execution_packet: {
-        actionKind: "local_command",
-        safeToMutate: true,
-        exactArgv: ["agentplane", "task", "run", "202606010530-BEYQXA"],
-      },
-    });
-
-    expect(step).toEqual({
-      code: "run",
-      args: ["task", "run", "202606010530-BEYQXA"],
-      reason: null,
-    });
-  });
-
-  it("does not downgrade a semantic direct continuation to task verify-show", () => {
-    const taskId = "202606010530-BEYQXA";
-
-    const step = executableStepFor({
-      task: {
-        id: taskId,
-        title: "Hermes direct implementation",
-        owner: "CODER",
-      },
-      next_action: {
-        code: "continue_direct",
-        summary: "hand the direct-mode task to CODER for semantic implementation",
-      },
-      execution_packet: {
-        actionKind: "stop",
-        safeToMutate: true,
-        exactArgv: null,
-      },
-    });
-
-    expect(step).toEqual({
-      code: "continue_direct",
-      args: null,
-      reason:
-        "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command",
-    });
+  it("emits the shared supervisor classification from task next-action", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createRunnableDirectTask(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        workflow_step: { preconditionFingerprint: { digest: string } };
+        workflow_supervision: {
+          executable: boolean;
+          operation_id: string | null;
+          audit: Array<{ event: string; state_fingerprint: string }>;
+        };
+      };
+      expect(payload.workflow_supervision.executable).toBe(true);
+      expect(payload.workflow_supervision.operation_id).toBe("runner.follow");
+      expect(payload.workflow_supervision.audit).toHaveLength(1);
+      expect(payload.workflow_supervision.audit[0]).toMatchObject({
+        event: "decision_observed",
+        state_fingerprint: payload.workflow_step.preconditionFingerprint.digest,
+      });
+    } finally {
+      io.restore();
+    }
   });
 
   it("keeps Hermes runner projection for explicit task run routes", () => {
@@ -550,74 +395,6 @@ describe("hermes adapter commands", () => {
     } as TaskRouteDecision;
 
     expect(routeNeedsRunnerProjection(decision)).toBe(true);
-  });
-
-  it("rejects task run route steps for a different task id", () => {
-    const step = executableStepFor({
-      task: {
-        id: "202606010530-BEYQXA",
-        title: "Hermes task launch",
-        owner: "CODER",
-      },
-      next_action: {
-        code: "run",
-        summary: "launch another task runner",
-      },
-      execution_packet: {
-        actionKind: "local_command",
-        safeToMutate: true,
-        exactArgv: ["agentplane", "task", "run", "202606010531-OTHER1"],
-      },
-    });
-
-    expect(step.args).toBeNull();
-    expect(step.reason).toContain("Hermes allowlist permits only the exact typed task runner argv");
-  });
-
-  it("supervise returns the child Agentplane command failure code", async () => {
-    const root = await mkGitRepoRoot();
-    const taskId = await createRunnableDirectTask(root);
-    const fakeBin = path.join(root, "failing-agentplane.js");
-    await writeFile(
-      fakeBin,
-      "#!/usr/bin/env node\nconsole.error('child-failed');\nprocess.exit(7);\n",
-    );
-    await chmod(fakeBin, 0o755);
-
-    const previous = process.env.AGENTPLANE_BIN;
-    const previousArgs = process.env.AGENTPLANE_BIN_ARGS;
-    process.env.AGENTPLANE_BIN = process.execPath;
-    process.env.AGENTPLANE_BIN_ARGS = JSON.stringify([fakeBin]);
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "hermes",
-        "supervise",
-        taskId,
-        "--execute-step",
-        "--json",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(7);
-      const payload = JSON.parse(io.stdout) as {
-        execution: { result: { exit_code: number; stderr: string } };
-      };
-      expect(payload.execution.result.exit_code).toBe(7);
-      expect(payload.execution.result.stderr).toContain("child-failed");
-    } finally {
-      io.restore();
-      if (previous === undefined) {
-        delete process.env.AGENTPLANE_BIN;
-      } else {
-        process.env.AGENTPLANE_BIN = previous;
-      }
-      if (previousArgs === undefined) {
-        delete process.env.AGENTPLANE_BIN_ARGS;
-      } else {
-        process.env.AGENTPLANE_BIN_ARGS = previousArgs;
-      }
-    }
   });
 
   it("doctor reports the local Agentplane side of the adapter contract", async () => {

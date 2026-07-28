@@ -12,6 +12,7 @@ import {
 } from "../shared/route-guidance.js";
 import type { RouteExecutionPacket } from "../shared/route-oracle.js";
 import { renderCliArgv } from "../shared/workflow-operation-projection.js";
+import { superviseWorkflowStep } from "../shared/workflow-supervisor.js";
 
 export type TaskNextActionParsed = {
   taskId: string;
@@ -164,6 +165,10 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
       }),
     );
     const decision = preparedWorkOrder.route_decision;
+    const supervision = await superviseWorkflowStep({
+      decision,
+      mode: "inspect",
+    });
     const operatorGuidance = deriveRouteOperatorGuidance(decision);
     const output = createCliEmitter();
     if (parsed.json) {
@@ -171,6 +176,13 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
         task: decision.task,
         workflow_step: decision.workflowStep,
         workflowStep: decision.workflowStep,
+        workflow_supervision: {
+          schema: "agentplane.workflow-supervisor.v1",
+          executable: supervision.executable,
+          stop_reason: supervision.stop_reason,
+          operation_id: supervision.operation?.id ?? null,
+          audit: supervision.audit,
+        },
         route_oracle: decision.oracle,
         conflict_rework: decision.conflictRework,
         execution_packet: executionPacketJson(decision.executionPacket),
