@@ -33,12 +33,14 @@ record.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/evaluator/evaluator-review-usecase.ts |  98 +++++++++++++++-
+ .../commands/evaluator/evaluator-diff-evidence.ts  | 102 ++++++++++++++++
+ .../commands/evaluator/evaluator-review-usecase.ts |  42 +++----
  .../evaluator/evaluator-run.command.test.ts        | 128 +++++++++++++++++++++
  .../src/commands/task/verify-record-execute.ts     |  60 +++++++++-
- .../src/commands/task/verify-record.unit.test.ts   |  60 +++++++++-
+ .../task/verify-record.durability.unit.test.ts     |  79 +++++++++++++
+ .../src/commands/task/verify-record.unit.test.ts   |  10 +-
  .../src/commands/workflow.verify-hooks.test.ts     |  81 ++++++++++++-
- 5 files changed, 420 insertions(+), 7 deletions(-)
+ 7 files changed, 478 insertions(+), 24 deletions(-)
 ```
 
 </details>

@@ -354,56 +354,6 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("fails closed when durable verification record creation fails", async () => {
-    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
-    const backend = makeWriteThroughBackend({
-      writeTask,
-      getTaskDoc: () =>
-        Promise.resolve(
-          [
-            "## Summary",
-            "x",
-            "",
-            "## Verify Steps",
-            "Run focused tests.",
-            "",
-            "## Verification",
-            "<!-- BEGIN VERIFICATION RESULTS -->",
-            "<!-- END VERIFICATION RESULTS -->",
-            "",
-            "## Findings",
-            "",
-          ].join("\n"),
-        ),
-    });
-    const ctx = mkCtx({ taskBackend: backend, backend });
-    mocks.loadTaskFromContext.mockResolvedValue(
-      mkTask({
-        status: "DONE",
-        commit: { hash: "abc", message: "msg" },
-        doc: undefined,
-        doc_version: 3,
-        doc_updated_at: "2026-02-01T00:00:00Z",
-      }),
-    );
-    mocks.writeJsonStableIfChanged.mockRejectedValueOnce(new Error("disk full"));
-
-    const { cmdTaskVerifyOk } = await import("./verify-record.js");
-    await expect(
-      cmdTaskVerifyOk({
-        ctx,
-        cwd: "/repo",
-        taskId: "T-1",
-        by: "REVIEWER",
-        note: "Looks good",
-        quiet: true,
-      }),
-    ).rejects.toThrow("disk full");
-
-    expect(mocks.mkdir).toHaveBeenCalledTimes(1);
-    expect(writeTask).not.toHaveBeenCalled();
-  });
-
   it("cmdTaskVerifyOk can collect incidents explicitly after recording verification", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
