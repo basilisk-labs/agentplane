@@ -4,7 +4,7 @@ title: "Enforce non-empty EVALUATOR pass findings"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -34,6 +34,30 @@ verification:
   updated_by: "TESTER"
   note: "Verified evaluator quality-gate consistency: every pass now carries an evidence-backed finding and empty findings are rejected by both the provider schema and strict SGR validator. Checks passed: focused evaluator/SGR suites (39), typecheck, format, routing validation."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-28T15:49:09.911Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "8dfcc1e90cd75db180f4fac4dff418f91af90e80"
+  blueprint_digest: "edfb831e78039154d29beb2cc89346939a5bb0d6fc4ec5b909594544c10b079c"
+  evidence_refs:
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281506-WWNFXE/README.md"
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281506-WWNFXE/quality/20260728-154807860-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The provider schema requires at least one finding, strict SGR validation rejects empty findings for every verdict, and focused regression coverage includes pass, rework, blocked, and human_review."
 commit:
   hash: "e76ab8e333faa1417a7b0de3188b98d361a09be5"
   message: "Enforce evaluator pass findings"
