@@ -6,7 +6,7 @@ Created: 2026-07-28T20:54:50.543Z
 
 - Task: `202607282053-BYCY0Q`
 - Title: Charge supervisor wall-time budget from observed execution
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607282053-BYCY0Q/charge-supervisor-wall-time-budget-from-observed`
 - Canonical task record: `.agentplane/tasks/202607282053-BYCY0Q/README.md`
 
@@ -29,10 +29,13 @@ Created: 2026-07-28T20:54:50.543Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-execute.command.test.ts    | 70 ++++++++++++++++++++++
- .../runner/supervisor-execution-episode.test.ts    | 39 ++++++++++++
- .../src/runner/supervisor-execution-episode.ts     | 15 +----
- 3 files changed, 111 insertions(+), 13 deletions(-)
+ .../evaluator/evaluator-execute-supervisor.ts      |   2 +
+ .../evaluator/evaluator-execute.command.test.ts    | 122 ++++++++++++++++++++-
+ .../shared/supervisor-execution-episode.test.ts    |  38 +++++++
+ .../shared/supervisor-execution-episode.ts         |   2 +
+ .../runner/supervisor-execution-episode.test.ts    |  39 +++++++
+ .../src/runner/supervisor-execution-episode.ts     |  15 +--
+ 6 files changed, 203 insertions(+), 15 deletions(-)
 ```
 
 </details>

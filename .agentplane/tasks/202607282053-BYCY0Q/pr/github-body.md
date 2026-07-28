@@ -32,10 +32,13 @@ hotspots, and full test:fast passed on abba7d47a.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-execute.command.test.ts    | 70 ++++++++++++++++++++++
- .../runner/supervisor-execution-episode.test.ts    | 39 ++++++++++++
- .../src/runner/supervisor-execution-episode.ts     | 15 +----
- 3 files changed, 111 insertions(+), 13 deletions(-)
+ .../evaluator/evaluator-execute-supervisor.ts      |   2 +
+ .../evaluator/evaluator-execute.command.test.ts    | 122 ++++++++++++++++++++-
+ .../shared/supervisor-execution-episode.test.ts    |  38 +++++++
+ .../shared/supervisor-execution-episode.ts         |   2 +
+ .../runner/supervisor-execution-episode.test.ts    |  39 +++++++
+ .../src/runner/supervisor-execution-episode.ts     |  15 +--
+ 6 files changed, 203 insertions(+), 15 deletions(-)
 ```
 
 </details>
