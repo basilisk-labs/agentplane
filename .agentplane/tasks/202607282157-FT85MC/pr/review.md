@@ -13,7 +13,7 @@ Created: 2026-07-28T21:58:43.037Z
 ## Verification
 
 - State: ok
-- Note: Fixed hosted verify-unit regressions in durable verification fixtures.
+- Note: Fixed the hosted static lint failure in the evaluator fixture.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
