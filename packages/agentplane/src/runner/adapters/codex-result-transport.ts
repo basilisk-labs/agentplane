@@ -206,7 +206,52 @@ function readCodexAgentMessage(providerEvent: Record<string, unknown>): string |
 export type CodexResultEventCollector = {
   observeStdoutLine(rawLine: string): void;
   readLastAgentMessage(): string | null;
+  readUsage(): CodexProviderUsage | null;
 };
+
+export type CodexProviderUsage = {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+};
+
+function nonNegativeInteger(value: unknown): number | null {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 ? value : null;
+}
+
+/**
+ * Codex reports visible and reasoning output separately.  The supervisor
+ * charges both to output and total so a reasoning-only turn cannot evade a
+ * run budget. `total_tokens`, when the provider includes it, may be larger
+ * (for example when it includes a cached component), but never smaller.
+ */
+function readCodexProviderUsage(providerEvent: Record<string, unknown>): CodexProviderUsage | null {
+  if (providerEvent.type !== "turn.completed") return null;
+  if (!isRecord(providerEvent.usage)) return null;
+  const input = nonNegativeInteger(providerEvent.usage.input_tokens);
+  const output = nonNegativeInteger(providerEvent.usage.output_tokens);
+  const reasoning = nonNegativeInteger(providerEvent.usage.reasoning_output_tokens);
+  if (input === null || output === null || reasoning === null) {
+    throw new Error("Codex turn completion contains malformed provider usage.");
+  }
+  const chargedOutput = output + reasoning;
+  const minimumTotal = input + chargedOutput;
+  const reportedTotal =
+    providerEvent.usage.total_tokens === undefined
+      ? null
+      : nonNegativeInteger(providerEvent.usage.total_tokens);
+  if (providerEvent.usage.total_tokens !== undefined && reportedTotal === null) {
+    throw new Error("Codex turn completion contains malformed total token usage.");
+  }
+  if (reportedTotal !== null && reportedTotal < minimumTotal) {
+    throw new Error("Codex turn completion total token usage is lower than its components.");
+  }
+  return {
+    input_tokens: input,
+    output_tokens: chargedOutput,
+    total_tokens: reportedTotal ?? minimumTotal,
+  };
+}
 
 /**
  * Collects the semantic transport from the raw provider JSONL stream before
@@ -215,6 +260,7 @@ export type CodexResultEventCollector = {
  */
 export function createCodexResultEventCollector(): CodexResultEventCollector {
   let lastMessage: string | null = null;
+  let usage: CodexProviderUsage | null = null;
   let turnCompleted = false;
   let protocolError: Error | null = null;
   return {
@@ -233,7 +279,12 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
           protocolError = new Error("Codex JSONL stream contained duplicate turn completion.");
           return;
         }
-        turnCompleted = true;
+        try {
+          usage = readCodexProviderUsage(parsed);
+          turnCompleted = true;
+        } catch (error) {
+          protocolError = error instanceof Error ? error : new Error(String(error));
+        }
         return;
       }
       const message = readCodexAgentMessage(parsed);
@@ -256,6 +307,13 @@ export function createCodexResultEventCollector(): CodexResultEventCollector {
         throw new Error("Codex JSONL stream ended before turn completion.");
       }
       return lastMessage;
+    },
+    readUsage() {
+      if (protocolError) throw protocolError;
+      if (!turnCompleted) {
+        throw new Error("Codex JSONL stream ended before turn completion.");
+      }
+      return usage;
     },
   };
 }

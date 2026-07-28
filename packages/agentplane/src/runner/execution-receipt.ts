@@ -41,6 +41,17 @@ function buildProcessObservation(opts: {
   capabilities_invoked: string[];
   metrics?: RunnerExecutionMetrics;
 }): ExecutionReceiptProcessObservation {
+  const providerUsage = {
+    ...(opts.metrics?.input_tokens === undefined
+      ? {}
+      : { input_tokens: opts.metrics.input_tokens }),
+    ...(opts.metrics?.output_tokens === undefined
+      ? {}
+      : { output_tokens: opts.metrics.output_tokens }),
+    ...(opts.metrics?.total_tokens === undefined
+      ? {}
+      : { total_tokens: opts.metrics.total_tokens }),
+  };
   const processResult = opts.process_result;
   if (!processResult) {
     return {
@@ -72,6 +83,7 @@ function buildProcessObservation(opts: {
         ...(opts.metrics?.output_last_message_bytes === undefined
           ? {}
           : { output_last_message_bytes: opts.metrics.output_last_message_bytes }),
+        ...providerUsage,
       },
     };
   }
@@ -100,6 +112,7 @@ function buildProcessObservation(opts: {
       ...(opts.metrics?.output_last_message_bytes === undefined
         ? {}
         : { output_last_message_bytes: opts.metrics.output_last_message_bytes }),
+      ...providerUsage,
     },
   };
 }

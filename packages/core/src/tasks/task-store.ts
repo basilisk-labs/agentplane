@@ -95,6 +95,9 @@ export type TaskRunnerExecutionMetrics = {
   stdout_bytes?: number;
   stderr_bytes?: number;
   output_last_message_bytes?: number | null;
+  input_tokens?: number;
+  output_tokens?: number;
+  total_tokens?: number;
 };
 
 export type TaskRunnerEvidence = {
