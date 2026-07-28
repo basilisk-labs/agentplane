@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:09b45351c8dd8de959f8af1acc31f2864c8a30398b80e71d0641dea155b4f2ca",
+  "implementation_sha": "a3d401d9e9afdd6d5634fd7ddd8a226826895d7c",
+  "kind": "task_verification_record",
+  "note": "Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.",
+  "recorded_at": "2026-07-28T22:53:29.224Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
+  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
+  "task_id": "202607282157-FT85MC",
+  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
+  "verifier": "TESTER"
+}

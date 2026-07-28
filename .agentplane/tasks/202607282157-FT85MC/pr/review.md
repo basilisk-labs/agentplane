@@ -13,7 +13,7 @@ Created: 2026-07-28T21:58:43.037Z
 ## Verification
 
 - State: ok
-- Note: Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied.
+- Note: Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

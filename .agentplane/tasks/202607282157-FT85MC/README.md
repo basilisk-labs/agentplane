@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T22:45:03.307Z"
+  updated_at: "2026-07-28T22:53:29.224Z"
   updated_by: "TESTER"
-  note: "Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied."
+  note: "Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded."
   attempts: 0
 quality_review:
   state: "rework"
@@ -160,8 +160,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied."
+  -
+    type: "verify"
+    at: "2026-07-28T22:53:29.224Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded."
 doc_version: 3
-doc_updated_at: "2026-07-28T22:45:04.072Z"
+doc_updated_at: "2026-07-28T22:53:29.896Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -433,6 +439,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T22:53:29.224Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:45:04.072Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -441,6 +477,10 @@ sections:
     - Observation: All three task-specific Verify Steps passed with 17 focused tests and static checks.
       Impact: EVALUATOR receives complete branch evidence and machine-readable verification records instead of only the final commit delta.
       Resolution: Use the recorded verification artifacts as frozen evidence for the independent evaluator episode.
+
+    - Observation: Focused evaluator and verification tests: 50 passed; prettier, eslint, typecheck, hotspot threshold, policy routing, and diff check passed.
+      Impact: A failed task-state transition can no longer freeze an orphan verification record as authoritative evaluator evidence.
+      Resolution: Bound record discovery to persisted verification state and added the orphan-record regression fixture.
 extensions:
   implementation_commit:
     hash: "66cf0428771389535048a925bd152f4ac663fcdc"
@@ -728,6 +768,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T22:53:29.224Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:45:04.072Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -740,3 +810,7 @@ DecisionContextRef:
 - Observation: All three task-specific Verify Steps passed with 17 focused tests and static checks.
   Impact: EVALUATOR receives complete branch evidence and machine-readable verification records instead of only the final commit delta.
   Resolution: Use the recorded verification artifacts as frozen evidence for the independent evaluator episode.
+
+- Observation: Focused evaluator and verification tests: 50 passed; prettier, eslint, typecheck, hotspot threshold, policy routing, and diff check passed.
+  Impact: A failed task-state transition can no longer freeze an orphan verification record as authoritative evaluator evidence.
+  Resolution: Bound record discovery to persisted verification state and added the orphan-record regression fixture.
