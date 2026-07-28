@@ -1,0 +1,592 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+index f8f049faf..61b0daa68 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+@@ -1,15 +1,15 @@
+  docs/user/cli-reference.generated.mdx              |   1 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+- .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+- .../evaluator/evaluator-execute.command.test.ts    | 369 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute-supervisor.ts      | 309 ++++++++++-------
++ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
+  .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+- .../shared/supervisor-execution-episode.ts         | 133 ++++++--
++ .../shared/supervisor-execution-episode.ts         | 188 +++++++++--
+  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
+  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 14 files changed, 855 insertions(+), 48 deletions(-)
++ 14 files changed, 1041 insertions(+), 161 deletions(-)
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index aed33ec3f..99697ceb7 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -29,19 +29,19 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
+ ```text
+  docs/user/cli-reference.generated.mdx              |   1 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+- .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+- .../evaluator/evaluator-execute.command.test.ts    | 369 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute-supervisor.ts      | 309 ++++++++++-------
++ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
+  .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+- .../shared/supervisor-execution-episode.ts         | 133 ++++++--
++ .../shared/supervisor-execution-episode.ts         | 188 +++++++++--
+  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
+  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 14 files changed, 855 insertions(+), 48 deletions(-)
++ 14 files changed, 1041 insertions(+), 161 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index e2c250277..a1af76671 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+-  "diffstat_sha256": "sha256:14fa98f251ebca4dfce8f6e810875544694959d3f7927c77d90ff55c8fbbc803",
++  "diffstat_sha256": "sha256:76f5815ece37afb8cc7c30aa1c8268aca579568b465fe058b9d81b8825bfbf86",
+   "last_verified_at": "2026-07-28T20:12:45.443Z",
+   "last_verified_diffstat_sha256": "sha256:14fa98f251ebca4dfce8f6e810875544694959d3f7927c77d90ff55c8fbbc803",
+   "pr_number": 4664,
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index cd2820bbd..514795cc1 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -31,19 +31,19 @@ Created: 2026-07-28T16:57:04.791Z
+ ```text
+  docs/user/cli-reference.generated.mdx              |   1 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+- .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+- .../evaluator/evaluator-execute.command.test.ts    | 369 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute-supervisor.ts      | 309 ++++++++++-------
++ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
+  .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+- .../shared/supervisor-execution-episode.ts         | 133 ++++++--
++ .../shared/supervisor-execution-episode.ts         | 188 +++++++++--
+  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
+  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 14 files changed, 855 insertions(+), 48 deletions(-)
++ 14 files changed, 1041 insertions(+), 161 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+index 4dfdc0d27..e1caee4b7 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -15,7 +15,10 @@ import type { CommandCtx } from "../../cli/spec/spec.js";
+ import type { EvaluatorModule } from "../../evaluators/catalog.js";
+ import { CliError } from "../../shared/errors.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+-import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++import {
++  openSupervisorExecutionEpisode,
++  tryAcquireSupervisorExecutionLease,
++} from "../shared/supervisor-execution-episode.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import {
+@@ -224,200 +227,214 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+     state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+     recover_intent: false,
+   });
+-  let journal = opened.journal;
+-  let replacementOfOperationKey: string | null = null;
+-  if (opts.replacement) {
+-    if (
++  const lease = await tryAcquireSupervisorExecutionLease({ journal_path: opened.journal_path });
++  if (!lease) {
++    throw new CliError({
++      exitCode: 2,
++      code: "E_USAGE",
++      message:
++        "Another evaluator process owns this task's preparation or provider window; no provider episode was started.",
++    });
++  }
++  try {
++    let journal = opened.journal;
++    let replacementOfOperationKey: string | null = null;
++    if (opts.replacement) {
++      if (
++        journal.status === "running" &&
++        journal.cursor.phase === "ready" &&
++        journal.cursor.replacement_of_operation_key
++      ) {
++        replacementOfOperationKey = journal.cursor.replacement_of_operation_key;
++      } else {
++        try {
++          const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++            journal,
++            state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++          });
++          if (!(await opened.store.compareAndSwap(journal.digest, reserved))) {
++            throw new CliError({
++              exitCode: 2,
++              code: "E_USAGE",
++              message:
++                "Evaluator replacement authorization changed concurrently; no provider episode was started. Retry after inspecting the journal.",
++            });
++          }
++          journal = reserved;
++          replacementOfOperationKey = reserved.cursor.replacement_of_operation_key ?? null;
++        } catch (error) {
++          if (error instanceof CliError) throw error;
++          throw new CliError({
++            exitCode: 2,
++            code: "E_USAGE",
++            message:
++              "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
++            context: {
++              stop_reason: journal.stop?.reason ?? null,
++              cause: error instanceof Error ? error.message : String(error),
++            },
++          });
++        }
++      }
++    } else if (
+       journal.status === "running" &&
+       journal.cursor.phase === "ready" &&
+       journal.cursor.replacement_of_operation_key
+     ) {
+-      replacementOfOperationKey = journal.cursor.replacement_of_operation_key;
+-    } else {
++      throw new CliError({
++        exitCode: 2,
++        code: "E_USAGE",
++        message:
++          "Evaluator replacement authorization is pending; resume it with --replacement or resolve its typed stop before another provider invocation.",
++      });
++    }
++    if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
++      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
++        journal,
++        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      });
++      await opened.store.write(journal);
++    }
++    let outcome: CompletedEvaluatorOutcome;
++
++    if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
+       try {
+-        const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++        outcome = await readCompletedEvaluatorOutcome({
++          git_root: opts.command.resolvedProject.gitRoot,
+           journal,
+-          state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+         });
+-        if (!(await opened.store.compareAndSwap(journal.digest, reserved))) {
+-          throw new CliError({
+-            exitCode: 2,
+-            code: "E_USAGE",
+-            message:
+-              "Evaluator replacement authorization changed concurrently; no provider episode was started. Retry after inspecting the journal.",
+-          });
+-        }
+-        journal = reserved;
+-        replacementOfOperationKey = reserved.cursor.replacement_of_operation_key ?? null;
+-      } catch (error) {
+-        if (error instanceof CliError) throw error;
++      } catch {
++        journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
++        await opened.store.write(journal);
+         throw new CliError({
+-          exitCode: 2,
+-          code: "E_USAGE",
++          code: "E_RUNTIME",
+           message:
+-            "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
+-          context: {
+-            stop_reason: journal.stop?.reason ?? null,
+-            cause: error instanceof Error ? error.message : String(error),
+-          },
++            "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
+         });
+       }
+-    }
+-  } else if (
+-    journal.status === "running" &&
+-    journal.cursor.phase === "ready" &&
+-    journal.cursor.replacement_of_operation_key
+-  ) {
+-    throw new CliError({
+-      exitCode: 2,
+-      code: "E_USAGE",
+-      message:
+-        "Evaluator replacement authorization is pending; resume it with --replacement or resolve its typed stop before another provider invocation.",
+-    });
+-  }
+-  if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
+-    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+-      journal,
+-      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+-    });
+-    await opened.store.write(journal);
+-  }
+-  let outcome: CompletedEvaluatorOutcome;
+-
+-  if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
+-    try {
+-      outcome = await readCompletedEvaluatorOutcome({
+-        git_root: opts.command.resolvedProject.gitRoot,
++      const operationKey = journal.cursor.operation_key;
++      if (!operationKey)
++        throw new Error("Evaluator supervisor intent is missing its operation key.");
++      journal = completePersistedEvaluatorEpisode({
+         journal,
++        operation_key: operationKey,
++        result: outcome.result,
++        receipt: outcome.receipt,
+       });
+-    } catch {
+-      journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
+       await opened.store.write(journal);
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message:
+-          "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
++    } else if (journal.status === "running" && journal.cursor.phase === "completed") {
++      outcome = await readCompletedEvaluatorOutcome({
++        git_root: opts.command.resolvedProject.gitRoot,
++        journal,
+       });
+-    }
+-    const operationKey = journal.cursor.operation_key;
+-    if (!operationKey) throw new Error("Evaluator supervisor intent is missing its operation key.");
+-    journal = completePersistedEvaluatorEpisode({
+-      journal,
+-      operation_key: operationKey,
+-      result: outcome.result,
+-      receipt: outcome.receipt,
+-    });
+-    await opened.store.write(journal);
+-  } else if (journal.status === "running" && journal.cursor.phase === "completed") {
+-    outcome = await readCompletedEvaluatorOutcome({
+-      git_root: opts.command.resolvedProject.gitRoot,
+-      journal,
+-    });
+-  } else {
+-    if (journal.status !== "running" || journal.cursor.phase !== "ready") {
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message:
+-          "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
++    } else {
++      if (journal.status !== "running" || journal.cursor.phase !== "ready") {
++        throw new CliError({
++          code: "E_RUNTIME",
++          message:
++            "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
++        });
++      }
++      const prepared = await prepareEvaluatorReview({
++        ctx: opts.command,
++        task: opts.task,
++        evaluator: opts.evaluator,
++        provenance: "evaluator_supplied",
+       });
+-    }
+-    const prepared = await prepareEvaluatorReview({
+-      ctx: opts.command,
+-      task: opts.task,
+-      evaluator: opts.evaluator,
+-      provenance: "evaluator_supplied",
+-    });
+-    const replacementBinding = replacementOfOperationKey
+-      ? { replacement_of_operation_key: replacementOfOperationKey }
+-      : {};
+-    const start = () =>
+-      startSupervisorExecutionEpisode({
+-        journal,
+-        role: "EVALUATOR",
+-        kind: "evaluator_episode",
+-        operation_identity: {
+-          evaluator_id: prepared.work_order.evaluator.id,
+-          work_order_id: prepared.work_order.work_order_id,
++      const replacementBinding = replacementOfOperationKey
++        ? { replacement_of_operation_key: replacementOfOperationKey }
++        : {};
++      const start = () =>
++        startSupervisorExecutionEpisode({
++          journal,
++          role: "EVALUATOR",
++          kind: "evaluator_episode",
++          operation_identity: {
++            evaluator_id: prepared.work_order.evaluator.id,
++            work_order_id: prepared.work_order.work_order_id,
++            ...replacementBinding,
++          },
++          precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++          authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
++          authority_digest: decision.workflowStep.preconditionFingerprint.digest,
++          work_order_ref: relativeToProject(
++            opts.command.resolvedProject.gitRoot,
++            prepared.work_order_path,
++          ),
++          effect_ref: prepared.work_order.work_order_id,
+           ...replacementBinding,
+-        },
+-        precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+-        authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
+-        authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+-        work_order_ref: relativeToProject(
+-          opts.command.resolvedProject.gitRoot,
+-          prepared.work_order_path,
+-        ),
+-        effect_ref: prepared.work_order.work_order_id,
+-        ...replacementBinding,
+-      });
+-    let started = start();
+-    if (started.status === "stopped" && started.stop.reason === "stale_state") {
+-      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+-        journal: started.journal,
+-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++        });
++      let started = start();
++      if (started.status === "stopped" && started.stop.reason === "stale_state") {
++        journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
++          journal: started.journal,
++          state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++        });
++        await opened.store.write(journal);
++        started = start();
++      }
++      if (started.status !== "started") {
++        await opened.store.write(started.journal);
++        throw new CliError({
++          code: "E_RUNTIME",
++          message:
++            started.status === "effect_in_doubt"
++              ? "Evaluator supervisor journal has an effect in doubt; resolve it before retrying."
++              : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
++        });
++      }
++      if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
++        throw new CliError({
++          exitCode: 2,
++          code: "E_USAGE",
++          message:
++            "Evaluator supervisor journal changed before its provider intent was recorded; no provider episode was started.",
++        });
++      }
++      journal = started.journal;
++      let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
++      try {
++        episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
++      } catch (error) {
++        journal = completeSupervisorExecutionEpisode({
++          journal,
++          operation_key: started.operation_key,
++          // Persist only a small classification. Provider stderr and model
++          // output can contain sensitive data and belong neither in the task
++          // record nor in the durable supervisor journal.
++          result: evaluatorProviderFailureRecord(error),
++          failed: true,
++        });
++        await opened.store.write(journal);
++        throw error;
++      }
++      outcome = {
++        result: episode.result,
++        receipt: episode.receipt,
++        work_order_path: prepared.work_order_path,
++        result_path: prepared.result_path,
++        report_path: prepared.report_path,
++      };
++      journal = completePersistedEvaluatorEpisode({
++        journal,
++        operation_key: started.operation_key,
++        result: outcome.result,
++        receipt: outcome.receipt,
+       });
+       await opened.store.write(journal);
+-      started = start();
+     }
+-    if (started.status !== "started") {
+-      await opened.store.write(started.journal);
++
++    if (journal.status !== "running" || journal.cursor.phase !== "completed") {
+       throw new CliError({
+         code: "E_RUNTIME",
+         message:
+-          started.status === "effect_in_doubt"
+-            ? "Evaluator supervisor journal has an effect in doubt; resolve it before retrying."
+-            : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
+-      });
+-    }
+-    if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
+-      throw new CliError({
+-        exitCode: 2,
+-        code: "E_USAGE",
+-        message:
+-          "Evaluator supervisor journal changed before its provider intent was recorded; no provider episode was started.",
+-      });
+-    }
+-    journal = started.journal;
+-    let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
+-    try {
+-      episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
+-    } catch (error) {
+-      journal = completeSupervisorExecutionEpisode({
+-        journal,
+-        operation_key: started.operation_key,
+-        // Persist only a small classification. Provider stderr and model
+-        // output can contain sensitive data and belong neither in the task
+-        // record nor in the durable supervisor journal.
+-        result: evaluatorProviderFailureRecord(error),
+-        failed: true,
++          "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
+       });
+-      await opened.store.write(journal);
+-      throw error;
+     }
+-    outcome = {
+-      result: episode.result,
+-      receipt: episode.receipt,
+-      work_order_path: prepared.work_order_path,
+-      result_path: prepared.result_path,
+-      report_path: prepared.report_path,
+-    };
+-    journal = completePersistedEvaluatorEpisode({
+-      journal,
+-      operation_key: started.operation_key,
+-      result: outcome.result,
+-      receipt: outcome.receipt,
+-    });
+-    await opened.store.write(journal);
+-  }
+-
+-  if (journal.status !== "running" || journal.cursor.phase !== "completed") {
+-    throw new CliError({
+-      code: "E_RUNTIME",
+-      message:
+-        "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
+-    });
++    return { ...outcome, journal, store: opened.store };
++  } finally {
++    await lease.release();
+   }
+-  return { ...outcome, journal, store: opened.store };
+ }
+ 
+ function relativeToProject(gitRoot: string, absolutePath: string): string {
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index 077aa47c0..adc948c29 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -689,7 +689,7 @@ describe("evaluator execute supervisor episode", () => {
+       AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
+       AGENTPLANE_FAKE_CODEX_DELAY_MS: "100",
+     };
+-    await Promise.all(
++    const executions = await Promise.all(
+       [1, 2].map(() =>
+         runCliInSeparateProcess({
+           root,
+@@ -701,6 +701,7 @@ describe("evaluator execute supervisor episode", () => {
+       ),
+     );
+ 
++    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
+     const invocationContents = await readFile(invocationLog, "utf8");
+     const invocationLines = invocationContents.trim().split("\n");
+     expect(invocationLines).toEqual(["provider-started"]);
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index fb672b47f..0f74f98c0 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -1,4 +1,5 @@
+-import { mkdir, readFile, rm, stat } from "node:fs/promises";
++import { randomUUID } from "node:crypto";
++import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import {
+@@ -63,6 +64,10 @@ export type SupervisorEpisodeStore = {
+ const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
+ const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
+ const JOURNAL_LOCK_WAIT_MS = 5000;
++// Provider execution has its own ten-minute hard timeout. A crashed owner is
++// therefore recoverable without allowing a second live provider to overlap it.
++const EXECUTION_LEASE_STALE_AFTER_MS = 11 * 60 * 1000;
++const EXECUTION_LEASE_OWNER_FILE = "owner";
+ 
+ function persistedJournalDigest(
+   value: unknown,
+@@ -106,6 +111,56 @@ async function withJournalLock<T>(filePath: string, work: () => Promise<T>): Pro
+   }
+ }
+ 
++export type SupervisorExecutionLease = {
++  release: () => Promise<void>;
++};
++
++/**
++ * Claim the full prepare -> provider -> persist window for one task episode.
++ *
++ * The journal CAS admits only one provider intent, but evaluator preparation
++ * itself writes frozen task artifacts. Without this lease, a losing process
++ * can create those artifacts while the winner is attesting its read-only
++ * provider workspace and make the winner look like it changed the repository.
++ */
++export async function tryAcquireSupervisorExecutionLease(opts: {
++  journal_path: string;
++}): Promise<SupervisorExecutionLease | null> {
++  const leasePath = `${opts.journal_path}.execution`;
++  await mkdir(path.dirname(opts.journal_path), { recursive: true, mode: 0o700 });
++  for (let attempt = 0; attempt < 2; attempt += 1) {
++    try {
++      await mkdir(leasePath, { mode: 0o700 });
++      const owner = randomUUID();
++      try {
++        await writeFile(path.join(leasePath, EXECUTION_LEASE_OWNER_FILE), `${owner}\n`, "utf8");
++      } catch (error) {
++        await rm(leasePath, { recursive: true, force: true });
++        throw error;
++      }
++      return {
++        release: async () => {
++          const observed = await readFile(
++            path.join(leasePath, EXECUTION_LEASE_OWNER_FILE),
++            "utf8",
++          ).catch(() => null);
++          if (observed?.trim() === owner) {
++            await rm(leasePath, { recursive: true, force: true });
++          }
++        },
++      };
++    } catch (error) {
++      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
++      const age = await stat(leasePath)
++        .then((entry) => Date.now() - entry.mtimeMs)
++        .catch(() => 0);
++      if (age <= EXECUTION_LEASE_STALE_AFTER_MS) return null;
++      await rm(leasePath, { recursive: true, force: true });
++    }
++  }
++  return null;
++}
++
+ function safeTaskPathSegment(taskId: string): string {
+   const normalized = taskId.trim();
+   if (
