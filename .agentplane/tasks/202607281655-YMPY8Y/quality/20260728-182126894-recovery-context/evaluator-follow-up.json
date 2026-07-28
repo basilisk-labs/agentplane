@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607281655-YMPY8Y-47cda409302c600773dcec92",
+  "task_id": "202607281655-YMPY8Y",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Verification evidence collection is now present, but the available record predates the evaluated SHA. Re-run the declared local checks on a6f138a66591a729333a69c3e2af718b9a339e73 and freeze a command-level record for that exact revision; retain the explicitly deferred real replacement episode as the post-integration release gate.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The durable verification record is scoped to implementation commit 8d242418, but the frozen review evaluates a6f138a6 and includes additional production-code changes to evaluator evidence collection; no command-level record proves the required checks passed on the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3d6b18ae931159462dd302eb29c081e826ed8664a6b56e70a6f6c41055ae337d"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:533a65cf0f2749234b4c1772d945c584ae835905557ca1ea66b323e6b89bacc8"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b58cf218efd5315fc98a0cfca099f2cc25bbcaca8086d518370fe4075d03a111"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-result.json"
+}

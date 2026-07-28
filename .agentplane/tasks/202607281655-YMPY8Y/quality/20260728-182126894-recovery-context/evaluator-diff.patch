@@ -1,0 +1,242 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+index 850c01339..d34985444 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+@@ -1,9 +1,10 @@
+- .../evaluator/evaluator-execute-supervisor.ts      |  66 ++++-
+- .../evaluator/evaluator-execute.command.test.ts    | 320 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
++ .../evaluator/evaluator-execute.command.test.ts    | 368 ++++++++++++++++++++-
++ .../commands/evaluator/evaluator-review-usecase.ts |  33 +-
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+- .../shared/supervisor-execution-episode.ts         | 133 +++++++--
+- .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++
+- .../src/runner/supervisor-execution-episode.ts     | 102 ++++++-
++ .../shared/supervisor-execution-episode.ts         | 133 ++++++--
++ .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
++ .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+- 8 files changed, 723 insertions(+), 37 deletions(-)
++ 9 files changed, 803 insertions(+), 38 deletions(-)
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index da11590d2..c762329b9 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -32,15 +32,16 @@ remains an explicit release gate.
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+- .../evaluator/evaluator-execute-supervisor.ts      |  66 ++++-
+- .../evaluator/evaluator-execute.command.test.ts    | 320 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
++ .../evaluator/evaluator-execute.command.test.ts    | 368 ++++++++++++++++++++-
++ .../commands/evaluator/evaluator-review-usecase.ts |  33 +-
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+- .../shared/supervisor-execution-episode.ts         | 133 +++++++--
+- .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++
+- .../src/runner/supervisor-execution-episode.ts     | 102 ++++++-
++ .../shared/supervisor-execution-episode.ts         | 133 ++++++--
++ .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
++ .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+- 8 files changed, 723 insertions(+), 37 deletions(-)
++ 9 files changed, 803 insertions(+), 38 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index 70cb6739e..5483317de 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+-  "diffstat_sha256": "sha256:ae5363f3f3626d2828bf08f904f800959d1702f99377a50f2788496de486c054",
++  "diffstat_sha256": "sha256:9e92930cf4b209d81147aae0bbcc9cbe30abc4f62e25d19567b204d2a1b62eb3",
+   "last_verified_at": "2026-07-28T18:18:08.153Z",
+   "last_verified_diffstat_sha256": "sha256:ae5363f3f3626d2828bf08f904f800959d1702f99377a50f2788496de486c054",
+   "pr_number": 4664,
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index a6d8e2cde..296502627 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -29,15 +29,16 @@ Created: 2026-07-28T16:57:04.791Z
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+- .../evaluator/evaluator-execute-supervisor.ts      |  66 ++++-
+- .../evaluator/evaluator-execute.command.test.ts    | 320 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
++ .../evaluator/evaluator-execute.command.test.ts    | 368 ++++++++++++++++++++-
++ .../commands/evaluator/evaluator-review-usecase.ts |  33 +-
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+- .../shared/supervisor-execution-episode.ts         | 133 +++++++--
+- .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++
+- .../src/runner/supervisor-execution-episode.ts     | 102 ++++++-
++ .../shared/supervisor-execution-episode.ts         | 133 ++++++--
++ .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
++ .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+- 8 files changed, 723 insertions(+), 37 deletions(-)
++ 9 files changed, 803 insertions(+), 38 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index d26184fd5..b5c5e3d08 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -52,6 +52,38 @@ async function commitTarget(root: string): Promise<void> {
+   await execFileAsync("git", ["commit", "-m", "feat: evaluator execute fixture"], { cwd: root });
+ }
+ 
++async function writeVerificationRecord(root: string, taskId: string): Promise<string> {
++  const recordPath = path.join(
++    root,
++    ".agentplane/tasks",
++    taskId,
++    "verification",
++    "command-results.json",
++  );
++  await mkdir(path.dirname(recordPath), { recursive: true });
++  await writeFile(
++    recordPath,
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        kind: "agentplane_task_verification_record",
++        checks: [
++          {
++            command:
++              "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
++            status: "passed",
++            exit_code: 0,
++          },
++        ],
++      },
++      null,
++      2,
++    )}\n`,
++    "utf8",
++  );
++  return recordPath;
++}
++
+ async function installFakeCodex(root: string): Promise<string> {
+   const bin = path.join(root, "fake-bin");
+   await mkdir(bin, { recursive: true });
+@@ -172,6 +204,7 @@ describe("evaluator execute supervisor episode", () => {
+     const taskId = "202607280000-EE01";
+     await addTask(root, taskId);
+     await commitTarget(root);
++    const verificationRecordPath = await writeVerificationRecord(root, taskId);
+     const fakeBin = await installFakeCodex(root);
+ 
+     const execution = await runWithFakeCodex(root, taskId, fakeBin);
+@@ -211,6 +244,21 @@ describe("evaluator execute supervisor episode", () => {
+       operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "completed" }],
+     });
+     expect(JSON.stringify(journal)).not.toContain("evaluator_result");
++    const completedOperation = (
++      journal as { operations: { work_order_ref?: string | null }[] }
++    ).operations.at(-1);
++    if (!completedOperation?.work_order_ref)
++      throw new Error("missing evaluator work order reference");
++    const workOrder = JSON.parse(
++      await readFile(path.join(root, completedOperation.work_order_ref), "utf8"),
++    ) as { evidence: { kind: string; path: string }[] };
++    expect(workOrder.evidence).toContainEqual({
++      kind: "verification_log",
++      path: path.relative(root, verificationRecordPath).replaceAll("\\\\", "/"),
++      id: "verification-record-1",
++      required: true,
++      sha256: expect.any(String),
++    });
+   });
+ 
+   it("resumes a completed evaluator outcome without launching Codex again", async () => {
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index 57c8cecb9..901df48ff 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -1,5 +1,5 @@
+ import { createHash } from "node:crypto";
+-import { mkdir, readFile, writeFile } from "node:fs/promises";
++import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ import { z } from "zod";
+@@ -79,6 +79,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
+               "task_document",
+               "actual_diff",
+               "observed_checks",
++              "verification_log",
+               "blueprint",
+               "policy_module",
+               "knowledge_ref",
+@@ -187,6 +188,19 @@ async function freezeFile(opts: {
+   };
+ }
+ 
++async function verificationRecordPaths(taskRoot: string): Promise<string[]> {
++  try {
++    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
++    return entries
++      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
++      .map((entry) => path.join(taskRoot, "verification", entry.name))
++      .toSorted();
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
++    throw error;
++  }
++}
++
+ async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
+   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
+   try {
+@@ -278,6 +292,7 @@ export async function prepareEvaluatorReview(opts: {
+     opts.task.id,
+     "README.md",
+   );
++  const taskRoot = path.dirname(taskReadmePath);
+   const evaluatedSha = await resolveQualityReviewTargetSha({
+     gitRoot,
+     workflowDir: opts.ctx.config.paths.workflow_dir,
+@@ -286,10 +301,25 @@ export async function prepareEvaluatorReview(opts: {
+     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+   });
+   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
++  const verificationRecords = await Promise.all(
++    (await verificationRecordPaths(taskRoot)).map((filePath, index) =>
++      freezeFile({
++        gitRoot,
++        id: `verification-record-${String(index + 1)}`,
++        kind: "verification_log",
++        filePath,
++        required: true,
++      }),
++    ),
++  );
+   const observedChecks = {
+     task_status: opts.task.status,
+     declared_checks: opts.task.verify ?? [],
+     verification: opts.task.verification ?? null,
++    verification_records: verificationRecords.map(({ path: evidencePath, sha256 }) => ({
++      path: evidencePath,
++      sha256,
++    })),
+     runner_history: opts.task.runner?.history ?? [],
+   };
+ 
+@@ -332,6 +362,7 @@ export async function prepareEvaluatorReview(opts: {
+       filePath: path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
+       required: true,
+     }),
++    ...verificationRecords,
+     await freezeFile({
+       gitRoot,
+       id: "blueprint",

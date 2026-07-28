@@ -4,7 +4,7 @@ title: "Authorize replacement evaluator episodes after terminal failure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -28,36 +28,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T18:18:08.153Z"
+  updated_at: "2026-07-28T18:24:08.495Z"
   updated_by: "TESTER"
-  note: "Rework verification passed with durable command-level records; the post-integration 8H replacement remains an explicit release gate."
+  note: "Rework verification passed on a6f138a66591 with exact command-level evidence; the real 8H replacement remains the explicit post-integration gate."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T18:16:36.946Z"
+  updated_at: "2026-07-28T18:22:37.598Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "8d242418bcd6fce80fa6ff6729fa996bc389d2b4"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "a6f138a66591a729333a69c3e2af718b9a339e73"
   blueprint_digest: "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138"
   evidence_refs:
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607281655-YMPY8Y/README.md"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The required real replacement-provider episode remains unexecuted, so end-to-end recovery without replay is unproven."
-    - "Frozen verification evidence asserts successful checks but contains no command-level execution records."
+    - "The durable verification record is scoped to implementation commit 8d242418, but the frozen review evaluates a6f138a6 and includes additional production-code changes to evaluator evidence collection; no command-level record proves the required checks passed on the evaluated SHA."
 commit:
   hash: "ad12b2313d565f9a8f76ba400bf225422a1f9b8a"
   message: "♻️ YMPY8Y task: bind replacement authorization atomically"
@@ -103,8 +103,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rework verification passed with durable command-level records; the post-integration 8H replacement remains an explicit release gate."
+  -
+    type: "verify"
+    at: "2026-07-28T18:24:08.495Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verification passed on a6f138a66591 with exact command-level evidence; the real 8H replacement remains the explicit post-integration gate."
 doc_version: 3
-doc_updated_at: "2026-07-28T18:18:08.889Z"
+doc_updated_at: "2026-07-28T18:24:09.466Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -206,6 +212,44 @@ sections:
     Scope: commit 8d242418bcd6fce80fa6ff6729fa996bc389d2b4; replacement CAS, cross-process contention, and interrupted-reservation recovery.
 
     Evidence manifest: .agentplane/tasks/202607281655-YMPY8Y/evidence/manifest.json (generated and verified after this record).
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+    - old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T18:24:08.495Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verification passed on a6f138a66591 with exact command-level evidence; the real 8H replacement remains the explicit post-integration gate.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T18:18:08.889Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+    Details:
+
+    Command-level execution record: .agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json
+
+    Implementation SHA: a6f138a66591a729333a69c3e2af718b9a339e73
+
+    Recorded commands: 22 focused tests, typecheck, changed-format, and policy routing all exited 0.
+
+    Evidence manifest: .agentplane/tasks/202607281655-YMPY8Y/evidence/manifest.json
 
     BlueprintSnapshotRef:
     - state: current
@@ -352,6 +396,44 @@ Command-level execution record: .agentplane/tasks/202607281655-YMPY8Y/verificati
 Scope: commit 8d242418bcd6fce80fa6ff6729fa996bc389d2b4; replacement CAS, cross-process contention, and interrupted-reservation recovery.
 
 Evidence manifest: .agentplane/tasks/202607281655-YMPY8Y/evidence/manifest.json (generated and verified after this record).
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+- old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T18:24:08.495Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verification passed on a6f138a66591 with exact command-level evidence; the real 8H replacement remains the explicit post-integration gate.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T18:18:08.889Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+Details:
+
+Command-level execution record: .agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json
+
+Implementation SHA: a6f138a66591a729333a69c3e2af718b9a339e73
+
+Recorded commands: 22 focused tests, typecheck, changed-format, and policy routing all exited 0.
+
+Evidence manifest: .agentplane/tasks/202607281655-YMPY8Y/evidence/manifest.json
 
 BlueprintSnapshotRef:
 - state: current
