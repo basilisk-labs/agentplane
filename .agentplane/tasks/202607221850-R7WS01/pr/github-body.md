@@ -21,8 +21,8 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
 - Note:
 
 ```text
-PASS (hosted rework): split execution contracts keeps task-run below the hotspot threshold and
-replaces unsafe Hermes matcher assignments with typed assertions.
+PASS (static rework): stale type import removed after contract extraction; no runner lifecycle
+behavior changed.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -47,8 +47,8 @@ replaces unsafe Hermes matcher assignments with typed assertions.
  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
  .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
- .../agentplane/src/runner/usecases/task-run.ts     |  43 ++----
- 14 files changed, 643 insertions(+), 94 deletions(-)
+ .../agentplane/src/runner/usecases/task-run.ts     |  44 ++----
+ 14 files changed, 643 insertions(+), 95 deletions(-)
 ```
 
 </details>
