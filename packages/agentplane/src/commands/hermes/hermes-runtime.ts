@@ -305,7 +305,7 @@ export async function executeHermesWorkflowOperation(opts: {
     status: succeeded ? "succeeded" : "failed",
     observed_postconditions: ["runner_state_observed"],
     detail: executed.result.summary ?? `runner execution completed for ${taskId}`,
-    exit_code: executed.result.exit_code,
+    exit_code: taskRunnerLifecycleExitCode(lifecycle),
     operation_result: { kind: "runner_lifecycle", value: lifecycle },
   };
 }

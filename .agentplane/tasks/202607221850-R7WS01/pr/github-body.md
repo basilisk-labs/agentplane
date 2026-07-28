@@ -17,8 +17,14 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+PASS: typed runner lifecycle results stay in-process through task CLI and Hermes; human and JSON
+renderers preserve effect authority, observed evidence, claim generation, and operator-resolution
+provenance.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -30,8 +36,8 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
 
 ```text
  .../src/cli/run-cli.core.task-run.test.ts          |   6 +
- .../src/commands/hermes/hermes-runtime.ts          |  17 +-
- .../src/commands/hermes/hermes.command.test.ts     |  45 +++++-
+ .../src/commands/hermes/hermes-runtime.ts          |  19 ++-
+ .../src/commands/hermes/hermes.command.test.ts     | 107 ++++++++++++-
  .../src/commands/shared/workflow-supervisor.ts     |   8 +
  .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
  .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
@@ -42,7 +48,7 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
  .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
- 13 files changed, 552 insertions(+), 60 deletions(-)
+ 13 files changed, 613 insertions(+), 63 deletions(-)
 ```
 
 </details>
