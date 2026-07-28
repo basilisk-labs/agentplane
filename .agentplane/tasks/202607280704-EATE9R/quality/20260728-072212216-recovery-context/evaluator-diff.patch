@@ -1,0 +1,13 @@
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts b/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts
+index 698a41db3..118f55c49 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts
+@@ -31,7 +31,7 @@ import { isAuthorityOnlyTaskReadmeAdvance } from "../shared/quality-review-targe
+ type CleanupBranchKind = "task" | "task-close";
+ 
+ type GithubCommitRecord = {
+-  parents?: Array<{ sha?: string | null }>;
++  parents?: { sha?: string | null }[];
+ };
+ 
+ export type CleanupCandidate = {
