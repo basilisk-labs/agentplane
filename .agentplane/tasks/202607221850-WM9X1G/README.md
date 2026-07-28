@@ -4,7 +4,7 @@ title: "Journal resumable context-ingestion phases"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -166,6 +166,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:87145751925ab1fe3469438ee4b00e08d9495ea60805a62c1332ea752a7818eb"
+      -
+        actor: "USER"
+        at: "2026-07-28T08:17:16.786Z"
+        authorityDigest: "sha256:8c78e3479639986aaff647d23495aad84bbeb808704684e26930936b36369e60"
+        digest: "sha256:1ba0e91bc393fedd92e776dce37361e7b4a8c702de5675023bdddec33c9ce849"
+        operationDigest: "sha256:c3557ec9107c780368ddd5d394514c297246161241a0d75aa9c43bebd7f2504f"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:dcda844fb534ce234ea6d226d044d9789cf8d55d1c50beeaee6f31ff73f4f003"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:5fdd26d6c22403ff3b13c0326a905d55eb1af75096dd50c9e1524aaa2e0e9c8b"
     grants:
       -
         actor: "USER"
@@ -180,6 +193,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:87145751925ab1fe3469438ee4b00e08d9495ea60805a62c1332ea752a7818eb"
         stateScopeDigest: "sha256:43b9c64e1ad33365d792441edb4f79b2b428ea0d01759f8463ad059d147a971f"
+      -
+        actor: "USER"
+        digest: "sha256:8c78e3479639986aaff647d23495aad84bbeb808704684e26930936b36369e60"
+        expiresAt: "2026-07-28T08:32:16.786Z"
+        id: "authority-956ad2e6-59dc-46c3-98bf-72fcef2c1338"
+        issuedAt: "2026-07-28T08:17:16.786Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:c3557ec9107c780368ddd5d394514c297246161241a0d75aa9c43bebd7f2504f"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:5fdd26d6c22403ff3b13c0326a905d55eb1af75096dd50c9e1524aaa2e0e9c8b"
+        stateScopeDigest: "sha256:442051d1152380a5881f62c17addd43a7068df84d1c5304a8a10473aefc8a092"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
