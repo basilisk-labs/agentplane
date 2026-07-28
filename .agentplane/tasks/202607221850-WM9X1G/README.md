@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "Resumable journal lease, semantic fingerprint guard, task-id resolution, and recovery diagnostics remain covered by focused tests."
 commit:
-  hash: "9b73c6485d9479041f42103910ebb46ae789b7e9"
-  message: "chore: authorize context ingest hotspot closure"
+  hash: "3e0e89d381fdfbc8848fde5d391b62e42d4c4866"
+  message: "chore: authorize context ingest pre-merge closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -160,8 +163,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Refreshed verification on current task head: task-state check and typecheck passed; focused resumable-ingestion suite passed (26 tests); ci:local:fast previously passed unchanged implementation head."
+  -
+    type: "status"
+    at: "2026-07-28T08:52:35.395Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:51:31.752Z"
+doc_updated_at: "2026-07-28T08:52:35.395Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
