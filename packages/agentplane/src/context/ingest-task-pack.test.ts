@@ -392,6 +392,96 @@ describe("context ingest task pack", () => {
     });
   });
 
+  it("keeps task creation fail-closed when a backend error may follow a persisted write", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/raw/unknown-task.md",
+      "# Unknown\n\nBackend outcome is uncertain.\n",
+    );
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "cloud",
+      backendConfigPath: path.join(root, ".agentplane/backends/cloud/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const createTask = vi.fn(() => Promise.reject(new Error("forced backend push failure")));
+    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
+
+    await expect(cmdContextIngest({ ctx, cwd: root, parsed, createTask })).rejects.toThrow(
+      /forced backend push failure/u,
+    );
+    await expect(cmdContextIngest({ ctx, cwd: root, parsed, createTask })).rejects.toThrow(
+      /unknown task creation outcome/u,
+    );
+
+    expect(createTask).toHaveBeenCalledTimes(1);
+    const diagnostics = await inspectContextIngestRuns(root);
+    expect(
+      diagnostics.some(
+        (diagnostic) =>
+          diagnostic.level === "issue" &&
+          diagnostic.message.includes("unknown task creation outcome"),
+      ),
+    ).toBe(true);
+  });
+
+  it("rejects a concurrent retry of the same resumable run while its executor is active", async () => {
+    const root = await tempRoot();
+    await write(
+      root,
+      "context/raw/concurrent.md",
+      "# Concurrent\n\nOnly one task may be created.\n",
+    );
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+    const taskId = "202607021207-CONCUR";
+    const createTask = vi.fn(() =>
+      Promise.resolve({
+        task_id: taskId,
+        revision: 1,
+        backend_id: "local",
+        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+      }),
+    );
+    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
+    let releaseFirst: (() => void) | undefined;
+    const firstPaused = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    let signalFirstPhase: (() => void) | undefined;
+    const firstReachedPhase = new Promise<void>((resolve) => {
+      signalFirstPhase = resolve;
+    });
+    const first = cmdContextIngest({
+      ctx,
+      cwd: root,
+      parsed,
+      createTask,
+      afterJournalPhase: async (phase) => {
+        if (phase !== "source_set_locked") return;
+        signalFirstPhase?.();
+        await firstPaused;
+      },
+    });
+    await firstReachedPhase;
+
+    await expect(cmdContextIngest({ ctx, cwd: root, parsed, createTask })).rejects.toThrow(
+      /already executing/u,
+    );
+    releaseFirst?.();
+    await expect(first).resolves.toBe(0);
+    expect(createTask).toHaveBeenCalledTimes(1);
+  });
+
   for (const crashPhase of [
     "source_set_locked",
     "task_created",

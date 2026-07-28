@@ -138,7 +138,7 @@ describe("context extraction apply", () => {
     await cmdContextExtractionApply({
       cwd: otherCwd,
       rootOverride: root,
-      parsed: { file: "context/extraction.json", taskId, dryRun: false },
+      parsed: { file: "context/extraction.json", taskId: "", dryRun: false },
     });
     await cmdContextGraphValidate({ cwd: root, parsed: {} });
 
@@ -179,6 +179,35 @@ describe("context extraction apply", () => {
           diagnostic.level === "warning" && diagnostic.message.includes("artifacts_applied"),
       ),
     ).toBe(true);
+
+    await write(
+      root,
+      "context/extraction-changed.json",
+      JSON.stringify({
+        schema_version: 1,
+        kind: "context_extraction",
+        task_id: taskId,
+        reasoning: [{ label: "changed", summary: "This is a different semantic result." }],
+        source_refs: [{ path: "context/raw/research/source.md", lines: "1-2" }],
+        extracted_items: [
+          {
+            id: "fact.changed-semantic-input",
+            kind: "fact",
+            summary: "A changed semantic input must not silently replace finalized journal state.",
+            source_refs: [{ path: "context/raw/research/source.md", lines: "1-2" }],
+            confidence: 0.9,
+            status: "accepted",
+          },
+        ],
+      }),
+    );
+    await expect(
+      cmdContextExtractionApply({
+        cwd: otherCwd,
+        rootOverride: root,
+        parsed: { file: "context/extraction-changed.json", taskId: "", dryRun: false },
+      }),
+    ).rejects.toThrow(/cannot apply changed semantic input/u);
   });
 
   it("reports input source scope separately from applied extraction source paths", async () => {

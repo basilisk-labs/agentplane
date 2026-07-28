@@ -6,14 +6,14 @@ Created: 2026-07-28T08:13:34.859Z
 
 - Task: `202607221850-WM9X1G`
 - Title: Journal resumable context-ingestion phases
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases`
 - Canonical task record: `.agentplane/tasks/202607221850-WM9X1G/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Focused ingest/doctor/extraction/finalize tests: 24 passed; critical CLI suite: 11/11 chunks passed; task-state, lint, typecheck, routing, and diff checks passed.
+- State: needs_rework
+- Note: GitHub PR #4654 review identified four reproducible RF-18 correctness defects: concurrent same-run resumption, unknown backend-write outcomes, changed semantic inputs, and payload task-id journal linkage.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
