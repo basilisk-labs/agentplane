@@ -13,7 +13,7 @@ Created: 2026-07-28T01:55:50.166Z
 ## Verification
 
 - State: ok
-- Note: PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as runner, renderer, and Hermes regression checks.
+- Note: PASS (hosted rework): split execution contracts keeps task-run below the hotspot threshold and replaces unsafe Hermes matcher assignments with typed assertions.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,18 +31,19 @@ Created: 2026-07-28T01:55:50.166Z
 ```text
  .../src/cli/run-cli.core.task-run.test.ts          |   6 +
  .../src/commands/hermes/hermes-runtime.ts          |  19 ++-
- .../src/commands/hermes/hermes.command.test.ts     | 109 ++++++++++++-
+ .../src/commands/hermes/hermes.command.test.ts     | 100 +++++++++++-
  .../src/commands/shared/workflow-supervisor.ts     |   8 +
  .../src/commands/task/run-render.test.ts           | 138 +++++++++++++++++
  .../agentplane/src/commands/task/run-render.ts     |  91 ++++++++++-
  .../agentplane/src/commands/task/run.command.ts    |  41 ++---
  .../task/task-run-effect-resolution.command.ts     |  28 ++--
  .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
+ .../src/runner/usecases/task-run-execution.ts      |  36 +++++
  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
  .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
- .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
- 13 files changed, 612 insertions(+), 69 deletions(-)
+ .../agentplane/src/runner/usecases/task-run.ts     |  43 ++----
+ 14 files changed, 643 insertions(+), 94 deletions(-)
 ```
 
 </details>
