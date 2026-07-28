@@ -6,14 +6,14 @@ Created: 2026-07-28T21:58:43.037Z
 
 - Task: `202607282157-FT85MC`
 - Title: Freeze complete branch evidence for evaluator review
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607282157-FT85MC/freeze-full-evaluator-evidence`
 - Canonical task record: `.agentplane/tasks/202607282157-FT85MC/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered.
+- Note: Independent verification passed after the fail-closed fix: a verification write failure cannot persist success, and concurrent verifies leave final task state matched to exactly one durable record.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
