@@ -4,7 +4,7 @@ title: "Prevent self-invalidating side-effect authority records"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -33,7 +33,9 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "1ec387cd29895158d5157c446a3913cc9598e440"
+  message: "🚧 PTG9C7 task: align work-order task snapshot"
 comments:
   -
     author: "CODER"
@@ -41,6 +43,9 @@ comments:
   -
     author: "CODER"
     body: "Start: implement the branch-snapshot consistency regression and minimal preparation fix."
+  -
+    author: "CODER"
+    body: "Implementation: AgentWorkOrder preparation now uses the branch snapshot selected by branch_pr route resolution; regression covers invocation from base checkout."
 events:
   -
     type: "status"
@@ -56,8 +61,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: implement the branch-snapshot consistency regression and minimal preparation fix."
+  -
+    type: "status"
+    at: "2026-07-28T06:18:54.021Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: AgentWorkOrder preparation now uses the branch snapshot selected by branch_pr route resolution; regression covers invocation from base checkout."
 doc_version: 3
-doc_updated_at: "2026-07-28T06:15:22.225Z"
+doc_updated_at: "2026-07-28T06:18:54.021Z"
 doc_updated_by: "CODER"
 description: "Fix the branch_pr lifecycle defect where a task authority grant changes the task revision/state fingerprint and makes the freshly recorded authority invalid before the required pre-merge closure or route refresh can execute. Preserve fail-closed authorization and support the documented grant -> clean commit -> recompute route path without manual GitHub merge."
 sections:
