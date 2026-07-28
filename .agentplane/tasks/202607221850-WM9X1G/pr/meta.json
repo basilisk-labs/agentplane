@@ -8,10 +8,10 @@
   "pr_number": 4654,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4654",
   "pre_merge_closure": {
-    "basis_commit": "7a41ac8f29897a03713e25332c27002ff6f1e3f2",
+    "basis_commit": "8571f318229cc3f21af02ad411ef3432d5e6a907",
     "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
     "pr_number": 4654,
-    "recorded_at": "2026-07-28T11:34:01.994Z",
+    "recorded_at": "2026-07-28T11:45:39.051Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
