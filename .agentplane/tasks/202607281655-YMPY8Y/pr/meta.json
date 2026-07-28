@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:9e92930cf4b209d81147aae0bbcc9cbe30abc4f62e25d19567b204d2a1b62eb3",
   "pr_number": 4664,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4664",
+  "pre_merge_closure": {
+    "basis_commit": "9466b926c2d536264c028037d220d0f0cf8b8030",
+    "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+    "pr_number": 4664,
+    "recorded_at": "2026-07-28T18:27:26.301Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607281655-YMPY8Y",
