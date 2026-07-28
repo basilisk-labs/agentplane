@@ -6,7 +6,7 @@ Created: 2026-07-28T01:55:50.166Z
 
 - Task: `202607221850-R7WS01`
 - Title: Return typed runner lifecycle results
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221850-R7WS01/return-typed-runner-lifecycle-results`
 - Canonical task record: `.agentplane/tasks/202607221850-R7WS01/README.md`
 

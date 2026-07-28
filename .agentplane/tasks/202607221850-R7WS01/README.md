@@ -1,10 +1,11 @@
 ---
 id: "202607221850-R7WS01"
 title: "Return typed runner lifecycle results"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -40,33 +41,32 @@ verification:
   note: "PASS: typed runner lifecycle results stay in-process through task CLI and Hermes; human and JSON renderers preserve effect authority, observed evidence, claim generation, and operator-resolution provenance."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T02:26:58.563Z"
+  updated_at: "2026-07-28T02:30:01.167Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "3f11077e583fb131713af53835139885b4406b60"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "e7465b7377c6a8af392c605de7aa4315bf107100"
   blueprint_digest: "97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-R7WS01/README.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "executeHermesWorkflowOperation marks an execution with active_claim_cleanup as failed but currently forwards executed.result.exit_code, which can still be 0. This splits supervisor semantics from task-run's typed exit mapping."
+    - "The rework replaces the raw provider exit code with taskRunnerLifecycleExitCode(lifecycle), and a regression test proves that active_claim_cleanup yields failed plus exit_code 1 while retaining the typed result."
 commit:
-  hash: "3f11077e583fb131713af53835139885b4406b60"
-  message: "✨ R7WS01 runner: return typed lifecycle results"
+  hash: "e7465b7377c6a8af392c605de7aa4315bf107100"
+  message: "🐛 R7WS01 hermes: preserve lifecycle exit failures"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: 3f11077e5. Typed lifecycle result, renderers, Hermes in-process projection, and effect identity coverage are ready for TESTER verification."
+  -
+    author: "CODER"
+    body: "Rework committed: e7465b737. Hermes now uses the shared typed lifecycle exit mapping when active-claim cleanup fails; regression coverage added."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -95,8 +101,22 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS: typed runner lifecycle results stay in-process through task CLI and Hermes; human and JSON renderers preserve effect authority, observed evidence, claim generation, and operator-resolution provenance."
+  -
+    type: "status"
+    at: "2026-07-28T02:29:32.508Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework committed: e7465b737. Hermes now uses the shared typed lifecycle exit mapping when active-claim cleanup fails; regression coverage added."
+  -
+    type: "status"
+    at: "2026-07-28T02:30:28.612Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T02:26:17.333Z"
+doc_updated_at: "2026-07-28T02:30:28.613Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -181,6 +201,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:62937b83576dd303313dfc83af04e7e3d0efff9106778d0bff0de00fcea2cf6f"
+      -
+        actor: "USER"
+        at: "2026-07-28T02:30:15.445Z"
+        authorityDigest: "sha256:159cf8da0a1adfd479ed1c9fe769214d27e092f038a4ebb0455db5994c8dfa05"
+        digest: "sha256:72385c150011fff45819893bd41e87d865ca9439a9d4272dc184a55b0978d928"
+        operationDigest: "sha256:7fd8c7ae1909c2269ce1bf5711b983199426325c913ac6c206ee455fc48e748f"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:bb166118ccb9d0ee8a50c75fcf8950df306b9378527648dc7a9c5e66e2c16206"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:3378a88965fa1fd31b000cfb7e1e4ee9d5264bfde20221f0605a8e190524a16d"
     grants:
       -
         actor: "USER"
@@ -195,6 +228,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:62937b83576dd303313dfc83af04e7e3d0efff9106778d0bff0de00fcea2cf6f"
         stateScopeDigest: "sha256:193bc7d44785382c8251ed54e1158f5778d84d491257d68adc3646854e5b28bc"
+      -
+        actor: "USER"
+        digest: "sha256:159cf8da0a1adfd479ed1c9fe769214d27e092f038a4ebb0455db5994c8dfa05"
+        expiresAt: "2026-07-28T02:45:15.445Z"
+        id: "authority-ecf0791d-21a5-42f0-a207-0a74e5cf92f1"
+        issuedAt: "2026-07-28T02:30:15.445Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:7fd8c7ae1909c2269ce1bf5711b983199426325c913ac6c206ee455fc48e748f"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:3378a88965fa1fd31b000cfb7e1e4ee9d5264bfde20221f0605a8e190524a16d"
+        stateScopeDigest: "sha256:d7289a717eae5c0660324db1e6a877d0b3b043e9cd1f584fb0155f138e9e1254"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"

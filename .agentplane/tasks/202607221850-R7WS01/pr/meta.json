@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:da831a54df8e685f7cb8a449136121ba3ff3501a78568ca3c61e81df7cbb34c4",
   "pr_number": 4650,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4650",
+  "pre_merge_closure": {
+    "basis_commit": "e7465b7377c6a8af392c605de7aa4315bf107100",
+    "branch": "task/202607221850-R7WS01/return-typed-runner-lifecycle-results",
+    "pr_number": 4650,
+    "recorded_at": "2026-07-28T02:30:28.669Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221850-R7WS01",
