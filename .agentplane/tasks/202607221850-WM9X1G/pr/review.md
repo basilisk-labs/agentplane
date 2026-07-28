@@ -34,10 +34,11 @@ Created: 2026-07-28T08:13:34.859Z
  .../agentplane/src/commands/context/extraction.ts  |  28 +-
  .../agentplane/src/commands/context/finalize.ts    |   5 +
  packages/agentplane/src/context/doctor.ts          |   5 +
- .../agentplane/src/context/ingest-run-journal.ts   | 645 +++++++++++++++++++++
- .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++-
- packages/agentplane/src/context/ingest.ts          | 165 +++++-
- 8 files changed, 1313 insertions(+), 20 deletions(-)
+ .../src/context/ingest-run-execution-lease.ts      | 111 +++++
+ .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
+ .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
+ packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+ 9 files changed, 1325 insertions(+), 20 deletions(-)
 ```
 
 </details>
