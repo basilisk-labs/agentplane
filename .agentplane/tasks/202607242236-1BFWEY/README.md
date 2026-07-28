@@ -4,7 +4,7 @@ title: "Persist bounded supervisor execution episodes"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -43,16 +43,19 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-28T03:57:29.122Z"
+  updated_by: "TESTER"
+  note: "Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full task contract remains incomplete."
+  attempts: 1
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: durable bounded supervisor episode journal, migration, and Hermes vertical slice with targeted verification."
 events:
   -
     type: "status"
@@ -61,8 +64,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-28T03:57:08.440Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: durable bounded supervisor episode journal, migration, and Hermes vertical slice with targeted verification."
+  -
+    type: "verify"
+    at: "2026-07-28T03:57:29.122Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full task contract remains incomplete."
 doc_version: 3
-doc_updated_at: "2026-07-28T03:32:16.664Z"
+doc_updated_at: "2026-07-28T03:57:29.723Z"
 doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
@@ -75,9 +91,44 @@ sections:
   Verify Steps: "1. Run direct EXECUTOR and context/CURATOR rework fixtures with each budget just below and exactly at its limit. Expected: the next agent/evaluator/side-effect operation is refused before launch, usage is durably recorded, and the typed stop identifies the exhausted dimension. 2. Crash after journal creation, operation intent, adapter completion, receipt persistence, evaluator result, bounded feedback creation, and cursor advancement in both direct and context flows, then resume. Expected: execution continues from the first incomplete phase without replaying a completed agent run, CURATOR work order, semantic apply, or external effect. 3. Exercise evaluator rework and repeated no-progress results for EXECUTOR and CURATOR. Expected: only a bounded feedback delta enters the next work order, progress fingerprints are deterministic, and max-no-progress terminates both cycles. 4. Validate canonical current/legacy/absent schema fixtures, migrate twice, inject failure at every publish phase, and roll back. Expected: migration is idempotent, mixed generations fail closed, recovery preserves prior valid state, and no journal is silently discarded. 5. Install the built package in an isolated fixture and run journal create/status/resume compatibility smoke. Expected: the published tarball contains the schemas/migrator/runtime assets and does not depend on repository-only files. 6. Change task revision, Git/provider state, authority, or StateFingerprint between checkpoints and leave an effect in doubt. Expected: resume fails closed and delegates to typed stale-state/effect-resolution paths rather than consuming budget or retrying. 7. Verify human and JSON projections contain canonical budget usage, cursor, stop reason, work-order/receipt refs, and no raw transcripts or secrets. 8. Run bun run schemas:check, bun run lifecycle:invariants, bun run guards:check, bun run test:critical, bun run typecheck, bun run package:install-smoke, and bun run bench:agent-efficiency:check. Expected: all pass and quality/safety controls do not regress."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-28T03:57:29.122Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full task contract remains incomplete.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:57:08.440Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+    - old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607242236-1BFWEY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "- Revert supervisor budget/journal integration while preserving already persisted diagnostic records and the existing StateFingerprint, execution-receipt, and effect-in-doubt safety boundaries. - Retain version readers and migration recovery for any journal generation already written; never delete or reinterpret durable records during rollback. - Keep the feature behind an explicit compatibility boundary until schema migration, restart, rollback, and installed-package tests pass. - Re-run schema, lifecycle, guard, critical, type, install-smoke, and agent-efficiency checks before restoring supervised execution."
-  Findings: "- The agentplane-loops runtime is design and test evidence for budgets, checkpoints, deterministic transitions, and bounded feedback only. This task must implement those properties inside the 0.7 typed supervisor and must not import the legacy public loop controller or create a second orchestration plane."
+  Findings: |-
+    - The agentplane-loops runtime is design and test evidence for budgets, checkpoints, deterministic transitions, and bounded feedback only. This task must implement those properties inside the 0.7 typed supervisor and must not import the legacy public loop controller or create a second orchestration plane.
+
+    - Observation: format, schemas, lint, guards, core and CLI typechecks, and 30 targeted tests passed; missing CURATOR/EVALUATOR integration, provider token telemetry, full crash matrix, installed-package smoke, and full critical suite.
+      Impact: Marking the broad execution-episode task ok would overstate coverage and allow unfinished budget and recovery paths to reach integration.
+      Resolution: Continue CODER work with typed telemetry projection, CURATOR/EVALUATOR adoption, crash-resume fixtures, and the declared full verification contract.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -135,6 +186,36 @@ Define a durable supervisor episode journal and hard execution budgets for bound
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-28T03:57:29.122Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full task contract remains incomplete.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:57:08.440Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+- old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607242236-1BFWEY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -144,3 +225,7 @@ Define a durable supervisor episode journal and hard execution budgets for bound
 ## Findings
 
 - The agentplane-loops runtime is design and test evidence for budgets, checkpoints, deterministic transitions, and bounded feedback only. This task must implement those properties inside the 0.7 typed supervisor and must not import the legacy public loop controller or create a second orchestration plane.
+
+- Observation: format, schemas, lint, guards, core and CLI typechecks, and 30 targeted tests passed; missing CURATOR/EVALUATOR integration, provider token telemetry, full crash matrix, installed-package smoke, and full critical suite.
+  Impact: Marking the broad execution-episode task ok would overstate coverage and allow unfinished budget and recovery paths to reach integration.
+  Resolution: Continue CODER work with typed telemetry projection, CURATOR/EVALUATOR adoption, crash-resume fixtures, and the declared full verification contract.
