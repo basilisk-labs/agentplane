@@ -1,10 +1,10 @@
 ---
 id: "202607221850-R7WS01"
 title: "Return typed runner lifecycle results"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -29,9 +29,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-28T01:55:33.967Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -40,11 +40,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-28T01:55:50.050Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:50:23.048Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-28T01:55:50.050Z"
+doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
   Summary: |-
@@ -79,6 +89,40 @@ sections:
     - Restore the previous compatibility path only when it cannot bypass the explicit operator-resolution protocol or invoke the adapter for unresolved `effect_in_doubt`.
     - Re-run lifecycle, focused, and type checks before resuming dependent work.
   Findings: ""
+extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-28T01:56:04.216Z"
+        authorityDigest: "sha256:1a9163585644b8044fd2623ebaae04eaa5ff72007319049788e911b2d0a8c050"
+        digest: "sha256:bb166118ccb9d0ee8a50c75fcf8950df306b9378527648dc7a9c5e66e2c16206"
+        operationDigest: "sha256:926afbf65c3bb7e5beecf6a240900f188305b43ba476802772444569bc54f1fd"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:62937b83576dd303313dfc83af04e7e3d0efff9106778d0bff0de00fcea2cf6f"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:1a9163585644b8044fd2623ebaae04eaa5ff72007319049788e911b2d0a8c050"
+        expiresAt: "2026-07-28T02:11:04.216Z"
+        id: "authority-c43fa0c7-9d23-4abf-9b92-7214c7b1d03e"
+        issuedAt: "2026-07-28T01:56:04.216Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:926afbf65c3bb7e5beecf6a240900f188305b43ba476802772444569bc54f1fd"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:62937b83576dd303313dfc83af04e7e3d0efff9106778d0bff0de00fcea2cf6f"
+        stateScopeDigest: "sha256:193bc7d44785382c8251ed54e1158f5778d84d491257d68adc3646854e5b28bc"
+    schemaVersion: 1
+  workflow_route_baseline:
+    start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
