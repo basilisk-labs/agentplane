@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -74,7 +74,7 @@ quality_review:
   findings:
     - "The extraction retains receipt validation, fail-closed recovery, budget accounting, and terminal provider-failure recording in one supervisor boundary; the facade keeps task-state application idempotent and exposes the same supervisor episode fields."
 commit:
-  hash: "a702e4ed0c9429e24babe0adcbff82c99f90acb5"
+  hash: "42a60677a4282cbf254511a111f13e7fafd55b83"
   message: "Record refreshed pre-merge authority"
 comments:
   -
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -130,8 +133,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T05:33:44.019Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T05:18:09.118Z"
+doc_updated_at: "2026-07-28T05:33:44.019Z"
 doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
@@ -404,8 +414,8 @@ extensions:
         stateScopeDigest: "sha256:41f63bfad76300666d96cd764a1707ee5dcd054162d9f33f4a671d0904996c0c"
     schemaVersion: 1
   implementation_commit:
-    hash: "edb373fa89ab1ca84d4dca56dadf1acea166a9a7"
-    message: "Format evaluator provider failure coverage"
+    hash: "594987c093a5d1bb0bbc443c2ac5028a228130c3"
+    message: "Refactor evaluator episode supervisor boundary"
   workflow_route_baseline:
     start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
     version: 1

@@ -8,10 +8,10 @@
   "pr_number": 4651,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4651",
   "pre_merge_closure": {
-    "basis_commit": "a702e4ed0c9429e24babe0adcbff82c99f90acb5",
+    "basis_commit": "42a60677a4282cbf254511a111f13e7fafd55b83",
     "branch": "task/202607242236-1BFWEY/persist-bounded-supervisor-execution-episodes",
     "pr_number": 4651,
-    "recorded_at": "2026-07-28T05:18:09.164Z",
+    "recorded_at": "2026-07-28T05:33:44.070Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
