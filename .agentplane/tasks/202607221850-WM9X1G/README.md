@@ -4,7 +4,7 @@ title: "Journal resumable context-ingestion phases"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -36,11 +36,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "21cd8c94d46c6a130ce5bad53b787372b3ad61cd"
+  message: "feat: journal resumable context ingestion"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: implement the approved resumable ingest journal vertical slice, preserving semantic work as an agent-owned phase."
+  -
+    author: "CODER"
+    body: "Implementation committed: resumable context-ingest journal with source-set locking, divergence diagnostics, and phase-boundary recovery coverage."
 events:
   -
     type: "status"
@@ -49,9 +54,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement the approved resumable ingest journal vertical slice, preserving semantic work as an agent-owned phase."
+  -
+    type: "status"
+    at: "2026-07-28T08:14:04.186Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: resumable context-ingest journal with source-set locking, divergence diagnostics, and phase-boundary recovery coverage."
 doc_version: 3
-doc_updated_at: "2026-07-28T07:46:21.325Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-07-28T08:14:04.186Z"
+doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
   Summary: |-
