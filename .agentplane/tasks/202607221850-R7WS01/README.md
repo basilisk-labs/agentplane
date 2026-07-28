@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -36,9 +36,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T02:26:16.727Z"
+  updated_at: "2026-07-28T02:36:22.966Z"
   updated_by: "TESTER"
-  note: "PASS: typed runner lifecycle results stay in-process through task CLI and Hermes; human and JSON renderers preserve effect authority, observed evidence, claim generation, and operator-resolution provenance."
+  note: "PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup."
   attempts: 0
 quality_review:
   state: "pass"
@@ -115,8 +115,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T02:36:22.966Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup."
 doc_version: 3
-doc_updated_at: "2026-07-28T02:30:28.613Z"
+doc_updated_at: "2026-07-28T02:36:24.002Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -175,6 +181,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T02:36:22.966Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T02:30:28.613Z, excerpt_hash=sha256:02a389ca089e360cf76ff483bd84febcf2d5924eaa0f09fb89eb4a0ab64c794d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-R7WS01-return-typed-runner-lifecycle-results/.agentplane/tasks/202607221850-R7WS01/blueprint/resolved-snapshot.json
+    - old_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+    - current_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-R7WS01
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607221850-R7WS01 --remote --explain
+    - diagnostic_command: agentplane task next-action 202607221850-R7WS01 --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -185,6 +221,10 @@ sections:
     - Observation: Focused runner/supervisor/lifecycle suite passed; critical-cli passed 11/11 files (72 tests) in canonical Node mode; lifecycle invariants, typecheck, lint, and routing checks passed.
       Impact: No stdout parsing or generic replay path was reintroduced for effect_in_doubt.
       Resolution: Approve branch for PR update and hosted validation.
+
+    - Observation: Hermes lifecycle, renderer, and effect-resolution tests passed; typecheck, lint, and lifecycle invariants passed on e7465b737.
+      Impact: Hosted verify-contract evidence now covers the rework commit rather than the superseded implementation head.
+      Resolution: Refresh PR head and rerun hosted validation.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -389,6 +429,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T02:36:22.966Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T02:30:28.613Z, excerpt_hash=sha256:02a389ca089e360cf76ff483bd84febcf2d5924eaa0f09fb89eb4a0ab64c794d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-R7WS01-return-typed-runner-lifecycle-results/.agentplane/tasks/202607221850-R7WS01/blueprint/resolved-snapshot.json
+- old_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+- current_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-R7WS01
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607221850-R7WS01 --remote --explain
+- diagnostic_command: agentplane task next-action 202607221850-R7WS01 --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -403,3 +473,7 @@ DecisionContextRef:
 - Observation: Focused runner/supervisor/lifecycle suite passed; critical-cli passed 11/11 files (72 tests) in canonical Node mode; lifecycle invariants, typecheck, lint, and routing checks passed.
   Impact: No stdout parsing or generic replay path was reintroduced for effect_in_doubt.
   Resolution: Approve branch for PR update and hosted validation.
+
+- Observation: Hermes lifecycle, renderer, and effect-resolution tests passed; typecheck, lint, and lifecycle invariants passed on e7465b737.
+  Impact: Hosted verify-contract evidence now covers the rework commit rather than the superseded implementation head.
+  Resolution: Refresh PR head and rerun hosted validation.
