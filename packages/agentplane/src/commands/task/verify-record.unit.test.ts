@@ -12,6 +12,8 @@ import type { CommandContext } from "../shared/task-backend.js";
 
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn<(p: string, enc: string) => Promise<string>>(),
+  mkdir: vi.fn(),
+  writeJsonStableIfChanged: vi.fn(),
   ensureReconciledBeforeMutation: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext:
@@ -30,8 +32,12 @@ vi.mock("node:fs/promises", async (importOriginal) => {
     actualUnknown && typeof actualUnknown === "object"
       ? (actualUnknown as Record<string, unknown>)
       : {};
-  return { ...actual, readFile: mocks.readFile };
+  return { ...actual, readFile: mocks.readFile, mkdir: mocks.mkdir };
 });
+
+vi.mock("../../shared/write-if-changed.js", () => ({
+  writeJsonStableIfChanged: mocks.writeJsonStableIfChanged,
+}));
 
 vi.mock("../shared/task-backend.js", () => ({
   backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
@@ -105,6 +111,8 @@ function makeWriteThroughBackend(opts: {
 describe("task verify record (unit)", () => {
   beforeEach(() => {
     mocks.readFile.mockReset();
+    mocks.mkdir.mockReset().mockResolvedValue(undefined);
+    mocks.writeJsonStableIfChanged.mockReset().mockResolvedValue(true);
     mocks.ensureReconciledBeforeMutation.mockReset();
     mocks.loadCommandContext.mockReset();
     mocks.loadTaskFromContext.mockReset();

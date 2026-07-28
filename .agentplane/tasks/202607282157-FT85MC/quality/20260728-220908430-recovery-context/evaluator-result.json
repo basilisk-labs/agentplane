@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen review contains no durable verification records: verification_records and runner_history are empty, while the only check evidence is a narrative verification note.",
+      "broken_invariant": "The approved contract requires machine-readable verification records to be discovered and frozen in the final evaluator work order so the evaluator can assess required checks without relying on narrative summaries.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:14dd44c60fb16b4f346a4fb837b10b8cc8a3c31c7651b8f03283abde9bfbdc4c",
+          "section": "verification_records and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:fd770ec8d50417c6398c680f5a240da2109278f4189117f03fc422339d5c5c5e",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An end-to-end regression test that records task verification through the supported verification path, prepares an evaluator work order, and asserts that the durable record is present as frozen evidence with exact command, result, scope, and digest.",
+    "Regression coverage proving that the frozen full-branch patch preserves binary changes and rename metadata, as explicitly required by the approved plan."
+  ],
+  "hidden_assumptions": [
+    "A task-level verification state and free-form note are assumed to be an adequate substitute for durable machine-readable verification records.",
+    "Passing focused tests is assumed to prove binary- and rename-safe evidence even though the added regression assertions cover only ordinary text files."
+  ],
+  "recovery_context": "Rework the verification-evidence path so a real durable verification record is created, discovered, and included in the frozen evaluator work order; then regenerate the review evidence and add explicit binary/rename regression coverage."
+}

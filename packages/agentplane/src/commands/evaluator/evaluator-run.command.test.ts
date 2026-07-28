@@ -10,6 +10,7 @@ import { parseCommandArgv } from "../../cli/spec/parse.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
+import { cmdVerifyParsed } from "../task/verify-record.js";
 import { cmdTaskAdd } from "../workflow.js";
 import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 
@@ -631,7 +632,12 @@ describe("evaluator run command", () => {
   it("freezes the complete branch delta from the merge base through the evaluated SHA", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const baseSha = await commitPath(root, "README.md", "base\n", "chore: establish base");
+    const baseSha = await commitPath(
+      root,
+      "src/rename-before.ts",
+      "export const renamed = true;\n",
+      "chore: establish base",
+    );
     const taskId = "202605240900-EV15";
     await addTask(root, taskId);
     const prDir = path.join(root, `.agentplane/tasks/${taskId}/pr`);
@@ -651,12 +657,20 @@ describe("evaluator run command", () => {
       "utf8",
     );
     await commitPath(root, "src/first-change.ts", "export const first = true;\n", "feat: first");
-    const evaluatedSha = await commitPath(
-      root,
-      "src/second-change.ts",
-      "export const second = true;\n",
-      "feat: second",
-    );
+    await commitPath(root, "src/second-change.ts", "export const second = true;\n", "feat: second");
+    const binaryPath = path.join(root, "fixtures", "payload.bin");
+    await mkdir(path.dirname(binaryPath), { recursive: true });
+    await writeFile(binaryPath, Buffer.from([0x00, 0xff, 0x2a, 0x7f]));
+    await execFileAsync("git", ["add", "--", "fixtures/payload.bin"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: add binary fixture"], { cwd: root });
+    await execFileAsync("git", ["mv", "src/rename-before.ts", "src/rename-after.ts"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "test: rename fixture"], { cwd: root });
+    const { stdout: evaluatedOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const evaluatedSha = evaluatedOutput.trim();
 
     const { prepared } = await prepareTypedReview(root, taskId);
     const actualDiff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
@@ -669,6 +683,9 @@ describe("evaluator run command", () => {
     const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
     expect(frozenDiff).toContain("src/first-change.ts");
     expect(frozenDiff).toContain("src/second-change.ts");
+    expect(frozenDiff).toContain("GIT binary patch");
+    expect(frozenDiff).toContain("rename from src/rename-before.ts");
+    expect(frozenDiff).toContain("rename to src/rename-after.ts");
   });
 
   it("keeps no-work-unit evidence empty and fails closed when its configured base is missing", async () => {
@@ -692,6 +709,49 @@ describe("evaluator run command", () => {
         baseRef: "refs/heads/does-not-exist",
       }),
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
+  });
+
+  it("freezes the durable verification record created through the supported verification path", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV16";
+    await addTask(root, taskId);
+    await commitPath(root, "src/evaluated.ts", "export const evaluated = true;\n", "feat: target");
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    await cmdVerifyParsed({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      state: "ok",
+      by: "TESTER",
+      note: "Focused evaluator checks passed.",
+      details:
+        "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nScope: evaluator evidence",
+      quiet: true,
+    });
+
+    const { prepared } = await prepareTypedReview(root, taskId);
+    const verificationEvidence = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "verification_log",
+    );
+    if (!verificationEvidence) throw new Error("Missing frozen verification evidence.");
+    const record = JSON.parse(
+      await readFile(path.join(root, verificationEvidence.path), "utf8"),
+    ) as Record<string, unknown>;
+
+    expect(verificationEvidence.path).toMatch(
+      new RegExp(`^\\.agentplane/tasks/${taskId}/verification/.+\\.json$`, "u"),
+    );
+    expect(record).toMatchObject({
+      kind: "task_verification_record",
+      task_id: taskId,
+      result: "ok",
+      verifier: "TESTER",
+    });
+    expect(typeof record.implementation_sha).toBe("string");
+    expect(record.scope_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
   it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {

@@ -12,8 +12,8 @@ Created: 2026-07-28T21:58:43.037Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused evaluator evidence regression tests (17), Prettier, ESLint, typecheck, policy routing, and doctor passed. The work order now freezes the merge-base-to-target diff with base provenance; direct root/single-commit behavior and missing branch_pr base failure are covered.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,9 +29,12 @@ Created: 2026-07-28T21:58:43.037Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/evaluator/evaluator-review-usecase.ts | 98 +++++++++++++++++++++-
- .../evaluator/evaluator-run.command.test.ts        | 68 +++++++++++++++
- 2 files changed, 162 insertions(+), 4 deletions(-)
+ .../commands/evaluator/evaluator-review-usecase.ts |  98 +++++++++++++++-
+ .../evaluator/evaluator-run.command.test.ts        | 128 +++++++++++++++++++++
+ .../src/commands/task/verify-record-execute.ts     |  58 +++++++++-
+ .../src/commands/task/verify-record.unit.test.ts   |  10 +-
+ .../src/commands/workflow.verify-hooks.test.ts     |  22 +++-
+ 5 files changed, 309 insertions(+), 7 deletions(-)
 ```
 
 </details>

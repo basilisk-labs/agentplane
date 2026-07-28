@@ -1,3 +1,6 @@
- .../commands/evaluator/evaluator-review-usecase.ts | 98 +++++++++++++++++++++-
- .../evaluator/evaluator-run.command.test.ts        | 68 +++++++++++++++
- 2 files changed, 162 insertions(+), 4 deletions(-)
+ .../commands/evaluator/evaluator-review-usecase.ts |  98 +++++++++++++++-
+ .../evaluator/evaluator-run.command.test.ts        | 128 +++++++++++++++++++++
+ .../src/commands/task/verify-record-execute.ts     |  58 +++++++++-
+ .../src/commands/task/verify-record.unit.test.ts   |  10 +-
+ .../src/commands/workflow.verify-hooks.test.ts     |  22 +++-
+ 5 files changed, 309 insertions(+), 7 deletions(-)
