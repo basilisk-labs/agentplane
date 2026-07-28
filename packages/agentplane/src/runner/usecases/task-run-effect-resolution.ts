@@ -123,7 +123,7 @@ async function waitForConcurrentResolutionRetirement(opts: {
         task_id: opts.task_id,
         run_id: opts.run_id,
       }).catch((error: unknown) => {
-        if (isStableFileReadCollision(error, "runner active claim")) return undefined;
+        if (isStableFileReadCollision(error, "runner active claim")) return;
         throw error;
       }),
     ]);
