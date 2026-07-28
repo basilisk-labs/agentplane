@@ -1,0 +1,18 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T23:47:29.665Z",
+    "updated_by": "CODER",
+    "note": "Fixed the hosted static lint failure in the evaluator fixture."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728234729665-091784423278cb9a.json",
+      "sha256": "sha256:31a3020530e4564c7376c669a15c09ad64d9c4f1863f410076be441dad04868c"
+    }
+  ],
+  "runner_history": []
+}
