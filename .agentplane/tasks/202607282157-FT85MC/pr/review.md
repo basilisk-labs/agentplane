@@ -13,7 +13,7 @@ Created: 2026-07-28T21:58:43.037Z
 ## Verification
 
 - State: ok
-- Note: Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline.
+- Note: Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,14 +29,16 @@ Created: 2026-07-28T21:58:43.037Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../commands/evaluator/evaluator-diff-evidence.ts  | 100 ++++++++++++++
- .../commands/evaluator/evaluator-review-usecase.ts |  42 +++---
- .../evaluator/evaluator-run.command.test.ts        | 150 +++++++++++++++++++++
- .../src/commands/task/verify-record-execute.ts     |  60 ++++++++-
- .../task/verify-record.durability.unit.test.ts     |  79 +++++++++++
+ .../commands/evaluator/evaluator-diff-evidence.ts  | 100 +++++++++++++
+ .../commands/evaluator/evaluator-review-apply.ts   |   3 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |  53 ++++---
+ .../evaluator/evaluator-run.command.test.ts        | 166 +++++++++++++++++++++
+ .../evaluator/evaluator-verification-records.ts    |  44 +++++-
+ .../src/commands/task/verify-record-execute.ts     |  60 +++++++-
+ .../task/verify-record.durability.unit.test.ts     |  79 ++++++++++
  .../src/commands/task/verify-record.unit.test.ts   |  10 +-
- .../src/commands/workflow.verify-hooks.test.ts     |  81 ++++++++++-
- 7 files changed, 498 insertions(+), 24 deletions(-)
+ .../src/commands/workflow.verify-hooks.test.ts     |  81 +++++++++-
+ 9 files changed, 560 insertions(+), 36 deletions(-)
 ```
 
 </details>

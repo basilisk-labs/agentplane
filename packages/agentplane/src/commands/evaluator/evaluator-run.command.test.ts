@@ -752,19 +752,35 @@ describe("evaluator run command", () => {
         "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nScope: evaluator evidence",
       quiet: true,
     });
+    await writeFile(
+      path.join(root, `.agentplane/tasks/${taskId}/verification/orphaned-after-transition.json`),
+      `${JSON.stringify({
+        schema_version: 1,
+        kind: "task_verification_record",
+        task_id: taskId,
+        recorded_at: "2026-01-01T00:00:00.000Z",
+        result: "ok",
+        verifier: "INTERRUPTED",
+        note: "The task transition did not persist.",
+      })}\n`,
+      "utf8",
+    );
 
     const { prepared } = await prepareTypedReview(root, taskId);
-    const verificationEvidence = prepared.work_order.evidence.find(
+    const verificationEvidence = prepared.work_order.evidence.filter(
       (entry) => entry.kind === "verification_log",
     );
-    if (!verificationEvidence) throw new Error("Missing frozen verification evidence.");
+    expect(verificationEvidence).toHaveLength(1);
+    const [currentVerificationEvidence] = verificationEvidence;
+    if (!currentVerificationEvidence) throw new Error("Missing frozen verification evidence.");
     const record = JSON.parse(
-      await readFile(path.join(root, verificationEvidence.path), "utf8"),
+      await readFile(path.join(root, currentVerificationEvidence.path), "utf8"),
     ) as Record<string, unknown>;
 
-    expect(verificationEvidence.path).toMatch(
+    expect(currentVerificationEvidence.path).toMatch(
       new RegExp(`^\\.agentplane/tasks/${taskId}/verification/.+\\.json$`, "u"),
     );
+    expect(currentVerificationEvidence.path).not.toContain("orphaned-after-transition.json");
     expect(record).toMatchObject({
       kind: "task_verification_record",
       task_id: taskId,
