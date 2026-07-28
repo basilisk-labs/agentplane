@@ -32,7 +32,7 @@ Created: 2026-07-28T16:57:04.791Z
  docs/user/cli-reference.generated.mdx              |   1 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
- .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
+ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
  .../evaluator/evaluator-verification-records.ts    |  15 +
  .../src/commands/evaluator/evaluator.command.ts    |   1 +
@@ -43,7 +43,7 @@ Created: 2026-07-28T16:57:04.791Z
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
  .../check-compatibility-contract-baseline.mjs      |  16 +
- 14 files changed, 852 insertions(+), 48 deletions(-)
+ 14 files changed, 856 insertions(+), 48 deletions(-)
 ```
 
 </details>
