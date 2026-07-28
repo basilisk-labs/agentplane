@@ -4,7 +4,7 @@ title: "Archive incident INC-20260727-01 task-context evidence"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -41,7 +41,7 @@ events:
     to: "DOING"
     note: "Start: dedicated release-incident reconciliation in the assigned task worktree; scope is archive evidence and active-registry cleanup only after checks."
 doc_version: 3
-doc_updated_at: "2026-07-28T01:07:40.040Z"
+doc_updated_at: "2026-07-28T01:09:45.640Z"
 doc_updated_by: "CODER"
 description: "Dedicated incident reconciliation for TaskEpisodeView section authority. Confirm the shipped RF-21 contract: task_document_schema is explicit, required-section omission or validation failure is enforced, and localized structural-heading coverage is present. Preserve final evidence in the historical archive and remove the active entry only after deterministic checks pass. Do not author a new semantic role or heading policy."
 sections:
@@ -54,11 +54,10 @@ sections:
     - Out of scope: unrelated refactors not required for "Reconcile release incident INC-20260727-01".
   Plan: "1. Re-read INC-20260727-01 and RF-21 evidence against the current main implementation; confirm TaskEpisodeView declares task_document_schema as its section authority and preserves explicit omission or validation failure. 2. Re-run the focused TaskEpisodeView regression suite plus the release-incident check; do not change semantic role or heading policy. 3. If the evidence is current and checks pass, move the complete incident record to docs/developer/incident-archive.mdx with task and command evidence, then remove it from the active registry. 4. Verify policy routing, doctor, and the release-incident gate; record residual risk that semantic role-policy remains intentionally deferred."
   Verify Steps: |-
-    PLANNER fallback scaffold for "Reconcile release incident INC-20260727-01". Replace with task-specific acceptance checks when PLANNER context is available.
-
-    1. Review the requested outcome for "Reconcile release incident INC-20260727-01". Expected: the visible result matches ## Summary and stays inside approved scope.
-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+    1. Run `bun test packages/agentplane/src/runner/context/task-context.test.ts`. Expected: TaskEpisodeView keeps `task_document_schema` as the stated authority; missing, oversized, and localized required sections retain explicit loss prevention.
+    2. Run `node scripts/release/check-release-incidents.mjs` before archival. Expected: it fails only for `INC-20260727-01`, proving the active release blocker is precise.
+    3. Archive the complete incident entry with current implementation, regression, and reconciliation evidence; remove it from `.agentplane/policy/incidents.md` only after step 1 passes.
+    4. Run `node .agentplane/policy/check-routing.mjs`, `node scripts/release/check-release-incidents.mjs`, and `node packages/agentplane/bin/agentplane.js doctor`. Expected: policy routing, active-registry release gate, and repository diagnostics pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     <!-- END VERIFICATION RESULTS -->
@@ -119,11 +118,10 @@ Dedicated incident review/fix for the release-blocking TaskEpisodeView section-a
 
 ## Verify Steps
 
-PLANNER fallback scaffold for "Reconcile release incident INC-20260727-01". Replace with task-specific acceptance checks when PLANNER context is available.
-
-1. Review the requested outcome for "Reconcile release incident INC-20260727-01". Expected: the visible result matches ## Summary and stays inside approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+1. Run `bun test packages/agentplane/src/runner/context/task-context.test.ts`. Expected: TaskEpisodeView keeps `task_document_schema` as the stated authority; missing, oversized, and localized required sections retain explicit loss prevention.
+2. Run `node scripts/release/check-release-incidents.mjs` before archival. Expected: it fails only for `INC-20260727-01`, proving the active release blocker is precise.
+3. Archive the complete incident entry with current implementation, regression, and reconciliation evidence; remove it from `.agentplane/policy/incidents.md` only after step 1 passes.
+4. Run `node .agentplane/policy/check-routing.mjs`, `node scripts/release/check-release-incidents.mjs`, and `node packages/agentplane/bin/agentplane.js doctor`. Expected: policy routing, active-registry release gate, and repository diagnostics pass.
 
 ## Verification
 

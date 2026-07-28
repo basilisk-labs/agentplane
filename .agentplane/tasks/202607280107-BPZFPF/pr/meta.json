@@ -2,11 +2,14 @@
   "base": "main",
   "branch": "task/202607280107-BPZFPF/reconcile-release-incident",
   "created_at": "2026-07-28T01:07:40.176Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "diffstat_sha256": "sha256:771335d65411f4cf8387a69986bd470f587de5733c3e4632eac33b579fc4abe7",
   "last_verified_at": null,
+  "pr_number": 4649,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4649",
   "schema_version": 1,
+  "status": "OPEN",
   "task_id": "202607280107-BPZFPF",
-  "updated_at": "2026-07-28T01:07:40.176Z",
+  "updated_at": "2026-07-28T01:09:13.903Z",
   "verify": {
     "status": "skipped"
   }
