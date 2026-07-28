@@ -37,9 +37,9 @@ risk: hosted PR verification remains required.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-episode.stdin.test.ts      | 55 ++++++++++++++++++++++
+ .../evaluator/evaluator-episode.stdin.test.ts      | 60 ++++++++++++++++++++++
  .../src/commands/evaluator/evaluator-episode.ts    | 23 ++++++++-
- 2 files changed, 76 insertions(+), 2 deletions(-)
+ 2 files changed, 81 insertions(+), 2 deletions(-)
 ```
 
 </details>
