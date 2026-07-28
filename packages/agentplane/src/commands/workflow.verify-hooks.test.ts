@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { readFile, writeFile } from "node:fs/promises";
+import { readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -162,6 +162,26 @@ describe("commands/workflow", () => {
     expect(readme).toContain("VERIFY — ok");
     expect(readme).toContain("By: REVIEWER");
     expect(readme).toContain("Note: Looks good");
+
+    const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
+    const verificationFiles = await readdir(verificationDir);
+    expect(verificationFiles).toHaveLength(1);
+    const record = JSON.parse(
+      await readFile(path.join(verificationDir, verificationFiles[0] ?? ""), "utf8"),
+    ) as Record<string, unknown>;
+    expect(record).toMatchObject({
+      kind: "task_verification_record",
+      task_id: taskId,
+      result: "ok",
+      verifier: "REVIEWER",
+      note: "Looks good",
+      verification_command: `agentplane verify ${taskId} --ok --by REVIEWER`,
+      implementation_sha: null,
+    });
+    expect(typeof record.scope).toBe("string");
+    expect(String(record.scope)).toContain("Review the requested outcome");
+    expect(record.scope_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
+    expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
   it("verify supports --file details and rejects --details with --file", async () => {

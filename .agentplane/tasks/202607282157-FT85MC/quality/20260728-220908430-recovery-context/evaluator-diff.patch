@@ -1,0 +1,1084 @@
+diff --git a/.agentplane/tasks/202607282157-FT85MC/README.md b/.agentplane/tasks/202607282157-FT85MC/README.md
+new file mode 100644
+index 000000000..45eff4963
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/README.md
+@@ -0,0 +1,114 @@
++---
++id: "202607282157-FT85MC"
++title: "Freeze complete branch evidence for evaluator review"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 5
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "evaluator"
++  - "quality"
++  - "v0.7"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-28T21:58:01.517Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit:
++  hash: "bc0977d49c9996e9577a11f56bbfbb7bb5486673"
++  message: "🐛 FT85MC code: freeze full evaluator branch diff"
++comments:
++  -
++    author: "ORCHESTRATOR"
++    body: "Start: isolate the evaluator evidence contract so quality review always receives the complete branch change and concrete verification evidence."
++  -
++    author: "CODER"
++    body: "Implementation committed: complete evaluator branch diff freezing, explicit diff base provenance, and regression coverage are ready for independent verification."
++events:
++  -
++    type: "status"
++    at: "2026-07-28T21:58:01.832Z"
++    author: "ORCHESTRATOR"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: isolate the evaluator evidence contract so quality review always receives the complete branch change and concrete verification evidence."
++  -
++    type: "status"
++    at: "2026-07-28T22:06:59.963Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: complete evaluator branch diff freezing, explicit diff base provenance, and regression coverage are ready for independent verification."
++doc_version: 3
++doc_updated_at: "2026-07-28T22:06:59.963Z"
++doc_updated_by: "CODER"
++description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
++sections:
++  Summary: |-
++    Freeze complete branch evidence for evaluator review
++
++    RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++  Scope: |-
++    - In scope: RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++    - Out of scope: unrelated refactors not required for "Freeze complete branch evidence for evaluator review".
++  Plan: "1. Reproduce the evaluator evidence gap using a multi-commit branch and identify the authoritative merge base for a branch_pr task. 2. Replace one-commit snapshotting with a bounded full branch patch from that merge base to the evaluated SHA, including binary/rename-safe content and a fail-closed error if base resolution is unavailable. 3. Freeze machine-readable verification records in the same work order and cover their discovery. 4. Add focused regression tests for complete multi-commit evidence, no-change handling, and base-resolution failure. 5. Run focused tests, formatting, typecheck, policy routing, and an independent evaluator review before PR integration."
++  Verify Steps: |-
++    1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.
++    2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.
++    3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "7f44e71fa8dbe12987744e4442ba0110dc150090"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Freeze complete branch evidence for evaluator review
++
++RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++
++## Scope
++
++- In scope: RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++- Out of scope: unrelated refactors not required for "Freeze complete branch evidence for evaluator review".
++
++## Plan
++
++1. Reproduce the evaluator evidence gap using a multi-commit branch and identify the authoritative merge base for a branch_pr task. 2. Replace one-commit snapshotting with a bounded full branch patch from that merge base to the evaluated SHA, including binary/rename-safe content and a fail-closed error if base resolution is unavailable. 3. Freeze machine-readable verification records in the same work order and cover their discovery. 4. Add focused regression tests for complete multi-commit evidence, no-change handling, and base-resolution failure. 5. Run focused tests, formatting, typecheck, policy routing, and an independent evaluator review before PR integration.
++
++## Verify Steps
++
++1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.
++2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.
++3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..3469d5229
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+@@ -0,0 +1,573 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607282157-FT85MC",
++    "title": "Freeze complete branch evidence for evaluator review",
++    "description": "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.",
++    "tags": [
++      "code",
++      "evaluator",
++      "quality",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607282157-FT85MC",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9"
++  }
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/diffstat.txt b/.agentplane/tasks/202607282157-FT85MC/pr/diffstat.txt
+new file mode 100644
+index 000000000..40bc7e691
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ .../commands/evaluator/evaluator-review-usecase.ts | 98 +++++++++++++++++++++-
++ .../evaluator/evaluator-run.command.test.ts        | 68 +++++++++++++++
++ 2 files changed, 162 insertions(+), 4 deletions(-)
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/github-body.md b/.agentplane/tasks/202607282157-FT85MC/pr/github-body.md
+new file mode 100644
+index 000000000..a3a77feac
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/github-body.md
+@@ -0,0 +1,35 @@
++Task: `202607282157-FT85MC`
++Title: Freeze complete branch evidence for evaluator review
++Canonical task record: `.agentplane/tasks/202607282157-FT85MC/README.md`
++
++## Summary
++
++Freeze complete branch evidence for evaluator review
++
++RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++
++## Scope
++
++- In scope: RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++- Out of scope: unrelated refactors not required for "Freeze complete branch evidence for evaluator review".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-28T21:58:46.533Z
++- Branch: task/202607282157-FT85MC/freeze-full-evaluator-evidence
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/evaluator/evaluator-review-usecase.ts | 98 +++++++++++++++++++++-
++ .../evaluator/evaluator-run.command.test.ts        | 68 +++++++++++++++
++ 2 files changed, 162 insertions(+), 4 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/github-title.txt b/.agentplane/tasks/202607282157-FT85MC/pr/github-title.txt
+new file mode 100644
+index 000000000..043de3cc9
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 FT85MC task: Freeze complete branch evidence for evaluator review [202607282157-FT85MC]
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/meta.json b/.agentplane/tasks/202607282157-FT85MC/pr/meta.json
+new file mode 100644
+index 000000000..0457d34a5
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607282157-FT85MC/freeze-full-evaluator-evidence",
++  "created_at": "2026-07-28T21:58:43.037Z",
++  "diffstat_sha256": "sha256:efb18fc5e867ef0d1c667b3f066806fcf5eefa9653ae8cf750712058b6816c33",
++  "last_verified_at": null,
++  "pr_number": 4666,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4666",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607282157-FT85MC",
++  "updated_at": "2026-07-28T21:58:46.533Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/review.md b/.agentplane/tasks/202607282157-FT85MC/pr/review.md
+new file mode 100644
+index 000000000..3002ec88a
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-07-28T21:58:43.037Z
++
++## Task
++
++- Task: `202607282157-FT85MC`
++- Title: Freeze complete branch evidence for evaluator review
++- Status: DOING
++- Branch: `task/202607282157-FT85MC/freeze-full-evaluator-evidence`
++- Canonical task record: `.agentplane/tasks/202607282157-FT85MC/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-28T21:58:46.533Z
++- Branch: task/202607282157-FT85MC/freeze-full-evaluator-evidence
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/evaluator/evaluator-review-usecase.ts | 98 +++++++++++++++++++++-
++ .../evaluator/evaluator-run.command.test.ts        | 68 +++++++++++++++
++ 2 files changed, 162 insertions(+), 4 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index e528024ff..39771d968 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -1,6 +1,7 @@
+ import { createHash } from "node:crypto";
+ import { mkdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
++import { gitMergeBase, gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ import { z } from "zod";
+ 
+@@ -15,6 +16,7 @@ import {
+   buildTaskBlueprintResolvedSnapshot,
+ } from "../blueprint/snapshot-artifact.js";
+ import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
++import { parsePrMetaForwardCompatible } from "../shared/pr-meta.js";
+ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+@@ -52,6 +54,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
+       })
+       .strict(),
+     evaluated_sha: z.string().trim().min(1).nullable(),
++    diff_base_sha: z.string().trim().min(1).nullable().optional(),
+     blueprint_digest: z.string().trim().min(1).nullable(),
+     evaluator: z
+       .object({
+@@ -189,13 +192,88 @@ async function freezeFile(opts: {
+   };
+ }
+ 
+-async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
++export async function resolveEvaluatorDiffBase(opts: {
++  gitRoot: string;
++  evaluatedSha: string | null;
++  baseRef: string | null;
++  allowSingleCommitFallback?: boolean;
++}): Promise<string | null> {
++  if (!opts.evaluatedSha) return null;
++  const baseRef = opts.baseRef?.trim();
++  if (!baseRef) {
++    if (opts.allowSingleCommitFallback) {
++      return await gitRevParse(opts.gitRoot, [`${opts.evaluatedSha}^`]).catch(() => null);
++    }
++    const parent = await gitRevParse(opts.gitRoot, [`${opts.evaluatedSha}^`]).catch(() => null);
++    if (!parent) return null;
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Unable to freeze the actual diff for evaluator review: task base branch is unavailable.",
++    });
++  }
++  try {
++    return await gitMergeBase(opts.gitRoot, baseRef, opts.evaluatedSha);
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Unable to resolve the evaluator diff base from ${baseRef}: ${
++        error instanceof Error ? error.message : String(error)
++      }`,
++    });
++  }
++}
++
++async function resolveEvaluatorDiffBaseRef(opts: {
++  ctx: CommandContext;
++  taskId: string;
++}): Promise<string | null> {
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const metaPath = path.join(
++    gitRoot,
++    opts.ctx.config.paths.workflow_dir,
++    opts.taskId,
++    "pr",
++    "meta.json",
++  );
++  try {
++    const meta = parsePrMetaForwardCompatible(await readFile(metaPath, "utf8"), opts.taskId);
++    if (meta.base?.trim()) return meta.base.trim();
++  } catch (error) {
++    if (
++      (error as NodeJS.ErrnoException | null)?.code !== "ENOENT" &&
++      opts.ctx.config.workflow_mode === "branch_pr"
++    ) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Unable to read the evaluator diff base from task PR metadata: ${
++          error instanceof Error ? error.message : String(error)
++        }`,
++      });
++    }
++  }
++  const base = await resolveBaseBranch({
++    cwd: gitRoot,
++    rootOverride: gitRoot,
++    cliBaseOpt: null,
++    mode: opts.ctx.config.workflow_mode,
++  }).catch(() => null);
++  return base?.trim() ?? null;
++}
++
++export async function renderActualDiff(
++  gitRoot: string,
++  evaluatedSha: string | null,
++  diffBaseSha: string | null,
++): Promise<string> {
+   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
+   try {
+     const { stdout } = await execFileAsync(
+       "git",
+-      ["show", "--format=", "--find-renames", "--binary", evaluatedSha],
+-      { cwd: gitRoot, maxBuffer: 1024 * 1024 },
++      diffBaseSha
++        ? ["diff", "--no-ext-diff", "--find-renames", "--binary", diffBaseSha, evaluatedSha]
++        : ["show", "--format=", "--root", "--find-renames", "--binary", evaluatedSha],
++      { cwd: gitRoot, maxBuffer: 16 * 1024 * 1024 },
+     );
+     return stdout || "No file diff was recorded for the evaluated commit.\n";
+   } catch (error) {
+@@ -233,6 +311,7 @@ function workOrderId(opts: {
+   taskId: string;
+   revision: number | null;
+   evaluatedSha: string | null;
++  diffBaseSha: string | null;
+   evidence: EvaluatorWorkOrder["evidence"];
+ }): string {
+   const digest = sha256(
+@@ -240,6 +319,7 @@ function workOrderId(opts: {
+       task_id: opts.taskId,
+       revision: opts.revision,
+       evaluated_sha: opts.evaluatedSha,
++      diff_base_sha: opts.diffBaseSha,
+       evidence: opts.evidence.map((entry) => [entry.id, entry.sha256]),
+     }),
+   ).slice("sha256:".length, "sha256:".length + 24);
+@@ -287,6 +367,14 @@ export async function prepareEvaluatorReview(opts: {
+     taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+   });
++  const diffBaseSha = await resolveEvaluatorDiffBase({
++    gitRoot,
++    evaluatedSha,
++    baseRef: evaluatedSha
++      ? await resolveEvaluatorDiffBaseRef({ ctx: opts.ctx, taskId: opts.task.id })
++      : null,
++    allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
++  });
+   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
+   const recordPaths = await verificationRecordPaths(path.dirname(taskReadmePath));
+   const verificationRecords = await Promise.all(
+@@ -313,7 +401,7 @@ export async function prepareEvaluatorReview(opts: {
+   await mkdir(reviewDir, { recursive: true });
+   await writeFile(
+     path.join(reviewDir, EVALUATOR_DIFF_FILE),
+-    await renderActualDiff(gitRoot, evaluatedSha),
++    await renderActualDiff(gitRoot, evaluatedSha, diffBaseSha),
+     "utf8",
+   );
+   await writeFile(
+@@ -387,6 +475,7 @@ export async function prepareEvaluatorReview(opts: {
+       taskId: opts.task.id,
+       revision: opts.task.revision ?? null,
+       evaluatedSha,
++      diffBaseSha,
+       evidence,
+     }),
+     prepared_at: at,
+@@ -397,6 +486,7 @@ export async function prepareEvaluatorReview(opts: {
+       acceptance_criteria: acceptanceCriteria(opts.task),
+     },
+     evaluated_sha: evaluatedSha,
++    diff_base_sha: diffBaseSha,
+     blueprint_digest: blueprint.digest.value,
+     evaluator: {
+       id: opts.evaluator.id,
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index 429797494..70eaeba22 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -16,6 +16,8 @@ import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
+ import { runEvaluatorRun } from "./evaluator.command.js";
+ import {
+   prepareEvaluatorReview,
++  renderActualDiff,
++  resolveEvaluatorDiffBase,
+   type PreparedEvaluatorReview,
+ } from "./evaluator-review-usecase.js";
+ import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
+@@ -626,6 +628,72 @@ describe("evaluator run command", () => {
+     });
+   });
+ 
++  it("freezes the complete branch delta from the merge base through the evaluated SHA", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const baseSha = await commitPath(root, "README.md", "base\n", "chore: establish base");
++    const taskId = "202605240900-EV15";
++    await addTask(root, taskId);
++    const prDir = path.join(root, `.agentplane/tasks/${taskId}/pr`);
++    await mkdir(prDir, { recursive: true });
++    await writeFile(
++      path.join(prDir, "meta.json"),
++      `${JSON.stringify({
++        schema_version: 1,
++        task_id: taskId,
++        branch: `task/${taskId}/fixture`,
++        created_at: "2026-01-01T00:00:00.000Z",
++        updated_at: "2026-01-01T00:00:00.000Z",
++        status: "OPEN",
++        verify: { status: "skipped" },
++        base: baseSha,
++      })}\n`,
++      "utf8",
++    );
++    await commitPath(root, "src/first-change.ts", "export const first = true;\n", "feat: first");
++    const evaluatedSha = await commitPath(
++      root,
++      "src/second-change.ts",
++      "export const second = true;\n",
++      "feat: second",
++    );
++
++    const { prepared } = await prepareTypedReview(root, taskId);
++    const actualDiff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
++    if (!actualDiff) throw new Error("Missing frozen actual-diff evidence.");
++
++    expect(prepared.work_order).toMatchObject({
++      evaluated_sha: evaluatedSha,
++      diff_base_sha: baseSha,
++    });
++    const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
++    expect(frozenDiff).toContain("src/first-change.ts");
++    expect(frozenDiff).toContain("src/second-change.ts");
++  });
++
++  it("keeps no-work-unit evidence empty and fails closed when its configured base is missing", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    await commitPath(root, "README.md", "base\n", "chore: establish base");
++    const evaluatedSha = await commitPath(
++      root,
++      "src/evaluated.ts",
++      "export const evaluated = true;\n",
++      "feat: evaluated",
++    );
++
++    await expect(renderActualDiff(root, null, null)).resolves.toBe(
++      "No committed task work unit is available for semantic evaluation.\n",
++    );
++    await expect(
++      resolveEvaluatorDiffBase({
++        gitRoot: root,
++        evaluatedSha,
++        baseRef: "refs/heads/does-not-exist",
++      }),
++    ).rejects.toMatchObject({ code: "E_VALIDATION" });
++  });
++
+   it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);

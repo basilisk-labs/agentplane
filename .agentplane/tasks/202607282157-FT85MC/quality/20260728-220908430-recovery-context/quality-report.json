@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T22:10:01.064Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "fae38597465dbcea157645ec28f47ea3564c1481",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "The frozen review contains no durable verification records: verification_records and runner_history are empty, while the only check evidence is a narrative verification note."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607282157-FT85MC/README.md"
+  ],
+  "missing_tests": [
+    "An end-to-end regression test that records task verification through the supported verification path, prepares an evaluator work order, and asserts that the durable record is present as frozen evidence with exact command, result, scope, and digest.",
+    "Regression coverage proving that the frozen full-branch patch preserves binary changes and rename metadata, as explicitly required by the approved plan."
+  ],
+  "hidden_assumptions": [
+    "A task-level verification state and free-form note are assumed to be an adequate substitute for durable machine-readable verification records.",
+    "Passing focused tests is assumed to prove binary- and rename-safe evidence even though the added regression assertions cover only ordinary text files."
+  ],
+  "residual_risks": [
+    "Rework the verification-evidence path so a real durable verification record is created, discovered, and included in the frozen evaluator work order; then regenerate the review evidence and add explicit binary/rename regression coverage."
+  ]
+}
