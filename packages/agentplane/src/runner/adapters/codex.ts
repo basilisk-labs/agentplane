@@ -31,6 +31,7 @@ import {
   CODEX_RESULT_TRANSPORT_ENV,
   createCodexResultEventCollector,
   materializeCodexResultTransport,
+  recordCodexProviderUsageForResult,
   renderCodexResultOutputSchemaJson,
 } from "./codex-result-transport.js";
 import { readValidatedPreparedRunnerStdin } from "./prepared-input.js";
@@ -44,6 +45,16 @@ function readOptionalCodexAgentMessage(
 ): string | null {
   try {
     return collector.readLastAgentMessage();
+  } catch {
+    return null;
+  }
+}
+
+function readOptionalCodexUsage(
+  collector: ReturnType<typeof createCodexResultEventCollector>,
+): { input_tokens: number; output_tokens: number; total_tokens: number } | null {
+  try {
+    return collector.readUsage();
   } catch {
     return null;
   }
@@ -147,10 +158,10 @@ export class CodexRunnerAdapter implements RunnerAdapter {
     return Promise.resolve(buildCodexInvocation({ adapterId: this.id, bundle }));
   }
 
-  execute(invocation: RunnerInvocation): Promise<RunnerResult> {
+  async execute(invocation: RunnerInvocation): Promise<RunnerResult> {
     const executionInvocation = structuredClone(invocation);
     const resultEventCollector = createCodexResultEventCollector();
-    return executeSupervisedRunnerAdapter({
+    const result = await executeSupervisedRunnerAdapter({
       invocation: executionInvocation,
       assertInvocation: assertCodexInvocation,
       observeStdoutLine: (rawLine) => resultEventCollector.observeStdoutLine(rawLine),
@@ -261,5 +272,8 @@ export class CodexRunnerAdapter implements RunnerAdapter {
         };
       },
     });
+    const providerUsage = readOptionalCodexUsage(resultEventCollector);
+    if (providerUsage) recordCodexProviderUsageForResult(result, providerUsage);
+    return result;
   }
 }

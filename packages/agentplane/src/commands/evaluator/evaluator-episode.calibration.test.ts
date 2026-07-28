@@ -14,7 +14,6 @@ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.
 import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
 import {
   executePreparedEvaluatorEpisode,
-  writeEvaluatorEpisodeReceipt,
   type EvaluatorEpisodeProvider,
 } from "./evaluator-episode.js";
 import {
@@ -125,6 +124,7 @@ function provider(
       ended_at: "2026-07-27T00:00:01.000Z",
       stdout_bytes: 12,
       stderr_bytes: 0,
+      provider_usage: { input_tokens: 100, output_tokens: 50, total_tokens: 150 },
     });
   };
 }
@@ -149,7 +149,6 @@ async function applyFixture(opts: {
     workOrderPath: prepared.work_order_path,
     result: episode.result,
   });
-  await writeEvaluatorEpisodeReceipt({ prepared, receipt: episode.receipt });
   return {
     prepared,
     stored: await readTask({ cwd: opts.root, rootOverride: opts.root, taskId: opts.taskId }),
@@ -166,13 +165,28 @@ describe("evaluator episode calibration", () => {
     const { command, prepared } = await prepare(root, taskId);
     let captured: Parameters<EvaluatorEpisodeProvider>[0] | null = null;
 
-    await executePreparedEvaluatorEpisode({
+    const episode = await executePreparedEvaluatorEpisode({
       ctx: command,
       prepared,
       executor: provider(result(prepared, "pass"), (invocation) => {
         captured = invocation;
       }),
     });
+
+    expect(episode.receipt.provider_usage).toEqual({
+      input_tokens: 100,
+      output_tokens: 50,
+      total_tokens: 150,
+    });
+    expect(JSON.parse(await readFile(prepared.result_path, "utf8"))).toEqual(episode.result);
+    expect(
+      JSON.parse(
+        await readFile(
+          path.join(path.dirname(prepared.work_order_path), "evaluator-episode.json"),
+          "utf8",
+        ),
+      ),
+    ).toEqual(episode.receipt);
 
     expect(captured?.argv).toEqual([
       "codex",
@@ -375,7 +389,7 @@ describe("evaluator episode calibration", () => {
     expect(failure).toMatchObject({ code: "E_RUNTIME" });
     expect(failure).toHaveProperty(
       "message",
-      "Codex evaluator provider failed before returning a typed result. The typed result was not applied.",
+      "Codex evaluator provider failed before returning a typed result (classification=unclassified exit_code=unknown signal=none). The typed result was not applied.",
     );
     expect(String(failure)).not.toContain("/private/provider-diagnostics");
     const stored = await readTask({ cwd: root, rootOverride: root, taskId });

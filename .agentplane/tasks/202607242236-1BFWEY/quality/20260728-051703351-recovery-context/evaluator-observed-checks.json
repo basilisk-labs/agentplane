@@ -1,0 +1,20 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run bench:agent-efficiency:check",
+    "bun run guards:check",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run schemas:check",
+    "bun run package:install-smoke"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T05:01:44.723Z",
+    "updated_by": "CODER",
+    "note": "Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift."
+  },
+  "runner_history": []
+}

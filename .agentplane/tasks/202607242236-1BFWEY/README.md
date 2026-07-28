@@ -1,10 +1,11 @@
 ---
 id: "202607242236-1BFWEY"
 title: "Persist bounded supervisor execution episodes"
-status: "TODO"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 43
 origin:
   system: "manual"
 depends_on:
@@ -38,22 +39,138 @@ verify:
   - "bun run schemas:check"
   - "bun run package:install-smoke"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-28T03:31:56.713Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-28T06:03:25.605Z"
+  updated_by: "EVALUATOR"
+  note: "Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green."
   attempts: 0
-commit: null
-comments: []
-events: []
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-07-28T06:03:58.443Z"
+  updated_by: "HUMAN"
+  note: "Current head d9f6ac23 changes only task-local integration authority after the reviewed implementation; PR #4651 hosted checks passed."
+  evaluated_sha: "d9f6ac23cb033aeb6242bdbd507d726302a50cb9"
+  blueprint_digest: "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477"
+  evidence_refs:
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/README.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/pr/meta.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/quality-report.json"
+    - "GitHub PR #4651 all hosted checks passed on d9f6ac23"
+  findings:
+    - "The current head preserves the durable episode implementation reviewed at 256d3f7d; subsequent diffs are task-local lifecycle evidence, and the refreshed PR diffstat verification matches the current implementation diff."
+commit:
+  hash: "a389670e0255dfa15608a4582e6bbe3ba893ff5a"
+  message: "🚧 1BFWEY task: authorize pre-merge closure"
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: durable bounded supervisor episode journal, migration, and Hermes vertical slice with targeted verification."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+events:
+  -
+    type: "status"
+    at: "2026-07-28T03:32:16.664Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-28T03:57:08.440Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: durable bounded supervisor episode journal, migration, and Hermes vertical slice with targeted verification."
+  -
+    type: "verify"
+    at: "2026-07-28T03:57:29.122Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full task contract remains incomplete."
+  -
+    type: "verify"
+    at: "2026-07-28T05:01:44.723Z"
+    author: "CODER"
+    state: "ok"
+    note: "Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift."
+  -
+    type: "status"
+    at: "2026-07-28T05:11:48.174Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T05:18:09.118Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T05:33:44.019Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T05:43:17.987Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T06:03:25.605Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green."
+  -
+    type: "status"
+    at: "2026-07-28T06:27:51.093Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:50:15.041Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-28T06:27:51.093Z"
+doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
   Summary: |-
@@ -65,9 +182,539 @@ sections:
   Verify Steps: "1. Run direct EXECUTOR and context/CURATOR rework fixtures with each budget just below and exactly at its limit. Expected: the next agent/evaluator/side-effect operation is refused before launch, usage is durably recorded, and the typed stop identifies the exhausted dimension. 2. Crash after journal creation, operation intent, adapter completion, receipt persistence, evaluator result, bounded feedback creation, and cursor advancement in both direct and context flows, then resume. Expected: execution continues from the first incomplete phase without replaying a completed agent run, CURATOR work order, semantic apply, or external effect. 3. Exercise evaluator rework and repeated no-progress results for EXECUTOR and CURATOR. Expected: only a bounded feedback delta enters the next work order, progress fingerprints are deterministic, and max-no-progress terminates both cycles. 4. Validate canonical current/legacy/absent schema fixtures, migrate twice, inject failure at every publish phase, and roll back. Expected: migration is idempotent, mixed generations fail closed, recovery preserves prior valid state, and no journal is silently discarded. 5. Install the built package in an isolated fixture and run journal create/status/resume compatibility smoke. Expected: the published tarball contains the schemas/migrator/runtime assets and does not depend on repository-only files. 6. Change task revision, Git/provider state, authority, or StateFingerprint between checkpoints and leave an effect in doubt. Expected: resume fails closed and delegates to typed stale-state/effect-resolution paths rather than consuming budget or retrying. 7. Verify human and JSON projections contain canonical budget usage, cursor, stop reason, work-order/receipt refs, and no raw transcripts or secrets. 8. Run bun run schemas:check, bun run lifecycle:invariants, bun run guards:check, bun run test:critical, bun run typecheck, bun run package:install-smoke, and bun run bench:agent-efficiency:check. Expected: all pass and quality/safety controls do not regress."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-28T03:57:29.122Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full task contract remains incomplete.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:57:08.440Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+    - old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607242236-1BFWEY
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T05:01:44.723Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:57:29.723Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+    - old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T06:03:25.605Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T05:43:17.988Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+    - old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+    - diagnostic_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "- Revert supervisor budget/journal integration while preserving already persisted diagnostic records and the existing StateFingerprint, execution-receipt, and effect-in-doubt safety boundaries. - Retain version readers and migration recovery for any journal generation already written; never delete or reinterpret durable records during rollback. - Keep the feature behind an explicit compatibility boundary until schema migration, restart, rollback, and installed-package tests pass. - Re-run schema, lifecycle, guard, critical, type, install-smoke, and agent-efficiency checks before restoring supervised execution."
-  Findings: "- The agentplane-loops runtime is design and test evidence for budgets, checkpoints, deterministic transitions, and bounded feedback only. This task must implement those properties inside the 0.7 typed supervisor and must not import the legacy public loop controller or create a second orchestration plane."
+  Findings: |-
+    - The agentplane-loops runtime is design and test evidence for budgets, checkpoints, deterministic transitions, and bounded feedback only. This task must implement those properties inside the 0.7 typed supervisor and must not import the legacy public loop controller or create a second orchestration plane.
+
+    - Observation: format, schemas, lint, guards, core and CLI typechecks, and 30 targeted tests passed; missing CURATOR/EVALUATOR integration, provider token telemetry, full crash matrix, installed-package smoke, and full critical suite.
+      Impact: Marking the broad execution-episode task ok would overstate coverage and allow unfinished budget and recovery paths to reach integration.
+      Resolution: Continue CODER work with typed telemetry projection, CURATOR/EVALUATOR adoption, crash-resume fixtures, and the declared full verification contract.
+
+    - Observation: Targeted supervisor and evaluator suites, schemas, lifecycle invariants, shared guards, typecheck, critical suite, isolated tarball smoke, and RF-04 agent-efficiency baseline passed.
+      Impact: The prior evaluator rework is addressed without changing the frozen v0.7 public CLI or tarball contract.
+      Resolution: Keep journal status in the existing supervised execution JSON projection; reserve any new public status command for a separately reviewed compatibility candidate.
+
+    - Observation: Current PR #4651 hosted checks passed on d9f6ac23.
+      Impact: The stale PR verification pointer did not reflect the validated current head.
+      Resolution: Recorded fresh EVALUATOR verification before integration.
+extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-28T03:32:32.681Z"
+        authorityDigest: "sha256:b69dfcad80b66bb7c00b8f9bf4b1433fb86b01175b929d3243aca0d1d206b3bc"
+        digest: "sha256:148744c4892c1bb467b5c7be5591af31e9b8f3b3bec1502bf846f46dc92223e1"
+        operationDigest: "sha256:1c6ad6a08e48aaa62120a4c8be6265af957eb35b2abb05e8f9d7a980d156f9ff"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:0708ba9b2e477068202564d4cf4d624ede0b95ee67d484df8cf62bc8cd127f90"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:11:33.405Z"
+        authorityDigest: "sha256:dcfdc60d6f3281df43d53a50a6fea79f1ab195b4b46d353644fba613891569f8"
+        digest: "sha256:904b0943f7ec19949ad82ca611147825dc5be65d04ff908fa026c9ccf1a18f4a"
+        operationDigest: "sha256:e2945d25d29654fb26cdc502d1e54bd9e623a55ed6aede165ab346ec9920b889"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:148744c4892c1bb467b5c7be5591af31e9b8f3b3bec1502bf846f46dc92223e1"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:6a900f164aac2b5e9f5bf90204dc385cc766a4de6500003835c49a597c1f53e8"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:12:03.680Z"
+        authorityDigest: "sha256:4fd66dbd8ddd79685067beab756f1ef997c96065b4b1e9fa2b65a585da33caba"
+        digest: "sha256:059cf70189ba38ff36c0dc3eb2a593f1fc00e9b0e7011c482a7a5d2ef6976e29"
+        operationDigest: "sha256:dd2c22089f53f9bbc507c7076870a842f3706a70ebf24985df65dd0f6ba23645"
+        operationId: "route.remote.refresh"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:904b0943f7ec19949ad82ca611147825dc5be65d04ff908fa026c9ccf1a18f4a"
+        schemaVersion: 1
+        sequence: 3
+        stateFingerprintDigest: "sha256:27677edb096c3f3fcf1101b75c9bdfdfdd72fdaf60497411fa2f137ebd4aa5cd"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:12:45.934Z"
+        authorityDigest: "sha256:85a2a00917f441a59c6b5ad92356c9d47ab930402fce3ccef87e07c8e41524ef"
+        digest: "sha256:3598f52b6b683bd7ac01d5a9910942247c8a5dd6178864c16ea221e3080ffc11"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:059cf70189ba38ff36c0dc3eb2a593f1fc00e9b0e7011c482a7a5d2ef6976e29"
+        schemaVersion: 1
+        sequence: 4
+        stateFingerprintDigest: "sha256:183a73c963b43204b9c6825e550252473d18b64f009e5963e020cf4d5fd99e63"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:17:39.939Z"
+        authorityDigest: "sha256:33bc08b9b6ba5f71a2657b4be2673025e72b007c767b063f767764f658aeae14"
+        digest: "sha256:f7f7af43943708dcfecefbbb847c965e79207ba75473b7243fed7fcf05cff1ad"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:3598f52b6b683bd7ac01d5a9910942247c8a5dd6178864c16ea221e3080ffc11"
+        schemaVersion: 1
+        sequence: 5
+        stateFingerprintDigest: "sha256:244af54f86df03ad6fcac867add43b009281cf2aa25d4e74bd397b8d793ca2a9"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:18:28.704Z"
+        authorityDigest: "sha256:119914691a5a96d9a595d000c479162025aae2721bcaeab13fb9274d504f9e77"
+        digest: "sha256:f40f28b1483ff1fc8023ad6a853df8523968e43eae1b1f436082afd5333c5a69"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:f7f7af43943708dcfecefbbb847c965e79207ba75473b7243fed7fcf05cff1ad"
+        schemaVersion: 1
+        sequence: 6
+        stateFingerprintDigest: "sha256:661adaf2af4e34cb9b6b93ce138c82836b412cc70e58624554418283d54450d9"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:33:19.498Z"
+        authorityDigest: "sha256:37cb633b83047bfbdd490b26d5adba2936b3f94ca72b184836d4d0ecc590289e"
+        digest: "sha256:7a8816cbf406ab27798f9a3cd302e5302b29efcdca844b1ea4e6f9f046bf00fb"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:f40f28b1483ff1fc8023ad6a853df8523968e43eae1b1f436082afd5333c5a69"
+        schemaVersion: 1
+        sequence: 7
+        stateFingerprintDigest: "sha256:3d9f4475c2ac1d3dab67dd29b5a394f1a0662b26c89c94b3023fd157fb8f0bf9"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:34:11.680Z"
+        authorityDigest: "sha256:fef335767ae71bc3d2adbb857d178e4c8ab3150c9ea77b52e6f7a03557470e78"
+        digest: "sha256:30bbfe887e87eddc961ab522f7960faabce4eb5c9a27fa04695531e87b6f7129"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:7a8816cbf406ab27798f9a3cd302e5302b29efcdca844b1ea4e6f9f046bf00fb"
+        schemaVersion: 1
+        sequence: 8
+        stateFingerprintDigest: "sha256:3d12447193fcfcf537843a5e9326479cba5e0db23fbf67f56175450cb0157c20"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:43:00.967Z"
+        authorityDigest: "sha256:ff1772cec8e3075ee5305e156a6793b41f32a2ee518eb1a9a28f41964454fac5"
+        digest: "sha256:46ffca2da83832477406255b6d9e382a4b6056ab396e5d174c16f2fa4178971d"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:30bbfe887e87eddc961ab522f7960faabce4eb5c9a27fa04695531e87b6f7129"
+        schemaVersion: 1
+        sequence: 9
+        stateFingerprintDigest: "sha256:0e6948634e1c406131cc44526cdfaaf5ecf6e0cbd415d407ea41a375f78be9f9"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:43:41.966Z"
+        authorityDigest: "sha256:fd0d85aa3563bc3e1376387bb8a073d357ad4fce4fe0e32b656de54533182b13"
+        digest: "sha256:a915e9ddea62deef4f762f619bbc4833deefecaac0a681f061a6b3c4bec4acf5"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:46ffca2da83832477406255b6d9e382a4b6056ab396e5d174c16f2fa4178971d"
+        schemaVersion: 1
+        sequence: 10
+        stateFingerprintDigest: "sha256:160be3feade6012e1e4fc0f0cb0618c4323e767ceed7b12af770667c3ba24450"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:50:34.350Z"
+        authorityDigest: "sha256:031b15d6fff753590723aa707f5576780df7a01d796896d58ad4b3b2b3388bf3"
+        digest: "sha256:8ca65232cc4173dc8fde9a21867c368fae6562094157bdada44985b0dfc62400"
+        operationDigest: "sha256:dced269bd73c1192286329e623f6edc43df8ad31f819708e7e03644f25600137"
+        operationId: "integration.enqueue"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:a915e9ddea62deef4f762f619bbc4833deefecaac0a681f061a6b3c4bec4acf5"
+        schemaVersion: 1
+        sequence: 11
+        stateFingerprintDigest: "sha256:f693451a89bb5910494a072e8f2ae7e842eafa11067cca1f6ab2a1b5f7a54dc8"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:54:58.587Z"
+        authorityDigest: "sha256:3c201d722682e78543ea031bd833d465d1cafe6b491236ba9b8758bb7731507a"
+        digest: "sha256:004ff9464990b7449afc89e1c4c840bf4e39a9654a20fac268ccd0e286bf603f"
+        operationDigest: "sha256:dd2c22089f53f9bbc507c7076870a842f3706a70ebf24985df65dd0f6ba23645"
+        operationId: "route.remote.refresh"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:8ca65232cc4173dc8fde9a21867c368fae6562094157bdada44985b0dfc62400"
+        schemaVersion: 1
+        sequence: 12
+        stateFingerprintDigest: "sha256:7692f75ded234a0522731992b2408acd3fb30ed5bdf2066343f8ab00561d1115"
+      -
+        actor: "USER"
+        at: "2026-07-28T06:04:36.460Z"
+        authorityDigest: "sha256:c98a59a767c4c60e1de76d362d69cb180198dfaabfbc7056f48485d0800493be"
+        digest: "sha256:c673749a9faf3edbeec8807e8794e67019791ff2c5fb6bf7652c13894a63b854"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:004ff9464990b7449afc89e1c4c840bf4e39a9654a20fac268ccd0e286bf603f"
+        schemaVersion: 1
+        sequence: 13
+        stateFingerprintDigest: "sha256:606998fe040a6588d1510685f0d94c0858c8bf4149667f7f3a3ffcad66aa82a3"
+      -
+        actor: "USER"
+        at: "2026-07-28T06:27:29.527Z"
+        authorityDigest: "sha256:588bc61f564448eef41cd581ee86d9cce2d4248ed98aa07777a5ac35779e17c8"
+        digest: "sha256:8816902f4fa96ff3d60a39e1795a9090de39a77969ea2ddb0d5115d4e48d6cea"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:c673749a9faf3edbeec8807e8794e67019791ff2c5fb6bf7652c13894a63b854"
+        schemaVersion: 1
+        sequence: 14
+        stateFingerprintDigest: "sha256:b08d3a30b1ab8df49e78daca94b5d5a2f4f63340c089a389785a9f8ee1f358f2"
+      -
+        actor: "USER"
+        at: "2026-07-28T06:28:14.190Z"
+        authorityDigest: "sha256:9dea4b486ba9033607c48e65832db53bba195e2129c1267d8127365894bb2df9"
+        digest: "sha256:d157ff79daff5b1c9c6c68b2786937b3ac1718260b095cff04577132459137a9"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: "sha256:8816902f4fa96ff3d60a39e1795a9090de39a77969ea2ddb0d5115d4e48d6cea"
+        schemaVersion: 1
+        sequence: 15
+        stateFingerprintDigest: "sha256:ad87aa17230740ba0f58fcde63e7c002ec80e775de8f5df285c078bed664f068"
+      -
+        actor: "USER"
+        at: "2026-07-28T06:35:06.177Z"
+        authorityDigest: "sha256:fcb7da7373c7d44dedb9b720469a4b282578cf850eda4fc0f7326313f853084d"
+        digest: "sha256:889ba72de652e2ee7726af028abeccedc71658aac447e3509372f01464b2973b"
+        operationDigest: "sha256:dced269bd73c1192286329e623f6edc43df8ad31f819708e7e03644f25600137"
+        operationId: "integration.enqueue"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:d157ff79daff5b1c9c6c68b2786937b3ac1718260b095cff04577132459137a9"
+        schemaVersion: 1
+        sequence: 16
+        stateFingerprintDigest: "sha256:e3ca18a36ae16faa8da4af50f16dec297d4a69b7505bea83e738756e819777c2"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:b69dfcad80b66bb7c00b8f9bf4b1433fb86b01175b929d3243aca0d1d206b3bc"
+        expiresAt: "2026-07-28T03:47:32.681Z"
+        id: "authority-85396e1a-dcc2-4347-a8ba-ddc4ae13de87"
+        issuedAt: "2026-07-28T03:32:32.681Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:1c6ad6a08e48aaa62120a4c8be6265af957eb35b2abb05e8f9d7a980d156f9ff"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:0708ba9b2e477068202564d4cf4d624ede0b95ee67d484df8cf62bc8cd127f90"
+        stateScopeDigest: "sha256:1cc9ede877816a55464cd799d60a0a69296c4f8bef5b55a63b36f4e6525b3970"
+      -
+        actor: "USER"
+        digest: "sha256:dcfdc60d6f3281df43d53a50a6fea79f1ab195b4b46d353644fba613891569f8"
+        expiresAt: "2026-07-28T05:26:33.405Z"
+        id: "authority-bd4f7aa6-084a-4d5d-bfb9-b1bd196f74e5"
+        issuedAt: "2026-07-28T05:11:33.405Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:e2945d25d29654fb26cdc502d1e54bd9e623a55ed6aede165ab346ec9920b889"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:6a900f164aac2b5e9f5bf90204dc385cc766a4de6500003835c49a597c1f53e8"
+        stateScopeDigest: "sha256:9cce98f32a648dc1db71591015dad1539b8c1c013dc9bdc1c9cca2c73df1509a"
+      -
+        actor: "USER"
+        digest: "sha256:4fd66dbd8ddd79685067beab756f1ef997c96065b4b1e9fa2b65a585da33caba"
+        expiresAt: "2026-07-28T05:27:03.680Z"
+        id: "authority-325b4beb-5929-4f4e-87be-c8708eee8a43"
+        issuedAt: "2026-07-28T05:12:03.680Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dd2c22089f53f9bbc507c7076870a842f3706a70ebf24985df65dd0f6ba23645"
+        operationId: "route.remote.refresh"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:27677edb096c3f3fcf1101b75c9bdfdfdd72fdaf60497411fa2f137ebd4aa5cd"
+        stateScopeDigest: "sha256:fc29b1c1dfa9724f6320d9d2b23a28d58b1c330205642ade3d0ae77766048097"
+      -
+        actor: "USER"
+        digest: "sha256:85a2a00917f441a59c6b5ad92356c9d47ab930402fce3ccef87e07c8e41524ef"
+        expiresAt: "2026-07-28T05:27:45.934Z"
+        id: "authority-2847bd19-6499-4ea5-a9b8-c76b5edbd3db"
+        issuedAt: "2026-07-28T05:12:45.934Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:183a73c963b43204b9c6825e550252473d18b64f009e5963e020cf4d5fd99e63"
+        stateScopeDigest: "sha256:81eeea5784b5d614a5f355ec3549f24958492b93dcb10b2a728267fca723d798"
+      -
+        actor: "USER"
+        digest: "sha256:33bc08b9b6ba5f71a2657b4be2673025e72b007c767b063f767764f658aeae14"
+        expiresAt: "2026-07-28T05:32:39.939Z"
+        id: "authority-01a79f43-fac7-4901-828d-99e4b8ec6b50"
+        issuedAt: "2026-07-28T05:17:39.939Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:244af54f86df03ad6fcac867add43b009281cf2aa25d4e74bd397b8d793ca2a9"
+        stateScopeDigest: "sha256:da322591a9d63c2bc316fec83a6705e9a48cbfc15303589ed94d94c2781b8aea"
+      -
+        actor: "USER"
+        digest: "sha256:119914691a5a96d9a595d000c479162025aae2721bcaeab13fb9274d504f9e77"
+        expiresAt: "2026-07-28T05:33:28.704Z"
+        id: "authority-c3419603-a2c2-4c03-be53-0850407a22d5"
+        issuedAt: "2026-07-28T05:18:28.704Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:661adaf2af4e34cb9b6b93ce138c82836b412cc70e58624554418283d54450d9"
+        stateScopeDigest: "sha256:4f35e9e54090b15621e9e445e0e3f1f7d1419d7df6b79824ba45d30d952f37cc"
+      -
+        actor: "USER"
+        digest: "sha256:37cb633b83047bfbdd490b26d5adba2936b3f94ca72b184836d4d0ecc590289e"
+        expiresAt: "2026-07-28T05:48:19.498Z"
+        id: "authority-67775d36-0e3d-4b34-81a5-84687cd3dc65"
+        issuedAt: "2026-07-28T05:33:19.498Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:3d9f4475c2ac1d3dab67dd29b5a394f1a0662b26c89c94b3023fd157fb8f0bf9"
+        stateScopeDigest: "sha256:41f63bfad76300666d96cd764a1707ee5dcd054162d9f33f4a671d0904996c0c"
+      -
+        actor: "USER"
+        digest: "sha256:fef335767ae71bc3d2adbb857d178e4c8ab3150c9ea77b52e6f7a03557470e78"
+        expiresAt: "2026-07-28T05:49:11.680Z"
+        id: "authority-da72e218-0e82-461a-837b-4b8ddd532ea9"
+        issuedAt: "2026-07-28T05:34:11.680Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:3d12447193fcfcf537843a5e9326479cba5e0db23fbf67f56175450cb0157c20"
+        stateScopeDigest: "sha256:a838d160ce5e2f61341498c15978f87672df4bd8a7bf3584406cdcf9a30506f5"
+      -
+        actor: "USER"
+        digest: "sha256:ff1772cec8e3075ee5305e156a6793b41f32a2ee518eb1a9a28f41964454fac5"
+        expiresAt: "2026-07-28T05:58:00.967Z"
+        id: "authority-66fa7993-3c95-4ae8-977b-fbb39e1eab50"
+        issuedAt: "2026-07-28T05:43:00.967Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:0e6948634e1c406131cc44526cdfaaf5ecf6e0cbd415d407ea41a375f78be9f9"
+        stateScopeDigest: "sha256:230045882e082b002b5ffaf6345c69cc351893e8dfc75f703b13f2889ad6421c"
+      -
+        actor: "USER"
+        digest: "sha256:fd0d85aa3563bc3e1376387bb8a073d357ad4fce4fe0e32b656de54533182b13"
+        expiresAt: "2026-07-28T05:58:41.966Z"
+        id: "authority-3f0ff965-0c9a-42ff-9d84-cf5d2679b63e"
+        issuedAt: "2026-07-28T05:43:41.966Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:160be3feade6012e1e4fc0f0cb0618c4323e767ceed7b12af770667c3ba24450"
+        stateScopeDigest: "sha256:34c77ae5ae05630c27e0473b8cb80fcee8b4704633832d2309142a4fa0749e30"
+      -
+        actor: "USER"
+        digest: "sha256:031b15d6fff753590723aa707f5576780df7a01d796896d58ad4b3b2b3388bf3"
+        expiresAt: "2026-07-28T06:05:34.350Z"
+        id: "authority-b6698438-7867-47f3-bf72-019625c70f67"
+        issuedAt: "2026-07-28T05:50:34.350Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dced269bd73c1192286329e623f6edc43df8ad31f819708e7e03644f25600137"
+        operationId: "integration.enqueue"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:f693451a89bb5910494a072e8f2ae7e842eafa11067cca1f6ab2a1b5f7a54dc8"
+        stateScopeDigest: "sha256:39e050b5e97136e2b5fdcaf9d2bd47ff24933097b32be8ec3111dda562e5326e"
+      -
+        actor: "USER"
+        digest: "sha256:3c201d722682e78543ea031bd833d465d1cafe6b491236ba9b8758bb7731507a"
+        expiresAt: "2026-07-28T06:09:58.587Z"
+        id: "authority-bd0cebc8-b155-485b-b8ac-d66bbb1f2c7a"
+        issuedAt: "2026-07-28T05:54:58.587Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dd2c22089f53f9bbc507c7076870a842f3706a70ebf24985df65dd0f6ba23645"
+        operationId: "route.remote.refresh"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:7692f75ded234a0522731992b2408acd3fb30ed5bdf2066343f8ab00561d1115"
+        stateScopeDigest: "sha256:33b31fed365a1bf14ee01f2f4f1b6b0c9eb02b0379b4f057b659c67572659c9d"
+      -
+        actor: "USER"
+        digest: "sha256:c98a59a767c4c60e1de76d362d69cb180198dfaabfbc7056f48485d0800493be"
+        expiresAt: "2026-07-28T06:19:36.460Z"
+        id: "authority-acec071d-6442-403c-b78c-dc413e9fb7a0"
+        issuedAt: "2026-07-28T06:04:36.460Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:606998fe040a6588d1510685f0d94c0858c8bf4149667f7f3a3ffcad66aa82a3"
+        stateScopeDigest: "sha256:d601b293cb13f937cd6d9cab28a522e5e38f61240a7e53296ec3e5fcafb6b72f"
+      -
+        actor: "USER"
+        digest: "sha256:588bc61f564448eef41cd581ee86d9cce2d4248ed98aa07777a5ac35779e17c8"
+        expiresAt: "2026-07-28T06:42:29.527Z"
+        id: "authority-0ffa1e46-020f-41e5-8974-9949c928c3d1"
+        issuedAt: "2026-07-28T06:27:29.527Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dbf3dc274da6344d1b206c88ce3c1958397020f126fcd073fccf67536091c92b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:b08d3a30b1ab8df49e78daca94b5d5a2f4f63340c089a389785a9f8ee1f358f2"
+        stateScopeDigest: "sha256:d601b293cb13f937cd6d9cab28a522e5e38f61240a7e53296ec3e5fcafb6b72f"
+      -
+        actor: "USER"
+        digest: "sha256:9dea4b486ba9033607c48e65832db53bba195e2129c1267d8127365894bb2df9"
+        expiresAt: "2026-07-28T06:43:14.190Z"
+        id: "authority-a5ddc790-fbbd-42b8-9e43-82580e102356"
+        issuedAt: "2026-07-28T06:28:14.190Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:5d741e2d30f33acf9cd87346af5aac0b5cd6d7c727b7ec562933caf1bb6e17ce"
+        operationId: "pr.head.publish"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:ad87aa17230740ba0f58fcde63e7c002ec80e775de8f5df285c078bed664f068"
+        stateScopeDigest: "sha256:b6db984ac5f5c7dba9452af1e7de969b2ad291a44a692d09390ec95b74641757"
+      -
+        actor: "USER"
+        digest: "sha256:fcb7da7373c7d44dedb9b720469a4b282578cf850eda4fc0f7326313f853084d"
+        expiresAt: "2026-07-28T06:50:06.177Z"
+        id: "authority-878b98d5-7a90-4426-a8e9-1124574f3881"
+        issuedAt: "2026-07-28T06:35:06.177Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:dced269bd73c1192286329e623f6edc43df8ad31f819708e7e03644f25600137"
+        operationId: "integration.enqueue"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:e3ca18a36ae16faa8da4af50f16dec297d4a69b7505bea83e738756e819777c2"
+        stateScopeDigest: "sha256:e8676945b98ae55b870d77f2a00ea15e5cc2f664c413929d150056f24cd31a8a"
+    schemaVersion: 1
+  implementation_commit:
+    hash: "d9f6ac23cb033aeb6242bdbd507d726302a50cb9"
+    message: "🚧 1BFWEY task: record refreshed route authority"
+  workflow_route_baseline:
+    start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
@@ -91,6 +738,96 @@ Define a durable supervisor episode journal and hard execution budgets for bound
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-28T03:57:29.122Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: the committed direct/Hermes supervisor journal slice passes targeted checks, but the full task contract remains incomplete.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:57:08.440Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+- old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607242236-1BFWEY
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T05:01:44.723Z — VERIFY — ok
+
+By: CODER
+
+Note: Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T03:57:29.723Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+- old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T06:03:25.605Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T05:43:17.988Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+- old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+- diagnostic_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -100,3 +837,15 @@ Define a durable supervisor episode journal and hard execution budgets for bound
 ## Findings
 
 - The agentplane-loops runtime is design and test evidence for budgets, checkpoints, deterministic transitions, and bounded feedback only. This task must implement those properties inside the 0.7 typed supervisor and must not import the legacy public loop controller or create a second orchestration plane.
+
+- Observation: format, schemas, lint, guards, core and CLI typechecks, and 30 targeted tests passed; missing CURATOR/EVALUATOR integration, provider token telemetry, full crash matrix, installed-package smoke, and full critical suite.
+  Impact: Marking the broad execution-episode task ok would overstate coverage and allow unfinished budget and recovery paths to reach integration.
+  Resolution: Continue CODER work with typed telemetry projection, CURATOR/EVALUATOR adoption, crash-resume fixtures, and the declared full verification contract.
+
+- Observation: Targeted supervisor and evaluator suites, schemas, lifecycle invariants, shared guards, typecheck, critical suite, isolated tarball smoke, and RF-04 agent-efficiency baseline passed.
+  Impact: The prior evaluator rework is addressed without changing the frozen v0.7 public CLI or tarball contract.
+  Resolution: Keep journal status in the existing supervised execution JSON projection; reserve any new public status command for a separately reviewed compatibility candidate.
+
+- Observation: Current PR #4651 hosted checks passed on d9f6ac23.
+  Impact: The stale PR verification pointer did not reflect the validated current head.
+  Resolution: Recorded fresh EVALUATOR verification before integration.

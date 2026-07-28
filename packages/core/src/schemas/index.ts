@@ -131,6 +131,43 @@ export {
 } from "../runner/runner-effect-operation.js";
 
 export {
+  SUPERVISOR_EXECUTION_EPISODE_KIND,
+  SUPERVISOR_EXECUTION_EPISODE_SCHEMA_VERSION,
+  SUPERVISOR_EXECUTION_EPISODE_JOURNAL_ZOD_SCHEMA,
+  SUPERVISOR_EXECUTION_BUDGET_ZOD_SCHEMA,
+  SUPERVISOR_EXECUTION_USAGE_ZOD_SCHEMA,
+  SUPERVISOR_EPISODE_CURSOR_PHASE_VALUES,
+  SUPERVISOR_EPISODE_OPERATION_KIND_VALUES,
+  SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES,
+  SUPERVISOR_EPISODE_ROLE_VALUES,
+  SUPERVISOR_EPISODE_STATUS_VALUES,
+  SUPERVISOR_EPISODE_STOP_REASON_VALUES,
+  advanceSupervisorExecutionEpisodeState,
+  completeSupervisorExecutionEpisode,
+  createSupervisorExecutionEpisodeJournal,
+  digestSupervisorEpisodeValue,
+  recoverSupervisorExecutionEpisodeJournal,
+  stopSupervisorExecutionEpisode,
+  startSupervisorExecutionEpisode,
+  validateSupervisorExecutionEpisodeJournal,
+  type SupervisorEpisodeBudgetStop,
+  type SupervisorEpisodeOperationKind,
+  type SupervisorEpisodeRole,
+  type SupervisorEpisodeStartResult,
+  type SupervisorEpisodeStopReason,
+  type SupervisorExecutionBudget,
+  type SupervisorExecutionEpisodeJournal,
+  type SupervisorExecutionUsage,
+} from "../runner/supervisor-execution-episode.js";
+
+export {
+  SUPERVISOR_EXECUTION_EPISODE_LEGACY_SCHEMA_VERSION,
+  migrateSupervisorExecutionEpisodeJournal,
+  type SupervisorExecutionEpisodeMigrationResult,
+  type SupervisorExecutionEpisodeMigrationSource,
+} from "../runner/supervisor-execution-episode-migration.js";
+
+export {
   STATE_FINGERPRINT_COMPONENT_NAMES,
   STATE_FINGERPRINT_COMPONENT_ZOD_SCHEMA,
   STATE_FINGERPRINT_KIND,

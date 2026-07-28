@@ -14,6 +14,7 @@ import {
   writeRunnerExecutable,
 } from "@agentplane/testkit/runner";
 import { createRunnerAdapter } from "./index.js";
+import { readCodexProviderUsageForResult } from "./codex-result-transport.js";
 
 const CYRILLIC_RE = /[\u0400-\u04FF]/u;
 const RUSSIAN_TRACE_LINE = "Привет из raw trace";
@@ -261,7 +262,7 @@ describe("CodexRunnerAdapter", () => {
         "cat >/dev/null",
         String.raw`printf '{"type":"session.started"}\n'`,
         String.raw`printf '%s\n' '${codexSemanticResultEvent("run-123", "custom codex success")}'`,
-        String.raw`printf '%s\n' '{"type":"turn.completed"}'`,
+        String.raw`printf '%s\n' '{"type":"turn.completed","usage":{"input_tokens":100,"output_tokens":30,"reasoning_output_tokens":20}}'`,
         String.raw`printf '%s\n' '${RUSSIAN_TRACE_LINE}'`,
         "exit 0",
       ].join("\n"),
@@ -289,6 +290,11 @@ describe("CodexRunnerAdapter", () => {
     expect(result.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(result.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(result.metrics?.duration_ms).toBeGreaterThanOrEqual(0);
+    expect(readCodexProviderUsageForResult(result)).toEqual({
+      input_tokens: 100,
+      output_tokens: 50,
+      total_tokens: 150,
+    });
     const state = JSON.parse(await readFile(invocation.state_path, "utf8")) as {
       status: string;
       prepared_metadata?: { bundle_bytes: number; bundle_sha256: string };
@@ -297,7 +303,10 @@ describe("CodexRunnerAdapter", () => {
         exit_code: number | null;
         summary?: string;
         stdout_summary?: string;
-        metrics?: { stdout_bytes?: number; output_last_message_bytes?: number | null };
+        metrics?: {
+          stdout_bytes?: number;
+          output_last_message_bytes?: number | null;
+        };
       };
     };
     expect(state.status).toBe("success");
@@ -310,6 +319,7 @@ describe("CodexRunnerAdapter", () => {
     expect(state.result?.stdout_summary).not.toMatch(CYRILLIC_RE);
     expect(state.result?.metrics?.stdout_bytes).toBeGreaterThan(0);
     expect(state.result?.metrics?.output_last_message_bytes).toBeGreaterThan(0);
+    expect(state.result?.metrics).not.toHaveProperty("input_tokens");
     const resultManifest = JSON.parse(await readFile(invocation.result_path, "utf8")) as {
       kind?: string;
       observed_by?: string;

@@ -1,0 +1,15 @@
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index d873a73ba..2f2dbcb47 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -262,7 +262,9 @@ describe("evaluator execute supervisor episode", () => {
+ 
+     const failed = await runWithFakeCodex(root, taskId, fakeBin);
+     expect(failed.code).toBe(8);
+-    expect(failed.stderr).toContain("Codex evaluator provider failed before returning a typed result");
++    expect(failed.stderr).toContain(
++      "Codex evaluator provider failed before returning a typed result",
++    );
+     expect(failed.stderr).toContain("classification=nonzero_exit exit_code=99 signal=none");
+ 
+     const journalPath = await resolveSupervisorExecutionEpisodePath({

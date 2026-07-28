@@ -1,0 +1,778 @@
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+new file mode 100644
+index 000000000..c1620dbc5
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -0,0 +1,343 @@
++import { createHash } from "node:crypto";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import {
++  completeSupervisorExecutionEpisode,
++  startSupervisorExecutionEpisode,
++  stopSupervisorExecutionEpisode,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { CommandCtx } from "../../cli/spec/spec.js";
++import type { EvaluatorModule } from "../../evaluators/catalog.js";
++import { CliError } from "../../shared/errors.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++import {
++  evaluatorProviderFailureRecord,
++  executePreparedEvaluatorEpisode,
++  type EvaluatorEpisodeReceipt,
++} from "./evaluator-episode.js";
++import {
++  isWithinRoot,
++  prepareEvaluatorReview,
++  readWorkOrder,
++  reportPaths,
++  validateStrictEvaluatorResult,
++} from "./evaluator-review-usecase.js";
++
++type CompletedEvaluatorOutcome = {
++  result: ReturnType<typeof validateStrictEvaluatorResult>;
++  receipt: EvaluatorEpisodeReceipt;
++  work_order_path: string;
++  result_path: string;
++  report_path: string;
++};
++
++export type EvaluatorSupervisorExecution = CompletedEvaluatorOutcome & {
++  journal: SupervisorExecutionEpisodeJournal;
++  store: Awaited<ReturnType<typeof openSupervisorExecutionEpisode>>["store"];
++};
++
++function sha256(value: string): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
++}
++
++function isNonNegativeInteger(value: unknown): value is number {
++  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
++}
++
++function assertPersistedEvaluatorReceipt(opts: {
++  value: unknown;
++  work_order_id: string;
++  canonical_result: string;
++}): asserts opts is {
++  value: EvaluatorEpisodeReceipt;
++  work_order_id: string;
++  canonical_result: string;
++} {
++  const receipt = opts.value;
++  if (!receipt || typeof receipt !== "object" || Array.isArray(receipt)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Persisted evaluator receipt is invalid.",
++    });
++  }
++  const value = receipt as Partial<EvaluatorEpisodeReceipt>;
++  const usage = value.provider_usage;
++  const usageIsValid =
++    usage === null ||
++    (typeof usage === "object" &&
++      usage !== null &&
++      isNonNegativeInteger(usage.input_tokens) &&
++      isNonNegativeInteger(usage.output_tokens) &&
++      isNonNegativeInteger(usage.total_tokens));
++  if (
++    value.schema_version !== 1 ||
++    value.kind !== "evaluator_episode_receipt" ||
++    value.work_order_id !== opts.work_order_id ||
++    value.provider !== "codex" ||
++    value.authority?.sandbox !== "read-only" ||
++    value.authority?.writable_roots?.length !== 0 ||
++    !usageIsValid ||
++    value.result_sha256 !== sha256(opts.canonical_result)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Persisted evaluator receipt does not attest the saved evaluator result.",
++    });
++  }
++  opts.value = value as EvaluatorEpisodeReceipt;
++}
++
++async function readCompletedEvaluatorOutcome(opts: {
++  git_root: string;
++  journal: SupervisorExecutionEpisodeJournal;
++}): Promise<CompletedEvaluatorOutcome> {
++  const operation = opts.journal.operations.at(-1);
++  if (
++    (operation?.status !== "completed" && operation?.status !== "intent") ||
++    operation.role !== "EVALUATOR" ||
++    operation.kind !== "evaluator_episode" ||
++    !operation.work_order_ref
++  ) {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: "Supervisor journal completion is not an evaluator episode that can be resumed.",
++    });
++  }
++  const workOrderPath = path.resolve(opts.git_root, operation.work_order_ref);
++  if (!isWithinRoot(opts.git_root, workOrderPath)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Supervisor journal evaluator work order is outside the project root.",
++    });
++  }
++  const workOrder = readWorkOrder(JSON.parse(await readFile(workOrderPath, "utf8")) as unknown);
++  const paths = reportPaths(path.dirname(workOrderPath));
++  const result = validateStrictEvaluatorResult(
++    JSON.parse(await readFile(paths.result_path, "utf8")) as unknown,
++  );
++  const canonicalResult = `${JSON.stringify(result, null, 2)}\n`;
++  const receiptInput = JSON.parse(
++    await readFile(path.join(path.dirname(workOrderPath), "evaluator-episode.json"), "utf8"),
++  ) as unknown;
++  const receiptHolder = {
++    value: receiptInput,
++    work_order_id: workOrder.work_order_id,
++    canonical_result: canonicalResult,
++  };
++  assertPersistedEvaluatorReceipt(receiptHolder);
++  if (result.evaluator_id !== workOrder.evaluator.id) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Persisted evaluator result does not match its work order.",
++    });
++  }
++  return {
++    result,
++    receipt: receiptHolder.value,
++    work_order_path: workOrderPath,
++    result_path: paths.result_path,
++    report_path: paths.report_path,
++  };
++}
++
++function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
++  input_tokens?: number;
++  output_tokens?: number;
++  total_tokens?: number;
++  wall_time_ms: number;
++  changed_files: number;
++} {
++  const elapsed = Date.parse(receipt.ended_at) - Date.parse(receipt.started_at);
++  return {
++    ...(receipt.provider_usage ?? {}),
++    wall_time_ms: Number.isFinite(elapsed) ? Math.max(0, elapsed) : 0,
++    changed_files: 0,
++  };
++}
++
++function completePersistedEvaluatorEpisode(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  operation_key: string;
++  result: ReturnType<typeof validateStrictEvaluatorResult>;
++  receipt: EvaluatorEpisodeReceipt;
++}): SupervisorExecutionEpisodeJournal {
++  let journal = completeSupervisorExecutionEpisode({
++    journal: opts.journal,
++    operation_key: opts.operation_key,
++    result: opts.result,
++    usage: evaluatorUsage(opts.receipt),
++    progress: {
++      evaluator_id: opts.result.evaluator_id,
++      verdict: opts.result.verdict,
++      result_sha256: opts.receipt.result_sha256,
++    },
++    ...(opts.result.recovery_context
++      ? {
++          bounded_feedback: {
++            verdict: opts.result.verdict,
++            recovery_context: opts.result.recovery_context,
++          },
++        }
++      : {}),
++  });
++  if (opts.receipt.provider_usage === null) {
++    journal = stopSupervisorExecutionEpisode({
++      journal,
++      reason: "human_review",
++      exhausted_dimensions: [
++        "input_tokens_telemetry",
++        "output_tokens_telemetry",
++        "total_tokens_telemetry",
++      ],
++    });
++  }
++  return journal;
++}
++
++export async function executeEvaluatorSupervisorEpisode(opts: {
++  ctx: CommandCtx;
++  command: CommandContext;
++  task: TaskData;
++  evaluator: EvaluatorModule;
++  task_id: string;
++}): Promise<EvaluatorSupervisorExecution> {
++  const decision = await buildTaskRouteDecision({
++    ctx: opts.command,
++    cwd: opts.ctx.cwd,
++    rootOverride: opts.ctx.rootOverride ?? null,
++    taskId: opts.task_id,
++    includeRemote: false,
++  });
++  const opened = await openSupervisorExecutionEpisode({
++    git_root: opts.command.resolvedProject.gitRoot,
++    task_id: opts.task_id,
++    task_revision: opts.task.revision ?? null,
++    state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++    recover_intent: false,
++  });
++  let journal = opened.journal;
++  let outcome: CompletedEvaluatorOutcome;
++
++  if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
++    try {
++      outcome = await readCompletedEvaluatorOutcome({
++        git_root: opts.command.resolvedProject.gitRoot,
++        journal,
++      });
++    } catch {
++      journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
++      await opened.store.write(journal);
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
++      });
++    }
++    const operationKey = journal.cursor.operation_key;
++    if (!operationKey) throw new Error("Evaluator supervisor intent is missing its operation key.");
++    journal = completePersistedEvaluatorEpisode({
++      journal,
++      operation_key: operationKey,
++      result: outcome.result,
++      receipt: outcome.receipt,
++    });
++    await opened.store.write(journal);
++  } else if (journal.status === "running" && journal.cursor.phase === "completed") {
++    outcome = await readCompletedEvaluatorOutcome({
++      git_root: opts.command.resolvedProject.gitRoot,
++      journal,
++    });
++  } else {
++    if (journal.status !== "running" || journal.cursor.phase !== "ready") {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
++      });
++    }
++    const prepared = await prepareEvaluatorReview({
++      ctx: opts.command,
++      task: opts.task,
++      evaluator: opts.evaluator,
++      provenance: "evaluator_supplied",
++    });
++    const started = startSupervisorExecutionEpisode({
++      journal,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: {
++        evaluator_id: prepared.work_order.evaluator.id,
++        work_order_id: prepared.work_order.work_order_id,
++      },
++      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
++      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
++      work_order_ref: relativeToProject(
++        opts.command.resolvedProject.gitRoot,
++        prepared.work_order_path,
++      ),
++      effect_ref: prepared.work_order.work_order_id,
++    });
++    if (started.status !== "started") {
++      await opened.store.write(started.journal);
++      throw new CliError({
++        code: "E_RUNTIME",
++        message:
++          started.status === "effect_in_doubt"
++            ? "Evaluator supervisor journal has an effect in doubt; resolve it before retrying."
++            : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
++      });
++    }
++    journal = started.journal;
++    await opened.store.write(journal);
++    let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
++    try {
++      episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
++    } catch (error) {
++      journal = completeSupervisorExecutionEpisode({
++        journal,
++        operation_key: started.operation_key,
++        // Persist only a small classification. Provider stderr and model
++        // output can contain sensitive data and belong neither in the task
++        // record nor in the durable supervisor journal.
++        result: evaluatorProviderFailureRecord(error),
++        failed: true,
++      });
++      await opened.store.write(journal);
++      throw error;
++    }
++    outcome = {
++      result: episode.result,
++      receipt: episode.receipt,
++      work_order_path: prepared.work_order_path,
++      result_path: prepared.result_path,
++      report_path: prepared.report_path,
++    };
++    journal = completePersistedEvaluatorEpisode({
++      journal,
++      operation_key: started.operation_key,
++      result: outcome.result,
++      receipt: outcome.receipt,
++    });
++    await opened.store.write(journal);
++  }
++
++  if (journal.status !== "running" || journal.cursor.phase !== "completed") {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message:
++        "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
++    });
++  }
++  return { ...outcome, journal, store: opened.store };
++}
++
++function relativeToProject(gitRoot: string, absolutePath: string): string {
++  return path.relative(gitRoot, absolutePath).replaceAll("\\\\", "/");
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index ee95590ea..b4efdad20 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -1,14 +1,7 @@
+-import { createHash } from "node:crypto";
+ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ import { findGitRoot, resolveProject } from "@agentplaneorg/core/project";
+-import {
+-  advanceSupervisorExecutionEpisodeState,
+-  completeSupervisorExecutionEpisode,
+-  startSupervisorExecutionEpisode,
+-  stopSupervisorExecutionEpisode,
+-  type SupervisorExecutionEpisodeJournal,
+-} from "@agentplaneorg/core/schemas";
++import { advanceSupervisorExecutionEpisodeState } from "@agentplaneorg/core/schemas";
+ 
+ import {
+   loadDirectSubcommandNames,
+@@ -20,7 +13,6 @@ import { CliError, GitError } from "../../shared/errors.js";
+ import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
+ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+-import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
+ import {
+   evaluatorSpec,
+   type EvaluatorApplyParsed,
+@@ -32,18 +24,10 @@ import {
+ } from "./evaluator.spec.js";
+ import {
+   prepareEvaluatorReview,
+-  isWithinRoot,
+-  readWorkOrder,
+-  reportPaths,
+-  validateStrictEvaluatorResult,
+   type PreparedEvaluatorReview,
+ } from "./evaluator-review-usecase.js";
+ import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
+-import {
+-  evaluatorProviderFailureRecord,
+-  executePreparedEvaluatorEpisode,
+-  type EvaluatorEpisodeReceipt,
+-} from "./evaluator-episode.js";
++import { executeEvaluatorSupervisorEpisode } from "./evaluator-execute-supervisor.js";
+ 
+ export {
+   evaluatorApplySpec,
+@@ -310,335 +294,33 @@ export const runEvaluatorApply: CommandHandler<EvaluatorApplyParsed> = async (ct
+   return 0;
+ };
+ 
+-function sha256(value: string): `sha256:${string}` {
+-  return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
+-}
+-
+-function isNonNegativeInteger(value: unknown): value is number {
+-  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+-}
+-
+-function assertPersistedEvaluatorReceipt(opts: {
+-  value: unknown;
+-  work_order_id: string;
+-  canonical_result: string;
+-}): asserts opts is {
+-  value: EvaluatorEpisodeReceipt;
+-  work_order_id: string;
+-  canonical_result: string;
+-} {
+-  const receipt = opts.value;
+-  if (!receipt || typeof receipt !== "object" || Array.isArray(receipt)) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: "Persisted evaluator receipt is invalid.",
+-    });
+-  }
+-  const value = receipt as Partial<EvaluatorEpisodeReceipt>;
+-  const usage = value.provider_usage;
+-  const usageIsValid =
+-    usage === null ||
+-    (typeof usage === "object" &&
+-      usage !== null &&
+-      isNonNegativeInteger(usage.input_tokens) &&
+-      isNonNegativeInteger(usage.output_tokens) &&
+-      isNonNegativeInteger(usage.total_tokens));
+-  if (
+-    value.schema_version !== 1 ||
+-    value.kind !== "evaluator_episode_receipt" ||
+-    value.work_order_id !== opts.work_order_id ||
+-    value.provider !== "codex" ||
+-    value.authority?.sandbox !== "read-only" ||
+-    value.authority?.writable_roots?.length !== 0 ||
+-    !usageIsValid ||
+-    value.result_sha256 !== sha256(opts.canonical_result)
+-  ) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: "Persisted evaluator receipt does not attest the saved evaluator result.",
+-    });
+-  }
+-  opts.value = value as EvaluatorEpisodeReceipt;
+-}
+-
+-async function readCompletedEvaluatorOutcome(opts: {
+-  git_root: string;
+-  journal: SupervisorExecutionEpisodeJournal;
+-}): Promise<{
+-  result: ReturnType<typeof validateStrictEvaluatorResult>;
+-  receipt: EvaluatorEpisodeReceipt;
+-  work_order_path: string;
+-  result_path: string;
+-  report_path: string;
+-}> {
+-  const operation = opts.journal.operations.at(-1);
+-  if (
+-    (operation?.status !== "completed" && operation?.status !== "intent") ||
+-    operation.role !== "EVALUATOR" ||
+-    operation.kind !== "evaluator_episode" ||
+-    !operation.work_order_ref
+-  ) {
+-    throw new CliError({
+-      code: "E_RUNTIME",
+-      message: "Supervisor journal completion is not an evaluator episode that can be resumed.",
+-    });
+-  }
+-  const workOrderPath = path.resolve(opts.git_root, operation.work_order_ref);
+-  if (!isWithinRoot(opts.git_root, workOrderPath)) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: "Supervisor journal evaluator work order is outside the project root.",
+-    });
+-  }
+-  const workOrder = readWorkOrder(JSON.parse(await readFile(workOrderPath, "utf8")) as unknown);
+-  const paths = reportPaths(path.dirname(workOrderPath));
+-  const result = validateStrictEvaluatorResult(
+-    JSON.parse(await readFile(paths.result_path, "utf8")) as unknown,
+-  );
+-  const canonicalResult = `${JSON.stringify(result, null, 2)}\n`;
+-  const receiptInput = JSON.parse(
+-    await readFile(path.join(path.dirname(workOrderPath), "evaluator-episode.json"), "utf8"),
+-  ) as unknown;
+-  const receiptHolder = {
+-    value: receiptInput,
+-    work_order_id: workOrder.work_order_id,
+-    canonical_result: canonicalResult,
+-  };
+-  assertPersistedEvaluatorReceipt(receiptHolder);
+-  if (result.evaluator_id !== workOrder.evaluator.id) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: "Persisted evaluator result does not match its work order.",
+-    });
+-  }
+-  return {
+-    result,
+-    receipt: receiptHolder.value,
+-    work_order_path: workOrderPath,
+-    result_path: paths.result_path,
+-    report_path: paths.report_path,
+-  };
+-}
+-
+-function evaluatorUsage(receipt: EvaluatorEpisodeReceipt): {
+-  input_tokens?: number;
+-  output_tokens?: number;
+-  total_tokens?: number;
+-  wall_time_ms: number;
+-  changed_files: number;
+-} {
+-  const elapsed = Date.parse(receipt.ended_at) - Date.parse(receipt.started_at);
+-  return {
+-    ...(receipt.provider_usage ?? {}),
+-    wall_time_ms: Number.isFinite(elapsed) ? Math.max(0, elapsed) : 0,
+-    changed_files: 0,
+-  };
+-}
+-
+-function completePersistedEvaluatorEpisode(opts: {
+-  journal: SupervisorExecutionEpisodeJournal;
+-  operation_key: string;
+-  result: ReturnType<typeof validateStrictEvaluatorResult>;
+-  receipt: EvaluatorEpisodeReceipt;
+-}): SupervisorExecutionEpisodeJournal {
+-  let journal = completeSupervisorExecutionEpisode({
+-    journal: opts.journal,
+-    operation_key: opts.operation_key,
+-    result: opts.result,
+-    usage: evaluatorUsage(opts.receipt),
+-    progress: {
+-      evaluator_id: opts.result.evaluator_id,
+-      verdict: opts.result.verdict,
+-      result_sha256: opts.receipt.result_sha256,
+-    },
+-    ...(opts.result.recovery_context
+-      ? {
+-          bounded_feedback: {
+-            verdict: opts.result.verdict,
+-            recovery_context: opts.result.recovery_context,
+-          },
+-        }
+-      : {}),
+-  });
+-  if (opts.receipt.provider_usage === null) {
+-    journal = stopSupervisorExecutionEpisode({
+-      journal,
+-      reason: "human_review",
+-      exhausted_dimensions: [
+-        "input_tokens_telemetry",
+-        "output_tokens_telemetry",
+-        "total_tokens_telemetry",
+-      ],
+-    });
+-  }
+-  return journal;
+-}
+-
+ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async (ctx, p) => {
+   const { command, task, evaluator } = await loadEvaluatorReviewContext({
+     ctx,
+     taskId: p.taskId,
+     evaluatorId: p.evaluator,
+   });
+-  const decision = await buildTaskRouteDecision({
+-    ctx: command,
+-    cwd: ctx.cwd,
+-    rootOverride: ctx.rootOverride ?? null,
+-    taskId: p.taskId,
+-    includeRemote: false,
+-  });
+-  const opened = await openSupervisorExecutionEpisode({
+-    git_root: command.resolvedProject.gitRoot,
++  const execution = await executeEvaluatorSupervisorEpisode({
++    ctx,
++    command,
++    task,
++    evaluator,
+     task_id: p.taskId,
+-    task_revision: task.revision ?? null,
+-    state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+-    recover_intent: false,
+   });
+-  let journal = opened.journal;
+-  let result: ReturnType<typeof validateStrictEvaluatorResult>;
+-  let receipt: EvaluatorEpisodeReceipt;
+-  let workOrderPath: string;
+-  let resultPath: string;
+-  let reportPath: string;
+-
+-  if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
+-    let recovered: Awaited<ReturnType<typeof readCompletedEvaluatorOutcome>>;
+-    try {
+-      recovered = await readCompletedEvaluatorOutcome({
+-        git_root: command.resolvedProject.gitRoot,
+-        journal,
+-      });
+-    } catch {
+-      journal = stopSupervisorExecutionEpisode({ journal, reason: "effect_in_doubt" });
+-      await opened.store.write(journal);
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message:
+-          "Evaluator supervisor intent has no complete validated outcome; resolve the effect before retrying.",
+-      });
+-    }
+-    const operationKey = journal.cursor.operation_key;
+-    if (!operationKey) throw new Error("Evaluator supervisor intent is missing its operation key.");
+-    journal = completePersistedEvaluatorEpisode({
+-      journal,
+-      operation_key: operationKey,
+-      result: recovered.result,
+-      receipt: recovered.receipt,
+-    });
+-    await opened.store.write(journal);
+-    result = recovered.result;
+-    receipt = recovered.receipt;
+-    workOrderPath = recovered.work_order_path;
+-    resultPath = recovered.result_path;
+-    reportPath = recovered.report_path;
+-  } else if (journal.status === "running" && journal.cursor.phase === "completed") {
+-    const resumed = await readCompletedEvaluatorOutcome({
+-      git_root: command.resolvedProject.gitRoot,
+-      journal,
+-    });
+-    result = resumed.result;
+-    receipt = resumed.receipt;
+-    workOrderPath = resumed.work_order_path;
+-    resultPath = resumed.result_path;
+-    reportPath = resumed.report_path;
+-  } else {
+-    if (journal.status !== "running" || journal.cursor.phase !== "ready") {
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message:
+-          "Evaluator supervisor journal is not ready; resolve its typed stop before another provider invocation.",
+-      });
+-    }
+-    const prepared = await prepareEvaluatorReview({
+-      ctx: command,
+-      task,
+-      evaluator,
+-      provenance: "evaluator_supplied",
+-    });
+-    const started = startSupervisorExecutionEpisode({
+-      journal,
+-      role: "EVALUATOR",
+-      kind: "evaluator_episode",
+-      operation_identity: {
+-        evaluator_id: prepared.work_order.evaluator.id,
+-        work_order_id: prepared.work_order.work_order_id,
+-      },
+-      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+-      authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
+-      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+-      work_order_ref: relativeToProject(command.resolvedProject.gitRoot, prepared.work_order_path),
+-      effect_ref: prepared.work_order.work_order_id,
+-    });
+-    if (started.status !== "started") {
+-      await opened.store.write(started.journal);
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message:
+-          started.status === "effect_in_doubt"
+-            ? "Evaluator supervisor journal has an effect in doubt; resolve it before retrying."
+-            : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
+-      });
+-    }
+-    journal = started.journal;
+-    await opened.store.write(journal);
+-    let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
+-    try {
+-      episode = await executePreparedEvaluatorEpisode({ ctx: command, prepared });
+-    } catch (error) {
+-      journal = completeSupervisorExecutionEpisode({
+-        journal,
+-        operation_key: started.operation_key,
+-        // Persist only a small classification. Provider stderr and model
+-        // output can contain sensitive data and belong neither in the task
+-        // record nor in the durable supervisor journal.
+-        result: evaluatorProviderFailureRecord(error),
+-        failed: true,
+-      });
+-      await opened.store.write(journal);
+-      throw error;
+-    }
+-    result = episode.result;
+-    receipt = episode.receipt;
+-    workOrderPath = prepared.work_order_path;
+-    resultPath = prepared.result_path;
+-    reportPath = prepared.report_path;
+-    journal = completePersistedEvaluatorEpisode({
+-      journal,
+-      operation_key: started.operation_key,
+-      result,
+-      receipt,
+-    });
+-    await opened.store.write(journal);
+-    if (journal.status !== "running" || journal.cursor.phase !== "completed") {
+-      throw new CliError({
+-        code: "E_RUNTIME",
+-        message:
+-          "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
+-      });
+-    }
+-  }
+-
+-  if (journal.status !== "running" || journal.cursor.phase !== "completed") {
+-    throw new CliError({
+-      code: "E_RUNTIME",
+-      message:
+-        "Evaluator outcome was persisted, but the supervisor budget stopped before its task-state application.",
+-    });
+-  }
+ 
+   const currentTask = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+-  const resultRef = relativeToProject(command.resolvedProject.gitRoot, resultPath);
++  const resultRef = relativeToProject(command.resolvedProject.gitRoot, execution.result_path);
+   const alreadyApplied = currentTask.quality_review?.evidence_refs?.includes(resultRef) ?? false;
+   const applied = alreadyApplied
+     ? {
+-        report_path: relativeToProject(command.resolvedProject.gitRoot, reportPath),
++        report_path: relativeToProject(command.resolvedProject.gitRoot, execution.report_path),
+         result_path: resultRef,
+       }
+     : await applyEvaluatorSgrReview({
+         ctx: command,
+         task: currentTask,
+-        workOrderPath,
+-        result,
++        workOrderPath: execution.work_order_path,
++        result: execution.result,
+       });
+   const postDecision = await buildTaskRouteDecision({
+     ctx: command,
+@@ -647,26 +329,26 @@ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async
+     taskId: p.taskId,
+     includeRemote: false,
+   });
+-  journal = advanceSupervisorExecutionEpisodeState({
+-    journal,
++  const journal = advanceSupervisorExecutionEpisodeState({
++    journal: execution.journal,
+     state_fingerprint_digest: postDecision.workflowStep.preconditionFingerprint.digest,
+     route_observation: { step_id: postDecision.workflowStep.id },
+   });
+-  await opened.store.write(journal);
++  await execution.store.write(journal);
+   printEvaluatorPayload({
+     json: p.json,
+     title: `evaluator execute ${p.taskId}`,
+     payload: {
+-      work_order_id: receipt.work_order_id,
+-      evaluator: result.evaluator_id,
+-      provider: receipt.provider,
+-      sandbox: receipt.authority.sandbox,
+-      verdict: result.verdict,
++      work_order_id: execution.receipt.work_order_id,
++      evaluator: execution.result.evaluator_id,
++      provider: execution.receipt.provider,
++      sandbox: execution.receipt.authority.sandbox,
++      verdict: execution.result.verdict,
+       report: applied.report_path,
+       result: applied.result_path,
+       receipt: relativeToProject(
+         command.resolvedProject.gitRoot,
+-        path.join(path.dirname(workOrderPath), "evaluator-episode.json"),
++        path.join(path.dirname(execution.work_order_path), "evaluator-episode.json"),
+       ),
+       supervisor_episode: {
+         status: journal.status,

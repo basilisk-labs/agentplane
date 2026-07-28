@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607242236-1BFWEY",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T05:17:03.471Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "edb373fa89ab1ca84d4dca56dadf1acea166a9a7",
+  "blueprint_digest": "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477",
+  "findings": [
+    "The changed test assertion is equivalent and the local format gate now passes; no production code or evaluator work-order contract changed in this head."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Hosted runners use the repository Prettier configuration already exercised by bun run format:check."
+  ],
+  "residual_risks": []
+}

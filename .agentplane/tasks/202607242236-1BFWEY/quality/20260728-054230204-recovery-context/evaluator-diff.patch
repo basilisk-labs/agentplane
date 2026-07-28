@@ -1,0 +1,26 @@
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+index 67529c6c8..7bd75ef7c 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+@@ -418,7 +418,7 @@ export async function executePreparedEvaluatorEpisode(opts: {
+   };
+ }
+ 
+-export async function writeEvaluatorEpisodeReceipt(opts: {
++async function writeEvaluatorEpisodeReceipt(opts: {
+   prepared: PreparedEvaluatorReview;
+   receipt: EvaluatorEpisodeReceipt;
+ }): Promise<string> {
+diff --git a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+index 437a8ea58..5b6f488d3 100644
+--- a/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
++++ b/packages/agentplane/src/commands/shared/supervisor-execution-episode.ts
+@@ -95,7 +95,7 @@ export function createSupervisorEpisodeStore(filePath: string): SupervisorEpisod
+   };
+ }
+ 
+-export function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
++function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
+   return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
+ }
+ 

@@ -1,0 +1,20 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run bench:agent-efficiency:check",
+    "bun run guards:check",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck",
+    "bun run schemas:check",
+    "bun run package:install-smoke"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T06:03:25.605Z",
+    "updated_by": "EVALUATOR",
+    "note": "Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green."
+  },
+  "runner_history": []
+}

@@ -3,6 +3,10 @@ import { describe, expect, it, vi } from "vitest";
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 
 import { runCli } from "../../cli/run-cli.js";
+import {
+  readCodexProviderUsageForResult,
+  recordCodexProviderUsageForResult,
+} from "../../runner/adapters/codex-result-transport.js";
 import * as taskRunUsecases from "../../runner/usecases/task-run.js";
 import { executeHermesWorkflowOperation, routeNeedsRunnerProjection } from "./hermes-runtime.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
@@ -111,10 +115,17 @@ describe("hermes adapter commands", () => {
         message: "active claim could not be retired",
         event_recorded: true,
       },
-    } as unknown as Awaited<ReturnType<typeof taskRunUsecases.executeTaskRunnerExecution>>;
+    };
+    recordCodexProviderUsageForResult(executed.result, {
+      input_tokens: 100,
+      output_tokens: 50,
+      total_tokens: 150,
+    });
     const executeSpy = vi
       .spyOn(taskRunUsecases, "executeTaskRunnerExecution")
-      .mockResolvedValue(executed);
+      .mockResolvedValue(
+        executed as Awaited<ReturnType<typeof taskRunUsecases.executeTaskRunnerExecution>>,
+      );
     try {
       const result = await executeHermesWorkflowOperation({
         ctx: {} as never,
@@ -136,6 +147,15 @@ describe("hermes adapter commands", () => {
             active_claim_cleanup: { status: "cleanup_failed" },
           },
         },
+      });
+      const lifecycle =
+        result.operation_result?.kind === "runner_lifecycle" ? result.operation_result.value : null;
+      expect(lifecycle?.result).not.toBeNull();
+      if (!lifecycle?.result) throw new Error("Hermes did not project the runner result.");
+      expect(readCodexProviderUsageForResult(lifecycle.result)).toEqual({
+        input_tokens: 100,
+        output_tokens: 50,
+        total_tokens: 150,
       });
     } finally {
       executeSpy.mockRestore();
@@ -313,7 +333,16 @@ describe("hermes adapter commands", () => {
             };
           };
         };
-        workflow_supervision: { audit: { event: string }[] };
+        workflow_supervision: {
+          audit: { event: string }[];
+          episode: {
+            status: string;
+            cursor: { phase: string; operation_key: string | null };
+            usage: { episodes: number; agent_runs: number };
+            stop: null;
+            digest: string;
+          } | null;
+        };
         refreshed_route: { task: { id: string } };
       };
       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
@@ -343,6 +372,13 @@ describe("hermes adapter commands", () => {
         "operation_executed",
         "route_refreshed",
       ]);
+      expect(payload.workflow_supervision.episode).toMatchObject({
+        status: "running",
+        cursor: { phase: "ready", operation_key: null },
+        usage: { episodes: 1, agent_runs: 1 },
+        stop: null,
+      });
+      expect(payload.workflow_supervision.episode?.digest).toMatch(/^sha256:[0-9a-f]{64}$/u);
       expect(payload.refreshed_route.task.id).toBe(taskId);
     } finally {
       io.restore();

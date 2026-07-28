@@ -7,6 +7,7 @@ import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
 import { superviseWorkflowStep } from "../shared/workflow-supervisor.js";
 import {
   buildHermesLifecycleRecommendation,
@@ -133,24 +134,30 @@ export function makeRunHermesSuperviseHandler(
     const prepared = await prepareHermesRoute(routeOpts);
     const packet = prepared.packet;
     let refreshedPacket: typeof packet | null = null;
-    const supervision = await superviseWorkflowStep({
-      decision: prepared.decision,
-      mode: parsed.executeStep ? "execute" : "inspect",
-      execute: async ({ operation }) =>
-        await executeHermesWorkflowOperation({
-          ctx: commandCtx,
-          cwd: ctx.cwd,
-          rootOverride: ctx.rootOverride ?? null,
-          includeRemote: parsed.remote,
-          dryRun: parsed.dryRun,
-          operation,
-        }),
-      refresh: async () => {
-        const refreshed = await prepareHermesRoute(routeOpts);
-        refreshedPacket = refreshed.packet;
-        return refreshed.decision;
-      },
-    });
+    const persistedEpisode = parsed.executeStep
+      ? await supervisePersistedWorkflowEpisode({
+          decision: prepared.decision,
+          git_root: commandCtx.resolvedProject.gitRoot,
+          task_revision: packet.task.revision,
+          execute: async ({ operation }) =>
+            await executeHermesWorkflowOperation({
+              ctx: commandCtx,
+              cwd: ctx.cwd,
+              rootOverride: ctx.rootOverride ?? null,
+              includeRemote: parsed.remote,
+              dryRun: parsed.dryRun,
+              operation,
+            }),
+          refresh: async () => {
+            const refreshed = await prepareHermesRoute(routeOpts);
+            refreshedPacket = refreshed.packet;
+            return refreshed.decision;
+          },
+        })
+      : null;
+    const supervision =
+      persistedEpisode?.execution ??
+      (await superviseWorkflowStep({ decision: prepared.decision, mode: "inspect" }));
     const lifecycleRecommendation = buildHermesLifecycleRecommendation(packet);
     const payload = {
       ...packet,
@@ -168,6 +175,16 @@ export function makeRunHermesSuperviseHandler(
         stop_reason: supervision.stop_reason,
         operation_id: supervision.operation?.id ?? null,
         audit: supervision.audit,
+        episode: persistedEpisode
+          ? {
+              journal_path: persistedEpisode.journal_path,
+              status: persistedEpisode.journal.status,
+              cursor: persistedEpisode.journal.cursor,
+              usage: persistedEpisode.journal.usage,
+              stop: persistedEpisode.journal.stop,
+              digest: persistedEpisode.journal.digest,
+            }
+          : null,
       },
       lifecycle_recommendation: lifecycleRecommendation,
       execution: {

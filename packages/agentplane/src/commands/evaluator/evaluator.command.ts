@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { findGitRoot, resolveProject } from "@agentplaneorg/core/project";
+import { advanceSupervisorExecutionEpisodeState } from "@agentplaneorg/core/schemas";
 
 import {
   loadDirectSubcommandNames,
@@ -11,6 +12,7 @@ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError, GitError } from "../../shared/errors.js";
 import { loadEvaluatorCatalog, type EvaluatorModule } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import {
   evaluatorSpec,
   type EvaluatorApplyParsed,
@@ -25,10 +27,7 @@ import {
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview, applyHumanEvaluatorReview } from "./evaluator-review-apply.js";
-import {
-  executePreparedEvaluatorEpisode,
-  writeEvaluatorEpisodeReceipt,
-} from "./evaluator-episode.js";
+import { executeEvaluatorSupervisorEpisode } from "./evaluator-execute-supervisor.js";
 
 export {
   evaluatorApplySpec,
@@ -301,33 +300,63 @@ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async
     taskId: p.taskId,
     evaluatorId: p.evaluator,
   });
-  const prepared = await prepareEvaluatorReview({
-    ctx: command,
+  const execution = await executeEvaluatorSupervisorEpisode({
+    ctx,
+    command,
     task,
     evaluator,
-    provenance: "evaluator_supplied",
+    task_id: p.taskId,
   });
-  const episode = await executePreparedEvaluatorEpisode({ ctx: command, prepared });
+
   const currentTask = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
-  const applied = await applyEvaluatorSgrReview({
+  const resultRef = relativeToProject(command.resolvedProject.gitRoot, execution.result_path);
+  const alreadyApplied = currentTask.quality_review?.evidence_refs?.includes(resultRef) ?? false;
+  const applied = alreadyApplied
+    ? {
+        report_path: relativeToProject(command.resolvedProject.gitRoot, execution.report_path),
+        result_path: resultRef,
+      }
+    : await applyEvaluatorSgrReview({
+        ctx: command,
+        task: currentTask,
+        workOrderPath: execution.work_order_path,
+        result: execution.result,
+      });
+  const postDecision = await buildTaskRouteDecision({
     ctx: command,
-    task: currentTask,
-    workOrderPath: prepared.work_order_path,
-    result: episode.result,
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride ?? null,
+    taskId: p.taskId,
+    includeRemote: false,
   });
-  const receiptPath = await writeEvaluatorEpisodeReceipt({ prepared, receipt: episode.receipt });
+  const journal = advanceSupervisorExecutionEpisodeState({
+    journal: execution.journal,
+    state_fingerprint_digest: postDecision.workflowStep.preconditionFingerprint.digest,
+    route_observation: { step_id: postDecision.workflowStep.id },
+  });
+  await execution.store.write(journal);
   printEvaluatorPayload({
     json: p.json,
     title: `evaluator execute ${p.taskId}`,
     payload: {
-      work_order_id: prepared.work_order.work_order_id,
-      evaluator: prepared.work_order.evaluator.id,
-      provider: episode.receipt.provider,
-      sandbox: episode.receipt.authority.sandbox,
-      verdict: episode.result.verdict,
+      work_order_id: execution.receipt.work_order_id,
+      evaluator: execution.result.evaluator_id,
+      provider: execution.receipt.provider,
+      sandbox: execution.receipt.authority.sandbox,
+      verdict: execution.result.verdict,
       report: applied.report_path,
       result: applied.result_path,
-      receipt: relativeToProject(command.resolvedProject.gitRoot, receiptPath),
+      receipt: relativeToProject(
+        command.resolvedProject.gitRoot,
+        path.join(path.dirname(execution.work_order_path), "evaluator-episode.json"),
+      ),
+      supervisor_episode: {
+        status: journal.status,
+        cursor: journal.cursor,
+        usage: journal.usage,
+        stop: journal.stop,
+        digest: journal.digest,
+      },
       recorded: true,
     },
   });
