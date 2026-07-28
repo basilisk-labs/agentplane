@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -58,8 +58,8 @@ quality_review:
     - "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion."
     - "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks."
 commit:
-  hash: "395c5c3248bc87364098cfa7f7d51f2987025489"
-  message: "fix(evaluator): reopen completed stale supervisor journals"
+  hash: "d74d6be94f2c5581daee824b0398adbd2138a59b"
+  message: "fix(evaluator): recover stale journal at start"
 comments:
   -
     author: "CODER"
@@ -67,6 +67,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: reopened only completed stale-state evaluator journals; preserved failed and ambiguous-effect terminal stops; added focused regression coverage."
+  -
+    author: "CODER"
+    body: "Implementation correction: the evaluator now recovers stale_state returned by the same start attempt before any provider intent is persisted; the regression test changes real task state between episodes."
 events:
   -
     type: "status"
@@ -88,8 +91,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks passed; stale-state reopening preserves usage while terminal stops remain protected."
+  -
+    type: "status"
+    at: "2026-07-28T16:21:57.981Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation correction: the evaluator now recovers stale_state returned by the same start attempt before any provider intent is persisted; the regression test changes real task state between episodes."
 doc_version: 3
-doc_updated_at: "2026-07-28T16:18:30.995Z"
+doc_updated_at: "2026-07-28T16:21:57.981Z"
 doc_updated_by: "CODER"
 description: "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics."
 sections:
