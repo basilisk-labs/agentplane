@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -61,8 +61,8 @@ quality_review:
   findings:
     - "The frozen delta is limited to hosted-CI remediation and task evidence refresh; recorded focused tests continue to cover replacement admission, cross-process contention, pending-reservation recovery, terminal rejection, type safety, formatting, routing, lint, documentation freshness, and compatibility."
 commit:
-  hash: "411792b907528fd6654997f139c8707816ebc3a7"
-  message: "🔍 YMPY8Y evaluator: record replacement quality pass"
+  hash: "059ebf2ee6d1638a1b5234ba6c3f179a38e5834a"
+  message: "🔍 YMPY8Y evaluator: record fresh hosted CI quality pass"
 comments:
   -
     author: "CODER"
@@ -70,6 +70,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -143,8 +146,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass."
+  -
+    type: "status"
+    at: "2026-07-28T19:25:57.934Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T19:19:04.613Z"
+doc_updated_at: "2026-07-28T19:25:57.935Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -382,8 +392,8 @@ sections:
       Resolution: Regenerated docs/user/cli-reference.generated.mdx, resolved ten lint findings, and froze local parity checks at 9ea452754fe4fbabf259cad263a0279aa78f3d2f.
 extensions:
   implementation_commit:
-    hash: "7d46071af90efdbfc80473de79339cb44148c27e"
-    message: "🧪 YMPY8Y task: freeze compatibility ratchet verification"
+    hash: "c782e037a6d197467ffe87b6745c8a7141975525"
+    message: "🧪 YMPY8Y task: freeze hosted CI rework verification"
   workflow_route_baseline:
     start_head_sha: "a9b9d6a834893013c30b5046d0c618cb23553638"
     version: 1
