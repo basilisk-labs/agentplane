@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on: []
@@ -60,8 +60,8 @@ quality_review:
   findings:
     - "The replacement implementation and compatibility ratchet are covered by frozen verification records; the required real provider episode is correctly deferred to the explicit post-integration gate."
 commit:
-  hash: "9466b926c2d536264c028037d220d0f0cf8b8030"
-  message: "📋 YMPY8Y task: refresh verification for evidence review"
+  hash: "411792b907528fd6654997f139c8707816ebc3a7"
+  message: "🔍 YMPY8Y evaluator: record replacement quality pass"
 comments:
   -
     author: "CODER"
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -126,8 +129,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused replacement, typecheck, format, and routing checks are frozen in 20260728-184101-compatibility-ratchet.json."
+  -
+    type: "status"
+    at: "2026-07-28T19:02:30.846Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T18:42:32.245Z"
+doc_updated_at: "2026-07-28T19:02:30.847Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -330,6 +340,9 @@ sections:
       Impact: Replacement authorization is now atomic at the journal transition, preventing an unrelated provider operation from consuming a terminal failure recovery path.
       Resolution: Run the retained post-integration provider proof after the feature merges, then close the dependent recovery task.
 extensions:
+  implementation_commit:
+    hash: "7d46071af90efdbfc80473de79339cb44148c27e"
+    message: "🧪 YMPY8Y task: freeze compatibility ratchet verification"
   workflow_route_baseline:
     start_head_sha: "a9b9d6a834893013c30b5046d0c618cb23553638"
     version: 1
