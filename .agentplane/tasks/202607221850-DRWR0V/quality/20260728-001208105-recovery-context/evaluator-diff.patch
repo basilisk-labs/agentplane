@@ -1,0 +1,2135 @@
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/blueprint/critical-cli.json b/.agentplane/tasks/202607221850-DRWR0V/blueprint/critical-cli.json
+new file mode 100644
+index 000000000..075633a28
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-DRWR0V/blueprint/critical-cli.json
+@@ -0,0 +1,94 @@
++{
++  "suite": "critical-cli",
++  "totalDurationMs": 49185,
++  "chunks": [
++    {
++      "index": 1,
++      "durationMs": 6737,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  7 passed (7); Duration  6.57s (transform 1.21s, setup 0ms, import 1.53s, tests 4.98s, environment 0ms)"
++    },
++    {
++      "index": 2,
++      "durationMs": 2121,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  14 passed (14); Duration  1.95s (transform 1.29s, setup 0ms, import 1.61s, tests 279ms, environment 0ms)"
++    },
++    {
++      "index": 3,
++      "durationMs": 17288,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  10 passed (10); Duration  17.12s (transform 1.35s, setup 0ms, import 1.66s, tests 15.40s, environment 0ms)"
++    },
++    {
++      "index": 4,
++      "durationMs": 2199,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  10 passed (10); Duration  2.03s (transform 1.33s, setup 0ms, import 1.66s, tests 306ms, environment 0ms)"
++    },
++    {
++      "index": 5,
++      "durationMs": 2845,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  2 passed (2); Duration  2.68s (transform 1.26s, setup 0ms, import 1.60s, tests 1.01s, environment 0ms)"
++    },
++    {
++      "index": 6,
++      "durationMs": 2771,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  2 passed (2); Duration  2.60s (transform 1.28s, setup 0ms, import 1.64s, tests 902ms, environment 0ms)"
++    },
++    {
++      "index": 7,
++      "durationMs": 3001,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  3 passed (3); Duration  2.83s (transform 1.27s, setup 0ms, import 1.61s, tests 1.16s, environment 0ms)"
++    },
++    {
++      "index": 8,
++      "durationMs": 3100,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  5 passed (5); Duration  2.93s (transform 1.25s, setup 0ms, import 1.59s, tests 1.28s, environment 0ms)"
++    },
++    {
++      "index": 9,
++      "durationMs": 2566,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  2 passed (2); Duration  2.40s (transform 1.26s, setup 0ms, import 1.60s, tests 736ms, environment 0ms)"
++    },
++    {
++      "index": 10,
++      "durationMs": 2093,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  5 passed (5); Duration  1.92s (transform 1.36s, setup 0ms, import 1.64s, tests 222ms, environment 0ms)"
++    },
++    {
++      "index": 11,
++      "durationMs": 4464,
++      "files": [
++        "packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts"
++      ],
++      "summary": "Test Files  1 passed (1); Tests  12 passed (12); Duration  4.29s (transform 1.31s, setup 0ms, import 1.59s, tests 2.64s, environment 0ms)"
++    }
++  ]
++}
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..0d311b9cb
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221850-DRWR0V",
++    "title": "Extract the shared typed workflow supervisor from Hermes",
++    "description": "RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop over typed operations; make Hermes and CLI adapters use it without raw shell route execution.",
++    "tags": [
++      "hermes",
++      "milestone-beta1",
++      "refactor",
++      "rf-09",
++      "rf-25",
++      "supervisor",
++      "v0.7",
++      "wave-supervisor"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221850-DRWR0V",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102"
++  }
++}
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt b/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt
+index e69de29bb..ec3f3f1d4 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt
+@@ -0,0 +1,8 @@
++ .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
++ .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
++ .../src/commands/hermes/hermes.command.ts          |  61 +++-
++ .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
++ .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
++ .../src/commands/task/next-action.command.ts       |  12 +
++ scripts/baselines/trust-boundary-violations.json   |   9 -
++ 7 files changed, 760 insertions(+), 386 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md b/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md
+index 793d98e80..63b300998 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md
+@@ -22,12 +22,19 @@ RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T23:42:49.681Z
++- Updated: 2026-07-27T23:43:10.504Z
+ - Branch: task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
++ .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
++ .../src/commands/hermes/hermes.command.ts          |  61 +++-
++ .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
++ .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
++ .../src/commands/task/next-action.command.ts       |  12 +
++ scripts/baselines/trust-boundary-violations.json   |   9 -
++ 7 files changed, 760 insertions(+), 386 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json b/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json
+index cc6e56da0..f3098b0f3 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro",
+   "created_at": "2026-07-27T23:42:49.681Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:debf54b97a0b13579da629617eed0895ac652327ce36883d6e31f75be2608dcc",
+   "last_verified_at": null,
++  "pr_number": 4648,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4648",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607221850-DRWR0V",
+-  "updated_at": "2026-07-27T23:42:49.681Z",
++  "updated_at": "2026-07-27T23:43:10.504Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/review.md b/.agentplane/tasks/202607221850-DRWR0V/pr/review.md
+index 75c9bc016..0d44bbe78 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/review.md
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/review.md
+@@ -24,12 +24,19 @@ Created: 2026-07-27T23:42:49.681Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-27T23:42:49.681Z
++- Updated: 2026-07-27T23:43:10.504Z
+ - Branch: task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
++ .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
++ .../src/commands/hermes/hermes.command.ts          |  61 +++-
++ .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
++ .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
++ .../src/commands/task/next-action.command.ts       |  12 +
++ scripts/baselines/trust-boundary-violations.json   |   9 -
++ 7 files changed, 760 insertions(+), 386 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/hermes/hermes-runtime.ts b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+index 750beb4bb..1a660e61f 100644
+--- a/packages/agentplane/src/commands/hermes/hermes-runtime.ts
++++ b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+@@ -2,6 +2,10 @@ import { execFile } from "node:child_process";
+ import { promisify } from "node:util";
+ 
+ import { loadTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
++import {
++  executeTaskRunnerExecution,
++  prepareTaskRunnerExecution,
++} from "../../runner/usecases/task-run.js";
+ import {
+   prepareAgentWorkOrder,
+   requirePreparedAgentWorkOrder,
+@@ -11,10 +15,10 @@ import {
+   routeRunnerContextIsRelevant,
+ } from "../shared/route-guidance.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+-import type { RouteExecutionPacket } from "../shared/route-oracle.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
++import type { WorkflowOperation } from "../shared/workflow-step.js";
+ 
+-import { currentAgentplaneCommand } from "./hermes-environment.js";
+ export {
+   currentAgentplaneCommand,
+   hermesEnvSnapshot,
+@@ -30,19 +34,6 @@ export type HermesLifecycleAction = (typeof HERMES_LIFECYCLE_ACTIONS)[number];
+ 
+ export type HermesLocalProjection = Awaited<ReturnType<typeof routePacket>>;
+ 
+-export type HermesRoutePacketForExecution = {
+-  task: {
+-    id: string;
+-    title: string;
+-    owner: string | null;
+-  };
+-  next_action: {
+-    code: string;
+-    summary: string;
+-  };
+-  execution_packet: Pick<RouteExecutionPacket, "actionKind" | "exactArgv" | "safeToMutate">;
+-};
+-
+ function taskTerminalForHermesComplete(task: {
+   status: string;
+   verification: string | null;
+@@ -114,7 +105,7 @@ export function routeNeedsRunnerProjection(decision: TaskRouteDecision): boolean
+   return routeRunnerContextIsRelevant(deriveRouteOperatorGuidance(decision));
+ }
+ 
+-export async function routePacket(opts: {
++export async function prepareHermesRoute(opts: {
+   ctx: CommandContext;
+   cwd: string;
+   rootOverride: string | null;
+@@ -151,7 +142,7 @@ export async function routePacket(opts: {
+     agentplane_authority: "engineering_task_lifecycle",
+     status_sync: "projection_only",
+   };
+-  return {
++  const packet = {
+     task: {
+       id: decision.task.id,
+       title: decision.task.title,
+@@ -200,6 +191,17 @@ export async function routePacket(opts: {
+       authority: projectionBoundary,
+     },
+   };
++  return { decision, packet };
++}
++
++export async function routePacket(opts: {
++  ctx: CommandContext;
++  cwd: string;
++  rootOverride: string | null;
++  taskId: string;
++  includeRemote?: boolean;
++}) {
++  return (await prepareHermesRoute(opts)).packet;
+ }
+ 
+ export function buildHermesLifecycleRecommendation(
+@@ -237,95 +239,59 @@ export function buildHermesLifecycleRecommendation(
+   };
+ }
+ 
+-function typedAgentplaneArgs(packet: HermesRoutePacketForExecution): string[] | null {
+-  if (packet.execution_packet.actionKind !== "local_command") return null;
+-  const argv = packet.execution_packet.exactArgv;
+-  if (argv?.[0] !== "agentplane") return null;
+-  return argv.slice(1);
+-}
+-
+-function blockedTypedStep(packet: HermesRoutePacketForExecution, reason: string) {
+-  return {
+-    code: packet.next_action.code,
+-    args: null,
+-    reason,
+-  };
+-}
+-
+-export function executableStepFor(packet: HermesRoutePacketForExecution): {
+-  code: string;
+-  args: string[] | null;
+-  reason: string | null;
+-} {
+-  const taskId = packet.task.id;
+-  const args = typedAgentplaneArgs(packet);
+-  if (!args) {
+-    return blockedTypedStep(
+-      packet,
+-      packet.next_action.code === "continue_direct"
+-        ? "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command"
+-        : "Agentplane route does not authorize a local typed command for Hermes execution",
+-    );
+-  }
+-  if (
+-    packet.execution_packet.safeToMutate &&
+-    args.length === 3 &&
+-    args[0] === "task" &&
+-    args[1] === "run" &&
+-    args[2] === taskId
+-  ) {
+-    return { code: packet.next_action.code, args, reason: null };
+-  }
+-  if (!packet.execution_packet.safeToMutate) {
+-    return blockedTypedStep(
+-      packet,
+-      "Hermes may execute only a mutation-authorized typed task runner command",
+-    );
+-  }
+-  return blockedTypedStep(
+-    packet,
+-    "Hermes allowlist permits only the exact typed task runner argv for the current task",
+-  );
+-}
+-
+-export async function runAgentplaneStep(args: string[], root: string, dryRun: boolean) {
+-  const command = currentAgentplaneCommand();
+-  const fullArgs = [...command.argsPrefix, ...args, "--root", root];
+-  if (dryRun) {
++/**
++ * Hermes is only an adapter. It may invoke the shared runner use case for the
++ * one typed runner operation; it never reconstructs or spawns a CLI command.
++ */
++export async function executeHermesWorkflowOperation(opts: {
++  ctx: CommandContext;
++  cwd: string;
++  rootOverride: string | null;
++  includeRemote: boolean;
++  dryRun: boolean;
++  operation: WorkflowOperation;
++}): Promise<WorkflowSupervisorOperationResult> {
++  if (opts.operation.id !== "runner.follow" || opts.operation.params.mode !== "run") {
+     return {
+-      executed: false,
+-      dry_run: true,
+-      command: [command.command, ...fullArgs],
+-      exit_code: null,
+-      stdout: "",
+-      stderr: "",
++      status: "failed",
++      observed_postconditions: [],
++      detail: `Hermes has no in-process executor for typed operation ${opts.operation.id}`,
++      exit_code: 1,
+     };
+   }
+-  try {
+-    const result = await execFileAsync(command.command, fullArgs, {
+-      cwd: root,
+-      env: process.env,
+-      maxBuffer: 1024 * 1024 * 4,
++
++  const taskId = opts.operation.params.taskId;
++  if (opts.dryRun) {
++    const prepared = await prepareTaskRunnerExecution({
++      ctx: opts.ctx,
++      cwd: opts.cwd,
++      rootOverride: opts.rootOverride,
++      task_id: taskId,
++      mode: "dry_run",
++      ...(opts.includeRemote ? { include_remote: true } : {}),
+     });
+     return {
+-      executed: true,
+-      dry_run: false,
+-      command: [command.command, ...fullArgs],
+-      exit_code: 0,
+-      stdout: result.stdout,
+-      stderr: result.stderr,
+-    };
+-  } catch (err) {
+-    const maybe = err as { code?: unknown; stdout?: unknown; stderr?: unknown; message?: string };
+-    return {
+-      executed: true,
+-      dry_run: false,
+-      command: [command.command, ...fullArgs],
+-      exit_code: typeof maybe.code === "number" ? maybe.code : 1,
+-      stdout: typeof maybe.stdout === "string" ? maybe.stdout : "",
+-      stderr: typeof maybe.stderr === "string" ? maybe.stderr : (maybe.message ?? String(err)),
++      status: "succeeded",
++      observed_postconditions: ["runner_state_observed"],
++      detail: `prepared runner invocation ${prepared.invocation.run_id} for ${taskId}`,
++      exit_code: null,
+     };
+   }
++
++  const executed = await executeTaskRunnerExecution({
++    ctx: opts.ctx,
++    cwd: opts.cwd,
++    rootOverride: opts.rootOverride,
++    task_id: taskId,
++    ...(opts.includeRemote ? { include_remote: true } : {}),
++  });
++  const succeeded = executed.result.status === "success" && !executed.active_claim_cleanup;
++  return {
++    status: succeeded ? "succeeded" : "failed",
++    observed_postconditions: ["runner_state_observed"],
++    detail: executed.result.summary ?? `runner execution completed for ${taskId}`,
++    exit_code: executed.result.exit_code,
++  };
+ }
+ 
+ export function hermesCliCommand(): string {
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.test.ts b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+index 1a6bb7ce5..1d23604bb 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.test.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+@@ -3,11 +3,7 @@ import { describe, expect, it } from "vitest";
+ import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
+ 
+ import { runCli } from "../../cli/run-cli.js";
+-import {
+-  executableStepFor,
+-  routeNeedsRunnerProjection,
+-  runAgentplaneStep,
+-} from "./hermes-runtime.js";
++import { routeNeedsRunnerProjection } from "./hermes-runtime.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
+ import { chmod, mkdir, writeFile } from "node:fs/promises";
+@@ -88,140 +84,6 @@ async function createRunnableDirectTask(root: string): Promise<string> {
+ }
+ 
+ describe("hermes adapter commands", () => {
+-  it("allowlists same-task typed Agentplane task run actions only", () => {
+-    const taskId = "202606010525-5TJNPS";
+-    const packet = {
+-      task: { id: taskId, title: "Hermes task run", owner: "CODER" },
+-      next_action: {
+-        code: "run_task",
+-        summary: "Launch the configured task runner.",
+-      },
+-      execution_packet: {
+-        actionKind: "local_command" as const,
+-        safeToMutate: true,
+-        exactArgv: ["agentplane", "task", "run", taskId],
+-      },
+-    };
+-
+-    expect(executableStepFor(packet).args).toEqual(["task", "run", taskId]);
+-    expect(
+-      executableStepFor({
+-        ...packet,
+-        execution_packet: {
+-          ...packet.execution_packet,
+-          exactArgv: ["agentplane", "task", "run", "202606010525-OTHER"],
+-        },
+-      }).args,
+-    ).toBeNull();
+-    expect(
+-      executableStepFor({
+-        ...packet,
+-        execution_packet: {
+-          ...packet.execution_packet,
+-          exactArgv: ["agentplane", "task", "run", taskId, "--unsafe"],
+-        },
+-      }).args,
+-    ).toBeNull();
+-    expect(
+-      executableStepFor({
+-        ...packet,
+-        execution_packet: {
+-          ...packet.execution_packet,
+-          safeToMutate: false,
+-        },
+-      }).args,
+-    ).toBeNull();
+-    expect(
+-      executableStepFor({
+-        ...packet,
+-        next_action: { code: "open_pr", summary: "publish the task PR" },
+-        execution_packet: {
+-          ...packet.execution_packet,
+-          exactArgv: ["agentplane", "pr", "open", taskId, "--author", "CODER"],
+-        },
+-      }).args,
+-    ).toBeNull();
+-    expect(
+-      executableStepFor({
+-        ...packet,
+-        next_action: { code: "update_pr_artifacts", summary: "refresh task PR artifacts" },
+-        execution_packet: {
+-          ...packet.execution_packet,
+-          exactArgv: ["agentplane", "pr", "update", taskId, "--include-task", "202606010525-OTHER"],
+-        },
+-      }).args,
+-    ).toBeNull();
+-    expect(
+-      executableStepFor({
+-        ...packet,
+-        next_action: { code: "start_or_recover_worktree", summary: "prepare a task worktree" },
+-        execution_packet: {
+-          ...packet.execution_packet,
+-          exactArgv: [
+-            "agentplane",
+-            "work",
+-            "start",
+-            taskId,
+-            "--agent",
+-            "CODER",
+-            "--slug",
+-            "hermes-task",
+-            "--worktree",
+-          ],
+-        },
+-      }).args,
+-    ).toBeNull();
+-  });
+-
+-  it("dry-runs a typed task run step without invoking a shell", async () => {
+-    const root = await mkGitRepoRoot();
+-    const taskId = "202606010525-5TJNPS";
+-
+-    const result = await runAgentplaneStep(["task", "run", taskId], root, true);
+-
+-    expect(result.executed).toBe(false);
+-    expect(result.dry_run).toBe(true);
+-    expect(result.exit_code).toBeNull();
+-    expect(result.command).toContain("task");
+-    expect(result.command).toContain("run");
+-    expect(result.command).toContain(taskId);
+-    expect(result.command).toContain("--root");
+-    expect(result.command).toContain(root);
+-  });
+-
+-  it("propagates child failure codes for typed task run steps", async () => {
+-    const root = await mkGitRepoRoot();
+-    const taskId = "202606010525-5TJNPS";
+-    const fakeBin = path.join(root, "failing-agentplane.js");
+-    await writeFile(
+-      fakeBin,
+-      "#!/usr/bin/env node\nconsole.error('task-run-failed');\nprocess.exit(9);\n",
+-    );
+-    await chmod(fakeBin, 0o755);
+-
+-    const previous = process.env.AGENTPLANE_BIN;
+-    const previousArgs = process.env.AGENTPLANE_BIN_ARGS;
+-    process.env.AGENTPLANE_BIN = process.execPath;
+-    process.env.AGENTPLANE_BIN_ARGS = JSON.stringify([fakeBin]);
+-    try {
+-      const result = await runAgentplaneStep(["task", "run", taskId], root, false);
+-      expect(result.executed).toBe(true);
+-      expect(result.exit_code).toBe(9);
+-      expect(result.stderr).toContain("task-run-failed");
+-    } finally {
+-      if (previous === undefined) {
+-        delete process.env.AGENTPLANE_BIN;
+-      } else {
+-        process.env.AGENTPLANE_BIN = previous;
+-      }
+-      if (previousArgs === undefined) {
+-        delete process.env.AGENTPLANE_BIN_ARGS;
+-      } else {
+-        process.env.AGENTPLANE_BIN_ARGS = previousArgs;
+-      }
+-    }
+-  });
+-
+   it("renders a provider-safe enqueue projection", async () => {
+     const root = await mkGitRepoRoot();
+     const taskId = await createApprovedTask(root);
+@@ -371,70 +233,53 @@ describe("hermes adapter commands", () => {
+           requested: boolean;
+           dry_run: boolean;
+           allowed: boolean;
+-          result: { command: string[] };
++          result: { detail: string; exit_code: number | null };
+         };
++        workflow_supervision: { audit: Array<{ event: string }> };
++        refreshed_route: { task: { id: string } };
+       };
+       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
+       expect(payload.execution.requested).toBe(true);
+       expect(payload.execution.dry_run).toBe(true);
+       expect(payload.execution.allowed).toBe(true);
+-      expect(payload.execution.result.command).toContain(taskId);
++      expect(payload.execution.result.detail).toContain(taskId);
++      expect(payload.execution.result.exit_code).toBeNull();
++      expect(payload.workflow_supervision.audit.map((entry) => entry.event)).toEqual([
++        "decision_observed",
++        "operation_executed",
++        "route_refreshed",
++      ]);
++      expect(payload.refreshed_route.task.id).toBe(taskId);
+     } finally {
+       io.restore();
+     }
+   });
+ 
+-  it("classifies same-task task run route steps as executable without raw shell", () => {
+-    const step = executableStepFor({
+-      task: {
+-        id: "202606010530-BEYQXA",
+-        title: "Hermes task launch",
+-        owner: "CODER",
+-      },
+-      next_action: {
+-        code: "run",
+-        summary: "launch the Agentplane task runner",
+-      },
+-      execution_packet: {
+-        actionKind: "local_command",
+-        safeToMutate: true,
+-        exactArgv: ["agentplane", "task", "run", "202606010530-BEYQXA"],
+-      },
+-    });
+-
+-    expect(step).toEqual({
+-      code: "run",
+-      args: ["task", "run", "202606010530-BEYQXA"],
+-      reason: null,
+-    });
+-  });
+-
+-  it("does not downgrade a semantic direct continuation to task verify-show", () => {
+-    const taskId = "202606010530-BEYQXA";
+-
+-    const step = executableStepFor({
+-      task: {
+-        id: taskId,
+-        title: "Hermes direct implementation",
+-        owner: "CODER",
+-      },
+-      next_action: {
+-        code: "continue_direct",
+-        summary: "hand the direct-mode task to CODER for semantic implementation",
+-      },
+-      execution_packet: {
+-        actionKind: "stop",
+-        safeToMutate: true,
+-        exactArgv: null,
+-      },
+-    });
+-
+-    expect(step).toEqual({
+-      code: "continue_direct",
+-      args: null,
+-      reason:
+-        "direct implementation is a semantic Agentplane episode; Hermes must not replace it with a read-only task verify-show command",
+-    });
++  it("emits the shared supervisor classification from task next-action", async () => {
++    const root = await mkGitRepoRoot();
++    const taskId = await createRunnableDirectTask(root);
++    const io = captureStdIO();
++    try {
++      const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
++      expect(code).toBe(0);
++      const payload = JSON.parse(io.stdout) as {
++        workflow_step: { preconditionFingerprint: { digest: string } };
++        workflow_supervision: {
++          executable: boolean;
++          operation_id: string | null;
++          audit: Array<{ event: string; state_fingerprint: string }>;
++        };
++      };
++      expect(payload.workflow_supervision.executable).toBe(true);
++      expect(payload.workflow_supervision.operation_id).toBe("runner.follow");
++      expect(payload.workflow_supervision.audit).toHaveLength(1);
++      expect(payload.workflow_supervision.audit[0]).toMatchObject({
++        event: "decision_observed",
++        state_fingerprint: payload.workflow_step.preconditionFingerprint.digest,
++      });
++    } finally {
++      io.restore();
++    }
+   });
+ 
+   it("keeps Hermes runner projection for explicit task run routes", () => {
+@@ -552,74 +397,6 @@ describe("hermes adapter commands", () => {
+     expect(routeNeedsRunnerProjection(decision)).toBe(true);
+   });
+ 
+-  it("rejects task run route steps for a different task id", () => {
+-    const step = executableStepFor({
+-      task: {
+-        id: "202606010530-BEYQXA",
+-        title: "Hermes task launch",
+-        owner: "CODER",
+-      },
+-      next_action: {
+-        code: "run",
+-        summary: "launch another task runner",
+-      },
+-      execution_packet: {
+-        actionKind: "local_command",
+-        safeToMutate: true,
+-        exactArgv: ["agentplane", "task", "run", "202606010531-OTHER1"],
+-      },
+-    });
+-
+-    expect(step.args).toBeNull();
+-    expect(step.reason).toContain("Hermes allowlist permits only the exact typed task runner argv");
+-  });
+-
+-  it("supervise returns the child Agentplane command failure code", async () => {
+-    const root = await mkGitRepoRoot();
+-    const taskId = await createRunnableDirectTask(root);
+-    const fakeBin = path.join(root, "failing-agentplane.js");
+-    await writeFile(
+-      fakeBin,
+-      "#!/usr/bin/env node\nconsole.error('child-failed');\nprocess.exit(7);\n",
+-    );
+-    await chmod(fakeBin, 0o755);
+-
+-    const previous = process.env.AGENTPLANE_BIN;
+-    const previousArgs = process.env.AGENTPLANE_BIN_ARGS;
+-    process.env.AGENTPLANE_BIN = process.execPath;
+-    process.env.AGENTPLANE_BIN_ARGS = JSON.stringify([fakeBin]);
+-    const io = captureStdIO();
+-    try {
+-      const code = await runCli([
+-        "hermes",
+-        "supervise",
+-        taskId,
+-        "--execute-step",
+-        "--json",
+-        "--root",
+-        root,
+-      ]);
+-      expect(code).toBe(7);
+-      const payload = JSON.parse(io.stdout) as {
+-        execution: { result: { exit_code: number; stderr: string } };
+-      };
+-      expect(payload.execution.result.exit_code).toBe(7);
+-      expect(payload.execution.result.stderr).toContain("child-failed");
+-    } finally {
+-      io.restore();
+-      if (previous === undefined) {
+-        delete process.env.AGENTPLANE_BIN;
+-      } else {
+-        process.env.AGENTPLANE_BIN = previous;
+-      }
+-      if (previousArgs === undefined) {
+-        delete process.env.AGENTPLANE_BIN_ARGS;
+-      } else {
+-        process.env.AGENTPLANE_BIN_ARGS = previousArgs;
+-      }
+-    }
+-  });
+-
+   it("doctor reports the local Agentplane side of the adapter contract", async () => {
+     const root = await mkGitRepoRoot();
+     await runCliSilent(["init", "--yes", "--root", root]);
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.ts b/packages/agentplane/src/commands/hermes/hermes.command.ts
+index 2e0e2f094..bbb9634eb 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.ts
+@@ -7,18 +7,19 @@ import { createCliEmitter } from "../../cli/output.js";
+ import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
+ import { CliError } from "../../shared/errors.js";
+ import type { CommandContext } from "../shared/task-backend.js";
++import { superviseWorkflowStep } from "../shared/workflow-supervisor.js";
+ import {
+-  executableStepFor,
+   buildHermesLifecycleRecommendation,
+   currentAgentplaneCommand,
++  executeHermesWorkflowOperation,
+   HERMES_LIFECYCLE_ACTIONS,
+   hermesCliCommand,
+   hermesEnvSnapshot,
+   loadHermesStateSnapshot,
+   loadLaneRegistry,
++  prepareHermesRoute,
+   reconcileHermesState,
+   routePacket,
+-  runAgentplaneStep,
+   runHermesLifecycle,
+   type HermesLifecycleAction,
+ } from "./hermes-runtime.js";
+@@ -122,42 +123,66 @@ export function makeRunHermesSuperviseHandler(
+ ): CommandHandler<HermesSuperviseParsed> {
+   return async (ctx, parsed) => {
+     const commandCtx = await getCtx("hermes supervise");
+-    const packet = await routePacket({
++    const routeOpts = {
+       ctx: commandCtx,
+       cwd: ctx.cwd,
+       rootOverride: ctx.rootOverride ?? null,
+       taskId: parsed.taskId,
+       ...(parsed.remote ? { includeRemote: true } : {}),
++    };
++    const prepared = await prepareHermesRoute(routeOpts);
++    const packet = prepared.packet;
++    let refreshedPacket: typeof packet | null = null;
++    const supervision = await superviseWorkflowStep({
++      decision: prepared.decision,
++      mode: parsed.executeStep ? "execute" : "inspect",
++      execute: async ({ operation }) =>
++        await executeHermesWorkflowOperation({
++          ctx: commandCtx,
++          cwd: ctx.cwd,
++          rootOverride: ctx.rootOverride ?? null,
++          includeRemote: parsed.remote,
++          dryRun: parsed.dryRun,
++          operation,
++        }),
++      refresh: async () => {
++        const refreshed = await prepareHermesRoute(routeOpts);
++        refreshedPacket = refreshed.packet;
++        return refreshed.decision;
++      },
+     });
+-    const step = executableStepFor(packet);
+     const lifecycleRecommendation = buildHermesLifecycleRecommendation(packet);
+-    const stepResult =
+-      parsed.executeStep && step.args
+-        ? await runAgentplaneStep(step.args, commandCtx.resolvedProject.gitRoot, parsed.dryRun)
+-        : null;
+     const payload = {
+       ...packet,
++      ...(refreshedPacket ? { refreshed_route: refreshedPacket } : {}),
+       hermes_run: hermesEnvSnapshot(),
+       hermes_comment_projection: packet.hermes_comment_projection,
+       supervisor_policy: {
+         execute_raw_shell_from_route: false,
+-        execution_model: "classify_route_action_then_execute_allowlisted_agentplane_command",
++        execution_model: "shared_typed_workflow_operation_registry",
+         max_route_steps_per_claim: 1,
+       },
++      workflow_supervision: {
++        schema: "agentplane.workflow-supervisor.v1",
++        executable: supervision.executable,
++        stop_reason: supervision.stop_reason,
++        operation_id: supervision.operation?.id ?? null,
++        audit: supervision.audit,
++      },
+       lifecycle_recommendation: lifecycleRecommendation,
+       execution: {
+         requested: parsed.executeStep,
+         dry_run: parsed.dryRun,
+-        action: step.code,
+-        allowed: Boolean(step.args),
+-        block_reason: step.reason,
+-        result: stepResult,
++        action: packet.next_action.code,
++        allowed: supervision.executable,
++        block_reason: supervision.stop_reason,
++        result: supervision.result,
+       },
+     };
+-    if (parsed.executeStep && !step.args && !parsed.dryRun) {
++    if (parsed.executeStep && !supervision.executable && !parsed.dryRun) {
+       throw new CliError({
+         code: "E_USAGE",
+-        message: step.reason ?? "Hermes supervisor route step is not executable",
++        message: supervision.stop_reason ?? "Hermes supervisor route step is not executable",
+       });
+     }
+     if (parsed.json) {
+@@ -173,11 +198,11 @@ export function makeRunHermesSuperviseHandler(
+           value: packet.terminal.hermes_root_complete_allowed,
+         },
+         { label: "execute_step", value: parsed.executeStep },
+-        { label: "execution_allowed", value: Boolean(step.args) },
++        { label: "execution_allowed", value: supervision.executable },
+       ]);
+     }
+-    if (stepResult?.executed === true && typeof stepResult.exit_code === "number") {
+-      return stepResult.exit_code;
++    if (typeof supervision.result?.exit_code === "number") {
++      return supervision.result.exit_code;
+     }
+     return 0;
+   };
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
+new file mode 100644
+index 000000000..d88d51dbd
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
+@@ -0,0 +1,232 @@
++import { describe, expect, it } from "vitest";
++
++import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
++
++import type { TaskRouteDecision } from "./route-decision-types.js";
++import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
++import { superviseWorkflowStep } from "./workflow-supervisor.js";
++import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
++
++const taskId = "202607270245-SUPV09";
++
++function fixtureDecision(opts?: {
++  exactArgv?: string[] | null;
++  kind?: "approval" | "agent_episode" | "wait";
++}): TaskRouteDecision {
++  const component = {
++    state: "present",
++    source: "workflow_supervisor_test",
++    value: { taskId },
++  } as const;
++  const fingerprint = buildStateFingerprint({
++    task_id: taskId,
++    task_revision: 1,
++    git_head: "0123456789abcdef0123456789abcdef01234567",
++    worktree: "/repo",
++    components: {
++      task: component,
++      git: component,
++      backend_projection: component,
++      policy: component,
++      blueprint: component,
++      knowledge: component,
++      provider: component,
++      authority: component,
++    },
++  });
++  const operation: WorkflowOperation = {
++    id: "runner.follow",
++    type: "runner_follow",
++    params: { mode: "run", taskId },
++    preconditionFingerprint: fingerprint,
++    authorityRef: `route:${taskId}:${fingerprint.digest}`,
++    idempotencyKey: `runner.follow:${taskId}:${fingerprint.digest}:fixture`,
++    expectedPostconditions: WORKFLOW_OPERATION_REGISTRY["runner.follow"].expectedPostconditions,
++    triggersGitHooks: false,
++  };
++  const workflowStep = opts?.kind
++    ? ({
++        id: opts.kind,
++        kind: opts.kind,
++        summary: `blocked ${opts.kind}`,
++        preconditionFingerprint: fingerprint,
++      } as TaskRouteDecision["workflowStep"])
++    : ({
++        id: "runner.follow",
++        kind: "cli_operation",
++        summary: "run the typed task runner operation",
++        preconditionFingerprint: fingerprint,
++        operation,
++        execution: { actionKind: "local_command" },
++      } as TaskRouteDecision["workflowStep"]);
++  return {
++    task: {
++      id: taskId,
++      title: "Workflow supervisor fixture",
++      status: "DOING",
++      owner: "CODER",
++      planApproval: "approved",
++      verification: "pending",
++      commit: null,
++    },
++    workflowStep,
++    executionPacket: {
++      actionKind: "local_command",
++      safeToMutate: true,
++      exactArgv: opts?.exactArgv ?? projectWorkflowOperationArgv(operation),
++    },
++  } as TaskRouteDecision;
++}
++
++describe("workflow supervisor", () => {
++  it("executes one registered operation and refreshes the route with a normalized audit", async () => {
++    const decision = fixtureDecision();
++    const refreshed = fixtureDecision();
++    const execution = await superviseWorkflowStep({
++      decision,
++      execute: async () => ({
++        status: "succeeded",
++        observed_postconditions: ["runner_state_observed"],
++        detail: "runner prepared",
++        exit_code: 0,
++      }),
++      refresh: async () => refreshed,
++    });
++
++    expect(execution.executable).toBe(true);
++    expect(execution.stop_reason).toBeNull();
++    expect(execution.refreshed_decision).toBe(refreshed);
++    expect(execution.audit.map((entry) => entry.event)).toEqual([
++      "decision_observed",
++      "operation_executed",
++      "route_refreshed",
++    ]);
++    expect(
++      execution.audit.every(
++        (entry) => entry.state_fingerprint === decision.workflowStep.preconditionFingerprint.digest,
++      ),
++    ).toBe(true);
++  });
++
++  it("rejects a route whose argv is not the registry projection before execution", async () => {
++    let invoked = false;
++    const execution = await superviseWorkflowStep({
++      decision: fixtureDecision({ exactArgv: ["sh", "-c", "agentplane task run anything"] }),
++      mode: "inspect",
++      execute: async () => {
++        invoked = true;
++        throw new Error("must not execute");
++      },
++    });
++
++    expect(invoked).toBe(false);
++    expect(execution.executable).toBe(false);
++    expect(execution.stop_reason).toContain("rendered argv");
++  });
++
++  it("rejects an unregistered operation and a registered operation for another task", async () => {
++    const unregistered = fixtureDecision();
++    const unregisteredOperation = (
++      unregistered.workflowStep as Extract<
++        typeof unregistered.workflowStep,
++        { kind: "cli_operation" }
++      >
++    ).operation as unknown as { id: string };
++    unregisteredOperation.id = "raw.shell";
++    const unknown = await superviseWorkflowStep({
++      decision: unregistered,
++      mode: "inspect",
++    });
++
++    const crossTask = fixtureDecision();
++    const crossTaskOperation = (
++      crossTask.workflowStep as Extract<typeof crossTask.workflowStep, { kind: "cli_operation" }>
++    ).operation;
++    crossTaskOperation.params = { mode: "run", taskId: "202607270245-OTHER09" };
++    crossTask.executionPacket.exactArgv = projectWorkflowOperationArgv(crossTaskOperation);
++    const other = await superviseWorkflowStep({
++      decision: crossTask,
++      mode: "inspect",
++    });
++
++    expect(unknown.executable).toBe(false);
++    expect(unknown.stop_reason).toContain("unregistered operation");
++    expect(other.executable).toBe(false);
++    expect(other.stop_reason).toContain("different task");
++  });
++
++  it.each(["approval", "agent_episode", "wait"] as const)(
++    "stops %s routes before any operation",
++    async (kind) => {
++      const execution = await superviseWorkflowStep({
++        decision: fixtureDecision({ kind }),
++        mode: "inspect",
++      });
++
++      expect(execution.executable).toBe(false);
++      expect(execution.operation).toBeNull();
++      expect(execution.audit.at(-1)?.event).toBe("execution_rejected");
++    },
++  );
++
++  it("rejects a repeated idempotency key without refreshing state", async () => {
++    const decision = fixtureDecision();
++    const key = (
++      decision.workflowStep as Extract<typeof decision.workflowStep, { kind: "cli_operation" }>
++    ).operation.idempotencyKey;
++    let refreshed = false;
++    const execution = await superviseWorkflowStep({
++      decision,
++      completed_idempotency_keys: new Set([key]),
++      execute: async () => ({
++        status: "succeeded",
++        observed_postconditions: ["runner_state_observed"],
++        detail: "must not execute",
++        exit_code: 0,
++      }),
++      refresh: async () => {
++        refreshed = true;
++        return decision;
++      },
++    });
++
++    expect(execution.executable).toBe(false);
++    expect(execution.stop_reason).toContain("repeated idempotency key");
++    expect(refreshed).toBe(false);
++  });
++
++  it("refreshes state after executor failure or absent postconditions without a second operation", async () => {
++    const decision = fixtureDecision();
++    let refreshed = false;
++    const crash = await superviseWorkflowStep({
++      decision,
++      execute: async () => {
++        throw new Error("runner crash");
++      },
++      refresh: async () => {
++        refreshed = true;
++        return decision;
++      },
++    });
++    const missing = await superviseWorkflowStep({
++      decision,
++      execute: async () => ({
++        status: "succeeded",
++        observed_postconditions: [],
++        detail: "runner result lacks durable observation",
++        exit_code: 0,
++      }),
++      refresh: async () => {
++        refreshed = true;
++        return decision;
++      },
++    });
++
++    expect(crash.stop_reason).toContain("executor crashed");
++    expect(missing.stop_reason).toContain("missing observed postconditions");
++    expect(missing.audit.some((entry) => entry.event === "postcondition_rejected")).toBe(true);
++    expect(crash.audit.at(-1)?.event).toBe("route_refreshed");
++    expect(missing.audit.at(-1)?.event).toBe("route_refreshed");
++    expect(refreshed).toBe(true);
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+new file mode 100644
+index 000000000..a8e1991c2
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+@@ -0,0 +1,371 @@
++import type { TaskRouteDecision } from "./route-decision-types.js";
++import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
++import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
++
++export const WORKFLOW_SUPERVISOR_AUDIT_SCHEMA = "agentplane.workflow-supervisor-audit.v1" as const;
++
++export type WorkflowSupervisorAuditEntry = {
++  schema: typeof WORKFLOW_SUPERVISOR_AUDIT_SCHEMA;
++  sequence: number;
++  event:
++    | "decision_observed"
++    | "execution_rejected"
++    | "operation_executed"
++    | "operation_failed"
++    | "postcondition_rejected"
++    | "route_refreshed"
++    | "refresh_failed";
++  task_id: string;
++  step_id: string;
++  state_fingerprint: string;
++  operation_id: string | null;
++  idempotency_key: string | null;
++  detail: string;
++};
++
++export type WorkflowSupervisorOperationResult = {
++  status: "succeeded" | "failed";
++  observed_postconditions: readonly string[];
++  detail: string;
++  exit_code: number | null;
++};
++
++export type WorkflowSupervisorExecution = {
++  decision: TaskRouteDecision;
++  operation: WorkflowOperation | null;
++  executable: boolean;
++  stop_reason: string | null;
++  audit: readonly WorkflowSupervisorAuditEntry[];
++  result: WorkflowSupervisorOperationResult | null;
++  refreshed_decision: TaskRouteDecision | null;
++};
++
++export type WorkflowSupervisorExecutor = (opts: {
++  operation: WorkflowOperation;
++}) => Promise<WorkflowSupervisorOperationResult>;
++
++function appendAudit(
++  audit: WorkflowSupervisorAuditEntry[],
++  entry: Omit<WorkflowSupervisorAuditEntry, "schema" | "sequence">,
++): void {
++  audit.push({
++    schema: WORKFLOW_SUPERVISOR_AUDIT_SCHEMA,
++    sequence: audit.length + 1,
++    ...entry,
++  });
++}
++
++function stopReason(decision: TaskRouteDecision): string {
++  const step = decision.workflowStep;
++  if (step.kind === "approval") {
++    return "workflow supervisor cannot synthesize plan, provider, or side-effect approval";
++  }
++  if (step.kind === "agent_episode") {
++    return "workflow supervisor returns control for the semantic agent episode";
++  }
++  if (step.kind === "human_input") {
++    return "workflow supervisor requires the requested human input";
++  }
++  if (step.kind === "wait") {
++    return "workflow supervisor waits for the observed condition instead of polling a mutation";
++  }
++  if (step.kind === "terminal") return "workflow supervisor reached a terminal route state";
++  if (step.execution.actionKind !== "local_command") {
++    return "workflow supervisor may execute only local typed operations";
++  }
++  if (!decision.executionPacket.safeToMutate) {
++    return "workflow supervisor refuses an operation outside the current mutation authority";
++  }
++  if (step.operation.preconditionFingerprint.digest !== step.preconditionFingerprint.digest) {
++    return "workflow supervisor rejected an operation with a stale precondition fingerprint";
++  }
++  if (!(step.operation.id in WORKFLOW_OPERATION_REGISTRY)) {
++    return "workflow supervisor rejected an unregistered operation";
++  }
++  const registered = WORKFLOW_OPERATION_REGISTRY[step.operation.id];
++  if (registered.type !== step.operation.type) {
++    return "workflow supervisor rejected an operation whose type does not match its registry entry";
++  }
++  if (step.operation.params.taskId !== decision.task.id) {
++    return "workflow supervisor rejected an operation for a different task";
++  }
++  const expectedPostconditionIds = registered.expectedPostconditions.map(
++    (postcondition) => postcondition.id,
++  );
++  const operationPostconditionIds = step.operation.expectedPostconditions.map(
++    (postcondition) => postcondition.id,
++  );
++  if (
++    expectedPostconditionIds.length !== operationPostconditionIds.length ||
++    expectedPostconditionIds.some((id, index) => id !== operationPostconditionIds[index])
++  ) {
++    return "workflow supervisor rejected an operation whose postconditions do not match its registry entry";
++  }
++  const expectedArgv = projectWorkflowOperationArgv(step.operation);
++  if (
++    decision.executionPacket.exactArgv === null ||
++    expectedArgv.length !== decision.executionPacket.exactArgv.length ||
++    expectedArgv.some((value, index) => value !== decision.executionPacket.exactArgv?.[index])
++  ) {
++    return "workflow supervisor rejected a route whose rendered argv does not match its typed operation";
++  }
++  if (!step.operation.idempotencyKey.trim()) {
++    return "workflow supervisor rejected an operation without an idempotency key";
++  }
++  return "workflow supervisor rejected the current operation";
++}
++
++function requiredPostconditionIds(operation: WorkflowOperation): string[] {
++  return operation.expectedPostconditions
++    .filter((postcondition) => postcondition.id !== "route_state_recomputed")
++    .map((postcondition) => postcondition.id);
++}
++
++function missingPostconditions(
++  operation: WorkflowOperation,
++  observed: readonly string[],
++): string[] {
++  const observedSet = new Set(observed);
++  return requiredPostconditionIds(operation).filter((id) => !observedSet.has(id));
++}
++
++async function refreshAfterOperation(opts: {
++  decision: TaskRouteDecision;
++  operation: WorkflowOperation;
++  audit: WorkflowSupervisorAuditEntry[];
++  result: WorkflowSupervisorOperationResult;
++  stopReason: string | null;
++  refresh: () => Promise<TaskRouteDecision>;
++}): Promise<WorkflowSupervisorExecution> {
++  try {
++    const refreshed = await opts.refresh();
++    appendAudit(opts.audit, {
++      event: "route_refreshed",
++      task_id: refreshed.task.id,
++      step_id: refreshed.workflowStep.id,
++      state_fingerprint: refreshed.workflowStep.preconditionFingerprint.digest,
++      operation_id: opts.operation.id,
++      idempotency_key: opts.operation.idempotencyKey,
++      detail: refreshed.workflowStep.summary,
++    });
++    return {
++      decision: opts.decision,
++      operation: opts.operation,
++      executable: true,
++      stop_reason: opts.stopReason,
++      audit: opts.audit,
++      result: opts.result,
++      refreshed_decision: refreshed,
++    };
++  } catch (error) {
++    const detail = error instanceof Error ? error.message : String(error);
++    appendAudit(opts.audit, {
++      event: "refresh_failed",
++      task_id: opts.decision.task.id,
++      step_id: opts.decision.workflowStep.id,
++      state_fingerprint: opts.decision.workflowStep.preconditionFingerprint.digest,
++      operation_id: opts.operation.id,
++      idempotency_key: opts.operation.idempotencyKey,
++      detail,
++    });
++    return {
++      decision: opts.decision,
++      operation: opts.operation,
++      executable: true,
++      stop_reason: opts.stopReason
++        ? `${opts.stopReason}; workflow supervisor could not refresh route state`
++        : "workflow supervisor could not refresh route state after the operation",
++      audit: opts.audit,
++      result: opts.result,
++      refreshed_decision: null,
++    };
++  }
++}
++
++/**
++ * Execute at most one registry-backed operation, then force a fresh route read.
++ * Semantic episodes, approvals, waits, and terminal states are explicit stops;
++ * callers cannot smuggle shell text into this boundary.
++ */
++export async function superviseWorkflowStep(opts: {
++  decision: TaskRouteDecision;
++  /** Inspect shares the same classification and audit surface without executing. */
++  mode?: "inspect" | "execute";
++  execute?: WorkflowSupervisorExecutor;
++  refresh?: () => Promise<TaskRouteDecision>;
++  completed_idempotency_keys?: ReadonlySet<string>;
++}): Promise<WorkflowSupervisorExecution> {
++  const audit: WorkflowSupervisorAuditEntry[] = [];
++  const { decision } = opts;
++  const step = decision.workflowStep;
++  const operation = step.kind === "cli_operation" ? step.operation : null;
++  appendAudit(audit, {
++    event: "decision_observed",
++    task_id: decision.task.id,
++    step_id: step.id,
++    state_fingerprint: step.preconditionFingerprint.digest,
++    operation_id: operation?.id ?? null,
++    idempotency_key: operation?.idempotencyKey ?? null,
++    detail: step.summary,
++  });
++
++  if (!operation) {
++    const reason = stopReason(decision);
++    appendAudit(audit, {
++      event: "execution_rejected",
++      task_id: decision.task.id,
++      step_id: step.id,
++      state_fingerprint: step.preconditionFingerprint.digest,
++      operation_id: null,
++      idempotency_key: null,
++      detail: reason,
++    });
++    return {
++      decision,
++      operation: null,
++      executable: false,
++      stop_reason: reason,
++      audit,
++      result: null,
++      refreshed_decision: null,
++    };
++  }
++
++  const reason = stopReason(decision);
++  if (reason !== "workflow supervisor rejected the current operation") {
++    appendAudit(audit, {
++      event: "execution_rejected",
++      task_id: decision.task.id,
++      step_id: step.id,
++      state_fingerprint: step.preconditionFingerprint.digest,
++      operation_id: operation.id,
++      idempotency_key: operation.idempotencyKey,
++      detail: reason,
++    });
++    return {
++      decision,
++      operation,
++      executable: false,
++      stop_reason: reason,
++      audit,
++      result: null,
++      refreshed_decision: null,
++    };
++  }
++  if (opts.completed_idempotency_keys?.has(operation.idempotencyKey)) {
++    const duplicateReason = "workflow supervisor refused a repeated idempotency key";
++    appendAudit(audit, {
++      event: "execution_rejected",
++      task_id: decision.task.id,
++      step_id: step.id,
++      state_fingerprint: step.preconditionFingerprint.digest,
++      operation_id: operation.id,
++      idempotency_key: operation.idempotencyKey,
++      detail: duplicateReason,
++    });
++    return {
++      decision,
++      operation,
++      executable: false,
++      stop_reason: duplicateReason,
++      audit,
++      result: null,
++      refreshed_decision: null,
++    };
++  }
++
++  if (opts.mode === "inspect") {
++    return {
++      decision,
++      operation,
++      executable: true,
++      stop_reason: null,
++      audit,
++      result: null,
++      refreshed_decision: null,
++    };
++  }
++
++  if (!opts.execute || !opts.refresh) {
++    throw new Error("workflow supervisor execution requires executor and refresh callbacks");
++  }
++
++  let result: WorkflowSupervisorOperationResult;
++  try {
++    result = await opts.execute({ operation });
++  } catch (error) {
++    const detail = error instanceof Error ? error.message : String(error);
++    appendAudit(audit, {
++      event: "operation_failed",
++      task_id: decision.task.id,
++      step_id: step.id,
++      state_fingerprint: step.preconditionFingerprint.digest,
++      operation_id: operation.id,
++      idempotency_key: operation.idempotencyKey,
++      detail,
++    });
++    return await refreshAfterOperation({
++      decision,
++      operation,
++      audit,
++      result: {
++        status: "failed",
++        observed_postconditions: [],
++        detail,
++        exit_code: 1,
++      },
++      stopReason: "workflow supervisor executor crashed",
++      refresh: opts.refresh,
++    });
++  }
++
++  appendAudit(audit, {
++    event: result.status === "succeeded" ? "operation_executed" : "operation_failed",
++    task_id: decision.task.id,
++    step_id: step.id,
++    state_fingerprint: step.preconditionFingerprint.digest,
++    operation_id: operation.id,
++    idempotency_key: operation.idempotencyKey,
++    detail: result.detail,
++  });
++  if (result.status !== "succeeded") {
++    return await refreshAfterOperation({
++      decision,
++      operation,
++      audit,
++      result,
++      stopReason: "workflow supervisor executor reported a failed operation",
++      refresh: opts.refresh,
++    });
++  }
++
++  const missing = missingPostconditions(operation, result.observed_postconditions);
++  if (missing.length > 0) {
++    const detail = `missing observed postconditions: ${missing.join(", ")}`;
++    appendAudit(audit, {
++      event: "postcondition_rejected",
++      task_id: decision.task.id,
++      step_id: step.id,
++      state_fingerprint: step.preconditionFingerprint.digest,
++      operation_id: operation.id,
++      idempotency_key: operation.idempotencyKey,
++      detail,
++    });
++    return await refreshAfterOperation({
++      decision,
++      operation,
++      audit,
++      result,
++      stopReason: detail,
++      refresh: opts.refresh,
++    });
++  }
++  return await refreshAfterOperation({
++    decision,
++    operation,
++    audit,
++    result,
++    stopReason: null,
++    refresh: opts.refresh,
++  });
++}
+diff --git a/packages/agentplane/src/commands/task/next-action.command.ts b/packages/agentplane/src/commands/task/next-action.command.ts
+index 3122e0c42..b931425e8 100644
+--- a/packages/agentplane/src/commands/task/next-action.command.ts
++++ b/packages/agentplane/src/commands/task/next-action.command.ts
+@@ -12,6 +12,7 @@ import {
+ } from "../shared/route-guidance.js";
+ import type { RouteExecutionPacket } from "../shared/route-oracle.js";
+ import { renderCliArgv } from "../shared/workflow-operation-projection.js";
++import { superviseWorkflowStep } from "../shared/workflow-supervisor.js";
+ 
+ export type TaskNextActionParsed = {
+   taskId: string;
+@@ -164,6 +165,10 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
+       }),
+     );
+     const decision = preparedWorkOrder.route_decision;
++    const supervision = await superviseWorkflowStep({
++      decision,
++      mode: "inspect",
++    });
+     const operatorGuidance = deriveRouteOperatorGuidance(decision);
+     const output = createCliEmitter();
+     if (parsed.json) {
+@@ -171,6 +176,13 @@ export function makeRunTaskNextActionHandler(getCtx: (cmd: string) => Promise<Co
+         task: decision.task,
+         workflow_step: decision.workflowStep,
+         workflowStep: decision.workflowStep,
++        workflow_supervision: {
++          schema: "agentplane.workflow-supervisor.v1",
++          executable: supervision.executable,
++          stop_reason: supervision.stop_reason,
++          operation_id: supervision.operation?.id ?? null,
++          audit: supervision.audit,
++        },
+         route_oracle: decision.oracle,
+         conflict_rework: decision.conflictRework,
+         execution_packet: executionPacketJson(decision.executionPacket),
+diff --git a/scripts/baselines/trust-boundary-violations.json b/scripts/baselines/trust-boundary-violations.json
+index 7c4a84676..e8e9349c3 100644
+--- a/scripts/baselines/trust-boundary-violations.json
++++ b/scripts/baselines/trust-boundary-violations.json
+@@ -109,15 +109,6 @@
+     }
+   ],
+   "violations": [
+-    {
+-      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:subprocess:runAgentplaneStep:ast:module:FunctionDeclaration:55a1dc9cd665:1",
+-      "rule_id": "trust.no-rendered-command-orchestration",
+-      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
+-      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
+-      "path": "packages/agentplane/src/commands/hermes/hermes-runtime.ts",
+-      "locator": "subprocess:runAgentplaneStep:ast:module:FunctionDeclaration:55a1dc9cd665:1",
+-      "rationale": "supervisor orchestration re-enters AgentPlane through a subprocess"
+-    },
+     {
+       "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/harness/hooks-lifecycle.ts:shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
+       "rule_id": "trust.no-rendered-command-orchestration",

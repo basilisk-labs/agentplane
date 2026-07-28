@@ -15,8 +15,13 @@ RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop 
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified shared typed supervisor: registry-bound execution, route refresh after every attempt, and
+Hermes in-process runner adapter.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

@@ -6,14 +6,14 @@ Created: 2026-07-27T23:42:49.681Z
 
 - Task: `202607221850-DRWR0V`
 - Title: Extract the shared typed workflow supervisor from Hermes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro`
 - Canonical task record: `.agentplane/tasks/202607221850-DRWR0V/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified shared typed supervisor: registry-bound execution, route refresh after every attempt, and Hermes in-process runner adapter.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
