@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The evaluated delta is limited to lint-safe test refinements and closure metadata; it preserves assertions for distinct replacement linkage, cross-process single-provider admission, and pending-reservation recovery.",
+      "broken_invariant": "No reviewed recovery or concurrency invariant is broken by the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-195218735-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:137c4ceeec10ee79e43f0f4dc9b16fa3be5c28291fc23099e5293df4244e5ea4",
+          "section": "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-195056-static-lint-rework.json",
+          "sha256": "sha256:ddbd0f626753c79a46fcd3c4e48bacf9847e27f4198b7782986540755d98d7bf",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad",
+          "section": "checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "The declared post-integration live provider check `agentplane evaluator execute 202607221850-8HBF4J --replacement` remains intentionally unexecuted until integration."
+  ],
+  "hidden_assumptions": [
+    "The fake read-only provider and subprocess fixtures accurately model the production provider boundary for replacement admission and durable journal behavior.",
+    "The post-integration live check will confirm retention of the original failed operation and exactly one linked completed replacement episode."
+  ]
+}
