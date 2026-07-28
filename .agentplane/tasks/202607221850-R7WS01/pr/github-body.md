@@ -21,9 +21,8 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
 - Note:
 
 ```text
-PASS: typed runner lifecycle results stay in-process through task CLI and Hermes; human and JSON
-renderers preserve effect authority, observed evidence, claim generation, and operator-resolution
-provenance.
+PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero
+failure for incomplete active-claim cleanup.
 ```
 - Canonical workflow state lives in the task README.
 

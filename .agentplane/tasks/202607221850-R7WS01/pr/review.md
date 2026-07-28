@@ -13,7 +13,7 @@ Created: 2026-07-28T01:55:50.166Z
 ## Verification
 
 - State: ok
-- Note: PASS: typed runner lifecycle results stay in-process through task CLI and Hermes; human and JSON renderers preserve effect authority, observed evidence, claim generation, and operator-resolution provenance.
+- Note: PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
