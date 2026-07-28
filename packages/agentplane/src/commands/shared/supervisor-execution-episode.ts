@@ -105,6 +105,7 @@ export async function openSupervisorExecutionEpisode(opts: {
   task_revision: number | null;
   state_fingerprint_digest: string;
   budget?: SupervisorExecutionBudget;
+  recover_intent?: boolean;
 }): Promise<{
   journal: SupervisorExecutionEpisodeJournal;
   store: SupervisorEpisodeStore;
@@ -126,7 +127,7 @@ export async function openSupervisorExecutionEpisode(opts: {
     },
   });
   const journal =
-    migration.source === "current"
+    migration.source === "current" && opts.recover_intent !== false
       ? recoverSupervisorExecutionEpisodeJournal({
           journal: migration.journal,
           state_fingerprint_digest: opts.state_fingerprint_digest,
