@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T19:55:36.974Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "46008ad0693f0d94232392f4b384f2f5ecfde1f1",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "findings": [
+    "The evaluated delta is limited to closure metadata and a frozen verification record; it does not alter the replacement execution contract, and the record preserves coverage for cross-process single-provider admission and pending-replacement recovery."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-195430045-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-195056-static-lint-rework.json",
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-195430045-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The required live replacement episode remains intentionally deferred until integration because it depends on the shared supervisor journal; it is a post-integration gate rather than evidence required for this pre-merge delta."
+  ],
+  "residual_risks": []
+}
