@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "No blocking finding: Knip and dependency-cruiser both pass; the implementation keeps only externally consumed symbols public."
 commit:
-  hash: "fd963ada01fbd68926a2965d1471eb07b9618cce"
-  message: "🛡️ R7WS01 task: authorize static rework closure"
+  hash: "c931f4d10add0edfe1e50c237954907745250fce"
+  message: "🛡️ R7WS01 task: authorize dead-code closure"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -185,8 +188,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS (dead-code rework): lifecycle-only exports are private; the public typed result and supervisor operation contract remain unchanged."
+  -
+    type: "status"
+    at: "2026-07-28T03:13:34.250Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T03:12:27.990Z"
+doc_updated_at: "2026-07-28T03:13:34.250Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -925,8 +935,8 @@ extensions:
         stateScopeDigest: "sha256:22620e96454ec74356f11bb0aa980bf5737fd648801739a70050da4740cc498d"
     schemaVersion: 1
   implementation_commit:
-    hash: "8339ca9dc3ed7b3e59726ee240bc044fead4b89f"
-    message: "🐛 R7WS01 runner: remove stale cleanup type import"
+    hash: "9474725b5ca119945c60338c7821e83f9fe40698"
+    message: "♻️ R7WS01 runner: keep lifecycle internals private"
   workflow_route_baseline:
     start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"
     version: 1
