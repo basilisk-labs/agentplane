@@ -8,10 +8,10 @@
   "pr_number": 4666,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4666",
   "pre_merge_closure": {
-    "basis_commit": "f0632c5d77073c64faea1ef52b0bf2d32a4cdf26",
+    "basis_commit": "b44df62c2083081b873ed343e969ac631b2f3f91",
     "branch": "task/202607282157-FT85MC/freeze-full-evaluator-evidence",
     "pr_number": 4666,
-    "recorded_at": "2026-07-28T22:31:18.928Z",
+    "recorded_at": "2026-07-28T23:22:15.866Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
