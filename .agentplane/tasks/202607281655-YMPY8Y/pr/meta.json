@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
   "created_at": "2026-07-28T16:57:04.791Z",
-  "diffstat_sha256": "sha256:21dd6a0967afffe419852aef2a7aac5086800f3107c93499e687120dd5ebd7ea",
+  "diffstat_sha256": "sha256:aed94a67f31f9fb5f9348e758da0240cd0fbcc4eb53d54c74849925fe5d6d4b9",
   "last_verified_at": "2026-07-28T19:19:01.764Z",
   "last_verified_diffstat_sha256": "sha256:21dd6a0967afffe419852aef2a7aac5086800f3107c93499e687120dd5ebd7ea",
   "pr_number": 4664,
