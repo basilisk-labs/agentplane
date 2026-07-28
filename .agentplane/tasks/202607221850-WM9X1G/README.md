@@ -1,10 +1,11 @@
 ---
 id: "202607221850-WM9X1G"
 title: "Journal resumable context-ingestion phases"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -61,8 +62,8 @@ quality_review:
   findings:
     - "The implementation diff remains unchanged: deterministic source-set locking, durable receipts, and fail-closed unknown task creation preserve the CLI-versus-agent boundary."
 commit:
-  hash: "21cd8c94d46c6a130ce5bad53b787372b3ad61cd"
-  message: "feat: journal resumable context ingestion"
+  hash: "9834ddfea5edab7199c9986ca43d769a134e0676"
+  message: "chore: authorize context ingest pre-merge closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -70,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: resumable context-ingest journal with source-set locking, divergence diagnostics, and phase-boundary recovery coverage."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -91,8 +95,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused ingest/doctor/extraction/finalize tests: 24 passed; critical CLI suite: 11/11 chunks passed; task-state, lint, typecheck, routing, and diff checks passed."
+  -
+    type: "status"
+    at: "2026-07-28T08:17:27.958Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:14:19.585Z"
+doc_updated_at: "2026-07-28T08:17:27.959Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -207,6 +218,9 @@ extensions:
         stateFingerprintDigest: "sha256:5fdd26d6c22403ff3b13c0326a905d55eb1af75096dd50c9e1524aaa2e0e9c8b"
         stateScopeDigest: "sha256:442051d1152380a5881f62c17addd43a7068df84d1c5304a8a10473aefc8a092"
     schemaVersion: 1
+  implementation_commit:
+    hash: "659c271881e5c312121f3163f3700ac83c062ec9"
+    message: "chore: record context ingest quality review"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
