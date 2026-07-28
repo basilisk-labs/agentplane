@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The canonical package policy and repo-local policy both remove INC-20260727-01; the archival entry preserves source PR, current implementation evidence, and the explicit follow-up boundary.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Focused TaskEpisodeView regression coverage and the release incident gate pass; template synchronization now has deterministic agents:check coverage.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-012253025-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
