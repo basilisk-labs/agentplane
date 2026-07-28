@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607281655-YMPY8Y-45dab3f9b3e8da21b35de8eb",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-28T18:39:12.436Z",
+  "ended_at": "2026-07-28T18:40:27.297Z",
+  "stdout_bytes": 85007,
+  "stderr_bytes": 8249,
+  "provider_usage": {
+    "input_tokens": 208363,
+    "output_tokens": 3127,
+    "total_tokens": 211490
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:35422400ded1a7e6720636f00986ff52a7c5fa0116985ed634578c59d0e394c3"
+}

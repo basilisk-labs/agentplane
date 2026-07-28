@@ -1,0 +1,253 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+index d34985444..aabe5f895 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+@@ -1,3 +1,4 @@
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+  .../evaluator/evaluator-execute.command.test.ts    | 368 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  33 +-
+@@ -7,4 +8,6 @@
+  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
+  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+- 9 files changed, 803 insertions(+), 38 deletions(-)
++ .../baselines/v0.7-compatibility-candidate.json    |  35 +-
++ .../check-compatibility-contract-baseline.mjs      |  16 +
++ 12 files changed, 851 insertions(+), 48 deletions(-)
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index f4cecf329..5fc0f4a6b 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -32,6 +32,7 @@ replacement remains the explicit post-integration gate.
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+  .../evaluator/evaluator-execute.command.test.ts    | 368 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  33 +-
+@@ -41,7 +42,9 @@ replacement remains the explicit post-integration gate.
+  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
+  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+- 9 files changed, 803 insertions(+), 38 deletions(-)
++ .../baselines/v0.7-compatibility-candidate.json    |  35 +-
++ .../check-compatibility-contract-baseline.mjs      |  16 +
++ 12 files changed, 851 insertions(+), 48 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index f82ad3351..70219e1c4 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+-  "diffstat_sha256": "sha256:9e92930cf4b209d81147aae0bbcc9cbe30abc4f62e25d19567b204d2a1b62eb3",
++  "diffstat_sha256": "sha256:231b2ddd4440b0144e76666bb86b83abe84b81c178f2356ecc24fcb661ead284",
+   "last_verified_at": "2026-07-28T18:24:08.495Z",
+   "last_verified_diffstat_sha256": "sha256:9e92930cf4b209d81147aae0bbcc9cbe30abc4f62e25d19567b204d2a1b62eb3",
+   "pr_number": 4664,
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index 8138ef6e9..31c21bde3 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -29,6 +29,7 @@ Created: 2026-07-28T16:57:04.791Z
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
++ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+  .../evaluator/evaluator-execute.command.test.ts    | 368 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  33 +-
+@@ -38,7 +39,9 @@ Created: 2026-07-28T16:57:04.791Z
+  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
+  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
+  packages/core/src/schemas/index.ts                 |   1 +
+- 9 files changed, 803 insertions(+), 38 deletions(-)
++ .../baselines/v0.7-compatibility-candidate.json    |  35 +-
++ .../check-compatibility-contract-baseline.mjs      |  16 +
++ 12 files changed, 851 insertions(+), 48 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index f45780270..d1d81d62e 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -113,7 +113,7 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       const efficiency = await runNode([EFFICIENCY_CHECK]);
+ 
+       expect(compatibility).toMatchObject({ exitCode: 0, stderr: "" });
+-      expect(compatibility.stdout).toContain("253commands/174args/813options");
++      expect(compatibility.stdout).toContain("253commands/174args/814options");
+       expect(compatibility.stdout).toContain(
+         "candidate=approved:agentplane.compatibility.v0.7.cumulative",
+       );
+@@ -179,13 +179,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607242158-QV09NA",
+           "202607260007-DQM6AW",
+           "202607260532-9M7RNH",
++          "202607281655-YMPY8Y",
+         ],
+         candidate: {
+-          surface_sha256: "cae67e3c40031c35350d6bae212a060528d3256ac4d924d8354fba589674e32a",
++          surface_sha256: "c4523f6e00dbb8c1e08041826416e97a644d6930efea137a5e295cdde8ff86e5",
+           section_digests: {
+             agent_facing_context_contracts:
+               "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
+-            cli_topology: "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
++            cli_topology: "37cdc4d84b93eeb3b423c1c5e2e832d101379009854af01b2d9eb83a85bde833",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 3e61a4e54..50716869e 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -17,7 +17,8 @@
+     "202607221849-8YYZ9X",
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+-    "202607260532-9M7RNH"
++    "202607260532-9M7RNH",
++    "202607281655-YMPY8Y"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -26,9 +27,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "cae67e3c40031c35350d6bae212a060528d3256ac4d924d8354fba589674e32a",
++    "surface_sha256": "c4523f6e00dbb8c1e08041826416e97a644d6930efea137a5e295cdde8ff86e5",
+     "section_digests": {
+-      "cli_topology": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
++      "cli_topology": "37cdc4d84b93eeb3b423c1c5e2e832d101379009854af01b2d9eb83a85bde833",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -362,12 +363,13 @@
+         "202607221849-8YYZ9X",
+         "202607242158-QV09NA",
+         "202607260007-DQM6AW",
+-        "202607260532-9M7RNH"
++        "202607260532-9M7RNH",
++        "202607281655-YMPY8Y"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "9bf1757fcf2da86c511ce6a78d4f33d264712566e0226c4b60d87be08901e750",
++      "to_sha256": "37cdc4d84b93eeb3b423c1c5e2e832d101379009854af01b2d9eb83a85bde833",
+       "classification": "additive",
+-      "summary": "Adds a CLI-owned read-only EVALUATOR provider episode alongside frozen work-order preparation and typed-result application; no command or option is removed or mutated.",
++      "summary": "Adds a CLI-owned read-only EVALUATOR provider episode alongside frozen work-order preparation and typed-result application, then adds explicit --replacement to bind one terminal known provider failure to one auditable successor; no command or option is removed or mutated.",
+       "evidence": {
+         "command_count": {
+           "from": 243,
+@@ -379,7 +381,7 @@
+         },
+         "option_count": {
+           "from": 767,
+-          "to": 813
++          "to": 814
+         },
+         "added_commands": [
+           "evaluator apply",
+@@ -445,6 +447,12 @@
+                 "valueHint": "<id>",
+                 "default": "recovery-context"
+               },
++              {
++                "name": "replacement",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
+               {
+                 "name": "json",
+                 "kind": "boolean",
+@@ -806,6 +814,13 @@
+             "valueHint": null,
+             "default": false
+           },
++          {
++            "command": "evaluator execute",
++            "name": "replacement",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
+           {
+             "command": "evaluator prepare",
+             "name": "evaluator",
+@@ -1170,6 +1185,12 @@
+             "name": "json",
+             "source_task": "202607221849-8YYZ9X"
+           },
++          {
++            "kind": "option",
++            "command": "evaluator execute",
++            "name": "replacement",
++            "source_task": "202607281655-YMPY8Y"
++          },
+           {
+             "kind": "option",
+             "command": "evaluator prepare",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 303a70c12..b89020be6 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -322,6 +322,7 @@ function validateReviewedCandidate({
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
++    "202607281655-YMPY8Y",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -340,6 +341,7 @@ function validateReviewedCandidate({
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
++    "202607281655-YMPY8Y",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -1047,6 +1049,7 @@ function validateReviewedCandidate({
+       args: [{ name: "taskId", required: true, variadic: false, valueHint: "<task-id>" }],
+       options: [
+         { name: "evaluator", kind: "string", valueHint: "<id>", default: "recovery-context" },
++        { name: "replacement", kind: "boolean", valueHint: null, default: false },
+         { name: "json", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
+@@ -1195,6 +1198,13 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "evaluator execute",
++      name: "replacement",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "evaluator prepare",
+       name: "evaluator",
+@@ -1421,6 +1431,12 @@ function validateReviewedCandidate({
+       name: "json",
+       source_task: "202607221849-8YYZ9X",
+     },
++    {
++      kind: "option",
++      command: "evaluator execute",
++      name: "replacement",
++      source_task: "202607281655-YMPY8Y",
++    },
+     {
+       kind: "option",
+       command: "evaluator prepare",
