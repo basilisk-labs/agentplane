@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on: []
@@ -22,9 +22,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T23:18:49.252Z"
-  updated_by: "TESTER"
-  note: "Rework verified with lifecycle-safe evaluator evidence freshness."
+  updated_at: "2026-07-28T23:34:32.108Z"
+  updated_by: "CODER"
+  note: "Fixed hosted verify-unit regressions in durable verification fixtures."
   attempts: 0
 quality_review:
   state: "pass"
@@ -208,8 +208,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T23:34:32.108Z"
+    author: "CODER"
+    state: "ok"
+    note: "Fixed hosted verify-unit regressions in durable verification fixtures."
 doc_version: 3
-doc_updated_at: "2026-07-28T23:22:15.813Z"
+doc_updated_at: "2026-07-28T23:34:32.859Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -903,6 +909,56 @@ sections:
     Result: pass
     Evidence: no whitespace errors.
     Scope: current task worktree
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T23:34:32.108Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Fixed hosted verify-unit regressions in durable verification fixtures.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:22:15.813Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+    Details:
+
+    Command: bunx vitest run affected evaluator, verification, batch ownership, and mutation parity suites
+    Result: pass
+    Evidence: 81 tests passed across 8 affected files
+    Scope: FT85MC implementation rework
+
+    Command: bun run format:check
+    Result: pass
+    Evidence: Prettier reported all matched files formatted
+    Scope: FT85MC implementation rework
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed successfully
+    Scope: FT85MC implementation rework
+
+    Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+    Result: pass
+    Evidence: routing OK; doctor exited 0 with only 3 historical warnings
+    Scope: FT85MC implementation rework
 
     BlueprintSnapshotRef:
     - state: current
@@ -1644,6 +1700,56 @@ Command: git diff --check
 Result: pass
 Evidence: no whitespace errors.
 Scope: current task worktree
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T23:34:32.108Z — VERIFY — ok
+
+By: CODER
+
+Note: Fixed hosted verify-unit regressions in durable verification fixtures.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:22:15.813Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+Details:
+
+Command: bunx vitest run affected evaluator, verification, batch ownership, and mutation parity suites
+Result: pass
+Evidence: 81 tests passed across 8 affected files
+Scope: FT85MC implementation rework
+
+Command: bun run format:check
+Result: pass
+Evidence: Prettier reported all matched files formatted
+Scope: FT85MC implementation rework
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed successfully
+Scope: FT85MC implementation rework
+
+Command: node .agentplane/policy/check-routing.mjs && agentplane doctor
+Result: pass
+Evidence: routing OK; doctor exited 0 with only 3 historical warnings
+Scope: FT85MC implementation rework
 
 BlueprintSnapshotRef:
 - state: current

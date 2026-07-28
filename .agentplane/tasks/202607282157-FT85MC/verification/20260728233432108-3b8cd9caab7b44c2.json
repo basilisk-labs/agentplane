@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run affected evaluator, verification, batch ownership, and mutation parity suites\nResult: pass\nEvidence: 81 tests passed across 8 affected files\nScope: FT85MC implementation rework\n\nCommand: bun run format:check\nResult: pass\nEvidence: Prettier reported all matched files formatted\nScope: FT85MC implementation rework\n\nCommand: bun run typecheck\nResult: pass\nEvidence: TypeScript build completed successfully\nScope: FT85MC implementation rework\n\nCommand: node .agentplane/policy/check-routing.mjs && agentplane doctor\nResult: pass\nEvidence: routing OK; doctor exited 0 with only 3 historical warnings\nScope: FT85MC implementation rework",
+  "digest": "sha256:3b8cd9caab7b44c281f15dad7fb4775ae71d290e99262e85ce8b70a72cbd10ea",
+  "implementation_sha": "c297de641727330c2add5ec0bb27f116ba3bf78a",
+  "kind": "task_verification_record",
+  "note": "Fixed hosted verify-unit regressions in durable verification fixtures.",
+  "recorded_at": "2026-07-28T23:34:32.108Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
+  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
+  "task_id": "202607282157-FT85MC",
+  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by CODER",
+  "verifier": "CODER"
+}
