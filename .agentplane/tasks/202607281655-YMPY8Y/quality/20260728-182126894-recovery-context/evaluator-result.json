@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "The durable verification record is scoped to implementation commit 8d242418, but the frozen review evaluates a6f138a6 and includes additional production-code changes to evaluator evidence collection; no command-level record proves the required checks passed on the evaluated SHA.",
+      "broken_invariant": "Verification must cover the exact implementation under semantic review, including all changed production paths; stale verification cannot establish the code DoD or support a pass verdict.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3d6b18ae931159462dd302eb29c081e826ed8664a6b56e70a6f6c41055ae337d"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:533a65cf0f2749234b4c1772d945c584ae835905557ca1ea66b323e6b89bacc8"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182126894-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b58cf218efd5315fc98a0cfca099f2cc25bbcaca8086d518370fe4075d03a111"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Rerun and durably record the focused supervisor/evaluator test command, typecheck, changed-format check, and routing validation against evaluated SHA a6f138a66591a729333a69c3e2af718b9a339e73.",
+    "After integration, execute and record the declared real replacement episode for task 202607221850-8HBF4J, confirming the original operation_failed record remains intact and exactly one linked replacement completes."
+  ],
+  "hidden_assumptions": [
+    "The checks recorded for 8d242418bcd6fce80fa6ff6729fa996bc389d2b4 are assumed to remain valid after the later evaluator-review-usecase and test changes.",
+    "The post-integration environment and persisted journal for 202607221850-8HBF4J are assumed to exercise the same recovery behavior proven by fixtures."
+  ],
+  "recovery_context": "Verification evidence collection is now present, but the available record predates the evaluated SHA. Re-run the declared local checks on a6f138a66591a729333a69c3e2af718b9a339e73 and freeze a command-level record for that exact revision; retain the explicitly deferred real replacement episode as the post-integration release gate."
+}

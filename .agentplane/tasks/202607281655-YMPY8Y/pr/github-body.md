@@ -19,8 +19,8 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Note:
 
 ```text
-Rework verification passed with durable command-level records; the post-integration 8H replacement
-remains an explicit release gate.
+Rework verification passed on a6f138a66591 with exact command-level evidence; the real 8H
+replacement remains the explicit post-integration gate.
 ```
 - Canonical workflow state lives in the task README.
 

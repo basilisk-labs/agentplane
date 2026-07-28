@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+    "bun run typecheck",
+    "bun run format:changed",
+    "node .agentplane/policy/check-routing.mjs",
+    "agentplane evaluator execute 202607221850-8HBF4J --replacement"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T18:18:08.153Z",
+    "updated_by": "TESTER",
+    "note": "Rework verification passed with durable command-level records; the post-integration 8H replacement remains an explicit release gate."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+      "sha256": "sha256:533a65cf0f2749234b4c1772d945c584ae835905557ca1ea66b323e6b89bacc8"
+    }
+  ],
+  "runner_history": []
+}
