@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-R7WS01",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T02:55:18.124Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8cd703b66e4c14daae26b244f551e705068e178d",
+  "blueprint_digest": "97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328",
+  "findings": [
+    "No blocking finding: task-run execution contracts are isolated in a dedicated type module; Hermes checks concrete typed values rather than assigning matcher any values."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
