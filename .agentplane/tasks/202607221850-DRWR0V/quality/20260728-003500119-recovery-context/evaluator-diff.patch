@@ -1,0 +1,544 @@
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/README.md b/.agentplane/tasks/202607221850-DRWR0V/README.md
+index 96225d156..b5a1f50ac 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/README.md
++++ b/.agentplane/tasks/202607221850-DRWR0V/README.md
+@@ -2,10 +2,10 @@
+ id: "202607221850-DRWR0V"
+ title: "Extract the shared typed workflow supervisor from Hermes"
+ result_summary: "pre-merge closure"
+-status: "DONE"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 15
++revision: 18
+ origin:
+   system: "manual"
+ depends_on:
+@@ -34,9 +34,9 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-07-28T00:11:42.458Z"
++  updated_at: "2026-07-28T00:30:59.308Z"
+   updated_by: "TESTER"
+-  note: "Verified shared typed supervisor: registry-bound execution, route refresh after every attempt, and Hermes in-process runner adapter."
++  note: "Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings."
+   attempts: 0
+ quality_review:
+   state: "pass"
+@@ -63,8 +63,8 @@ quality_review:
+   findings:
+     - "The supervisor rejects unregistered, cross-task, stale, non-authorized, duplicate, approval, semantic, human, wait, and terminal routes before execution; attempts refresh route state exactly once after execution."
+ commit:
+-  hash: "425ee76ab656e27805ca20a5184531a8bbfeac1c"
+-  message: "✨ DRWR0V supervisor: share typed workflow execution"
++  hash: "5daf51d4c3b9ae78b5a3aed8fe3b416431117f0b"
++  message: "♻️ DRWR0V supervisor: satisfy static lint gates"
+ comments:
+   -
+     author: "CODER"
+@@ -75,6 +75,9 @@ comments:
+   -
+     author: "CODER"
+     body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Rework: static lint gate fixed and committed at 5daf51d4c3b9; lint report is clean."
+ events:
+   -
+     type: "status"
+@@ -103,8 +106,27 @@ events:
+     from: "DOING"
+     to: "DONE"
+     note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "verify"
++    at: "2026-07-28T00:18:03.113Z"
++    author: "TESTER"
++    state: "needs_rework"
++    note: "Hosted verify-static found 14 ESLint violations in the RF-09 implementation and tests; no behavioral failure is reported."
++  -
++    type: "status"
++    at: "2026-07-28T00:30:47.118Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Rework: static lint gate fixed and committed at 5daf51d4c3b9; lint report is clean."
++  -
++    type: "verify"
++    at: "2026-07-28T00:30:59.308Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T00:12:35.087Z"
++doc_updated_at: "2026-07-28T00:30:59.901Z"
+ doc_updated_by: "CODER"
+ description: "RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop over typed operations; make Hermes and CLI adapters use it without raw shell route execution."
+ sections:
+@@ -158,6 +180,66 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    ### 2026-07-28T00:18:03.113Z — VERIFY — needs_rework
++
++    By: TESTER
++
++    Note: Hosted verify-static found 14 ESLint violations in the RF-09 implementation and tests; no behavioral failure is reported.
++    Attempts: 1
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:12:35.087Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
++    - old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++    - current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
++
++    DecisionContextRef:
++    - operator_action: run_exact_argv
++    - can_execute_now: true
++    - safe_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
++    - diagnostic_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: true
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T00:30:59.308Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:30:47.118Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
++    - old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++    - current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
+@@ -167,6 +249,14 @@ sections:
+     - Observation: 20 targeted supervisor/Hermes tests, 11 critical CLI chunks, typecheck, lint, guards, and formatting passed.
+       Impact: The supervisor rejects raw, unregistered, cross-task, stale, duplicate, approval, semantic, and wait paths before a duplicate side effect.
+       Resolution: Recorded evidence in the task blueprint and removed the fixed Hermes subprocess ratchet entry.
++
++    - Observation: GitHub Core CI verify-static failed on lint rules in Hermes runtime and supervisor tests.
++      Impact: Hosted gate is red, so the task must return to implementation before integration.
++      Resolution: Apply the mechanical lint fixes, rerun local lint and targeted tests, then record fresh verification.
++
++    - Observation: 20 targeted tests, typecheck, guards, formatting, and the complete lint JSON report passed after the rework.
++      Impact: The previous hosted static failure is resolved locally without changing supervisor behavior.
++      Resolution: Republish the task branch and require fresh hosted checks before integration.
+ extensions:
+   agentplane.side_effect_authority:
+     audit:
+@@ -340,6 +430,66 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++### 2026-07-28T00:18:03.113Z — VERIFY — needs_rework
++
++By: TESTER
++
++Note: Hosted verify-static found 14 ESLint violations in the RF-09 implementation and tests; no behavioral failure is reported.
++Attempts: 1
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:12:35.087Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
++- old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++- current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
++
++DecisionContextRef:
++- operator_action: run_exact_argv
++- can_execute_now: true
++- safe_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
++- diagnostic_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: true
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T00:30:59.308Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:30:47.118Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
++- old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++- current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -353,3 +503,11 @@ DecisionContextRef:
+ - Observation: 20 targeted supervisor/Hermes tests, 11 critical CLI chunks, typecheck, lint, guards, and formatting passed.
+   Impact: The supervisor rejects raw, unregistered, cross-task, stale, duplicate, approval, semantic, and wait paths before a duplicate side effect.
+   Resolution: Recorded evidence in the task blueprint and removed the fixed Hermes subprocess ratchet entry.
++
++- Observation: GitHub Core CI verify-static failed on lint rules in Hermes runtime and supervisor tests.
++  Impact: Hosted gate is red, so the task must return to implementation before integration.
++  Resolution: Apply the mechanical lint fixes, rerun local lint and targeted tests, then record fresh verification.
++
++- Observation: 20 targeted tests, typecheck, guards, formatting, and the complete lint JSON report passed after the rework.
++  Impact: The previous hosted static failure is resolved locally without changing supervisor behavior.
++  Resolution: Republish the task branch and require fresh hosted checks before integration.
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/blueprint/lint-core.summary.json b/.agentplane/tasks/202607221850-DRWR0V/blueprint/lint-core.summary.json
+new file mode 100644
+index 000000000..601a7cdcb
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-DRWR0V/blueprint/lint-core.summary.json
+@@ -0,0 +1,10 @@
++{
++  "schema": "agentplane.lint-summary.v1",
++  "command": "bun run lint:core -- --format json --output-file <temporary report>",
++  "checked_files": 2028,
++  "error_count": 0,
++  "warning_count": 0,
++  "fatal_error_count": 0,
++  "recorded_at": "2026-07-28T00:29:00.000Z",
++  "raw_report_policy": "The full machine report was parsed locally but is not versioned because it exceeds the evaluator diff-freeze limit."
++}
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt b/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt
+index ec3f3f1d4..0855506a6 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/diffstat.txt
+@@ -1,8 +1,8 @@
+- .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
+- .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
++ .../src/commands/hermes/hermes-runtime.ts          | 165 ++++-----
++ .../src/commands/hermes/hermes.command.test.ts     | 299 +++--------------
+  .../src/commands/hermes/hermes.command.ts          |  61 +++-
+- .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
++ .../commands/shared/workflow-supervisor.test.ts    | 233 +++++++++++++
+  .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
+  .../src/commands/task/next-action.command.ts       |  12 +
+  scripts/baselines/trust-boundary-violations.json   |   9 -
+- 7 files changed, 760 insertions(+), 386 deletions(-)
++ 7 files changed, 763 insertions(+), 387 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md b/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md
+index 43845ddda..1ed9ad57c 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/github-body.md
+@@ -19,8 +19,8 @@ RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop
+ - Note:
+ 
+ ```text
+-Verified shared typed supervisor: registry-bound execution, route refresh after every attempt, and
+-Hermes in-process runner adapter.
++Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files
++with zero errors and warnings.
+ ```
+ - Canonical workflow state lives in the task README.
+ 
+@@ -32,14 +32,14 @@ Hermes in-process runner adapter.
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+- .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
+- .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
++ .../src/commands/hermes/hermes-runtime.ts          | 165 ++++-----
++ .../src/commands/hermes/hermes.command.test.ts     | 299 +++--------------
+  .../src/commands/hermes/hermes.command.ts          |  61 +++-
+- .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
++ .../commands/shared/workflow-supervisor.test.ts    | 233 +++++++++++++
+  .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
+  .../src/commands/task/next-action.command.ts       |  12 +
+  scripts/baselines/trust-boundary-violations.json   |   9 -
+- 7 files changed, 760 insertions(+), 386 deletions(-)
++ 7 files changed, 763 insertions(+), 387 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/github-title.txt b/.agentplane/tasks/202607221850-DRWR0V/pr/github-title.txt
+index ea03498db..bd72166e4 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/github-title.txt
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/github-title.txt
+@@ -1 +1 @@
+-✅ DRWR0V task: Extract the shared typed workflow supervisor from Hermes [202607221850-DRWR0V]
++🚧 DRWR0V task: Extract the shared typed workflow supervisor from Hermes [202607221850-DRWR0V]
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json b/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json
+index 5f155715d..c5f3eb10a 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/meta.json
+@@ -2,18 +2,11 @@
+   "base": "main",
+   "branch": "task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro",
+   "created_at": "2026-07-27T23:42:49.681Z",
+-  "diffstat_sha256": "sha256:debf54b97a0b13579da629617eed0895ac652327ce36883d6e31f75be2608dcc",
+-  "last_verified_at": "2026-07-28T00:11:42.458Z",
+-  "last_verified_diffstat_sha256": "sha256:debf54b97a0b13579da629617eed0895ac652327ce36883d6e31f75be2608dcc",
++  "diffstat_sha256": "sha256:44754fc3b363f0e38dafbc8383be602326a6a470991d79e69d3398d00f620efe",
++  "last_verified_at": "2026-07-28T00:30:59.308Z",
++  "last_verified_diffstat_sha256": "sha256:44754fc3b363f0e38dafbc8383be602326a6a470991d79e69d3398d00f620efe",
+   "pr_number": 4648,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4648",
+-  "pre_merge_closure": {
+-    "basis_commit": "425ee76ab656e27805ca20a5184531a8bbfeac1c",
+-    "branch": "task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro",
+-    "pr_number": 4648,
+-    "recorded_at": "2026-07-28T00:12:35.142Z",
+-    "state": "closed_before_merge"
+-  },
+   "schema_version": 1,
+   "status": "OPEN",
+   "task_id": "202607221850-DRWR0V",
+diff --git a/.agentplane/tasks/202607221850-DRWR0V/pr/review.md b/.agentplane/tasks/202607221850-DRWR0V/pr/review.md
+index e909f01e8..0912559e8 100644
+--- a/.agentplane/tasks/202607221850-DRWR0V/pr/review.md
++++ b/.agentplane/tasks/202607221850-DRWR0V/pr/review.md
+@@ -6,14 +6,14 @@ Created: 2026-07-27T23:42:49.681Z
+ 
+ - Task: `202607221850-DRWR0V`
+ - Title: Extract the shared typed workflow supervisor from Hermes
+-- Status: DONE
++- Status: DOING
+ - Branch: `task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro`
+ - Canonical task record: `.agentplane/tasks/202607221850-DRWR0V/README.md`
+ 
+ ## Verification
+ 
+ - State: ok
+-- Note: Verified shared typed supervisor: registry-bound execution, route refresh after every attempt, and Hermes in-process runner adapter.
++- Note: Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+@@ -29,14 +29,14 @@ Created: 2026-07-27T23:42:49.681Z
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+- .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
+- .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
++ .../src/commands/hermes/hermes-runtime.ts          | 165 ++++-----
++ .../src/commands/hermes/hermes.command.test.ts     | 299 +++--------------
+  .../src/commands/hermes/hermes.command.ts          |  61 +++-
+- .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
++ .../commands/shared/workflow-supervisor.test.ts    | 233 +++++++++++++
+  .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
+  .../src/commands/task/next-action.command.ts       |  12 +
+  scripts/baselines/trust-boundary-violations.json   |   9 -
+- 7 files changed, 760 insertions(+), 386 deletions(-)
++ 7 files changed, 763 insertions(+), 387 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/hermes/hermes-runtime.ts b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+index 1a660e61f..1bf76e7fd 100644
+--- a/packages/agentplane/src/commands/hermes/hermes-runtime.ts
++++ b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+@@ -201,7 +201,8 @@ export async function routePacket(opts: {
+   taskId: string;
+   includeRemote?: boolean;
+ }) {
+-  return (await prepareHermesRoute(opts)).packet;
++  const prepared = await prepareHermesRoute(opts);
++  return prepared.packet;
+ }
+ 
+ export function buildHermesLifecycleRecommendation(
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.test.ts b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+index 1d23604bb..6536f4b90 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.test.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+@@ -6,7 +6,7 @@ import { runCli } from "../../cli/run-cli.js";
+ import { routeNeedsRunnerProjection } from "./hermes-runtime.js";
+ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
+ import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
+-import { chmod, mkdir, writeFile } from "node:fs/promises";
++import { mkdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ async function createTask(root: string): Promise<string> {
+@@ -235,7 +235,7 @@ describe("hermes adapter commands", () => {
+           allowed: boolean;
+           result: { detail: string; exit_code: number | null };
+         };
+-        workflow_supervision: { audit: Array<{ event: string }> };
++        workflow_supervision: { audit: { event: string }[] };
+         refreshed_route: { task: { id: string } };
+       };
+       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
+@@ -267,7 +267,7 @@ describe("hermes adapter commands", () => {
+         workflow_supervision: {
+           executable: boolean;
+           operation_id: string | null;
+-          audit: Array<{ event: string; state_fingerprint: string }>;
++          audit: { event: string; state_fingerprint: string }[];
+         };
+       };
+       expect(payload.workflow_supervision.executable).toBe(true);
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
+index d88d51dbd..235410e40 100644
+--- a/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.test.ts
+@@ -84,13 +84,14 @@ describe("workflow supervisor", () => {
+     const refreshed = fixtureDecision();
+     const execution = await superviseWorkflowStep({
+       decision,
+-      execute: async () => ({
+-        status: "succeeded",
+-        observed_postconditions: ["runner_state_observed"],
+-        detail: "runner prepared",
+-        exit_code: 0,
+-      }),
+-      refresh: async () => refreshed,
++      execute: () =>
++        Promise.resolve({
++          status: "succeeded" as const,
++          observed_postconditions: ["runner_state_observed"],
++          detail: "runner prepared",
++          exit_code: 0,
++        }),
++      refresh: () => Promise.resolve(refreshed),
+     });
+ 
+     expect(execution.executable).toBe(true);
+@@ -113,9 +114,9 @@ describe("workflow supervisor", () => {
+     const execution = await superviseWorkflowStep({
+       decision: fixtureDecision({ exactArgv: ["sh", "-c", "agentplane task run anything"] }),
+       mode: "inspect",
+-      execute: async () => {
++      execute: () => {
+         invoked = true;
+-        throw new Error("must not execute");
++        return Promise.reject(new Error("must not execute"));
+       },
+     });
+ 
+@@ -178,15 +179,16 @@ describe("workflow supervisor", () => {
+     const execution = await superviseWorkflowStep({
+       decision,
+       completed_idempotency_keys: new Set([key]),
+-      execute: async () => ({
+-        status: "succeeded",
+-        observed_postconditions: ["runner_state_observed"],
+-        detail: "must not execute",
+-        exit_code: 0,
+-      }),
+-      refresh: async () => {
++      execute: () =>
++        Promise.resolve({
++          status: "succeeded" as const,
++          observed_postconditions: ["runner_state_observed"],
++          detail: "must not execute",
++          exit_code: 0,
++        }),
++      refresh: () => {
+         refreshed = true;
+-        return decision;
++        return Promise.resolve(decision);
+       },
+     });
+ 
+@@ -200,25 +202,24 @@ describe("workflow supervisor", () => {
+     let refreshed = false;
+     const crash = await superviseWorkflowStep({
+       decision,
+-      execute: async () => {
+-        throw new Error("runner crash");
+-      },
+-      refresh: async () => {
++      execute: () => Promise.reject(new Error("runner crash")),
++      refresh: () => {
+         refreshed = true;
+-        return decision;
++        return Promise.resolve(decision);
+       },
+     });
+     const missing = await superviseWorkflowStep({
+       decision,
+-      execute: async () => ({
+-        status: "succeeded",
+-        observed_postconditions: [],
+-        detail: "runner result lacks durable observation",
+-        exit_code: 0,
+-      }),
+-      refresh: async () => {
++      execute: () =>
++        Promise.resolve({
++          status: "succeeded" as const,
++          observed_postconditions: [],
++          detail: "runner result lacks durable observation",
++          exit_code: 0,
++        }),
++      refresh: () => {
+         refreshed = true;
+-        return decision;
++        return Promise.resolve(decision);
+       },
+     });
+ 
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+index a8e1991c2..93da43f36 100644
+--- a/packages/agentplane/src/commands/shared/workflow-supervisor.ts
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+@@ -102,10 +102,10 @@ function stopReason(decision: TaskRouteDecision): string {
+     return "workflow supervisor rejected an operation whose postconditions do not match its registry entry";
+   }
+   const expectedArgv = projectWorkflowOperationArgv(step.operation);
++  const actualArgv = decision.executionPacket.exactArgv;
+   if (
+-    decision.executionPacket.exactArgv === null ||
+-    expectedArgv.length !== decision.executionPacket.exactArgv.length ||
+-    expectedArgv.some((value, index) => value !== decision.executionPacket.exactArgv?.[index])
++    expectedArgv.length !== actualArgv?.length ||
++    expectedArgv.some((value, index) => value !== actualArgv?.[index])
+   ) {
+     return "workflow supervisor rejected a route whose rendered argv does not match its typed operation";
+   }

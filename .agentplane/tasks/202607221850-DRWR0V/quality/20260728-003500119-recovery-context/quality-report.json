@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-DRWR0V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T00:35:00.243Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "2411e888b94442fbbfa3fb7df1655164c4914727",
+  "blueprint_digest": "718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102",
+  "findings": [
+    "Route decisions are validated before projection and execution, explicit semantic and approval stops remain terminal, and attempted operations always refresh route state before control can return."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
