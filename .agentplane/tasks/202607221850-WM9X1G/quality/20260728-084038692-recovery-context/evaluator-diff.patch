@@ -1,0 +1,55 @@
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/README.md b/.agentplane/tasks/202607221850-WM9X1G/README.md
+index 648219a42..a8d3e2bb5 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/README.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/README.md
+@@ -2,10 +2,10 @@
+ id: "202607221850-WM9X1G"
+ title: "Journal resumable context-ingestion phases"
+ result_summary: "pre-merge closure"
+-status: "DONE"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 25
++revision: 26
+ origin:
+   system: "manual"
+ depends_on:
+@@ -62,8 +62,8 @@ quality_review:
+   findings:
+     - "The P1 and P2 review fixes are already bound to commit 98b1aa740 and no subsequent source code change occurred."
+ commit:
+-  hash: "5ddb55bdca6b6f2140a68462af573b49354c618d"
+-  message: "chore: authorize context ingest rework closure"
++  hash: "e95335eaf093b1d360a6772649f4d0a4b823eacc"
++  message: "refactor: isolate ingest execution lease"
+ comments:
+   -
+     author: "ORCHESTRATOR"
+@@ -80,6 +80,9 @@ comments:
+   -
+     author: "CODER"
+     body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "CI hotspot remediation committed: execution lease extracted without behavior change; journal returns below the enforced module budget."
+ events:
+   -
+     type: "status"
+@@ -134,8 +137,15 @@ events:
+     from: "DOING"
+     to: "DONE"
+     note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "status"
++    at: "2026-07-28T08:40:09.624Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DOING"
++    note: "CI hotspot remediation committed: execution lease extracted without behavior change; journal returns below the enforced module budget."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T08:33:48.894Z"
++doc_updated_at: "2026-07-28T08:40:09.624Z"
+ doc_updated_by: "CODER"
+ description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
+ sections:
