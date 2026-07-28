@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -66,10 +66,17 @@ async function installFakeCodex(root: string): Promise<string> {
     "  const workOrder = JSON.parse(fs.readFileSync(workOrderMatch[1], 'utf8'));",
     "  const evidence = workOrder.evidence.find((entry) => entry.kind === 'actual_diff');",
     "  if (!evidence) process.exit(1);",
+    "  const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
+    "  if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
     "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict: 'pass', findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [] };",
-    "  process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
-    "  process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
-    "  process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 30, reasoning_output_tokens: 20 } }) + '\\n');",
+    "  const complete = () => {",
+    "    process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
+    "    process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
+    "    process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 30, reasoning_output_tokens: 20 } }) + '\\n');",
+    "  };",
+    "  const delayMs = Number(process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS ?? '0');",
+    "  if (Number.isFinite(delayMs) && delayMs > 0) setTimeout(complete, delayMs);",
+    "  else complete();",
     "});",
     "",
   ].join("\n");
@@ -451,5 +458,65 @@ describe("evaluator execute supervisor episode", () => {
     const exhaustedReplacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
     expect(exhaustedReplacement.code).toBe(2);
     expect(exhaustedReplacement.stderr).toContain("requires a terminal operation_failed journal");
+  });
+
+  it("atomically consumes one replacement authorization before any second provider start", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE06";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    await replaceCodexWithFailure(fakeBin);
+    const failed = await runWithFakeCodex(root, taskId, fakeBin);
+    expect(failed.code).toBe(8);
+
+    await installFakeCodex(root);
+    const invocationLog = path.join(path.dirname(root), `${taskId}-provider-invocations.log`);
+    const previousPath = process.env.PATH;
+    const previousInvocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;
+    const previousDelay = process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS;
+    process.env.PATH = `${fakeBin}${path.delimiter}${previousPath ?? ""}`;
+    process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS = invocationLog;
+    process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS = "100";
+    const io = captureStdIO();
+    let codes: number[] = [];
+    try {
+      codes = await Promise.all(
+        [1, 2].map(() =>
+          runCli(["evaluator", "execute", taskId, "--replacement", "--json", "--root", root]),
+        ),
+      );
+    } finally {
+      io.restore();
+      if (previousPath === undefined) delete process.env.PATH;
+      else process.env.PATH = previousPath;
+      if (previousInvocationLog === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;
+      else process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS = previousInvocationLog;
+      if (previousDelay === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS;
+      else process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS = previousDelay;
+    }
+
+    expect(codes.toSorted(), io.stderr).toEqual([0, 2]);
+    expect((await readFile(invocationLog, "utf8")).trim().split("\n")).toEqual([
+      "provider-started",
+    ]);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    expect(
+      validateSupervisorExecutionEpisodeJournal(
+        await createSupervisorEpisodeStore(journalPath).read(),
+      ),
+    ).toMatchObject({
+      status: "running",
+      cursor: { phase: "ready", operation_key: null },
+      usage: { episodes: 2, agent_runs: 2 },
+      operations: [
+        { status: "failed" },
+        { status: "completed", replacement_of_operation_key: expect.any(String) },
+      ],
+    });
   });
 });

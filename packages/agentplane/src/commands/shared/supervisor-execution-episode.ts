@@ -1,4 +1,4 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -48,8 +48,63 @@ const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
 export type SupervisorEpisodeStore = {
   read: () => Promise<unknown>;
   write: (journal: SupervisorExecutionEpisodeJournal) => Promise<void>;
+  /**
+   * Replace a journal only if the persisted digest is still the digest the
+   * caller observed. This is the boundary between a read-only route decision
+   * and a provider invocation: a loser must not launch a second provider.
+   */
+  compareAndSwap: (
+    expected_digest: SupervisorExecutionEpisodeJournal["digest"] | null,
+    journal: SupervisorExecutionEpisodeJournal,
+  ) => Promise<boolean>;
   path: string;
 };
+
+const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
+const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
+const JOURNAL_LOCK_WAIT_MS = 5_000;
+
+function persistedJournalDigest(
+  value: unknown,
+): SupervisorExecutionEpisodeJournal["digest"] | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const digest = (value as { digest?: unknown }).digest;
+  return typeof digest === "string" ? digest : null;
+}
+
+async function waitForJournalLock(lockPath: string): Promise<void> {
+  const deadline = Date.now() + JOURNAL_LOCK_WAIT_MS;
+  while (true) {
+    try {
+      await mkdir(lockPath, { mode: 0o700 });
+      return;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+      const lockAge = await stat(lockPath)
+        .then((entry) => Date.now() - entry.mtimeMs)
+        .catch(() => 0);
+      if (lockAge > JOURNAL_LOCK_STALE_AFTER_MS) {
+        await rm(lockPath, { recursive: true, force: true });
+        continue;
+      }
+      if (Date.now() >= deadline) {
+        throw new Error(`Timed out waiting for supervisor episode journal lock: ${lockPath}`);
+      }
+      await new Promise<void>((resolve) => setTimeout(resolve, JOURNAL_LOCK_RETRY_DELAY_MS));
+    }
+  }
+}
+
+async function withJournalLock<T>(filePath: string, work: () => Promise<T>): Promise<T> {
+  const lockPath = `${filePath}.lock`;
+  await mkdir(path.dirname(filePath), { recursive: true, mode: 0o700 });
+  await waitForJournalLock(lockPath);
+  try {
+    return await work();
+  } finally {
+    await rm(lockPath, { recursive: true, force: true });
+  }
+}
 
 function safeTaskPathSegment(taskId: string): string {
   const normalized = taskId.trim();
@@ -78,19 +133,30 @@ export async function resolveSupervisorExecutionEpisodePath(opts: {
 }
 
 export function createSupervisorEpisodeStore(filePath: string): SupervisorEpisodeStore {
+  const read = async () => {
+    try {
+      return JSON.parse(await readFile(filePath, "utf8")) as unknown;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+      throw error;
+    }
+  };
+  const writeJournal = async (journal: SupervisorExecutionEpisodeJournal) => {
+    await atomicWriteFile(filePath, `${JSON.stringify(journal, null, 2)}\n`, "utf8");
+  };
   return {
     path: filePath,
-    read: async () => {
-      try {
-        return JSON.parse(await readFile(filePath, "utf8")) as unknown;
-      } catch (error) {
-        if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
-        throw error;
-      }
-    },
+    read,
     write: async (journal) => {
-      await mkdir(path.dirname(filePath), { recursive: true, mode: 0o700 });
-      await atomicWriteFile(filePath, `${JSON.stringify(journal, null, 2)}\n`, "utf8");
+      await withJournalLock(filePath, async () => writeJournal(journal));
+    },
+    compareAndSwap: async (expectedDigest, journal) => {
+      return withJournalLock(filePath, async () => {
+        const current = await read();
+        if (persistedJournalDigest(current) !== expectedDigest) return false;
+        await writeJournal(journal);
+        return true;
+      });
     },
   };
 }
@@ -117,24 +183,33 @@ export async function openSupervisorExecutionEpisode(opts: {
   });
   const store = createSupervisorEpisodeStore(journalPath);
   const budget = opts.budget ?? defaultSupervisorExecutionBudget();
-  const migration = migrateSupervisorExecutionEpisodeJournal({
-    input: await store.read(),
-    create: {
-      task_id: opts.task_id,
-      task_revision: opts.task_revision,
-      state_fingerprint_digest: opts.state_fingerprint_digest,
-      budget,
-    },
-  });
-  const journal =
-    migration.source === "current" && opts.recover_intent !== false
-      ? recoverSupervisorExecutionEpisodeJournal({
-          journal: migration.journal,
-          state_fingerprint_digest: opts.state_fingerprint_digest,
-        })
-      : migration.journal;
-  await store.write(journal);
-  return { journal, store, journal_path: store.path };
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const input = await store.read();
+    const migration = migrateSupervisorExecutionEpisodeJournal({
+      input,
+      create: {
+        task_id: opts.task_id,
+        task_revision: opts.task_revision,
+        state_fingerprint_digest: opts.state_fingerprint_digest,
+        budget,
+      },
+    });
+    const journal =
+      migration.source === "current" && opts.recover_intent !== false
+        ? recoverSupervisorExecutionEpisodeJournal({
+            journal: migration.journal,
+            state_fingerprint_digest: opts.state_fingerprint_digest,
+          })
+        : migration.journal;
+    const observedDigest = persistedJournalDigest(input);
+    if (journal.digest === observedDigest) return { journal, store, journal_path: store.path };
+    if (await store.compareAndSwap(observedDigest, journal)) {
+      return { journal, store, journal_path: store.path };
+    }
+  }
+  throw new Error(
+    "Supervisor episode journal changed while it was being opened; retry the command.",
+  );
 }
 
 function operationKind(decision: TaskRouteDecision): SupervisorEpisodeOperationKind {

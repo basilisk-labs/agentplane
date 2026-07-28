@@ -227,25 +227,53 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
   let journal = opened.journal;
   let replacementOfOperationKey: string | null = null;
   if (opts.replacement) {
-    const failedOperation = journal.operations.at(-1);
-    try {
-      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
-        journal,
-        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
-      });
-    } catch (error) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message:
-          "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
-        context: {
-          stop_reason: journal.stop?.reason ?? null,
-          cause: error instanceof Error ? error.message : String(error),
-        },
-      });
+    if (
+      journal.status === "running" &&
+      journal.cursor.phase === "ready" &&
+      journal.cursor.replacement_of_operation_key
+    ) {
+      replacementOfOperationKey = journal.cursor.replacement_of_operation_key;
+    } else {
+      try {
+        const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+          journal,
+          state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        });
+        if (!(await opened.store.compareAndSwap(journal.digest, reserved))) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message:
+              "Evaluator replacement authorization changed concurrently; no provider episode was started. Retry after inspecting the journal.",
+          });
+        }
+        journal = reserved;
+        replacementOfOperationKey = reserved.cursor.replacement_of_operation_key ?? null;
+      } catch (error) {
+        if (error instanceof CliError) throw error;
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message:
+            "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
+          context: {
+            stop_reason: journal.stop?.reason ?? null,
+            cause: error instanceof Error ? error.message : String(error),
+          },
+        });
+      }
     }
-    replacementOfOperationKey = failedOperation?.operation_key ?? null;
+  } else if (
+    journal.status === "running" &&
+    journal.cursor.phase === "ready" &&
+    journal.cursor.replacement_of_operation_key
+  ) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        "Evaluator replacement authorization is pending; resume it with --replacement or resolve its typed stop before another provider invocation.",
+    });
   }
   if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
     journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
@@ -341,8 +369,15 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
             : `Evaluator supervisor journal stopped: ${started.stop.reason}.`,
       });
     }
+    if (!(await opened.store.compareAndSwap(journal.digest, started.journal))) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "Evaluator supervisor journal changed before its provider intent was recorded; no provider episode was started.",
+      });
+    }
     journal = started.journal;
-    await opened.store.write(journal);
     let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
     try {
       episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
