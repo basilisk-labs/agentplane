@@ -6,7 +6,7 @@ Created: 2026-07-28T12:28:33.723Z
 
 - Task: `202607281227-GX5NVT`
 - Title: Handle evaluator stdin EPIPE without unhandled CI failures
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607281227-GX5NVT/handle-evaluator-stdin-epipe-without-unhandled-c`
 - Canonical task record: `.agentplane/tasks/202607281227-GX5NVT/README.md`
 
