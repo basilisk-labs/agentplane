@@ -31,7 +31,7 @@ import { isAuthorityOnlyTaskReadmeAdvance } from "../shared/quality-review-targe
 type CleanupBranchKind = "task" | "task-close";
 
 type GithubCommitRecord = {
-  parents?: Array<{ sha?: string | null }>;
+  parents?: { sha?: string | null }[];
 };
 
 export type CleanupCandidate = {
