@@ -77,6 +77,7 @@ const SUPERVISOR_EPISODE_CURSOR_ZOD_SCHEMA = z
     episode: NON_NEGATIVE_INTEGER,
     phase: z.enum(SUPERVISOR_EPISODE_CURSOR_PHASE_VALUES),
     operation_key: SHA256_DIGEST_SCHEMA.nullable(),
+    replacement_of_operation_key: SHA256_DIGEST_SCHEMA.optional(),
   })
   .strict();
 
@@ -263,7 +264,11 @@ function stoppedJournal(opts: {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
     ...journal,
-    cursor: { ...journal.cursor, phase: "stopped" },
+    cursor: {
+      episode: journal.cursor.episode,
+      phase: "stopped",
+      operation_key: journal.cursor.operation_key,
+    },
     status: "stopped",
     stop: {
       reason: opts.reason,
@@ -335,6 +340,22 @@ export function validateSupervisorExecutionEpisodeJournal(
   if (new Set(sequences).size !== sequences.length) {
     throw new Error("Supervisor episode journal operation sequences must be unique.");
   }
+  const pendingReplacement = parsed.cursor.replacement_of_operation_key;
+  if (pendingReplacement !== undefined) {
+    const last = parsed.operations.at(-1);
+    if (
+      parsed.status !== "running" ||
+      parsed.stop !== null ||
+      parsed.cursor.phase !== "ready" ||
+      parsed.cursor.operation_key !== null ||
+      last?.status !== "failed" ||
+      last?.operation_key !== pendingReplacement
+    ) {
+      throw new Error(
+        "Supervisor episode pending replacement must bind a running ready cursor to its failed latest operation.",
+      );
+    }
+  }
   return parsed;
 }
 
@@ -382,6 +403,7 @@ export function startSupervisorExecutionEpisode(opts: {
   const replacementBinding = replacementReference
     ? { replacement_of_operation_key: replacementReference }
     : {};
+  const pendingReplacement = journal.cursor.replacement_of_operation_key;
   if (journal.status === "stopped") {
     return {
       status: "stopped",
@@ -404,6 +426,22 @@ export function startSupervisorExecutionEpisode(opts: {
       status: "effect_in_doubt",
       journal: stoppedJournal({ journal, reason: "effect_in_doubt", at: now }),
     };
+  }
+  if (pendingReplacement !== undefined) {
+    const predecessor = journal.operations.at(-1);
+    if (
+      replacementReference !== pendingReplacement ||
+      predecessor?.role !== opts.role ||
+      predecessor?.kind !== opts.kind
+    ) {
+      throw new Error(
+        "Supervisor episode replacement requires the exact pending failed operation with the same role and kind.",
+      );
+    }
+  } else if (replacementReference) {
+    throw new Error(
+      "Supervisor episode replacement requires a pending terminal operation_failed authorization.",
+    );
   }
   const exhausted = exhaustedDimensions({
     budget: journal.budget,
@@ -677,7 +715,12 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
     ...journal,
     state_fingerprint_digest: opts.state_fingerprint_digest,
-    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    cursor: {
+      episode: journal.cursor.episode,
+      phase: "ready",
+      operation_key: null,
+      replacement_of_operation_key: last.operation_key,
+    },
     status: "running",
     stop: null,
     updated_at: now,

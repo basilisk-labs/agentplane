@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
   "created_at": "2026-07-28T16:57:04.791Z",
-  "diffstat_sha256": "sha256:f781747f7f2b3db82d6ba5b1021e7dc4635f93d4c3718cc18392a95e24983e25",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:688cb788cb03ee5ac8c8a1378dda459dc659a58a224638efd5b581ad1b83170b",
+  "last_verified_at": "2026-07-28T17:45:35.786Z",
+  "last_verified_diffstat_sha256": "sha256:f781747f7f2b3db82d6ba5b1021e7dc4635f93d4c3718cc18392a95e24983e25",
   "pr_number": 4664,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4664",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607281655-YMPY8Y",
   "updated_at": "2026-07-28T16:57:08.231Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

@@ -1,0 +1,12 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T17:45:35.786Z",
+    "updated_by": "TESTER",
+    "note": "Focused replacement coverage passed: 19 tests; typecheck, changed-format, policy routing, and diff check passed. The required live replacement evaluator episode for 202607221850-8HBF4J remains an explicit post-integration proof."
+  },
+  "runner_history": []
+}

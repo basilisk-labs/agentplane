@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Replacement authorization and lineage are not enforced atomically by the supervisor journal state machine.",
+      "broken_invariant": "An explicitly authorized replacement must be a distinct operation bound to the exact failed terminal operation, while implicit replay and unrelated starts remain impossible. The new preparation function clears the terminal stop without persisting a pending replacement authorization, and the generic start function accepts an arbitrary replacement_of_operation_key independently; callers can therefore reopen the journal and start an unbound operation or attach replacement lineage without the required terminal-failure transition.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:47c4e5ac9871ed501d79ded8b227fa7e1e0ce0794304c3ff112d8523e8468d18",
+          "line": 1030,
+          "lines": "1030-1124",
+          "section": "packages/core/src/runner/supervisor-execution-episode.ts"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "severity": "medium",
+      "summary": "Frozen verification evidence does not substantiate the declared checks or the required real replacement episode.",
+      "broken_invariant": "Pass requires recorded verification covering positive, negative, and concurrency-sensitive paths. The observed-checks artifact contains no declared checks or runner history, while the task verification note explicitly leaves the real replacement-provider episode outstanding.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:de27370a764f3016261ffa7020ada042209e14bbdf37f37ea86e938fd80be85e",
+          "line": 1,
+          "lines": "1-13",
+          "section": "observed checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:9b0a93cf8ade8920f7eb4da5cff4324bd16342827dfaa816076a026bbeb53caa",
+          "line": 104,
+          "lines": "104-109",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A core state-machine test proving that preparing a replacement cannot be followed by an unbound or differently bound operation.",
+    "A test proving replacement_of_operation_key cannot be supplied through the generic start path without a matching terminal operation_failed authorization.",
+    "Command-level tests for --replacement rejection after effect_in_doubt and after each exhausted budget dimension.",
+    "The declared real read-only --replacement provider episode for task 202607221850-8HBF4J, with evidence that the original failed operation remains unchanged and no provider effect is replayed."
+  ],
+  "hidden_assumptions": [
+    "Only executeEvaluatorSupervisorEpisode will call the exported replacement preparation and generic start functions in the required sequence.",
+    "Passing --replacement constitutes sufficient durable authorization even though the journal does not persist a pending authorized replacement before the next operation starts.",
+    "A replacement cannot be interleaved with another caller or operation between journal preparation and operation start.",
+    "The verification summary accurately represents successful commands despite the frozen observed-checks artifact containing no command records."
+  ],
+  "recovery_context": "Make replacement authorization and lineage one atomic journal transition, or persist a pending replacement constraint that start must consume only for the exact failed operation key. Reject arbitrary replacement metadata on generic starts, add negative and concurrency/interleaving coverage, and provide frozen command-level check evidence; retain the real provider episode as a required post-integration proof if it cannot validly run before integration."
+}

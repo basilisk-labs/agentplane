@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
+  recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
@@ -397,5 +398,58 @@ describe("evaluator execute supervisor episode", () => {
         },
       ],
     });
+
+    const interrupted = startSupervisorExecutionEpisode({
+      journal: createSupervisorExecutionEpisodeJournal({
+        task_id: taskId,
+        task_revision: replaced.task_revision,
+        state_fingerprint_digest: replaced.state_fingerprint_digest,
+        budget: replaced.budget,
+      }),
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { fixture: "interrupted" },
+      precondition_fingerprint_digest: replaced.state_fingerprint_digest,
+    });
+    if (interrupted.status !== "started") throw new Error("expected interrupted evaluator intent");
+    await store.write(
+      recoverSupervisorExecutionEpisodeJournal({
+        journal: interrupted.journal,
+        state_fingerprint_digest: replaced.state_fingerprint_digest,
+      }),
+    );
+    const effectInDoubtReplacement = await runWithFakeCodex(root, taskId, fakeBin, [
+      "--replacement",
+    ]);
+    expect(effectInDoubtReplacement.code).toBe(2);
+    expect(effectInDoubtReplacement.stderr).toContain(
+      "requires a terminal operation_failed journal",
+    );
+
+    const budgetLimited = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: replaced.task_revision,
+      state_fingerprint_digest: replaced.state_fingerprint_digest,
+      budget: { ...replaced.budget, max_episodes: 1, max_agent_runs: 1 },
+    });
+    const exhaustedIntent = startSupervisorExecutionEpisode({
+      journal: budgetLimited,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { fixture: "budget-limited" },
+      precondition_fingerprint_digest: replaced.state_fingerprint_digest,
+    });
+    if (exhaustedIntent.status !== "started") throw new Error("expected budget-limited intent");
+    await store.write(
+      completeSupervisorExecutionEpisode({
+        journal: exhaustedIntent.journal,
+        operation_key: exhaustedIntent.operation_key,
+        result: { fixture: "provider-failed" },
+        failed: true,
+      }),
+    );
+    const exhaustedReplacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
+    expect(exhaustedReplacement.code).toBe(2);
+    expect(exhaustedReplacement.stderr).toContain("requires a terminal operation_failed journal");
   });
 });
