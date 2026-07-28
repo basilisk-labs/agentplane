@@ -557,6 +557,76 @@ describe("evaluator execute supervisor episode", () => {
     expect(exhaustedReplacement.stderr).toContain("requires a terminal operation_failed journal");
   });
 
+  it("allows one replacement after external waiting when observed wall time remains", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE09";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const fingerprint = `sha256:${"a".repeat(64)}`;
+    const seeded = createSupervisorExecutionEpisodeJournal({
+      task_id: taskId,
+      task_revision: 1,
+      state_fingerprint_digest: fingerprint,
+      budget: {
+        max_episodes: 3,
+        max_agent_runs: 3,
+        max_input_tokens: 1000,
+        max_output_tokens: 1000,
+        max_total_tokens: 2000,
+        max_wall_time_ms: 10_000,
+        max_changed_files: 10,
+        max_diff_lines: null,
+        max_no_progress_episodes: 2,
+      },
+      now: "2026-07-27T00:00:00.000Z",
+    });
+    const intent = startSupervisorExecutionEpisode({
+      journal: seeded,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { fixture: "external-wait" },
+      precondition_fingerprint_digest: fingerprint,
+      now: "2026-07-27T00:00:00.000Z",
+    });
+    if (intent.status !== "started") throw new Error("expected failed evaluator fixture intent");
+    await store.write(
+      completeSupervisorExecutionEpisode({
+        journal: intent.journal,
+        operation_key: intent.operation_key,
+        result: { fixture: "provider-failed" },
+        usage: { wall_time_ms: 5 },
+        failed: true,
+        now: "2026-07-27T00:00:01.000Z",
+      }),
+    );
+
+    const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
+
+    expect(replacement.code, replacement.stderr).toBe(0);
+    const recorded = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(recorded).toMatchObject({
+      status: "running",
+      usage: { episodes: 2, agent_runs: 2 },
+      operations: [
+        { status: "failed" },
+        {
+          status: "completed",
+          replacement_of_operation_key: intent.operation_key,
+        },
+      ],
+    });
+    expect(recorded.usage.wall_time_ms).toBeTypeOf("number");
+    expect(recorded.usage.wall_time_ms).toBeGreaterThanOrEqual(5);
+    expect(recorded.usage.wall_time_ms).toBeLessThan(10_000);
+  });
+
   it("atomically consumes one replacement authorization before any second provider start", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

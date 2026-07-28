@@ -211,8 +211,6 @@ function exhaustedDimensions(opts: {
   budget: SupervisorExecutionBudget;
   usage: SupervisorExecutionUsage;
   next_kind?: SupervisorEpisodeOperationKind;
-  now: string;
-  started_at: string;
 }): string[] {
   const { budget, usage } = opts;
   const dimensions: string[] = [];
@@ -233,11 +231,8 @@ function exhaustedDimensions(opts: {
   if (budget.max_total_tokens !== null && usage.total_tokens >= budget.max_total_tokens) {
     dimensions.push("total_tokens");
   }
-  if (budget.max_wall_time_ms !== null) {
-    const elapsed = Date.parse(opts.now) - Date.parse(opts.started_at);
-    if (!Number.isFinite(elapsed) || elapsed >= budget.max_wall_time_ms) {
-      dimensions.push("wall_time_ms");
-    }
+  if (budget.max_wall_time_ms !== null && usage.wall_time_ms >= budget.max_wall_time_ms) {
+    dimensions.push("wall_time_ms");
   }
   if (budget.max_changed_files !== null && usage.changed_files >= budget.max_changed_files) {
     dimensions.push("changed_files");
@@ -447,8 +442,6 @@ export function startSupervisorExecutionEpisode(opts: {
     budget: journal.budget,
     usage: journal.usage,
     next_kind: opts.kind,
-    now,
-    started_at: journal.started_at,
   });
   if (exhausted.length > 0) {
     return {
@@ -587,8 +580,6 @@ export function completeSupervisorExecutionEpisode(opts: {
   const exhausted = exhaustedDimensions({
     budget: completed.budget,
     usage: completed.usage,
-    now,
-    started_at: completed.started_at,
   });
   return exhausted.length > 0
     ? stoppedJournal({
@@ -704,8 +695,6 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
     budget: journal.budget,
     usage: journal.usage,
     next_kind: last.kind,
-    now,
-    started_at: journal.started_at,
   });
   if (exhausted.length > 0) {
     throw new Error(

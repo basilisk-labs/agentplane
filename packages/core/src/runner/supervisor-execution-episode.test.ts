@@ -130,6 +130,45 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
   });
 
+  it("charges wall-time budget only from observed execution, not inactive journal age", () => {
+    const first = start({ journal: journal({ max_wall_time_ms: 10 }) });
+    if (first.status !== "started") throw new Error("expected first agent episode");
+
+    const firstCompleted = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { status: "ok" },
+      usage: { wall_time_ms: 9 },
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const resumedAfterExternalWait = advanceSupervisorExecutionEpisodeState({
+      journal: firstCompleted,
+      state_fingerprint_digest: FINGERPRINT,
+      route_observation: { step: "external-wait-complete" },
+      now: "2026-07-29T00:00:00.000Z",
+    });
+    const second = start({
+      journal: resumedAfterExternalWait,
+      now: "2026-07-29T00:00:01.000Z",
+    });
+    if (second.status !== "started")
+      throw new Error("expected second agent episode after external wait");
+
+    const exhausted = completeSupervisorExecutionEpisode({
+      journal: second.journal,
+      operation_key: second.operation_key,
+      result: { status: "ok" },
+      usage: { wall_time_ms: 1 },
+      now: "2026-07-29T00:00:02.000Z",
+    });
+
+    expect(exhausted).toMatchObject({
+      status: "stopped",
+      usage: { wall_time_ms: 10 },
+      stop: { reason: "budget_exhausted", exhausted_dimensions: ["wall_time_ms"] },
+    });
+  });
+
   it("fails closed after a persisted operation intent instead of replaying an agent", () => {
     const prepared = start({ journal: journal() });
     expect(prepared.status).toBe("started");
