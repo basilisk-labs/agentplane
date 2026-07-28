@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607281655-YMPY8Y-02cb67b4261978dd7af28fe1",
+  "task_id": "202607281655-YMPY8Y",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Implementation evidence addresses atomic reservation and single-provider start, but quality cannot pass until exact verification records are frozen and the declared real post-integration replacement episode proves end-to-end recovery without replaying or mutating the failed operation.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The required real replacement-provider episode remains unexecuted, so frozen evidence does not prove that an integrated replacement preserves the original failed operation and completes a distinct provider work order without replay.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:7032d255e40bc50b395c9353209e1ce55009c65dd2fde65d59d1e8e26badee6d",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "declared_checks and runner_history"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "Verification is recorded only as summary assertions: the frozen observed-check evidence has an empty runner history and provides no exact command results for the focused tests, typecheck, formatting, or routing validation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "verification and runner_history"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-result.json"
+}

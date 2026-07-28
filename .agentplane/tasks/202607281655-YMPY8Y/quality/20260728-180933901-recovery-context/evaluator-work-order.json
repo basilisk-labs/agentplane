@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607281655-YMPY8Y-02cb67b4261978dd7af28fe1",
+  "prepared_at": "2026-07-28T18:09:33.901Z",
+  "task": {
+    "id": "202607281655-YMPY8Y",
+    "revision": 14,
+    "objective": "Authorize replacement evaluator episodes after terminal failure\n\nAllow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review.",
+    "acceptance_criteria": [
+      "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+      "bun run typecheck",
+      "bun run format:changed",
+      "node .agentplane/policy/check-routing.mjs",
+      "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "- In scope: Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review.\n- Out of scope: unrelated refactors not required for \"Authorize replacement evaluator episodes after terminal failure\".",
+      "1. Inspect the terminal evaluator journal and existing provider boundary to define a distinct replacement operation, not a retry. 2. Add an explicit replacement-only execution path that preserves failed operation history and accumulated usage, starts a new bounded episode, and refuses effect_in_doubt or implicit replay. 3. Cover operation_failed replacement, terminal-effect rejection, default no-retry behavior, and command-level persistence. 4. Run focused supervisor/evaluator tests, typecheck, formatting, routing, and one real read-only replacement provider episode before publishing.",
+      "1. Run `bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000`.\n   Expected: default retry remains blocked; `--replacement` creates a distinct bounded evaluator episode linked to the failed operation; `effect_in_doubt` and exhausted budgets remain terminal.\n\n2. Run `bun run typecheck && bun run format:changed`.\n   Expected: type and formatting gates pass.\n\n3. Run `node .agentplane/policy/check-routing.mjs`.\n   Expected: policy routing validation passes.\n\n4. After integration, run one real `--replacement` evaluator episode for `202607221850-8HBF4J`.\n   Expected: the original `operation_failed` record is retained and a distinct provider work order completes without replaying it."
+    ]
+  },
+  "evaluated_sha": "870811915c4d7646aaf849b65cea46f059e9eeff",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+      "sha256": "sha256:7032d255e40bc50b395c9353209e1ce55009c65dd2fde65d59d1e8e26badee6d",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:6b3aea2f53d4d9cede678171da2a7713f802472e9c774c07a2ffe27b32784d4d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:7559591037cd03c92c5578931ccc99a63cffb4975d5d5126f550b273e2bd30f4",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

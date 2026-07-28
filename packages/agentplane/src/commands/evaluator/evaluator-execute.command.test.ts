@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
@@ -119,6 +120,49 @@ async function runWithFakeCodex(
     if (previous === undefined) delete process.env.PATH;
     else process.env.PATH = previous;
   }
+}
+
+async function runCliInSeparateProcess(opts: {
+  root: string;
+  taskId: string;
+  fakeBin: string;
+  executeArgs?: string[];
+  env?: Record<string, string>;
+}): Promise<{ code: number; stdout: string; stderr: string }> {
+  const cli = path.resolve(process.cwd(), "packages/agentplane/src/cli.ts");
+  const args = [
+    "--bun",
+    cli,
+    "evaluator",
+    "execute",
+    opts.taskId,
+    ...(opts.executeArgs ?? []),
+    "--json",
+    "--root",
+    opts.root,
+  ];
+  return await new Promise((resolve, reject) => {
+    execFile(
+      "bun",
+      args,
+      {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          PATH: `${opts.fakeBin}${path.delimiter}${process.env.PATH ?? ""}`,
+          ...opts.env,
+        },
+        maxBuffer: 1024 * 1024,
+      },
+      (error, stdout, stderr) => {
+        if (error && typeof error.code !== "number") {
+          reject(error);
+          return;
+        }
+        resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
+      },
+    );
+  });
 }
 
 describe("evaluator execute supervisor episode", () => {
@@ -472,7 +516,11 @@ describe("evaluator execute supervisor episode", () => {
     expect(failed.code).toBe(8);
 
     await installFakeCodex(root);
-    const invocationLog = path.join(path.dirname(root), `${taskId}-provider-invocations.log`);
+    const invocationLog = path.join(
+      path.dirname(root),
+      `${taskId}-${path.basename(root)}-provider-invocations.log`,
+    );
+    await writeFile(invocationLog, "", "utf8");
     const previousPath = process.env.PATH;
     const previousInvocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;
     const previousDelay = process.env.AGENTPLANE_FAKE_CODEX_DELAY_MS;
@@ -512,6 +560,107 @@ describe("evaluator execute supervisor episode", () => {
     ).toMatchObject({
       status: "running",
       cursor: { phase: "ready", operation_key: null },
+      usage: { episodes: 2, agent_runs: 2 },
+      operations: [
+        { status: "failed" },
+        { status: "completed", replacement_of_operation_key: expect.any(String) },
+      ],
+    });
+  });
+
+  it("resumes a durably reserved replacement before provider intent", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE07";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    await replaceCodexWithFailure(fakeBin);
+    expect((await runWithFakeCodex(root, taskId, fakeBin)).code).toBe(8);
+
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const failed = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: failed.state_fingerprint_digest,
+    });
+    expect(await store.compareAndSwap(failed.digest, reserved)).toBe(true);
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+      status: "running",
+      cursor: {
+        phase: "ready",
+        operation_key: null,
+        replacement_of_operation_key: failed.operations[0]?.operation_key,
+      },
+    });
+
+    await installFakeCodex(root);
+    const resumed = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
+    expect(resumed.code, resumed.stderr).toBe(0);
+    const completed = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(completed).toMatchObject({
+      status: "running",
+      cursor: { phase: "ready", operation_key: null },
+      operations: [
+        { status: "failed" },
+        {
+          status: "completed",
+          replacement_of_operation_key: failed.operations[0]?.operation_key,
+        },
+      ],
+    });
+  });
+
+  it("allows exactly one provider start across independent replacement CLI processes", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE08";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    await replaceCodexWithFailure(fakeBin);
+    expect((await runWithFakeCodex(root, taskId, fakeBin)).code).toBe(8);
+
+    await installFakeCodex(root);
+    const invocationLog = path.join(
+      path.dirname(root),
+      `${taskId}-${path.basename(root)}-process-provider-invocations.log`,
+    );
+    await writeFile(invocationLog, "", "utf8");
+    const childEnv = {
+      AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
+      AGENTPLANE_FAKE_CODEX_DELAY_MS: "100",
+    };
+    const executions = await Promise.all(
+      [1, 2].map(() =>
+        runCliInSeparateProcess({
+          root,
+          taskId,
+          fakeBin,
+          executeArgs: ["--replacement"],
+          env: childEnv,
+        }),
+      ),
+    );
+
+    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
+    expect((await readFile(invocationLog, "utf8")).trim().split("\n")).toEqual([
+      "provider-started",
+    ]);
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    expect(
+      validateSupervisorExecutionEpisodeJournal(
+        await createSupervisorEpisodeStore(journalPath).read(),
+      ),
+    ).toMatchObject({
+      status: "running",
       usage: { episodes: 2, agent_runs: 2 },
       operations: [
         { status: "failed" },
