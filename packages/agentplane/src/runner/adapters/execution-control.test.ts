@@ -2,16 +2,22 @@ import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { RunnerInvocation } from "../types.js";
+import * as stableFile from "../stable-file.js";
 
-import { claimRunnerPreSpawnDecision } from "./execution-control.js";
+import {
+  claimRunnerPreSpawnDecision,
+  publishRunnerCancellationIntent,
+  readRunnerCancellationIntent,
+} from "./execution-control.js";
 
 describe("runner immutable execution control", () => {
   let tempDir = "";
 
   afterEach(async () => {
+    vi.restoreAllMocks();
     if (tempDir) await rm(tempDir, { recursive: true, force: true });
     tempDir = "";
   });
@@ -85,5 +91,64 @@ describe("runner immutable execution control", () => {
     });
     expect(retry.won).toBe(false);
     expect(retry.record).toEqual(published.record);
+  });
+
+  it("retries a transient cancellation-intent publication collision", async () => {
+    tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-execution-control-"));
+    const runDir = path.join(tempDir, "run");
+    await mkdir(runDir);
+    const invocation = {
+      adapter_id: "custom",
+      run_id: "run-cancellation-intent-read-collision",
+      work_order_id: "run-cancellation-intent-read-collision",
+      repository_root: tempDir,
+      run_dir: runDir,
+      bundle_path: path.join(runDir, "bundle.json"),
+      state_path: path.join(runDir, "run-state.json"),
+      events_path: path.join(runDir, "events.jsonl"),
+      result_path: path.join(runDir, "result.json"),
+      receipt_path: path.join(runDir, "receipt.json"),
+      trace_path: path.join(runDir, "trace.jsonl"),
+      stderr_path: path.join(runDir, "stderr.log"),
+      trace_policy: {
+        mode: "raw",
+        max_tail_bytes: 1024,
+        capture_stderr: true,
+      },
+      timeout_policy: {
+        wall_clock_ms: 1000,
+        idle_ms: 1000,
+        terminate_grace_ms: 100,
+      },
+      argv: ["runner"],
+      env: {},
+      dry_run: false,
+    } as RunnerInvocation;
+    const published = await publishRunnerCancellationIntent({
+      invocation,
+      requested_at: "2026-07-28T09:52:00.000Z",
+      signal: "SIGTERM",
+    });
+    const originalRead = stableFile.readStableRegularTextNoFollow;
+    let cancellationIntentReadCount = 0;
+    vi.spyOn(stableFile, "readStableRegularTextNoFollow").mockImplementation(async (...args) => {
+      if (args[1] === "runner cancellation intent") {
+        cancellationIntentReadCount += 1;
+        if (cancellationIntentReadCount === 1) {
+          throw new Error(`runner cancellation intent changed before it could be read: ${args[0]}`);
+        }
+      }
+      return await originalRead(...args);
+    });
+    const observed = await readRunnerCancellationIntent(invocation);
+
+    expect(published.won).toBe(true);
+    expect(cancellationIntentReadCount).toBe(2);
+    expect(observed).toEqual({
+      schema_version: 1,
+      run_id: invocation.run_id,
+      requested_at: "2026-07-28T09:52:00.000Z",
+      signal: "SIGTERM",
+    });
   });
 });
