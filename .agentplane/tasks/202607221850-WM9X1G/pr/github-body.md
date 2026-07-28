@@ -19,9 +19,8 @@ RF-18: persist an idempotent assimilation run journal so task creation, manifest
 - Note:
 
 ```text
-Refreshed verification on current task head: task-state check and typecheck passed; focused
-resumable-ingestion suite passed (26 tests); ci:local:fast previously passed unchanged
-implementation head.
+Fresh lifecycle verification: no implementation paths changed after the prior focused suite and
+ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
 ```
 - Canonical workflow state lives in the task README.
 

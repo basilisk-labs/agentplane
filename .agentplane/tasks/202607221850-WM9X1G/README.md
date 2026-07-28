@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on:
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T08:51:30.504Z"
+  updated_at: "2026-07-28T08:57:37.751Z"
   updated_by: "TESTER"
-  note: "Refreshed verification on current task head: task-state check and typecheck passed; focused resumable-ingestion suite passed (26 tests); ci:local:fast previously passed unchanged implementation head."
+  note: "Fresh lifecycle verification: no implementation paths changed after the prior focused suite and ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing."
   attempts: 0
 quality_review:
   state: "pass"
@@ -170,8 +170,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T08:57:37.751Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Fresh lifecycle verification: no implementation paths changed after the prior focused suite and ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:52:35.395Z"
+doc_updated_at: "2026-07-28T08:57:38.995Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -307,6 +313,36 @@ sections:
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T08:57:37.751Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Fresh lifecycle verification: no implementation paths changed after the prior focused suite and ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T08:52:35.395Z, excerpt_hash=sha256:c3db14e69390a1d913a0542c2b51033ee0d992b3b468e37cb6c3cd9977425fba
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-WM9X1G-journal-resumable-context-ingestion-phases/.agentplane/tasks/202607221850-WM9X1G/blueprint/resolved-snapshot.json
+    - old_digest: d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e
+    - current_digest: d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-WM9X1G
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
@@ -820,6 +856,36 @@ DecisionContextRef:
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T08:57:37.751Z — VERIFY — ok
+
+By: TESTER
+
+Note: Fresh lifecycle verification: no implementation paths changed after the prior focused suite and ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T08:52:35.395Z, excerpt_hash=sha256:c3db14e69390a1d913a0542c2b51033ee0d992b3b468e37cb6c3cd9977425fba
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-WM9X1G-journal-resumable-context-ingestion-phases/.agentplane/tasks/202607221850-WM9X1G/blueprint/resolved-snapshot.json
+- old_digest: d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e
+- current_digest: d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-WM9X1G
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
