@@ -19,8 +19,9 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Note:
 
 ```text
-Rework verification passed on a6f138a66591 with exact command-level evidence; the real 8H
-replacement remains the explicit post-integration gate.
+Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused
+replacement, typecheck, format, and routing checks are frozen in
+20260728-184101-compatibility-ratchet.json.
 ```
 - Canonical workflow state lives in the task README.
 
