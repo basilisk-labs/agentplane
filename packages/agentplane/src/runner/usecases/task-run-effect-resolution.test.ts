@@ -3,13 +3,14 @@ import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { advanceRunnerEffectJournal, startRunnerEffectOperation } from "../effect-operation.js";
 import { evolveRunnerRunState, writeRunnerRunState } from "../artifacts.js";
 import { RunnerRunRepository } from "../run-repository.js";
+import * as stableFile from "../stable-file.js";
 import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
 import {
   configureCustomRunner,
@@ -214,6 +215,39 @@ describe("task runner effect resolution", () => {
     }
     expect(reason.context?.reason).toBe("runner_effect_resolution_intent_conflict");
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
+  });
+
+  it("retries an unstable active-claim observation while a concurrent resolution retires it", async () => {
+    const fixture = await uncertainEffectFixture();
+    const originalRead = stableFile.readStableRegularTextNoFollow;
+    let activeClaimReadCount = 0;
+    const readSpy = vi
+      .spyOn(stableFile, "readStableRegularTextNoFollow")
+      .mockImplementation(async (...args) => {
+        if (args[1] === "runner active claim") {
+          activeClaimReadCount += 1;
+          // The two resolve requests each validate the claim once, then the
+          // winner reads it to retire. The losing resolver observes it again
+          // while waiting for that retirement to settle.
+          if (activeClaimReadCount === 4) {
+            throw new Error(`runner active claim changed while it was being read: ${args[0]}`);
+          }
+        }
+        return await originalRead(...args);
+      });
+
+    try {
+      const input = resolutionInput(fixture);
+      const resolutions = await Promise.all([
+        resolveTaskRunnerEffect(input),
+        resolveTaskRunnerEffect(input),
+      ]);
+
+      expect(resolutions[0].resolution.digest).toBe(resolutions[1].resolution.digest);
+      expect(activeClaimReadCount).toBeGreaterThanOrEqual(5);
+    } finally {
+      readSpy.mockRestore();
+    }
   });
 
   it("rejects authority mismatch before creating an intent", async () => {
