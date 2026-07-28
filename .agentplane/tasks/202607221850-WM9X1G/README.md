@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -40,27 +40,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T08:17:06.323Z"
+  updated_at: "2026-07-28T08:32:43.920Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "659c271881e5c312121f3163f3700ac83c062ec9"
+  evaluated_sha: "98b1aa7400a67c7277fac1cbbcbb992574e19433"
   blueprint_digest: "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-WM9X1G/README.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-083243607-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The implementation diff remains unchanged: deterministic source-set locking, durable receipts, and fail-closed unknown task creation preserve the CLI-versus-agent boundary."
+    - "An exclusive execution lease rejects overlapping same-run retries; task backend errors remain unknown; semantic payload SHA-256 and effective SGR task_id make applies idempotent and traceable."
 commit:
   hash: "98b1aa7400a67c7277fac1cbbcbb992574e19433"
   message: "fix: harden resumable context ingest"

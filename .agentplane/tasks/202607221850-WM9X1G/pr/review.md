@@ -12,8 +12,8 @@ Created: 2026-07-28T08:13:34.859Z
 
 ## Verification
 
-- State: needs_rework
-- Note: GitHub PR #4654 review identified four reproducible RF-18 correctness defects: concurrent same-run resumption, unknown backend-write outcomes, changed semantic inputs, and payload task-id journal linkage.
+- State: ok
+- Note: Review rework verified: focused context suite 26 passed; critical CLI suite 11/11 chunks passed; lint, typecheck, task-state, routing, and diff checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,14 +30,14 @@ Created: 2026-07-28T08:13:34.859Z
 
 ```text
  .../src/commands/context/check.unit.test.ts        |  40 ++
- .../commands/context/extraction-apply.unit.test.ts |  36 +-
- .../agentplane/src/commands/context/extraction.ts  |  13 +
+ .../commands/context/extraction-apply.unit.test.ts |  65 ++-
+ .../agentplane/src/commands/context/extraction.ts  |  28 +-
  .../agentplane/src/commands/context/finalize.ts    |   5 +
  packages/agentplane/src/context/doctor.ts          |   5 +
- .../agentplane/src/context/ingest-run-journal.ts   | 526 +++++++++++++++++++++
- .../src/context/ingest-task-pack.test.ts           | 290 +++++++++++-
- packages/agentplane/src/context/ingest.ts          | 174 ++++++-
- 8 files changed, 1066 insertions(+), 23 deletions(-)
+ .../agentplane/src/context/ingest-run-journal.ts   | 645 +++++++++++++++++++++
+ .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++-
+ packages/agentplane/src/context/ingest.ts          | 165 +++++-
+ 8 files changed, 1313 insertions(+), 20 deletions(-)
 ```
 
 </details>
