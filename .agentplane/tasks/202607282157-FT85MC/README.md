@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on: []
@@ -52,8 +52,8 @@ quality_review:
   findings:
     - "The delta after the prior independent pass is a non-semantic lint-compliance extraction; it preserves the same directory contents, JSON filtering predicate, assertion, and durable verification-record path."
 commit:
-  hash: "c5a8086c52c98890e0201e9caf3fb06994c861e2"
-  message: "✅ FT85MC quality: validate durable verification fixture rework"
+  hash: "e5d08a2525a0beb581ca141d9168033dad65f99d"
+  message: "✅ FT85MC quality: review static-lint fixture correction"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -230,8 +233,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed the hosted static lint failure in the evaluator fixture."
+  -
+    type: "status"
+    at: "2026-07-28T23:49:36.164Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T23:47:30.465Z"
+doc_updated_at: "2026-07-28T23:49:36.165Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -1059,8 +1069,8 @@ sections:
       Resolution: Bound record discovery to persisted verification state and added the orphan-record regression fixture.
 extensions:
   implementation_commit:
-    hash: "c297de641727330c2add5ec0bb27f116ba3bf78a"
-    message: "🐛 FT85MC task: fix durable verification test fixtures"
+    hash: "bd91cba5b9925a5f098a01b936810dac4dd2a083"
+    message: "🐛 FT85MC task: satisfy evaluator fixture lint"
   workflow_route_baseline:
     start_head_sha: "7f44e71fa8dbe12987744e4442ba0110dc150090"
     version: 1
