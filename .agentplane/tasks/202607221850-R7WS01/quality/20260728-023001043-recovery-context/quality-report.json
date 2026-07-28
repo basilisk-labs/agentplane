@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-R7WS01",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T02:30:01.167Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "e7465b7377c6a8af392c605de7aa4315bf107100",
+  "blueprint_digest": "97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328",
+  "findings": [
+    "The rework replaces the raw provider exit code with taskRunnerLifecycleExitCode(lifecycle), and a regression test proves that active_claim_cleanup yields failed plus exit_code 1 while retaining the typed result."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
