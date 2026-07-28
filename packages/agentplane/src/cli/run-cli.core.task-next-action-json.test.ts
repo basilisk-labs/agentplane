@@ -9,10 +9,14 @@ import {
 } from "@agentplaneorg/core/schemas";
 import {
   captureStdIO,
+  configureGitUser,
   defaultConfig,
+  execFile,
   expect,
+  extractTaskSuffix,
   it,
   mkGitRepoRootWithBranch,
+  promisify,
   runCli,
   runCliSilent,
   writeConfig,
@@ -61,7 +65,136 @@ async function createBranchPrTask(root: string): Promise<string> {
   }
 }
 
+type AuthorityRequest = {
+  type: string;
+  operationId: string;
+  operationDigest: string;
+  stateFingerprintDigest: string;
+  stateScopeDigest: string;
+};
+
+type NextActionJson = {
+  workflow_step: {
+    kind: string;
+    id: string;
+    request?: AuthorityRequest;
+    operation?: { id: string };
+  };
+};
+
+async function readNextActionJson(root: string, taskId: string): Promise<NextActionJson> {
+  const io = captureStdIO();
+  try {
+    const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
+    if (code !== 0) process.stderr.write(io.stderr);
+    expect(code).toBe(0);
+    return JSON.parse(io.stdout) as NextActionJson;
+  } finally {
+    io.restore();
+  }
+}
+
 describe("task next-action JSON", () => {
+  it("commits a branch_pr authority record before returning the authorized PR operation", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await writeRoutePolicies(root);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    const taskId = await createBranchPrTask(root);
+    await runCliSilent([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Commit authority records before continuing the protected PR route.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
+    const branch = `task/${taskId}/authority-auto-commit`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await runCliSilent([
+      "task",
+      "start-ready",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: exercise the authority artifact commit boundary.",
+      "--root",
+      root,
+    ]);
+    await execFileAsync("git", ["add", "-A"], { cwd: root });
+    await execFileAsync(
+      "git",
+      [
+        "commit",
+        "-m",
+        `🧩 ${extractTaskSuffix(taskId)} task: establish branch packet for authority regression`,
+      ],
+      { cwd: root },
+    );
+    const { stdout: setupStatus } = await execFileAsync("git", ["status", "--porcelain"], {
+      cwd: root,
+    });
+    expect(setupStatus.trim()).toBe("");
+
+    const initial = await readNextActionJson(root, taskId);
+    expect(initial.workflow_step).toMatchObject({
+      kind: "approval",
+      id: "approval.pr.open",
+      request: { type: "side_effect", operationId: "pr.open" },
+    });
+    const request = initial.workflow_step.request;
+    if (!request) throw new Error("expected an authority request for pr.open");
+
+    await runCliSilent([
+      "task",
+      "authority",
+      "grant",
+      taskId,
+      "--operation",
+      request.operationId,
+      "--operation-digest",
+      request.operationDigest,
+      "--state-fingerprint",
+      request.stateFingerprintDigest,
+      "--state-scope-digest",
+      request.stateScopeDigest,
+      "--by",
+      "USER",
+      "--root",
+      root,
+    ]);
+
+    const { stdout: subject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+    });
+    expect(subject.trim()).toBe(
+      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
+    );
+    const { stdout: status } = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
+    expect(status.trim()).toBe("");
+
+    const authorized = await readNextActionJson(root, taskId);
+    expect(authorized.workflow_step).toMatchObject({
+      kind: "cli_operation",
+      id: "pr.open",
+      operation: { id: "pr.open" },
+    });
+  });
+
   it("prints snake_case fields while preserving camelCase aliases", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
