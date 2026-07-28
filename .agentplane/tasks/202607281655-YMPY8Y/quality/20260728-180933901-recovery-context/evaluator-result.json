@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The required real replacement-provider episode remains unexecuted, so frozen evidence does not prove that an integrated replacement preserves the original failed operation and completes a distinct provider work order without replay.",
+      "broken_invariant": "Pass requires all declared verification steps and coverage of the relevant recovery path; the task explicitly requires one real post-integration `--replacement` episode.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:7032d255e40bc50b395c9353209e1ce55009c65dd2fde65d59d1e8e26badee6d",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "declared_checks and runner_history"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "severity": "medium",
+      "summary": "Verification is recorded only as summary assertions: the frozen observed-check evidence has an empty runner history and provides no exact command results for the focused tests, typecheck, formatting, or routing validation.",
+      "broken_invariant": "The code DoD requires exact command, result, evidence, and scope records for every Verify Step; asserted aggregate outcomes are insufficient evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "verification and runner_history"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Run and retain evidence for the required real post-integration `agentplane evaluator execute 202607221850-8HBF4J --replacement` episode, including the unchanged original failure and distinct completed replacement operation.",
+    "Add a cross-process concurrency test that launches two independent CLI processes against the same failed journal and proves exactly one provider invocation starts.",
+    "Add a recovery test for process interruption after replacement authorization is persisted but before provider intent is recorded, proving a later explicit `--replacement` safely resumes the reserved episode."
+  ],
+  "hidden_assumptions": [
+    "The in-process concurrent-command test is assumed to represent independent OS-process contention on the filesystem lock.",
+    "A persisted pending replacement authorization is assumed to remain safely resumable after interruption, although that recovery path is not evidenced.",
+    "The live provider boundary is assumed to behave like the fake Codex fixture."
+  ],
+  "recovery_context": "Implementation evidence addresses atomic reservation and single-provider start, but quality cannot pass until exact verification records are frozen and the declared real post-integration replacement episode proves end-to-end recovery without replaying or mutating the failed operation."
+}

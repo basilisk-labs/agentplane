@@ -29,15 +29,15 @@ Created: 2026-07-28T16:57:04.791Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-execute-supervisor.ts      |  66 +++++++-
- .../evaluator/evaluator-execute.command.test.ts    | 171 ++++++++++++++++++++-
+ .../evaluator/evaluator-execute-supervisor.ts      |  66 ++++-
+ .../evaluator/evaluator-execute.command.test.ts    | 320 ++++++++++++++++++++-
  .../src/commands/evaluator/evaluator.command.ts    |   1 +
- .../src/commands/evaluator/evaluator.spec.ts       |   9 ++
- .../shared/supervisor-execution-episode.ts         | 133 ++++++++++++----
- .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++++++++
- .../src/runner/supervisor-execution-episode.ts     | 102 +++++++++++-
+ .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+ .../shared/supervisor-execution-episode.ts         | 133 +++++++--
+ .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 102 ++++++-
  packages/core/src/schemas/index.ts                 |   1 +
- 8 files changed, 574 insertions(+), 37 deletions(-)
+ 8 files changed, 723 insertions(+), 37 deletions(-)
 ```
 
 </details>
