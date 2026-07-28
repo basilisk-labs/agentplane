@@ -2,10 +2,10 @@
 id: "202607221850-DRWR0V"
 title: "Extract the shared typed workflow supervisor from Hermes"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -33,36 +33,38 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-28T00:43:25.009Z"
+  state: "ok"
+  updated_at: "2026-07-28T00:45:00.682Z"
   updated_by: "TESTER"
-  note: "Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no behavioral test failure is reported."
-  attempts: 1
+  note: "Rework verification passed: Knip baseline is clean after making the two audit implementation symbols module-private; targeted supervisor and Hermes tests, typecheck, guards, and formatting pass."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T00:35:00.243Z"
+  updated_at: "2026-07-28T00:45:14.195Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "2411e888b94442fbbfa3fb7df1655164c4914727"
+  evaluated_sha: "2673df3ac280f981867d1e96e6682c276d4ed1d0"
   blueprint_digest: "718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-DRWR0V/README.md"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-004514065-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Route decisions are validated before projection and execution, explicit semantic and approval stops remain terminal, and attempted operations always refresh route state before control can return."
-commit: null
+    - "The exact hosted Knip failure is covered locally without a baseline exception: module-private implementation symbols eliminate the two newly introduced unused-code entries while supervisor and Hermes behavior remains covered by 20 targeted tests."
+commit:
+  hash: "2673df3ac280f981867d1e96e6682c276d4ed1d0"
+  message: "♻️ DRWR0V supervisor: remove unused audit exports"
 comments:
   -
     author: "CODER"
@@ -76,6 +78,12 @@ comments:
   -
     author: "CODER"
     body: "Rework: static lint gate fixed and committed at 5daf51d4c3b9; lint report is clean."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: removed the two Knip-reported unused public supervisor symbols; Knip, targeted tests, typecheck, guards, and formatting pass."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -139,8 +147,28 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no behavioral test failure is reported."
+  -
+    type: "status"
+    at: "2026-07-28T00:44:48.497Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: removed the two Knip-reported unused public supervisor symbols; Knip, targeted tests, typecheck, guards, and formatting pass."
+  -
+    type: "verify"
+    at: "2026-07-28T00:45:00.682Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verification passed: Knip baseline is clean after making the two audit implementation symbols module-private; targeted supervisor and Hermes tests, typecheck, guards, and formatting pass."
+  -
+    type: "status"
+    at: "2026-07-28T00:45:37.971Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T00:43:25.983Z"
+doc_updated_at: "2026-07-28T00:45:37.971Z"
 doc_updated_by: "CODER"
 description: "RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop over typed operations; make Hermes and CLI adapters use it without raw shell route execution."
 sections:
@@ -284,6 +312,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T00:45:00.682Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verification passed: Knip baseline is clean after making the two audit implementation symbols module-private; targeted supervisor and Hermes tests, typecheck, guards, and formatting pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:44:48.497Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+    - old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -305,6 +363,10 @@ sections:
     - Observation: GitHub Core CI run 30317848130 reports new Knip entries for WORKFLOW_SUPERVISOR_AUDIT_SCHEMA and WorkflowSupervisorAuditEntry.
       Impact: The static gate remains red despite passing unit, critical CLI, Windows, coverage, workflow, and contract checks.
       Resolution: Remove the unnecessary public exports, rerun Knip/static verification and the targeted supervisor/Hermes tests, then publish a fresh PR head.
+
+    - Observation: bun run knip:check; 20 targeted tests; bun run typecheck; bun run guards:check; bun run format:changed all passed.
+      Impact: The previously failing hosted static condition has an exact local regression proof without changing behavior or baseline debt.
+      Resolution: Run a fresh evaluator review and publish a new PR head for hosted static, unit, critical CLI, and Windows confirmation.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -399,6 +461,19 @@ extensions:
         schemaVersion: 1
         sequence: 7
         stateFingerprintDigest: "sha256:f9a9baed58e33a1e3ab71dc1015c72eb4df2d6425469f9e8a359641a93531058"
+      -
+        actor: "USER"
+        at: "2026-07-28T00:45:25.471Z"
+        authorityDigest: "sha256:cbc06e40b5b566d45eb0a4d50ff40390e3488c33fb6503113d076f8b5d0f0087"
+        digest: "sha256:63be6e0f016d532a4ee2b45db2e85613c457c32622c85324e559a5b3fbf804d0"
+        operationDigest: "sha256:daab60af0159efce940ea0a86d8ba89b92faec9f55f3a49b046a76a53bf660aa"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:bb8c33a2f9353816de02b5e4eed458f981a1fc2cf94253a0a8d8e165b6611040"
+        schemaVersion: 1
+        sequence: 8
+        stateFingerprintDigest: "sha256:69422778af6c1f5c4deeb52797e35f368e8b482453bf3b6a8210e090c4addf5d"
     grants:
       -
         actor: "USER"
@@ -491,6 +566,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:f9a9baed58e33a1e3ab71dc1015c72eb4df2d6425469f9e8a359641a93531058"
         stateScopeDigest: "sha256:30eaa0e6709ac87a8bfef88eb8ab43e434f9508195f8189d7e5395a5261e359b"
+      -
+        actor: "USER"
+        digest: "sha256:cbc06e40b5b566d45eb0a4d50ff40390e3488c33fb6503113d076f8b5d0f0087"
+        expiresAt: "2026-07-28T01:00:25.471Z"
+        id: "authority-13ac31f9-07f2-4cc3-8476-34aebbfe2a75"
+        issuedAt: "2026-07-28T00:45:25.471Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:daab60af0159efce940ea0a86d8ba89b92faec9f55f3a49b046a76a53bf660aa"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:69422778af6c1f5c4deeb52797e35f368e8b482453bf3b6a8210e090c4addf5d"
+        stateScopeDigest: "sha256:6e6b2ef0d15159727c87144767232ab2b28f351beb690dc0cfc4857fc275bdc4"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "2d6582e7f017820668cbbbbe90c211e360e47394"
@@ -646,6 +734,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T00:45:00.682Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verification passed: Knip baseline is clean after making the two audit implementation symbols module-private; targeted supervisor and Hermes tests, typecheck, guards, and formatting pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:44:48.497Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+- old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -671,3 +789,7 @@ DecisionContextRef:
 - Observation: GitHub Core CI run 30317848130 reports new Knip entries for WORKFLOW_SUPERVISOR_AUDIT_SCHEMA and WorkflowSupervisorAuditEntry.
   Impact: The static gate remains red despite passing unit, critical CLI, Windows, coverage, workflow, and contract checks.
   Resolution: Remove the unnecessary public exports, rerun Knip/static verification and the targeted supervisor/Hermes tests, then publish a fresh PR head.
+
+- Observation: bun run knip:check; 20 targeted tests; bun run typecheck; bun run guards:check; bun run format:changed all passed.
+  Impact: The previously failing hosted static condition has an exact local regression proof without changing behavior or baseline debt.
+  Resolution: Run a fresh evaluator review and publish a new PR head for hosted static, unit, critical CLI, and Windows confirmation.

@@ -15,12 +15,12 @@ RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop 
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no
-behavioral test failure is reported.
+Rework verification passed: Knip baseline is clean after making the two audit implementation symbols
+module-private; targeted supervisor and Hermes tests, typecheck, guards, and formatting pass.
 ```
 - Canonical workflow state lives in the task README.
 
