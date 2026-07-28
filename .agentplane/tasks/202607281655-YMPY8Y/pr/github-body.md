@@ -29,19 +29,19 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 ```text
  docs/user/cli-reference.generated.mdx              |   1 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
- .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
- .../evaluator/evaluator-execute.command.test.ts    | 369 ++++++++++++++++++++-
+ .../evaluator/evaluator-execute-supervisor.ts      | 309 ++++++++++-------
+ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
  .../evaluator/evaluator-verification-records.ts    |  15 +
  .../src/commands/evaluator/evaluator.command.ts    |   1 +
  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
- .../shared/supervisor-execution-episode.ts         | 133 ++++++--
+ .../shared/supervisor-execution-episode.ts         | 188 +++++++++--
  .../runner/supervisor-execution-episode.test.ts    | 128 +++++++
  .../src/runner/supervisor-execution-episode.ts     | 102 +++++-
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
  .../check-compatibility-contract-baseline.mjs      |  16 +
- 14 files changed, 855 insertions(+), 48 deletions(-)
+ 14 files changed, 1041 insertions(+), 161 deletions(-)
 ```
 
 </details>
