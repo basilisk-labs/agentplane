@@ -1,0 +1,399 @@
+{
+  "artifact_root": ".agentplane/tasks/202607281655-YMPY8Y",
+  "created_at": "2026-07-28T18:18:11.543Z",
+  "files": [
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json",
+      "role": "blueprint_snapshot",
+      "sha256": "sha256:7559591037cd03c92c5578931ccc99a63cffb4975d5d5126f550b273e2bd30f4",
+      "size_bytes": 15558
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt",
+      "role": "pr_artifact",
+      "sha256": "sha256:ae5363f3f3626d2828bf08f904f800959d1702f99377a50f2788496de486c054",
+      "size_bytes": 579
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md",
+      "role": "pr_artifact",
+      "sha256": "sha256:faf529eaa3a75bf99ab25cb4e7f79449a9ef4e367b9fd6dd7dc18ea4bc8e4c42",
+      "size_bytes": 2098
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/pr/github-title.txt",
+      "role": "pr_artifact",
+      "sha256": "sha256:af03066a9b04f33932954e247a953d7d4f82adb21fa5d74d86b00ab66cc68efe",
+      "size_bytes": 104
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/pr/meta.json",
+      "role": "pr_artifact",
+      "sha256": "sha256:aab9635d3d7ff1e6a68e96b18c0ccb495d46d62ed826fb8f2699cce0b5239e0a",
+      "size_bytes": 663
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/pr/review.md",
+      "role": "pr_artifact",
+      "sha256": "sha256:6ea0db87f456395bff40371aa8b0e018016cc5ca723c7646eaa9e4824ffb187e",
+      "size_bytes": 1551
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-blueprint.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7559591037cd03c92c5578931ccc99a63cffb4975d5d5126f550b273e2bd30f4",
+      "size_bytes": 15558
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-diff.patch",
+      "role": "task_artifact",
+      "sha256": "sha256:47c4e5ac9871ed501d79ded8b227fa7e1e0ce0794304c3ff112d8523e8468d18",
+      "size_bytes": 42757
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-episode.json",
+      "role": "task_artifact",
+      "sha256": "sha256:d37769426a2dd7c90b15ab49043bd2a1d242c24e5b8d14e10cb4d8af96b5996a",
+      "size_bytes": 1351
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-follow-up.json",
+      "role": "task_artifact",
+      "sha256": "sha256:5093ef9760a41459d73cfbea02ff44a56de004dfb0a68c7572921940fd349377",
+      "size_bytes": 2310
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-observed-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:de27370a764f3016261ffa7020ada042209e14bbdf37f37ea86e938fd80be85e",
+      "size_bytes": 458
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-opinion.md",
+      "role": "task_artifact",
+      "sha256": "sha256:74065bb11dc3213c3a8a01ef80360a5b4910044cc5b971f574e4264f9daf07b1",
+      "size_bytes": 2217
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-prompt.md",
+      "role": "task_artifact",
+      "sha256": "sha256:8a9c17d9983eb019f29e4c79b04c506fcb848603664e6f5c4e9f6d8b8bf72ee1",
+      "size_bytes": 4489
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-result.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7b9b7701aad639cf7f9505c657a0a19eb6805574d16d64074f718286fdac3985",
+      "size_bytes": 4114
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-result.schema.json",
+      "role": "task_artifact",
+      "sha256": "sha256:182d97325f6786e18a2584b4dc1207ea6ade094dbe9ca9ae96c2d508bc01d984",
+      "size_bytes": 3290
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:df917b8240b18e4d876d1222f41f04d8e55deaea9578e1dc9771ae21a43d48d0",
+      "size_bytes": 5298
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/quality-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:4f93fed507fc1b0ec79568e0316d97eaf2ef76402d27d4fb7f1382352d00321a",
+      "size_bytes": 2677
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-blueprint.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7559591037cd03c92c5578931ccc99a63cffb4975d5d5126f550b273e2bd30f4",
+      "size_bytes": 15558
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-diff.patch",
+      "role": "task_artifact",
+      "sha256": "sha256:47c4e5ac9871ed501d79ded8b227fa7e1e0ce0794304c3ff112d8523e8468d18",
+      "size_bytes": 42757
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-episode.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f24c701c5b7279b4eeb0acd34330ae2b6d738fb353fd7e9054d458d0512da696",
+      "size_bytes": 1351
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-follow-up.json",
+      "role": "task_artifact",
+      "sha256": "sha256:090435de70e7dbc9733a0bf997047377cbacd07c9b821567f82a2104dae68608",
+      "size_bytes": 2251
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-observed-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:de27370a764f3016261ffa7020ada042209e14bbdf37f37ea86e938fd80be85e",
+      "size_bytes": 458
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-opinion.md",
+      "role": "task_artifact",
+      "sha256": "sha256:14dc3b084025158e8ea14b0fea08892ebe3b684e14cf4b91b760c13c4fb8fa24",
+      "size_bytes": 2334
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-prompt.md",
+      "role": "task_artifact",
+      "sha256": "sha256:f6ae172c46defc782903a8bece1d274fdb1e38f153d455d3a14a5b6c6dd5bd16",
+      "size_bytes": 4489
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-result.json",
+      "role": "task_artifact",
+      "sha256": "sha256:5aa3d9e82c0def1e0d8a376b770d4c00760d6474abd2a9135617805812042fff",
+      "size_bytes": 4194
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-result.schema.json",
+      "role": "task_artifact",
+      "sha256": "sha256:182d97325f6786e18a2584b4dc1207ea6ade094dbe9ca9ae96c2d508bc01d984",
+      "size_bytes": 3290
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:6a602cfd3a62eda2e017292020c7ad77e653821ca983820466f5d967aa0c47c1",
+      "size_bytes": 5298
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/quality-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f02077bf7eb5f3db6005e3e3abdd70e27289580180ec465f7148d0dbb2d09e66",
+      "size_bytes": 2789
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-blueprint.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7559591037cd03c92c5578931ccc99a63cffb4975d5d5126f550b273e2bd30f4",
+      "size_bytes": 15558
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-diff.patch",
+      "role": "task_artifact",
+      "sha256": "sha256:448fe8a952fa7c6d7b091ea082d7216ae9830e88aa18b981e40b25d4d41e2531",
+      "size_bytes": 209318
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-episode.json",
+      "role": "task_artifact",
+      "sha256": "sha256:ae945fe2e258b25bae8c7e89cd04fe049db9076ef1b30601c91732c47ccafa61",
+      "size_bytes": 1352
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-follow-up.json",
+      "role": "task_artifact",
+      "sha256": "sha256:620ae7977f644d4108ebbf8e058f1fc7bbb8c935c179e93f42264b8f7a4a5b30",
+      "size_bytes": 2432
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-observed-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+      "size_bytes": 861
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-opinion.md",
+      "role": "task_artifact",
+      "sha256": "sha256:301676ecc3b66dfd9e975a8d6f0b7f25e6acd7f8bcfa7b9c7933a9180b10a9b0",
+      "size_bytes": 2340
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-prompt.md",
+      "role": "task_artifact",
+      "sha256": "sha256:36273ddbad6b0890aff37e72a1f87560deca67853780642072c6523b7150341a",
+      "size_bytes": 4489
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-result.json",
+      "role": "task_artifact",
+      "sha256": "sha256:614a590e9b5394a3f4e07cc4bec681a3460e363935b4d713b7131a8ae56c0273",
+      "size_bytes": 4216
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-result.schema.json",
+      "role": "task_artifact",
+      "sha256": "sha256:182d97325f6786e18a2584b4dc1207ea6ade094dbe9ca9ae96c2d508bc01d984",
+      "size_bytes": 3290
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:5a53b57db833d1358e951f19a252c8878890e3d6daa2ed4b77fb9a2f1a845754",
+      "size_bytes": 5665
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-175732957-recovery-context/quality-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7ee36d048835a26da39b327ab2eb4b6946cedf13cbcf61924ca3d0bcf50812b5",
+      "size_bytes": 2800
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-blueprint.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7559591037cd03c92c5578931ccc99a63cffb4975d5d5126f550b273e2bd30f4",
+      "size_bytes": 15558
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-diff.patch",
+      "role": "task_artifact",
+      "sha256": "sha256:6b3aea2f53d4d9cede678171da2a7713f802472e9c774c07a2ffe27b32784d4d",
+      "size_bytes": 297600
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-episode.json",
+      "role": "task_artifact",
+      "sha256": "sha256:23aa2ff34210be2695b62a5c8129b4e2e514138ed92223327d5228cee7db97e0",
+      "size_bytes": 1352
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-follow-up.json",
+      "role": "task_artifact",
+      "sha256": "sha256:1a4345ef7e2db51e4bdacef27e17f0aa5fd8ee7855d463ead6e1a373b4b39dbd",
+      "size_bytes": 2382
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-observed-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+      "size_bytes": 861
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-opinion.md",
+      "role": "task_artifact",
+      "sha256": "sha256:11c1917bf86e0c1ab50e1176cb40a5c6addf172b18442282d276fea5a888fd84",
+      "size_bytes": 2106
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-prompt.md",
+      "role": "task_artifact",
+      "sha256": "sha256:41ae78af2dad396f980fc9d283ae94cad50b20cea24fd89ce8775030c64d8b85",
+      "size_bytes": 4489
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-result.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f5c2fcc3814da9a55452f5d42dabce52d906ecb66c665a51c2db9300f9d9bdf0",
+      "size_bytes": 3606
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-result.schema.json",
+      "role": "task_artifact",
+      "sha256": "sha256:182d97325f6786e18a2584b4dc1207ea6ade094dbe9ca9ae96c2d508bc01d984",
+      "size_bytes": 3290
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:84254414ba720a8dcc82ca07f495d8602b49097b1907891312a93758b230ba70",
+      "size_bytes": 5665
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-180933901-recovery-context/quality-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:37f962e8ef3a0d8a2bffe4d98474c75811cfbd2d91d5074268cdc245784bcccc",
+      "size_bytes": 2551
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-blueprint.json",
+      "role": "task_artifact",
+      "sha256": "sha256:7559591037cd03c92c5578931ccc99a63cffb4975d5d5126f550b273e2bd30f4",
+      "size_bytes": 15558
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-diff.patch",
+      "role": "task_artifact",
+      "sha256": "sha256:2ad59783d5b584a9e90fa65fd69244587dc400e5106368a16ce1292946a8cb2d",
+      "size_bytes": 368191
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-episode.json",
+      "role": "task_artifact",
+      "sha256": "sha256:4b1ab7d24f70e2582bca319d3d562f79de39f1e18cd46e6d086f9ebad716d2ef",
+      "size_bytes": 1352
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-follow-up.json",
+      "role": "task_artifact",
+      "sha256": "sha256:3c83da8623ee05142a3d40f69f92b386a01bad1f0915c7e41a8f108eab5205b7",
+      "size_bytes": 2134
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-observed-checks.json",
+      "role": "task_artifact",
+      "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+      "size_bytes": 861
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-opinion.md",
+      "role": "task_artifact",
+      "sha256": "sha256:34c7801cb88b92e9a5fcd9fd486ae48edcefb1dde45f21d72f984cd52d04f6e3",
+      "size_bytes": 1531
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-prompt.md",
+      "role": "task_artifact",
+      "sha256": "sha256:d90a4ed07c0f6ec2a3d402aa2cd1fe1bdc34e4d0ea8a9e5c50ccc5b292422e34",
+      "size_bytes": 4489
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-result.json",
+      "role": "task_artifact",
+      "sha256": "sha256:6d2318801787e7341c157b654d4e928257521705fcb8da7696845d8d57c3fa75",
+      "size_bytes": 3193
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-result.schema.json",
+      "role": "task_artifact",
+      "sha256": "sha256:182d97325f6786e18a2584b4dc1207ea6ade094dbe9ca9ae96c2d508bc01d984",
+      "size_bytes": 3290
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-work-order.json",
+      "role": "task_artifact",
+      "sha256": "sha256:62e0ca47d7e10c9dc16114d553c30648d3b7cd547af274281cde81e2659eaac2",
+      "size_bytes": 5665
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/quality-report.json",
+      "role": "task_artifact",
+      "sha256": "sha256:4a64f25b847adb57bb178c82c5d041ad9447bc98f900fe0802e4df996435293a",
+      "size_bytes": 1966
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+      "role": "task_readme",
+      "sha256": "sha256:363042c3989ed3cf7540fd8e30e46d34d1a3e832cb75b545d34df40603b41d34",
+      "size_bytes": 21935
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+      "role": "task_artifact",
+      "sha256": "sha256:533a65cf0f2749234b4c1772d945c584ae835905557ca1ea66b323e6b89bacc8",
+      "size_bytes": 2663
+    }
+  ],
+  "integrity": {
+    "canonicalization": "agentplane-canonical-json-v1",
+    "digest_algorithm": "sha256",
+    "manifest_digest": "sha256:d6057c75bfce397df911d978828bdf140ba6fe8f37783447776098d8c5b70380"
+  },
+  "kind": "agentplane_evidence_bundle",
+  "producer": {
+    "name": "agentplane",
+    "version": "0.6.24"
+  },
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "verification": {
+    "command": "agentplane evidence verify 202607281655-YMPY8Y"
+  }
+}
