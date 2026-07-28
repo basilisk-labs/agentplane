@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "The rework replaces the raw provider exit code with taskRunnerLifecycleExitCode(lifecycle), and a regression test proves that active_claim_cleanup yields failed plus exit_code 1 while retaining the typed result."
 commit:
-  hash: "e7465b7377c6a8af392c605de7aa4315bf107100"
-  message: "🐛 R7WS01 hermes: preserve lifecycle exit failures"
+  hash: "f63905e9ace209c7dd772d564e016782ea0984ab"
+  message: "🛡️ R7WS01 task: record refreshed closure authority"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -121,8 +124,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup."
+  -
+    type: "status"
+    at: "2026-07-28T02:37:57.845Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T02:36:24.002Z"
+doc_updated_at: "2026-07-28T02:37:57.846Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -412,6 +422,9 @@ extensions:
         stateFingerprintDigest: "sha256:23ca034da05724478f1f5e1ccecde49327120d00f0e1bde20df569fcbef022e8"
         stateScopeDigest: "sha256:87e029cd9f844739d0647f8380a221ff13ab79f9cc66ba0c2b2faa15f5a60797"
     schemaVersion: 1
+  implementation_commit:
+    hash: "e7465b7377c6a8af392c605de7aa4315bf107100"
+    message: "🐛 R7WS01 hermes: preserve lifecycle exit failures"
   workflow_route_baseline:
     start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"
     version: 1
