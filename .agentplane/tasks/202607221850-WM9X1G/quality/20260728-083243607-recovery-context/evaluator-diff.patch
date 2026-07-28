@@ -1,0 +1,593 @@
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+index 646bc89b2..ab4831396 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+@@ -15,12 +15,13 @@ RF-18: persist an idempotent assimilation run journal so task creation, manifest
+ 
+ ## Verification
+ 
+-- State: ok
++- State: needs_rework
+ - Note:
+ 
+ ```text
+-Focused ingest/doctor/extraction/finalize tests: 24 passed; critical CLI suite: 11/11 chunks passed;
+-task-state, lint, typecheck, routing, and diff checks passed.
++GitHub PR #4654 review identified four reproducible RF-18 correctness defects: concurrent same-run
++resumption, unknown backend-write outcomes, changed semantic inputs, and payload task-id journal
++linkage.
+ ```
+ - Canonical workflow state lives in the task README.
+ 
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/github-title.txt b/.agentplane/tasks/202607221850-WM9X1G/pr/github-title.txt
+index c892b2faa..0f217a497 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/github-title.txt
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/github-title.txt
+@@ -1 +1 @@
+-✅ WM9X1G task: Journal resumable context-ingestion phases [202607221850-WM9X1G]
++🚧 WM9X1G task: Journal resumable context-ingestion phases [202607221850-WM9X1G]
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+index 39cc5a3ac..2db078776 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+@@ -3,22 +3,15 @@
+   "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
+   "created_at": "2026-07-28T08:13:34.859Z",
+   "diffstat_sha256": "sha256:64de979af431f42b369414c29e40e6d0a6506fb67e355e1236fa82a9080fa79a",
+-  "last_verified_at": "2026-07-28T08:14:18.979Z",
++  "last_verified_at": "2026-07-28T08:23:01.666Z",
+   "last_verified_diffstat_sha256": "sha256:64de979af431f42b369414c29e40e6d0a6506fb67e355e1236fa82a9080fa79a",
+   "pr_number": 4654,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4654",
+-  "pre_merge_closure": {
+-    "basis_commit": "9834ddfea5edab7199c9986ca43d769a134e0676",
+-    "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
+-    "pr_number": 4654,
+-    "recorded_at": "2026-07-28T08:17:28.010Z",
+-    "state": "closed_before_merge"
+-  },
+   "schema_version": 1,
+   "status": "OPEN",
+   "task_id": "202607221850-WM9X1G",
+   "updated_at": "2026-07-28T08:13:38.724Z",
+   "verify": {
+-    "status": "pass"
++    "status": "fail"
+   }
+ }
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+index e17bc77e0..df85820a0 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+@@ -6,14 +6,14 @@ Created: 2026-07-28T08:13:34.859Z
+ 
+ - Task: `202607221850-WM9X1G`
+ - Title: Journal resumable context-ingestion phases
+-- Status: DONE
++- Status: DOING
+ - Branch: `task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases`
+ - Canonical task record: `.agentplane/tasks/202607221850-WM9X1G/README.md`
+ 
+ ## Verification
+ 
+-- State: ok
+-- Note: Focused ingest/doctor/extraction/finalize tests: 24 passed; critical CLI suite: 11/11 chunks passed; task-state, lint, typecheck, routing, and diff checks passed.
++- State: needs_rework
++- Note: GitHub PR #4654 review identified four reproducible RF-18 correctness defects: concurrent same-run resumption, unknown backend-write outcomes, changed semantic inputs, and payload task-id journal linkage.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+diff --git a/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts b/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
+index 66d97a25b..267c4b87c 100644
+--- a/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
++++ b/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
+@@ -138,7 +138,7 @@ describe("context extraction apply", () => {
+     await cmdContextExtractionApply({
+       cwd: otherCwd,
+       rootOverride: root,
+-      parsed: { file: "context/extraction.json", taskId, dryRun: false },
++      parsed: { file: "context/extraction.json", taskId: "", dryRun: false },
+     });
+     await cmdContextGraphValidate({ cwd: root, parsed: {} });
+ 
+@@ -179,6 +179,35 @@ describe("context extraction apply", () => {
+           diagnostic.level === "warning" && diagnostic.message.includes("artifacts_applied"),
+       ),
+     ).toBe(true);
++
++    await write(
++      root,
++      "context/extraction-changed.json",
++      JSON.stringify({
++        schema_version: 1,
++        kind: "context_extraction",
++        task_id: taskId,
++        reasoning: [{ label: "changed", summary: "This is a different semantic result." }],
++        source_refs: [{ path: "context/raw/research/source.md", lines: "1-2" }],
++        extracted_items: [
++          {
++            id: "fact.changed-semantic-input",
++            kind: "fact",
++            summary: "A changed semantic input must not silently replace finalized journal state.",
++            source_refs: [{ path: "context/raw/research/source.md", lines: "1-2" }],
++            confidence: 0.9,
++            status: "accepted",
++          },
++        ],
++      }),
++    );
++    await expect(
++      cmdContextExtractionApply({
++        cwd: otherCwd,
++        rootOverride: root,
++        parsed: { file: "context/extraction-changed.json", taskId: "", dryRun: false },
++      }),
++    ).rejects.toThrow(/cannot apply changed semantic input/u);
+   });
+ 
+   it("reports input source scope separately from applied extraction source paths", async () => {
+diff --git a/packages/agentplane/src/commands/context/extraction.ts b/packages/agentplane/src/commands/context/extraction.ts
+index 6cabc3e57..0b998082e 100644
+--- a/packages/agentplane/src/commands/context/extraction.ts
++++ b/packages/agentplane/src/commands/context/extraction.ts
+@@ -2,7 +2,11 @@ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { applyContextExtractionResult } from "../../context/extraction-writer.js";
+-import { advanceContextIngestRunForTask } from "../../context/ingest-run-journal.js";
++import {
++  advanceContextIngestRunForTask,
++  contextIngestSemanticFingerprint,
++} from "../../context/ingest-run-journal.js";
++import { validateContextExtractionSgrResult } from "../../context/sgr-extraction.js";
+ 
+ export async function cmdContextExtractionApply(opts: {
+   cwd: string;
+@@ -11,24 +15,31 @@ export async function cmdContextExtractionApply(opts: {
+ }): Promise<number> {
+   const root = path.resolve(opts.rootOverride ?? opts.cwd);
+   const filePath = path.resolve(root, opts.parsed.file);
+-  const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
+-  if (!opts.parsed.dryRun && opts.parsed.taskId) {
+-    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
++  const rawText = await readFile(filePath, "utf8");
++  const raw = JSON.parse(rawText) as unknown;
++  const extraction = validateContextExtractionSgrResult(raw);
++  const taskId = opts.parsed.taskId.length > 0 ? opts.parsed.taskId : extraction.task_id;
++  const semantic = {
++    extraction_file: opts.parsed.file,
++    extraction_fingerprint: contextIngestSemanticFingerprint(rawText),
++  };
++  if (!opts.parsed.dryRun && taskId) {
++    await advanceContextIngestRunForTask(root, taskId, {
+       phase: "semantic_result_received",
+-      semantic: { extraction_file: opts.parsed.file },
++      semantic,
+     });
+   }
+   const result = await applyContextExtractionResult({
+     root,
+     raw,
+-    taskId: opts.parsed.taskId || undefined,
++    taskId: taskId === "" ? undefined : taskId,
+     dryRun: opts.parsed.dryRun,
+     synthesizeWiki: opts.parsed.synthesizeWiki,
+   });
+-  if (!opts.parsed.dryRun && opts.parsed.taskId) {
+-    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
++  if (!opts.parsed.dryRun && taskId) {
++    await advanceContextIngestRunForTask(root, taskId, {
+       phase: "artifacts_applied",
+-      semantic: { extraction_file: opts.parsed.file },
++      semantic,
+     });
+   }
+   process.stdout.write(
+diff --git a/packages/agentplane/src/context/ingest-run-journal.ts b/packages/agentplane/src/context/ingest-run-journal.ts
+index 9bb41b074..5098fca76 100644
+--- a/packages/agentplane/src/context/ingest-run-journal.ts
++++ b/packages/agentplane/src/context/ingest-run-journal.ts
+@@ -57,7 +57,7 @@ export type ContextIngestRunJournal = {
+   phase: ContextIngestRunPhase;
+   request: ContextIngestRequest;
+   run_id: string;
+-  semantic?: { extraction_file: string };
++  semantic?: { extraction_file: string; extraction_fingerprint?: string };
+   source_set: ContextIngestSourceSet;
+   task?: TaskCreationResult;
+   updated_at: string;
+@@ -71,6 +71,18 @@ type ContextIngestRunLease = {
+   version: 1;
+ };
+ 
++type ContextIngestRunExecutionLease = {
++  pid: number;
++  run_id: string;
++  token: string;
++  version: 1;
++};
++
++export type ContextIngestRunExecutionClaim = Pick<
++  ContextIngestRunExecutionLease,
++  "run_id" | "token"
++>;
++
+ export type ContextIngestRunDiagnostic = {
+   level: "issue" | "warning";
+   message: string;
+@@ -95,6 +107,10 @@ export function contextIngestSourceFingerprint(entries: ManifestEntry[]): string
+   return fingerprint(normalizeEntries(entries));
+ }
+ 
++export function contextIngestSemanticFingerprint(raw: string): string {
++  return `sha256:${createHash("sha256").update(raw).digest("hex")}`;
++}
++
+ export async function acquireContextIngestRun(opts: {
+   allowCreate: boolean;
+   manifest: ManifestLock;
+@@ -220,7 +236,7 @@ export async function advanceContextIngestRunForTask(
+   taskId: string,
+   update: {
+     phase: ContextIngestRunPhase;
+-    semantic?: { extraction_file: string };
++    semantic?: { extraction_file: string; extraction_fingerprint: string };
+   },
+ ): Promise<ContextIngestRunJournal | null> {
+   const runs = await readContextIngestRuns(root);
+@@ -230,6 +246,20 @@ export async function advanceContextIngestRunForTask(
+   const run = matches.at(-1);
+   if (run === undefined) return null;
+ 
++  if (
++    update.semantic !== undefined &&
++    run.semantic !== undefined &&
++    run.semantic.extraction_fingerprint !== update.semantic.extraction_fingerprint
++  ) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message:
++        `context ingest run ${run.run_id} cannot apply changed semantic input after ${run.phase}. ` +
++        "Start a new assimilation run explicitly instead of rewriting the existing journal.",
++    });
++  }
++
+   const currentIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(run.phase);
+   const requestedIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(update.phase);
+   if (requestedIndex <= currentIndex) return run;
+@@ -249,6 +279,59 @@ export async function releaseContextIngestRunLease(
+   });
+ }
+ 
++export async function claimContextIngestRunExecution(
++  root: string,
++  run: ContextIngestRunJournal,
++): Promise<ContextIngestRunExecutionClaim> {
++  const target = executionLeasePath(root, run.run_id);
++  await mkdir(path.dirname(target), { recursive: true });
++  const claim: ContextIngestRunExecutionLease = {
++    pid: process.pid,
++    run_id: run.run_id,
++    token: randomUUID(),
++    version: 1,
++  };
++  try {
++    await writeFile(target, `${JSON.stringify(claim, null, 2)}\n`, {
++      encoding: "utf8",
++      flag: "wx",
++    });
++    return claim;
++  } catch (error) {
++    if (!isAlreadyExistsError(error)) throw error;
++  }
++
++  const existing = await readExecutionLease(target);
++  if (existing === null) return await claimContextIngestRunExecution(root, run);
++  if (processIsAlive(existing.pid)) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message:
++        `context ingest run ${run.run_id} is already executing in process ${existing.pid}. ` +
++        "Wait for that execution to finish before retrying.",
++    });
++  }
++  await unlink(target).catch((cleanupError: unknown) => {
++    if (isMissingError(cleanupError)) return;
++    throw cleanupError;
++  });
++  return await claimContextIngestRunExecution(root, run);
++}
++
++export async function releaseContextIngestRunExecution(
++  root: string,
++  claim: ContextIngestRunExecutionClaim,
++): Promise<void> {
++  const target = executionLeasePath(root, claim.run_id);
++  const current = await readExecutionLease(target);
++  if (current?.token !== claim.token) return;
++  await unlink(target).catch((error: unknown) => {
++    if (isMissingError(error)) return;
++    throw error;
++  });
++}
++
+ export function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
+   return (PREPARATION_PHASES as readonly string[]).includes(phase);
+ }
+@@ -455,6 +538,29 @@ async function readLease(activePath: string): Promise<ContextIngestRunLease | nu
+   }
+ }
+ 
++async function readExecutionLease(target: string): Promise<ContextIngestRunExecutionLease | null> {
++  try {
++    const raw = await readFile(target, "utf8");
++    const parsed = JSON.parse(raw) as Partial<ContextIngestRunExecutionLease>;
++    if (
++      parsed.version !== 1 ||
++      typeof parsed.pid !== "number" ||
++      typeof parsed.run_id !== "string" ||
++      typeof parsed.token !== "string"
++    ) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message: `context ingest execution lease is malformed: ${target}`,
++      });
++    }
++    return parsed as ContextIngestRunExecutionLease;
++  } catch (error) {
++    if (isMissingError(error)) return null;
++    throw error;
++  }
++}
++
+ function parseRun(raw: string): ContextIngestRunJournal {
+   const parsed = JSON.parse(raw) as Partial<ContextIngestRunJournal>;
+   if (
+@@ -480,6 +586,10 @@ function activeLeasePath(root: string): string {
+   return path.join(root, ACTIVE_DIRECTORY, "source-set.lock.json");
+ }
+ 
++function executionLeasePath(root: string, runId: string): string {
++  return path.join(root, ACTIVE_DIRECTORY, `${runId}.execution.json`);
++}
++
+ function runPath(root: string, runId: string): string {
+   return path.join(root, JOURNAL_DIRECTORY, `${runId}.json`);
+ }
+@@ -524,3 +634,12 @@ function isMissingError(error: unknown): boolean {
+ function isNodeError(error: unknown, code: string): boolean {
+   return typeof error === "object" && error !== null && "code" in error && error.code === code;
+ }
++
++function processIsAlive(pid: number): boolean {
++  try {
++    process.kill(pid, 0);
++    return true;
++  } catch (error) {
++    return isNodeError(error, "EPERM");
++  }
++}
+diff --git a/packages/agentplane/src/context/ingest-task-pack.test.ts b/packages/agentplane/src/context/ingest-task-pack.test.ts
+index 034c24340..9bd4308cc 100644
+--- a/packages/agentplane/src/context/ingest-task-pack.test.ts
++++ b/packages/agentplane/src/context/ingest-task-pack.test.ts
+@@ -392,6 +392,96 @@ describe("context ingest task pack", () => {
+     });
+   });
+ 
++  it("keeps task creation fail-closed when a backend error may follow a persisted write", async () => {
++    const root = await tempRoot();
++    await write(
++      root,
++      "context/raw/unknown-task.md",
++      "# Unknown\n\nBackend outcome is uncertain.\n",
++    );
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "cloud",
++      backendConfigPath: path.join(root, ".agentplane/backends/cloud/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++    const createTask = vi.fn(() => Promise.reject(new Error("forced backend push failure")));
++    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
++
++    await expect(cmdContextIngest({ ctx, cwd: root, parsed, createTask })).rejects.toThrow(
++      /forced backend push failure/u,
++    );
++    await expect(cmdContextIngest({ ctx, cwd: root, parsed, createTask })).rejects.toThrow(
++      /unknown task creation outcome/u,
++    );
++
++    expect(createTask).toHaveBeenCalledTimes(1);
++    const diagnostics = await inspectContextIngestRuns(root);
++    expect(
++      diagnostics.some(
++        (diagnostic) =>
++          diagnostic.level === "issue" &&
++          diagnostic.message.includes("unknown task creation outcome"),
++      ),
++    ).toBe(true);
++  });
++
++  it("rejects a concurrent retry of the same resumable run while its executor is active", async () => {
++    const root = await tempRoot();
++    await write(
++      root,
++      "context/raw/concurrent.md",
++      "# Concurrent\n\nOnly one task may be created.\n",
++    );
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++    const taskId = "202607021207-CONCUR";
++    const createTask = vi.fn(() =>
++      Promise.resolve({
++        task_id: taskId,
++        revision: 1,
++        backend_id: "local",
++        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++      }),
++    );
++    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
++    let releaseFirst: (() => void) | undefined;
++    const firstPaused = new Promise<void>((resolve) => {
++      releaseFirst = resolve;
++    });
++    let signalFirstPhase: (() => void) | undefined;
++    const firstReachedPhase = new Promise<void>((resolve) => {
++      signalFirstPhase = resolve;
++    });
++    const first = cmdContextIngest({
++      ctx,
++      cwd: root,
++      parsed,
++      createTask,
++      afterJournalPhase: async (phase) => {
++        if (phase !== "source_set_locked") return;
++        signalFirstPhase?.();
++        await firstPaused;
++      },
++    });
++    await firstReachedPhase;
++
++    await expect(cmdContextIngest({ ctx, cwd: root, parsed, createTask })).rejects.toThrow(
++      /already executing/u,
++    );
++    releaseFirst?.();
++    await expect(first).resolves.toBe(0);
++    expect(createTask).toHaveBeenCalledTimes(1);
++  });
++
+   for (const crashPhase of [
+     "source_set_locked",
+     "task_created",
+diff --git a/packages/agentplane/src/context/ingest.ts b/packages/agentplane/src/context/ingest.ts
+index 04377f5b9..a5b82d2e3 100644
+--- a/packages/agentplane/src/context/ingest.ts
++++ b/packages/agentplane/src/context/ingest.ts
+@@ -28,7 +28,9 @@ import {
+   advanceContextIngestRun,
+   assertContextIngestRunManifest,
+   assertContextIngestRunSourceSet,
++  claimContextIngestRunExecution,
+   contextIngestManifestFingerprint,
++  releaseContextIngestRunExecution,
+   releaseContextIngestRunLease,
+   type ContextIngestRunPhase,
+ } from "./ingest-run-journal.js";
+@@ -110,45 +112,50 @@ export async function cmdContextIngest(opts: {
+       process.stdout.write("no new or changed sources detected for context assimilation\n");
+       return 0;
+     }
+-    assertContextIngestRunSourceSet(run, completeRows);
+-
+-    if (run.phase === "task_creating") {
+-      throw new CliError({
+-        exitCode: 3,
+-        code: "E_VALIDATION",
+-        message:
+-          `context ingest run ${run.run_id} has an unknown task creation outcome. ` +
+-          "Run context doctor and inspect the task backend before retrying.",
+-      });
+-    }
+-
+-    if (run.phase !== "planned") {
+-      assertContextIngestRunManifest(run, lock);
+-    }
++    const execution = await claimContextIngestRunExecution(root, run);
++    try {
++      assertContextIngestRunSourceSet(run, completeRows);
+ 
+-    if (run.phase === "planned") {
+-      const currentFingerprint = contextIngestManifestFingerprint(lock);
+-      if (
+-        currentFingerprint !== run.source_set.previous_manifest_fingerprint &&
+-        currentFingerprint !== run.source_set.manifest_fingerprint
+-      ) {
++      if (run.phase === "task_creating") {
+         throw new CliError({
+           exitCode: 3,
+           code: "E_VALIDATION",
+           message:
+-            `context ingest run ${run.run_id} cannot lock sources because the manifest changed concurrently. ` +
+-            "Run context doctor before retrying.",
++            `context ingest run ${run.run_id} has an unknown task creation outcome. ` +
++            "Run context doctor and inspect the task backend before retrying.",
+         });
+       }
+-      if (currentFingerprint !== run.source_set.manifest_fingerprint) {
+-        await writeManifest(root, run.source_set.manifest);
++
++      if (run.phase !== "planned") {
++        assertContextIngestRunManifest(run, lock);
+       }
+-      const locked = await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
+-      await opts.afterJournalPhase?.(locked.phase);
+-      return await continueContextIngest(opts, ctx, root, locked);
+-    }
+ 
+-    return await continueContextIngest(opts, ctx, root, run);
++      if (run.phase === "planned") {
++        const currentFingerprint = contextIngestManifestFingerprint(lock);
++        if (
++          currentFingerprint !== run.source_set.previous_manifest_fingerprint &&
++          currentFingerprint !== run.source_set.manifest_fingerprint
++        ) {
++          throw new CliError({
++            exitCode: 3,
++            code: "E_VALIDATION",
++            message:
++              `context ingest run ${run.run_id} cannot lock sources because the manifest changed concurrently. ` +
++              "Run context doctor before retrying.",
++          });
++        }
++        if (currentFingerprint !== run.source_set.manifest_fingerprint) {
++          await writeManifest(root, run.source_set.manifest);
++        }
++        const locked = await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
++        await opts.afterJournalPhase?.(locked.phase);
++        return await continueContextIngest(opts, ctx, root, locked);
++      }
++
++      return await continueContextIngest(opts, ctx, root, run);
++    } finally {
++      await releaseContextIngestRunExecution(root, execution);
++    }
+   } catch (err) {
+     if (err instanceof CliError) throw err;
+     throw mapBackendError(err, { command: "context ingest", root: opts.rootOverride ?? null });
+@@ -174,18 +181,12 @@ async function continueContextIngest(
+     const workspaceMode = await readContextWorkspaceMode(root);
+     const taskParsed = createTaskNewParsed(opts.parsed, run.source_set.selected, workspaceMode);
+     const createTask = opts.createTask ?? runTaskNewParsed;
+-    let contextCreated: TaskCreationResult;
+-    try {
+-      contextCreated = await createTask({
+-        ctx,
+-        cwd: opts.cwd,
+-        rootOverride: opts.rootOverride,
+-        parsed: taskParsed,
+-      });
+-    } catch (error) {
+-      await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
+-      throw error;
+-    }
++    const contextCreated: TaskCreationResult = await createTask({
++      ctx,
++      cwd: opts.cwd,
++      rootOverride: opts.rootOverride,
++      parsed: taskParsed,
++    });
+     run = await advanceContextIngestRun(root, run, {
+       phase: "task_created",
+       task: contextCreated,
