@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The evaluated delta is limited to closure metadata and a frozen verification record; it does not alter the replacement execution contract, and the record preserves coverage for cross-process single-provider admission and pending-replacement recovery.",
+      "broken_invariant": "No recovery-context invariant is broken; the frozen delta preserves the previously verified replacement semantics and records the deferred post-integration provider proof explicitly.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-195430045-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:aca72e9e857b0c00ea389f996fd25aecefb5a30dc79594ce999da912a6542a11"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-195056-static-lint-rework.json",
+          "sha256": "sha256:ddbd0f626753c79a46fcd3c4e48bacf9847e27f4198b7782986540755d98d7bf",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-195430045-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:42dca2cb033572758067c406f55d7bf10725571a2350c3eacfaf6d80f572194b",
+          "section": "verification_records"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The required live replacement episode remains intentionally deferred until integration because it depends on the shared supervisor journal; it is a post-integration gate rather than evidence required for this pre-merge delta."
+  ]
+}
