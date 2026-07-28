@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T20:16:35.651Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "8be946fefff686fb72c2ba3ef1f06c4077f11c5f",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "findings": [
+    "The reviewed delta preserves exactly one provider start, the original failed operation, a distinct linked completed replacement, and bounded journal usage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-201635415-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The real replacement episode for 202607221850-8HBF4J remains deferred until integration into main and is still a release gate."
+  ],
+  "residual_risks": []
+}

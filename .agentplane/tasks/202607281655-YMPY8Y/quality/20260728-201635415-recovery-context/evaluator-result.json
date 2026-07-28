@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The reviewed delta preserves exactly one provider start, the original failed operation, a distinct linked completed replacement, and bounded journal usage.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-201635415-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The real replacement episode for 202607221850-8HBF4J remains deferred until integration into main and is still a release gate."
+  ]
+}
