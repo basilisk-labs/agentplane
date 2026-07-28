@@ -6,7 +6,7 @@ Created: 2026-07-28T09:02:22.621Z
 
 - Task: `202607280900-WHE7JS`
 - Title: Break authority-close lifecycle feedback loop
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop`
 - Canonical task record: `.agentplane/tasks/202607280900-WHE7JS/README.md`
 
