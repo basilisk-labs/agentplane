@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -52,27 +52,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T05:17:03.471Z"
+  updated_at: "2026-07-28T05:32:29.040Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "edb373fa89ab1ca84d4dca56dadf1acea166a9a7"
+  evaluated_sha: "594987c093a5d1bb0bbc443c2ac5028a228130c3"
   blueprint_digest: "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477"
   evidence_refs:
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607242236-1BFWEY/README.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051703351-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-053228919-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The changed test assertion is equivalent and the local format gate now passes; no production code or evaluator work-order contract changed in this head."
+    - "The extraction retains receipt validation, fail-closed recovery, budget accounting, and terminal provider-failure recording in one supervisor boundary; the facade keeps task-state application idempotent and exposes the same supervisor episode fields."
 commit:
   hash: "a702e4ed0c9429e24babe0adcbff82c99f90acb5"
   message: "Record refreshed pre-merge authority"
