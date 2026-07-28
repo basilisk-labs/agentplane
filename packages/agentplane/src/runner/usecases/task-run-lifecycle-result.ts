@@ -10,10 +10,9 @@ import type {
   RunnerRunState,
 } from "../types.js";
 
-export const TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA =
-  "agentplane.task_runner_lifecycle_result.v1" as const;
+const TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA = "agentplane.task_runner_lifecycle_result.v1" as const;
 
-export type TaskRunnerLifecycleEffectState =
+type TaskRunnerLifecycleEffectState =
   | "not_recorded"
   | "effect_in_doubt"
   | "applied"

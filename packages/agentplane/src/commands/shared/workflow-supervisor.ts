@@ -24,7 +24,7 @@ type WorkflowSupervisorAuditEntry = {
   detail: string;
 };
 
-export type WorkflowSupervisorOperationPayload = {
+type WorkflowSupervisorOperationPayload = {
   kind: "runner_lifecycle";
   value: TaskRunnerLifecycleResult;
 };
