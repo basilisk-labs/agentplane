@@ -1,10 +1,11 @@
 ---
 id: "202607280704-EATE9R"
 title: "Prove cleanup identity after provider-updated PR head"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -17,16 +18,48 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-28T07:13:25.623Z"
+  updated_by: "TESTER"
+  note: "Targeted cleanup provider-proof regression suite, TypeScript build, runtime doctor, and routing validation all passed for commit 4e4708b49."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-28T07:14:04.741Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "4e4708b49d94193df8aaa204f5b85b4a38042fdc"
+  blueprint_digest: "a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712"
+  evidence_refs:
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607280704-EATE9R/README.md"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The direct head-equality path is unchanged; mismatch is cleared only after authenticated provider commit-parent evidence proves a base-only branch update."
+commit:
+  hash: "4e4708b49d94193df8aaa204f5b85b4a38042fdc"
+  message: "fix: prove cleanup after provider branch update"
 comments:
   -
     author: "CODER"
     body: "Start: implement a fail-closed cleanup identity proof for the provider-updated PR head observed during protected-base integration."
+  -
+    author: "CODER"
+    body: "Implementation: committed 4e4708b49 with a strict provider-update ancestry proof and positive plus fail-closed cleanup regressions."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -35,8 +68,28 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement a fail-closed cleanup identity proof for the provider-updated PR head observed during protected-base integration."
+  -
+    type: "status"
+    at: "2026-07-28T07:12:56.651Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: committed 4e4708b49 with a strict provider-update ancestry proof and positive plus fail-closed cleanup regressions."
+  -
+    type: "verify"
+    at: "2026-07-28T07:13:25.623Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Targeted cleanup provider-proof regression suite, TypeScript build, runtime doctor, and routing validation all passed for commit 4e4708b49."
+  -
+    type: "status"
+    at: "2026-07-28T07:14:47.176Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T07:05:27.137Z"
+doc_updated_at: "2026-07-28T07:14:47.177Z"
 doc_updated_by: "CODER"
 description: "Allow branch_pr cleanup to recognize a GitHub-generated PR branch update after a protected-base merge, only when immutable ancestry and merged-base evidence prove the original task head is integrated. Preserve fail-closed behavior for unrelated or rewritten heads."
 sections:
@@ -51,11 +104,44 @@ sections:
   Verify Steps: "1. bunx vitest packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts: proves the GitHub-updated-head case is accepted only with merged-base ancestry and that unrelated/re-written heads remain rejected. 2. bun run typecheck: proves the changed cleanup proof code remains type-safe. 3. ap doctor and node .agentplane/policy/check-routing.mjs: prove runtime and policy routing integrity."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-28T07:13:25.623Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Targeted cleanup provider-proof regression suite, TypeScript build, runtime doctor, and routing validation all passed for commit 4e4708b49.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T07:12:56.651Z, excerpt_hash=sha256:7060a12b8de9d84c6c359fcc572eac9d51f07578a94d92549327d9b82f8f071a
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280704-EATE9R-prove-cleanup-identity-after-provider-updated-pr/.agentplane/tasks/202607280704-EATE9R/blueprint/resolved-snapshot.json
+    - old_digest: a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712
+    - current_digest: a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607280704-EATE9R
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607280704-EATE9R
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: 17 targeted cleanup tests passed; typecheck, doctor, routing validation, Prettier, and diff check passed.
+      Impact: The cleanup route recognizes only a provider merge head with the local task head and a base-ancestor parent.
+      Resolution: Record local pass; the hosted PR route remains required before integration.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -72,6 +158,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:bb12614f644448b0cf57d79f54030b6018b91d4fa9625618cb3f7dece69e01c3"
+      -
+        actor: "USER"
+        at: "2026-07-28T07:14:27.661Z"
+        authorityDigest: "sha256:ea7d504c29987178ad7ab0a4530679c0814f67793f147b520df6545928db3311"
+        digest: "sha256:31b3022ee72566143e8634752536659e25d2d655c32624cf0bfbdb6ced924bca"
+        operationDigest: "sha256:66cb289440e2353e7a028c7a3a49b84a5d3be5bf04c052a530f7edfa4e70710b"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:f3eb08ae566c35d38baa2821e429ddd113d96c48b9e4a55a47f91448d73ab2b8"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:f0c2e8036ddc35999f04b6a68fecc70bb1aa6992ffa524cfd0eb34c3cd99aca7"
     grants:
       -
         actor: "USER"
@@ -86,6 +185,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:bb12614f644448b0cf57d79f54030b6018b91d4fa9625618cb3f7dece69e01c3"
         stateScopeDigest: "sha256:fc20ee7a1953c22543fb93d47739fa8181cba731c527721f221a8ffa7c6b56c0"
+      -
+        actor: "USER"
+        digest: "sha256:ea7d504c29987178ad7ab0a4530679c0814f67793f147b520df6545928db3311"
+        expiresAt: "2026-07-28T07:29:27.661Z"
+        id: "authority-add87c65-cc74-480c-9a2e-672e708d2ffd"
+        issuedAt: "2026-07-28T07:14:27.661Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:66cb289440e2353e7a028c7a3a49b84a5d3be5bf04c052a530f7edfa4e70710b"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:f0c2e8036ddc35999f04b6a68fecc70bb1aa6992ffa524cfd0eb34c3cd99aca7"
+        stateScopeDigest: "sha256:9863b3d015f1bc872ec36af798a147ea7a64ceb414d08bc8f469c01488fb021a"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "32bb732a2bc37b812d53839df9890353a34451ef"
@@ -114,6 +226,36 @@ Allow branch_pr cleanup to recognize a GitHub-generated PR branch update after a
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-28T07:13:25.623Z — VERIFY — ok
+
+By: TESTER
+
+Note: Targeted cleanup provider-proof regression suite, TypeScript build, runtime doctor, and routing validation all passed for commit 4e4708b49.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T07:12:56.651Z, excerpt_hash=sha256:7060a12b8de9d84c6c359fcc572eac9d51f07578a94d92549327d9b82f8f071a
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280704-EATE9R-prove-cleanup-identity-after-provider-updated-pr/.agentplane/tasks/202607280704-EATE9R/blueprint/resolved-snapshot.json
+- old_digest: a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712
+- current_digest: a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607280704-EATE9R
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607280704-EATE9R
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -122,3 +264,7 @@ Allow branch_pr cleanup to recognize a GitHub-generated PR branch update after a
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: 17 targeted cleanup tests passed; typecheck, doctor, routing validation, Prettier, and diff check passed.
+  Impact: The cleanup route recognizes only a provider merge head with the local task head and a base-ancestor parent.
+  Resolution: Record local pass; the hosted PR route remains required before integration.

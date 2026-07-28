@@ -15,19 +15,26 @@ Allow branch_pr cleanup to recognize a GitHub-generated PR branch update after a
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Targeted cleanup provider-proof regression suite, TypeScript build, runtime doctor, and routing
+validation all passed for commit 4e4708b49.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T07:06:30.803Z
+- Updated: 2026-07-28T07:06:34.499Z
 - Branch: task/202607280704-EATE9R/prove-cleanup-identity-after-provider-updated-pr
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/branch/cleanup-merged-proof.ts    | 47 +++++++++++++++++
+ .../branch/cleanup-merged.targeted.test.ts         | 59 ++++++++++++++++++++++
+ 2 files changed, 106 insertions(+)
 ```
 
 </details>

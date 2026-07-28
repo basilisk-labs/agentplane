@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607280704-EATE9R",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T07:14:04.741Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "4e4708b49d94193df8aaa204f5b85b4a38042fdc",
+  "blueprint_digest": "a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712",
+  "findings": [
+    "The direct head-equality path is unchanged; mismatch is cleared only after authenticated provider commit-parent evidence proves a base-only branch update."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
