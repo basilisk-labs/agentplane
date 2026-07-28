@@ -1,3 +1,7 @@
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
+
 import { defaultConfig } from "@agentplaneorg/core/config";
 import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core/tasks";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -506,7 +510,13 @@ async function runVerifyRecordScenario(mode: BackendMode) {
     writeTask,
     getTaskDoc: vi.fn(() => Promise.resolve(baseDoc)),
   });
-  const ctx = mkCtx(backend);
+  const root = await mkdtemp(path.join(tmpdir(), "agentplane-mutation-parity-"));
+  const ctx = mkCtx(backend, {
+    resolvedProject: {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    } as CommandContext["resolvedProject"],
+  });
 
   vi.doMock("../shared/reconcile-check.js", () => ({
     ensureReconciledBeforeMutation: vi.fn(() => Promise.resolve()),
@@ -529,7 +539,7 @@ async function runVerifyRecordScenario(mode: BackendMode) {
   const output = await captureOutput(() =>
     mod.cmdTaskVerifyOk({
       ctx,
-      cwd: "/repo",
+      cwd: root,
       taskId: "T-1",
       by: "QA",
       note: "Looks good",

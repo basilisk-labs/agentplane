@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, readFile, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -55,35 +55,51 @@ async function commitTarget(root: string): Promise<void> {
 }
 
 async function writeVerificationRecord(root: string, taskId: string): Promise<string> {
-  const recordPath = path.join(
-    root,
-    ".agentplane/tasks",
-    taskId,
-    "verification",
-    "command-results.json",
-  );
-  await mkdir(path.dirname(recordPath), { recursive: true });
-  await writeFile(
-    recordPath,
-    `${JSON.stringify(
-      {
-        schema_version: 1,
-        kind: "agentplane_task_verification_record",
-        checks: [
-          {
-            command:
-              "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
-            status: "passed",
-            exit_code: 0,
-          },
-        ],
-      },
-      null,
-      2,
-    )}\n`,
-    "utf8",
-  );
-  return recordPath;
+  const io = captureStdIO();
+  let code: number;
+  try {
+    code = await runCli([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "Run evaluator execute verification. Expected: the fixture record is durable.",
+      "--root",
+      root,
+    ]);
+    if (code === 0) {
+      code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "QA",
+        "--note",
+        "Evaluator execute fixture verified.",
+        "--details",
+        [
+          "Command: bunx vitest run evaluator-execute.command.test.ts",
+          "Result: pass",
+          "Evidence: fixture test run",
+          "Scope: evaluator execute fixture",
+        ].join("\n"),
+        "--quiet",
+        "--root",
+        root,
+      ]);
+    }
+  } finally {
+    io.restore();
+  }
+  if (code !== 0) throw new Error(`failed to create verification record: ${io.stderr}`);
+
+  const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
+  const files = (await readdir(verificationDir)).filter((file) => file.endsWith(".json"));
+  expect(files).toHaveLength(1);
+  return path.join(verificationDir, files[0]!);
 }
 
 async function installFakeCodex(root: string): Promise<string> {
