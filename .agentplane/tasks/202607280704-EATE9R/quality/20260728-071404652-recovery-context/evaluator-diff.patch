@@ -1,0 +1,762 @@
+diff --git a/.agentplane/tasks/202607280704-EATE9R/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607280704-EATE9R/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..447719ec0
+--- /dev/null
++++ b/.agentplane/tasks/202607280704-EATE9R/blueprint/resolved-snapshot.json
+@@ -0,0 +1,570 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607280704-EATE9R",
++    "title": "Prove cleanup identity after provider-updated PR head",
++    "description": "Allow branch_pr cleanup to recognize a GitHub-generated PR branch update after a protected-base merge, only when immutable ancestry and merged-base evidence prove the original task head is integrated. Preserve fail-closed behavior for unrelated or rewritten heads.",
++    "tags": [
++      "code"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607280704-EATE9R",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712"
++  }
++}
+diff --git a/.agentplane/tasks/202607280704-EATE9R/pr/meta.json b/.agentplane/tasks/202607280704-EATE9R/pr/meta.json
+index 31b745c2b..f0dc85100 100644
+--- a/.agentplane/tasks/202607280704-EATE9R/pr/meta.json
++++ b/.agentplane/tasks/202607280704-EATE9R/pr/meta.json
+@@ -4,9 +4,12 @@
+   "created_at": "2026-07-28T07:06:30.803Z",
+   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "last_verified_at": null,
++  "pr_number": 4653,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4653",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607280704-EATE9R",
+-  "updated_at": "2026-07-28T07:06:30.803Z",
++  "updated_at": "2026-07-28T07:06:34.499Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts b/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts
+index 3328ff4b7..698a41db3 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged-proof.ts
+@@ -20,6 +20,7 @@ import {
+   observeExistingGithubPrByNumber,
+   type GithubPrLookupResult,
+ } from "../pr/internal/sync-github.js";
++import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js";
+ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+ import {
+   taskCloseAlreadyRecordedOnBase,
+@@ -29,6 +30,10 @@ import { isAuthorityOnlyTaskReadmeAdvance } from "../shared/quality-review-targe
+ 
+ type CleanupBranchKind = "task" | "task-close";
+ 
++type GithubCommitRecord = {
++  parents?: Array<{ sha?: string | null }>;
++};
++
+ export type CleanupCandidate = {
+   taskId: string;
+   branch: string;
+@@ -222,6 +227,35 @@ async function validateMergedProviderReceipt(opts: {
+   return { prNumber: observed.prNumber, reason: null, observedHeadSha };
+ }
+ 
++/**
++ * GitHub's "Update branch" produces a merge commit whose parents are the
++ * task branch head and a commit already contained by the protected base. The
++ * provider can retain that head after its task branch was deleted, so local
++ * ref equality is not available during cleanup. This shape proves the update
++ * added only base context to the exact local task head.
++ */
++async function isProviderBaseUpdateOfLocalHead(opts: {
++  gitRoot: string;
++  baseBranch: string;
++  branchHeadSha: string;
++  providerHeadSha: string;
++}): Promise<boolean> {
++  try {
++    const repo = await resolveDefaultGithubRepo(opts.gitRoot);
++    const commit = await runGhApiJson<GithubCommitRecord>(opts.gitRoot, [
++      `repos/${repo}/commits/${opts.providerHeadSha}`,
++    ]);
++    const parents = (commit.parents ?? [])
++      .map((parent) => parent.sha?.trim() ?? "")
++      .filter(Boolean);
++    if (parents.length !== 2 || !parents.includes(opts.branchHeadSha)) return false;
++    const baseParent = parents.find((parent) => parent !== opts.branchHeadSha);
++    return Boolean(baseParent && (await gitIsAncestor(opts.gitRoot, baseParent, opts.baseBranch)));
++  } catch {
++    return false;
++  }
++}
++
+ /**
+  * A durable authority record can be written after the provider has merged the
+  * task branch but before local cleanup runs. The record must not let arbitrary
+@@ -332,6 +366,19 @@ async function targetedCleanupProof(opts: {
+     providerReceipt = { ...providerReceipt, reason: null };
+   }
+ 
++  if (
++    providerReceipt.reason &&
++    providerReceipt.observedHeadSha &&
++    (await isProviderBaseUpdateOfLocalHead({
++      gitRoot: opts.gitRoot,
++      baseBranch: opts.baseBranch,
++      branchHeadSha: branchHead,
++      providerHeadSha: providerReceipt.observedHeadSha,
++    }))
++  ) {
++    providerReceipt = { ...providerReceipt, reason: null };
++  }
++
+   if (opts.kind === "task") {
+     if (providerReceipt.reason) return result(null, providerReceipt.reason);
+     const closureRecorded =
+diff --git a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+index f85167aa0..a496484c6 100644
+--- a/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
++++ b/packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts
+@@ -220,6 +220,7 @@ async function installFakeGh(opts: {
+   headSha?: string;
+   baseRef?: string;
+   mergeCommitSha?: string;
++  providerUpdateBaseSha?: string;
+ }): Promise<string> {
+   const fakeBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-gh-"));
+   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
+@@ -233,11 +234,23 @@ async function installFakeGh(opts: {
+     head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
+     base: { ref: opts.baseRef ?? "main" },
+   };
++  const providerUpdatePayload =
++    opts.providerUpdateBaseSha && opts.headSha
++      ? {
++          sha: opts.headSha,
++          parents: [{ sha: opts.fixture.branchHead }, { sha: opts.providerUpdateBaseSha }],
++        }
++      : null;
+   await writeFile(
+     scriptPath,
+     [
+       "const args = process.argv.slice(2);",
+       'if (args[0] !== "api") process.exit(90);',
++      providerUpdatePayload
++        ? `if (args[1] === ${JSON.stringify(
++            `repos/example/repo/commits/${opts.headSha}`,
++          )}) { console.log(${JSON.stringify(JSON.stringify(providerUpdatePayload))}); process.exit(0); }`
++        : "",
+       opts.kind === "found"
+         ? `console.log(${JSON.stringify(JSON.stringify(payload))});`
+         : opts.kind === "not_found"
+@@ -527,6 +540,52 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
+     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
+   });
+ 
++  it("cleans after a provider-generated update branch head merges the local task head with base", async () => {
++    const fixture = await createTargetedFixture();
++    const fakeBin = await installFakeGh({
++      kind: "found",
++      fixture,
++      headSha: "1".repeat(40),
++      providerUpdateBaseSha: fixture.mergeCommit,
++    });
++    const result = await runWithFakeGh(fakeBin, [
++      "cleanup",
++      "merged",
++      "--task-id",
++      fixture.taskId,
++      "--yes",
++      "--root",
++      fixture.root,
++    ]);
++    expect(result.code).toBe(0);
++    expect(result.stdout).toContain("proof=provider_merge");
++    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
++    expect(await pathExists(fixture.worktreePath)).toBe(false);
++  });
++
++  it("keeps cleanup blocked when a provider update head lacks a base-ancestry parent", async () => {
++    const fixture = await createTargetedFixture();
++    const fakeBin = await installFakeGh({
++      kind: "found",
++      fixture,
++      headSha: "2".repeat(40),
++      providerUpdateBaseSha: "0".repeat(40),
++    });
++    const result = await runWithFakeGh(fakeBin, [
++      "cleanup",
++      "merged",
++      "--task-id",
++      fixture.taskId,
++      "--yes",
++      "--root",
++      fixture.root,
++    ]);
++    expect(result.code).toBe(5);
++    expect(result.stderr).toContain("provider head mismatch");
++    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
++    expect(await pathExists(fixture.worktreePath)).toBe(true);
++  });
++
+   it("cleans a provider-merged task with a local authority-only post-merge tail", async () => {
+     const fixture = await createTargetedFixture();
+     const localTail = await commitAuthorityOnlyTail(fixture);

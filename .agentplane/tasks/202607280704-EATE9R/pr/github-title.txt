@@ -1,1 +1,1 @@
-🚧 EATE9R task: Prove cleanup identity after provider-updated PR head [202607280704-EATE9R]
+✅ EATE9R task: Prove cleanup identity after provider-updated PR head [202607280704-EATE9R]

@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607280704-EATE9R-6e888460f1a40870f5edeccc",
+  "prepared_at": "2026-07-28T07:14:04.652Z",
+  "task": {
+    "id": "202607280704-EATE9R",
+    "revision": 8,
+    "objective": "Prove cleanup identity after provider-updated PR head\n\nAllow branch_pr cleanup to recognize a GitHub-generated PR branch update after a protected-base merge, only when immutable ancestry and merged-base evidence prove the original task head is integrated. Preserve fail-closed behavior for unrelated or rewritten heads.",
+    "acceptance_criteria": [
+      "- In scope: Allow branch_pr cleanup to recognize a GitHub-generated PR branch update after a protected-base merge, only when immutable ancestry and merged-base evidence prove the original task head is integrated. Preserve fail-closed behavior for unrelated or rewritten heads.\n- Out of scope: unrelated refactors not required for \"Prove cleanup identity after provider-updated PR head\".",
+      "1. Model the provider-updated PR head as a distinct cleanup evidence case without accepting arbitrary rewrites. 2. Permit cleanup only when immutable ancestry proves the original task head landed in the protected base and the observed provider head is the GitHub-generated update against that base. 3. Add positive and fail-closed regression tests, then run focused cleanup tests, typecheck, doctor, and routing validation.",
+      "1. bunx vitest packages/agentplane/src/commands/branch/cleanup-merged.targeted.test.ts: proves the GitHub-updated-head case is accepted only with merged-base ancestry and that unrelated/re-written heads remain rejected. 2. bun run typecheck: proves the changed cleanup proof code remains type-safe. 3. ap doctor and node .agentplane/policy/check-routing.mjs: prove runtime and policy routing integrity."
+    ]
+  },
+  "evaluated_sha": "4e4708b49d94193df8aaa204f5b85b4a38042fdc",
+  "blueprint_digest": "a6a5c1ea93baefaf87bc79368e1c0966c2ef86d8029180cf279041ff42cf5712",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607280704-EATE9R/README.md",
+      "sha256": "sha256:a0698cb2c1cf4247cca3f0f4702182172525784bd86446f26d184a251d7f1a43",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:17dc8323e867ae29a302cc34e6eb639732faf05dfe6ee858c2b110288ea4fb12",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:13392e719aac7cba994af51d74930a5e31d232d53ad7af63ab51460e0cda93c2",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607280704-EATE9R/quality/20260728-071404652-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:47c5b2709aabbe5736c72f54e6ef72976c0246ac63b02e50b9357f5500c6c61c",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
