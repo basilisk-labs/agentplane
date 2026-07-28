@@ -180,7 +180,6 @@ async function recordVerificationResult(opts: {
 
   const at = nowIso();
   const evaluatedSha = await gitRevParse(resolved.gitRoot, ["HEAD"]).catch(() => null);
-  let verificationScope = "";
   await applyTaskMutation({
     ctx,
     taskId: opts.taskId,
@@ -196,7 +195,42 @@ async function recordVerificationResult(opts: {
         action: "record verification",
         guidance: "fill it before running `agentplane verify ...`",
       });
-      verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+      const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+      const record = {
+        schema_version: 1,
+        kind: "task_verification_record",
+        task_id: opts.taskId,
+        recorded_at: at,
+        verification_command: verificationCommand({
+          command: opts.command,
+          taskId: opts.taskId,
+          state: opts.state,
+          by: opts.by,
+        }),
+        result: opts.state,
+        verifier: opts.by,
+        note: opts.note,
+        details: opts.details?.trim() ?? null,
+        implementation_sha: evaluatedSha,
+        scope: verificationScope,
+        scope_digest: sha256(verificationScope),
+      };
+      const digest = sha256(JSON.stringify(record));
+      const verificationDir = path.join(
+        resolved.gitRoot,
+        config.paths.workflow_dir,
+        opts.taskId,
+        "verification",
+      );
+      await mkdir(verificationDir, { recursive: true });
+      await writeJsonStableIfChanged(
+        path.join(verificationDir, verificationRecordName(at, digest)),
+        {
+          ...record,
+          digest,
+        },
+      );
+
       const execution = executeTaskVerificationTransitionRequest({
         task: current,
         at,
@@ -267,38 +301,6 @@ async function recordVerificationResult(opts: {
       }
       return { intents };
     },
-  });
-
-  const record = {
-    schema_version: 1,
-    kind: "task_verification_record",
-    task_id: opts.taskId,
-    recorded_at: at,
-    verification_command: verificationCommand({
-      command: opts.command,
-      taskId: opts.taskId,
-      state: opts.state,
-      by: opts.by,
-    }),
-    result: opts.state,
-    verifier: opts.by,
-    note: opts.note,
-    details: opts.details?.trim() ?? null,
-    implementation_sha: evaluatedSha,
-    scope: verificationScope,
-    scope_digest: sha256(verificationScope),
-  };
-  const digest = sha256(JSON.stringify(record));
-  const verificationDir = path.join(
-    resolved.gitRoot,
-    config.paths.workflow_dir,
-    opts.taskId,
-    "verification",
-  );
-  await mkdir(verificationDir, { recursive: true });
-  await writeJsonStableIfChanged(path.join(verificationDir, verificationRecordName(at, digest)), {
-    ...record,
-    digest,
   });
 
   if (config.workflow_mode === "branch_pr") {

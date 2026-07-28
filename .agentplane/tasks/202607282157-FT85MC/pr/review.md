@@ -13,7 +13,7 @@ Created: 2026-07-28T21:58:43.037Z
 ## Verification
 
 - State: ok
-- Note: Focused evaluator evidence regression tests (17), Prettier, ESLint, typecheck, policy routing, and doctor passed. The work order now freezes the merge-base-to-target diff with base provenance; direct root/single-commit behavior and missing branch_pr base failure are covered.
+- Note: Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,10 +31,10 @@ Created: 2026-07-28T21:58:43.037Z
 ```text
  .../commands/evaluator/evaluator-review-usecase.ts |  98 +++++++++++++++-
  .../evaluator/evaluator-run.command.test.ts        | 128 +++++++++++++++++++++
- .../src/commands/task/verify-record-execute.ts     |  58 +++++++++-
- .../src/commands/task/verify-record.unit.test.ts   |  10 +-
- .../src/commands/workflow.verify-hooks.test.ts     |  22 +++-
- 5 files changed, 309 insertions(+), 7 deletions(-)
+ .../src/commands/task/verify-record-execute.ts     |  60 +++++++++-
+ .../src/commands/task/verify-record.unit.test.ts   |  60 +++++++++-
+ .../src/commands/workflow.verify-hooks.test.ts     |  81 ++++++++++++-
+ 5 files changed, 420 insertions(+), 7 deletions(-)
 ```
 
 </details>

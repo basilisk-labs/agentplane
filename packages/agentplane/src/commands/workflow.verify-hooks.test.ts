@@ -184,6 +184,65 @@ describe("commands/workflow", () => {
     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
+  it("keeps the final verification state aligned with a durable record during concurrent verifies", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4E";
+    await addTask(root, taskId);
+    const [firstContext, secondContext] = await Promise.all([
+      loadCommandContext({ cwd: root, rootOverride: null }),
+      loadCommandContext({ cwd: root, rootOverride: null }),
+    ]);
+
+    const outcomes = await Promise.all([
+      cmdVerifyParsed({
+        ctx: firstContext,
+        cwd: root,
+        rootOverride: undefined,
+        taskId,
+        state: "ok",
+        by: "FIRST",
+        note: "First verification",
+        quiet: true,
+      }),
+      cmdVerifyParsed({
+        ctx: secondContext,
+        cwd: root,
+        rootOverride: undefined,
+        taskId,
+        state: "ok",
+        by: "SECOND",
+        note: "Second verification",
+        quiet: true,
+      }),
+    ]);
+    expect(outcomes).toEqual([0, 0]);
+
+    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
+    const task = await backend.getTask(taskId);
+    const verification = task?.verification;
+    if (!verification) throw new Error("Missing final verification state.");
+    const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
+    const verificationFiles = await readdir(verificationDir);
+    const records = await Promise.all(
+      verificationFiles.map(async (file) => {
+        return JSON.parse(await readFile(path.join(verificationDir, file), "utf8")) as Record<
+          string,
+          unknown
+        >;
+      }),
+    );
+    const matchingRecords = records.filter(
+      (record) =>
+        record.recorded_at === verification.updated_at &&
+        record.verifier === verification.updated_by &&
+        record.note === verification.note &&
+        record.result === verification.state,
+    );
+
+    expect(records).toHaveLength(2);
+    expect(matchingRecords).toHaveLength(1);
+  });
+
   it("verify supports --file details and rejects --details with --file", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4C";
