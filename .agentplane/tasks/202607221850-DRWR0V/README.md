@@ -2,10 +2,10 @@
 id: "202607221850-DRWR0V"
 title: "Extract the shared typed workflow supervisor from Hermes"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -34,9 +34,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T00:11:42.458Z"
+  updated_at: "2026-07-28T00:30:59.308Z"
   updated_by: "TESTER"
-  note: "Verified shared typed supervisor: registry-bound execution, route refresh after every attempt, and Hermes in-process runner adapter."
+  note: "Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings."
   attempts: 0
 quality_review:
   state: "pass"
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The supervisor rejects unregistered, cross-task, stale, non-authorized, duplicate, approval, semantic, human, wait, and terminal routes before execution; attempts refresh route state exactly once after execution."
 commit:
-  hash: "425ee76ab656e27805ca20a5184531a8bbfeac1c"
-  message: "✨ DRWR0V supervisor: share typed workflow execution"
+  hash: "5daf51d4c3b9ae78b5a3aed8fe3b416431117f0b"
+  message: "♻️ DRWR0V supervisor: satisfy static lint gates"
 comments:
   -
     author: "CODER"
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: static lint gate fixed and committed at 5daf51d4c3b9; lint report is clean."
 events:
   -
     type: "status"
@@ -103,8 +106,27 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T00:18:03.113Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted verify-static found 14 ESLint violations in the RF-09 implementation and tests; no behavioral failure is reported."
+  -
+    type: "status"
+    at: "2026-07-28T00:30:47.118Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework: static lint gate fixed and committed at 5daf51d4c3b9; lint report is clean."
+  -
+    type: "verify"
+    at: "2026-07-28T00:30:59.308Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings."
 doc_version: 3
-doc_updated_at: "2026-07-28T00:12:35.087Z"
+doc_updated_at: "2026-07-28T00:30:59.901Z"
 doc_updated_by: "CODER"
 description: "RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop over typed operations; make Hermes and CLI adapters use it without raw shell route execution."
 sections:
@@ -158,6 +180,66 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T00:18:03.113Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted verify-static found 14 ESLint violations in the RF-09 implementation and tests; no behavioral failure is reported.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:12:35.087Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+    - old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+    - diagnostic_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T00:30:59.308Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:30:47.118Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+    - old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -167,6 +249,14 @@ sections:
     - Observation: 20 targeted supervisor/Hermes tests, 11 critical CLI chunks, typecheck, lint, guards, and formatting passed.
       Impact: The supervisor rejects raw, unregistered, cross-task, stale, duplicate, approval, semantic, and wait paths before a duplicate side effect.
       Resolution: Recorded evidence in the task blueprint and removed the fixed Hermes subprocess ratchet entry.
+
+    - Observation: GitHub Core CI verify-static failed on lint rules in Hermes runtime and supervisor tests.
+      Impact: Hosted gate is red, so the task must return to implementation before integration.
+      Resolution: Apply the mechanical lint fixes, rerun local lint and targeted tests, then record fresh verification.
+
+    - Observation: 20 targeted tests, typecheck, guards, formatting, and the complete lint JSON report passed after the rework.
+      Impact: The previous hosted static failure is resolved locally without changing supervisor behavior.
+      Resolution: Republish the task branch and require fresh hosted checks before integration.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -340,6 +430,66 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T00:18:03.113Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted verify-static found 14 ESLint violations in the RF-09 implementation and tests; no behavioral failure is reported.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:12:35.087Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+- old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+- diagnostic_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T00:30:59.308Z — VERIFY — ok
+
+By: TESTER
+
+Note: Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:30:47.118Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+- old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -353,3 +503,11 @@ DecisionContextRef:
 - Observation: 20 targeted supervisor/Hermes tests, 11 critical CLI chunks, typecheck, lint, guards, and formatting passed.
   Impact: The supervisor rejects raw, unregistered, cross-task, stale, duplicate, approval, semantic, and wait paths before a duplicate side effect.
   Resolution: Recorded evidence in the task blueprint and removed the fixed Hermes subprocess ratchet entry.
+
+- Observation: GitHub Core CI verify-static failed on lint rules in Hermes runtime and supervisor tests.
+  Impact: Hosted gate is red, so the task must return to implementation before integration.
+  Resolution: Apply the mechanical lint fixes, rerun local lint and targeted tests, then record fresh verification.
+
+- Observation: 20 targeted tests, typecheck, guards, formatting, and the complete lint JSON report passed after the rework.
+  Impact: The previous hosted static failure is resolved locally without changing supervisor behavior.
+  Resolution: Republish the task branch and require fresh hosted checks before integration.

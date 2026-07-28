@@ -201,7 +201,8 @@ export async function routePacket(opts: {
   taskId: string;
   includeRemote?: boolean;
 }) {
-  return (await prepareHermesRoute(opts)).packet;
+  const prepared = await prepareHermesRoute(opts);
+  return prepared.packet;
 }
 
 export function buildHermesLifecycleRecommendation(

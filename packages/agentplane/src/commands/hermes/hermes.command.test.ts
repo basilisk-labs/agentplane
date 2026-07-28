@@ -6,7 +6,7 @@ import { runCli } from "../../cli/run-cli.js";
 import { routeNeedsRunnerProjection } from "./hermes-runtime.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
-import { chmod, mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 async function createTask(root: string): Promise<string> {
@@ -235,7 +235,7 @@ describe("hermes adapter commands", () => {
           allowed: boolean;
           result: { detail: string; exit_code: number | null };
         };
-        workflow_supervision: { audit: Array<{ event: string }> };
+        workflow_supervision: { audit: { event: string }[] };
         refreshed_route: { task: { id: string } };
       };
       expect(payload.supervisor_policy.execute_raw_shell_from_route).toBe(false);
@@ -267,7 +267,7 @@ describe("hermes adapter commands", () => {
         workflow_supervision: {
           executable: boolean;
           operation_id: string | null;
-          audit: Array<{ event: string; state_fingerprint: string }>;
+          audit: { event: string; state_fingerprint: string }[];
         };
       };
       expect(payload.workflow_supervision.executable).toBe(true);
