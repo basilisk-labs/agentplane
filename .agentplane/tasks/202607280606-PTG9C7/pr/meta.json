@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:55500b8fdbe38fdfcafe9d9088d2757134902286c63245f80fc28a290a55833d",
   "pr_number": 4652,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4652",
+  "pre_merge_closure": {
+    "basis_commit": "0e2bcb59e5931c267bb29ce4d9686b854e5fe724",
+    "branch": "task/202607280606-PTG9C7/prevent-self-invalidating-side-effect-authority",
+    "pr_number": 4652,
+    "recorded_at": "2026-07-28T06:20:45.365Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607280606-PTG9C7",

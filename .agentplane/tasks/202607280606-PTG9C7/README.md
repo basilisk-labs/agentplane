@@ -1,10 +1,11 @@
 ---
 id: "202607280606-PTG9C7"
 title: "Prevent self-invalidating side-effect authority records"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 15
+revision: 16
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +60,8 @@ quality_review:
     - "Route resolution and AgentWorkOrder preparation now share branch snapshot precedence in branch_pr mode, so task.revision and state_fingerprint.task_revision cannot diverge solely by checkout."
     - "The regression advances and commits the task worktree document, invokes task next-action from main, and asserts both revision fields equal the branch snapshot."
 commit:
-  hash: "1ec387cd29895158d5157c446a3913cc9598e440"
-  message: "🚧 PTG9C7 task: align work-order task snapshot"
+  hash: "0e2bcb59e5931c267bb29ce4d9686b854e5fe724"
+  message: "🚧 PTG9C7 task: authorize pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -71,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: AgentWorkOrder preparation now uses the branch snapshot selected by branch_pr route resolution; regression covers invocation from base checkout."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -99,8 +103,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused AgentWorkOrder integration and side-effect authority suites passed: 13 tests. Typecheck and policy routing passed. The base-checkout route for 202607242236-1BFWEY now resolves without a task-revision schema error."
+  -
+    type: "status"
+    at: "2026-07-28T06:20:45.314Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T06:19:33.181Z"
+doc_updated_at: "2026-07-28T06:20:45.315Z"
 doc_updated_by: "CODER"
 description: "Fix the branch_pr lifecycle defect where a task authority grant changes the task revision/state fingerprint and makes the freshly recorded authority invalid before the required pre-merge closure or route refresh can execute. Preserve fail-closed authorization and support the documented grant -> clean commit -> recompute route path without manual GitHub merge."
 sections:
@@ -210,6 +221,9 @@ extensions:
         stateFingerprintDigest: "sha256:efd338becc8af6425572abac5c3fd2c89e214786dca8e7745182d9a513c8eaff"
         stateScopeDigest: "sha256:810f3027e076813b54d331eb0d02516c734ccef9c4c3afba2c279b8183bb76cc"
     schemaVersion: 1
+  implementation_commit:
+    hash: "1ec387cd29895158d5157c446a3913cc9598e440"
+    message: "🚧 PTG9C7 task: align work-order task snapshot"
   workflow_route_baseline:
     start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
     version: 1
