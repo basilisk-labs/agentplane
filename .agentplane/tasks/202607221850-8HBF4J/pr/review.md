@@ -33,18 +33,18 @@ Created: 2026-07-28T13:53:55.558Z
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
- .../src/commands/context/context-runner.ts         |  74 +++
+ .../src/commands/context/context-runner.ts         |  79 +++
  .../src/commands/context/context.spec.ts           |  45 ++
  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
  packages/agentplane/src/context/ingest-task.ts     |  29 +-
  .../runner/supervisor-execution-episode.test.ts    |  34 ++
- .../src/runner/supervisor-execution-episode.ts     |  55 ++
+ .../src/runner/supervisor-execution-episode.ts     |  53 ++
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
  .../check-compatibility-contract-baseline.mjs      |  67 +++
- 15 files changed, 1398 insertions(+), 67 deletions(-)
+ 15 files changed, 1401 insertions(+), 67 deletions(-)
 ```
 
 </details>

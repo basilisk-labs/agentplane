@@ -625,8 +625,6 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
     budget: journal.budget,
     usage: journal.usage,
     next_kind: opts.next_kind,
-    now,
-    started_at: journal.started_at,
   });
   if (exhausted.length > 0) {
     return stoppedJournal({
