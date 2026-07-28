@@ -18,6 +18,7 @@ const RUNNER_PRE_SPAWN_DECISION_FILENAME = ".runner-pre-spawn-decision.json";
 const RUNNER_CHILD_SPAWN_CLAIM_FILENAME = ".runner-child-spawn-claim.json";
 const RUNNER_CANCELLATION_INTENT_FILENAME = ".runner-cancellation-intent.json";
 const DEFAULT_START_OWNER_LEASE_MS = 3000;
+const CANCELLATION_INTENT_READ_ATTEMPTS = 4;
 
 export type RunnerStartOwnerLease = {
   owner_id: string;
@@ -133,6 +134,16 @@ function parseRunnerChildSpawnClaim(raw: string, expectedRunId: string): RunnerC
     throw new Error(`Invalid runner child spawn claim for run_id=${expectedRunId}.`);
   }
   return parsed as RunnerChildSpawnClaim;
+}
+
+function isTransientCancellationIntentReadCollision(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.startsWith("runner cancellation intent ") &&
+    (message.includes(" changed before it could be read:") ||
+      message.includes(" changed while it was being read:") ||
+      message.includes(" path changed while it was being read:"))
+  );
 }
 
 async function publishImmutableRunnerControlRecord<T>(opts: {
@@ -351,15 +362,24 @@ export async function readRunnerCancellationIntent(
   invocation: RunnerInvocation,
 ): Promise<RunnerCancellationIntent | null> {
   const intentPath = path.join(invocation.run_dir, RUNNER_CANCELLATION_INTENT_FILENAME);
-  try {
-    return parseRunnerCancellationIntent(
-      await readStableRegularTextNoFollow(intentPath, "runner cancellation intent", {
-        max_bytes: 4096,
-      }),
-      invocation.run_id,
-    );
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
-    throw error;
+  for (let attempt = 1; attempt <= CANCELLATION_INTENT_READ_ATTEMPTS; attempt += 1) {
+    try {
+      return parseRunnerCancellationIntent(
+        await readStableRegularTextNoFollow(intentPath, "runner cancellation intent", {
+          max_bytes: 4096,
+        }),
+        invocation.run_id,
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
+      if (
+        !isTransientCancellationIntentReadCollision(error) ||
+        attempt === CANCELLATION_INTENT_READ_ATTEMPTS
+      ) {
+        throw error;
+      }
+      await new Promise<void>((resolve) => setImmediate(resolve));
+    }
   }
+  return null;
 }

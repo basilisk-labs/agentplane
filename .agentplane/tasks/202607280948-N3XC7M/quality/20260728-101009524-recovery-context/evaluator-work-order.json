@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607280948-N3XC7M-5df63a953799155e4457a98d",
+  "prepared_at": "2026-07-28T10:10:09.524Z",
+  "task": {
+    "id": "202607280948-N3XC7M",
+    "revision": 10,
+    "objective": "Retry transient runner cancellation intent reads\n\nFix the CI-proven race where an atomically published runner cancellation intent changes during a stable read and is treated as a fatal execution error. Retry only transient immutable-publication collisions, preserve fail-closed behavior for malformed or unsafe records, and add deterministic regression coverage.",
+    "acceptance_criteria": [
+      "- In scope: Fix the CI-proven race where an atomically published runner cancellation intent changes during a stable read and is treated as a fatal execution error. Retry only transient immutable-publication collisions, preserve fail-closed behavior for malformed or unsafe records, and add deterministic regression coverage.\n- Out of scope: unrelated refactors not required for \"Retry transient runner cancellation intent reads\".",
+      "1. Add a narrowly scoped retry path for transient stable-read collisions when observing immutable runner cancellation intents. 2. Keep ENOENT optionality and unsafe/malformed-record failures fail-closed. 3. Add a deterministic regression that injects one publication-race read failure, then proves cancellation completes. 4. Run focused runner tests, typecheck, and the relevant fast unit gate.",
+      "1. Inject a single transient stable-file publication collision while reading a runner cancellation intent; expected: the read retries and returns the immutable intent. 2. Execute the cancellation lifecycle regression; expected: cancellation yields terminal cancelled state, not failed. 3. Run focused execution-control and lifecycle-cancellation tests, typecheck, and bun run test:fast; expected: all pass."
+    ]
+  },
+  "evaluated_sha": "a224a862c0ba75d09060d1a6b1301005ca6a5173",
+  "blueprint_digest": "33b37b14eb7897fb73d306e273fed82660d2b30131380aade76e26cb77d2c31f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607280948-N3XC7M/README.md",
+      "sha256": "sha256:cb01ffaa6f27ff4539763a020cfb43b3042ca1816175a64c67bbfb3ac94521fc",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607280948-N3XC7M/quality/20260728-101009524-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:b049254ed23c518b6d4f7d96b4e8fba00f2a04c5d7e0f616acb3764b0e5633fd",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607280948-N3XC7M/quality/20260728-101009524-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:29583402ceef7aaf0fd790d0fdad82571f882a2370adaa97ee90561eca04546e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607280948-N3XC7M/quality/20260728-101009524-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:7d25b3159ac78780236ee7c2dbb663e92b792333cafa0542e05c382fb2908dae",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

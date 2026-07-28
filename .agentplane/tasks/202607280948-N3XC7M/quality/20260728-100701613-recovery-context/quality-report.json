@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607280948-N3XC7M",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T10:07:01.865Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The patch retries only stable-file identity collisions during immutable cancellation-intent publication, preserves fail-closed handling for all other errors, and adds a deterministic one-collision regression.",
+  "evaluated_sha": "1a49629678f2a08df884ea70aa429ede775151fd",
+  "blueprint_digest": "33b37b14eb7897fb73d306e273fed82660d2b30131380aade76e26cb77d2c31f",
+  "findings": [
+    "Scope is limited to readRunnerCancellationIntent; malformed records, unsafe paths, and exhausted collision retries still propagate errors."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/runner/adapters/execution-control.ts",
+    "packages/agentplane/src/runner/adapters/execution-control.test.ts",
+    "focused vitest: execution-control plus lifecycle-cancel 16/16; typecheck and Prettier passed"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The workstation all-project fast suite has an unrelated parallel runner teardown failure; GitHub CI is required before integration."
+  ]
+}

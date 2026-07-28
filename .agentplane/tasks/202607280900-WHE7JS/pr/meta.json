@@ -1,0 +1,24 @@
+{
+  "base": "main",
+  "branch": "task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop",
+  "created_at": "2026-07-28T09:02:22.621Z",
+  "diffstat_sha256": "sha256:87aea721cc43b1999b3b66f12b8b998e655f5818c6368d589d1c80ce7c8a6ee5",
+  "last_verified_at": "2026-07-28T10:28:47.525Z",
+  "last_verified_diffstat_sha256": "sha256:87aea721cc43b1999b3b66f12b8b998e655f5818c6368d589d1c80ce7c8a6ee5",
+  "pr_number": 4655,
+  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4655",
+  "pre_merge_closure": {
+    "basis_commit": "2e04b906f9d327f180b0dc11f0a3d9dd4e6a3088",
+    "branch": "task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop",
+    "pr_number": 4655,
+    "recorded_at": "2026-07-28T10:31:39.869Z",
+    "state": "closed_before_merge"
+  },
+  "schema_version": 1,
+  "status": "OPEN",
+  "task_id": "202607280900-WHE7JS",
+  "updated_at": "2026-07-28T09:22:13.954Z",
+  "verify": {
+    "status": "pass"
+  }
+}
