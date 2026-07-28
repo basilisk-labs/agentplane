@@ -6,7 +6,7 @@ Created: 2026-07-28T16:06:20.759Z
 
 - Task: `202607281605-D59AS4`
 - Title: Recover completed evaluator supervisor journals for new episodes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607281605-D59AS4/recover-evaluator-supervisor-journals`
 - Canonical task record: `.agentplane/tasks/202607281605-D59AS4/README.md`
 
