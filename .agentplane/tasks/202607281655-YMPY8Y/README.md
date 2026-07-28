@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 33
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T19:36:27.493Z"
+  updated_at: "2026-07-28T19:51:25.363Z"
   updated_by: "TESTER"
-  note: "Hosted hotspot rework verified: evaluator verification-record collection is split into a dedicated helper and the 600-line contract gate passes."
+  note: "Hosted static rework verified: all replacement-test lint findings are resolved while the eight command-level replacement scenarios remain green."
   attempts: 0
 quality_review:
   state: "pass"
@@ -170,8 +170,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T19:51:25.363Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted static rework verified: all replacement-test lint findings are resolved while the eight command-level replacement scenarios remain green."
 doc_version: 3
-doc_updated_at: "2026-07-28T19:42:09.664Z"
+doc_updated_at: "2026-07-28T19:51:28.368Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -421,6 +427,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T19:51:25.363Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted static rework verified: all replacement-test lint findings are resolved while the eight command-level replacement scenarios remain green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T19:42:09.664Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+    - old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -441,6 +477,10 @@ sections:
     - Observation: verify-contract failed only because evaluator-review-usecase.ts exceeded the enforced 600-line hotspot ceiling.
       Impact: The PR could not enter integration despite green compatibility, docs, lint, and type gates.
       Resolution: Extracted verificationRecordPaths into evaluator-verification-records.ts; hotspot, lint, types, evaluator command tests, compatibility, and routing pass at 4daba8e5fcebc22526c966e2c527b963b18422eb.
+
+    - Observation: verify-static failed only on six lint findings in evaluator-execute.command.test.ts.
+      Impact: PR #4664 could not proceed to integration despite a green compatibility contract.
+      Resolution: Replaced unsafe any/await assertions with typed intermediate values and explicit sha256 assertions; lint, types, hotspot, compatibility, routing, and replacement tests pass at 620357a35317e18eaf63555b0270cdc5855203b2.
 extensions:
   implementation_commit:
     hash: "93b6cc4311380a09b2148feb29e373f89edf5dd8"
@@ -706,6 +746,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T19:51:25.363Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted static rework verified: all replacement-test lint findings are resolved while the eight command-level replacement scenarios remain green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T19:42:09.664Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+- old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -730,3 +800,7 @@ DecisionContextRef:
 - Observation: verify-contract failed only because evaluator-review-usecase.ts exceeded the enforced 600-line hotspot ceiling.
   Impact: The PR could not enter integration despite green compatibility, docs, lint, and type gates.
   Resolution: Extracted verificationRecordPaths into evaluator-verification-records.ts; hotspot, lint, types, evaluator command tests, compatibility, and routing pass at 4daba8e5fcebc22526c966e2c527b963b18422eb.
+
+- Observation: verify-static failed only on six lint findings in evaluator-execute.command.test.ts.
+  Impact: PR #4664 could not proceed to integration despite a green compatibility contract.
+  Resolution: Replaced unsafe any/await assertions with typed intermediate values and explicit sha256 assertions; lint, types, hotspot, compatibility, routing, and replacement tests pass at 620357a35317e18eaf63555b0270cdc5855203b2.
