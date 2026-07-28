@@ -95,7 +95,7 @@ export function createSupervisorEpisodeStore(filePath: string): SupervisorEpisod
   };
 }
 
-export function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
+function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
   return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
 }
 
