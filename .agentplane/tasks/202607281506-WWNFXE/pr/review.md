@@ -6,7 +6,7 @@ Created: 2026-07-28T15:06:48.295Z
 
 - Task: `202607281506-WWNFXE`
 - Title: Enforce non-empty EVALUATOR pass findings
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607281506-WWNFXE/enforce-evaluator-pass-findings`
 - Canonical task record: `.agentplane/tasks/202607281506-WWNFXE/README.md`
 
@@ -29,12 +29,12 @@ Created: 2026-07-28T15:06:48.295Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator-episode.calibration.test.ts          |  5 +++-
+ .../evaluator-episode.calibration.test.ts          |  2 ++
  .../src/commands/evaluator/evaluator-episode.ts    |  1 +
  .../evaluator/evaluator-execute.command.test.ts    | 22 ++++++++--------
  .../src/runtime/sgr/contract-evaluator-routing.ts  |  4 +--
  .../agentplane/src/runtime/sgr/contracts.test.ts   | 29 ++++++++++++----------
- 5 files changed, 34 insertions(+), 27 deletions(-)
+ 5 files changed, 32 insertions(+), 26 deletions(-)
 ```
 
 </details>

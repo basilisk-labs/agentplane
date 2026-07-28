@@ -33,12 +33,12 @@ focused evaluator/SGR suites (39), typecheck, format, routing validation.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator-episode.calibration.test.ts          |  5 +++-
+ .../evaluator-episode.calibration.test.ts          |  2 ++
  .../src/commands/evaluator/evaluator-episode.ts    |  1 +
  .../evaluator/evaluator-execute.command.test.ts    | 22 ++++++++--------
  .../src/runtime/sgr/contract-evaluator-routing.ts  |  4 +--
  .../agentplane/src/runtime/sgr/contracts.test.ts   | 29 ++++++++++++----------
- 5 files changed, 34 insertions(+), 27 deletions(-)
+ 5 files changed, 32 insertions(+), 26 deletions(-)
 ```
 
 </details>
