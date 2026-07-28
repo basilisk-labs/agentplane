@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607281655-YMPY8Y",
+  "recorded_at": "2026-07-28T20:35:24Z",
+  "scope": {
+    "implementation_commit": "6c021591eb0d054f478e6e73320a2aab6aa040a5",
+    "paths": [
+      "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
+      "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+    ],
+    "objective": "Prevent a losing concurrent evaluator process from writing preparation artifacts while the admitted provider is attesting its read-only workspace."
+  },
+  "checks": [
+    {
+      "id": "cross-process-replacement-stress",
+      "command": "for attempt in {1..15}; do bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testNamePattern 'allows exactly one provider start across independent replacement CLI processes' --testTimeout 60000 --reporter=dot || exit $?; done",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "15 independent runs passed. Each requires exactly one successful provider-owning process and one pre-provider refusal, while preserving failed history and a linked completed replacement.",
+      "evidence_scope": "cross-process evaluator preparation and provider admission"
+    },
+    {
+      "id": "focused-supervisor-suite",
+      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000 --reporter=verbose",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "2 test files and 22 tests passed, covering terminal failures, replacement authorization, durable resume, and independent-process admission.",
+      "evidence_scope": "supervisor journal and evaluator execution"
+    },
+    {
+      "id": "full-fast-suite",
+      "command": "bun run test:fast",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "481 test files and 3358 tests passed. This is the same full unit surface that previously exposed the race in hosted CI.",
+      "evidence_scope": "repository-wide unit regression"
+    },
+    {
+      "id": "static-contracts",
+      "command": "bun run typecheck && bunx eslint packages/agentplane/src/commands/shared/supervisor-execution-episode.ts packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts && bun run lint:core && bun run hotspots:check && bun run bench:compatibility:check && node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "Type safety, focused and core lint, hotspot limits, compatibility baseline, and policy routing passed.",
+      "evidence_scope": "static and compatibility gates"
+    },
+    {
+      "id": "post-integration-real-replacement",
+      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "status": "not_run",
+      "exit_code": null,
+      "result": "Deferred until integration into main. The release gate remains: retain the original operation_failed record and prove exactly one linked completed replacement episode.",
+      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
+    }
+  ]
+}
