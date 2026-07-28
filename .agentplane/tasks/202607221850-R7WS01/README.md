@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "The only source changes are Prettier-normalized wrapping and import grouping in the previously reviewed lifecycle paths; targeted regression tests and format:check pass."
 commit:
-  hash: "f63905e9ace209c7dd772d564e016782ea0984ab"
-  message: "🛡️ R7WS01 task: record refreshed closure authority"
+  hash: "fb7da2d8aac146ef830003f4b2ab20e220f5c2d2"
+  message: "🛡️ R7WS01 task: authorize fresh format closure"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -137,8 +140,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as runner, renderer, and Hermes regression checks."
+  -
+    type: "status"
+    at: "2026-07-28T02:46:10.968Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T02:43:39.221Z"
+doc_updated_at: "2026-07-28T02:46:10.968Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -541,8 +551,8 @@ extensions:
         stateScopeDigest: "sha256:d982377aa1e9b923101daf24fe57602f59d8bb6c08066c469b9bbe96403a9354"
     schemaVersion: 1
   implementation_commit:
-    hash: "e7465b7377c6a8af392c605de7aa4315bf107100"
-    message: "🐛 R7WS01 hermes: preserve lifecycle exit failures"
+    hash: "96ff9bab8db6e431077c9a7f60b357735e011f80"
+    message: "🎨 R7WS01 runner: format typed lifecycle paths"
   workflow_route_baseline:
     start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"
     version: 1
