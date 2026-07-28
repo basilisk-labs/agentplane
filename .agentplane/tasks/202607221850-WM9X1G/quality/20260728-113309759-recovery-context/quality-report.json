@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-WM9X1G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T11:33:09.914Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Reviewed commit c170a930: stable active-claim read collisions are retried within the existing bounded observation loop, while only a stable null claim can complete concurrent retirement.",
+  "evaluated_sha": "c170a930d8649b4b0ff06a9bb56a6e060bfb4719",
+  "blueprint_digest": "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e",
+  "findings": [
+    "The classifier accepts only the four exact stable-file collision messages for the runner active-claim label; unrelated observation failures still fail closed. The deterministic concurrent test injects a path-swap collision from the retirement-wait call and proves a second observation occurs."
+  ],
+  "evidence_refs": [
+    "commit:c170a930; checks: task-run-effect-resolution.test.ts (8/8), hotspots:check, typecheck, knip:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "A fresh hosted Core CI run on the final published PR head remains mandatory; the prior failed run covered an earlier head."
+  ]
+}
