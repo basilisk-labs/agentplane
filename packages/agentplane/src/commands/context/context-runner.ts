@@ -1,4 +1,8 @@
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import { generateAcr, validateAcrTarget, writeAcrFile } from "../acr/acr.command.js";
+import { runEvaluatorExecute } from "../evaluator/evaluator.command.js";
+import { loadCommandContext } from "../shared/task-backend.js";
+import { runContextAssimilationSupervisor } from "./assimilation-supervisor.js";
 import { cmdContextIngest, type ContextIngestParsed } from "./ingest.js";
 import { cmdContextMigrate } from "./migrate.js";
 import { cmdContextReindex } from "./reindex.js";
@@ -208,6 +212,75 @@ export async function runContextFinalizeTask(
   });
 }
 
+export async function runContextSuperviseTask(
+  _ctx: CommandCtx,
+  p: {
+    taskId: string;
+    extractionFile: string;
+    smokeQuery: string;
+    evaluator: string;
+    json: boolean;
+  },
+): Promise<number> {
+  const command = await loadCommandContext({
+    cwd: _ctx.cwd,
+    rootOverride: _ctx.rootOverride ?? null,
+  });
+  const result = await runContextAssimilationSupervisor(
+    {
+      command,
+      ctx: _ctx,
+      extractionFile: p.extractionFile,
+      smokeQuery: p.smokeQuery,
+      taskId: p.taskId,
+    },
+    {
+      runEvaluator: async () =>
+        await runEvaluatorExecute(_ctx, { taskId: p.taskId, evaluator: p.evaluator, json: p.json }),
+      createAcr: async () => {
+        const generated = await generateAcr({
+          ctx: command,
+          cwd: _ctx.cwd,
+          rootOverride: _ctx.rootOverride,
+          taskId: p.taskId,
+          workCommit: "HEAD",
+          write: true,
+          refresh: true,
+        });
+        if (!generated.acrPath) throw new Error("ACR generation did not resolve an output path.");
+        await writeAcrFile({
+          acrPath: generated.acrPath,
+          record: generated.record,
+          refresh: true,
+        });
+        return { path: generated.acrPath, warnings: generated.warnings };
+      },
+      checkAcr: async () =>
+        await validateAcrTarget({
+          ctx: command,
+          target: p.taskId,
+          mode: "local",
+          strict: true,
+          allowManualOverride: false,
+          allowWaivedVerification: false,
+          requirePlanApproved: false,
+          requirePolicyPass: false,
+          requireVerification: false,
+        }),
+    },
+  );
+  if (p.json) process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  else {
+    process.stdout.write(
+      `context supervise-task ${p.taskId}: ${result.status} phase=${result.phase} ` +
+        `episode=${result.episode_path}` +
+        (result.rework_work_order ? ` rework=${result.rework_work_order}` : "") +
+        "\n",
+    );
+  }
+  return 0;
+}
+
 export async function runContextWikiNew(
   _ctx: CommandCtx,
   p: Parameters<typeof cmdContextWikiNew>[0]["parsed"],
@@ -360,6 +433,7 @@ export {
   contextDashboardSpec,
   contextDoctorSpec,
   contextExtractionApplySpec,
+  contextSuperviseTaskSpec,
   contextGraphExportSpec,
   contextGraphNeighborsSpec,
   contextGraphShowSpec,

@@ -78,21 +78,14 @@ function buildIngestMetadata(
     ...deprecatedModeNote(workspaceMode),
     "",
     "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
-    "Execute semantic entity reconciliation -> SGR extraction -> atomic formal+wiki compilation -> coverage/reports -> verification. CURATOR owns every identity decision; deterministic code only prepares evidence, validates the decision record, and applies canonical identifiers. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
+    "CURATOR owns semantic entity reconciliation and returns one schema-valid SGR extraction. The CLI supervisor owns validation, atomic materialization, indexes, reports, retrieval checks, evaluation, ACR, and finalization. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
   ].join("\n");
   return {
     title,
     description,
     verify: [
-      "agentplane context reindex --include-raw",
-      "agentplane context wiki report context/wiki",
-      "agentplane context wiki index context/wiki",
-      "agentplane context wiki lint context/wiki",
-      'agentplane evaluator run <created-task-id> --provenance human_supplied --verdict <pass|rework|blocked|human_review> --summary "<human-supplied-summary>" --finding "<human-supplied-finding>" --evidence context/wiki/reports/topology.md --evidence context/wiki/reports/coverage.md --evidence "raw-deletion-resilience: curated-only reindex and smoke search result"',
-      "agentplane context finalize-task <created-task-id>",
-      'agentplane context search "<smoke-query>" --format json',
-      "agentplane acr generate <created-task-id> --write",
-      "agentplane acr check <created-task-id>",
+      "Return one schema-valid context_extraction SGR with semantic reconciliation evidence and complete source coverage.",
+      "CLI supervisor records every deterministic post-processing gate, evaluator result, ACR, and finalization in the shared durable episode journal.",
     ],
   };
 }
@@ -102,18 +95,16 @@ function buildContextTaskDocSections(): NonNullable<TaskNewParsed["taskDocSectio
     Plan: [
       "1. Read every task-bound input and lock the selected source/canonical baseline before writing.",
       "2. Let CURATOR reconcile each entity-bearing term against the complete canonical catalog and record evidence-bearing same_as, alias_of, distinct_entity, possibly_same_as, or new_entity_proposal decisions.",
-      "3. Classify source spans and produce one schema-valid SGR extraction containing semantic decisions, atomic claims, graph relations, topology/page decisions, and coverage.",
-      "4. Apply the extraction atomically with wiki synthesis; review preserved human prose, canonical identifiers, links, aliases, conflicts, and open questions.",
-      "5. Refresh reports/indexes, prove curated-only retrieval and raw-deletion resilience, obtain a separate semantic review, record its explicit provenance, run task verification, and record residual uncertainty.",
+      "3. Classify source spans and return one schema-valid SGR extraction containing semantic decisions, atomic claims, graph relations, topology/page decisions, and coverage.",
+      "4. State unresolved identity, conflict, or evidence gaps in the SGR instead of deciding them mechanically.",
+      "5. Stop after the semantic SGR result. CLI supervision owns all materialization, validation, retrieval, evaluation, ACR, and finalization gates.",
     ].join("\n"),
     "Verify Steps": [
       "1. Inspect `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
       "2. Validate the SGR extraction before apply. Expected: every entity-bearing term has exactly one supported semantic resolution with candidates checked, comparison dimensions, evidence for and against, rationale, and explicit unresolved questions where needed; same_as/alias_of reuse an existing canonical ID and add no duplicate graph entity.",
-      "3. Run `agentplane context extraction apply <sgr-json> --task-id <task-id> --synthesize-wiki`. Expected: formal and Wiki artifacts commit atomically and stay within allowed_outputs.",
-      "4. Run `agentplane context reindex --include-raw`, `agentplane context wiki report context/wiki`, `agentplane context wiki index context/wiki`, `agentplane context wiki lint context/wiki`, and `agentplane context graph validate`. Expected: indexes, topology, links, entity references, and reports are valid.",
-      '5. Run `agentplane context verify-task <task-id>` and a task-specific `agentplane context search "<smoke-query>" --format json`. Expected: task contract passes and exact source terminology retrieves the canonical entity/page.',
-      "6. Reindex without relying on raw source content and repeat the smoke search. Expected: significant meaning and canonical identity remain retrievable; private content does not leak.",
-      "7. Obtain a separate semantic review, record the supplied result through the declared evaluator command, then run `agentplane context finalize-task <task-id>`, `agentplane acr generate <task-id> --write`, and `agentplane acr check <task-id>`. Expected: the review records human or EVALUATOR provenance and covers semantic reconciliation, topology, provenance, coverage, uncertainty, and raw-deletion resilience; closure artifacts pass.",
+      "3. Return the SGR without applying, indexing, validating, evaluating, or finalizing it. Expected: only semantic output and evidence-bearing decisions are produced by CURATOR.",
+      "4. Expected from the CLI supervisor: formal and Wiki artifacts are atomically materialized, indexes/reports/graph/task checks pass, and curated retrieval remains useful without raw source dependence.",
+      "5. Expected from the CLI supervisor: an independent evaluator records explicit provenance; semantic rework returns a separate bounded CURATOR work order; ACR and finalization artifacts are recorded only after a passing semantic review.",
     ].join("\n"),
     "Rollback Plan":
       "Revert only this task's context and task-artifact commit, restore the previous canonical/derived files, reindex, and rerun the smoke search. Never reverse an accepted semantic merge by inventing a new identity; restore the prior evidence-backed resolution or record a new CURATOR correction task.",
@@ -151,6 +142,8 @@ export function createTaskNewParsed(
     ".agentplane/tasks/${taskId}/source-set.lock.json",
     ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
     ".agentplane/tasks/${taskId}/expected-artifacts.json",
+    ".agentplane/tasks/${taskId}/semantic-results/**",
+    ".agentplane/tasks/${taskId}/context-rework/**",
   ];
   if (allowCapabilities) {
     allowedOutputs.push("context/capabilities/**", ".agentplane/context/derived/capabilities/**");

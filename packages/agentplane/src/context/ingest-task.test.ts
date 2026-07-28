@@ -65,21 +65,18 @@ describe("context ingest task creation", () => {
     expect(context.allowed_outputs).toContain(
       ".agentplane/tasks/${taskId}/extraction-contract.json",
     );
+    expect(context.allowed_outputs).toContain(".agentplane/tasks/${taskId}/semantic-results/**");
+    expect(context.allowed_outputs).toContain(".agentplane/tasks/${taskId}/context-rework/**");
     expect(task.verify).toEqual(
       expect.arrayContaining([
-        "agentplane context wiki report context/wiki",
-        expect.stringContaining("agentplane evaluator run <created-task-id>"),
-        "agentplane context finalize-task <created-task-id>",
+        expect.stringContaining("schema-valid context_extraction SGR"),
+        expect.stringContaining("shared durable episode journal"),
       ]),
     );
-    const qualityReviewStep = task.verify.find((step) => step.includes("evaluator run"));
-    expect(qualityReviewStep).toContain("--provenance human_supplied");
-    expect(qualityReviewStep).toContain("--verdict <pass|rework|blocked|human_review>");
-    expect(qualityReviewStep).not.toContain("--verdict pass");
-    expect(qualityReviewStep).not.toContain("Maximum-assimilation context lifecycle verified.");
-    expect(qualityReviewStep).not.toContain(
-      "Curated context, topology, coverage, and evaluator scenarios satisfy the task contract.",
-    );
+    expect(task.verify.join("\n")).not.toContain("agentplane context ");
+    expect(task.verify.join("\n")).not.toContain("agentplane evaluator ");
+    expect(context.prompt_modules?.[0]?.content).not.toContain("agentplane context ");
+    expect(context.prompt_modules?.[0]?.content).not.toContain("agentplane evaluator ");
   });
 
   it("records deprecated workspace mode aliases without weakening the task", () => {

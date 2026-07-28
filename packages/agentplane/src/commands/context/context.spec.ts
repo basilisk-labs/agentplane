@@ -670,6 +670,51 @@ export const contextFinalizeTaskSpec: CommandSpec<{ taskId: string }> = {
   parse: (raw) => ({ taskId: String(raw.args["task-id"]) }),
 };
 
+export const contextSuperviseTaskSpec: CommandSpec<{
+  taskId: string;
+  extractionFile: string;
+  smokeQuery: string;
+  evaluator: string;
+  json: boolean;
+}> = {
+  id: ["context", "supervise-task"],
+  group: "Context",
+  summary: "Run resumable CLI-owned post-processing for one CURATOR context result.",
+  description:
+    "Records the already-produced semantic SGR result, then applies, validates, indexes, evaluates, records ACR, and finalizes deterministic context work under one bounded supervisor episode.",
+  args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+  options: [
+    {
+      kind: "string",
+      name: "extraction",
+      required: true,
+      valueHint: "<sgr-json>",
+      description: "CURATOR-produced schema-valid context_extraction SGR file.",
+    },
+    {
+      kind: "string",
+      name: "smoke-query",
+      valueHint: "<query>",
+      description: "Optional retrieval check; defaults to a semantic entity from the SGR.",
+    },
+    {
+      kind: "string",
+      name: "evaluator",
+      default: "recovery-context",
+      valueHint: "<id>",
+      description: "Read-only evaluator module id.",
+    },
+    { kind: "boolean", name: "json", default: false, description: "Emit machine-readable result." },
+  ],
+  parse: (raw) => ({
+    taskId: String(raw.args["task-id"]),
+    extractionFile: String(raw.opts.extraction ?? ""),
+    smokeQuery: typeof raw.opts["smoke-query"] === "string" ? raw.opts["smoke-query"] : "",
+    evaluator: typeof raw.opts.evaluator === "string" ? raw.opts.evaluator : "recovery-context",
+    json: raw.opts.json === true,
+  }),
+};
+
 export const contextCapabilitySpec: CommandSpec<GroupCommandParsed> = {
   id: ["context", "capability"],
   group: "Context",

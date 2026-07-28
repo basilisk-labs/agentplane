@@ -149,6 +149,7 @@ export {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  retryFailedSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,

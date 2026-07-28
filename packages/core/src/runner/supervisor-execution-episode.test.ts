@@ -7,6 +7,7 @@ import {
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+  retryFailedSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
   type SupervisorExecutionBudget,
@@ -185,6 +186,39 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       cursor: { phase: "stopped" },
       stop: { reason: "effect_in_doubt", operation_key: prepared.operation_key },
     });
+  });
+
+  it("retries only a durably failed CLI operation without resetting shared usage", () => {
+    const first = start({ journal: journal(), kind: "cli_operation" });
+    if (first.status !== "started") throw new Error("expected started CLI operation");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { code: "lint_failed" },
+      failed: true,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const retried = retryFailedSupervisorExecutionEpisode({
+      journal: failed,
+      state_fingerprint_digest: FINGERPRINT,
+      next_kind: "cli_operation",
+      now: "2026-07-28T00:00:02.000Z",
+    });
+    const second = start({
+      journal: retried,
+      kind: "cli_operation",
+      now: "2026-07-28T00:00:03.000Z",
+    });
+
+    expect(failed.stop).toMatchObject({ reason: "operation_failed" });
+    expect(retried).toMatchObject({
+      status: "running",
+      stop: null,
+      cursor: { phase: "ready", operation_key: null },
+      usage: { episodes: 1, agent_runs: 0 },
+    });
+    expect(second.status).toBe("started");
+    if (second.status === "started") expect(second.journal.usage.episodes).toBe(2);
   });
 
   it("preserves a completed outcome for a later postcondition refresh", () => {
