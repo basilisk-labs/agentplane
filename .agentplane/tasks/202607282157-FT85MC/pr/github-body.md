@@ -16,7 +16,7 @@ RF-QUALITY: evaluator review must freeze the complete task branch diff against i
 ## Verification
 
 - State: ok
-- Note: Rework verified with lifecycle-safe evaluator evidence freshness.
+- Note: Fixed hosted verify-unit regressions in durable verification fixtures.
 - Canonical workflow state lives in the task README.
 
 <details>
