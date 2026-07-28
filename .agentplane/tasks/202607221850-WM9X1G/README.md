@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -61,7 +61,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The implementation diff remains unchanged: deterministic source-set locking, durable receipts, and fail-closed unknown task creation preserve the CLI-versus-agent boundary."
-commit: null
+commit:
+  hash: "98b1aa7400a67c7277fac1cbbcbb992574e19433"
+  message: "fix: harden resumable context ingest"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -72,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Review rework committed: serialize same-run execution, preserve unknown backend outcomes, fingerprint semantic input, and use payload task_id."
 events:
   -
     type: "status"
@@ -106,8 +111,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "GitHub PR #4654 review identified four reproducible RF-18 correctness defects: concurrent same-run resumption, unknown backend-write outcomes, changed semantic inputs, and payload task-id journal linkage."
+  -
+    type: "status"
+    at: "2026-07-28T08:32:02.815Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Review rework committed: serialize same-run execution, preserve unknown backend outcomes, fingerprint semantic input, and use payload task_id."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:23:02.592Z"
+doc_updated_at: "2026-07-28T08:32:02.815Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
