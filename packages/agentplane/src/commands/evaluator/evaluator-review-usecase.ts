@@ -286,7 +286,10 @@ export async function prepareEvaluatorReview(opts: {
     allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
   });
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
-  const recordPaths = await verificationRecordPaths(path.dirname(taskReadmePath));
+  const recordPaths = await verificationRecordPaths(
+    path.dirname(taskReadmePath),
+    opts.task.verification,
+  );
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>
       freezeFile({
@@ -586,12 +589,6 @@ export async function assertWorkOrderCurrent(opts: {
       });
     }
   }
-}
-
-export function qualityState(
-  verdict: EvaluatorRunVerdict,
-): "pass" | "rework" | "blocked" | "human_review" {
-  return verdict;
 }
 
 export function evaluatorSummary(result: EvaluatorSgrResult): string {

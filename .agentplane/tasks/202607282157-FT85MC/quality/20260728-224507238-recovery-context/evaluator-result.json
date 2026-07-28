@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "A failed task-state mutation can leave behind a durable verification record that falsely appears successful and is later frozen as authoritative evaluator evidence.",
+      "broken_invariant": "Machine-readable verification evidence must correspond to a successfully recorded verification transition and fail closed as one atomic outcome. The implementation writes the verification JSON before executeTaskVerificationTransitionRequest/applyTaskMutation; failures after the write do not remove or invalidate the record.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224507238-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:4ec0f730104d690c45006beb9226e290fd2230b812f263351c3f37eda3620c1f",
+          "line": 78533,
+          "lines": "verify-record-execute.ts writes the durable record before executing and persisting the task verification transition; the durability test covers record-write failure but not a subsequent transition failure.",
+          "section": "packages/agentplane/src/commands/task/verify-record-execute.ts and verify-record.durability.unit.test.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Force executeTaskVerificationTransitionRequest or applyTaskMutation to fail after writeJsonStableIfChanged succeeds, then assert that no authoritative verification record remains or that the record is explicitly invalidated and excluded from evaluator evidence discovery."
+  ],
+  "hidden_assumptions": [
+    "Once the verification JSON write succeeds, the subsequent task transition and backend persistence cannot fail.",
+    "Every file under the task verification directory represents a successfully accepted verification outcome."
+  ],
+  "recovery_context": "Make durable verification evidence and the accepted task transition atomic or introduce a committed/invalidated state that verificationRecordPaths excludes; then add the post-write transition-failure regression test and rerun the focused evaluator and verification suites."
+}

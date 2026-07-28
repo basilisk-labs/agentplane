@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T22:46:21.614Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "618d1f9de3e4b5d473dc005b553490fa3d78262b",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "A failed task-state mutation can leave behind a durable verification record that falsely appears successful and is later frozen as authoritative evaluator evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224507238-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Force executeTaskVerificationTransitionRequest or applyTaskMutation to fail after writeJsonStableIfChanged succeeds, then assert that no authoritative verification record remains or that the record is explicitly invalidated and excluded from evaluator evidence discovery."
+  ],
+  "hidden_assumptions": [
+    "Once the verification JSON write succeeds, the subsequent task transition and backend persistence cannot fail.",
+    "Every file under the task verification directory represents a successfully accepted verification outcome."
+  ],
+  "residual_risks": [
+    "Make durable verification evidence and the accepted task transition atomic or introduce a committed/invalidated state that verificationRecordPaths excludes; then add the post-write transition-failure regression test and rerun the focused evaluator and verification suites."
+  ]
+}
