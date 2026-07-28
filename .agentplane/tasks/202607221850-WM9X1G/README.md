@@ -2,10 +2,10 @@
 id: "202607221850-WM9X1G"
 title: "Journal resumable context-ingestion phases"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 30
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "The execution-lease extraction remains the reviewed implementation change."
 commit:
-  hash: "e95335eaf093b1d360a6772649f4d0a4b823eacc"
-  message: "refactor: isolate ingest execution lease"
+  hash: "9b73c6485d9479041f42103910ebb46ae789b7e9"
+  message: "chore: authorize context ingest hotspot closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -83,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "CI hotspot remediation committed: execution lease extracted without behavior change; journal returns below the enforced module budget."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -144,8 +147,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "CI hotspot remediation committed: execution lease extracted without behavior change; journal returns below the enforced module budget."
+  -
+    type: "status"
+    at: "2026-07-28T08:41:11.587Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:40:09.624Z"
+doc_updated_at: "2026-07-28T08:41:11.587Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -459,8 +469,8 @@ extensions:
         stateScopeDigest: "sha256:b43a670669e76530dcd2b418b0d4ebebb973c20218235ec552c722c977a4a2c9"
     schemaVersion: 1
   implementation_commit:
-    hash: "22606dfb114fc274dd427efff859b73c9bf47196"
-    message: "chore: verify context ingest review rework"
+    hash: "5c27b4c8fc12caaebbb7e5fa92c15824882f0277"
+    message: "chore: record context ingest hotspot remediation"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
