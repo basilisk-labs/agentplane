@@ -787,6 +787,16 @@ describe("evaluator run command", () => {
       })}\n`,
       "utf8",
     );
+    await writeFile(
+      path.join(root, `.agentplane/tasks/${taskId}/verification/stale-implementation-record.json`),
+      `${JSON.stringify({ ...supportedRecord, implementation_sha: "stale-implementation" })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, `.agentplane/tasks/${taskId}/verification/stale-scope-record.json`),
+      `${JSON.stringify({ ...supportedRecord, scope_digest: "sha256:stale-scope" })}\n`,
+      "utf8",
+    );
 
     const { prepared } = await prepareTypedReview(root, taskId);
     const verificationEvidence = prepared.work_order.evidence.filter(
@@ -804,6 +814,8 @@ describe("evaluator run command", () => {
     );
     expect(currentVerificationEvidence.path).not.toContain("orphaned-after-transition.json");
     expect(currentVerificationEvidence.path).not.toContain("incomplete-current-record.json");
+    expect(currentVerificationEvidence.path).not.toContain("stale-implementation-record.json");
+    expect(currentVerificationEvidence.path).not.toContain("stale-scope-record.json");
     expect(record).toMatchObject({
       kind: "task_verification_record",
       task_id: taskId,

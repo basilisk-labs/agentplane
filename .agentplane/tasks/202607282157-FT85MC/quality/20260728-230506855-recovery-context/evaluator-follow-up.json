@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607282157-FT85MC-ffafaee09140d87d1b8be40c",
+  "task_id": "202607282157-FT85MC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Update verification-record admission to require implementation_sha equality with the evaluated SHA and scope_digest equality with the current Verify Steps digest, then add stale-commit and stale-scope regression coverage and regenerate the frozen evaluator evidence.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Verification-record admission does not bind the record to the evaluated commit or current verification scope. A record matching only the task's timestamp, state, verifier, and note can be frozen after implementation or Verify Steps drift, allowing stale checks to support a new quality review.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-230506855-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:02cebbf70be207cd1d01f9f7964494721ec6c0f347981efdb654859c235095ce",
+          "section": "evaluator-verification-records.ts: matchesCurrentVerification"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728230443027-9b1ce9fa67c234df.json",
+          "sha256": "sha256:c0024d5bec1cdb69af45d1ff929dcaba39d927cd4c5eb8fb9e9363d1f55c400e",
+          "section": "implementation_sha and scope_digest"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-230506855-recovery-context/evaluator-result.json"
+}

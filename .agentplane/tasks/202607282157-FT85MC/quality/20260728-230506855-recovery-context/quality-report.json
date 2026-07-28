@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T23:06:17.772Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "abf96ea4fa8497b26776655a8fb889bf6fdebab8",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "Verification-record admission does not bind the record to the evaluated commit or current verification scope. A record matching only the task's timestamp, state, verifier, and note can be frozen after implementation or Verify Steps drift, allowing stale checks to support a new quality review."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/quality/20260728-230506855-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607282157-FT85MC/verification/20260728230443027-9b1ce9fa67c234df.json"
+  ],
+  "missing_tests": [
+    "Reject an otherwise metadata-matching verification record when implementation_sha differs from the evaluator work order's evaluated_sha.",
+    "Reject an otherwise metadata-matching verification record when scope_digest differs from the digest of the current Verify Steps.",
+    "Cover post-verification implementation and Verify Steps changes to prove stale records are excluded from observed checks and work-order evidence."
+  ],
+  "hidden_assumptions": [
+    "Matching recorded_at, result, verifier, and note uniquely identifies evidence applicable to the current implementation and verification contract.",
+    "Verification state cannot remain unchanged while the evaluated commit or Verify Steps change."
+  ],
+  "residual_risks": [
+    "Update verification-record admission to require implementation_sha equality with the evaluated SHA and scope_digest equality with the current Verify Steps digest, then add stale-commit and stale-scope regression coverage and regenerate the frozen evaluator evidence."
+  ]
+}

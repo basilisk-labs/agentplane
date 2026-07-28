@@ -1,9 +1,19 @@
+import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 
 const CHECK_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
+
+function sha256(value: string): `sha256:${string}` {
+  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
+  const verifySteps = task.sections?.["Verify Steps"];
+  return typeof verifySteps === "string" && verifySteps.trim() ? sha256(verifySteps.trim()) : null;
+}
 
 function hasConcreteCheckDetails(details: unknown): boolean {
   if (typeof details !== "string" || !details.trim()) return false;
@@ -24,9 +34,14 @@ function hasConcreteCheckDetails(details: unknown): boolean {
 
 function matchesCurrentVerification(
   raw: unknown,
-  verification: TaskData["verification"] | null | undefined,
+  task: TaskData,
+  evaluatedSha: string | null,
 ): boolean {
-  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification) return false;
+  const verification = task.verification;
+  const scopeDigest = verifyStepsDigest(task);
+  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification || !evaluatedSha) {
+    return false;
+  }
   const record = raw as Record<string, unknown>;
   return (
     record.kind === "task_verification_record" &&
@@ -34,16 +49,23 @@ function matchesCurrentVerification(
     record.result === verification.state &&
     record.verifier === verification.updated_by &&
     record.note === verification.note &&
+    record.implementation_sha === evaluatedSha &&
+    record.scope_digest === scopeDigest &&
     hasConcreteCheckDetails(record.details)
   );
 }
 
 async function isAcceptedVerificationRecord(
   filePath: string,
-  verification: TaskData["verification"] | null | undefined,
+  task: TaskData,
+  evaluatedSha: string | null,
 ): Promise<boolean> {
   try {
-    return matchesCurrentVerification(JSON.parse(await readFile(filePath, "utf8")), verification);
+    return matchesCurrentVerification(
+      JSON.parse(await readFile(filePath, "utf8")),
+      task,
+      evaluatedSha,
+    );
   } catch {
     return false;
   }
@@ -51,7 +73,8 @@ async function isAcceptedVerificationRecord(
 
 export async function verificationRecordPaths(
   taskRoot: string,
-  verification: TaskData["verification"] | null | undefined,
+  task: TaskData,
+  evaluatedSha: string | null,
 ): Promise<string[]> {
   try {
     const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
@@ -62,7 +85,7 @@ export async function verificationRecordPaths(
     const accepted = await Promise.all(
       candidates.map(async (filePath) => ({
         filePath,
-        accepted: await isAcceptedVerificationRecord(filePath, verification),
+        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha),
       })),
     );
     return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
