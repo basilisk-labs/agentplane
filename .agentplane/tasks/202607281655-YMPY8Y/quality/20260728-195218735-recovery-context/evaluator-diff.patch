@@ -1,0 +1,169 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+index dbf1db7d9..e2b4c7bff 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+@@ -1,7 +1,7 @@
+  docs/user/cli-reference.generated.mdx              |   1 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+- .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
+  .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+@@ -12,4 +12,4 @@
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 14 files changed, 852 insertions(+), 48 deletions(-)
++ 14 files changed, 856 insertions(+), 48 deletions(-)
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index 702ad35e2..7f0826119 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -35,7 +35,7 @@ helper and the 600-line contract gate passes.
+  docs/user/cli-reference.generated.mdx              |   1 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+- .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
+  .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+@@ -46,7 +46,7 @@ helper and the 600-line contract gate passes.
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 14 files changed, 852 insertions(+), 48 deletions(-)
++ 14 files changed, 856 insertions(+), 48 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index 775a104bd..5370ff747 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+-  "diffstat_sha256": "sha256:aed94a67f31f9fb5f9348e758da0240cd0fbcc4eb53d54c74849925fe5d6d4b9",
++  "diffstat_sha256": "sha256:7ad06ec0e9cf5c41c660fa949bccbbbfe75389eddf4c8f9ffd8ef8356bd3af8e",
+   "last_verified_at": "2026-07-28T19:36:27.493Z",
+   "last_verified_diffstat_sha256": "sha256:aed94a67f31f9fb5f9348e758da0240cd0fbcc4eb53d54c74849925fe5d6d4b9",
+   "pr_number": 4664,
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index c6a97804d..bd90e7374 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -32,7 +32,7 @@ Created: 2026-07-28T16:57:04.791Z
+  docs/user/cli-reference.generated.mdx              |   1 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+- .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
++ .../evaluator/evaluator-execute.command.test.ts    | 370 ++++++++++++++++++++-
+  .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
+  .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+@@ -43,7 +43,7 @@ Created: 2026-07-28T16:57:04.791Z
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 14 files changed, 852 insertions(+), 48 deletions(-)
++ 14 files changed, 856 insertions(+), 48 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index d1181bdf3..adc948c29 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -188,7 +188,7 @@ async function runCliInSeparateProcess(opts: {
+       },
+       (error, stdout, stderr) => {
+         if (error && typeof error.code !== "number") {
+-          reject(error instanceof Error ? error : new Error(String(error)));
++          reject(error instanceof Error ? error : new Error("subprocess execution failed"));
+           return;
+         }
+         resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
+@@ -252,14 +252,18 @@ describe("evaluator execute supervisor episode", () => {
+     const parsedWorkOrder: unknown = JSON.parse(
+       await readFile(path.join(root, completedOperation.work_order_ref), "utf8"),
+     );
+-    const workOrder = parsedWorkOrder as { evidence: { kind: string; path: string }[] };
+-    expect(workOrder.evidence).toContainEqual({
+-      kind: "verification_log",
+-      path: path.relative(root, verificationRecordPath).replaceAll("\\\\", "/"),
++    const workOrder = parsedWorkOrder as {
++      evidence: { id: string; kind: string; path: string; required: boolean; sha256: string }[];
++    };
++    const verificationEvidence = workOrder.evidence.find(
++      (evidence) => evidence.kind === "verification_log",
++    );
++    expect(verificationEvidence).toMatchObject({
+       id: "verification-record-1",
++      path: path.relative(root, verificationRecordPath).replaceAll("\\\\", "/"),
+       required: true,
+-      sha256: expect.any(String),
+     });
++    expect(verificationEvidence?.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+   });
+ 
+   it("resumes a completed evaluator outcome without launching Codex again", async () => {
+@@ -595,22 +599,22 @@ describe("evaluator execute supervisor episode", () => {
+     }
+ 
+     expect(codes.toSorted(), io.stderr).toEqual([0, 2]);
+-    const invocationLines = (await readFile(invocationLog, "utf8")).trim().split("\n");
++    const invocationContents = await readFile(invocationLog, "utf8");
++    const invocationLines = invocationContents.trim().split("\n");
+     expect(invocationLines).toEqual(["provider-started"]);
+     const journalPath = await resolveSupervisorExecutionEpisodePath({
+       git_root: root,
+       task_id: taskId,
+     });
+     const concurrentJournal = await createSupervisorEpisodeStore(journalPath).read();
+-    expect(validateSupervisorExecutionEpisodeJournal(concurrentJournal)).toMatchObject({
++    const concurrentEpisode = validateSupervisorExecutionEpisodeJournal(concurrentJournal);
++    expect(concurrentEpisode).toMatchObject({
+       status: "running",
+       cursor: { phase: "ready", operation_key: null },
+       usage: { episodes: 2, agent_runs: 2 },
+-      operations: [
+-        { status: "failed" },
+-        { status: "completed", replacement_of_operation_key: expect.any(String) },
+-      ],
++      operations: [{ status: "failed" }, { status: "completed" }],
+     });
++    expect(concurrentEpisode.operations[1]?.replacement_of_operation_key).toMatch(/^sha256:/u);
+   });
+ 
+   it("resumes a durably reserved replacement before provider intent", async () => {
+@@ -698,20 +702,20 @@ describe("evaluator execute supervisor episode", () => {
+     );
+ 
+     expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
+-    const invocationLines = (await readFile(invocationLog, "utf8")).trim().split("\n");
++    const invocationContents = await readFile(invocationLog, "utf8");
++    const invocationLines = invocationContents.trim().split("\n");
+     expect(invocationLines).toEqual(["provider-started"]);
+     const journalPath = await resolveSupervisorExecutionEpisodePath({
+       git_root: root,
+       task_id: taskId,
+     });
+     const processJournal = await createSupervisorEpisodeStore(journalPath).read();
+-    expect(validateSupervisorExecutionEpisodeJournal(processJournal)).toMatchObject({
++    const processEpisode = validateSupervisorExecutionEpisodeJournal(processJournal);
++    expect(processEpisode).toMatchObject({
+       status: "running",
+       usage: { episodes: 2, agent_runs: 2 },
+-      operations: [
+-        { status: "failed" },
+-        { status: "completed", replacement_of_operation_key: expect.any(String) },
+-      ],
++      operations: [{ status: "failed" }, { status: "completed" }],
+     });
++    expect(processEpisode.operations[1]?.replacement_of_operation_key).toMatch(/^sha256:/u);
+   });
+ });
