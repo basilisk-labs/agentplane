@@ -344,7 +344,9 @@ describe("hermes adapter commands", () => {
           },
         },
       });
-      expect(payload.execution.result.operation_result.value.invocation.work_order_id).toContain(taskId);
+      expect(payload.execution.result.operation_result.value.invocation.work_order_id).toContain(
+        taskId,
+      );
       expect(payload.workflow_supervision.audit.map((entry) => entry.event)).toEqual([
         "decision_observed",
         "operation_executed",
