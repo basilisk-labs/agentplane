@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "Замороженная проверка фиксирует команды и итоговые результаты, но не содержит необработанных журналов их выполнения.",
+      "broken_invariant": "Доказательство проверок должно позволять независимо подтвердить заявленные результаты, а не только полагаться на записанный статус.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-212157355-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:819889d4e4e8635c06002ad830fa0691862e14f6c7862fa700bab32f5909aa05",
+          "section": "verification_records"
+        },
+        {
+          "path": ".agentplane/tasks/202607282053-BYCY0Q/verification/20260728-2115-wall-time-budget.json",
+          "sha256": "sha256:634e2d19200f20546778db2856f1b39397ee99c7c921c07414a497acd5610fa1",
+          "section": "checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Измерение через Date.now() предполагает, что системные часы не смещаются назад во время запуска; отрицательная разница обнуляется и в таком случае занижает расход wall_time_ms.",
+    "Отложенный реальный replacement pilot допустимо выполнять только после интеграции и поэтому он не входит в текущую предынтеграционную проверку."
+  ]
+}
