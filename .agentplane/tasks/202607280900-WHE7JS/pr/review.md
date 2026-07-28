@@ -13,7 +13,7 @@ Created: 2026-07-28T09:02:22.621Z
 ## Verification
 
 - State: ok
-- Note: Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open.
+- Note: After rebasing onto main with the runner cancellation-intent retry, focused authority and runner regressions pass, typecheck/task-state/routing pass, and critical CLI matrix passes 11/11. Hosted CI must still validate the rebased PR head.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

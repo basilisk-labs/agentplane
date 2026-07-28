@@ -1,0 +1,1025 @@
+diff --git a/.agentplane/tasks/202607280900-WHE7JS/README.md b/.agentplane/tasks/202607280900-WHE7JS/README.md
+new file mode 100644
+index 000000000..d8ba56eff
+--- /dev/null
++++ b/.agentplane/tasks/202607280900-WHE7JS/README.md
+@@ -0,0 +1,122 @@
++---
++id: "202607280900-WHE7JS"
++title: "Break authority-close lifecycle feedback loop"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 8
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "blocker"
++  - "code"
++  - "lifecycle"
++  - "v0.7"
++  - "workflow"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "bun run test:critical"
++  - "bun run typecheck"
++  - "node .agentplane/policy/check-routing.mjs"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-28T09:01:44.246Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit: null
++comments:
++  -
++    author: "CODER"
++    body: "Start: isolate authority and close-tail freshness from implementation verification without weakening protected merge gates."
++events:
++  -
++    type: "status"
++    at: "2026-07-28T09:02:22.510Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: isolate authority and close-tail freshness from implementation verification without weakening protected merge gates."
++doc_version: 3
++doc_updated_at: "2026-07-28T09:02:22.510Z"
++doc_updated_by: "CODER"
++description: "v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration."
++sections:
++  Summary: |-
++    Break authority-close lifecycle feedback loop
++
++    v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.
++  Scope: |-
++    - In scope: v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.
++    - Out of scope: unrelated refactors not required for "Break authority-close lifecycle feedback loop".
++  Plan: |-
++    1. Trace the route predicates that classify task README and PR-artifact changes as verification/pre-merge invalidators.
++    2. Introduce an explicit freshness boundary: implementation, verification, quality, and close-tail evidence remain content-addressed; authority grants and provider-sync metadata preserve auditability but do not invalidate unchanged implementation evidence.
++    3. Preserve all high-risk gates: a protected provider operation still requires a matching current authority record; code/verification/quality changes still require fresh verification and pre-merge closure; final PR head and hosted checks must remain live and stable.
++    4. Add deterministic regression coverage for authority grant -> pre-merge closure -> final head publication -> integration queue, proving the route reaches an executable integration step without another verification cycle when implementation is unchanged.
++    5. Run focused route tests, task-state check, typecheck, critical tests, policy routing, and the relevant local CI selector; record residual compatibility risk in task Findings.
++  Verify Steps: |-
++    1. Add a deterministic route-level regression: authority grant, verification, evaluator pass, pre-merge closure, final-head publication, hosted-green refresh, integration queue. Expected: unchanged implementation and quality evidence reaches an executable integration action without another verification/close/publish loop.
++    2. Exercise the negative boundary. Expected: a changed implementation commit, invalid or stale authority, or changed hosted state still invalidates the appropriate evidence and blocks integration.
++    3. Inspect persisted task and authority artifacts. Expected: every protected operation retains a matching scoped authority record; no authority record widens an operation.
++    4. Run focused lifecycle-route tests, bun run task-state:check, bun run typecheck, bun run test:critical, and node .agentplane/policy/check-routing.mjs. Expected: all pass.
++    5. Publish a PR and require stable hosted checks before integrating. Expected: the PR head, review state, and merge queue agree; no manual provider merge is used.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Break authority-close lifecycle feedback loop
++
++v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.
++
++## Scope
++
++- In scope: v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.
++- Out of scope: unrelated refactors not required for "Break authority-close lifecycle feedback loop".
++
++## Plan
++
++1. Trace the route predicates that classify task README and PR-artifact changes as verification/pre-merge invalidators.
++2. Introduce an explicit freshness boundary: implementation, verification, quality, and close-tail evidence remain content-addressed; authority grants and provider-sync metadata preserve auditability but do not invalidate unchanged implementation evidence.
++3. Preserve all high-risk gates: a protected provider operation still requires a matching current authority record; code/verification/quality changes still require fresh verification and pre-merge closure; final PR head and hosted checks must remain live and stable.
++4. Add deterministic regression coverage for authority grant -> pre-merge closure -> final head publication -> integration queue, proving the route reaches an executable integration step without another verification cycle when implementation is unchanged.
++5. Run focused route tests, task-state check, typecheck, critical tests, policy routing, and the relevant local CI selector; record residual compatibility risk in task Findings.
++
++## Verify Steps
++
++1. Add a deterministic route-level regression: authority grant, verification, evaluator pass, pre-merge closure, final-head publication, hosted-green refresh, integration queue. Expected: unchanged implementation and quality evidence reaches an executable integration action without another verification/close/publish loop.
++2. Exercise the negative boundary. Expected: a changed implementation commit, invalid or stale authority, or changed hosted state still invalidates the appropriate evidence and blocks integration.
++3. Inspect persisted task and authority artifacts. Expected: every protected operation retains a matching scoped authority record; no authority record widens an operation.
++4. Run focused lifecycle-route tests, bun run task-state:check, bun run typecheck, bun run test:critical, and node .agentplane/policy/check-routing.mjs. Expected: all pass.
++5. Publish a PR and require stable hosted checks before integrating. Expected: the PR head, review state, and merge queue agree; no manual provider merge is used.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607280900-WHE7JS/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607280900-WHE7JS/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..00ce27ec5
+--- /dev/null
++++ b/.agentplane/tasks/202607280900-WHE7JS/blueprint/resolved-snapshot.json
+@@ -0,0 +1,581 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607280900-WHE7JS",
++    "title": "Break authority-close lifecycle feedback loop",
++    "description": "v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.",
++    "tags": [
++      "blocker",
++      "code",
++      "lifecycle",
++      "v0.7",
++      "workflow"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607280900-WHE7JS",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410"
++  }
++}
+diff --git a/.agentplane/tasks/202607280900-WHE7JS/pr/diffstat.txt b/.agentplane/tasks/202607280900-WHE7JS/pr/diffstat.txt
+new file mode 100644
+index 000000000..e69de29bb
+diff --git a/.agentplane/tasks/202607280900-WHE7JS/pr/github-body.md b/.agentplane/tasks/202607280900-WHE7JS/pr/github-body.md
+new file mode 100644
+index 000000000..3937d8cf1
+--- /dev/null
++++ b/.agentplane/tasks/202607280900-WHE7JS/pr/github-body.md
+@@ -0,0 +1,33 @@
++Task: `202607280900-WHE7JS`
++Title: Break authority-close lifecycle feedback loop
++Canonical task record: `.agentplane/tasks/202607280900-WHE7JS/README.md`
++
++## Summary
++
++Break authority-close lifecycle feedback loop
++
++v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.
++
++## Scope
++
++- In scope: v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration.
++- Out of scope: unrelated refactors not required for "Break authority-close lifecycle feedback loop".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-28T09:02:22.621Z
++- Branch: task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++No changes detected.
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607280900-WHE7JS/pr/github-title.txt b/.agentplane/tasks/202607280900-WHE7JS/pr/github-title.txt
+new file mode 100644
+index 000000000..f7afb1455
+--- /dev/null
++++ b/.agentplane/tasks/202607280900-WHE7JS/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 WHE7JS task: Break authority-close lifecycle feedback loop [202607280900-WHE7JS]
+diff --git a/.agentplane/tasks/202607280900-WHE7JS/pr/meta.json b/.agentplane/tasks/202607280900-WHE7JS/pr/meta.json
+new file mode 100644
+index 000000000..b10bdbead
+--- /dev/null
++++ b/.agentplane/tasks/202607280900-WHE7JS/pr/meta.json
+@@ -0,0 +1,13 @@
++{
++  "base": "main",
++  "branch": "task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop",
++  "created_at": "2026-07-28T09:02:22.621Z",
++  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "last_verified_at": null,
++  "schema_version": 1,
++  "task_id": "202607280900-WHE7JS",
++  "updated_at": "2026-07-28T09:02:22.621Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607280900-WHE7JS/pr/review.md b/.agentplane/tasks/202607280900-WHE7JS/pr/review.md
+new file mode 100644
+index 000000000..b655cbc96
+--- /dev/null
++++ b/.agentplane/tasks/202607280900-WHE7JS/pr/review.md
+@@ -0,0 +1,36 @@
++# PR Review
++
++Created: 2026-07-28T09:02:22.621Z
++
++## Task
++
++- Task: `202607280900-WHE7JS`
++- Title: Break authority-close lifecycle feedback loop
++- Status: DOING
++- Branch: `task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop`
++- Canonical task record: `.agentplane/tasks/202607280900-WHE7JS/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-28T09:02:22.621Z
++- Branch: task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++No changes detected.
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+index 9e788c968..433000aa3 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts
+@@ -9,10 +9,14 @@ import {
+ } from "@agentplaneorg/core/schemas";
+ import {
+   captureStdIO,
++  configureGitUser,
+   defaultConfig,
++  execFile,
+   expect,
++  extractTaskSuffix,
+   it,
+   mkGitRepoRootWithBranch,
++  promisify,
+   runCli,
+   runCliSilent,
+   writeConfig,
+@@ -61,7 +65,136 @@ async function createBranchPrTask(root: string): Promise<string> {
+   }
+ }
+ 
++type AuthorityRequest = {
++  type: string;
++  operationId: string;
++  operationDigest: string;
++  stateFingerprintDigest: string;
++  stateScopeDigest: string;
++};
++
++type NextActionJson = {
++  workflow_step: {
++    kind: string;
++    id: string;
++    request?: AuthorityRequest;
++    operation?: { id: string };
++  };
++};
++
++async function readNextActionJson(root: string, taskId: string): Promise<NextActionJson> {
++  const io = captureStdIO();
++  try {
++    const code = await runCli(["task", "next-action", taskId, "--json", "--root", root]);
++    if (code !== 0) process.stderr.write(io.stderr);
++    expect(code).toBe(0);
++    return JSON.parse(io.stdout) as NextActionJson;
++  } finally {
++    io.restore();
++  }
++}
++
+ describe("task next-action JSON", () => {
++  it("commits a branch_pr authority record before returning the authorized PR operation", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "branch_pr";
++    await writeConfig(root, config);
++    await writeRoutePolicies(root);
++    await configureGitUser(root);
++    const execFileAsync = promisify(execFile);
++    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
++    await execFileAsync("git", ["add", "."], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
++
++    const taskId = await createBranchPrTask(root);
++    await runCliSilent([
++      "task",
++      "plan",
++      "set",
++      taskId,
++      "--text",
++      "Commit authority records before continuing the protected PR route.",
++      "--updated-by",
++      "ORCHESTRATOR",
++      "--root",
++      root,
++    ]);
++    await runCliSilent(["task", "plan", "approve", taskId, "--by", "ORCHESTRATOR", "--root", root]);
++    const branch = `task/${taskId}/authority-auto-commit`;
++    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
++    await runCliSilent([
++      "task",
++      "start-ready",
++      taskId,
++      "--author",
++      "CODER",
++      "--body",
++      "Start: exercise the authority artifact commit boundary.",
++      "--root",
++      root,
++    ]);
++    await execFileAsync("git", ["add", "-A"], { cwd: root });
++    await execFileAsync(
++      "git",
++      [
++        "commit",
++        "-m",
++        `🧩 ${extractTaskSuffix(taskId)} task: establish branch packet for authority regression`,
++      ],
++      { cwd: root },
++    );
++    const { stdout: setupStatus } = await execFileAsync("git", ["status", "--porcelain"], {
++      cwd: root,
++    });
++    expect(setupStatus.trim()).toBe("");
++
++    const initial = await readNextActionJson(root, taskId);
++    expect(initial.workflow_step).toMatchObject({
++      kind: "approval",
++      id: "approval.pr.open",
++      request: { type: "side_effect", operationId: "pr.open" },
++    });
++    const request = initial.workflow_step.request;
++    if (!request) throw new Error("expected an authority request for pr.open");
++
++    await runCliSilent([
++      "task",
++      "authority",
++      "grant",
++      taskId,
++      "--operation",
++      request.operationId,
++      "--operation-digest",
++      request.operationDigest,
++      "--state-fingerprint",
++      request.stateFingerprintDigest,
++      "--state-scope-digest",
++      request.stateScopeDigest,
++      "--by",
++      "USER",
++      "--root",
++      root,
++    ]);
++
++    const { stdout: subject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
++      cwd: root,
++    });
++    expect(subject.trim()).toBe(
++      `🧩 ${extractTaskSuffix(taskId)} task: refresh task artifacts after commit`,
++    );
++    const { stdout: status } = await execFileAsync("git", ["status", "--porcelain"], { cwd: root });
++    expect(status.trim()).toBe("");
++
++    const authorized = await readNextActionJson(root, taskId);
++    expect(authorized.workflow_step).toMatchObject({
++      kind: "cli_operation",
++      id: "pr.open",
++      operation: { id: "pr.open" },
++    });
++  });
++
+   it("prints snake_case fields while preserving camelCase aliases", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+diff --git a/packages/agentplane/src/commands/task/authority-grant.command.ts b/packages/agentplane/src/commands/task/authority-grant.command.ts
+index f654f66bf..4633202e7 100644
+--- a/packages/agentplane/src/commands/task/authority-grant.command.ts
++++ b/packages/agentplane/src/commands/task/authority-grant.command.ts
+@@ -1,6 +1,7 @@
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
+ import { createCliEmitter } from "../../cli/output.js";
++import { maybeAutoCommitTaskPrArtifacts } from "../pr/internal/auto-commit.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+ import {
+   appendSideEffectAuthorityAudit,
+@@ -155,7 +156,7 @@ export function makeRunTaskAuthorityGrantHandler(getCtx: (cmd: string) => Promis
+     const issuedAt = now.toISOString();
+     const expiresAt = new Date(now.getTime() + parsed.ttlMinutes * 60_000).toISOString();
+     let grantId: string | null = null;
+-    await applyTaskMutation({
++    const mutation = await applyTaskMutation({
+       ctx: commandCtx,
+       taskId: parsed.taskId,
+       build: (task) => {
+@@ -200,10 +201,21 @@ export function makeRunTaskAuthorityGrantHandler(getCtx: (cmd: string) => Promis
+         return { nextTask: { ...task, extensions: withSideEffectAuthorityState(task, audited) } };
+       },
+     });
++    const branch = decision.workspace.prBranch;
++    const authorityArtifactCommitted =
++      mutation.changed && branch
++        ? await maybeAutoCommitTaskPrArtifacts({
++            ctx: commandCtx,
++            taskId: parsed.taskId,
++            branch,
++            baseBranch: decision.workspace.baseBranch,
++            strategy: "commit",
++          })
++        : false;
+     createCliEmitter().success(
+       "task authority grant",
+       parsed.taskId,
+-      `authority=${grantId ?? "recorded"} expires_at=${expiresAt}`,
++      `authority=${grantId ?? "recorded"} expires_at=${expiresAt}${authorityArtifactCommitted ? " committed" : ""}`,
+     );
+     return 0;
+   };

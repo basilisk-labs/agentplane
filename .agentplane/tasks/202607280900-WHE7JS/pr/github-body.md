@@ -19,9 +19,9 @@ v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority r
 - Note:
 
 ```text
-Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full
-local fast CI passed; the live authority grant auto-committed its packet and advanced directly to
-pr.open.
+After rebasing onto main with the runner cancellation-intent retry, focused authority and runner
+regressions pass, typecheck/task-state/routing pass, and critical CLI matrix passes 11/11. Hosted CI
+must still validate the rebased PR head.
 ```
 - Canonical workflow state lives in the task README.
 

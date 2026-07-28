@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -29,34 +29,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T09:22:59.261Z"
+  updated_at: "2026-07-28T10:28:47.525Z"
   updated_by: "TESTER"
-  note: "Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open."
+  note: "After rebasing onto main with the runner cancellation-intent retry, focused authority and runner regressions pass, typecheck/task-state/routing pass, and critical CLI matrix passes 11/11. Hosted CI must still validate the rebased PR head."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-07-28T09:23:17.513Z"
+  updated_at: "2026-07-28T10:29:09.901Z"
   updated_by: "HUMAN"
-  note: "Reviewed the authority-grant lifecycle boundary: branch_pr grants now commit only task packet artifacts through the existing PR artifact helper, preserving all authority validation before mutation."
-  evaluated_sha: "03a98aa601a69dd8c89e5dc424ca2e0ed214d025"
+  note: "The authority grant now commits only the current task packet after a changed grant, preventing the authority-to-dirty-worktree feedback loop without widening authority semantics."
+  evaluated_sha: "b803b67e786127a849af228924ce35faff083247"
   blueprint_digest: "cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410"
   evidence_refs:
-    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-102909016-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-102909016-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-102909016-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-102909016-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607280900-WHE7JS/README.md"
-    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-102909016-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-102909016-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-102909016-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "bun run ci:local:fast"
+    - "packages/agentplane/src/commands/task/authority-grant.command.ts"
+    - "packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts"
+    - "focused authority-route and runner regressions passed; bun run typecheck, task-state:check, check-routing, and test:critical 11/11 passed"
   findings:
-    - "No scope-digest, expiry, stale-input, or protected-operation policy was relaxed. The focused route regression proves a granted pr.open advances to an executable operation with a clean worktree; full fast CI passed."
+    - "Rebased scope preserves the narrow auto-commit behavior and route-level regression; it now includes the merged cancellation-intent retry that caused the prior hosted unit failure. Focused authority and runner regressions, typecheck, task-state, routing, and critical CLI 11/11 pass."
 commit:
   hash: "6d40a20d583714656c5edbffbf4bd78c483902c7"
   message: "🧩 WHE7JS task: refresh task artifacts after commit"
@@ -98,8 +100,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T10:28:47.525Z"
+    author: "TESTER"
+    state: "ok"
+    note: "After rebasing onto main with the runner cancellation-intent retry, focused authority and runner regressions pass, typecheck/task-state/routing pass, and critical CLI matrix passes 11/11. Hosted CI must still validate the rebased PR head."
 doc_version: 3
-doc_updated_at: "2026-07-28T09:23:47.147Z"
+doc_updated_at: "2026-07-28T10:28:50.098Z"
 doc_updated_by: "CODER"
 description: "v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration."
 sections:
@@ -154,6 +162,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T10:28:47.525Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: After rebasing onto main with the runner cancellation-intent retry, focused authority and runner regressions pass, typecheck/task-state/routing pass, and critical CLI matrix passes 11/11. Hosted CI must still validate the rebased PR head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T09:23:47.147Z, excerpt_hash=sha256:52fcdb54a6ac5d2e275518998c6d5e8482aa9d20bac2e445e9a05838c2d4d074
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280900-WHE7JS-break-authority-close-lifecycle-feedback-loop/.agentplane/tasks/202607280900-WHE7JS/blueprint/resolved-snapshot.json
+    - old_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+    - current_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607280900-WHE7JS
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -162,6 +200,10 @@ sections:
     - Observation: authority grant emitted committed and next-action became cli_operation pr.open
       Impact: breaks the task-worktree dirty feedback loop without weakening authority scope or expiry
       Resolution: verified against commit 03a98aa601a69dd8c89e5dc424ca2e0ed214d025
+
+    - Observation: The previous hosted unit failure was the cancellation-intent read race now fixed by merged N3.
+      Impact: The WHE lifecycle change could not be integrated safely until its CI ran with the runner fix.
+      Resolution: Rebase WHE onto current main and require a new green hosted check set before queueing integration.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -339,6 +381,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T10:28:47.525Z — VERIFY — ok
+
+By: TESTER
+
+Note: After rebasing onto main with the runner cancellation-intent retry, focused authority and runner regressions pass, typecheck/task-state/routing pass, and critical CLI matrix passes 11/11. Hosted CI must still validate the rebased PR head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T09:23:47.147Z, excerpt_hash=sha256:52fcdb54a6ac5d2e275518998c6d5e8482aa9d20bac2e445e9a05838c2d4d074
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280900-WHE7JS-break-authority-close-lifecycle-feedback-loop/.agentplane/tasks/202607280900-WHE7JS/blueprint/resolved-snapshot.json
+- old_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+- current_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607280900-WHE7JS
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -351,3 +423,7 @@ DecisionContextRef:
 - Observation: authority grant emitted committed and next-action became cli_operation pr.open
   Impact: breaks the task-worktree dirty feedback loop without weakening authority scope or expiry
   Resolution: verified against commit 03a98aa601a69dd8c89e5dc424ca2e0ed214d025
+
+- Observation: The previous hosted unit failure was the cancellation-intent read race now fixed by merged N3.
+  Impact: The WHE lifecycle change could not be integrated safely until its CI ran with the runner fix.
+  Resolution: Rebase WHE onto current main and require a new green hosted check set before queueing integration.
