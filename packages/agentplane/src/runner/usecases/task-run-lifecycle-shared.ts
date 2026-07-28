@@ -2,6 +2,7 @@ import { realpath } from "node:fs/promises";
 import path from "node:path";
 
 import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
+import type { RunnerEffectResolutionRef } from "@agentplaneorg/core/schemas";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
@@ -45,6 +46,8 @@ export type EffectResumedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
   source_run_id: string;
   source_status: RunnerLifecycleStatus;
   previous_status: RunnerLifecycleStatus;
+  /** Immutable operator disposition that authorized this fresh effect attempt. */
+  source_effect_resolution: RunnerEffectResolutionRef;
 };
 
 export type RunnerReplayAction = "resume" | "retry" | "resume_effect";

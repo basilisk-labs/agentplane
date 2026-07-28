@@ -24,12 +24,25 @@ Created: 2026-07-28T01:55:50.166Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T01:55:50.166Z
+- Updated: 2026-07-28T01:56:15.744Z
 - Branch: task/202607221850-R7WS01/return-typed-runner-lifecycle-results
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/cli/run-cli.core.task-run.test.ts          |   6 +
+ .../src/commands/hermes/hermes-runtime.ts          |  17 +-
+ .../src/commands/hermes/hermes.command.test.ts     |  45 +++++-
+ .../src/commands/shared/workflow-supervisor.ts     |   8 +
+ .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
+ .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
+ .../agentplane/src/commands/task/run.command.ts    |  41 ++---
+ .../task/task-run-effect-resolution.command.ts     |  28 ++--
+ .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
+ .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
+ .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
+ .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
+ .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
+ 13 files changed, 552 insertions(+), 60 deletions(-)
 ```
 
 </details>

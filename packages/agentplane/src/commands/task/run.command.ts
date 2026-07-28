@@ -5,6 +5,11 @@ import {
   executeTaskRunnerExecution,
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
+import {
+  projectExecutedTaskRunnerLifecycleResult,
+  projectPreparedTaskRunnerLifecycleResult,
+  taskRunnerLifecycleExitCode,
+} from "../../runner/usecases/task-run-lifecycle-result.js";
 import { RUNNER_SANDBOX_MODES } from "../../runner/types.js";
 import {
   loadTaskRunnerDiagnosticInspection,
@@ -19,7 +24,7 @@ import {
   renderRunnerDiagnosticStatusPayload,
   renderRunnerStatusPayload,
   runnerReconciliationWarning,
-  renderTaskRunPayload,
+  renderTaskRunnerLifecyclePayload,
   reportExecutedTaskRun,
   reportPreparedTaskRun,
   tailText,
@@ -277,16 +282,11 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
         danger_authority: dangerAuthority,
         sandbox_override: parsed.sandbox,
       });
-      const payload = renderTaskRunPayload({
-        taskId: parsed.taskId,
-        mode: "dry_run",
-        adapterId: prepared.invocation.adapter_id,
-        runId: prepared.invocation.run_id,
-        runDir: prepared.invocation.run_dir,
-        bundlePath: prepared.invocation.bundle_path,
-        bootstrapPath: prepared.invocation.bootstrap_path ?? "",
-        resultPath: prepared.invocation.result_path,
+      const lifecycle = projectPreparedTaskRunnerLifecycleResult({
+        task_id: parsed.taskId,
+        execution: prepared,
       });
+      const payload = renderTaskRunnerLifecyclePayload(lifecycle);
       if (parsed.json) {
         output.json(payload);
       } else {
@@ -304,28 +304,17 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
       danger_authority: dangerAuthority,
       sandbox_override: parsed.sandbox,
     });
-    const payload = renderTaskRunPayload({
-      taskId: parsed.taskId,
-      mode: "execute",
-      adapterId: executed.invocation.adapter_id,
-      runId: executed.invocation.run_id,
-      runDir: executed.invocation.run_dir,
-      bundlePath: executed.invocation.bundle_path,
-      bootstrapPath: executed.invocation.bootstrap_path ?? "",
-      resultPath: executed.invocation.result_path,
-      status: executed.result.status,
-      verificationState: executed.result.execution_receipt?.verification_state,
-      receiptPath: executed.result.execution_receipt?.path,
-      exitCode: executed.result.exit_code,
-      summary: executed.result.summary,
-      activeClaimCleanup: executed.active_claim_cleanup,
+    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
+      task_id: parsed.taskId,
+      execution: executed,
     });
+    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
     if (parsed.json) {
       output.json(payload);
     } else {
       reportExecutedTaskRun(payload, parsed.taskId);
     }
-    return executed.result.status === "success" && !executed.active_claim_cleanup ? 0 : 1;
+    return taskRunnerLifecycleExitCode(lifecycle);
   };
 }
 

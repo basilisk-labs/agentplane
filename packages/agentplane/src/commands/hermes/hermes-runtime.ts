@@ -7,6 +7,11 @@ import {
   prepareTaskRunnerExecution,
 } from "../../runner/usecases/task-run.js";
 import {
+  projectExecutedTaskRunnerLifecycleResult,
+  projectPreparedTaskRunnerLifecycleResult,
+  taskRunnerLifecycleExitCode,
+} from "../../runner/usecases/task-run-lifecycle-result.js";
+import {
   prepareAgentWorkOrder,
   requirePreparedAgentWorkOrder,
 } from "../../runner/usecases/agent-work-order.js";
@@ -271,11 +276,16 @@ export async function executeHermesWorkflowOperation(opts: {
       mode: "dry_run",
       ...(opts.includeRemote ? { include_remote: true } : {}),
     });
+    const lifecycle = projectPreparedTaskRunnerLifecycleResult({
+      task_id: taskId,
+      execution: prepared,
+    });
     return {
       status: "succeeded",
       observed_postconditions: ["runner_state_observed"],
       detail: `prepared runner invocation ${prepared.invocation.run_id} for ${taskId}`,
       exit_code: null,
+      operation_result: { kind: "runner_lifecycle", value: lifecycle },
     };
   }
 
@@ -286,12 +296,17 @@ export async function executeHermesWorkflowOperation(opts: {
     task_id: taskId,
     ...(opts.includeRemote ? { include_remote: true } : {}),
   });
-  const succeeded = executed.result.status === "success" && !executed.active_claim_cleanup;
+  const lifecycle = projectExecutedTaskRunnerLifecycleResult({
+    task_id: taskId,
+    execution: executed,
+  });
+  const succeeded = taskRunnerLifecycleExitCode(lifecycle) === 0;
   return {
     status: succeeded ? "succeeded" : "failed",
     observed_postconditions: ["runner_state_observed"],
     detail: executed.result.summary ?? `runner execution completed for ${taskId}`,
     exit_code: executed.result.exit_code,
+    operation_result: { kind: "runner_lifecycle", value: lifecycle },
   };
 }
 

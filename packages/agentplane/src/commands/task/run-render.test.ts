@@ -4,13 +4,151 @@ import { captureStdIO } from "@agentplane/testkit";
 import { readObservedProcessIdentity } from "../../runner/process-supervision/signals.js";
 import type { LoadedTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
 import {
+  projectExecutedTaskRunnerLifecycleResult,
+  type TaskRunnerLifecycleResult,
+} from "../../runner/usecases/task-run-lifecycle-result.js";
+import {
+  reportExecutedTaskRun,
   reportRunnerStatus,
+  renderTaskRunnerLifecyclePayload,
   renderRunnerStatusPayload,
   renderTaskRunPayload,
   runnerReconciliationWarning,
 } from "./run-render.js";
 
 describe("task run rendering", () => {
+  it("renders the typed effect lifecycle without parsing a runner report", () => {
+    const lifecycle = {
+      schema: "agentplane.task_runner_lifecycle_result.v1",
+      phase: "executed",
+      task_id: "TASK-EFFECT",
+      invocation: {
+        adapter_id: "codex",
+        run_id: "run-effect",
+        work_order_id: "work-order-effect",
+        run_dir: "/repo/runs/run-effect",
+        bundle_path: "/repo/runs/run-effect/bundle.json",
+        bootstrap_path: "/repo/runs/run-effect/bootstrap.md",
+        result_path: "/repo/runs/run-effect/result.json",
+      },
+      lifecycle: {
+        mode: "execute",
+        status: "failed",
+        state_fingerprint: null,
+        effect: {
+          state: "effect_in_doubt",
+          operation: {
+            operation_key: `sha256:${"a".repeat(64)}`,
+            operation_digest: `sha256:${"b".repeat(64)}`,
+            claim_generation: `sha256:${"c".repeat(64)}`,
+          },
+          authority: {
+            ref: "work-order:work-order-effect",
+            digest: `sha256:${"e".repeat(64)}`,
+          },
+          observed_evidence: {
+            code: "runner_adapter_effect_error",
+            digest: `sha256:${"f".repeat(64)}`,
+          },
+          claim_generation: `sha256:${"c".repeat(64)}`,
+          resolution: null,
+          resolution_provenance: null,
+          source_resolution: null,
+          source_resolution_provenance: null,
+        },
+        work_order_authority: null,
+      },
+      result: {
+        status: "failed",
+        exit_code: 1,
+        started_at: "2026-07-28T00:00:00.000Z",
+        ended_at: "2026-07-28T00:00:01.000Z",
+        summary: "provider outcome is uncertain",
+      },
+      active_claim_cleanup: null,
+    } as unknown as TaskRunnerLifecycleResult;
+
+    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
+    expect(payload).toMatchObject({
+      task_id: "TASK-EFFECT",
+      work_order_id: "work-order-effect",
+      lifecycle_result: {
+        lifecycle: {
+          effect: {
+            state: "effect_in_doubt",
+            operation: { claim_generation: `sha256:${"c".repeat(64)}` },
+            authority: { digest: `sha256:${"e".repeat(64)}` },
+            observed_evidence: { digest: `sha256:${"f".repeat(64)}` },
+            resolution: null,
+          },
+        },
+      },
+    });
+
+    const io = captureStdIO();
+    try {
+      reportExecutedTaskRun(payload, "TASK-EFFECT");
+      expect(io.stdout).toMatch(/work_order:\s+work-order-effect/u);
+      expect(io.stdout).toMatch(/effect:\s+effect_in_doubt/u);
+      expect(io.stdout).toMatch(new RegExp(`effect_authority:\\s+sha256:${"e".repeat(64)}`, "u"));
+      expect(io.stdout).toMatch(new RegExp(`effect_evidence:\\s+sha256:${"f".repeat(64)}`, "u"));
+      expect(io.stdout).toMatch(
+        new RegExp(`effect_claim_generation:\\s+sha256:${"c".repeat(64)}`, "u"),
+      );
+    } finally {
+      io.restore();
+    }
+
+    for (const verdict of ["applied", "not_applied"] as const) {
+      const resolved = projectExecutedTaskRunnerLifecycleResult({
+        task_id: "TASK-EFFECT",
+        execution: {
+          ...lifecycle,
+          bundle: {},
+          state: {
+            mode: "execute",
+            status: "blocked",
+            effect_resolution: {
+              verdict,
+              digest: `sha256:${"d".repeat(64)}`,
+            },
+          },
+          effect_operation: {
+            operation: {
+              authority_ref: "work-order:work-order-effect",
+              authority_digest: `sha256:${"e".repeat(64)}`,
+              claim_generation: `sha256:${"c".repeat(64)}`,
+            },
+            journal: {
+              observed_evidence: {
+                code: "operator_resolution_evidence",
+                digest: `sha256:${"f".repeat(64)}`,
+              },
+            },
+          },
+          source_effect_resolution: {
+            verdict: "not_applied",
+            digest: `sha256:${"g".repeat(64)}`,
+          },
+        } as unknown as Parameters<typeof projectExecutedTaskRunnerLifecycleResult>[0]["execution"],
+        source_effect_resolution: {
+          verdict: "not_applied",
+          digest: `sha256:${"g".repeat(64)}`,
+        } as unknown as TaskRunnerLifecycleResult["lifecycle"]["effect"]["source_resolution"],
+      });
+      expect(resolved.lifecycle.effect).toMatchObject({
+        state: verdict,
+        resolution: { verdict },
+        resolution_provenance: "operator_supplied",
+        authority: { digest: `sha256:${"e".repeat(64)}` },
+        observed_evidence: { digest: `sha256:${"f".repeat(64)}` },
+        claim_generation: `sha256:${"c".repeat(64)}`,
+        source_resolution: { verdict: "not_applied" },
+        source_resolution_provenance: "operator_supplied",
+      });
+    }
+  });
+
   it("keeps execution status and verification confidence distinct", () => {
     expect(
       renderTaskRunPayload({

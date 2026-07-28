@@ -126,6 +126,7 @@ describe("runCli task run", () => {
       invocation: {
         adapter_id: "custom",
         run_id: "run-degraded-cleanup",
+        work_order_id: "work-order-degraded-cleanup",
         run_dir: "/repo/run",
         bundle_path: "/repo/run/bundle.json",
         bootstrap_path: "/repo/run/bootstrap.md",
@@ -136,6 +137,11 @@ describe("runCli task run", () => {
         exit_code: 0,
         summary: "provider completed",
       },
+      state: {
+        mode: "execute",
+        status: "success",
+      },
+      bundle: {},
       active_claim_cleanup: cleanup,
     } as unknown as Awaited<ReturnType<typeof taskRunUsecases.executeTaskRunnerExecution>>;
     const executeSpy = vi

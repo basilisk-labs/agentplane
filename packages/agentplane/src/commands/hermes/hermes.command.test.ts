@@ -233,7 +233,27 @@ describe("hermes adapter commands", () => {
           requested: boolean;
           dry_run: boolean;
           allowed: boolean;
-          result: { detail: string; exit_code: number | null };
+          result: {
+            detail: string;
+            exit_code: number | null;
+            operation_result: {
+              kind: string;
+              value: {
+                schema: string;
+                phase: string;
+                task_id: string;
+                invocation: { work_order_id: string };
+                lifecycle: {
+                  effect: {
+                    state: string;
+                    authority: { ref: string; digest: string } | null;
+                    observed_evidence: { code: string; digest: string | null } | null;
+                    claim_generation: string | null;
+                  };
+                };
+              };
+            };
+          };
         };
         workflow_supervision: { audit: { event: string }[] };
         refreshed_route: { task: { id: string } };
@@ -244,6 +264,29 @@ describe("hermes adapter commands", () => {
       expect(payload.execution.allowed).toBe(true);
       expect(payload.execution.result.detail).toContain(taskId);
       expect(payload.execution.result.exit_code).toBeNull();
+      expect(payload.execution.result.operation_result).toMatchObject({
+        kind: "runner_lifecycle",
+        value: {
+          schema: "agentplane.task_runner_lifecycle_result.v1",
+          phase: "prepared",
+          task_id: taskId,
+          lifecycle: {
+            effect: {
+              state: "not_recorded",
+              authority: {
+                ref: expect.stringContaining("work-order:"),
+                digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
+              },
+              observed_evidence: {
+                code: "runner_effect_operation_prepared",
+                digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
+              },
+              claim_generation: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
+            },
+          },
+        },
+      });
+      expect(payload.execution.result.operation_result.value.invocation.work_order_id).toContain(taskId);
       expect(payload.workflow_supervision.audit.map((entry) => entry.event)).toEqual([
         "decision_observed",
         "operation_executed",
