@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on: []
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "The frozen delta is limited to extracting evaluator verification-record discovery and refreshing closure evidence; the supplied verification records preserve coverage of explicit replacement admission, default terminal blocking, effect-in-doubt rejection, pending-reservation recovery, and cross-process single-provider admission."
 commit:
-  hash: "059ebf2ee6d1638a1b5234ba6c3f179a38e5834a"
-  message: "🔍 YMPY8Y evaluator: record fresh hosted CI quality pass"
+  hash: "cfd2a1c6cd5e3c1956a85e547f43723be362e593"
+  message: "🔍 YMPY8Y evaluator: record fresh hotspot quality pass"
 comments:
   -
     author: "CODER"
@@ -71,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -160,8 +163,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted hotspot rework verified: evaluator verification-record collection is split into a dedicated helper and the 600-line contract gate passes."
+  -
+    type: "status"
+    at: "2026-07-28T19:42:09.662Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T19:36:30.409Z"
+doc_updated_at: "2026-07-28T19:42:09.664Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -433,8 +443,8 @@ sections:
       Resolution: Extracted verificationRecordPaths into evaluator-verification-records.ts; hotspot, lint, types, evaluator command tests, compatibility, and routing pass at 4daba8e5fcebc22526c966e2c527b963b18422eb.
 extensions:
   implementation_commit:
-    hash: "c782e037a6d197467ffe87b6745c8a7141975525"
-    message: "🧪 YMPY8Y task: freeze hosted CI rework verification"
+    hash: "93b6cc4311380a09b2148feb29e373f89edf5dd8"
+    message: "🧪 YMPY8Y task: freeze hotspot rework verification"
   workflow_route_baseline:
     start_head_sha: "a9b9d6a834893013c30b5046d0c618cb23553638"
     version: 1
