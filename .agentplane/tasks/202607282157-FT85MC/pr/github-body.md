@@ -19,8 +19,8 @@ RF-QUALITY: evaluator review must freeze the complete task branch diff against i
 - Note:
 
 ```text
-Independent verification passed after the root-commit fix: branch_pr now fails closed without a
-base, while direct fallback remains explicit and hotspot contracts remain satisfied.
+Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted
+task verification; orphan post-transition records are excluded.
 ```
 - Canonical workflow state lives in the task README.
 
