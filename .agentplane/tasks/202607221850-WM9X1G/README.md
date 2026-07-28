@@ -4,7 +4,7 @@ title: "Journal resumable context-ingestion phases"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -36,6 +36,30 @@ verification:
   updated_by: "TESTER"
   note: "Focused ingest/doctor/extraction/finalize tests: 24 passed; critical CLI suite: 11/11 chunks passed; task-state, lint, typecheck, routing, and diff checks passed."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-28T08:14:49.383Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "21cd8c94d46c6a130ce5bad53b787372b3ad61cd"
+  blueprint_digest: "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
+  evidence_refs:
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/README.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Single source-set lease prevents competing manifest mutations; SHA-256 fingerprints and crash-boundary tests cover safe resume. Unknown backend creation remains fail-closed at task_creating."
 commit:
   hash: "21cd8c94d46c6a130ce5bad53b787372b3ad61cd"
   message: "feat: journal resumable context ingestion"
