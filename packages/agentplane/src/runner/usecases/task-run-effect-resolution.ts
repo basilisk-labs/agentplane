@@ -18,6 +18,7 @@ import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { ensureStableRunnerArtifactDirectoryChain } from "../run-directory-boundary.js";
 import { RunnerRunRepository } from "../run-repository.js";
 import {
+  isStableFileReadCollision,
   readStableRegularTextNoFollow,
   writeNewStableRegularFileNoFollow,
 } from "../stable-file.js";
@@ -107,16 +108,6 @@ function isConcurrentRetirementError(error: unknown): boolean {
   );
 }
 
-function isTransientActiveClaimReadCollision(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error);
-  return (
-    message.startsWith("runner active claim ") &&
-    (message.includes(" changed before it could be read:") ||
-      message.includes(" changed while it was being read:") ||
-      message.includes(" path changed while it was being read:"))
-  );
-}
-
 async function waitForConcurrentResolutionRetirement(opts: {
   repository: RunnerRunRepository;
   git_root: string;
@@ -134,7 +125,7 @@ async function waitForConcurrentResolutionRetirement(opts: {
         task_id: opts.task_id,
         run_id: opts.run_id,
       }).catch((error: unknown) => {
-        if (isTransientActiveClaimReadCollision(error)) return undefined;
+        if (isStableFileReadCollision(error, "runner active claim")) return undefined;
         throw error;
       }),
     ]);

@@ -141,6 +141,15 @@ export async function readStableRegularTextNoFollow(
   return content.toString("utf8");
 }
 
+export function isStableFileReadCollision(error: unknown, label: string): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return [
+    "changed before it could be read:",
+    "changed while it was being read:",
+    "path changed while it was being read:",
+  ].some((detail) => message.startsWith(`${label} ${detail}`));
+}
+
 export async function appendStableRegularFileNoFollow(
   filePath: string,
   contents: string | Buffer,
