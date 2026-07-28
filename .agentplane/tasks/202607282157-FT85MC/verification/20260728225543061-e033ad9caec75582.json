@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx prettier --check evaluator review, verification record, task verification, and workflow hook files\nResult: pass\nScope: all files changed for FT85MC rework\n\nCommand: bunx eslint evaluator review, verification record, task verification, and workflow hook files\nResult: pass\nScope: all files changed for FT85MC rework\n\nCommand: bunx vitest run verify-record.unit.test.ts verify-record.durability.unit.test.ts workflow.verify-hooks.test.ts evaluator-run.command.test.ts\nResult: pass (4 files, 50 tests)\nScope: durable verification writer, concurrent verification, evaluator evidence discovery\n\nCommand: bun run typecheck\nResult: pass\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nScope: runtime limit 600 lines; evaluator-review-usecase below limit; test baseline accepted\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nScope: policy routing\n\nCommand: agentplane doctor\nResult: pass (0 errors; 3 pre-existing historical DONE-task warnings)\nScope: workflow, workspace, branch_pr, runtime, blueprint, prompt graph, archive\n\nCommand: git diff --check\nResult: pass\nScope: current task worktree",
+  "digest": "sha256:e033ad9caec755823b8686a1c3bbbfdc76e71e84e15bf7a4059ab2754d6e0c26",
+  "implementation_sha": "6d411661eef470acec14af1f8e2939de7a8a605d",
+  "kind": "task_verification_record",
+  "note": "Rework verified with durable command-level evidence for the current evaluator review.",
+  "recorded_at": "2026-07-28T22:55:43.061Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
+  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
+  "task_id": "202607282157-FT85MC",
+  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
+  "verifier": "TESTER"
+}

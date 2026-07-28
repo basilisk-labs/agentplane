@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T22:54:45.309Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "a3d401d9e9afdd6d5634fd7ddd8a226826895d7c",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "The final frozen verification evidence does not contain the required check results; it only records an unsubstantiated success note."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/verification/20260728225329224-09b45351c8dd8de9.json",
+    ".agentplane/tasks/202607282157-FT85MC/quality/20260728-225348913-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607282157-FT85MC/README.md"
+  ],
+  "missing_tests": [
+    "Prepare a final evaluator work order after verification and assert that its admitted verification record contains concrete command, result, and scope entries for focused tests, formatting, typecheck, policy routing, and doctor.",
+    "Reject or flag an ok verification record with null/empty details when the task's Verify Steps require named checks."
+  ],
+  "hidden_assumptions": [
+    "A verification note stating that rework was verified is assumed to prove the underlying required checks even though the authoritative record contains no check details.",
+    "Earlier narrative verification entries in the task README are assumed to remain sufficient after record discovery intentionally narrows frozen evidence to the single current verification record."
+  ],
+  "residual_risks": [
+    "Record a new current verification through the supported path with durable details for every required check, then prepare a fresh evaluator work order and confirm that the admitted verification evidence exposes those concrete results."
+  ]
+}

@@ -16,12 +16,7 @@ RF-QUALITY: evaluator review must freeze the complete task branch diff against i
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted
-task verification; orphan post-transition records are excluded.
-```
+- Note: Rework verified with durable command-level evidence for the current evaluator review.
 - Canonical workflow state lives in the task README.
 
 <details>

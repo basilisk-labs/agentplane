@@ -13,7 +13,7 @@ Created: 2026-07-28T21:58:43.037Z
 ## Verification
 
 - State: ok
-- Note: Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.
+- Note: Rework verified with durable command-level evidence for the current evaluator review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
