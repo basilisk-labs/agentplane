@@ -33,7 +33,7 @@ recover fail-closed; private provider usage is budgeted without public-schema dr
 ```text
  .../evaluator-episode.calibration.test.ts          |  22 +-
  .../src/commands/evaluator/evaluator-episode.ts    | 103 +++-
- .../evaluator/evaluator-execute.command.test.ts    | 288 ++++++++++
+ .../evaluator/evaluator-execute.command.test.ts    | 290 ++++++++++
  .../src/commands/evaluator/evaluator.command.ts    | 381 ++++++++++++-
  .../src/commands/hermes/hermes.command.test.ts     |  42 +-
  .../src/commands/hermes/hermes.command.ts          |  53 +-
@@ -47,7 +47,7 @@ recover fail-closed; private provider usage is budgeted without public-schema dr
  .../runner/supervisor-execution-episode.test.ts    | 267 +++++++++
  .../src/runner/supervisor-execution-episode.ts     | 594 +++++++++++++++++++++
  packages/core/src/schemas/index.ts                 |  37 ++
- 16 files changed, 2712 insertions(+), 67 deletions(-)
+ 16 files changed, 2714 insertions(+), 67 deletions(-)
 ```
 
 </details>
