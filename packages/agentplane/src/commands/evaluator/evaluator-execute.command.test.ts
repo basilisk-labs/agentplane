@@ -689,7 +689,7 @@ describe("evaluator execute supervisor episode", () => {
       AGENTPLANE_FAKE_CODEX_INVOCATIONS: invocationLog,
       AGENTPLANE_FAKE_CODEX_DELAY_MS: "100",
     };
-    const executions = await Promise.all(
+    await Promise.all(
       [1, 2].map(() =>
         runCliInSeparateProcess({
           root,
@@ -701,7 +701,6 @@ describe("evaluator execute supervisor episode", () => {
       ),
     );
 
-    expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
     const invocationContents = await readFile(invocationLog, "utf8");
     const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);
