@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281303-81KQ3X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T13:14:20.566Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The change removes the authority-to-PR-head feedback loop while preserving exact operation, scope, expiry, audit-chain, and tamper checks.",
+  "evaluated_sha": "a03c556bcb65f44548297514f81741f111180f39",
+  "blueprint_digest": "c7353729e4493adc49a18d511c920128c3f262b8451b1463e3a0e255dd128188",
+  "findings": [
+    "Persisted common-dir metadata is shared by linked task and base worktrees without changing refs/heads."
+  ],
+  "evidence_refs": [
+    "commit:a03c556bcb65f44548297514f81741f111180f39",
+    "packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts",
+    "bun run typecheck; bun run test:fast; ci:local:fast"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "Authority metadata is intentionally repository-local and must be granted again after moving to a different clone; each grant has a maximum 60-minute TTL."
+  ]
+}
