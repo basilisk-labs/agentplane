@@ -6,7 +6,10 @@ import { execFileAsync } from "@agentplaneorg/core/process";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
-import { createCodexResultEventCollector } from "../../runner/adapters/codex-result-transport.js";
+import {
+  createCodexResultEventCollector,
+  type CodexProviderUsage,
+} from "../../runner/adapters/codex-result-transport.js";
 import type { EvaluatorSgrResult } from "../../evaluators/sgr-result.js";
 
 import {
@@ -100,6 +103,7 @@ type EvaluatorEpisodeProviderResult = {
   ended_at: string;
   stdout_bytes: number;
   stderr_bytes: number;
+  provider_usage?: CodexProviderUsage | null;
 };
 
 export type EvaluatorEpisodeProvider = (
@@ -117,6 +121,7 @@ export type EvaluatorEpisodeReceipt = {
   ended_at: string;
   stdout_bytes: number;
   stderr_bytes: number;
+  provider_usage: CodexProviderUsage | null;
   workspace_state: "unchanged";
   result_sha256: `sha256:${string}`;
 };
@@ -280,12 +285,14 @@ const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation
         if (stdoutBuffer.trim()) collector.observeStdoutLine(stdoutBuffer);
         const rawText = collector.readLastAgentMessage();
         if (rawText === null) throw new Error("Codex evaluator returned no structured result.");
+        const providerUsage = collector.readUsage();
         finish(undefined, {
           raw_result: JSON.parse(rawText) as unknown,
           started_at: startedAt,
           ended_at: new Date().toISOString(),
           stdout_bytes: stdoutBytes,
           stderr_bytes: stderrBytes,
+          provider_usage: providerUsage,
         });
       } catch (error) {
         finish(error instanceof Error ? error : new Error(String(error)));
@@ -349,6 +356,7 @@ export async function executePreparedEvaluatorEpisode(opts: {
       ended_at: providerResult.ended_at,
       stdout_bytes: providerResult.stdout_bytes,
       stderr_bytes: providerResult.stderr_bytes,
+      provider_usage: providerResult.provider_usage ?? null,
       workspace_state: "unchanged",
       result_sha256: sha256(canonicalResult),
     },

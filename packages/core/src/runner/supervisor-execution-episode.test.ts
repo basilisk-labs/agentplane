@@ -208,4 +208,37 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     expect(JSON.stringify(completed)).not.toContain("small focused change");
     expect(JSON.stringify(completed)).not.toContain("provider output is never copied");
   });
+
+  it("stops a repeated no-progress agent cycle before a third work order", () => {
+    const first = start({ journal: journal({ max_no_progress_episodes: 1 }) });
+    if (first.status !== "started") throw new Error("expected first agent episode");
+    const firstCompleted = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { status: "ok" },
+      progress: { observed_state: "unchanged" },
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const advanced = advanceSupervisorExecutionEpisodeState({
+      journal: firstCompleted,
+      state_fingerprint_digest: FINGERPRINT,
+      route_observation: { step: "second" },
+      now: "2026-07-28T00:00:02.000Z",
+    });
+    const second = start({ journal: advanced, now: "2026-07-28T00:00:03.000Z" });
+    if (second.status !== "started") throw new Error("expected second agent episode");
+    const stopped = completeSupervisorExecutionEpisode({
+      journal: second.journal,
+      operation_key: second.operation_key,
+      result: { status: "ok" },
+      progress: { observed_state: "unchanged" },
+      now: "2026-07-28T00:00:04.000Z",
+    });
+
+    expect(stopped).toMatchObject({
+      status: "stopped",
+      usage: { no_progress_episodes: 1 },
+      stop: { reason: "budget_exhausted", exhausted_dimensions: ["no_progress_episodes"] },
+    });
+  });
 });
