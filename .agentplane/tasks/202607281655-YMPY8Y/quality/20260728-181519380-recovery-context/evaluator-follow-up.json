@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607281655-YMPY8Y-d66596c98c97ee5b8a23f08d",
+  "task_id": "202607281655-YMPY8Y",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "The concurrency and interruption-recovery changes are represented in the frozen diff, but quality cannot pass until exact command-level verification records are frozen and the declared real post-integration replacement episode proves end-to-end recovery without replaying or mutating the failed operation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The required real replacement-provider episode remains unexecuted, so end-to-end recovery without replay is unproven.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:f93d4c52b8a587274ae9f93980fc806db28a42ddfdfa2b89a30769da6a3def36",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "declared_checks"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Frozen verification evidence asserts successful checks but contains no command-level execution records.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "runner_history"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-result.json"
+}

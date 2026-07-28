@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The required real replacement-provider episode remains unexecuted, so end-to-end recovery without replay is unproven.",
+      "broken_invariant": "Pass requires execution and recorded evidence for every declared Verify Step. The task explicitly requires a real post-integration `--replacement` episode proving that the original failed operation remains unchanged and a distinct replacement work order completes.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:f93d4c52b8a587274ae9f93980fc806db28a42ddfdfa2b89a30769da6a3def36",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "declared_checks"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "Frozen verification evidence asserts successful checks but contains no command-level execution records.",
+      "broken_invariant": "The code verification evidence contract requires exact command, result, evidence, and scope records. The observed-check artifact has an empty runner history, so the focused tests, typecheck, formatting, and routing results cannot be independently substantiated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:f25a2844f428892ee9e12c7c6a187115241a560faccfae6915b0c2357e914e3c",
+          "section": "runner_history"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Retain command-level results for the focused supervisor/evaluator test suite, typecheck, formatting, and routing validation.",
+    "Run and retain the declared real post-integration `agentplane evaluator execute 202607221850-8HBF4J --replacement` check, including evidence that the original failure is unchanged and the linked replacement completes exactly once."
+  ],
+  "hidden_assumptions": [
+    "Summary verification notes are assumed to be sufficient evidence despite the empty frozen runner history.",
+    "The required post-integration replacement proof is assumed to be safely deferrable even though no approved skip is recorded."
+  ],
+  "recovery_context": "The concurrency and interruption-recovery changes are represented in the frozen diff, but quality cannot pass until exact command-level verification records are frozen and the declared real post-integration replacement episode proves end-to-end recovery without replaying or mutating the failed operation."
+}

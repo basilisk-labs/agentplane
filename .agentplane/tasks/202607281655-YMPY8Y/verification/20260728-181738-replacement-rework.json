@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607281655-YMPY8Y",
+  "recorded_at": "2026-07-28T18:17:38Z",
+  "scope": {
+    "implementation_commit": "8d242418bcd6fce80fa6ff6729fa996bc389d2b4",
+    "paths": [
+      "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts",
+      "packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts",
+      "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+    ],
+    "objective": "Persist and atomically consume an explicit evaluator replacement authorization after a terminal provider failure."
+  },
+  "checks": [
+    {
+      "id": "focused-supervisor-and-evaluator-tests",
+      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "2 test files passed; 22 tests passed. Coverage includes a failed-operation replacement, two independent CLI processes with exactly one provider start, and recovery from a persisted pending replacement before provider intent.",
+      "evidence_scope": "unit and integration fixtures with a fake read-only Codex provider"
+    },
+    {
+      "id": "typescript-build",
+      "command": "bun run typecheck",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "scripts/checks/run-typescript-build.mjs completed successfully.",
+      "evidence_scope": "repository TypeScript build"
+    },
+    {
+      "id": "changed-format",
+      "command": "bun run format:changed",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "scripts/checks/check-changed-format.mjs reported all changed files formatted.",
+      "evidence_scope": "changed task implementation and tests"
+    },
+    {
+      "id": "policy-routing",
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "policy routing OK.",
+      "evidence_scope": "AGENTS gateway and loaded code-task policy graph"
+    },
+    {
+      "id": "post-integration-real-replacement",
+      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "status": "not_run",
+      "exit_code": null,
+      "result": "Deferred until this implementation is integrated into main. It remains a required release gate: retain the original operation_failed record and prove exactly one linked completed replacement provider episode.",
+      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
+    }
+  ]
+}

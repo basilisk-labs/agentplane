@@ -19,9 +19,8 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Note:
 
 ```text
-Rework verification passed: 19 focused supervisor/evaluator tests, typecheck, changed-format, policy
-routing, and diff check. Task metadata now freezes these commands; the real replacement provider
-episode for 202607221850-8HBF4J remains an explicit post-integration proof.
+Rework verification passed with durable command-level records; the post-integration 8H replacement
+remains an explicit release gate.
 ```
 - Canonical workflow state lives in the task README.
 

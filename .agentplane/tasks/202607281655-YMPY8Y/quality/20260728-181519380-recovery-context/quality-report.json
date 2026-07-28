@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T18:16:36.946Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "8d242418bcd6fce80fa6ff6729fa996bc389d2b4",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "findings": [
+    "The required real replacement-provider episode remains unexecuted, so end-to-end recovery without replay is unproven.",
+    "Frozen verification evidence asserts successful checks but contains no command-level execution records."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-181519380-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "Retain command-level results for the focused supervisor/evaluator test suite, typecheck, formatting, and routing validation.",
+    "Run and retain the declared real post-integration `agentplane evaluator execute 202607221850-8HBF4J --replacement` check, including evidence that the original failure is unchanged and the linked replacement completes exactly once."
+  ],
+  "hidden_assumptions": [
+    "Summary verification notes are assumed to be sufficient evidence despite the empty frozen runner history.",
+    "The required post-integration replacement proof is assumed to be safely deferrable even though no approved skip is recorded."
+  ],
+  "residual_risks": [
+    "The concurrency and interruption-recovery changes are represented in the frozen diff, but quality cannot pass until exact command-level verification records are frozen and the declared real post-integration replacement episode proves end-to-end recovery without replaying or mutating the failed operation."
+  ]
+}
