@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Route resolution and AgentWorkOrder preparation now share branch snapshot precedence in branch_pr mode, so task.revision and state_fingerprint.task_revision cannot diverge solely by checkout.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The regression advances and commits the task worktree document, invokes task next-action from main, and asserts both revision fields equal the branch snapshot.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "loadTaskFromBranchSnapshot remains the canonical branch_pr task source when a task branch exists."
+  ]
+}
