@@ -106,6 +106,26 @@ type EvaluatorEpisodeProviderResult = {
   provider_usage?: CodexProviderUsage | null;
 };
 
+type EvaluatorProviderFailureKind = "nonzero_exit" | "missing_structured_result";
+
+class EvaluatorProviderFailure extends Error {
+  readonly kind: EvaluatorProviderFailureKind;
+  readonly exit_code: number | null;
+  readonly signal: string | null;
+
+  constructor(opts: {
+    kind: EvaluatorProviderFailureKind;
+    exit_code?: number | null;
+    signal?: string | null;
+  }) {
+    super(`Codex evaluator provider failure: ${opts.kind}`);
+    this.name = "EvaluatorProviderFailure";
+    this.kind = opts.kind;
+    this.exit_code = opts.exit_code ?? null;
+    this.signal = opts.signal ?? null;
+  }
+}
+
 export type EvaluatorEpisodeProvider = (
   invocation: EvaluatorEpisodeInvocation,
 ) => Promise<EvaluatorEpisodeProviderResult>;
@@ -181,6 +201,28 @@ function evaluatorCodexArgv(opts: { repositoryRoot: string; outputSchemaPath: st
     opts.outputSchemaPath,
     "-",
   ];
+}
+
+export function evaluatorProviderFailureRecord(error: unknown): {
+  kind: "evaluator_provider_failure";
+  classification: EvaluatorProviderFailureKind | "unclassified";
+  exit_code: number | null;
+  signal: string | null;
+} {
+  if (error instanceof EvaluatorProviderFailure) {
+    return {
+      kind: "evaluator_provider_failure",
+      classification: error.kind,
+      exit_code: error.exit_code,
+      signal: error.signal,
+    };
+  }
+  return {
+    kind: "evaluator_provider_failure",
+    classification: "unclassified",
+    exit_code: null,
+    signal: null,
+  };
 }
 
 async function prepareEvaluatorEpisodeInvocation(opts: {
@@ -275,16 +317,20 @@ const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation
       }
       if (code !== 0 || signal) {
         finish(
-          new Error(
-            `Codex evaluator exited before returning a typed result (code=${code ?? "null"} signal=${signal ?? "none"}); provider diagnostics were withheld.`,
-          ),
+          new EvaluatorProviderFailure({
+            kind: "nonzero_exit",
+            exit_code: code,
+            signal,
+          }),
         );
         return;
       }
       try {
         if (stdoutBuffer.trim()) collector.observeStdoutLine(stdoutBuffer);
         const rawText = collector.readLastAgentMessage();
-        if (rawText === null) throw new Error("Codex evaluator returned no structured result.");
+        if (rawText === null) {
+          throw new EvaluatorProviderFailure({ kind: "missing_structured_result" });
+        }
         const providerUsage = collector.readUsage();
         finish(undefined, {
           raw_result: JSON.parse(rawText) as unknown,
@@ -321,10 +367,13 @@ export async function executePreparedEvaluatorEpisode(opts: {
   const after = await readWorkspaceState(invocation.repository_root);
   assertUnchangedWorkspace({ before, after });
   if (providerFailure !== null || providerResult === null) {
+    const failure = evaluatorProviderFailureRecord(providerFailure);
     throw new CliError({
       code: "E_RUNTIME",
       message:
-        "Codex evaluator provider failed before returning a typed result. The typed result was not applied.",
+        "Codex evaluator provider failed before returning a typed result " +
+        `(classification=${failure.classification} exit_code=${failure.exit_code ?? "unknown"} signal=${failure.signal ?? "none"}). ` +
+        "The typed result was not applied.",
     });
   }
   const result = validateStrictEvaluatorResult(providerResult.raw_result);

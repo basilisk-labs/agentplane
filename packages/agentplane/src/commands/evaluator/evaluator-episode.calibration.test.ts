@@ -389,7 +389,7 @@ describe("evaluator episode calibration", () => {
     expect(failure).toMatchObject({ code: "E_RUNTIME" });
     expect(failure).toHaveProperty(
       "message",
-      "Codex evaluator provider failed before returning a typed result. The typed result was not applied.",
+      "Codex evaluator provider failed before returning a typed result (classification=unclassified exit_code=unknown signal=none). The typed result was not applied.",
     );
     expect(String(failure)).not.toContain("/private/provider-diagnostics");
     const stored = await readTask({ cwd: root, rootOverride: root, taskId });
