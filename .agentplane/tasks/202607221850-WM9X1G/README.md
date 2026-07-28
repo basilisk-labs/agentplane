@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 48
 origin:
   system: "manual"
 depends_on:
@@ -67,8 +67,8 @@ quality_review:
     - "No external source consumer imports the six journal helpers; removing their export modifiers eliminates the new Knip debt without changing runtime behavior."
     - "A transient active-claim collision is represented as unknown and retried; only a stable null claim permits concurrent retirement convergence, and non-transient errors remain fail-closed."
 commit:
-  hash: "74c47028d8af0c31c50eda0b2dc9788efda72351"
-  message: "chore: authorize final context ingest pre-merge closure"
+  hash: "7199f70a58843ed024f97931bbce2d765408cbd6"
+  message: "🚧 WM9X1G task: record fresh pre-merge closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -91,6 +91,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -191,8 +194,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T11:16:54.852Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:58:31.911Z"
+doc_updated_at: "2026-07-28T11:16:54.853Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -826,8 +836,8 @@ extensions:
         stateScopeDigest: "sha256:ebe1e2a54f4ed7282c5f295b628ccbd972fdea097cd6704e726ba6d854a83a53"
     schemaVersion: 1
   implementation_commit:
-    hash: "5c27b4c8fc12caaebbb7e5fa92c15824882f0277"
-    message: "chore: record context ingest hotspot remediation"
+    hash: "5ee3c3bb55e6a8a7905d7b9a6ee3f9595ffdebbb"
+    message: "🚧 WM9X1G task: repair journal API and claim observation"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
