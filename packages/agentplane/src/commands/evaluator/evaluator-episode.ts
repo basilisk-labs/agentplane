@@ -343,23 +343,29 @@ export async function executePreparedEvaluatorEpisode(opts: {
     });
   }
   const canonicalResult = `${JSON.stringify(result, null, 2)}\n`;
+  const receipt: EvaluatorEpisodeReceipt = {
+    schema_version: 1,
+    kind: "evaluator_episode_receipt",
+    work_order_id: invocation.work_order_id,
+    provider: "codex",
+    authority: { sandbox: "read-only", writable_roots: [] },
+    argv: invocation.argv,
+    started_at: providerResult.started_at,
+    ended_at: providerResult.ended_at,
+    stdout_bytes: providerResult.stdout_bytes,
+    stderr_bytes: providerResult.stderr_bytes,
+    provider_usage: providerResult.provider_usage ?? null,
+    workspace_state: "unchanged",
+    result_sha256: sha256(canonicalResult),
+  };
+  // These artifacts make a completed provider result recoverable before the
+  // task mutation that applies its verdict. A restart can validate and apply
+  // this outcome instead of asking the provider to repeat the evaluation.
+  await writeFile(opts.prepared.result_path, canonicalResult, "utf8");
+  await writeEvaluatorEpisodeReceipt({ prepared: opts.prepared, receipt });
   return {
     result,
-    receipt: {
-      schema_version: 1,
-      kind: "evaluator_episode_receipt",
-      work_order_id: invocation.work_order_id,
-      provider: "codex",
-      authority: { sandbox: "read-only", writable_roots: [] },
-      argv: invocation.argv,
-      started_at: providerResult.started_at,
-      ended_at: providerResult.ended_at,
-      stdout_bytes: providerResult.stdout_bytes,
-      stderr_bytes: providerResult.stderr_bytes,
-      provider_usage: providerResult.provider_usage ?? null,
-      workspace_state: "unchanged",
-      result_sha256: sha256(canonicalResult),
-    },
+    receipt,
   };
 }
 

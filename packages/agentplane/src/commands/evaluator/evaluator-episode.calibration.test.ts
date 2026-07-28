@@ -14,7 +14,6 @@ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.
 import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
 import {
   executePreparedEvaluatorEpisode,
-  writeEvaluatorEpisodeReceipt,
   type EvaluatorEpisodeProvider,
 } from "./evaluator-episode.js";
 import {
@@ -150,7 +149,6 @@ async function applyFixture(opts: {
     workOrderPath: prepared.work_order_path,
     result: episode.result,
   });
-  await writeEvaluatorEpisodeReceipt({ prepared, receipt: episode.receipt });
   return {
     prepared,
     stored: await readTask({ cwd: opts.root, rootOverride: opts.root, taskId: opts.taskId }),
@@ -180,6 +178,15 @@ describe("evaluator episode calibration", () => {
       output_tokens: 50,
       total_tokens: 150,
     });
+    expect(JSON.parse(await readFile(prepared.result_path, "utf8"))).toEqual(episode.result);
+    expect(
+      JSON.parse(
+        await readFile(
+          path.join(path.dirname(prepared.work_order_path), "evaluator-episode.json"),
+          "utf8",
+        ),
+      ),
+    ).toEqual(episode.receipt);
 
     expect(captured?.argv).toEqual([
       "codex",
