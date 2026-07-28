@@ -16,6 +16,8 @@ import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { runEvaluatorRun } from "./evaluator.command.js";
 import {
   prepareEvaluatorReview,
+  renderActualDiff,
+  resolveEvaluatorDiffBase,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
@@ -624,6 +626,72 @@ describe("evaluator run command", () => {
       updated_by: "EVALUATOR",
       evaluated_sha: implementationSha,
     });
+  });
+
+  it("freezes the complete branch delta from the merge base through the evaluated SHA", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const baseSha = await commitPath(root, "README.md", "base\n", "chore: establish base");
+    const taskId = "202605240900-EV15";
+    await addTask(root, taskId);
+    const prDir = path.join(root, `.agentplane/tasks/${taskId}/pr`);
+    await mkdir(prDir, { recursive: true });
+    await writeFile(
+      path.join(prDir, "meta.json"),
+      `${JSON.stringify({
+        schema_version: 1,
+        task_id: taskId,
+        branch: `task/${taskId}/fixture`,
+        created_at: "2026-01-01T00:00:00.000Z",
+        updated_at: "2026-01-01T00:00:00.000Z",
+        status: "OPEN",
+        verify: { status: "skipped" },
+        base: baseSha,
+      })}\n`,
+      "utf8",
+    );
+    await commitPath(root, "src/first-change.ts", "export const first = true;\n", "feat: first");
+    const evaluatedSha = await commitPath(
+      root,
+      "src/second-change.ts",
+      "export const second = true;\n",
+      "feat: second",
+    );
+
+    const { prepared } = await prepareTypedReview(root, taskId);
+    const actualDiff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
+    if (!actualDiff) throw new Error("Missing frozen actual-diff evidence.");
+
+    expect(prepared.work_order).toMatchObject({
+      evaluated_sha: evaluatedSha,
+      diff_base_sha: baseSha,
+    });
+    const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
+    expect(frozenDiff).toContain("src/first-change.ts");
+    expect(frozenDiff).toContain("src/second-change.ts");
+  });
+
+  it("keeps no-work-unit evidence empty and fails closed when its configured base is missing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await commitPath(root, "README.md", "base\n", "chore: establish base");
+    const evaluatedSha = await commitPath(
+      root,
+      "src/evaluated.ts",
+      "export const evaluated = true;\n",
+      "feat: evaluated",
+    );
+
+    await expect(renderActualDiff(root, null, null)).resolves.toBe(
+      "No committed task work unit is available for semantic evaluation.\n",
+    );
+    await expect(
+      resolveEvaluatorDiffBase({
+        gitRoot: root,
+        evaluatedSha,
+        baseRef: "refs/heads/does-not-exist",
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 
   it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {
