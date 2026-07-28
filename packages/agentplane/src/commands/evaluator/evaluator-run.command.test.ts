@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 import { readTask } from "@agentplaneorg/core/tasks";
@@ -749,9 +749,15 @@ describe("evaluator run command", () => {
       by: "TESTER",
       note: "Focused evaluator checks passed.",
       details:
-        "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nScope: evaluator evidence",
+        "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nEvidence: 1 test file passed\nScope: evaluator evidence",
       quiet: true,
     });
+    const verificationDir = path.join(root, `.agentplane/tasks/${taskId}/verification`);
+    const [supportedRecordName] = await readdir(verificationDir);
+    if (!supportedRecordName) throw new Error("Missing supported verification record.");
+    const supportedRecord = JSON.parse(
+      await readFile(path.join(verificationDir, supportedRecordName), "utf8"),
+    ) as Record<string, unknown>;
     await writeFile(
       path.join(root, `.agentplane/tasks/${taskId}/verification/orphaned-after-transition.json`),
       `${JSON.stringify({
@@ -762,6 +768,15 @@ describe("evaluator run command", () => {
         result: "ok",
         verifier: "INTERRUPTED",
         note: "The task transition did not persist.",
+      })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, `.agentplane/tasks/${taskId}/verification/incomplete-current-record.json`),
+      `${JSON.stringify({
+        ...supportedRecord,
+        details:
+          "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nScope: evaluator evidence",
       })}\n`,
       "utf8",
     );
@@ -781,6 +796,7 @@ describe("evaluator run command", () => {
       new RegExp(`^\\.agentplane/tasks/${taskId}/verification/.+\\.json$`, "u"),
     );
     expect(currentVerificationEvidence.path).not.toContain("orphaned-after-transition.json");
+    expect(currentVerificationEvidence.path).not.toContain("incomplete-current-record.json");
     expect(record).toMatchObject({
       kind: "task_verification_record",
       task_id: taskId,

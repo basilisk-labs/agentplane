@@ -3,6 +3,25 @@ import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
 
+const CHECK_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
+
+function hasConcreteCheckDetails(details: unknown): boolean {
+  if (typeof details !== "string" || !details.trim()) return false;
+  const checks = details.trim().split(/\n\s*\n/gu);
+  return checks.every((check) => {
+    const fields = new Map(
+      check.split("\n").map((line) => {
+        const [field, ...value] = line.split(":");
+        return [field?.trim(), value.join(":").trim()] as const;
+      }),
+    );
+    return (
+      CHECK_FIELDS.every((field) => fields.get(field)) &&
+      ["pass", "fail"].includes(fields.get("Result") ?? "")
+    );
+  });
+}
+
 function matchesCurrentVerification(
   raw: unknown,
   verification: TaskData["verification"] | null | undefined,
@@ -14,7 +33,8 @@ function matchesCurrentVerification(
     record.recorded_at === verification.updated_at &&
     record.result === verification.state &&
     record.verifier === verification.updated_by &&
-    record.note === verification.note
+    record.note === verification.note &&
+    hasConcreteCheckDetails(record.details)
   );
 }
 
