@@ -2,7 +2,11 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { applyContextExtractionResult } from "../../context/extraction-writer.js";
-import { advanceContextIngestRunForTask } from "../../context/ingest-run-journal.js";
+import {
+  advanceContextIngestRunForTask,
+  contextIngestSemanticFingerprint,
+} from "../../context/ingest-run-journal.js";
+import { validateContextExtractionSgrResult } from "../../context/sgr-extraction.js";
 
 export async function cmdContextExtractionApply(opts: {
   cwd: string;
@@ -11,24 +15,31 @@ export async function cmdContextExtractionApply(opts: {
 }): Promise<number> {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const filePath = path.resolve(root, opts.parsed.file);
-  const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
-  if (!opts.parsed.dryRun && opts.parsed.taskId) {
-    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
+  const rawText = await readFile(filePath, "utf8");
+  const raw = JSON.parse(rawText) as unknown;
+  const extraction = validateContextExtractionSgrResult(raw);
+  const taskId = opts.parsed.taskId.length > 0 ? opts.parsed.taskId : extraction.task_id;
+  const semantic = {
+    extraction_file: opts.parsed.file,
+    extraction_fingerprint: contextIngestSemanticFingerprint(rawText),
+  };
+  if (!opts.parsed.dryRun && taskId) {
+    await advanceContextIngestRunForTask(root, taskId, {
       phase: "semantic_result_received",
-      semantic: { extraction_file: opts.parsed.file },
+      semantic,
     });
   }
   const result = await applyContextExtractionResult({
     root,
     raw,
-    taskId: opts.parsed.taskId || undefined,
+    taskId: taskId === "" ? undefined : taskId,
     dryRun: opts.parsed.dryRun,
     synthesizeWiki: opts.parsed.synthesizeWiki,
   });
-  if (!opts.parsed.dryRun && opts.parsed.taskId) {
-    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
+  if (!opts.parsed.dryRun && taskId) {
+    await advanceContextIngestRunForTask(root, taskId, {
       phase: "artifacts_applied",
-      semantic: { extraction_file: opts.parsed.file },
+      semantic,
     });
   }
   process.stdout.write(

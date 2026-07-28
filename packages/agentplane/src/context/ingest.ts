@@ -28,7 +28,9 @@ import {
   advanceContextIngestRun,
   assertContextIngestRunManifest,
   assertContextIngestRunSourceSet,
+  claimContextIngestRunExecution,
   contextIngestManifestFingerprint,
+  releaseContextIngestRunExecution,
   releaseContextIngestRunLease,
   type ContextIngestRunPhase,
 } from "./ingest-run-journal.js";
@@ -110,45 +112,50 @@ export async function cmdContextIngest(opts: {
       process.stdout.write("no new or changed sources detected for context assimilation\n");
       return 0;
     }
-    assertContextIngestRunSourceSet(run, completeRows);
+    const execution = await claimContextIngestRunExecution(root, run);
+    try {
+      assertContextIngestRunSourceSet(run, completeRows);
 
-    if (run.phase === "task_creating") {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message:
-          `context ingest run ${run.run_id} has an unknown task creation outcome. ` +
-          "Run context doctor and inspect the task backend before retrying.",
-      });
-    }
-
-    if (run.phase !== "planned") {
-      assertContextIngestRunManifest(run, lock);
-    }
-
-    if (run.phase === "planned") {
-      const currentFingerprint = contextIngestManifestFingerprint(lock);
-      if (
-        currentFingerprint !== run.source_set.previous_manifest_fingerprint &&
-        currentFingerprint !== run.source_set.manifest_fingerprint
-      ) {
+      if (run.phase === "task_creating") {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
           message:
-            `context ingest run ${run.run_id} cannot lock sources because the manifest changed concurrently. ` +
-            "Run context doctor before retrying.",
+            `context ingest run ${run.run_id} has an unknown task creation outcome. ` +
+            "Run context doctor and inspect the task backend before retrying.",
         });
       }
-      if (currentFingerprint !== run.source_set.manifest_fingerprint) {
-        await writeManifest(root, run.source_set.manifest);
-      }
-      const locked = await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
-      await opts.afterJournalPhase?.(locked.phase);
-      return await continueContextIngest(opts, ctx, root, locked);
-    }
 
-    return await continueContextIngest(opts, ctx, root, run);
+      if (run.phase !== "planned") {
+        assertContextIngestRunManifest(run, lock);
+      }
+
+      if (run.phase === "planned") {
+        const currentFingerprint = contextIngestManifestFingerprint(lock);
+        if (
+          currentFingerprint !== run.source_set.previous_manifest_fingerprint &&
+          currentFingerprint !== run.source_set.manifest_fingerprint
+        ) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message:
+              `context ingest run ${run.run_id} cannot lock sources because the manifest changed concurrently. ` +
+              "Run context doctor before retrying.",
+          });
+        }
+        if (currentFingerprint !== run.source_set.manifest_fingerprint) {
+          await writeManifest(root, run.source_set.manifest);
+        }
+        const locked = await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
+        await opts.afterJournalPhase?.(locked.phase);
+        return await continueContextIngest(opts, ctx, root, locked);
+      }
+
+      return await continueContextIngest(opts, ctx, root, run);
+    } finally {
+      await releaseContextIngestRunExecution(root, execution);
+    }
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "context ingest", root: opts.rootOverride ?? null });
@@ -174,18 +181,12 @@ async function continueContextIngest(
     const workspaceMode = await readContextWorkspaceMode(root);
     const taskParsed = createTaskNewParsed(opts.parsed, run.source_set.selected, workspaceMode);
     const createTask = opts.createTask ?? runTaskNewParsed;
-    let contextCreated: TaskCreationResult;
-    try {
-      contextCreated = await createTask({
-        ctx,
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        parsed: taskParsed,
-      });
-    } catch (error) {
-      await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
-      throw error;
-    }
+    const contextCreated: TaskCreationResult = await createTask({
+      ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      parsed: taskParsed,
+    });
     run = await advanceContextIngestRun(root, run, {
       phase: "task_created",
       task: contextCreated,

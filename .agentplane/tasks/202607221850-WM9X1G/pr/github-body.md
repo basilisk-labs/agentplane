@@ -15,12 +15,13 @@ RF-18: persist an idempotent assimilation run journal so task creation, manifest
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Focused ingest/doctor/extraction/finalize tests: 24 passed; critical CLI suite: 11/11 chunks passed;
-task-state, lint, typecheck, routing, and diff checks passed.
+GitHub PR #4654 review identified four reproducible RF-18 correctness defects: concurrent same-run
+resumption, unknown backend-write outcomes, changed semantic inputs, and payload task-id journal
+linkage.
 ```
 - Canonical workflow state lives in the task README.
 
