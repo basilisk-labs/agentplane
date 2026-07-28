@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 63
+revision: 64
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "The only new committed paths are task-local verification and PR artifacts. The fail-closed active-claim logic remains bound to stable null, and all hosted required checks passed on the published implementation head."
 commit:
-  hash: "8571f318229cc3f21af02ad411ef3432d5e6a907"
-  message: "🚧 WM9X1G task: record final pre-merge closure authority"
+  hash: "60aab9f2616dee1f0f29ca513404e31c3b040a33"
+  message: "🚧 WM9X1G task: record verification-aware pre-merge closure authority"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -222,8 +225,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Verified: hosted Core CI passed for the fail-closed effect-resolution implementation; all commits after the reviewed implementation are task-local lifecycle artifacts."
+  -
+    type: "status"
+    at: "2026-07-28T11:59:28.915Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T11:56:36.865Z"
+doc_updated_at: "2026-07-28T11:59:28.916Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -1121,8 +1131,8 @@ extensions:
         stateScopeDigest: "sha256:151bb1becb09b48fa5f6249daf8ddf1981c7511c6c3d7501d122f224b21e9745"
     schemaVersion: 1
   implementation_commit:
-    hash: "bc2a760e30227d164d8b40fcca2b151434d949cd"
-    message: "🚧 WM9X1G task: satisfy effect resolution lint contract"
+    hash: "2178f007a461564a29c8e7005adb38e23d1aa082"
+    message: "🚧 WM9X1G task: authorize lint-corrected integration enqueue"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
