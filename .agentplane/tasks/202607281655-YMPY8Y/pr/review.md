@@ -13,7 +13,7 @@ Created: 2026-07-28T16:57:04.791Z
 ## Verification
 
 - State: ok
-- Note: Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused replacement, typecheck, format, and routing checks are frozen in 20260728-184101-compatibility-ratchet.json.
+- Note: Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

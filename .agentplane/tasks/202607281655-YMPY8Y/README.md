@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -29,9 +29,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T18:42:31.263Z"
+  updated_at: "2026-07-28T19:19:01.764Z"
   updated_by: "TESTER"
-  note: "Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused replacement, typecheck, format, and routing checks are frozen in 20260728-184101-compatibility-ratchet.json."
+  note: "Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass."
   attempts: 0
 quality_review:
   state: "pass"
@@ -136,8 +136,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T19:19:01.764Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass."
 doc_version: 3
-doc_updated_at: "2026-07-28T19:02:30.847Z"
+doc_updated_at: "2026-07-28T19:19:04.613Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -327,6 +333,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T19:19:01.764Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T19:02:30.847Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+    - old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -339,6 +375,10 @@ sections:
     - Observation: The journal persists a pending replacement key and start consumes it only for the exact failed operation with the same role and kind; arbitrary, unbound, effect-in-doubt, and exhausted replacements are rejected.
       Impact: Replacement authorization is now atomic at the journal transition, preventing an unrelated provider operation from consuming a terminal failure recovery path.
       Resolution: Run the retained post-integration provider proof after the feature merges, then close the dependent recovery task.
+
+    - Observation: verify-contract and verify-static failed only on stale generated documentation and lint findings.
+      Impact: PR #4664 could not enter integration until the generated artifact and static checks were repaired.
+      Resolution: Regenerated docs/user/cli-reference.generated.mdx, resolved ten lint findings, and froze local parity checks at 9ea452754fe4fbabf259cad263a0279aa78f3d2f.
 extensions:
   implementation_commit:
     hash: "7d46071af90efdbfc80473de79339cb44148c27e"
@@ -544,6 +584,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T19:19:01.764Z — VERIFY — ok
+
+By: TESTER
+
+Note: Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T19:02:30.847Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+- old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -560,3 +630,7 @@ DecisionContextRef:
 - Observation: The journal persists a pending replacement key and start consumes it only for the exact failed operation with the same role and kind; arbitrary, unbound, effect-in-doubt, and exhausted replacements are rejected.
   Impact: Replacement authorization is now atomic at the journal transition, preventing an unrelated provider operation from consuming a terminal failure recovery path.
   Resolution: Run the retained post-integration provider proof after the feature merges, then close the dependent recovery task.
+
+- Observation: verify-contract and verify-static failed only on stale generated documentation and lint findings.
+  Impact: PR #4664 could not enter integration until the generated artifact and static checks were repaired.
+  Resolution: Regenerated docs/user/cli-reference.generated.mdx, resolved ten lint findings, and froze local parity checks at 9ea452754fe4fbabf259cad263a0279aa78f3d2f.

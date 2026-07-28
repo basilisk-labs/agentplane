@@ -19,9 +19,8 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Note:
 
 ```text
-Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused
-replacement, typecheck, format, and routing checks are frozen in
-20260728-184101-compatibility-ratchet.json.
+Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local
+verify-contract and verify-static parity checks pass.
 ```
 - Canonical workflow state lives in the task README.
 
