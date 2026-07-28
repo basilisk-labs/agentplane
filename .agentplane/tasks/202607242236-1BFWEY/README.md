@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 32
+revision: 33
 origin:
   system: "manual"
 depends_on:
@@ -74,7 +74,7 @@ quality_review:
   findings:
     - "Knip identified no external imports for either helper; removing only their export modifiers closes the unused-code contract without widening the public API or changing evaluator receipt and supervisor budget behavior."
 commit:
-  hash: "42a60677a4282cbf254511a111f13e7fafd55b83"
+  hash: "7f724401d7dabeaa1739f459ceb45b9aa775ab06"
   message: "Record refreshed pre-merge authority"
 comments:
   -
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -140,8 +143,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T05:43:17.987Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T05:33:44.019Z"
+doc_updated_at: "2026-07-28T05:43:17.988Z"
 doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
@@ -466,8 +476,8 @@ extensions:
         stateScopeDigest: "sha256:230045882e082b002b5ffaf6345c69cc351893e8dfc75f703b13f2889ad6421c"
     schemaVersion: 1
   implementation_commit:
-    hash: "594987c093a5d1bb0bbc443c2ac5028a228130c3"
-    message: "Refactor evaluator episode supervisor boundary"
+    hash: "256d3f7de147c480af565abbdbd5a63198b2e558"
+    message: "Keep supervisor helpers module-private"
   workflow_route_baseline:
     start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
     version: 1
