@@ -6,14 +6,14 @@ Created: 2026-07-27T23:42:49.681Z
 
 - Task: `202607221850-DRWR0V`
 - Title: Extract the shared typed workflow supervisor from Hermes
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro`
 - Canonical task record: `.agentplane/tasks/202607221850-DRWR0V/README.md`
 
 ## Verification
 
-- State: ok
-- Note: Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings.
+- State: needs_rework
+- Note: Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no behavioral test failure is reported.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

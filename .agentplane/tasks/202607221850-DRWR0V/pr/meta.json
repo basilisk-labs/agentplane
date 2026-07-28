@@ -3,22 +3,15 @@
   "branch": "task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro",
   "created_at": "2026-07-27T23:42:49.681Z",
   "diffstat_sha256": "sha256:44754fc3b363f0e38dafbc8383be602326a6a470991d79e69d3398d00f620efe",
-  "last_verified_at": "2026-07-28T00:30:59.308Z",
+  "last_verified_at": "2026-07-28T00:43:25.009Z",
   "last_verified_diffstat_sha256": "sha256:44754fc3b363f0e38dafbc8383be602326a6a470991d79e69d3398d00f620efe",
   "pr_number": 4648,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4648",
-  "pre_merge_closure": {
-    "basis_commit": "2411e888b94442fbbfa3fb7df1655164c4914727",
-    "branch": "task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro",
-    "pr_number": 4648,
-    "recorded_at": "2026-07-28T00:35:24.609Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221850-DRWR0V",
   "updated_at": "2026-07-27T23:43:10.504Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

@@ -2,9 +2,9 @@ import type { TaskRouteDecision } from "./route-decision-types.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
 import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
 
-export const WORKFLOW_SUPERVISOR_AUDIT_SCHEMA = "agentplane.workflow-supervisor-audit.v1" as const;
+const WORKFLOW_SUPERVISOR_AUDIT_SCHEMA = "agentplane.workflow-supervisor-audit.v1" as const;
 
-export type WorkflowSupervisorAuditEntry = {
+type WorkflowSupervisorAuditEntry = {
   schema: typeof WORKFLOW_SUPERVISOR_AUDIT_SCHEMA;
   sequence: number;
   event:

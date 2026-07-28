@@ -2,10 +2,10 @@
 id: "202607221850-DRWR0V"
 title: "Extract the shared typed workflow supervisor from Hermes"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -33,11 +33,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-28T00:30:59.308Z"
+  state: "needs_rework"
+  updated_at: "2026-07-28T00:43:25.009Z"
   updated_by: "TESTER"
-  note: "Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings."
-  attempts: 0
+  note: "Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no behavioral test failure is reported."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -62,9 +62,7 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Route decisions are validated before projection and execution, explicit semantic and approval stops remain terminal, and attempted operations always refresh route state before control can return."
-commit:
-  hash: "2411e888b94442fbbfa3fb7df1655164c4914727"
-  message: "♻️ DRWR0V supervisor: satisfy static lint gates"
+commit: null
 comments:
   -
     author: "CODER"
@@ -135,8 +133,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T00:43:25.009Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no behavioral test failure is reported."
 doc_version: 3
-doc_updated_at: "2026-07-28T00:35:24.555Z"
+doc_updated_at: "2026-07-28T00:43:25.983Z"
 doc_updated_by: "CODER"
 description: "RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop over typed operations; make Hermes and CLI adapters use it without raw shell route execution."
 sections:
@@ -250,6 +254,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T00:43:25.009Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no behavioral test failure is reported.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:35:24.555Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+    - old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+    - diagnostic_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -267,6 +301,10 @@ sections:
     - Observation: 20 targeted tests, typecheck, guards, formatting, and the complete lint JSON report passed after the rework.
       Impact: The previous hosted static failure is resolved locally without changing supervisor behavior.
       Resolution: Republish the task branch and require fresh hosted checks before integration.
+
+    - Observation: GitHub Core CI run 30317848130 reports new Knip entries for WORKFLOW_SUPERVISOR_AUDIT_SCHEMA and WorkflowSupervisorAuditEntry.
+      Impact: The static gate remains red despite passing unit, critical CLI, Windows, coverage, workflow, and contract checks.
+      Resolution: Remove the unnecessary public exports, rerun Knip/static verification and the targeted supervisor/Hermes tests, then publish a fresh PR head.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -578,6 +616,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T00:43:25.009Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted verify-static rejected two newly exported but unused workflow-supervisor symbols; no behavioral test failure is reported.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T00:35:24.555Z, excerpt_hash=sha256:2465e808ab2543aa665437fb7588025441de69da8e4f7be0eda602c12c55ddd9
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/rf09-integration-lane.8OI6wK/repo/.agentplane/worktrees/202607221850-DRWR0V-extract-the-shared-typed-workflow-supervisor-fro/.agentplane/tasks/202607221850-DRWR0V/blueprint/resolved-snapshot.json
+- old_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- current_digest: 718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-DRWR0V
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+- diagnostic_command: agentplane task next-action 202607221850-DRWR0V --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -599,3 +667,7 @@ DecisionContextRef:
 - Observation: 20 targeted tests, typecheck, guards, formatting, and the complete lint JSON report passed after the rework.
   Impact: The previous hosted static failure is resolved locally without changing supervisor behavior.
   Resolution: Republish the task branch and require fresh hosted checks before integration.
+
+- Observation: GitHub Core CI run 30317848130 reports new Knip entries for WORKFLOW_SUPERVISOR_AUDIT_SCHEMA and WorkflowSupervisorAuditEntry.
+  Impact: The static gate remains red despite passing unit, critical CLI, Windows, coverage, workflow, and contract checks.
+  Resolution: Remove the unnecessary public exports, rerun Knip/static verification and the targeted supervisor/Hermes tests, then publish a fresh PR head.
