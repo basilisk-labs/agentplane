@@ -107,6 +107,16 @@ function isConcurrentRetirementError(error: unknown): boolean {
   );
 }
 
+function isTransientActiveClaimReadCollision(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.startsWith("runner active claim ") &&
+    (message.includes(" changed before it could be read:") ||
+      message.includes(" changed while it was being read:") ||
+      message.includes(" path changed while it was being read:"))
+  );
+}
+
 async function waitForConcurrentResolutionRetirement(opts: {
   repository: RunnerRunRepository;
   git_root: string;
@@ -123,6 +133,9 @@ async function waitForConcurrentResolutionRetirement(opts: {
         workflow_dir: opts.workflow_dir,
         task_id: opts.task_id,
         run_id: opts.run_id,
+      }).catch((error: unknown) => {
+        if (isTransientActiveClaimReadCollision(error)) return undefined;
+        throw error;
       }),
     ]);
     if (record.state.effect_resolution?.digest === opts.resolution.digest && !activeClaim) {

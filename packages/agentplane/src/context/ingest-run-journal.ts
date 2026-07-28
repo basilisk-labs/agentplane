@@ -23,7 +23,7 @@ const PREPARATION_PHASES = [
   "pack_writing",
 ] as const;
 
-export const CONTEXT_INGEST_RUN_PHASES = [
+const CONTEXT_INGEST_RUN_PHASES = [
   ...PREPARATION_PHASES,
   "pack_written",
   "curator_running",
@@ -76,7 +76,7 @@ export type ContextIngestRunDiagnostic = {
   message: string;
 };
 
-export function contextIngestRequestFingerprint(
+function contextIngestRequestFingerprint(
   parsed: Pick<ContextIngestParsed, "mode" | "sources">,
 ): string {
   return fingerprint({ mode: parsed.mode, sources: [...parsed.sources].toSorted() });
@@ -91,7 +91,7 @@ export function contextIngestManifestFingerprint(manifest: ManifestLock): string
   });
 }
 
-export function contextIngestSourceFingerprint(entries: ManifestEntry[]): string {
+function contextIngestSourceFingerprint(entries: ManifestEntry[]): string {
   return fingerprint(normalizeEntries(entries));
 }
 
@@ -267,11 +267,11 @@ export async function releaseContextIngestRunLease(
   });
 }
 
-export function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
+function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
   return (PREPARATION_PHASES as readonly string[]).includes(phase);
 }
 
-export function contextIngestRunRetryCommand(run: ContextIngestRunJournal): string {
+function contextIngestRunRetryCommand(run: ContextIngestRunJournal): string {
   if (run.request.mode === "all") return "agentplane context ingest --all";
   if (run.request.mode === "changed") return "agentplane context ingest --changed";
   return `agentplane context ingest ${run.request.sources.map((source) => JSON.stringify(source)).join(" ")}`;
@@ -412,7 +412,7 @@ export function assertContextIngestRunManifest(
   });
 }
 
-export async function readContextIngestRun(
+async function readContextIngestRun(
   root: string,
   runId: string,
 ): Promise<ContextIngestRunJournal | null> {
