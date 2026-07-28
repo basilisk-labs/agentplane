@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The replacement implementation and compatibility ratchet are covered by frozen verification records; the required real provider episode is correctly deferred to the explicit post-integration gate.",
+      "broken_invariant": "No invariant is currently broken; implementation verification covers failed-operation replacement, default terminal behavior, cross-process admission, persisted pending-replacement recovery, compatibility, type checking, formatting, and routing.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-184101-compatibility-ratchet.json",
+          "sha256": "sha256:fc186a7415c6c44a995299db11ac27730674dea617dfed4caf117deb6a9b751b",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-185909648-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:ffb3c069f5b233ff8a23584960771d0b3c22b1572854ca8ab28a271ba4bdc11a"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The post-integration environment and retained journal for task 202607221850-8HBF4J remain available for the mandatory real replacement episode."
+  ]
+}

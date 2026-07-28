@@ -1,0 +1,28 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+    "bun run typecheck",
+    "bun run format:changed",
+    "node .agentplane/policy/check-routing.mjs",
+    "agentplane evaluator execute 202607221850-8HBF4J --replacement"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T18:42:31.263Z",
+    "updated_by": "TESTER",
+    "note": "Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused replacement, typecheck, format, and routing checks are frozen in 20260728-184101-compatibility-ratchet.json."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+      "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad"
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-184101-compatibility-ratchet.json",
+      "sha256": "sha256:fc186a7415c6c44a995299db11ac27730674dea617dfed4caf117deb6a9b751b"
+    }
+  ],
+  "runner_history": []
+}
