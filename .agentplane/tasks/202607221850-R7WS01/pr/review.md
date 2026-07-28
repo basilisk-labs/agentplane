@@ -13,7 +13,7 @@ Created: 2026-07-28T01:55:50.166Z
 ## Verification
 
 - State: ok
-- Note: PASS (hosted rework): split execution contracts keeps task-run below the hotspot threshold and replaces unsafe Hermes matcher assignments with typed assertions.
+- Note: PASS (static rework): stale type import removed after contract extraction; no runner lifecycle behavior changed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -42,8 +42,8 @@ Created: 2026-07-28T01:55:50.166Z
  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
  .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
- .../agentplane/src/runner/usecases/task-run.ts     |  43 ++----
- 14 files changed, 643 insertions(+), 94 deletions(-)
+ .../agentplane/src/runner/usecases/task-run.ts     |  44 ++----
+ 14 files changed, 643 insertions(+), 95 deletions(-)
 ```
 
 </details>
