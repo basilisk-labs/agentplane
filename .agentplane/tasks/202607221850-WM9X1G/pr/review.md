@@ -38,10 +38,10 @@ Created: 2026-07-28T08:13:34.859Z
  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
- .../usecases/task-run-effect-resolution.test.ts    |  22 +
- .../runner/usecases/task-run-effect-resolution.ts  |   4 +
+ .../usecases/task-run-effect-resolution.test.ts    |  39 +-
+ .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
  packages/agentplane/src/shared/stable-file.ts      |   9 +
- 12 files changed, 1360 insertions(+), 20 deletions(-)
+ 12 files changed, 1377 insertions(+), 24 deletions(-)
 ```
 
 </details>
