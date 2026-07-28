@@ -8,6 +8,7 @@ import { cmdContextReindex } from "./reindex.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
 import { cmdContextWikiIndex, cmdContextWikiLint } from "./wiki.js";
 import { cmdContextWikiReport } from "./wiki-reports.js";
+import { advanceContextIngestRunForTask } from "../../context/ingest-run-journal.js";
 
 type FinalizeInput = {
   cwd: string;
@@ -135,6 +136,10 @@ export async function runContextFinalization(
 
 export async function cmdContextFinalizeTask(input: FinalizeInput): Promise<number> {
   const summary = await runContextFinalization(input);
+  const root = path.resolve(input.rootOverride ?? input.cwd);
+  await advanceContextIngestRunForTask(root, input.parsed.taskId, { phase: "validated" });
+  await advanceContextIngestRunForTask(root, input.parsed.taskId, { phase: "evaluated" });
+  await advanceContextIngestRunForTask(root, input.parsed.taskId, { phase: "finalized" });
   process.stdout.write(`context finalize-task ${input.parsed.taskId}: ok\n`);
   process.stdout.write(`${JSON.stringify(summary)}\n`);
   return 0;

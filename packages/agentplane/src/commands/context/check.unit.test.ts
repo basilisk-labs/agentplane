@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { cmdContextDoctor } from "./doctor.js";
+import { cmdContextIngest } from "./ingest.js";
 import { cmdContextInit } from "./init.js";
 import { cmdContextWikiReport } from "./wiki-reports.js";
 
@@ -139,5 +140,44 @@ describe("context cross-surface integrity", () => {
     await expect(
       cmdContextDoctor({ cwd: root, parsed: { fix: false, label: "check" } }),
     ).rejects.toThrow(/wiki connectivity reports are stale/u);
+  });
+
+  it("reports journaled task and receipt divergence with a bounded resume action", async () => {
+    const root = await tempRoot();
+    await initMaximum(root);
+    await write(root, "context/raw/divergence.md", "# Divergence\n\nPersist this source.\n");
+    const taskId = "202607021205-DOCTOR";
+    const ctx = {
+      resolvedProject: { gitRoot: root },
+      config: { paths: { workflow_dir: ".agentplane/tasks" } },
+      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
+      backendId: "local",
+      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
+      memo: {},
+    } as unknown as CommandContext;
+
+    await expect(
+      cmdContextIngest({
+        ctx,
+        cwd: root,
+        parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
+        createTask: () =>
+          Promise.resolve({
+            task_id: taskId,
+            revision: 1,
+            backend_id: "local",
+            artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+          }),
+        afterJournalPhase: (phase) => {
+          if (phase === "task_created") throw new Error("forced task-created crash");
+        },
+      }),
+    ).rejects.toThrow(/forced task-created crash/u);
+
+    await expect(
+      cmdContextDoctor({ cwd: root, parsed: { fix: false, label: "doctor" } }),
+    ).rejects.toThrow(
+      /task\/receipt divergence[\s\S]*resume with agentplane context ingest --changed/u,
+    );
   });
 });

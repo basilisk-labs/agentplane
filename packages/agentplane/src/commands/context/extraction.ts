@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { applyContextExtractionResult } from "../../context/extraction-writer.js";
+import { advanceContextIngestRunForTask } from "../../context/ingest-run-journal.js";
 
 export async function cmdContextExtractionApply(opts: {
   cwd: string;
@@ -11,6 +12,12 @@ export async function cmdContextExtractionApply(opts: {
   const root = path.resolve(opts.rootOverride ?? opts.cwd);
   const filePath = path.resolve(root, opts.parsed.file);
   const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
+  if (!opts.parsed.dryRun && opts.parsed.taskId) {
+    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
+      phase: "semantic_result_received",
+      semantic: { extraction_file: opts.parsed.file },
+    });
+  }
   const result = await applyContextExtractionResult({
     root,
     raw,
@@ -18,6 +25,12 @@ export async function cmdContextExtractionApply(opts: {
     dryRun: opts.parsed.dryRun,
     synthesizeWiki: opts.parsed.synthesizeWiki,
   });
+  if (!opts.parsed.dryRun && opts.parsed.taskId) {
+    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
+      phase: "artifacts_applied",
+      semantic: { extraction_file: opts.parsed.file },
+    });
+  }
   process.stdout.write(
     [
       `context extraction apply${opts.parsed.dryRun ? " (dry-run)" : ""}: items=${result.items} input_source_paths=${result.input_source_paths} source_paths=${result.source_paths} source_refs=${result.source_refs} facts=${result.facts} entities=${result.entities} edges=${result.edges} provenance=${result.provenance}`,
