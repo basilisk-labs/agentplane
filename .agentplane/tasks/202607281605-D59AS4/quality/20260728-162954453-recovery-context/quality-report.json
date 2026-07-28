@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281605-D59AS4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T16:29:54.950Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Human freshness review: metadata-only lifecycle advances through 7a23d981 are covered; the implementation remains independently approved by the live Codex pass recorded for 05b047545.",
+  "evaluated_sha": "7a23d981986df1babf5e4e682b71797e6206b099",
+  "blueprint_digest": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6",
+  "findings": [
+    "The metadata-only commit records task state and evidence; it adds no implementation behavior beyond the provider-reviewed recovery path."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/quality-report.json",
+    ".agentplane/tasks/202607281605-D59AS4/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

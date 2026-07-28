@@ -1,0 +1,51 @@
+diff --git a/.agentplane/tasks/202607281605-D59AS4/README.md b/.agentplane/tasks/202607281605-D59AS4/README.md
+index 15c107191..7fc6e1264 100644
+--- a/.agentplane/tasks/202607281605-D59AS4/README.md
++++ b/.agentplane/tasks/202607281605-D59AS4/README.md
+@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
+ status: "DOING"
+ priority: "med"
+ owner: "CODER"
+-revision: 15
++revision: 16
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -58,8 +58,8 @@ quality_review:
+     - "The required second live evaluator episode and cumulative usage increase are not present in the frozen evidence; runner_history remains empty and the task document records only live episode 1."
+     - "The command regression changes task state before the second invocation, but it does not demonstrate that the newly added recovery branch for stale_state returned by the same start attempt is reached; the earlier journal-opening recovery path can satisfy the test."
+ commit:
+-  hash: "d74d6be94f2c5581daee824b0398adbd2138a59b"
+-  message: "fix(evaluator): recover stale journal at start"
++  hash: "05b047545b610a5d7a75a125d50b9283de13b086"
++  message: "test(evaluator): prove stale start recovery"
+ comments:
+   -
+     author: "CODER"
+@@ -70,6 +70,9 @@ comments:
+   -
+     author: "CODER"
+     body: "Implementation correction: the evaluator now recovers stale_state returned by the same start attempt before any provider intent is persisted; the regression test changes real task state between episodes."
++  -
++    author: "CODER"
++    body: "Verification correction: direct command regression now proves a ready journal becomes stale only at the second start attempt, while two live read-only episodes preserve cumulative usage."
+ events:
+   -
+     type: "status"
+@@ -98,8 +101,15 @@ events:
+     from: "DOING"
+     to: "DOING"
+     note: "Implementation correction: the evaluator now recovers stale_state returned by the same start attempt before any provider intent is persisted; the regression test changes real task state between episodes."
++  -
++    type: "status"
++    at: "2026-07-28T16:26:43.181Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Verification correction: direct command regression now proves a ready journal becomes stale only at the second start attempt, while two live read-only episodes preserve cumulative usage."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T16:26:16.959Z"
++doc_updated_at: "2026-07-28T16:26:43.181Z"
+ doc_updated_by: "CODER"
+ description: "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics."
+ sections:

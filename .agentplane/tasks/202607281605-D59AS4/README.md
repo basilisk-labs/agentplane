@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -33,28 +33,28 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T16:28:08.299Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "05b047545b610a5d7a75a125d50b9283de13b086"
+  provenance: "human_supplied"
+  updated_at: "2026-07-28T16:29:54.950Z"
+  updated_by: "HUMAN"
+  note: "Human freshness review: metadata-only lifecycle advances through 7a23d981 are covered; the implementation remains independently approved by the live Codex pass recorded for 05b047545."
+  evaluated_sha: "7a23d981986df1babf5e4e682b71797e6206b099"
   blueprint_digest: "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6"
   evidence_refs:
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162954453-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162954453-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162954453-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162954453-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607281605-D59AS4/README.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162954453-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162954453-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162954453-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/quality-report.json"
   findings:
-    - "The frozen evidence demonstrates safe stale-state reopening, terminal protection for failed or ambiguous effects, two bounded evaluator episodes, and preserved cumulative usage."
+    - "The metadata-only commit records task state and evidence; it adds no implementation behavior beyond the provider-reviewed recovery path."
 commit:
   hash: "05b047545b610a5d7a75a125d50b9283de13b086"
   message: "test(evaluator): prove stale start recovery"
