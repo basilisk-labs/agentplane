@@ -1,10 +1,11 @@
 ---
 id: "202607280107-BPZFPF"
 title: "Archive incident INC-20260727-01 task-context evidence"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 12
 origin:
   system: "manual"
 depends_on: []
@@ -22,16 +23,47 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-28T01:12:14.139Z"
+  updated_by: "TESTER"
+  note: "Verified archive reconciliation: TaskEpisodeView authority and loss-prevention regression passed; policy routing, release incident gate, doctor, and diff checks passed."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-28T01:12:43.813Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "edbda105af747db96936f5419592ee025d8a3ed2"
+  blueprint_digest: "6e156dee17fb4c53b995e3a1cc1e4dd0d0b5876dfcda20942e9049d6afd8562b"
+  evidence_refs:
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/README.md"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607280107-BPZFPF/quality/20260728-011243728-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/dod.docs.md"
+    - ".agentplane/policy/security.must.md"
+  findings:
+    - "The archived record correctly treats task_document_schema as structural authority and points to explicit omission or validation behavior, while preserving the deferred semantic-policy boundary."
+commit:
+  hash: "edbda105af747db96936f5419592ee025d8a3ed2"
+  message: "🛡️ BPZFPF policy: archive resolved task context incident"
 comments:
   -
     author: "CODER"
     body: "Start: dedicated release-incident reconciliation in the assigned task worktree; scope is archive evidence and active-registry cleanup only after checks."
+  -
+    author: "CODER"
+    body: "Implementation committed: archived INC-20260727-01 after reconfirming TaskEpisodeView section authority, regression coverage, policy routing, doctor, and the release incident gate."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -40,8 +72,28 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: dedicated release-incident reconciliation in the assigned task worktree; scope is archive evidence and active-registry cleanup only after checks."
+  -
+    type: "status"
+    at: "2026-07-28T01:11:32.713Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: archived INC-20260727-01 after reconfirming TaskEpisodeView section authority, regression coverage, policy routing, doctor, and the release incident gate."
+  -
+    type: "verify"
+    at: "2026-07-28T01:12:14.139Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified archive reconciliation: TaskEpisodeView authority and loss-prevention regression passed; policy routing, release incident gate, doctor, and diff checks passed."
+  -
+    type: "status"
+    at: "2026-07-28T01:13:10.702Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T01:09:45.640Z"
+doc_updated_at: "2026-07-28T01:13:10.703Z"
 doc_updated_by: "CODER"
 description: "Dedicated incident reconciliation for TaskEpisodeView section authority. Confirm the shipped RF-21 contract: task_document_schema is explicit, required-section omission or validation failure is enforced, and localized structural-heading coverage is present. Preserve final evidence in the historical archive and remove the active entry only after deterministic checks pass. Do not author a new semantic role or heading policy."
 sections:
@@ -60,11 +112,44 @@ sections:
     4. Run `node .agentplane/policy/check-routing.mjs`, `node scripts/release/check-release-incidents.mjs`, and `node packages/agentplane/bin/agentplane.js doctor`. Expected: policy routing, active-registry release gate, and repository diagnostics pass.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-28T01:12:14.139Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified archive reconciliation: TaskEpisodeView authority and loss-prevention regression passed; policy routing, release incident gate, doctor, and diff checks passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T01:11:32.713Z, excerpt_hash=sha256:a59fd1cab17d0a6b8997cba362eec1f3ff54f01b3937dfb887b7892e788ae407
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280107-BPZFPF-reconcile-release-incident/.agentplane/tasks/202607280107-BPZFPF/blueprint/resolved-snapshot.json
+    - old_digest: 6e156dee17fb4c53b995e3a1cc1e4dd0d0b5876dfcda20942e9049d6afd8562b
+    - current_digest: 6e156dee17fb4c53b995e3a1cc1e4dd0d0b5876dfcda20942e9049d6afd8562b
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607280107-BPZFPF
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607280107-BPZFPF
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The active registry contained only INC-20260727-01 before archival; after moving its complete evidence to the historical archive, the release gate reported no active entries.
+      Impact: Release readiness is unblocked without adding an unapproved semantic role or heading policy.
+      Resolution: Preserved the deferred semantic-policy boundary in the archive and retained the existing focused TaskEpisodeView coverage.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -81,6 +166,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:e80591fbb8deb3b79e4ed346a146c363d72192478589105b5d3313203f0c4516"
+      -
+        actor: "USER"
+        at: "2026-07-28T01:12:56.699Z"
+        authorityDigest: "sha256:ae94d53f61d64b5ba3709bad155233336a0b60e74dcf6ba7f81b520d7555d7df"
+        digest: "sha256:da86f30cf5ea363da0ad4733068d87e023f8fc4f568a15878a9ddc1e785d3fc5"
+        operationDigest: "sha256:b796c927a28d28365198ea1d5a53de51d4756301855169c1146550578552df00"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:0384b450f69d748303e3021bebdbc75ac41704c7908234b8f0cfb37473e13a33"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:b87536c013f1354e9b95e4038691fb7365452461b522657cb973d2ca9a063b15"
     grants:
       -
         actor: "USER"
@@ -95,6 +193,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:e80591fbb8deb3b79e4ed346a146c363d72192478589105b5d3313203f0c4516"
         stateScopeDigest: "sha256:0ca1b0540ad5e5e0e1ad58f60f668bab4baf203f226366e539b4072a7bc72edc"
+      -
+        actor: "USER"
+        digest: "sha256:ae94d53f61d64b5ba3709bad155233336a0b60e74dcf6ba7f81b520d7555d7df"
+        expiresAt: "2026-07-28T01:27:56.699Z"
+        id: "authority-54783b68-03c8-4ca1-9cb5-9d82809dfe8c"
+        issuedAt: "2026-07-28T01:12:56.699Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:b796c927a28d28365198ea1d5a53de51d4756301855169c1146550578552df00"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:b87536c013f1354e9b95e4038691fb7365452461b522657cb973d2ca9a063b15"
+        stateScopeDigest: "sha256:4fd957fc29341599ae77f3ddea88bdc25c441cb5277f1bd494bb7c1164f5223a"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "78b62230dda3ff6aec52db27e74c49e9a5926683"
@@ -126,6 +237,36 @@ Dedicated incident review/fix for the release-blocking TaskEpisodeView section-a
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-28T01:12:14.139Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified archive reconciliation: TaskEpisodeView authority and loss-prevention regression passed; policy routing, release incident gate, doctor, and diff checks passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T01:11:32.713Z, excerpt_hash=sha256:a59fd1cab17d0a6b8997cba362eec1f3ff54f01b3937dfb887b7892e788ae407
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280107-BPZFPF-reconcile-release-incident/.agentplane/tasks/202607280107-BPZFPF/blueprint/resolved-snapshot.json
+- old_digest: 6e156dee17fb4c53b995e3a1cc1e4dd0d0b5876dfcda20942e9049d6afd8562b
+- current_digest: 6e156dee17fb4c53b995e3a1cc1e4dd0d0b5876dfcda20942e9049d6afd8562b
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607280107-BPZFPF
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607280107-BPZFPF
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -134,3 +275,7 @@ Dedicated incident review/fix for the release-blocking TaskEpisodeView section-a
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The active registry contained only INC-20260727-01 before archival; after moving its complete evidence to the historical archive, the release gate reported no active entries.
+  Impact: Release readiness is unblocked without adding an unapproved semantic role or heading policy.
+  Resolution: Preserved the deferred semantic-policy boundary in the archive and retained the existing focused TaskEpisodeView coverage.

@@ -15,8 +15,13 @@ Dedicated incident review/fix for the release-blocking TaskEpisodeView section-a
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified archive reconciliation: TaskEpisodeView authority and loss-prevention regression passed;
+policy routing, release incident gate, doctor, and diff checks passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
