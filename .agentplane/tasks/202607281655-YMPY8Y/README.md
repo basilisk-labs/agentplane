@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 44
+revision: 45
 origin:
   system: "manual"
 depends_on: []
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "The verification commit is traceable to implementation 6c021591 and demonstrates the previous hosted failure path is covered by 15 independent cross-process runs and the full 3358-test suite."
 commit:
-  hash: "7bbc3534216f6fe11ec1eb1a7f1a5d27a56e1ac1"
-  message: "🔍 YMPY8Y evaluator: refresh verification-commit quality pass"
+  hash: "dab9e28450971fed245d5d85c95dd6348deb3984"
+  message: "🔍 YMPY8Y evaluator: refresh provider lease verification quality"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -211,8 +214,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted cross-process rework fixed at 6c021591eb0d054f478e6e73320a2aab6aa040a5."
+  -
+    type: "status"
+    at: "2026-07-28T20:38:23.221Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T20:36:00.938Z"
+doc_updated_at: "2026-07-28T20:38:23.222Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -586,8 +596,8 @@ sections:
       Resolution: Recorded fresh verification evidence; refresh EVALUATOR quality and hosted checks.
 extensions:
   implementation_commit:
-    hash: "f51722c22e772c920eed46234e4f4fc3e8a52d74"
-    message: "🧪 YMPY8Y task: freeze concurrent replacement verification"
+    hash: "fafec4302cb4f9c799852a4e3512ad0c1f26fc76"
+    message: "🧪 YMPY8Y task: freeze provider lease rework verification"
   workflow_route_baseline:
     start_head_sha: "a9b9d6a834893013c30b5046d0c618cb23553638"
     version: 1
