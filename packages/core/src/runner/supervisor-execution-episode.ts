@@ -92,6 +92,7 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
     authority_digest: SHA256_DIGEST_SCHEMA.nullable(),
     work_order_ref: NON_EMPTY_STRING.nullable(),
     effect_ref: NON_EMPTY_STRING.nullable(),
+    replacement_of_operation_key: SHA256_DIGEST_SCHEMA.nullable().optional(),
     status: z.enum(SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES),
     result_digest: SHA256_DIGEST_SCHEMA.nullable(),
     postcondition_fingerprint_digest: SHA256_DIGEST_SCHEMA.nullable(),
@@ -372,10 +373,15 @@ export function startSupervisorExecutionEpisode(opts: {
   authority_digest?: string | null;
   work_order_ref?: string | null;
   effect_ref?: string | null;
+  replacement_of_operation_key?: string | null;
   now?: string;
 }): SupervisorEpisodeStartResult {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
   const now = opts.now ?? new Date().toISOString();
+  const replacementReference = opts.replacement_of_operation_key?.trim();
+  const replacementBinding = replacementReference
+    ? { replacement_of_operation_key: replacementReference }
+    : {};
   if (journal.status === "stopped") {
     return {
       status: "stopped",
@@ -429,6 +435,7 @@ export function startSupervisorExecutionEpisode(opts: {
     authority_digest: opts.authority_digest ?? null,
     work_order_ref: opts.work_order_ref?.trim() ?? null,
     effect_ref: opts.effect_ref?.trim() ?? null,
+    ...replacementBinding,
   });
   const operation = {
     sequence: journal.operations.length + 1,
@@ -441,6 +448,7 @@ export function startSupervisorExecutionEpisode(opts: {
     authority_digest: opts.authority_digest ?? null,
     work_order_ref: opts.work_order_ref?.trim() ?? null,
     effect_ref: opts.effect_ref?.trim() ?? null,
+    ...replacementBinding,
     status: "intent" as const,
     result_digest: null,
     postcondition_fingerprint_digest: null,
@@ -615,6 +623,55 @@ export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
   ) {
     throw new Error(
       "Supervisor episode stale-state reopening requires a stopped journal with a completed latest operation.",
+    );
+  }
+  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
+    ...journal,
+    state_fingerprint_digest: opts.state_fingerprint_digest,
+    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  };
+  return createJournal(next);
+}
+
+/**
+ * Open a distinct, explicitly authorized operation after a provider failure.
+ * The failed operation remains in the journal and the next start binds its
+ * replacement to that operation key. This is deliberately narrower than a
+ * retry: ambiguous effects and exhausted budgets stay terminal.
+ */
+export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "operation_failed" ||
+    journal.cursor.phase !== "stopped" ||
+    last?.status !== "failed" ||
+    journal.stop?.operation_key !== last?.operation_key
+  ) {
+    throw new Error(
+      "Supervisor episode replacement requires a stopped operation_failed journal with a failed latest operation.",
+    );
+  }
+  const exhausted = exhaustedDimensions({
+    budget: journal.budget,
+    usage: journal.usage,
+    next_kind: last.kind,
+    now,
+    started_at: journal.started_at,
+  });
+  if (exhausted.length > 0) {
+    throw new Error(
+      `Supervisor episode replacement requires remaining budget; exhausted: ${exhausted.join(", ")}.`,
     );
   }
   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
