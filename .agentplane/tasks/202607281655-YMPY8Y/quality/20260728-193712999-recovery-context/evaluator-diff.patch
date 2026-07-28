@@ -1,0 +1,164 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+index 17dd2388e..dbf1db7d9 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+@@ -2,7 +2,8 @@
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+  .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
+- .../commands/evaluator/evaluator-review-usecase.ts |  34 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
++ .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+  .../shared/supervisor-execution-episode.ts         | 133 ++++++--
+@@ -11,4 +12,4 @@
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 13 files changed, 851 insertions(+), 48 deletions(-)
++ 14 files changed, 852 insertions(+), 48 deletions(-)
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index 6b5df639e..ef5fc38a4 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -36,7 +36,8 @@ verify-contract and verify-static parity checks pass.
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+  .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
+- .../commands/evaluator/evaluator-review-usecase.ts |  34 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
++ .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+  .../shared/supervisor-execution-episode.ts         | 133 ++++++--
+@@ -45,7 +46,7 @@ verify-contract and verify-static parity checks pass.
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 13 files changed, 851 insertions(+), 48 deletions(-)
++ 14 files changed, 852 insertions(+), 48 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index f1243a5d9..a18866880 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+-  "diffstat_sha256": "sha256:21dd6a0967afffe419852aef2a7aac5086800f3107c93499e687120dd5ebd7ea",
++  "diffstat_sha256": "sha256:aed94a67f31f9fb5f9348e758da0240cd0fbcc4eb53d54c74849925fe5d6d4b9",
+   "last_verified_at": "2026-07-28T19:19:01.764Z",
+   "last_verified_diffstat_sha256": "sha256:21dd6a0967afffe419852aef2a7aac5086800f3107c93499e687120dd5ebd7ea",
+   "pr_number": 4664,
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index 06887ac46..f8dc4b987 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -33,7 +33,8 @@ Created: 2026-07-28T16:57:04.791Z
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../evaluator/evaluator-execute-supervisor.ts      |  66 +++-
+  .../evaluator/evaluator-execute.command.test.ts    | 366 ++++++++++++++++++++-
+- .../commands/evaluator/evaluator-review-usecase.ts |  34 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  20 +-
++ .../evaluator/evaluator-verification-records.ts    |  15 +
+  .../src/commands/evaluator/evaluator.command.ts    |   1 +
+  .../src/commands/evaluator/evaluator.spec.ts       |   9 +
+  .../shared/supervisor-execution-episode.ts         | 133 ++++++--
+@@ -42,7 +43,7 @@ Created: 2026-07-28T16:57:04.791Z
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    |  35 +-
+  .../check-compatibility-contract-baseline.mjs      |  16 +
+- 13 files changed, 851 insertions(+), 48 deletions(-)
++ 14 files changed, 852 insertions(+), 48 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index b316f0472..e528024ff 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -1,5 +1,5 @@
+ import { createHash } from "node:crypto";
+-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
++import { mkdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { execFileAsync } from "@agentplaneorg/core/process";
+ import { z } from "zod";
+@@ -19,6 +19,7 @@ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.j
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import type { EvaluatorModule } from "../../evaluators/catalog.js";
++import { verificationRecordPaths } from "./evaluator-verification-records.js";
+ import {
+   EVALUATOR_OPINION_FILE,
+   EVALUATOR_PROMPT_FILE,
+@@ -188,19 +189,6 @@ async function freezeFile(opts: {
+   };
+ }
+ 
+-async function verificationRecordPaths(taskRoot: string): Promise<string[]> {
+-  try {
+-    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
+-    return entries
+-      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+-      .map((entry) => path.join(taskRoot, "verification", entry.name))
+-      .toSorted();
+-  } catch (error) {
+-    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
+-    throw error;
+-  }
+-}
+-
+ async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
+   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
+   try {
+@@ -292,7 +280,6 @@ export async function prepareEvaluatorReview(opts: {
+     opts.task.id,
+     "README.md",
+   );
+-  const taskRoot = path.dirname(taskReadmePath);
+   const evaluatedSha = await resolveQualityReviewTargetSha({
+     gitRoot,
+     workflowDir: opts.ctx.config.paths.workflow_dir,
+@@ -301,7 +288,7 @@ export async function prepareEvaluatorReview(opts: {
+     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+   });
+   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
+-  const recordPaths = await verificationRecordPaths(taskRoot);
++  const recordPaths = await verificationRecordPaths(path.dirname(taskReadmePath));
+   const verificationRecords = await Promise.all(
+     recordPaths.map((filePath, index) =>
+       freezeFile({
+@@ -323,7 +310,6 @@ export async function prepareEvaluatorReview(opts: {
+     })),
+     runner_history: opts.task.runner?.history ?? [],
+   };
+-
+   await mkdir(reviewDir, { recursive: true });
+   await writeFile(
+     path.join(reviewDir, EVALUATOR_DIFF_FILE),
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+new file mode 100644
+index 000000000..8a50e75f5
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+@@ -0,0 +1,15 @@
++import { readdir } from "node:fs/promises";
++import path from "node:path";
++
++export async function verificationRecordPaths(taskRoot: string): Promise<string[]> {
++  try {
++    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
++    return entries
++      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
++      .map((entry) => path.join(taskRoot, "verification", entry.name))
++      .toSorted();
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
++    throw error;
++  }
++}

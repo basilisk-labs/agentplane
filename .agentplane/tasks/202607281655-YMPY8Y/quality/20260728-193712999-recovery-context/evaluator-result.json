@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The current delta only extracts verification-record discovery into a dedicated helper; the frozen checks show unchanged evaluator-review behavior and continued coverage of replacement admission, terminal rejection, pending-reservation recovery, and cross-process contention.",
+      "broken_invariant": "No contract invariant is broken by the evaluated delta.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-193712999-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:facf44e2595ddcac2425fb32477c94d9c646363a08e837f34ce3ed74421fb8d1",
+          "section": "evaluator-review-usecase extraction"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-193556-hotspot-rework.json",
+          "sha256": "sha256:71925fb0caecdfe3cb2bb46b0f3f31e3c2834915c5f821c0cf592a7c139b3875",
+          "section": "checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "The required post-integration real replacement episode for task 202607221850-8HBF4J remains deferred; it must confirm preservation of the original operation_failed record and completion of exactly one linked replacement episode."
+  ],
+  "hidden_assumptions": [
+    "The fake read-only provider and filesystem fixtures faithfully model the production provider boundary and shared-journal locking behavior.",
+    "The post-integration release gate will run before the replacement feature is treated as operationally complete."
+  ]
+}
