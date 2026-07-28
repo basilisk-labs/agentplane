@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "No new code path was introduced after the fresh focused and hosted evidence."
 commit:
-  hash: "3e0e89d381fdfbc8848fde5d391b62e42d4c4866"
-  message: "chore: authorize context ingest pre-merge closure"
+  hash: "74c47028d8af0c31c50eda0b2dc9788efda72351"
+  message: "chore: authorize final context ingest pre-merge closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -176,8 +179,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Fresh lifecycle verification: no implementation paths changed after the prior focused suite and ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing."
+  -
+    type: "status"
+    at: "2026-07-28T08:58:31.911Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:57:38.995Z"
+doc_updated_at: "2026-07-28T08:58:31.911Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
