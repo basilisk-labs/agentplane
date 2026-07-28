@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607282053-BYCY0Q-3276f5ae6518b588cbae9195",
+  "prepared_at": "2026-07-28T21:21:57.355Z",
+  "task": {
+    "id": "202607282053-BYCY0Q",
+    "revision": 7,
+    "objective": "Charge supervisor wall-time budget from observed execution\n\nMake max_wall_time_ms charge cumulative supervisor-observed provider or runner duration rather than journal age, so external waits do not consume execution budget. Preserve durable episode history, terminal operation_failed rules, one explicit replacement authorization, and all other budget dimensions. Add deterministic core and evaluator coverage, then validate one post-integration replacement pilot if the journal remains eligible.",
+    "acceptance_criteria": [
+      "- In scope: Make max_wall_time_ms charge cumulative supervisor-observed provider or runner duration rather than journal age, so external waits do not consume execution budget. Preserve durable episode history, terminal operation_failed rules, one explicit replacement authorization, and all other budget dimensions. Add deterministic core and evaluator coverage, then validate one post-integration replacement pilot if the journal remains eligible.\n- Out of scope: unrelated refactors not required for \"Charge supervisor wall-time budget from observed execution\".",
+      "1. Define max_wall_time_ms as cumulative supervisor-observed active duration and keep journal age out of its exhaustion calculation. 2. Preserve current terminal operation_failed and replacement CAS semantics, token/run/file/no-progress limits, and stale-state protections. 3. Add core tests for inactive elapsed time versus accumulated active duration and evaluator coverage that an eligible replacement can proceed after external waiting. 4. Run focused and required policy/type checks, independent quality review, hosted CI, integration, then execute the deferred real replacement pilot without retry if its journal is eligible.",
+      "1. Run core supervisor episode tests. Expected: inactive elapsed time does not exhaust max_wall_time_ms, while cumulative observed execution time does.\n2. Run evaluator execute tests. Expected: one explicit replacement remains linked to the original failed operation after external waiting, with no retry or duplicate provider start.\n3. Run typecheck, formatting, policy routing, and the relevant fast test gate. Expected: touched contracts and repository gates pass.\n4. After integration, execute the deferred real replacement pilot once. Expected: it either creates one linked completed operation with the original failure retained, or exits before a provider start with a durable, explicit stop reason."
+    ]
+  },
+  "evaluated_sha": "c553cf67a0457761a6d4e1f9b1bcb373e29e099b",
+  "blueprint_digest": "9569b35ae52dfba3f86d314fa3810629285946ebdb8bd90e4aa638a96726eaf2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607282053-BYCY0Q/README.md",
+      "sha256": "sha256:6b35d3b4bbf47f7f4f03bbd67057933644b11bb99f734ba95f14a5e236e661a4",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-212157355-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:2c17bb2f9947200c0a1e25b43129c6725923b6d310b6adafe4fa761b1c664bca",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-212157355-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:819889d4e4e8635c06002ad830fa0691862e14f6c7862fa700bab32f5909aa05",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607282053-BYCY0Q/verification/20260728-2115-wall-time-budget.json",
+      "sha256": "sha256:634e2d19200f20546778db2856f1b39397ee99c7c921c07414a497acd5610fa1",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-212157355-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:4dd8e6cc49616f51cc48dc49a1d07f4baef4487d9d69c09d1f6c999a965ffced",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
