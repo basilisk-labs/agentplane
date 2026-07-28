@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607282157-FT85MC-0f3234a8a58b5d04ae58f6d3",
+  "task_id": "202607282157-FT85MC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Bind verification-record admission to the current task_id and supported schema_version, recompute and validate the record digest using the canonical serialization contract, add cross-task-copy and tamper regression tests, then rerun the full evaluator evidence verification set.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Verification-record admission does not validate the record's task_id, schema_version, or self-digest. A copied or modified JSON record can therefore be admitted as current evidence when its timestamp, verification fields, implementation SHA, scope digest, and details match, even though it was not proven to be the durable record produced for this task.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-230911568-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3f4b3f9a2c4addedaa2c8f6138ae7c7a5b8cefca51df04022accbeb57a9c12e1",
+          "section": "evaluator-verification-records.ts admission predicate and evaluator-run.command.test.ts verification-record coverage"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728230853498-d66d9c9cbd276c1e.json",
+          "sha256": "sha256:884f0bf926dedb8e80b1c4cd8b04aeab78d397370212d0f4f411163a43cf11b2",
+          "section": "task_id, schema_version, and digest fields"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-230911568-recovery-context/evaluator-result.json"
+}
