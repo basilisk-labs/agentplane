@@ -1,0 +1,18 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T23:34:32.108Z",
+    "updated_by": "CODER",
+    "note": "Fixed hosted verify-unit regressions in durable verification fixtures."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728233432108-3b8cd9caab7b44c2.json",
+      "sha256": "sha256:bfc665d37cb2592706063ab9544c645120dbdba73ead753f129ca69f937284e9"
+    }
+  ],
+  "runner_history": []
+}
