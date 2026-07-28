@@ -1,0 +1,49 @@
+diff --git a/.agentplane/tasks/202607281506-WWNFXE/README.md b/.agentplane/tasks/202607281506-WWNFXE/README.md
+index f0c59decd..334bfea7d 100644
+--- a/.agentplane/tasks/202607281506-WWNFXE/README.md
++++ b/.agentplane/tasks/202607281506-WWNFXE/README.md
+@@ -4,7 +4,7 @@ title: "Enforce non-empty EVALUATOR pass findings"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 7
++revision: 8
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -59,7 +59,7 @@ quality_review:
+   findings:
+     - "The provider schema requires at least one finding, strict SGR validation rejects empty findings for every verdict, and focused regression coverage includes pass, rework, blocked, and human_review."
+ commit:
+-  hash: "e76ab8e333faa1417a7b0de3188b98d361a09be5"
++  hash: "8dfcc1e90cd75db180f4fac4dff418f91af90e80"
+   message: "Enforce evaluator pass findings"
+ comments:
+   -
+@@ -68,6 +68,9 @@ comments:
+   -
+     author: "CODER"
+     body: "Implemented: every EVALUATOR verdict now requires one frozen, evidence-backed finding in both the provider schema and strict SGR validator; fixtures cover pass, rework, blocked, and human_review empty-result rejection."
++  -
++    author: "CODER"
++    body: "Rebased onto main after the evaluator schema repair; record the rewritten implementation SHA so the live EVALUATOR review and task metadata refer to the same code."
+ events:
+   -
+     type: "status"
+@@ -89,8 +92,15 @@ events:
+     author: "TESTER"
+     state: "ok"
+     note: "Verified evaluator quality-gate consistency: every pass now carries an evidence-backed finding and empty findings are rejected by both the provider schema and strict SGR validator. Checks passed: focused evaluator/SGR suites (39), typecheck, format, routing validation."
++  -
++    type: "status"
++    at: "2026-07-28T15:50:47.455Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Rebased onto main after the evaluator schema repair; record the rewritten implementation SHA so the live EVALUATOR review and task metadata refer to the same code."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T15:10:43.516Z"
++doc_updated_at: "2026-07-28T15:50:47.455Z"
+ doc_updated_by: "CODER"
+ description: "Quality-gate follow-up: align the Codex output schema and strict evaluator SGR validation with the branch_pr requirement that a pass review contains at least one evidence-backed finding, so an empty pass cannot leave a task permanently quality-stale."
+ sections:
