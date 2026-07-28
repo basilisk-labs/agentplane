@@ -1,4 +1,8 @@
-import { digestRunnerEffectValue } from "@agentplaneorg/core/schemas";
+import {
+  digestRunnerEffectValue,
+  type RunnerEffectJournal,
+  type RunnerEffectOperation,
+} from "@agentplaneorg/core/schemas";
 
 import {
   advanceRunnerEffectJournal,
@@ -16,6 +20,11 @@ import type {
   RunnerStateFingerprintRecord,
 } from "../types.js";
 
+export type TaskRunnerEffectOperationSnapshot = {
+  operation: RunnerEffectOperation;
+  journal: RunnerEffectJournal;
+};
+
 export async function persistPreparedTaskRunnerEffectOperation(opts: {
   repository: RunnerRunRepository;
   bundle: RunnerContextBundle;
@@ -24,7 +33,10 @@ export async function persistPreparedTaskRunnerEffectOperation(opts: {
   task_id: string;
   source_run_id?: string | null;
   resolved_not_applied_source?: boolean;
-}): Promise<RunnerRunState> {
+}): Promise<{
+  state: RunnerRunState;
+  effect_operation: TaskRunnerEffectOperationSnapshot;
+}> {
   if (!opts.state.state_fingerprint) {
     throw new Error(
       `Runner prepared state is missing effect-journal fingerprint authority for ` +
@@ -44,7 +56,13 @@ export async function persistPreparedTaskRunnerEffectOperation(opts: {
     updated_at: new Date().toISOString(),
   };
   await opts.repository.writeState(state);
-  return state;
+  return {
+    state,
+    effect_operation: {
+      operation: effectOperation.operation,
+      journal: effectOperation.journal,
+    },
+  };
 }
 
 export async function startTaskRunnerEffectOperation(opts: {
@@ -102,8 +120,8 @@ async function recordTaskRunnerEffectAccepted(opts: {
   session: StartedRunnerEffectOperation;
   result: RunnerResult;
   state_fingerprint: RunnerStateFingerprintRecord;
-}): Promise<void> {
-  await advanceRunnerEffectJournal({
+}): Promise<RunnerEffectJournal> {
+  return await advanceRunnerEffectJournal({
     session: opts.session,
     phase: "accepted",
     evidence: {
@@ -125,7 +143,7 @@ export async function persistTaskRunnerEffectAccepted<T>(opts: {
   result: RunnerResult;
   state_fingerprint: RunnerStateFingerprintRecord;
   persist_post_effect_state: () => Promise<T>;
-}): Promise<T> {
+}): Promise<{ state: T; journal: RunnerEffectJournal }> {
   if (!opts.session) {
     throw new Error(
       `Runner adapter returned without a durable effect operation for ` +
@@ -144,10 +162,10 @@ export async function persistTaskRunnerEffectAccepted<T>(opts: {
     });
     throw error;
   }
-  await recordTaskRunnerEffectAccepted({
+  const journal = await recordTaskRunnerEffectAccepted({
     session: opts.session,
     result: opts.result,
     state_fingerprint: opts.state_fingerprint,
   });
-  return state;
+  return { state, journal };
 }

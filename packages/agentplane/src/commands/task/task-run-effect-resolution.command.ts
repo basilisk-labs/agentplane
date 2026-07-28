@@ -4,11 +4,15 @@ import { createCliEmitter, infoMessage } from "../../cli/output.js";
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { resumeTaskRunnerEffectExecution } from "../../runner/usecases/task-run-lifecycle.js";
 import {
+  projectExecutedTaskRunnerLifecycleResult,
+  taskRunnerLifecycleExitCode,
+} from "../../runner/usecases/task-run-lifecycle-result.js";
+import {
   acceptLegacyTaskRunnerEffect,
   resolveTaskRunnerEffect,
 } from "../../runner/usecases/task-run-effect-resolution.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { renderTaskRunPayload, reportExecutedTaskRun } from "./run-render.js";
+import { renderTaskRunnerLifecyclePayload, reportExecutedTaskRun } from "./run-render.js";
 
 type TaskRunResolveEffectParsed = {
   taskId: string;
@@ -258,25 +262,15 @@ export function makeRunTaskRunResumeEffectHandler(
       run_id: parsed.runId,
       ...(parsed.newRunId ? { new_run_id: parsed.newRunId } : {}),
     });
-    const payload = renderTaskRunPayload({
-      taskId: parsed.taskId,
-      mode: "execute",
-      adapterId: resumed.invocation.adapter_id,
-      runId: resumed.invocation.run_id,
-      runDir: resumed.invocation.run_dir,
-      bundlePath: resumed.invocation.bundle_path,
-      bootstrapPath: resumed.invocation.bootstrap_path ?? "",
-      resultPath: resumed.invocation.result_path,
-      status: resumed.result.status,
-      verificationState: resumed.result.execution_receipt?.verification_state,
-      receiptPath: resumed.result.execution_receipt?.path,
-      exitCode: resumed.result.exit_code,
-      summary: resumed.result.summary,
-      activeClaimCleanup: resumed.active_claim_cleanup,
+    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
+      task_id: parsed.taskId,
+      execution: resumed,
+      source_effect_resolution: resumed.source_effect_resolution,
     });
+    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
     const output = createCliEmitter();
     if (parsed.json) output.json(payload);
     else reportExecutedTaskRun(payload, parsed.taskId);
-    return resumed.result.status === "success" && !resumed.active_claim_cleanup ? 0 : 1;
+    return taskRunnerLifecycleExitCode(lifecycle);
   };
 }

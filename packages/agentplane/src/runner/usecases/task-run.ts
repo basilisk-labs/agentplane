@@ -58,6 +58,7 @@ import {
   recordTaskRunnerPostStateUnknown,
   persistTaskRunnerEffectAccepted,
   startTaskRunnerEffectOperation,
+  type TaskRunnerEffectOperationSnapshot,
   type StartedRunnerEffectOperation,
 } from "./task-run-effect-journal.js";
 import { finalizeTaskRunnerActiveClaimCleanup } from "./task-run-active-claim-cleanup.js";
@@ -92,6 +93,8 @@ export type PreparedTaskRunnerExecution = {
   bundle: RunnerContextBundle;
   invocation: RunnerInvocation;
   state: RunnerRunState;
+  /** Durable operation and journal identity already established by preparation. */
+  effect_operation?: TaskRunnerEffectOperationSnapshot;
   precondition_fingerprint?: StateFingerprint;
   precondition_policy?: StateFingerprintPolicy;
 };
@@ -302,7 +305,7 @@ export async function prepareTaskRunnerExecution(opts: {
     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
     invocation,
   });
-  const stateWithEffectOperation = await persistPreparedTaskRunnerEffectOperation({
+  const preparedEffectOperation = await persistPreparedTaskRunnerEffectOperation({
     repository,
     bundle,
     invocation,
@@ -314,7 +317,8 @@ export async function prepareTaskRunnerExecution(opts: {
   return {
     bundle,
     invocation,
-    state: stateWithEffectOperation,
+    state: preparedEffectOperation.state,
+    effect_operation: preparedEffectOperation.effect_operation,
     precondition_fingerprint,
     precondition_policy,
   };
@@ -520,7 +524,7 @@ export async function executeTaskRunnerExecution(opts: {
     const preconditionFingerprint = guardedExecution.precondition_fingerprint;
     const preconditionPolicy = guardedExecution.precondition_policy;
     const result = guardedExecution.result;
-    const state = await persistTaskRunnerEffectAccepted({
+    const acceptedEffect = await persistTaskRunnerEffectAccepted({
       session: effectOperation,
       task_id: opts.task_id,
       run_id: prepared.invocation.run_id,
@@ -537,6 +541,7 @@ export async function executeTaskRunnerExecution(opts: {
           state_fingerprint: guardedExecution.state_fingerprint,
         }),
     });
+    const state = acceptedEffect.state;
     const claimedRunAuthority = await inspectTaskRunnerClaimedRunAuthority(
       {
         git_root: ctx.resolvedProject.gitRoot,
@@ -549,6 +554,9 @@ export async function executeTaskRunnerExecution(opts: {
     releaseActiveClaim = cleanupConfirmed;
     completed = {
       ...prepared,
+      effect_operation: prepared.effect_operation
+        ? { ...prepared.effect_operation, journal: acceptedEffect.journal }
+        : undefined,
       precondition_fingerprint: preconditionFingerprint,
       precondition_policy: preconditionPolicy,
       state,

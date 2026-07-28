@@ -5,6 +5,7 @@ import type {
   TaskRunnerDiagnosticInspection,
 } from "../../runner/usecases/task-run-inspect.js";
 import type { TaskRunnerActiveClaimCleanupDiagnostic } from "../../runner/usecases/task-run-active-claim-runtime.js";
+import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import type { RunnerLifecycleStatus } from "../../runner/types.js";
 import {
   isProcessAlive,
@@ -50,6 +51,38 @@ export function renderTaskRunPayload(opts: {
       : {}),
   };
 }
+
+/**
+ * Compatibility renderer for the typed in-process lifecycle result. The
+ * existing top-level fields stay stable while the additive lifecycle object
+ * exposes durable effect and authority evidence without stdout parsing.
+ */
+export function renderTaskRunnerLifecyclePayload(result: TaskRunnerLifecycleResult) {
+  return {
+    ...renderTaskRunPayload({
+      taskId: result.task_id,
+      mode: result.lifecycle.mode,
+      adapterId: result.invocation.adapter_id,
+      runId: result.invocation.run_id,
+      runDir: result.invocation.run_dir,
+      bundlePath: result.invocation.bundle_path,
+      bootstrapPath: result.invocation.bootstrap_path ?? "",
+      resultPath: result.invocation.result_path,
+      ...(result.phase === "executed" ? { status: result.result?.status } : {}),
+      verificationState: result.result?.execution_receipt?.verification_state,
+      receiptPath: result.result?.execution_receipt?.path,
+      exitCode: result.result?.exit_code,
+      summary: result.result?.summary,
+      activeClaimCleanup: result.active_claim_cleanup ?? undefined,
+    }),
+    work_order_id: result.invocation.work_order_id,
+    lifecycle_result: result,
+  };
+}
+
+type TaskRunRendererPayload =
+  | ReturnType<typeof renderTaskRunPayload>
+  | ReturnType<typeof renderTaskRunnerLifecyclePayload>;
 
 export function isTerminalRunnerStatus(status: RunnerLifecycleStatus): boolean {
   return (
@@ -379,7 +412,7 @@ export async function loadRunnerLogText(
 }
 
 export function reportPreparedTaskRun(
-  payload: ReturnType<typeof renderTaskRunPayload>,
+  payload: TaskRunRendererPayload,
   taskId: string,
 ): void {
   createCliEmitter().report(
@@ -388,6 +421,24 @@ export function reportPreparedTaskRun(
       { label: "mode", value: payload.mode },
       { label: "adapter", value: payload.adapter_id },
       { label: "run", value: payload.run_id },
+      ...("lifecycle_result" in payload
+        ? [
+            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
+            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
+            {
+              label: "effect_authority",
+              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
+            },
+            {
+              label: "effect_evidence",
+              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
+            },
+            {
+              label: "effect_claim_generation",
+              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
+            },
+          ]
+        : []),
       { label: "bundle", value: payload.bundle_path },
       { label: "bootstrap", value: payload.bootstrap_path },
       { label: "result", value: payload.result_path },
@@ -397,7 +448,7 @@ export function reportPreparedTaskRun(
 }
 
 export function reportExecutedTaskRun(
-  payload: ReturnType<typeof renderTaskRunPayload>,
+  payload: TaskRunRendererPayload,
   taskId: string,
 ): void {
   createCliEmitter().report(
@@ -406,6 +457,36 @@ export function reportExecutedTaskRun(
       { label: "mode", value: payload.mode },
       { label: "adapter", value: payload.adapter_id },
       { label: "run", value: payload.run_id },
+      ...("lifecycle_result" in payload
+        ? [
+            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
+            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
+            {
+              label: "effect_resolution",
+              value: payload.lifecycle_result.lifecycle.effect.resolution?.verdict ?? null,
+            },
+            {
+              label: "effect_authority",
+              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
+            },
+            {
+              label: "effect_evidence",
+              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
+            },
+            {
+              label: "effect_claim_generation",
+              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
+            },
+            ...(payload.lifecycle_result.lifecycle.effect.source_resolution
+              ? [
+                  {
+                    label: "source_effect_resolution",
+                    value: payload.lifecycle_result.lifecycle.effect.source_resolution.verdict,
+                  },
+                ]
+              : []),
+          ]
+        : []),
       { label: "status", value: payload.status ?? "unknown" },
       { label: "verification", value: payload.verification_state ?? "unavailable" },
       { label: "exit_code", value: payload.exit_code ?? null },

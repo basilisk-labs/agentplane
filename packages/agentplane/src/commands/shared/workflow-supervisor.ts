@@ -1,4 +1,5 @@
 import type { TaskRouteDecision } from "./route-decision-types.js";
+import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
 import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
 
@@ -23,11 +24,18 @@ type WorkflowSupervisorAuditEntry = {
   detail: string;
 };
 
+export type WorkflowSupervisorOperationPayload = {
+  kind: "runner_lifecycle";
+  value: TaskRunnerLifecycleResult;
+};
+
 export type WorkflowSupervisorOperationResult = {
   status: "succeeded" | "failed";
   observed_postconditions: readonly string[];
   detail: string;
   exit_code: number | null;
+  /** Typed in-process data for migrated operation slices; never parsed from stdout. */
+  operation_result?: WorkflowSupervisorOperationPayload;
 };
 
 export type WorkflowSupervisorExecution = {

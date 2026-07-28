@@ -1,4 +1,5 @@
 import type { TaskData, TaskRunnerHistoryEntry } from "../../backends/task-backend.js";
+import type { RunnerEffectResolutionRef } from "@agentplaneorg/core/schemas";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { RunnerRunDirectoryBoundaryError } from "../run-directory-boundary.js";
@@ -24,6 +25,7 @@ type FreshReplayExecution = ExecutedTaskRunnerExecution & {
   ctx: CommandContext;
   source_run_id: string;
   source_status: RunnerLifecycleStatus;
+  source_effect_resolution: RunnerEffectResolutionRef | null;
 };
 
 function replaySourceGuidance(source: TaskRunnerHistoryEntry, taskId: string): string {
@@ -254,6 +256,7 @@ async function executeFreshReplay(opts: {
     run_id: opts.run_id,
     task,
   });
+  let sourceEffectResolution: RunnerEffectResolutionRef | null = null;
   if (opts.action === "resume_effect") {
     const sourceRepository = await RunnerRunRepository.openExistingTaskRun({
       git_root: ctx.resolvedProject.gitRoot,
@@ -281,6 +284,7 @@ async function executeFreshReplay(opts: {
         },
       });
     }
+    sourceEffectResolution = sourceRecord.state.effect_resolution;
   }
   assertFreshReplayDangerAuthority(opts);
   const destinationRunId = resolveFreshReplayRunId({
@@ -323,6 +327,7 @@ async function executeFreshReplay(opts: {
     ctx,
     source_run_id: source.run_id,
     source_status: source.status,
+    source_effect_resolution: sourceEffectResolution,
   };
 }
 
@@ -339,8 +344,9 @@ export async function resumeTaskRunnerExecution(opts: {
     ...opts,
     action: "resume",
   });
+  const { source_effect_resolution: _sourceEffectResolution, ...execution } = resumed;
   return {
-    ...resumed,
+    ...execution,
     previous_status: resumed.source_status,
   };
 }
@@ -373,8 +379,16 @@ export async function resumeTaskRunnerEffectExecution(opts: {
     ...opts,
     action: "resume_effect",
   });
+  const sourceEffectResolution = resumed.source_effect_resolution;
+  if (!sourceEffectResolution) {
+    throw new Error(
+      `resume-effect completed without its required source resolution for ${opts.task_id}:${opts.run_id}.`,
+    );
+  }
+  const { source_effect_resolution: _sourceEffectResolution, ...execution } = resumed;
   return {
-    ...resumed,
+    ...execution,
     previous_status: resumed.source_status,
+    source_effect_resolution: sourceEffectResolution,
   };
 }
