@@ -19,8 +19,8 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Note:
 
 ```text
-Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local
-verify-contract and verify-static parity checks pass.
+Hosted hotspot rework verified: evaluator verification-record collection is split into a dedicated
+helper and the 600-line contract gate passes.
 ```
 - Canonical workflow state lives in the task README.
 

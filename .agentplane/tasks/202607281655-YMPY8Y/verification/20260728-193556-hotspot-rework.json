@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607281655-YMPY8Y",
+  "recorded_at": "2026-07-28T19:35:56Z",
+  "scope": {
+    "implementation_commit": "4daba8e5fcebc22526c966e2c527b963b18422eb",
+    "paths": [
+      "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
+      "packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts"
+    ],
+    "objective": "Keep the evaluator verification-record evidence path within the enforced hotspot budget after the hosted contract gate rejected the oversized module."
+  },
+  "checks": [
+    {
+      "id": "hotspot-threshold",
+      "command": "bun run hotspots:check",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "The evaluator review use case is at the permitted 600-line threshold; no runtime module exceeds the 600-line error budget.",
+      "evidence_scope": "hosted verify-contract hotspot parity"
+    },
+    {
+      "id": "core-lint-and-typecheck",
+      "command": "bun run lint:core && bun run typecheck",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "Core eslint and the repository TypeScript build completed with no findings.",
+      "evidence_scope": "static safety for the extracted helper"
+    },
+    {
+      "id": "evaluator-review-command",
+      "command": "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts --testTimeout 60000",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "1 test file passed; 15 tests passed, including frozen read-only evaluator work-order preparation and evaluated-SHA freshness behavior.",
+      "evidence_scope": "evaluator review preparation and persistence"
+    },
+    {
+      "id": "compatibility-and-routing",
+      "command": "bun run bench:compatibility:check && node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "The approved v0.7 compatibility candidate and policy routing graph remain valid.",
+      "evidence_scope": "public CLI contract and policy gateway"
+    },
+    {
+      "id": "post-integration-real-replacement",
+      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "status": "not_run",
+      "exit_code": null,
+      "result": "Deferred until integration into main. The release gate remains: retain the original operation_failed record and prove exactly one linked completed replacement episode.",
+      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
+    }
+  ]
+}
