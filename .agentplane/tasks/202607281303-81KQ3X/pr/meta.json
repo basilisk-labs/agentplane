@@ -2,15 +2,23 @@
   "base": "main",
   "branch": "task/202607281303-81KQ3X/persist-branch-pr-authority-outside-the-pr-head",
   "created_at": "2026-07-28T13:04:14.654Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:0e22a6764c82a8169fa2e8ac69ac59fc40594f9e40210fd6aa2ee9066eee7d40",
+  "last_verified_at": "2026-07-28T13:13:52.978Z",
+  "last_verified_diffstat_sha256": "sha256:0e22a6764c82a8169fa2e8ac69ac59fc40594f9e40210fd6aa2ee9066eee7d40",
   "pr_number": 4658,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4658",
+  "pre_merge_closure": {
+    "basis_commit": "a03c556bcb65f44548297514f81741f111180f39",
+    "branch": "task/202607281303-81KQ3X/persist-branch-pr-authority-outside-the-pr-head",
+    "pr_number": 4658,
+    "recorded_at": "2026-07-28T13:15:00.799Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607281303-81KQ3X",
   "updated_at": "2026-07-28T13:04:44.037Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

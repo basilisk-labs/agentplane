@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607281303-81KQ3X-f790a7fc932a07de5ad9c01c",
+  "prepared_at": "2026-07-28T13:14:20.464Z",
+  "task": {
+    "id": "202607281303-81KQ3X",
+    "revision": 8,
+    "objective": "Persist branch_pr authority outside the PR head\n\nProtected CI is invalidated when a scoped authority grant is written to the task README and auto-committed to the PR branch. Persist auditable, expiring authority metadata outside refs/heads while retaining exact operation and state-scope validation across task and integration checkouts.",
+    "acceptance_criteria": [
+      "- In scope: Protected CI is invalidated when a scoped authority grant is written to the task README and auto-committed to the PR branch. Persist auditable, expiring authority metadata outside refs/heads while retaining exact operation and state-scope validation across task and integration checkouts.\n- Out of scope: unrelated refactors not required for \"Persist branch_pr authority outside the PR head\".",
+      "1. Map the authority write/read path and its shared checkout boundary. 2. Move authority persistence from the tracked task record into a durable repository-control-plane store that does not advance the task PR ref. 3. Keep expiry, operation digest, state-scope matching, and tamper detection fail-closed. 4. Add focused unit and lifecycle-route regressions. 5. Run declared local checks, publish a PR, and verify hosted checks before integration.",
+      "1. Grant a scoped authority from the task branch and assert that refs/heads/task/<task-id>/<slug> is byte-for-byte unchanged while the task worktree remains clean. Expected: authority remains available from the base integration checkout.\n2. Exercise matching, expired, tampered, and state-scope-mismatched authority records. Expected: only the matching unexpired record permits the exact operation.\n3. Simulate a verified PR head, grant integration authority, then recompute the route. Expected: integration enqueue is available without a PR-head publication or a fresh hosted-check requirement.\n4. Run focused authority and lifecycle tests, typecheck, test:fast, and the changed-files local CI route. Expected: all pass."
+    ]
+  },
+  "evaluated_sha": "a03c556bcb65f44548297514f81741f111180f39",
+  "blueprint_digest": "c7353729e4493adc49a18d511c920128c3f262b8451b1463e3a0e255dd128188",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607281303-81KQ3X/README.md",
+      "sha256": "sha256:90ef503bda76a44c8e32d12b39a673de8c2dfcc71dfab1619828ac6edb455883",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:c34e1987b9c74f46f8cea00a9b99ecda275f1cbb26eda960400884e44434f618",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:70b7efd2fcf457f3a3909081cc7c68801b0470439e978289d407018fcbb8ce86",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607281303-81KQ3X/quality/20260728-131420464-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:8d9452d81a1fb3597403e0b6b72afb39fe17b24ac96a21f4482ec83dc96a15f7",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

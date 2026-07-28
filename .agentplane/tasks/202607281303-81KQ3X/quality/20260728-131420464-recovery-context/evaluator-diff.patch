@@ -1,0 +1,491 @@
+diff --git a/.agentplane/tasks/202607281303-81KQ3X/pr/meta.json b/.agentplane/tasks/202607281303-81KQ3X/pr/meta.json
+index 0d6913dde..faf2c5ff5 100644
+--- a/.agentplane/tasks/202607281303-81KQ3X/pr/meta.json
++++ b/.agentplane/tasks/202607281303-81KQ3X/pr/meta.json
+@@ -4,9 +4,12 @@
+   "created_at": "2026-07-28T13:04:14.654Z",
+   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "last_verified_at": null,
++  "pr_number": 4658,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4658",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607281303-81KQ3X",
+-  "updated_at": "2026-07-28T13:04:14.654Z",
++  "updated_at": "2026-07-28T13:04:44.037Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/packages/agentplane/src/commands/shared/route-decision.ts b/packages/agentplane/src/commands/shared/route-decision.ts
+index b0c19819f..17c1a60a2 100644
+--- a/packages/agentplane/src/commands/shared/route-decision.ts
++++ b/packages/agentplane/src/commands/shared/route-decision.ts
+@@ -45,6 +45,11 @@ import {
+   type TaskWorktreeCleanliness,
+ } from "./task-worktree-cleanliness.js";
+ import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
++import { loadSideEffectAuthorityState } from "./side-effect-authority-store.js";
++import {
++  SIDE_EFFECT_AUTHORITY_EXTENSION_KEY,
++  withSideEffectAuthorityState,
++} from "./side-effect-authority.js";
+ export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
+ 
+ function isCliUsageOrIo(err: unknown): boolean {
+@@ -372,13 +377,32 @@ export async function buildTaskRouteDecision(opts: {
+   const ctx =
+     opts.ctx ??
+     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+-  const { task } = await loadBackendTask({
++  const { task: loadedTask } = await loadBackendTask({
+     ctx,
+     cwd: opts.cwd,
+     rootOverride: opts.rootOverride ?? null,
+     taskId: opts.taskId,
+     preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
+   });
++  const authority = await loadSideEffectAuthorityState({
++    gitRoot: ctx.resolvedProject.gitRoot,
++    taskId: opts.taskId,
++    task: loadedTask,
++  });
++  const task = authority.state
++    ? {
++        ...loadedTask,
++        extensions: withSideEffectAuthorityState(loadedTask, authority.state),
++      }
++    : authority.source === "invalid"
++      ? {
++          ...loadedTask,
++          extensions: {
++            ...(loadedTask.extensions ?? {}),
++            [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: null,
++          },
++        }
++      : loadedTask;
+   const resume = await buildTaskResumeContext({
+     ctx,
+     cwd: opts.cwd,
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts b/packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts
+new file mode 100644
+index 000000000..ff56d4b78
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/side-effect-authority-store.test.ts
+@@ -0,0 +1,144 @@
++import { execFile } from "node:child_process";
++import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { buildStateFingerprint, type StateFingerprint } from "@agentplaneorg/core/schemas";
++import { describe, expect, it } from "vitest";
++
++import {
++  appendSideEffectAuthorityAudit,
++  createSideEffectAuthorityRecord,
++  evaluateWorkflowOperationAuthority,
++  withSideEffectAuthorityState,
++} from "./side-effect-authority.js";
++import {
++  loadSideEffectAuthorityState,
++  persistSideEffectAuthorityState,
++} from "./side-effect-authority-store.js";
++import type { WorkflowOperation } from "./workflow-step.js";
++
++const execFileAsync = promisify(execFile);
++const taskId = "202607281303-AUTHST";
++const taskBranch = `task/${taskId}/authority-store`;
++const operation = {
++  id: "integration.enqueue",
++  type: "integration_enqueue",
++  params: { taskId, branch: taskBranch },
++} as Pick<WorkflowOperation, "id" | "type" | "params">;
++
++function fingerprint(): StateFingerprint {
++  return buildStateFingerprint({
++    task_id: taskId,
++    task_revision: 3,
++    git_head: "a".repeat(40),
++    worktree: "/repo/.agentplane/worktrees/authority-store",
++    components: {
++      task: { state: "present", source: "fixture", value: { title: "Authority store" } },
++      git: { state: "present", source: "fixture", value: { trackedContent: "source-tree" } },
++      backend_projection: { state: "present", source: "fixture", value: { backend: "local" } },
++      policy: { state: "present", source: "fixture", value: { rule: "workflow" } },
++      blueprint: { state: "present", source: "fixture", value: { digest: "blueprint" } },
++      knowledge: { state: "present", source: "fixture", value: { digest: "knowledge" } },
++      provider: { state: "present", source: "fixture", value: { pr: "open" } },
++      authority: { state: "present", source: "fixture", value: { route: operation.id } },
++    },
++  });
++}
++
++function approvedState() {
++  const issuedAt = "2026-07-28T10:00:00.000Z";
++  const grant = createSideEffectAuthorityRecord({
++    id: "authority-store-fixture",
++    actor: "USER",
++    operation,
++    fingerprint: fingerprint(),
++    issuedAt,
++    expiresAt: "2026-07-28T10:15:00.000Z",
++  });
++  return appendSideEffectAuthorityAudit({
++    state: { schemaVersion: 1, grants: [grant], audit: [] },
++    at: issuedAt,
++    actor: "USER",
++    operation,
++    fingerprint: fingerprint(),
++    authority: grant,
++    outcome: "approved",
++  });
++}
++
++async function git(root: string, args: string[]): Promise<string> {
++  const { stdout } = await execFileAsync("git", args, { cwd: root });
++  return stdout.trim();
++}
++
++describe("side-effect authority store", () => {
++  it("shares an auditable authority with the integration checkout without moving the PR head", async () => {
++    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-authority-store-"));
++    const integration = path.join(root, "integration");
++    try {
++      await git(root, ["init", "--initial-branch=main"]);
++      await git(root, ["config", "user.name", "AgentPlane test"]);
++      await git(root, ["config", "user.email", "test@example.test"]);
++      await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
++      await git(root, ["add", "seed.txt"]);
++      await git(root, ["commit", "-m", "seed"]);
++      await git(root, ["worktree", "add", "-b", taskBranch, integration]);
++      const before = await git(integration, ["rev-parse", "HEAD"]);
++
++      await persistSideEffectAuthorityState({
++        gitRoot: integration,
++        taskId,
++        state: approvedState(),
++      });
++
++      expect(await git(integration, ["rev-parse", "HEAD"])).toBe(before);
++      expect(await git(integration, ["status", "--porcelain"])).toBe("");
++      const loaded = await loadSideEffectAuthorityState({
++        gitRoot: root,
++        taskId,
++        task: { extensions: {} },
++      });
++      expect(loaded).toMatchObject({ source: "git_common_dir" });
++      if (!loaded.state) throw new Error("Expected a persisted authority state.");
++      expect(
++        evaluateWorkflowOperationAuthority({
++          task: { extensions: withSideEffectAuthorityState({ extensions: {} }, loaded.state) },
++          operation,
++          fingerprint: fingerprint(),
++          now: new Date("2026-07-28T10:01:00.000Z"),
++        }),
++      ).toMatchObject({ state: "allowed", authorityRef: "authority:authority-store-fixture" });
++    } finally {
++      await rm(root, { recursive: true, force: true });
++    }
++  });
++
++  it("fails closed when the persisted authority envelope is malformed", async () => {
++    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-authority-store-"));
++    try {
++      await git(root, ["init", "--initial-branch=main"]);
++      const commonDir = await git(root, [
++        "rev-parse",
++        "--path-format=absolute",
++        "--git-common-dir",
++      ]);
++      const target = path.join(commonDir, "agentplane", "side-effect-authority", `${taskId}.json`);
++      await mkdir(path.dirname(target), { recursive: true });
++      await writeFile(target, "{not-json}\n", "utf8");
++      await expect(
++        loadSideEffectAuthorityState({
++          gitRoot: root,
++          taskId,
++          task: { extensions: {} },
++        }),
++      ).resolves.toMatchObject({
++        state: null,
++        source: "invalid",
++      });
++    } finally {
++      await rm(root, { recursive: true, force: true });
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/shared/side-effect-authority-store.ts b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+new file mode 100644
+index 000000000..3760a8681
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/side-effect-authority-store.ts
+@@ -0,0 +1,127 @@
++import { randomUUID } from "node:crypto";
++import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++import { gitRevParse } from "@agentplaneorg/core/git";
++
++import { isRecord } from "../../shared/guards.js";
++import {
++  readSideEffectAuthorityState,
++  type SideEffectAuthorityState,
++} from "./side-effect-authority.js";
++
++const AUTHORITY_STORE_SCHEMA_VERSION = 1;
++const AUTHORITY_STORE_DIR = ["agentplane", "side-effect-authority"];
++
++type StoredAuthorityEnvelope = {
++  schemaVersion: 1;
++  kind: "side_effect_authority_store";
++  taskId: string;
++  state: SideEffectAuthorityState;
++};
++
++export type SideEffectAuthorityStateLoadResult =
++  | { state: SideEffectAuthorityState; source: "git_common_dir" | "task_extension" }
++  | { state: null; source: "invalid"; reason: string };
++
++function assertSafeTaskId(taskId: string): void {
++  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/u.test(taskId)) {
++    throw new Error("Authority store task id must be a portable task identifier.");
++  }
++}
++
++async function authorityStorePath(opts: { gitRoot: string; taskId: string }): Promise<string> {
++  assertSafeTaskId(opts.taskId);
++  const commonDir = await gitRevParse(opts.gitRoot, ["--path-format=absolute", "--git-common-dir"]);
++  return path.join(commonDir, ...AUTHORITY_STORE_DIR, `${opts.taskId}.json`);
++}
++
++function parseStoredAuthorityEnvelope(
++  value: unknown,
++  taskId: string,
++): SideEffectAuthorityState | null {
++  if (
++    !isRecord(value) ||
++    value.schemaVersion !== AUTHORITY_STORE_SCHEMA_VERSION ||
++    value.kind !== "side_effect_authority_store" ||
++    value.taskId !== taskId
++  ) {
++    return null;
++  }
++  return readSideEffectAuthorityState({
++    extensions: { "agentplane.side_effect_authority": value.state },
++  });
++}
++
++async function readStoredAuthorityState(opts: {
++  gitRoot: string;
++  taskId: string;
++}): Promise<{ state: SideEffectAuthorityState | null; exists: boolean }> {
++  const target = await authorityStorePath(opts);
++  let raw: string;
++  try {
++    raw = await readFile(target, "utf8");
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") {
++      return { state: null, exists: false };
++    }
++    throw error;
++  }
++  try {
++    return {
++      state: parseStoredAuthorityEnvelope(JSON.parse(raw) as unknown, opts.taskId),
++      exists: true,
++    };
++  } catch {
++    return { state: null, exists: true };
++  }
++}
++
++/**
++ * Authority is local control-plane state: linked worktrees share the Git common
++ * directory, while the task branch and its protected CI status remain unchanged.
++ * Existing task extensions stay as a read-only migration source until a new grant.
++ */
++export async function loadSideEffectAuthorityState(opts: {
++  gitRoot: string;
++  taskId: string;
++  task: { extensions?: Record<string, unknown> };
++}): Promise<SideEffectAuthorityStateLoadResult> {
++  const stored = await readStoredAuthorityState({ gitRoot: opts.gitRoot, taskId: opts.taskId });
++  if (stored.exists) {
++    return stored.state
++      ? { state: stored.state, source: "git_common_dir" }
++      : { state: null, source: "invalid", reason: "persisted authority state is malformed" };
++  }
++  const legacy = readSideEffectAuthorityState(opts.task);
++  return legacy
++    ? { state: legacy, source: "task_extension" }
++    : { state: null, source: "invalid", reason: "task authority state is malformed" };
++}
++
++export async function persistSideEffectAuthorityState(opts: {
++  gitRoot: string;
++  taskId: string;
++  state: SideEffectAuthorityState;
++}): Promise<void> {
++  const target = await authorityStorePath(opts);
++  const parent = path.dirname(target);
++  const temporary = path.join(parent, `.${opts.taskId}.${process.pid}.${randomUUID()}.tmp`);
++  const payload: StoredAuthorityEnvelope = {
++    schemaVersion: 1,
++    kind: "side_effect_authority_store",
++    taskId: opts.taskId,
++    state: opts.state,
++  };
++  await mkdir(parent, { recursive: true, mode: 0o700 });
++  try {
++    await writeFile(temporary, `${JSON.stringify(payload, null, 2)}\n`, {
++      encoding: "utf8",
++      mode: 0o600,
++      flag: "wx",
++    });
++    await rename(temporary, target);
++  } finally {
++    await rm(temporary, { force: true });
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/authority-grant.command.ts b/packages/agentplane/src/commands/task/authority-grant.command.ts
+index 4633202e7..153571f20 100644
+--- a/packages/agentplane/src/commands/task/authority-grant.command.ts
++++ b/packages/agentplane/src/commands/task/authority-grant.command.ts
+@@ -1,16 +1,16 @@
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { usageError } from "../../cli/spec/errors.js";
+ import { createCliEmitter } from "../../cli/output.js";
+-import { maybeAutoCommitTaskPrArtifacts } from "../pr/internal/auto-commit.js";
+ import { buildTaskRouteDecision } from "../shared/route-decision.js";
+ import {
+   appendSideEffectAuthorityAudit,
+   createSideEffectAuthorityRecord,
+-  readSideEffectAuthorityState,
+-  withSideEffectAuthorityState,
+ } from "../shared/side-effect-authority.js";
+-import type { CommandContext } from "../shared/task-backend.js";
+-import { applyTaskMutation } from "../shared/task-mutation.js";
++import {
++  loadSideEffectAuthorityState,
++  persistSideEffectAuthorityState,
++} from "../shared/side-effect-authority-store.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
+ 
+ export type TaskAuthorityGrantParsed = {
+   taskId: string;
+@@ -155,67 +155,59 @@ export function makeRunTaskAuthorityGrantHandler(getCtx: (cmd: string) => Promis
+     const now = new Date();
+     const issuedAt = now.toISOString();
+     const expiresAt = new Date(now.getTime() + parsed.ttlMinutes * 60_000).toISOString();
+-    let grantId: string | null = null;
+-    const mutation = await applyTaskMutation({
++    const task = await loadTaskFromContext({
+       ctx: commandCtx,
+       taskId: parsed.taskId,
+-      build: (task) => {
+-        const state = readSideEffectAuthorityState(task);
+-        if (!state) {
+-          throw usageError({
+-            spec: taskAuthorityGrantSpec,
+-            message:
+-              "Existing side-effect authority state is malformed or tampered; repair it before granting authority.",
+-          });
+-        }
+-        const routeOperation = request.operation;
+-        const grant = createSideEffectAuthorityRecord({
+-          actor: parsed.by,
+-          operation: routeOperation,
+-          fingerprint: decision.workflowStep.preconditionFingerprint,
+-          issuedAt,
+-          expiresAt,
+-        });
+-        if (grant.operationDigest !== request.operationDigest) {
+-          throw usageError({
+-            spec: taskAuthorityGrantSpec,
+-            message:
+-              "Authority target parameters cannot be reconstructed safely; recompute task next-action.",
+-          });
+-        }
+-        grantId = grant.id;
+-        const withGrant = {
+-          schemaVersion: 1 as const,
+-          grants: [...state.grants, grant],
+-          audit: state.audit,
+-        };
+-        const audited = appendSideEffectAuthorityAudit({
+-          state: withGrant,
+-          at: issuedAt,
+-          actor: parsed.by,
+-          operation: routeOperation,
+-          fingerprint: decision.workflowStep.preconditionFingerprint,
+-          authority: grant,
+-          outcome: "approved",
+-        });
+-        return { nextTask: { ...task, extensions: withSideEffectAuthorityState(task, audited) } };
++      preferBranchSnapshot: commandCtx.config.workflow_mode === "branch_pr",
++    });
++    const loaded = await loadSideEffectAuthorityState({
++      gitRoot: commandCtx.resolvedProject.gitRoot,
++      taskId: parsed.taskId,
++      task,
++    });
++    if (!loaded.state) {
++      throw usageError({
++        spec: taskAuthorityGrantSpec,
++        message:
++          "Existing side-effect authority state is malformed or tampered; repair it before granting authority.",
++      });
++    }
++    const grant = createSideEffectAuthorityRecord({
++      actor: parsed.by,
++      operation: request.operation,
++      fingerprint: decision.workflowStep.preconditionFingerprint,
++      issuedAt,
++      expiresAt,
++    });
++    if (grant.operationDigest !== request.operationDigest) {
++      throw usageError({
++        spec: taskAuthorityGrantSpec,
++        message:
++          "Authority target parameters cannot be reconstructed safely; recompute task next-action.",
++      });
++    }
++    const audited = appendSideEffectAuthorityAudit({
++      state: {
++        schemaVersion: 1,
++        grants: [...loaded.state.grants, grant],
++        audit: loaded.state.audit,
+       },
++      at: issuedAt,
++      actor: parsed.by,
++      operation: request.operation,
++      fingerprint: decision.workflowStep.preconditionFingerprint,
++      authority: grant,
++      outcome: "approved",
++    });
++    await persistSideEffectAuthorityState({
++      gitRoot: commandCtx.resolvedProject.gitRoot,
++      taskId: parsed.taskId,
++      state: audited,
+     });
+-    const branch = decision.workspace.prBranch;
+-    const authorityArtifactCommitted =
+-      mutation.changed && branch
+-        ? await maybeAutoCommitTaskPrArtifacts({
+-            ctx: commandCtx,
+-            taskId: parsed.taskId,
+-            branch,
+-            baseBranch: decision.workspace.baseBranch,
+-            strategy: "commit",
+-          })
+-        : false;
+     createCliEmitter().success(
+       "task authority grant",
+       parsed.taskId,
+-      `authority=${grantId ?? "recorded"} expires_at=${expiresAt}${authorityArtifactCommitted ? " committed" : ""}`,
++      `authority=${grant.id} expires_at=${expiresAt} stored=git_common_dir`,
+     );
+     return 0;
+   };
