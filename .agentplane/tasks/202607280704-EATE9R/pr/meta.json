@@ -8,10 +8,10 @@
   "pr_number": 4653,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4653",
   "pre_merge_closure": {
-    "basis_commit": "4e4708b49d94193df8aaa204f5b85b4a38042fdc",
+    "basis_commit": "6888e4818c75f0b9449160f605e01d23e2c4b52a",
     "branch": "task/202607280704-EATE9R/prove-cleanup-identity-after-provider-updated-pr",
     "pr_number": 4653,
-    "recorded_at": "2026-07-28T07:14:47.228Z",
+    "recorded_at": "2026-07-28T07:23:58.405Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 14
+revision: 15
 origin:
   system: "manual"
 depends_on: []
@@ -48,8 +48,8 @@ quality_review:
   findings:
     - "Current head retains the exact two-parent proof and passes the previously missed lint gate before publication."
 commit:
-  hash: "4e4708b49d94193df8aaa204f5b85b4a38042fdc"
-  message: "fix: prove cleanup after provider branch update"
+  hash: "6888e4818c75f0b9449160f605e01d23e2c4b52a"
+  message: "🛡️ EATE9R task: authorize refreshed pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -60,6 +60,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -88,8 +91,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T07:23:58.352Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T07:14:47.177Z"
+doc_updated_at: "2026-07-28T07:23:58.353Z"
 doc_updated_by: "CODER"
 description: "Allow branch_pr cleanup to recognize a GitHub-generated PR branch update after a protected-base merge, only when immutable ancestry and merged-base evidence prove the original task head is integrated. Preserve fail-closed behavior for unrelated or rewritten heads."
 sections:
@@ -251,6 +261,9 @@ extensions:
         stateFingerprintDigest: "sha256:52f0f9d43bcf2f36934b61dda9cbbcb52d406389d7f0327214232bd574b72161"
         stateScopeDigest: "sha256:238e82b1dafb70e87ee6e6969c15c4cca7ab984f08a3d84c86633594d65dc736"
     schemaVersion: 1
+  implementation_commit:
+    hash: "779fa87dd699d829d4990e0c5fddcc591da3fd99"
+    message: "style: satisfy cleanup proof lint"
   workflow_route_baseline:
     start_head_sha: "32bb732a2bc37b812d53839df9890353a34451ef"
     version: 1
