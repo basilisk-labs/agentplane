@@ -3,7 +3,7 @@ import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -217,25 +217,40 @@ describe("task runner effect resolution", () => {
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
   });
 
-  it("classifies only stable active-claim read collisions as retriable", () => {
-    expect(
-      stableFile.isStableFileReadCollision(
-        new Error("runner active claim changed while it was being read: claim.json"),
-        "runner active claim",
-      ),
-    ).toBe(true);
-    expect(
-      stableFile.isStableFileReadCollision(
-        new Error("runner active claim path changed while it was being read: claim.json"),
-        "runner active claim",
-      ),
-    ).toBe(true);
-    expect(
-      stableFile.isStableFileReadCollision(
-        new Error("runner active claim exceeds the 16384-byte observation budget: claim.json"),
-        "runner active claim",
-      ),
-    ).toBe(false);
+  it("retries an unstable active-claim observation while a concurrent resolution retires it", async () => {
+    const fixture = await uncertainEffectFixture();
+    const originalRead = stableFile.readStableRegularTextNoFollow;
+    let collisionInjected = false;
+    let retirementWaitReads = 0;
+    const readSpy = vi
+      .spyOn(stableFile, "readStableRegularTextNoFollow")
+      .mockImplementation(async (...args) => {
+        const isRetirementWaitRead =
+          args[1] === "runner active claim" &&
+          new Error().stack?.includes("waitForConcurrentResolutionRetirement");
+        if (isRetirementWaitRead) {
+          retirementWaitReads += 1;
+          if (!collisionInjected) {
+            collisionInjected = true;
+            throw new Error(`runner active claim changed while it was being read: ${args[0]}`);
+          }
+        }
+        return await originalRead(...args);
+      });
+
+    try {
+      const input = resolutionInput(fixture);
+      const resolutions = await Promise.all([
+        resolveTaskRunnerEffect(input),
+        resolveTaskRunnerEffect(input),
+      ]);
+
+      expect(resolutions[0].resolution.digest).toBe(resolutions[1].resolution.digest);
+      expect(collisionInjected).toBe(true);
+      expect(retirementWaitReads).toBeGreaterThanOrEqual(2);
+    } finally {
+      readSpy.mockRestore();
+    }
   });
 
   it("rejects authority mismatch before creating an intent", async () => {

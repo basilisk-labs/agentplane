@@ -13,7 +13,6 @@ import {
   type RunnerEffectResolutionRef,
   type RunnerEffectResolutionVerdict,
 } from "@agentplaneorg/core/schemas";
-
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import { ensureStableRunnerArtifactDirectoryChain } from "../run-directory-boundary.js";
 import { RunnerRunRepository } from "../run-repository.js";
@@ -28,7 +27,6 @@ import {
   type RunnerEffectOperationPaths,
 } from "../effect-operation.js";
 import { runnerEffectRuntimeError } from "../effect-operation-contract.js";
-
 import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
 import { retireTaskRunnerActiveClaimAfterEffectResolution } from "./task-run-effect-resolution-claim.js";
 
@@ -129,7 +127,7 @@ async function waitForConcurrentResolutionRetirement(opts: {
         throw error;
       }),
     ]);
-    if (record.state.effect_resolution?.digest === opts.resolution.digest && !activeClaim) {
+    if (record.state.effect_resolution?.digest === opts.resolution.digest && activeClaim === null) {
       return true;
     }
     if (attempt < CONCURRENT_RETIREMENT_OBSERVATION_ATTEMPTS) {
