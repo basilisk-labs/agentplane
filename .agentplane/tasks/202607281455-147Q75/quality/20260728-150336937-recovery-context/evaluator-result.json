@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

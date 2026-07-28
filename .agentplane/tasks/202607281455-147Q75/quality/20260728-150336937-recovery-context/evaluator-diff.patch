@@ -1,0 +1,804 @@
+diff --git a/.agentplane/tasks/202607281455-147Q75/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607281455-147Q75/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..5e3d500bd
+--- /dev/null
++++ b/.agentplane/tasks/202607281455-147Q75/blueprint/resolved-snapshot.json
+@@ -0,0 +1,582 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607281455-147Q75",
++    "title": "Repair evaluator response schema for Codex structured output",
++    "description": "Release-blocking follow-up: make the evaluator typed-result JSON Schema compatible with the current Codex structured-output validator, preserve optional evidence fields through explicit nullable values, and add a regression test proving evaluator execution reaches a typed result instead of failing before the provider turn.",
++    "tags": [
++      "code",
++      "evaluator",
++      "provider",
++      "regression",
++      "release-blocker",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607281455-147Q75",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "502c33075284ce6f9aa46423f98024e5cae094e841cac21d82f799f5898e4d05"
++  }
++}
+diff --git a/.agentplane/tasks/202607281455-147Q75/pr/meta.json b/.agentplane/tasks/202607281455-147Q75/pr/meta.json
+index 9d8d1b931..492aa18cc 100644
+--- a/.agentplane/tasks/202607281455-147Q75/pr/meta.json
++++ b/.agentplane/tasks/202607281455-147Q75/pr/meta.json
+@@ -4,9 +4,12 @@
+   "created_at": "2026-07-28T14:56:22.735Z",
+   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "last_verified_at": null,
++  "pr_number": 4660,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4660",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607281455-147Q75",
+-  "updated_at": "2026-07-28T14:56:22.735Z",
++  "updated_at": "2026-07-28T14:56:52.349Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+index 7d91442dd..83841a573 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+@@ -96,19 +96,16 @@ function result(
+         severity: nonPassing ? "high" : "low",
+         summary: `${verdict} calibration finding from the frozen evaluator evidence.`,
+         broken_invariant: nonPassing ? "calibration invariant" : "none",
+-        evidence_refs: [{ path: diff.path }],
++        evidence_refs: [{ path: diff.path, sha256: null, line: null, lines: null, section: null }],
+       },
+     ],
+     missing_tests: [],
+     hidden_assumptions: [],
+-    ...(nonPassing
+-      ? {
+-          recovery_context:
+-            verdict === "human_review"
+-              ? "Which of the two mutually incompatible acceptance interpretations should govern this task?"
+-              : `Bounded ${verdict} follow-up required before another evaluator episode.`,
+-        }
+-      : {}),
++    recovery_context: nonPassing
++      ? verdict === "human_review"
++        ? "Which of the two mutually incompatible acceptance interpretations should govern this task?"
++        : `Bounded ${verdict} follow-up required before another evaluator episode.`
++      : null,
+   };
+ }
+ 
+@@ -178,6 +175,14 @@ describe("evaluator episode calibration", () => {
+       output_tokens: 50,
+       total_tokens: 150,
+     });
++    expect(episode.result.recovery_context).toBeUndefined();
++    expect(episode.result.findings[0]?.evidence_refs[0]).toEqual({
++      path: prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff")?.path,
++      sha256: undefined,
++      line: undefined,
++      lines: undefined,
++      section: undefined,
++    });
+     expect(JSON.parse(await readFile(prepared.result_path, "utf8"))).toEqual(episode.result);
+     expect(
+       JSON.parse(
+@@ -210,7 +215,37 @@ describe("evaluator episode calibration", () => {
+     expect(captured?.prompt).toContain(
+       "AgentPlane prepared and froze the authoritative review input",
+     );
+-    expect(await readFile(captured!.output_schema_path, "utf8")).toContain("human_review");
++    const outputSchema = JSON.parse(await readFile(captured!.output_schema_path, "utf8")) as {
++      required: string[];
++      properties: {
++        recovery_context: { type: string[] };
++        findings: {
++          items: {
++            properties: {
++              evidence_refs: {
++                items: {
++                  required: string[];
++                  properties: {
++                    sha256: { type: string[] };
++                    line: { type: string[] };
++                    lines: { type: string[] };
++                    section: { type: string[] };
++                  };
++                };
++              };
++            };
++          };
++        };
++      };
++    };
++    const evidenceSchema = outputSchema.properties.findings.items.properties.evidence_refs.items;
++    expect(outputSchema.required).toContain("recovery_context");
++    expect(outputSchema.properties.recovery_context.type).toEqual(["string", "null"]);
++    expect(evidenceSchema.required).toEqual(["path", "sha256", "line", "lines", "section"]);
++    expect(evidenceSchema.properties.sha256.type).toEqual(["string", "null"]);
++    expect(evidenceSchema.properties.line.type).toEqual(["integer", "null"]);
++    expect(evidenceSchema.properties.lines.type).toEqual(["string", "null"]);
++    expect(evidenceSchema.properties.section.type).toEqual(["string", "null"]);
+   });
+ 
+   it.each([
+@@ -275,7 +310,9 @@ describe("evaluator episode calibration", () => {
+     await commitTarget(root);
+     const { command, prepared } = await prepare(root, taskId);
+     const invalid = result(prepared, "rework");
+-    invalid.findings[0]!.evidence_refs = [{ path: "src/not-frozen.ts" }];
++    invalid.findings[0]!.evidence_refs = [
++      { path: "src/not-frozen.ts", sha256: null, line: null, lines: null, section: null },
++    ];
+ 
+     await expect(
+       executePreparedEvaluatorEpisode({ ctx: command, prepared, executor: provider(invalid) }),
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+index aa9d2c767..e5cecf404 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+@@ -25,6 +25,18 @@ const MAX_PROVIDER_STDERR_BYTES = 1024 * 1024;
+ const CODEX_EVALUATOR_TIMEOUT_MS = 10 * 60 * 1000;
+ 
+ const NON_EMPTY_STRING_SCHEMA = { type: "string", minLength: 1 } as const;
++const NULLABLE_NON_EMPTY_STRING_SCHEMA = {
++  type: ["string", "null"],
++  minLength: 1,
++} as const;
++const NULLABLE_SHA256_SCHEMA = {
++  type: ["string", "null"],
++  pattern: "^sha256:[a-f0-9]{64}$",
++} as const;
++const NULLABLE_POSITIVE_INTEGER_SCHEMA = {
++  type: ["integer", "null"],
++  minimum: 1,
++} as const;
+ 
+ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
+   $schema: "http://json-schema.org/draft-07/schema#",
+@@ -56,12 +68,16 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
+               additionalProperties: false,
+               properties: {
+                 path: NON_EMPTY_STRING_SCHEMA,
+-                sha256: { type: "string", pattern: "^sha256:[a-f0-9]{64}$" },
+-                line: { type: "integer", minimum: 1 },
+-                lines: NON_EMPTY_STRING_SCHEMA,
+-                section: NON_EMPTY_STRING_SCHEMA,
++                sha256: NULLABLE_SHA256_SCHEMA,
++                line: NULLABLE_POSITIVE_INTEGER_SCHEMA,
++                lines: NULLABLE_NON_EMPTY_STRING_SCHEMA,
++                section: NULLABLE_NON_EMPTY_STRING_SCHEMA,
+               },
+-              required: ["path"],
++              // Codex structured output requires every declared property to
++              // appear in `required`. Source-reference metadata remains
++              // semantically optional by using null, which is normalized by
++              // the evaluator result validator before its typed SGR handoff.
++              required: ["path", "sha256", "line", "lines", "section"],
+             },
+           },
+         },
+@@ -70,7 +86,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
+     },
+     missing_tests: { type: "array", items: { type: "string" } },
+     hidden_assumptions: { type: "array", items: { type: "string" } },
+-    recovery_context: NON_EMPTY_STRING_SCHEMA,
++    recovery_context: NULLABLE_NON_EMPTY_STRING_SCHEMA,
+   },
+   required: [
+     "schema_version",
+@@ -80,6 +96,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
+     "findings",
+     "missing_tests",
+     "hidden_assumptions",
++    "recovery_context",
+   ],
+ } as const;
+ 
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index 69962b834..7a3f47a8d 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -428,6 +428,27 @@ function assertExactKeys(
+   }
+ }
+ 
++function normalizeEvaluatorStructuredNulls(raw: Record<string, unknown>): Record<string, unknown> {
++  const normalized: Record<string, unknown> = { ...raw };
++  if (normalized.recovery_context === null) delete normalized.recovery_context;
++  if (!Array.isArray(normalized.findings)) return normalized;
++  normalized.findings = normalized.findings.map((finding) => {
++    if (!finding || typeof finding !== "object" || Array.isArray(finding)) return finding;
++    const normalizedFinding: Record<string, unknown> = { ...finding };
++    if (!Array.isArray(normalizedFinding.evidence_refs)) return normalizedFinding;
++    normalizedFinding.evidence_refs = normalizedFinding.evidence_refs.map((evidence) => {
++      if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return evidence;
++      const normalizedEvidence: Record<string, unknown> = { ...evidence };
++      for (const field of ["sha256", "line", "lines", "section"] as const) {
++        if (normalizedEvidence[field] === null) delete normalizedEvidence[field];
++      }
++      return normalizedEvidence;
++    });
++    return normalizedFinding;
++  });
++  return normalized;
++}
++
+ export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult {
+   assertExactKeys(
+     raw,
+@@ -468,7 +489,7 @@ export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult
+       }
+     }
+   }
+-  return validateEvaluatorSgrResult(raw);
++  return validateEvaluatorSgrResult(normalizeEvaluatorStructuredNulls(record));
+ }
+ 
+ export function readWorkOrder(raw: unknown): EvaluatorWorkOrder {

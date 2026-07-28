@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281455-147Q75",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T15:04:43.610Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 0 typed finding(s).",
+  "evaluated_sha": "b5cad73384df973a4a0845521c97723347af56f8",
+  "blueprint_digest": "502c33075284ce6f9aa46423f98024e5cae094e841cac21d82f799f5898e4d05",
+  "findings": [],
+  "evidence_refs": [],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
