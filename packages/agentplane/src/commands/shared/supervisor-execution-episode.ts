@@ -62,7 +62,7 @@ export type SupervisorEpisodeStore = {
 
 const JOURNAL_LOCK_STALE_AFTER_MS = 60_000;
 const JOURNAL_LOCK_RETRY_DELAY_MS = 10;
-const JOURNAL_LOCK_WAIT_MS = 5_000;
+const JOURNAL_LOCK_WAIT_MS = 5000;
 
 function persistedJournalDigest(
   value: unknown,

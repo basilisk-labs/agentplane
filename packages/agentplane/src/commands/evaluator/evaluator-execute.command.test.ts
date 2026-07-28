@@ -188,7 +188,7 @@ async function runCliInSeparateProcess(opts: {
       },
       (error, stdout, stderr) => {
         if (error && typeof error.code !== "number") {
-          reject(error);
+          reject(error instanceof Error ? error : new Error(String(error)));
           return;
         }
         resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
@@ -249,9 +249,10 @@ describe("evaluator execute supervisor episode", () => {
     ).operations.at(-1);
     if (!completedOperation?.work_order_ref)
       throw new Error("missing evaluator work order reference");
-    const workOrder = JSON.parse(
+    const parsedWorkOrder: unknown = JSON.parse(
       await readFile(path.join(root, completedOperation.work_order_ref), "utf8"),
-    ) as { evidence: { kind: string; path: string }[] };
+    );
+    const workOrder = parsedWorkOrder as { evidence: { kind: string; path: string }[] };
     expect(workOrder.evidence).toContainEqual({
       kind: "verification_log",
       path: path.relative(root, verificationRecordPath).replaceAll("\\\\", "/"),
@@ -594,18 +595,14 @@ describe("evaluator execute supervisor episode", () => {
     }
 
     expect(codes.toSorted(), io.stderr).toEqual([0, 2]);
-    expect((await readFile(invocationLog, "utf8")).trim().split("\n")).toEqual([
-      "provider-started",
-    ]);
+    const invocationLines = (await readFile(invocationLog, "utf8")).trim().split("\n");
+    expect(invocationLines).toEqual(["provider-started"]);
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
     });
-    expect(
-      validateSupervisorExecutionEpisodeJournal(
-        await createSupervisorEpisodeStore(journalPath).read(),
-      ),
-    ).toMatchObject({
+    const concurrentJournal = await createSupervisorEpisodeStore(journalPath).read();
+    expect(validateSupervisorExecutionEpisodeJournal(concurrentJournal)).toMatchObject({
       status: "running",
       cursor: { phase: "ready", operation_key: null },
       usage: { episodes: 2, agent_runs: 2 },
@@ -624,20 +621,23 @@ describe("evaluator execute supervisor episode", () => {
     await commitTarget(root);
     const fakeBin = await installFakeCodex(root);
     await replaceCodexWithFailure(fakeBin);
-    expect((await runWithFakeCodex(root, taskId, fakeBin)).code).toBe(8);
+    const failedExecution = await runWithFakeCodex(root, taskId, fakeBin);
+    expect(failedExecution.code).toBe(8);
 
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
     });
     const store = createSupervisorEpisodeStore(journalPath);
-    const failed = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const failedJournal = await store.read();
+    const failed = validateSupervisorExecutionEpisodeJournal(failedJournal);
     const reserved = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
       journal: failed,
       state_fingerprint_digest: failed.state_fingerprint_digest,
     });
     expect(await store.compareAndSwap(failed.digest, reserved)).toBe(true);
-    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+    const reservedJournal = await store.read();
+    expect(validateSupervisorExecutionEpisodeJournal(reservedJournal)).toMatchObject({
       status: "running",
       cursor: {
         phase: "ready",
@@ -649,7 +649,8 @@ describe("evaluator execute supervisor episode", () => {
     await installFakeCodex(root);
     const resumed = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
     expect(resumed.code, resumed.stderr).toBe(0);
-    const completed = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const completedJournal = await store.read();
+    const completed = validateSupervisorExecutionEpisodeJournal(completedJournal);
     expect(completed).toMatchObject({
       status: "running",
       cursor: { phase: "ready", operation_key: null },
@@ -671,7 +672,8 @@ describe("evaluator execute supervisor episode", () => {
     await commitTarget(root);
     const fakeBin = await installFakeCodex(root);
     await replaceCodexWithFailure(fakeBin);
-    expect((await runWithFakeCodex(root, taskId, fakeBin)).code).toBe(8);
+    const failedExecution = await runWithFakeCodex(root, taskId, fakeBin);
+    expect(failedExecution.code).toBe(8);
 
     await installFakeCodex(root);
     const invocationLog = path.join(
@@ -696,18 +698,14 @@ describe("evaluator execute supervisor episode", () => {
     );
 
     expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
-    expect((await readFile(invocationLog, "utf8")).trim().split("\n")).toEqual([
-      "provider-started",
-    ]);
+    const invocationLines = (await readFile(invocationLog, "utf8")).trim().split("\n");
+    expect(invocationLines).toEqual(["provider-started"]);
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
     });
-    expect(
-      validateSupervisorExecutionEpisodeJournal(
-        await createSupervisorEpisodeStore(journalPath).read(),
-      ),
-    ).toMatchObject({
+    const processJournal = await createSupervisorEpisodeStore(journalPath).read();
+    expect(validateSupervisorExecutionEpisodeJournal(processJournal)).toMatchObject({
       status: "running",
       usage: { episodes: 2, agent_runs: 2 },
       operations: [
