@@ -6,7 +6,7 @@ Created: 2026-07-28T06:15:22.323Z
 
 - Task: `202607280606-PTG9C7`
 - Title: Prevent self-invalidating side-effect authority records
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607280606-PTG9C7/prevent-self-invalidating-side-effect-authority`
 - Canonical task record: `.agentplane/tasks/202607280606-PTG9C7/README.md`
 
