@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen delta is limited to extracting evaluator verification-record discovery and refreshing closure evidence; the supplied verification records preserve coverage of explicit replacement admission, default terminal blocking, effect-in-doubt rejection, pending-reservation recovery, and cross-process single-provider admission.",
+      "broken_invariant": "No invariant is broken in the evaluated delta; the replacement remains a distinct authorized episode and terminal operation history remains immutable.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-193929201-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:55802f421199de7de2ae0377417baeb1c3f3faee5b1872d50d01d913e5a6efbb"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-184101-compatibility-ratchet.json",
+          "sha256": "sha256:fc186a7415c6c44a995299db11ac27730674dea617dfed4caf117deb6a9b751b",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-193556-hotspot-rework.json",
+          "sha256": "sha256:71925fb0caecdfe3cb2bb46b0f3f31e3c2834915c5f821c0cf592a7c139b3875",
+          "section": "checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "The declared post-integration real provider check `agentplane evaluator execute 202607221850-8HBF4J --replacement` remains intentionally deferred; it must confirm retention of the original operation_failed record and exactly one linked completed replacement episode after integration."
+  ],
+  "hidden_assumptions": [
+    "The helper extraction is behavior-preserving beyond the covered evaluator-review tests.",
+    "Integration into main will not change supervisor-journal state or provider-boundary behavior before the deferred real replacement episode runs."
+  ]
+}
