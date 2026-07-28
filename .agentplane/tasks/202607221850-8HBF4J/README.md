@@ -1,10 +1,10 @@
 ---
 id: "202607221850-8HBF4J"
 title: "Supervise context assimilation post-processing"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -32,9 +32,9 @@ verify:
   - "bun run test:critical"
   - "bun run typecheck"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-28T13:53:03.642Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -43,11 +43,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: implement the supervised, resumable mechanical post-processing for context assimilation while preserving CURATOR semantic ownership."
+events:
+  -
+    type: "status"
+    at: "2026-07-28T13:53:08.890Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: implement the supervised, resumable mechanical post-processing for context assimilation while preserving CURATOR semantic ownership."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:50:15.403Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-28T13:53:08.890Z"
+doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
   Summary: |-
@@ -72,6 +82,10 @@ sections:
     - Restore the previous compatibility path behind an explicit feature/compatibility boundary.
     - Re-run lifecycle, focused, and type checks before resuming dependent work.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
