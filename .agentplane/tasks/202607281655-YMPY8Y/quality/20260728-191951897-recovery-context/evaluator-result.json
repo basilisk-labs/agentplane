@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "Frozen evidence shows the hosted-CI rework is limited to generated CLI documentation and lint-safe refactoring, while focused replacement, compatibility, type, format, routing, and concurrency-sensitive checks remain green.",
+      "broken_invariant": "No invariant is broken; the required real provider replacement remains an explicit post-integration gate and is not represented as completed pre-integration.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-191951897-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b744acd2c042af15e310b52af290688570b7238dce561fad1bf4ca1fa32fe44e"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-191822-hosted-ci-rework.json",
+          "sha256": "sha256:a78aacd0b73a906e3379a409a6dd64f3546c7fc6cc0845e3cf3ef15eed7503ee"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-184101-compatibility-ratchet.json",
+          "sha256": "sha256:fc186a7415c6c44a995299db11ac27730674dea617dfed4caf117deb6a9b751b"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "After integration, run `agentplane evaluator execute 202607221850-8HBF4J --replacement` and verify that the original operation_failed record remains unchanged and exactly one linked replacement provider episode completes."
+  ],
+  "hidden_assumptions": [
+    "The post-integration environment retains the original failed journal and sufficient replacement budget for task 202607221850-8HBF4J.",
+    "The frozen command-level verification records accurately represent the implementation commits preceding the evaluated hosted-CI-only rework."
+  ]
+}
