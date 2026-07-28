@@ -4,7 +4,7 @@ title: "Prevent self-invalidating side-effect authority records"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -78,6 +78,36 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-28T06:18:20.437Z"
+        authorityDigest: "sha256:70537b3ef8c0212f0f7f5ef921f22371981508c23fd5b6a6a35db242ab96092d"
+        digest: "sha256:a5e0278f5c78582008f90413654f1310ab1946ff1156218e949a3ebf88ea933e"
+        operationDigest: "sha256:fca746e05f2bdcf1d5c7f4a343da571be7f1a64a298ea05c0ba68f29f50f62aa"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:21b94b9565a67b32d8fab5cdcc6025ffaa794d007e399b844b36f1fd5c6212da"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:70537b3ef8c0212f0f7f5ef921f22371981508c23fd5b6a6a35db242ab96092d"
+        expiresAt: "2026-07-28T06:33:20.437Z"
+        id: "authority-3f9fbb04-bfd7-4936-a548-ee082e185cb1"
+        issuedAt: "2026-07-28T06:18:20.437Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:fca746e05f2bdcf1d5c7f4a343da571be7f1a64a298ea05c0ba68f29f50f62aa"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:21b94b9565a67b32d8fab5cdcc6025ffaa794d007e399b844b36f1fd5c6212da"
+        stateScopeDigest: "sha256:bfc9073aa48a7486231ea060ca83e4ad134d15c7447f37b94605a14fcafd9230"
+    schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
     version: 1
