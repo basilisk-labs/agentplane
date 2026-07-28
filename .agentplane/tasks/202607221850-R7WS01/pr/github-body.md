@@ -36,18 +36,18 @@ failure for incomplete active-claim cleanup.
 ```text
  .../src/cli/run-cli.core.task-run.test.ts          |   6 +
  .../src/commands/hermes/hermes-runtime.ts          |  19 ++-
- .../src/commands/hermes/hermes.command.test.ts     | 107 ++++++++++++-
+ .../src/commands/hermes/hermes.command.test.ts     | 109 ++++++++++++-
  .../src/commands/shared/workflow-supervisor.ts     |   8 +
- .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
- .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
+ .../src/commands/task/run-render.test.ts           | 138 +++++++++++++++++
+ .../agentplane/src/commands/task/run-render.ts     |  91 ++++++++++-
  .../agentplane/src/commands/task/run.command.ts    |  41 ++---
  .../task/task-run-effect-resolution.command.ts     |  28 ++--
  .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
- .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
+ .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
- 13 files changed, 613 insertions(+), 63 deletions(-)
+ 13 files changed, 612 insertions(+), 69 deletions(-)
 ```
 
 </details>

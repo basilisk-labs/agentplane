@@ -2,10 +2,7 @@ import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
 
 import type { TaskRunnerActiveClaimCleanupDiagnostic } from "./task-run-active-claim-runtime.js";
 import type { TaskRunnerEffectOperationSnapshot } from "./task-run-effect-journal.js";
-import type {
-  ExecutedTaskRunnerExecution,
-  PreparedTaskRunnerExecution,
-} from "./task-run.js";
+import type { ExecutedTaskRunnerExecution, PreparedTaskRunnerExecution } from "./task-run.js";
 import type {
   RunnerInvocation,
   RunnerLifecycleStatus,

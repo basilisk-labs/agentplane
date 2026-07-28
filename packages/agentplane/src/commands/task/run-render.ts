@@ -411,10 +411,7 @@ export async function loadRunnerLogText(
   });
 }
 
-export function reportPreparedTaskRun(
-  payload: TaskRunRendererPayload,
-  taskId: string,
-): void {
+export function reportPreparedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
   createCliEmitter().report(
     [
       { label: "task", value: payload.task_id },
@@ -447,10 +444,7 @@ export function reportPreparedTaskRun(
   );
 }
 
-export function reportExecutedTaskRun(
-  payload: TaskRunRendererPayload,
-  taskId: string,
-): void {
+export function reportExecutedTaskRun(payload: TaskRunRendererPayload, taskId: string): void {
   createCliEmitter().report(
     [
       { label: "task", value: payload.task_id },
