@@ -238,6 +238,24 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       : migration.journal;
   await store.write(journal);
 
+  // A restart can observe the durable agent outcome before the route cursor
+  // was advanced. Refresh and commit that observation first; launching a new
+  // provider here would replay an already completed semantic episode.
+  if (journal.status === "running" && journal.cursor.phase === "completed") {
+    const refreshed = await opts.refresh();
+    journal = advanceSupervisorExecutionEpisodeState({
+      journal,
+      state_fingerprint_digest: refreshed.workflowStep.preconditionFingerprint.digest,
+      route_observation: { step_id: refreshed.workflowStep.id },
+    });
+    await store.write(journal);
+    return {
+      execution: await superviseWorkflowStep({ decision: refreshed, mode: "inspect" }),
+      journal,
+      journal_path: store.path,
+    };
+  }
+
   const kind = operationKind(opts.decision);
   const started = startSupervisorExecutionEpisode({
     journal,

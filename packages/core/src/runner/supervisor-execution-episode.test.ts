@@ -145,6 +145,29 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     });
   });
 
+  it("preserves a completed outcome for a later postcondition refresh", () => {
+    const first = start({ journal: journal() });
+    if (first.status !== "started") throw new Error("expected started episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { status: "ok" },
+      now: "2026-07-28T00:00:01.000Z",
+    });
+
+    const recovered = recoverSupervisorExecutionEpisodeJournal({
+      journal: completed,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      now: "2026-07-28T00:00:02.000Z",
+    });
+
+    expect(recovered).toMatchObject({
+      status: "running",
+      cursor: { phase: "completed", operation_key: first.operation_key },
+      stop: null,
+    });
+  });
+
   it("accepts the supervisor-observed route refresh before the next operation", () => {
     const first = start({ journal: journal() });
     if (first.status !== "started") throw new Error("expected started episode");

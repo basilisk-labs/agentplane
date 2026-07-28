@@ -348,12 +348,16 @@ export function recoverSupervisorExecutionEpisodeJournal(opts: {
 }): SupervisorExecutionEpisodeJournal {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
   const now = opts.now ?? new Date().toISOString();
-  if (journal.state_fingerprint_digest !== opts.state_fingerprint_digest) {
-    return stoppedJournal({ journal, reason: "stale_state", at: now });
-  }
   if (journal.status === "stopped") return journal;
   if (journal.cursor.phase === "intent_recorded") {
     return stoppedJournal({ journal, reason: "effect_in_doubt", at: now });
+  }
+  // A completed outcome is durable but its postcondition observation may not
+  // be. The caller must refresh and advance it before another operation; a
+  // changed fingerprint is expected at this exact checkpoint, not stale work.
+  if (journal.cursor.phase === "completed") return journal;
+  if (journal.state_fingerprint_digest !== opts.state_fingerprint_digest) {
+    return stoppedJournal({ journal, reason: "stale_state", at: now });
   }
   return journal;
 }
