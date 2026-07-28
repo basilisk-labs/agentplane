@@ -1,0 +1,16 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run task-state:check",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T11:56:35.735Z",
+    "updated_by": "EVALUATOR",
+    "note": "Verified: hosted Core CI passed for the fail-closed effect-resolution implementation; all commits after the reviewed implementation are task-local lifecycle artifacts."
+  },
+  "runner_history": []
+}
