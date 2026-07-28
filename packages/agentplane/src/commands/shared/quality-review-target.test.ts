@@ -135,6 +135,33 @@ describe("quality review target resolver", () => {
     );
   });
 
+  it("preserves a reviewed target across a durable verification record", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-VERIFICATION";
+    const reviewedSha = await commitPath(
+      root,
+      "src/reviewed.ts",
+      "export const reviewed = true;\n",
+      "feat: establish reviewed implementation",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/verification/command-results.json`,
+      '{"kind":"task_verification_record"}\n',
+      "test: record durable verification evidence",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/quality/run/quality-report.json`,
+      "{}\n",
+      "test: record managed review artifact",
+    );
+
+    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
+      reviewedSha,
+    );
+  });
+
   it("selects a semantic commit created after the recorded review", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-SEMANTIC";
