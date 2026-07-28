@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607242236-1BFWEY-ff031f715d9452578a823b2b",
+  "prepared_at": "2026-07-28T06:03:58.376Z",
+  "task": {
+    "id": "202607242236-1BFWEY",
+    "revision": 37,
+    "objective": "Persist bounded supervisor execution episodes\n\nDefine a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR to EVALUATOR to rework cycles, with deterministic checkpoints, resume without replay, stop reasons, bounded feedback deltas, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface.",
+    "acceptance_criteria": [
+      "bun run bench:agent-efficiency:check",
+      "bun run guards:check",
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "bun run typecheck",
+      "bun run schemas:check",
+      "bun run package:install-smoke",
+      "- In scope: one versioned journal and hard budget contract shared by direct EXECUTOR, context/CURATOR, EVALUATOR, and rework episodes; deterministic checkpoints and stop records; resume without replay; bounded feedback deltas; usage limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes. - In scope: canonical schema and fixtures, migrator from absent/legacy state, idempotency and rollback/recovery evidence, installed-package smoke, human/JSON status, StateFingerprint, execution-receipt, authority, and effect-in-doubt integration. - Out of scope: importing ap loop, LoopSpec, project-local programmable loop JSON, automatic loop selection, or any second orchestration controller.",
+      "1. Define versioned SupervisorExecutionBudget, SupervisorEpisodeJournal, cursor, usage, transition, stop, and bounded-feedback contracts with canonical digests, generated schema fixtures, and explicit persisted-format versions. 2. Add an idempotent migrator from absent and legacy journal state, transactional rollback/recovery, and installed-package coverage for the published CLI surface. 3. Persist checkpoints around every supervisor operation and EXECUTOR, CURATOR, or EVALUATOR episode boundary so restart resumes from the first incomplete action without replaying completed agent or side-effect operations. 4. Enforce hard limits for episodes, agent runs, input/output/total tokens, wall time, changed files, diff lines, and no-progress episodes before launching the next operation; return typed terminal or human-review stops. 5. Integrate budget accounting and journal recovery with direct execution, context assimilation and CURATOR rework, typed runner lifecycle results, evaluator rework work orders, StateFingerprint, execution receipts, and effect-in-doubt guards. 6. Add deterministic crash/restart, stale-state, budget-edge, no-progress, bounded-feedback, schema migration idempotency/rollback, installed-package, and agent-efficiency regression tests. Do not port or expose ap loop, LoopSpec, project-local loop JSON, or a second orchestration controller.",
+      "1. Run direct EXECUTOR and context/CURATOR rework fixtures with each budget just below and exactly at its limit. Expected: the next agent/evaluator/side-effect operation is refused before launch, usage is durably recorded, and the typed stop identifies the exhausted dimension. 2. Crash after journal creation, operation intent, adapter completion, receipt persistence, evaluator result, bounded feedback creation, and cursor advancement in both direct and context flows, then resume. Expected: execution continues from the first incomplete phase without replaying a completed agent run, CURATOR work order, semantic apply, or external effect. 3. Exercise evaluator rework and repeated no-progress results for EXECUTOR and CURATOR. Expected: only a bounded feedback delta enters the next work order, progress fingerprints are deterministic, and max-no-progress terminates both cycles. 4. Validate canonical current/legacy/absent schema fixtures, migrate twice, inject failure at every publish phase, and roll back. Expected: migration is idempotent, mixed generations fail closed, recovery preserves prior valid state, and no journal is silently discarded. 5. Install the built package in an isolated fixture and run journal create/status/resume compatibility smoke. Expected: the published tarball contains the schemas/migrator/runtime assets and does not depend on repository-only files. 6. Change task revision, Git/provider state, authority, or StateFingerprint between checkpoints and leave an effect in doubt. Expected: resume fails closed and delegates to typed stale-state/effect-resolution paths rather than consuming budget or retrying. 7. Verify human and JSON projections contain canonical budget usage, cursor, stop reason, work-order/receipt refs, and no raw transcripts or secrets. 8. Run bun run schemas:check, bun run lifecycle:invariants, bun run guards:check, bun run test:critical, bun run typecheck, bun run package:install-smoke, and bun run bench:agent-efficiency:check. Expected: all pass and quality/safety controls do not regress."
+    ]
+  },
+  "evaluated_sha": "d9f6ac23cb033aeb6242bdbd507d726302a50cb9",
+  "blueprint_digest": "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607242236-1BFWEY/README.md",
+      "sha256": "sha256:ad70d3ab8bcfd330c94fcda3004835415bb9009650c01c46cf8ad93a36bdd48a",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:655d719d218c454db30d65eed74d92f5408dbd06e99ac27719445de5bf517a0e",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:b325e458623e8778c1d1fbe570f6232128c29c3c6339ec5c074185b48dec505d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:8969bc23518bb8fecfa1b144d5daeaa411a2fdabc3238fb8a971ad071709b94a",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

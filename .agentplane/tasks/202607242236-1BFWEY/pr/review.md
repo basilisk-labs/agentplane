@@ -13,7 +13,7 @@ Created: 2026-07-28T03:32:16.784Z
 ## Verification
 
 - State: ok
-- Note: Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift.
+- Note: Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
