@@ -4,7 +4,7 @@ title: "Journal resumable context-ingestion phases"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on:
@@ -76,6 +76,36 @@ sections:
     - Re-run lifecycle, focused, and type checks before resuming dependent work.
   Findings: ""
 extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-28T08:13:28.768Z"
+        authorityDigest: "sha256:b7128f4279d0814784541717fa320d7c4f435f537565cc3e7a47d233ec017b58"
+        digest: "sha256:dcda844fb534ce234ea6d226d044d9789cf8d55d1c50beeaee6f31ff73f4f003"
+        operationDigest: "sha256:36a45efbda02780ab478f08ffd3ba40b3988aa7b6cdd4373dbbfa943fa7e1e60"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:87145751925ab1fe3469438ee4b00e08d9495ea60805a62c1332ea752a7818eb"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:b7128f4279d0814784541717fa320d7c4f435f537565cc3e7a47d233ec017b58"
+        expiresAt: "2026-07-28T08:28:28.768Z"
+        id: "authority-ea80f9f9-91c6-4444-aaec-adf8f96a66d2"
+        issuedAt: "2026-07-28T08:13:28.768Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:36a45efbda02780ab478f08ffd3ba40b3988aa7b6cdd4373dbbfa943fa7e1e60"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:87145751925ab1fe3469438ee4b00e08d9495ea60805a62c1332ea752a7818eb"
+        stateScopeDigest: "sha256:43b9c64e1ad33365d792441edb4f79b2b428ea0d01759f8463ad059d147a971f"
+    schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
