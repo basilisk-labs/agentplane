@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 42
+revision: 43
 origin:
   system: "manual"
 depends_on: []
@@ -52,8 +52,8 @@ quality_review:
   findings:
     - "The current implementation head is covered: the lint-compliance extraction is semantically neutral, while durable verification-record admission and multi-commit evaluator evidence remain exercised by focused and hosted checks."
 commit:
-  hash: "e5d08a2525a0beb581ca141d9168033dad65f99d"
-  message: "✅ FT85MC quality: review static-lint fixture correction"
+  hash: "c91e764756e49ea55bd3f7242ae815d8158959c3"
+  message: "✅ FT85MC quality: refresh evaluator review evidence"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -240,8 +243,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T23:59:55.870Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T23:49:36.165Z"
+doc_updated_at: "2026-07-28T23:59:55.871Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
