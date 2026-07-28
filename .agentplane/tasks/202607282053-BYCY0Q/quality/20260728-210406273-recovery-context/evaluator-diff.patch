@@ -1,0 +1,841 @@
+diff --git a/.agentplane/tasks/202607282053-BYCY0Q/README.md b/.agentplane/tasks/202607282053-BYCY0Q/README.md
+index de6c7853b..165543e6e 100644
+--- a/.agentplane/tasks/202607282053-BYCY0Q/README.md
++++ b/.agentplane/tasks/202607282053-BYCY0Q/README.md
+@@ -49,11 +49,10 @@ sections:
+     - Out of scope: unrelated refactors not required for "Charge supervisor wall-time budget from observed execution".
+   Plan: "1. Define max_wall_time_ms as cumulative supervisor-observed active duration and keep journal age out of its exhaustion calculation. 2. Preserve current terminal operation_failed and replacement CAS semantics, token/run/file/no-progress limits, and stale-state protections. 3. Add core tests for inactive elapsed time versus accumulated active duration and evaluator coverage that an eligible replacement can proceed after external waiting. 4. Run focused and required policy/type checks, independent quality review, hosted CI, integration, then execute the deferred real replacement pilot without retry if its journal is eligible."
+   Verify Steps: |-
+-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+-
+-    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+-    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
++    1. Run core supervisor episode tests. Expected: inactive elapsed time does not exhaust max_wall_time_ms, while cumulative observed execution time does.
++    2. Run evaluator execute tests. Expected: one explicit replacement remains linked to the original failed operation after external waiting, with no retry or duplicate provider start.
++    3. Run typecheck, formatting, policy routing, and the relevant fast test gate. Expected: touched contracts and repository gates pass.
++    4. After integration, execute the deferred real replacement pilot once. Expected: it either creates one linked completed operation with the original failure retained, or exits before a provider start with a durable, explicit stop reason.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
+     <!-- END VERIFICATION RESULTS -->
+@@ -84,11 +83,10 @@ Make max_wall_time_ms charge cumulative supervisor-observed provider or runner d
+
+ ## Verify Steps
+
+-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
+-
+-1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+-2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
++1. Run core supervisor episode tests. Expected: inactive elapsed time does not exhaust max_wall_time_ms, while cumulative observed execution time does.
++2. Run evaluator execute tests. Expected: one explicit replacement remains linked to the original failed operation after external waiting, with no retry or duplicate provider start.
++3. Run typecheck, formatting, policy routing, and the relevant fast test gate. Expected: touched contracts and repository gates pass.
++4. After integration, execute the deferred real replacement pilot once. Expected: it either creates one linked completed operation with the original failure retained, or exits before a provider start with a durable, explicit stop reason.
+
+ ## Verification
+
+diff --git a/.agentplane/tasks/202607282053-BYCY0Q/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607282053-BYCY0Q/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..d257f9865
+--- /dev/null
++++ b/.agentplane/tasks/202607282053-BYCY0Q/blueprint/resolved-snapshot.json
+@@ -0,0 +1,596 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607282053-BYCY0Q",
++    "title": "Charge supervisor wall-time budget from observed execution",
++    "description": "Make max_wall_time_ms charge cumulative supervisor-observed provider or runner duration rather than journal age, so external waits do not consume execution budget. Preserve durable episode history, terminal operation_failed rules, one explicit replacement authorization, and all other budget dimensions. Add deterministic core and evaluator coverage, then validate one post-integration replacement pilot if the journal remains eligible.",
++    "tags": [
++      "code"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "quality.regression",
++    "version": 1,
++    "title": "Quality regression",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "quality.regression",
++    "blueprintVersion": 1,
++    "title": "Quality regression",
++    "taskId": "202607282053-BYCY0Q",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "specialized code domain resolved to quality.regression",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest",
++          "artifact"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "check_result"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "weak_links"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "regression.original_failure",
++        "kind": "artifact",
++        "producedBy": "context_resolve",
++        "required": true,
++        "description": "Original failure log or check output."
++      },
++      {
++        "id": "regression.reproduction",
++        "kind": "check_result",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Local reproduction or explicit non-reproduction result."
++      },
++      {
++        "id": "regression.focused_check",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Focused regression check."
++      },
++      {
++        "id": "regression.matrix_or_scope",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Affected test/check matrix or bounded scope."
++      },
++      {
++        "id": "regression.full_gate",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Full relevant gate or hosted check evidence."
++      },
++      {
++        "id": "regression.flake_classification",
++        "kind": "weak_links",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Flake classification or residual risk."
++      },
++      {
++        "id": "regression.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "regression.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "affected matrix or full relevant gate",
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "failure reproduction command",
++      "focused regression check",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest",
++        "artifact"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "check_result"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "weak_links"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "regression.original_failure",
++      "kind": "artifact",
++      "producedBy": "context_resolve",
++      "required": true,
++      "description": "Original failure log or check output."
++    },
++    {
++      "id": "regression.reproduction",
++      "kind": "check_result",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Local reproduction or explicit non-reproduction result."
++    },
++    {
++      "id": "regression.focused_check",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Focused regression check."
++    },
++    {
++      "id": "regression.matrix_or_scope",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Affected test/check matrix or bounded scope."
++    },
++    {
++      "id": "regression.full_gate",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Full relevant gate or hosted check evidence."
++    },
++    {
++      "id": "regression.flake_classification",
++      "kind": "weak_links",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Flake classification or residual risk."
++    },
++    {
++      "id": "regression.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "regression.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "affected matrix or full relevant gate",
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "failure reproduction command",
++    "focused regression check",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Regression work needs failure evidence, focused reproduction, and the relevant quality gate."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "specialized code domain resolved to quality.regression",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "9569b35ae52dfba3f86d314fa3810629285946ebdb8bd90e4aa638a96726eaf2"
++  }
++}
+diff --git a/.agentplane/tasks/202607282053-BYCY0Q/pr/meta.json b/.agentplane/tasks/202607282053-BYCY0Q/pr/meta.json
+index d45d39c7b..8276421e1 100644
+--- a/.agentplane/tasks/202607282053-BYCY0Q/pr/meta.json
++++ b/.agentplane/tasks/202607282053-BYCY0Q/pr/meta.json
+@@ -4,9 +4,12 @@
+   "created_at": "2026-07-28T20:54:50.543Z",
+   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "last_verified_at": null,
++  "pr_number": 4665,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4665",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607282053-BYCY0Q",
+-  "updated_at": "2026-07-28T20:54:50.543Z",
++  "updated_at": "2026-07-28T20:54:54.418Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index adc948c29..9dc4f4e7b 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -557,6 +557,76 @@ describe("evaluator execute supervisor episode", () => {
+     expect(exhaustedReplacement.stderr).toContain("requires a terminal operation_failed journal");
+   });
+
++  it("allows one replacement after external waiting when observed wall time remains", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607280000-EE09";
++    await addTask(root, taskId);
++    await commitTarget(root);
++    const fakeBin = await installFakeCodex(root);
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
++    const fingerprint = `sha256:${"a".repeat(64)}`;
++    const seeded = createSupervisorExecutionEpisodeJournal({
++      task_id: taskId,
++      task_revision: 1,
++      state_fingerprint_digest: fingerprint,
++      budget: {
++        max_episodes: 3,
++        max_agent_runs: 3,
++        max_input_tokens: 1000,
++        max_output_tokens: 1000,
++        max_total_tokens: 2000,
++        max_wall_time_ms: 10_000,
++        max_changed_files: 10,
++        max_diff_lines: null,
++        max_no_progress_episodes: 2,
++      },
++      now: "2026-07-27T00:00:00.000Z",
++    });
++    const intent = startSupervisorExecutionEpisode({
++      journal: seeded,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { fixture: "external-wait" },
++      precondition_fingerprint_digest: fingerprint,
++      now: "2026-07-27T00:00:00.000Z",
++    });
++    if (intent.status !== "started") throw new Error("expected failed evaluator fixture intent");
++    await store.write(
++      completeSupervisorExecutionEpisode({
++        journal: intent.journal,
++        operation_key: intent.operation_key,
++        result: { fixture: "provider-failed" },
++        usage: { wall_time_ms: 5 },
++        failed: true,
++        now: "2026-07-27T00:00:01.000Z",
++      }),
++    );
++
++    const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
++
++    expect(replacement.code, replacement.stderr).toBe(0);
++    const recorded = validateSupervisorExecutionEpisodeJournal(await store.read());
++    expect(recorded).toMatchObject({
++      status: "running",
++      usage: { episodes: 2, agent_runs: 2 },
++      operations: [
++        { status: "failed" },
++        {
++          status: "completed",
++          replacement_of_operation_key: intent.operation_key,
++        },
++      ],
++    });
++    expect(recorded.usage.wall_time_ms).toBeTypeOf("number");
++    expect(recorded.usage.wall_time_ms).toBeGreaterThanOrEqual(5);
++    expect(recorded.usage.wall_time_ms).toBeLessThan(10_000);
++  });
++
+   it("atomically consumes one replacement authorization before any second provider start", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+diff --git a/packages/core/src/runner/supervisor-execution-episode.test.ts b/packages/core/src/runner/supervisor-execution-episode.test.ts
+index 74604aed4..fe9df37e7 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.test.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.test.ts
+@@ -130,6 +130,45 @@ describe("SupervisorExecutionEpisodeJournal", () => {
+     });
+   });
+
++  it("charges wall-time budget only from observed execution, not inactive journal age", () => {
++    const first = start({ journal: journal({ max_wall_time_ms: 10 }) });
++    if (first.status !== "started") throw new Error("expected first agent episode");
++
++    const firstCompleted = completeSupervisorExecutionEpisode({
++      journal: first.journal,
++      operation_key: first.operation_key,
++      result: { status: "ok" },
++      usage: { wall_time_ms: 9 },
++      now: "2026-07-28T00:00:01.000Z",
++    });
++    const resumedAfterExternalWait = advanceSupervisorExecutionEpisodeState({
++      journal: firstCompleted,
++      state_fingerprint_digest: FINGERPRINT,
++      route_observation: { step: "external-wait-complete" },
++      now: "2026-07-29T00:00:00.000Z",
++    });
++    const second = start({
++      journal: resumedAfterExternalWait,
++      now: "2026-07-29T00:00:01.000Z",
++    });
++    if (second.status !== "started")
++      throw new Error("expected second agent episode after external wait");
++
++    const exhausted = completeSupervisorExecutionEpisode({
++      journal: second.journal,
++      operation_key: second.operation_key,
++      result: { status: "ok" },
++      usage: { wall_time_ms: 1 },
++      now: "2026-07-29T00:00:02.000Z",
++    });
++
++    expect(exhausted).toMatchObject({
++      status: "stopped",
++      usage: { wall_time_ms: 10 },
++      stop: { reason: "budget_exhausted", exhausted_dimensions: ["wall_time_ms"] },
++    });
++  });
++
+   it("fails closed after a persisted operation intent instead of replaying an agent", () => {
+     const prepared = start({ journal: journal() });
+     expect(prepared.status).toBe("started");
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index 8d99a0990..95ae1ee3a 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -211,8 +211,6 @@ function exhaustedDimensions(opts: {
+   budget: SupervisorExecutionBudget;
+   usage: SupervisorExecutionUsage;
+   next_kind?: SupervisorEpisodeOperationKind;
+-  now: string;
+-  started_at: string;
+ }): string[] {
+   const { budget, usage } = opts;
+   const dimensions: string[] = [];
+@@ -233,11 +231,8 @@ function exhaustedDimensions(opts: {
+   if (budget.max_total_tokens !== null && usage.total_tokens >= budget.max_total_tokens) {
+     dimensions.push("total_tokens");
+   }
+-  if (budget.max_wall_time_ms !== null) {
+-    const elapsed = Date.parse(opts.now) - Date.parse(opts.started_at);
+-    if (!Number.isFinite(elapsed) || elapsed >= budget.max_wall_time_ms) {
+-      dimensions.push("wall_time_ms");
+-    }
++  if (budget.max_wall_time_ms !== null && usage.wall_time_ms >= budget.max_wall_time_ms) {
++    dimensions.push("wall_time_ms");
+   }
+   if (budget.max_changed_files !== null && usage.changed_files >= budget.max_changed_files) {
+     dimensions.push("changed_files");
+@@ -447,8 +442,6 @@ export function startSupervisorExecutionEpisode(opts: {
+     budget: journal.budget,
+     usage: journal.usage,
+     next_kind: opts.kind,
+-    now,
+-    started_at: journal.started_at,
+   });
+   if (exhausted.length > 0) {
+     return {
+@@ -587,8 +580,6 @@ export function completeSupervisorExecutionEpisode(opts: {
+   const exhausted = exhaustedDimensions({
+     budget: completed.budget,
+     usage: completed.usage,
+-    now,
+-    started_at: completed.started_at,
+   });
+   return exhausted.length > 0
+     ? stoppedJournal({
+@@ -704,8 +695,6 @@ export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
+     budget: journal.budget,
+     usage: journal.usage,
+     next_kind: last.kind,
+-    now,
+-    started_at: journal.started_at,
+   });
+   if (exhausted.length > 0) {
+     throw new Error(
