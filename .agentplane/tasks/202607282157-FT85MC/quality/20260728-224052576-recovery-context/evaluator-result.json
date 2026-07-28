@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "medium",
+      "summary": "A branch_pr review can silently fall back to root-commit evidence when no base reference is available and the evaluated commit has no parent.",
+      "broken_invariant": "Branch_pr evaluator preparation must fail closed with E_VALIDATION whenever the authoritative diff base cannot be resolved; returning null permits renderActualDiff to use git show --root instead.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:f98dc256d857e8f81a934fa16b8446d746504405c9bb8b683c938fa17f9cd8f6",
+          "section": "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a branch_pr regression test where base resolution yields no reference and evaluated_sha is a root commit; evaluator preparation must fail with E_VALIDATION rather than freezing git show --root output."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that an evaluated root commit without a resolved base is a legitimate no-base case, although the approved branch_pr contract requires unresolved bases to fail closed."
+  ],
+  "recovery_context": "Change branch_pr base resolution so every non-null evaluated SHA requires a resolved merge base, including root commits, while retaining root/single-commit fallback only for non-branch_pr workflows; add the missing root-commit branch_pr regression test."
+}

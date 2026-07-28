@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607282157-FT85MC-e589942e7ce3923af26cf5b5",
+  "task_id": "202607282157-FT85MC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Change branch_pr base resolution so every non-null evaluated SHA requires a resolved merge base, including root commits, while retaining root/single-commit fallback only for non-branch_pr workflows; add the missing root-commit branch_pr regression test.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "A branch_pr review can silently fall back to root-commit evidence when no base reference is available and the evaluated commit has no parent.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:f98dc256d857e8f81a934fa16b8446d746504405c9bb8b683c938fa17f9cd8f6",
+          "section": "packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-result.json"
+}

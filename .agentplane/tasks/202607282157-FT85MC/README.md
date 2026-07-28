@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -22,36 +22,38 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T22:26:35.776Z"
+  updated_at: "2026-07-28T22:40:43.586Z"
   updated_by: "TESTER"
-  note: "Independent verification passed after the fail-closed fix: a verification write failure cannot persist success, and concurrent verifies leave final task state matched to exactly one durable record."
+  note: "Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T22:30:06.355Z"
+  updated_at: "2026-07-28T22:42:03.179Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "66cf0428771389535048a925bd152f4ac663fcdc"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "d4fa2ae38ff3010059bcfaf3fe6d595314b385d6"
   blueprint_digest: "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9"
   evidence_refs:
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607282157-FT85MC/README.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-observed-checks.json"
     - ".agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json"
     - ".agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607282157-FT85MC/verification/20260728224043586-0205aa4bd9698f63.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen branch-wide patch and durable verification records cover the complete multi-commit delta, merge-base provenance, binary and rename handling, no-change behavior, fail-closed base resolution, verification-write failure, and concurrent verification."
+    - "A branch_pr review can silently fall back to root-commit evidence when no base reference is available and the evaluated commit has no parent."
 commit:
   hash: "f0632c5d77073c64faea1ef52b0bf2d32a4cdf26"
   message: "✅ FT85MC quality: refresh closure review evidence"
@@ -145,8 +147,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T22:40:43.586Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline."
 doc_version: 3
-doc_updated_at: "2026-07-28T22:31:18.878Z"
+doc_updated_at: "2026-07-28T22:40:44.335Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -274,6 +282,64 @@ sections:
     Command: bun run typecheck
     Result: pass
     Scope: repository TypeScript build
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Scope: policy routing
+
+    Command: agentplane doctor
+    Result: pass with 3 pre-existing historical task-archive warnings
+    Scope: workflow contract and workspace health
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T22:40:43.586Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:31:18.878Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+    Details:
+
+    Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+    Result: pass
+    Scope: formatting of touched source and tests
+
+    Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+    Result: pass
+    Scope: static analysis of touched source and tests
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass (49 tests)
+    Scope: evaluator diff evidence and verification durability
+
+    Command: bun run typecheck
+    Result: pass
+    Scope: repository TypeScript build
+
+    Command: bun run hotspots:check
+    Result: pass
+    Scope: source and test hotspot contracts
 
     Command: node .agentplane/policy/check-routing.mjs
     Result: pass
@@ -453,6 +519,64 @@ Scope: full branch evidence, durable verification records, write-failure and con
 Command: bun run typecheck
 Result: pass
 Scope: repository TypeScript build
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Scope: policy routing
+
+Command: agentplane doctor
+Result: pass with 3 pre-existing historical task-archive warnings
+Scope: workflow contract and workspace health
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T22:40:43.586Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:31:18.878Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+Details:
+
+Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+Result: pass
+Scope: formatting of touched source and tests
+
+Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+Result: pass
+Scope: static analysis of touched source and tests
+
+Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass (49 tests)
+Scope: evaluator diff evidence and verification durability
+
+Command: bun run typecheck
+Result: pass
+Scope: repository TypeScript build
+
+Command: bun run hotspots:check
+Result: pass
+Scope: source and test hotspot contracts
 
 Command: node .agentplane/policy/check-routing.mjs
 Result: pass

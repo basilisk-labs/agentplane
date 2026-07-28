@@ -19,8 +19,6 @@ export async function resolveEvaluatorDiffBase(opts: {
     if (opts.allowSingleCommitFallback) {
       return await gitRevParse(opts.gitRoot, [`${opts.evaluatedSha}^`]).catch(() => null);
     }
-    const parent = await gitRevParse(opts.gitRoot, [`${opts.evaluatedSha}^`]).catch(() => null);
-    if (!parent) return null;
     throw new CliError({
       code: "E_VALIDATION",
       message:

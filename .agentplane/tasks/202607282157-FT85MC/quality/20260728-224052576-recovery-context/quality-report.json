@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T22:42:03.179Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "d4fa2ae38ff3010059bcfaf3fe6d595314b385d6",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "A branch_pr review can silently fall back to root-commit evidence when no base reference is available and the evaluated commit has no parent."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224052576-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Add a branch_pr regression test where base resolution yields no reference and evaluated_sha is a root commit; evaluator preparation must fail with E_VALIDATION rather than freezing git show --root output."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that an evaluated root commit without a resolved base is a legitimate no-base case, although the approved branch_pr contract requires unresolved bases to fail closed."
+  ],
+  "residual_risks": [
+    "Change branch_pr base resolution so every non-null evaluated SHA requires a resolved merge base, including root commits, while retaining root/single-commit fallback only for non-branch_pr workflows; add the missing root-commit branch_pr regression test."
+  ]
+}
