@@ -6,7 +6,7 @@ Created: 2026-07-28T09:49:46.757Z
 
 - Task: `202607280948-N3XC7M`
 - Title: Retry transient runner cancellation intent reads
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607280948-N3XC7M/retry-transient-runner-cancellation-intent-reads`
 - Canonical task record: `.agentplane/tasks/202607280948-N3XC7M/README.md`
 
