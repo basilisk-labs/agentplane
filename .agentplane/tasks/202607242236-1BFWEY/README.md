@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -76,8 +76,8 @@ quality_review:
   findings:
     - "The current head preserves the durable episode implementation reviewed at 256d3f7d; subsequent diffs are task-local lifecycle evidence, and the refreshed PR diffstat verification matches the current implementation diff."
 commit:
-  hash: "7f724401d7dabeaa1739f459ceb45b9aa775ab06"
-  message: "Record refreshed pre-merge authority"
+  hash: "a389670e0255dfa15608a4582e6bbe3ba893ff5a"
+  message: "🚧 1BFWEY task: authorize pre-merge closure"
 comments:
   -
     author: "CODER"
@@ -88,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -158,8 +161,15 @@ events:
     author: "EVALUATOR"
     state: "ok"
     note: "Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green."
+  -
+    type: "status"
+    at: "2026-07-28T06:27:51.093Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T06:03:26.752Z"
+doc_updated_at: "2026-07-28T06:27:51.093Z"
 doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
@@ -648,8 +658,8 @@ extensions:
         stateScopeDigest: "sha256:d601b293cb13f937cd6d9cab28a522e5e38f61240a7e53296ec3e5fcafb6b72f"
     schemaVersion: 1
   implementation_commit:
-    hash: "256d3f7de147c480af565abbdbd5a63198b2e558"
-    message: "Keep supervisor helpers module-private"
+    hash: "d9f6ac23cb033aeb6242bdbd507d726302a50cb9"
+    message: "🚧 1BFWEY task: record refreshed route authority"
   workflow_route_baseline:
     start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
     version: 1
