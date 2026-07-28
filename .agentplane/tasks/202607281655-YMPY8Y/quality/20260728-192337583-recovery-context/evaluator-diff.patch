@@ -1,0 +1,266 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/README.md b/.agentplane/tasks/202607281655-YMPY8Y/README.md
+index 4985bf014..d67481046 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/README.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/README.md
+@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
+ status: "DONE"
+ priority: "med"
+ owner: "CODER"
+-revision: 25
++revision: 26
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -29,9 +29,9 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-07-28T18:42:31.263Z"
++  updated_at: "2026-07-28T19:19:01.764Z"
+   updated_by: "TESTER"
+-  note: "Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused replacement, typecheck, format, and routing checks are frozen in 20260728-184101-compatibility-ratchet.json."
++  note: "Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass."
+   attempts: 0
+ quality_review:
+   state: "pass"
+@@ -136,8 +136,14 @@ events:
+     from: "DONE"
+     to: "DONE"
+     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++  -
++    type: "verify"
++    at: "2026-07-28T19:19:01.764Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T19:02:30.847Z"
++doc_updated_at: "2026-07-28T19:19:04.613Z"
+ doc_updated_by: "CODER"
+ description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
+ sections:
+@@ -327,6 +333,36 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    ### 2026-07-28T19:19:01.764Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T19:02:30.847Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
++    - old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++    - current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert task-related commit(s).
+@@ -339,6 +375,10 @@ sections:
+     - Observation: The journal persists a pending replacement key and start consumes it only for the exact failed operation with the same role and kind; arbitrary, unbound, effect-in-doubt, and exhausted replacements are rejected.
+       Impact: Replacement authorization is now atomic at the journal transition, preventing an unrelated provider operation from consuming a terminal failure recovery path.
+       Resolution: Run the retained post-integration provider proof after the feature merges, then close the dependent recovery task.
++
++    - Observation: verify-contract and verify-static failed only on stale generated documentation and lint findings.
++      Impact: PR #4664 could not enter integration until the generated artifact and static checks were repaired.
++      Resolution: Regenerated docs/user/cli-reference.generated.mdx, resolved ten lint findings, and froze local parity checks at 9ea452754fe4fbabf259cad263a0279aa78f3d2f.
+ extensions:
+   implementation_commit:
+     hash: "7d46071af90efdbfc80473de79339cb44148c27e"
+@@ -544,6 +584,36 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++### 2026-07-28T19:19:01.764Z — VERIFY — ok
++
++By: TESTER
++
++Note: Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T19:02:30.847Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
++- old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++- current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -560,3 +630,7 @@ DecisionContextRef:
+ - Observation: The journal persists a pending replacement key and start consumes it only for the exact failed operation with the same role and kind; arbitrary, unbound, effect-in-doubt, and exhausted replacements are rejected.
+   Impact: Replacement authorization is now atomic at the journal transition, preventing an unrelated provider operation from consuming a terminal failure recovery path.
+   Resolution: Run the retained post-integration provider proof after the feature merges, then close the dependent recovery task.
++
++- Observation: verify-contract and verify-static failed only on stale generated documentation and lint findings.
++  Impact: PR #4664 could not enter integration until the generated artifact and static checks were repaired.
++  Resolution: Regenerated docs/user/cli-reference.generated.mdx, resolved ten lint findings, and froze local parity checks at 9ea452754fe4fbabf259cad263a0279aa78f3d2f.
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index b68630aac..6b5df639e 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -19,9 +19,8 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
+ - Note:
+ 
+ ```text
+-Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused
+-replacement, typecheck, format, and routing checks are frozen in
+-20260728-184101-compatibility-ratchet.json.
++Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local
++verify-contract and verify-static parity checks pass.
+ ```
+ - Canonical workflow state lives in the task README.
+ 
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index 7c418d55e..13f51d2ba 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -3,8 +3,8 @@
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+   "diffstat_sha256": "sha256:21dd6a0967afffe419852aef2a7aac5086800f3107c93499e687120dd5ebd7ea",
+-  "last_verified_at": "2026-07-28T18:42:31.263Z",
+-  "last_verified_diffstat_sha256": "sha256:231b2ddd4440b0144e76666bb86b83abe84b81c178f2356ecc24fcb661ead284",
++  "last_verified_at": "2026-07-28T19:19:01.764Z",
++  "last_verified_diffstat_sha256": "sha256:21dd6a0967afffe419852aef2a7aac5086800f3107c93499e687120dd5ebd7ea",
+   "pr_number": 4664,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4664",
+   "pre_merge_closure": {
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index 3bb493b1f..06887ac46 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -13,7 +13,7 @@ Created: 2026-07-28T16:57:04.791Z
+ ## Verification
+ 
+ - State: ok
+-- Note: Compatibility ratchet verification passed for implementation 4aaa436b1; critical CLI, focused replacement, typecheck, format, and routing checks are frozen in 20260728-184101-compatibility-ratchet.json.
++- Note: Hosted CI rework verified: refreshed CLI reference and lint-safe evaluator paths; local verify-contract and verify-static parity checks pass.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/verification/20260728-191822-hosted-ci-rework.json b/.agentplane/tasks/202607281655-YMPY8Y/verification/20260728-191822-hosted-ci-rework.json
+new file mode 100644
+index 000000000..5843cb9d7
+--- /dev/null
++++ b/.agentplane/tasks/202607281655-YMPY8Y/verification/20260728-191822-hosted-ci-rework.json
+@@ -0,0 +1,82 @@
++{
++  "schema_version": 1,
++  "kind": "agentplane_task_verification_record",
++  "task_id": "202607281655-YMPY8Y",
++  "recorded_at": "2026-07-28T19:18:22Z",
++  "scope": {
++    "implementation_commit": "9ea452754fe4fbabf259cad263a0279aa78f3d2f",
++    "paths": [
++      "docs/user/cli-reference.generated.mdx",
++      "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
++      "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts",
++      "packages/agentplane/src/commands/shared/supervisor-execution-episode.ts"
++    ],
++    "objective": "Resolve the hosted CI static-analysis and generated-CLI-reference failures without changing replacement semantics or the approved compatibility contract."
++  },
++  "checks": [
++    {
++      "id": "core-lint",
++      "command": "bun run lint:core",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "eslint packages scripts eslint.config.cjs vitest.config.ts completed with no findings.",
++      "evidence_scope": "hosted verify-static parity"
++    },
++    {
++      "id": "cli-reference-freshness",
++      "command": "bun run docs:cli:generate && bun run docs:cli:check",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "The generated CLI reference now includes evaluator execute --replacement and the freshness checker accepted the tracked document.",
++      "evidence_scope": "hosted verify-contract parity"
++    },
++    {
++      "id": "focused-supervisor-and-evaluator-tests",
++      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "2 test files passed; 22 tests passed, including pending-replacement recovery and independent-process provider admission.",
++      "evidence_scope": "replacement supervisor and evaluator execution"
++    },
++    {
++      "id": "critical-cli-baseline",
++      "command": "bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts --testTimeout 60000",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "1 test file passed; 7 tests passed, preserving the approved v0.7 cumulative contract candidate.",
++      "evidence_scope": "critical CLI compatibility and agent-efficiency baseline"
++    },
++    {
++      "id": "compatibility-contract-ratchet",
++      "command": "bun run bench:compatibility:check",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "The immutable v0.6.24 baseline remained unchanged and the approved v0.7 candidate accepted the sole additive replacement option.",
++      "evidence_scope": "public CLI compatibility contract"
++    },
++    {
++      "id": "typescript-build-and-format",
++      "command": "bun run typecheck && bun run format:changed",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "TypeScript build completed and all four changed files matched repository formatting.",
++      "evidence_scope": "repository type and formatting gates"
++    },
++    {
++      "id": "policy-routing",
++      "command": "node .agentplane/policy/check-routing.mjs",
++      "status": "passed",
++      "exit_code": 0,
++      "result": "policy routing OK.",
++      "evidence_scope": "AGENTS gateway and loaded code-task policy graph"
++    },
++    {
++      "id": "post-integration-real-replacement",
++      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
++      "status": "not_run",
++      "exit_code": null,
++      "result": "Deferred until integration into main. The release gate remains: retain the original operation_failed record and prove exactly one linked completed replacement episode.",
++      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
++    }
++  ]
++}

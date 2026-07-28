@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen delta is limited to hosted-CI remediation and task evidence refresh; recorded focused tests continue to cover replacement admission, cross-process contention, pending-reservation recovery, terminal rejection, type safety, formatting, routing, lint, documentation freshness, and compatibility.",
+      "broken_invariant": "No reviewed recovery-context invariant is broken by the evaluated delta.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-192337583-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:bda5cefd6ca75117840cf0ee3d94b9d26090dc58fd1f2c15bbdb8b785563211c"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-191822-hosted-ci-rework.json",
+          "sha256": "sha256:a78aacd0b73a906e3379a409a6dd64f3546c7fc6cc0845e3cf3ef15eed7503ee",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad",
+          "section": "checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-184101-compatibility-ratchet.json",
+          "sha256": "sha256:fc186a7415c6c44a995299db11ac27730674dea617dfed4caf117deb6a9b751b",
+          "section": "checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "The declared post-integration real replacement episode for task 202607221850-8HBF4J has not yet run; retain it as the integration/release gate proving preservation of the original operation_failed record and exactly one linked completed replacement episode."
+  ],
+  "hidden_assumptions": [
+    "The fake read-only provider fixtures accurately model the real provider boundary for reservation consumption and episode persistence.",
+    "The post-integration environment retains the original failed journal and sufficient budget to execute the deferred real replacement proof."
+  ]
+}
