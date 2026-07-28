@@ -3,7 +3,8 @@
   "branch": "task/202607281227-GX5NVT/handle-evaluator-stdin-epipe-without-unhandled-c",
   "created_at": "2026-07-28T12:28:33.723Z",
   "diffstat_sha256": "sha256:221a90aee8c8c011f6a989d0ac01eaf5c1112c8abc109619f429bd8ea93051f3",
-  "last_verified_at": null,
+  "last_verified_at": "2026-07-28T12:41:39.128Z",
+  "last_verified_diffstat_sha256": "sha256:221a90aee8c8c011f6a989d0ac01eaf5c1112c8abc109619f429bd8ea93051f3",
   "pr_number": 4657,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4657",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607281227-GX5NVT",
   "updated_at": "2026-07-28T12:29:58.601Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }
