@@ -19,8 +19,8 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Note:
 
 ```text
-Hosted hotspot rework verified: evaluator verification-record collection is split into a dedicated
-helper and the 600-line contract gate passes.
+Hosted static rework verified: all replacement-test lint findings are resolved while the eight
+command-level replacement scenarios remain green.
 ```
 - Canonical workflow state lives in the task README.
 

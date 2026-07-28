@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607281655-YMPY8Y",
+  "recorded_at": "2026-07-28T19:50:56Z",
+  "scope": {
+    "implementation_commit": "620357a35317e18eaf63555b0270cdc5855203b2",
+    "paths": [
+      "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+    ],
+    "objective": "Resolve the hosted verify-static lint findings in replacement-evaluator tests without changing the replacement execution contract."
+  },
+  "checks": [
+    {
+      "id": "replacement-test-eslint",
+      "command": "bunx eslint packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "The six hosted lint findings are resolved: no unsafe any assignment, await-member access, or unsafe error stringification remains.",
+      "evidence_scope": "hosted verify-static lint parity"
+    },
+    {
+      "id": "replacement-command-tests",
+      "command": "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "1 test file passed; 8 tests passed, including cross-process single-provider admission and persisted pending-replacement recovery.",
+      "evidence_scope": "replacement evaluator execution"
+    },
+    {
+      "id": "static-contract-and-routing",
+      "command": "bun run lint:core && bun run typecheck && bun run hotspots:check && bun run bench:compatibility:check && node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "Core lint and type safety, the 600-line hotspot threshold, the approved v0.7 compatibility candidate, and policy routing all pass locally.",
+      "evidence_scope": "hosted verify-static and verify-contract parity"
+    },
+    {
+      "id": "post-integration-real-replacement",
+      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "status": "not_run",
+      "exit_code": null,
+      "result": "Deferred until integration into main. The release gate remains: retain the original operation_failed record and prove exactly one linked completed replacement episode.",
+      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
+    }
+  ]
+}
