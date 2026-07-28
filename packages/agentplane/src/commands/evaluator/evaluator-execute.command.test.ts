@@ -52,6 +52,38 @@ async function commitTarget(root: string): Promise<void> {
   await execFileAsync("git", ["commit", "-m", "feat: evaluator execute fixture"], { cwd: root });
 }
 
+async function writeVerificationRecord(root: string, taskId: string): Promise<string> {
+  const recordPath = path.join(
+    root,
+    ".agentplane/tasks",
+    taskId,
+    "verification",
+    "command-results.json",
+  );
+  await mkdir(path.dirname(recordPath), { recursive: true });
+  await writeFile(
+    recordPath,
+    `${JSON.stringify(
+      {
+        schema_version: 1,
+        kind: "agentplane_task_verification_record",
+        checks: [
+          {
+            command:
+              "bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+            status: "passed",
+            exit_code: 0,
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+  return recordPath;
+}
+
 async function installFakeCodex(root: string): Promise<string> {
   const bin = path.join(root, "fake-bin");
   await mkdir(bin, { recursive: true });
@@ -172,6 +204,7 @@ describe("evaluator execute supervisor episode", () => {
     const taskId = "202607280000-EE01";
     await addTask(root, taskId);
     await commitTarget(root);
+    const verificationRecordPath = await writeVerificationRecord(root, taskId);
     const fakeBin = await installFakeCodex(root);
 
     const execution = await runWithFakeCodex(root, taskId, fakeBin);
@@ -211,6 +244,21 @@ describe("evaluator execute supervisor episode", () => {
       operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "completed" }],
     });
     expect(JSON.stringify(journal)).not.toContain("evaluator_result");
+    const completedOperation = (
+      journal as { operations: { work_order_ref?: string | null }[] }
+    ).operations.at(-1);
+    if (!completedOperation?.work_order_ref)
+      throw new Error("missing evaluator work order reference");
+    const workOrder = JSON.parse(
+      await readFile(path.join(root, completedOperation.work_order_ref), "utf8"),
+    ) as { evidence: { kind: string; path: string }[] };
+    expect(workOrder.evidence).toContainEqual({
+      kind: "verification_log",
+      path: path.relative(root, verificationRecordPath).replaceAll("\\\\", "/"),
+      id: "verification-record-1",
+      required: true,
+      sha256: expect.any(String),
+    });
   });
 
   it("resumes a completed evaluator outcome without launching Codex again", async () => {

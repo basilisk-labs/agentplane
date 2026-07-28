@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { execFileAsync } from "@agentplaneorg/core/process";
 import { z } from "zod";
@@ -79,6 +79,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
               "task_document",
               "actual_diff",
               "observed_checks",
+              "verification_log",
               "blueprint",
               "policy_module",
               "knowledge_ref",
@@ -187,6 +188,19 @@ async function freezeFile(opts: {
   };
 }
 
+async function verificationRecordPaths(taskRoot: string): Promise<string[]> {
+  try {
+    const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
+    return entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+      .map((entry) => path.join(taskRoot, "verification", entry.name))
+      .toSorted();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
+    throw error;
+  }
+}
+
 async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
   if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
   try {
@@ -278,6 +292,7 @@ export async function prepareEvaluatorReview(opts: {
     opts.task.id,
     "README.md",
   );
+  const taskRoot = path.dirname(taskReadmePath);
   const evaluatedSha = await resolveQualityReviewTargetSha({
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
@@ -286,10 +301,25 @@ export async function prepareEvaluatorReview(opts: {
     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
   });
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
+  const verificationRecords = await Promise.all(
+    (await verificationRecordPaths(taskRoot)).map((filePath, index) =>
+      freezeFile({
+        gitRoot,
+        id: `verification-record-${String(index + 1)}`,
+        kind: "verification_log",
+        filePath,
+        required: true,
+      }),
+    ),
+  );
   const observedChecks = {
     task_status: opts.task.status,
     declared_checks: opts.task.verify ?? [],
     verification: opts.task.verification ?? null,
+    verification_records: verificationRecords.map(({ path: evidencePath, sha256 }) => ({
+      path: evidencePath,
+      sha256,
+    })),
     runner_history: opts.task.runner?.history ?? [],
   };
 
@@ -332,6 +362,7 @@ export async function prepareEvaluatorReview(opts: {
       filePath: path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
       required: true,
     }),
+    ...verificationRecords,
     await freezeFile({
       gitRoot,
       id: "blueprint",
