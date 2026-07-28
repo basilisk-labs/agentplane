@@ -521,19 +521,22 @@ describe("SGR reliability contracts", () => {
     expect(result.findings).toHaveLength(1);
   });
 
-  it("rejects rework evaluator results without findings", () => {
-    expect(() =>
-      validateEvaluatorSgrResult({
-        schema_version: SGR_CONTRACT_SCHEMA_VERSION,
-        kind: "evaluator_result",
-        evaluator_id: "recovery-context",
-        verdict: "rework",
-        findings: [],
-        missing_tests: [],
-        hidden_assumptions: [],
-      }),
-    ).toThrow("non-empty array for rework or blocked verdict");
-  });
+  it.each(["pass", "rework", "blocked", "human_review"] as const)(
+    "rejects %s evaluator results without findings",
+    (verdict) => {
+      expect(() =>
+        validateEvaluatorSgrResult({
+          schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+          kind: "evaluator_result",
+          evaluator_id: "recovery-context",
+          verdict,
+          findings: [],
+          missing_tests: [],
+          hidden_assumptions: [],
+        }),
+      ).toThrow("non-empty array for every evaluator verdict");
+    },
+  );
 
   it("validates structured blueprint route decisions", () => {
     const result = validateBlueprintRouteDecisionSgrResult({

@@ -44,8 +44,8 @@ export function validateEvaluatorSgrResult(
       ),
     };
   });
-  if ((verdict === "rework" || verdict === "blocked") && findings.length === 0) {
-    throw invalid(`${field}.findings`, "non-empty array for rework or blocked verdict");
+  if (findings.length === 0) {
+    throw invalid(`${field}.findings`, "non-empty array for every evaluator verdict");
   }
   const recoveryContext = optionalString(result.recovery_context, `${field}.recovery_context`);
   return {

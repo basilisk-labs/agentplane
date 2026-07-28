@@ -53,21 +53,21 @@ async function commitTarget(root: string): Promise<void> {
 async function installFakeCodex(root: string): Promise<string> {
   const bin = path.join(root, "fake-bin");
   await mkdir(bin, { recursive: true });
-  const result = JSON.stringify({
-    schema_version: 1,
-    kind: "evaluator_result",
-    evaluator_id: "recovery-context",
-    verdict: "pass",
-    findings: [],
-    missing_tests: [],
-    hidden_assumptions: [],
-  });
   const source = [
     "#!/usr/bin/env node",
-    "process.stdin.resume();",
+    "const fs = require('node:fs');",
+    "let prompt = '';",
+    "process.stdin.setEncoding('utf8');",
+    "process.stdin.on('data', (chunk) => { prompt += chunk; });",
     "process.stdin.on('end', () => {",
+    "  const workOrderMatch = prompt.match(/^- work_order: (.+)$/m);",
+    "  if (!workOrderMatch) process.exit(1);",
+    "  const workOrder = JSON.parse(fs.readFileSync(workOrderMatch[1], 'utf8'));",
+    "  const evidence = workOrder.evidence.find((entry) => entry.kind === 'actual_diff');",
+    "  if (!evidence) process.exit(1);",
+    "  const result = { schema_version: 1, kind: 'evaluator_result', evaluator_id: 'recovery-context', verdict: 'pass', findings: [{ id: 'fixture-pass', severity: 'low', summary: 'Fixture verifies the persisted EVALUATOR result path.', broken_invariant: 'Pass reviews require one evidence-backed finding.', evidence_refs: [{ path: evidence.path }] }], missing_tests: [], hidden_assumptions: [] };",
     "  process.stdout.write(JSON.stringify({ type: 'session.started' }) + '\\n');",
-    `  process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: ${JSON.stringify(result)} } }) + '\\n');`,
+    "  process.stdout.write(JSON.stringify({ type: 'item.completed', item: { type: 'agent_message', text: JSON.stringify(result) } }) + '\\n');",
     "  process.stdout.write(JSON.stringify({ type: 'turn.completed', usage: { input_tokens: 100, output_tokens: 30, reasoning_output_tokens: 20 } }) + '\\n');",
     "});",
     "",

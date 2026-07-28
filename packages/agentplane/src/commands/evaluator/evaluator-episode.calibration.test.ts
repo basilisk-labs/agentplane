@@ -220,6 +220,7 @@ describe("evaluator episode calibration", () => {
       properties: {
         recovery_context: { type: string[] };
         findings: {
+          minItems: number;
           items: {
             properties: {
               evidence_refs: {
@@ -239,6 +240,7 @@ describe("evaluator episode calibration", () => {
       };
     };
     const evidenceSchema = outputSchema.properties.findings.items.properties.evidence_refs.items;
+    expect(outputSchema.properties.findings.minItems).toBe(1);
     expect(outputSchema.required).toContain("recovery_context");
     expect(outputSchema.properties.recovery_context.type).toEqual(["string", "null"]);
     expect(evidenceSchema.required).toEqual(["path", "sha256", "line", "lines", "section"]);

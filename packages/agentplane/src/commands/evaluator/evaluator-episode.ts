@@ -52,6 +52,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
     verdict: { type: "string", enum: ["pass", "rework", "blocked", "human_review"] },
     findings: {
       type: "array",
+      minItems: 1,
       items: {
         type: "object",
         additionalProperties: false,
