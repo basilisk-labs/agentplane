@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on: []
@@ -52,8 +52,8 @@ quality_review:
   findings:
     - "The frozen branch delta records the merge base and evaluated SHA, excludes recursive quality artifacts, preserves explicit no-work-unit behavior, fails closed when a branch_pr base cannot be resolved, and includes a current SHA- and scope-bound durable verification record with concurrency coverage."
 commit:
-  hash: "b44df62c2083081b873ed343e969ac631b2f3f91"
-  message: "✅ FT85MC quality: lifecycle freshness evaluator passes"
+  hash: "c5a8086c52c98890e0201e9caf3fb06994c861e2"
+  message: "✅ FT85MC quality: validate durable verification fixture rework"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -214,8 +217,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Fixed hosted verify-unit regressions in durable verification fixtures."
+  -
+    type: "status"
+    at: "2026-07-28T23:39:15.572Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T23:34:32.859Z"
+doc_updated_at: "2026-07-28T23:39:15.573Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -993,8 +1003,8 @@ sections:
       Resolution: Bound record discovery to persisted verification state and added the orphan-record regression fixture.
 extensions:
   implementation_commit:
-    hash: "8ee05f15844cca6791b30caff27849dbbf7e3a24"
-    message: "🐛 FT85MC code: keep verification artifacts out of review staleness"
+    hash: "c297de641727330c2add5ec0bb27f116ba3bf78a"
+    message: "🐛 FT85MC task: fix durable verification test fixtures"
   workflow_route_baseline:
     start_head_sha: "7f44e71fa8dbe12987744e4442ba0110dc150090"
     version: 1
