@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607281455-147Q75/repair-evaluator-response-schema",
   "created_at": "2026-07-28T14:56:22.735Z",
-  "diffstat_sha256": "sha256:7b10d23b67d648d15fa1a62b935c84c12238d695b13a36e5e63bef51ddbb6f6d",
+  "diffstat_sha256": "sha256:4e4d54acd65143b05ecf775a67200dcf67249f52734cebcf9bad435e68b08967",
   "last_verified_at": "2026-07-28T15:03:08.775Z",
   "last_verified_diffstat_sha256": "sha256:7b10d23b67d648d15fa1a62b935c84c12238d695b13a36e5e63bef51ddbb6f6d",
   "pr_number": 4660,

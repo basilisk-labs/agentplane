@@ -35,8 +35,8 @@ read-only. Checks passed: focused evaluator suites (14), typecheck, format, rout
 ```text
  .../evaluator-episode.calibration.test.ts          | 59 ++++++++++++++++++----
  .../src/commands/evaluator/evaluator-episode.ts    | 29 ++++++++---
- .../commands/evaluator/evaluator-review-usecase.ts | 23 ++++++++-
- 3 files changed, 93 insertions(+), 18 deletions(-)
+ .../commands/evaluator/evaluator-review-usecase.ts | 25 ++++++++-
+ 3 files changed, 95 insertions(+), 18 deletions(-)
 ```
 
 </details>
