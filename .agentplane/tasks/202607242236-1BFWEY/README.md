@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 36
+revision: 38
 origin:
   system: "manual"
 depends_on:
@@ -45,34 +45,36 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T05:01:44.723Z"
-  updated_by: "CODER"
-  note: "Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift."
+  updated_at: "2026-07-28T06:03:25.605Z"
+  updated_by: "EVALUATOR"
+  note: "Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green."
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T05:42:30.326Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "256d3f7de147c480af565abbdbd5a63198b2e558"
+  provenance: "human_supplied"
+  updated_at: "2026-07-28T06:03:58.443Z"
+  updated_by: "HUMAN"
+  note: "Current head d9f6ac23 changes only task-local integration authority after the reviewed implementation; PR #4651 hosted checks passed."
+  evaluated_sha: "d9f6ac23cb033aeb6242bdbd507d726302a50cb9"
   blueprint_digest: "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477"
   evidence_refs:
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607242236-1BFWEY/README.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-060358376-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/pr/meta.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-054230204-recovery-context/quality-report.json"
+    - "GitHub PR #4651 all hosted checks passed on d9f6ac23"
   findings:
-    - "Knip identified no external imports for either helper; removing only their export modifiers closes the unused-code contract without widening the public API or changing evaluator receipt and supervisor budget behavior."
+    - "The current head preserves the durable episode implementation reviewed at 256d3f7d; subsequent diffs are task-local lifecycle evidence, and the refreshed PR diffstat verification matches the current implementation diff."
 commit:
   hash: "7f724401d7dabeaa1739f459ceb45b9aa775ab06"
   message: "Record refreshed pre-merge authority"
@@ -150,8 +152,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T06:03:25.605Z"
+    author: "EVALUATOR"
+    state: "ok"
+    note: "Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green."
 doc_version: 3
-doc_updated_at: "2026-07-28T05:43:17.988Z"
+doc_updated_at: "2026-07-28T06:03:26.752Z"
 doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
@@ -224,6 +232,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T06:03:25.605Z — VERIFY — ok
+
+    By: EVALUATOR
+
+    Note: Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T05:43:17.988Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+    - old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+    DecisionContextRef:
+    - operator_action: run_exact_argv
+    - can_execute_now: true
+    - safe_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+    - diagnostic_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: true
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "- Revert supervisor budget/journal integration while preserving already persisted diagnostic records and the existing StateFingerprint, execution-receipt, and effect-in-doubt safety boundaries. - Retain version readers and migration recovery for any journal generation already written; never delete or reinterpret durable records during rollback. - Keep the feature behind an explicit compatibility boundary until schema migration, restart, rollback, and installed-package tests pass. - Re-run schema, lifecycle, guard, critical, type, install-smoke, and agent-efficiency checks before restoring supervised execution."
   Findings: |-
@@ -236,6 +274,10 @@ sections:
     - Observation: Targeted supervisor and evaluator suites, schemas, lifecycle invariants, shared guards, typecheck, critical suite, isolated tarball smoke, and RF-04 agent-efficiency baseline passed.
       Impact: The prior evaluator rework is addressed without changing the frozen v0.7 public CLI or tarball contract.
       Resolution: Keep journal status in the existing supervised execution JSON projection; reserve any new public status command for a separately reviewed compatibility candidate.
+
+    - Observation: Current PR #4651 hosted checks passed on d9f6ac23.
+      Impact: The stale PR verification pointer did not reflect the validated current head.
+      Resolution: Recorded fresh EVALUATOR verification before integration.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -642,6 +684,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T06:03:25.605Z — VERIFY — ok
+
+By: EVALUATOR
+
+Note: Reverified current PR head d9f6ac23: implementation is unchanged since the evaluator pass, and GitHub hosted checks are all green.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T05:43:17.988Z, excerpt_hash=sha256:41d35bf605fded6cdc173757ce95594ef978d3858ff5b5e78a12cd22828b8cd8
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607242236-1BFWEY-persist-bounded-supervisor-execution-episodes/.agentplane/tasks/202607242236-1BFWEY/blueprint/resolved-snapshot.json
+- old_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- current_digest: fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607242236-1BFWEY
+
+DecisionContextRef:
+- operator_action: run_exact_argv
+- can_execute_now: true
+- safe_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+- diagnostic_command: agentplane task next-action 202607242236-1BFWEY --remote --explain
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: true
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -659,3 +731,7 @@ DecisionContextRef:
 - Observation: Targeted supervisor and evaluator suites, schemas, lifecycle invariants, shared guards, typecheck, critical suite, isolated tarball smoke, and RF-04 agent-efficiency baseline passed.
   Impact: The prior evaluator rework is addressed without changing the frozen v0.7 public CLI or tarball contract.
   Resolution: Keep journal status in the existing supervised execution JSON projection; reserve any new public status command for a separately reviewed compatibility candidate.
+
+- Observation: Current PR #4651 hosted checks passed on d9f6ac23.
+  Impact: The stale PR verification pointer did not reflect the validated current head.
+  Resolution: Recorded fresh EVALUATOR verification before integration.

@@ -1,0 +1,53 @@
+diff --git a/.agentplane/tasks/202607242236-1BFWEY/README.md b/.agentplane/tasks/202607242236-1BFWEY/README.md
+index c98b58bde..17d8f6e6a 100644
+--- a/.agentplane/tasks/202607242236-1BFWEY/README.md
++++ b/.agentplane/tasks/202607242236-1BFWEY/README.md
+@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
+ status: "DONE"
+ priority: "high"
+ owner: "CODER"
+-revision: 35
++revision: 36
+ origin:
+   system: "manual"
+ depends_on:
+@@ -382,6 +382,19 @@ extensions:
+         schemaVersion: 1
+         sequence: 11
+         stateFingerprintDigest: "sha256:f693451a89bb5910494a072e8f2ae7e842eafa11067cca1f6ab2a1b5f7a54dc8"
++      -
++        actor: "USER"
++        at: "2026-07-28T05:54:58.587Z"
++        authorityDigest: "sha256:3c201d722682e78543ea031bd833d465d1cafe6b491236ba9b8758bb7731507a"
++        digest: "sha256:004ff9464990b7449afc89e1c4c840bf4e39a9654a20fac268ccd0e286bf603f"
++        operationDigest: "sha256:dd2c22089f53f9bbc507c7076870a842f3706a70ebf24985df65dd0f6ba23645"
++        operationId: "route.remote.refresh"
++        outcome: "approved"
++        policyRule: "workflow.external_reversible"
++        previousDigest: "sha256:8ca65232cc4173dc8fde9a21867c368fae6562094157bdada44985b0dfc62400"
++        schemaVersion: 1
++        sequence: 12
++        stateFingerprintDigest: "sha256:7692f75ded234a0522731992b2408acd3fb30ed5bdf2066343f8ab00561d1115"
+     grants:
+       -
+         actor: "USER"
+@@ -526,6 +539,19 @@ extensions:
+         schemaVersion: 1
+         stateFingerprintDigest: "sha256:f693451a89bb5910494a072e8f2ae7e842eafa11067cca1f6ab2a1b5f7a54dc8"
+         stateScopeDigest: "sha256:39e050b5e97136e2b5fdcaf9d2bd47ff24933097b32be8ec3111dda562e5326e"
++      -
++        actor: "USER"
++        digest: "sha256:3c201d722682e78543ea031bd833d465d1cafe6b491236ba9b8758bb7731507a"
++        expiresAt: "2026-07-28T06:09:58.587Z"
++        id: "authority-bd0cebc8-b155-485b-b8ac-d66bbb1f2c7a"
++        issuedAt: "2026-07-28T05:54:58.587Z"
++        kind: "side_effect_authority"
++        operationDigest: "sha256:dd2c22089f53f9bbc507c7076870a842f3706a70ebf24985df65dd0f6ba23645"
++        operationId: "route.remote.refresh"
++        policyRule: "workflow.external_reversible"
++        schemaVersion: 1
++        stateFingerprintDigest: "sha256:7692f75ded234a0522731992b2408acd3fb30ed5bdf2066343f8ab00561d1115"
++        stateScopeDigest: "sha256:33b31fed365a1bf14ee01f2f4f1b6b0c9eb02b0379b4f057b659c67572659c9d"
+     schemaVersion: 1
+   implementation_commit:
+     hash: "256d3f7de147c480af565abbdbd5a63198b2e558"
