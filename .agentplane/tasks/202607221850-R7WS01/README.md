@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 26
 origin:
   system: "manual"
 depends_on:
@@ -36,34 +36,34 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T02:36:22.966Z"
+  updated_at: "2026-07-28T02:43:38.519Z"
   updated_by: "TESTER"
-  note: "PASS (rework reverified): Hermes now uses the shared typed lifecycle exit mapping, including nonzero failure for incomplete active-claim cleanup."
+  note: "PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as runner, renderer, and Hermes regression checks."
   attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T02:30:01.167Z"
+  updated_at: "2026-07-28T02:43:41.960Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "e7465b7377c6a8af392c605de7aa4315bf107100"
+  evaluated_sha: "96ff9bab8db6e431077c9a7f60b357735e011f80"
   blueprint_digest: "97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-R7WS01/README.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-023001043-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-024341835-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The rework replaces the raw provider exit code with taskRunnerLifecycleExitCode(lifecycle), and a regression test proves that active_claim_cleanup yields failed plus exit_code 1 while retaining the typed result."
+    - "The only source changes are Prettier-normalized wrapping and import grouping in the previously reviewed lifecycle paths; targeted regression tests and format:check pass."
 commit:
   hash: "f63905e9ace209c7dd772d564e016782ea0984ab"
   message: "🛡️ R7WS01 task: record refreshed closure authority"
@@ -131,8 +131,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-28T02:43:38.519Z"
+    author: "TESTER"
+    state: "ok"
+    note: "PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as runner, renderer, and Hermes regression checks."
 doc_version: 3
-doc_updated_at: "2026-07-28T02:37:57.846Z"
+doc_updated_at: "2026-07-28T02:43:39.221Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -221,6 +227,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-28T02:43:38.519Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as runner, renderer, and Hermes regression checks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T02:37:57.846Z, excerpt_hash=sha256:02a389ca089e360cf76ff483bd84febcf2d5924eaa0f09fb89eb4a0ab64c794d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-R7WS01-return-typed-runner-lifecycle-results/.agentplane/tasks/202607221850-R7WS01/blueprint/resolved-snapshot.json
+    - old_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+    - current_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-R7WS01
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -235,6 +271,10 @@ sections:
     - Observation: Hermes lifecycle, renderer, and effect-resolution tests passed; typecheck, lint, and lifecycle invariants passed on e7465b737.
       Impact: Hosted verify-contract evidence now covers the rework commit rather than the superseded implementation head.
       Resolution: Refresh PR head and rerun hosted validation.
+
+    - Observation: format:check, targeted Hermes/renderer/effect-resolution tests, typecheck, lint, and lifecycle invariants passed on 96ff9bab8.
+      Impact: Hosted verify-contract now records evidence for the formatted implementation head.
+      Resolution: Refresh evaluator review and pre-merge closure.
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -550,6 +590,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-28T02:43:38.519Z — VERIFY — ok
+
+By: TESTER
+
+Note: PASS (format reverified): typed lifecycle paths now pass repository Prettier format check as well as runner, renderer, and Hermes regression checks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T02:37:57.846Z, excerpt_hash=sha256:02a389ca089e360cf76ff483bd84febcf2d5924eaa0f09fb89eb4a0ab64c794d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-R7WS01-return-typed-runner-lifecycle-results/.agentplane/tasks/202607221850-R7WS01/blueprint/resolved-snapshot.json
+- old_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+- current_digest: 97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-R7WS01
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -568,3 +638,7 @@ DecisionContextRef:
 - Observation: Hermes lifecycle, renderer, and effect-resolution tests passed; typecheck, lint, and lifecycle invariants passed on e7465b737.
   Impact: Hosted verify-contract evidence now covers the rework commit rather than the superseded implementation head.
   Resolution: Refresh PR head and rerun hosted validation.
+
+- Observation: format:check, targeted Hermes/renderer/effect-resolution tests, typecheck, lint, and lifecycle invariants passed on 96ff9bab8.
+  Impact: Hosted verify-contract now records evidence for the formatted implementation head.
+  Resolution: Refresh evaluator review and pre-merge closure.
