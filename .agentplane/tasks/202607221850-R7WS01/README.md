@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 37
+revision: 38
 origin:
   system: "manual"
 depends_on:
@@ -43,27 +43,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T02:55:18.124Z"
+  updated_at: "2026-07-28T03:01:49.505Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "8cd703b66e4c14daae26b244f551e705068e178d"
+  evaluated_sha: "8339ca9dc3ed7b3e59726ee240bc044fead4b89f"
   blueprint_digest: "97dbd5ae24a9308fca905710dccc07fa250b9db1f6435363f589cdbc72b6a328"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-R7WS01/README.md"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-025517959-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-R7WS01/quality/20260728-030149331-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No blocking finding: task-run execution contracts are isolated in a dedicated type module; Hermes checks concrete typed values rather than assigning matcher any values."
+    - "No blocking finding: the only new hosted static error was an unused import left after contract extraction; final lint and targeted regression tests pass."
 commit:
   hash: "9013722fdf3806b630cdce0a39610e671216af5a"
   message: "🛡️ R7WS01 task: authorize rework closure"

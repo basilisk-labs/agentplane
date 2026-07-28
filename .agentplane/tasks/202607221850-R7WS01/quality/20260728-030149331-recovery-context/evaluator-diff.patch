@@ -1,0 +1,12 @@
+diff --git a/packages/agentplane/src/runner/usecases/task-run.ts b/packages/agentplane/src/runner/usecases/task-run.ts
+index b503528ad..3b8337461 100644
+--- a/packages/agentplane/src/runner/usecases/task-run.ts
++++ b/packages/agentplane/src/runner/usecases/task-run.ts
+@@ -31,7 +31,6 @@ import {
+   reconcileStaleTerminalTaskRunnerActiveClaim,
+   reconcileTerminalTaskRunnerActiveClaim,
+   recordActiveClaimCleanupFailure,
+-  type TaskRunnerActiveClaimCleanupDiagnostic,
+ } from "./task-run-active-claim-runtime.js";
+ import { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
+ export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
