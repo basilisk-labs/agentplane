@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-WM9X1G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T08:57:50.140Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "5c27b4c8fc12caaebbb7e5fa92c15824882f0277",
+  "blueprint_digest": "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e",
+  "findings": [
+    "No new code path was introduced after the fresh focused and hosted evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

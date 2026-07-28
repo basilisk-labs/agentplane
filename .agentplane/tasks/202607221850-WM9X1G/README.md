@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -40,27 +40,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T08:51:44.887Z"
+  updated_at: "2026-07-28T08:57:50.140Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "5c27b4c8fc12caaebbb7e5fa92c15824882f0277"
   blueprint_digest: "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-WM9X1G/README.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085144114-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-085748918-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Resumable journal lease, semantic fingerprint guard, task-id resolution, and recovery diagnostics remain covered by focused tests."
+    - "No new code path was introduced after the fresh focused and hosted evidence."
 commit:
   hash: "3e0e89d381fdfbc8848fde5d391b62e42d4c4866"
   message: "chore: authorize context ingest pre-merge closure"
