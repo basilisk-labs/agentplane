@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "No blocking finding: the only new hosted static error was an unused import left after contract extraction; final lint and targeted regression tests pass."
 commit:
-  hash: "9013722fdf3806b630cdce0a39610e671216af5a"
-  message: "🛡️ R7WS01 task: authorize rework closure"
+  hash: "fd963ada01fbd68926a2965d1471eb07b9618cce"
+  message: "🛡️ R7WS01 task: authorize static rework closure"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -169,8 +172,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS (static rework): stale type import removed after contract extraction; no runner lifecycle behavior changed."
+  -
+    type: "status"
+    at: "2026-07-28T03:02:39.662Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T03:01:35.078Z"
+doc_updated_at: "2026-07-28T03:02:39.662Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -797,8 +807,8 @@ extensions:
         stateScopeDigest: "sha256:c183b07e0fd4b947db6d5e194cf4f080c472d1888bb7519a597d521fc21dc562"
     schemaVersion: 1
   implementation_commit:
-    hash: "8cd703b66e4c14daae26b244f551e705068e178d"
-    message: "♻️ R7WS01 runner: split execution contracts"
+    hash: "8339ca9dc3ed7b3e59726ee240bc044fead4b89f"
+    message: "🐛 R7WS01 runner: remove stale cleanup type import"
   workflow_route_baseline:
     start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"
     version: 1
