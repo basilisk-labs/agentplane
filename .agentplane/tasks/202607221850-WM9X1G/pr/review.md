@@ -6,7 +6,7 @@ Created: 2026-07-28T08:13:34.859Z
 
 - Task: `202607221850-WM9X1G`
 - Title: Journal resumable context-ingestion phases
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases`
 - Canonical task record: `.agentplane/tasks/202607221850-WM9X1G/README.md`
 
