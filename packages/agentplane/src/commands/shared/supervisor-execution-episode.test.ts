@@ -4,6 +4,7 @@ import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 
 import type { TaskRouteDecision } from "./route-decision-types.js";
+import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
 import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
 import {
@@ -14,7 +15,11 @@ import {
 
 const taskId = "202607280001-EPISODE";
 
-function fixtureDecision(root: string, revision: number): TaskRouteDecision {
+function fixtureDecision(
+  root: string,
+  revision: number,
+  owner: "CODER" | "CURATOR" = "CODER",
+): TaskRouteDecision {
   const component = {
     state: "present",
     source: "supervisor_execution_episode_test",
@@ -51,7 +56,7 @@ function fixtureDecision(root: string, revision: number): TaskRouteDecision {
       id: taskId,
       title: "Supervisor episode fixture",
       status: "DOING",
-      owner: "CODER",
+      owner,
       planApproval: "approved",
       verification: "pending",
       commit: null,
@@ -70,6 +75,61 @@ function fixtureDecision(root: string, revision: number): TaskRouteDecision {
       exactArgv: projectWorkflowOperationArgv(operation),
     },
   } as TaskRouteDecision;
+}
+
+function executedLifecycle(opts: {
+  decision: TaskRouteDecision;
+  metrics?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    total_tokens?: number;
+    duration_ms?: number;
+  };
+  files_changed_count?: number;
+}): TaskRunnerLifecycleResult {
+  return {
+    schema: "agentplane.task_runner_lifecycle_result.v1",
+    phase: "executed",
+    task_id: opts.decision.task.id,
+    invocation: {
+      adapter_id: "codex",
+      run_id: "run-supervisor-episode",
+      work_order_id: "work-order-supervisor-episode",
+      run_dir: "/repo/.agentplane/runs/run-supervisor-episode",
+      bundle_path: "/repo/.agentplane/runs/run-supervisor-episode/bundle.json",
+      bootstrap_path: null,
+      result_path: "/repo/.agentplane/runs/run-supervisor-episode/result.json",
+    },
+    lifecycle: {
+      mode: "execute",
+      status: "success",
+      state_fingerprint: null,
+      effect: {
+        state: "not_applied",
+        operation: null,
+        authority: null,
+        observed_evidence: null,
+        claim_generation: null,
+        resolution: null,
+        resolution_provenance: null,
+        source_resolution: null,
+        source_resolution_provenance: null,
+      },
+      work_order_authority: null,
+    },
+    result: {
+      status: "success",
+      exit_code: 0,
+      started_at: "2026-07-28T00:00:00.000Z",
+      ended_at: "2026-07-28T00:00:01.000Z",
+      metrics: opts.metrics,
+      evidence:
+        opts.files_changed_count === undefined
+          ? undefined
+          : { provenance: "supervisor_observed", files_changed_count: opts.files_changed_count },
+    },
+    active_claim_cleanup: null,
+  };
 }
 
 describe("persisted supervisor execution episodes", () => {
@@ -126,5 +186,143 @@ describe("persisted supervisor execution episodes", () => {
     expect(outcome.journal_path).toEqual(
       await resolveSupervisorExecutionEpisodePath({ git_root: root, task_id: taskId }),
     );
+  });
+
+  it("projects supervisor-observed provider and execution usage into the journal", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["runner_state_observed"],
+          detail: "fixture runner completed",
+          exit_code: 0,
+          operation_result: {
+            kind: "runner_lifecycle" as const,
+            value: executedLifecycle({
+              decision,
+              metrics: { input_tokens: 3, output_tokens: 5, total_tokens: 8, duration_ms: 17 },
+              files_changed_count: 2,
+            }),
+          },
+        }),
+      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
+      budget: {
+        max_episodes: 2,
+        max_agent_runs: 2,
+        max_input_tokens: 10,
+        max_output_tokens: 10,
+        max_total_tokens: 20,
+        max_wall_time_ms: 1000,
+        max_changed_files: 10,
+        max_diff_lines: null,
+        max_no_progress_episodes: 2,
+      },
+    });
+
+    expect(outcome.journal.usage).toMatchObject({
+      episodes: 1,
+      agent_runs: 1,
+      input_tokens: 3,
+      output_tokens: 5,
+      total_tokens: 8,
+      wall_time_ms: 17,
+      changed_files: 2,
+    });
+    expect(outcome.journal.status).toBe("running");
+  });
+
+  it("keeps a CURATOR context run in the same journal and budget boundary", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1, "CURATOR");
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["runner_state_observed"],
+          detail: "context runner completed",
+          exit_code: 0,
+          operation_result: {
+            kind: "runner_lifecycle" as const,
+            value: executedLifecycle({
+              decision,
+              metrics: { input_tokens: 1, output_tokens: 1, total_tokens: 2, duration_ms: 1 },
+              files_changed_count: 1,
+            }),
+          },
+        }),
+      refresh: () => Promise.resolve(fixtureDecision(root, 2, "CURATOR")),
+      budget: {
+        max_episodes: 2,
+        max_agent_runs: 2,
+        max_input_tokens: 10,
+        max_output_tokens: 10,
+        max_total_tokens: 20,
+        max_wall_time_ms: 1000,
+        max_changed_files: 10,
+        max_diff_lines: null,
+        max_no_progress_episodes: 2,
+      },
+    });
+
+    expect(outcome.journal.operations).toMatchObject([
+      { role: "CURATOR", kind: "agent_episode", status: "completed" },
+    ]);
+  });
+
+  it("stops for review when an active budget has no trusted telemetry", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["runner_state_observed"],
+          detail: "fixture runner completed",
+          exit_code: 0,
+          operation_result: {
+            kind: "runner_lifecycle" as const,
+            value: executedLifecycle({
+              decision,
+              metrics: { duration_ms: 17 },
+              files_changed_count: 0,
+            }),
+          },
+        }),
+      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
+      budget: {
+        max_episodes: 2,
+        max_agent_runs: 2,
+        max_input_tokens: 10,
+        max_output_tokens: 10,
+        max_total_tokens: 20,
+        max_wall_time_ms: 1000,
+        max_changed_files: 10,
+        max_diff_lines: null,
+        max_no_progress_episodes: 2,
+      },
+    });
+
+    expect(outcome.journal).toMatchObject({
+      status: "stopped",
+      stop: {
+        reason: "human_review",
+        exhausted_dimensions: [
+          "input_tokens_telemetry",
+          "output_tokens_telemetry",
+          "total_tokens_telemetry",
+        ],
+      },
+    });
   });
 });

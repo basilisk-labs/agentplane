@@ -157,6 +157,39 @@ describe("Codex supervisor semantic result transport", () => {
     });
   });
 
+  it("charges visible and reasoning output from the completed-turn usage", () => {
+    const collector = createCodexResultEventCollector();
+
+    collector.observeStdoutLine(
+      JSON.stringify({
+        type: "turn.completed",
+        usage: {
+          input_tokens: 100,
+          output_tokens: 30,
+          reasoning_output_tokens: 20,
+        },
+      }),
+    );
+
+    expect(collector.readUsage()).toEqual({
+      input_tokens: 100,
+      output_tokens: 50,
+      total_tokens: 150,
+    });
+  });
+
+  it("rejects malformed completed-turn usage instead of recording zero", () => {
+    const collector = createCodexResultEventCollector();
+    collector.observeStdoutLine(
+      JSON.stringify({
+        type: "turn.completed",
+        usage: { input_tokens: 1, output_tokens: 2 },
+      }),
+    );
+
+    expect(() => collector.readUsage()).toThrow(/malformed provider usage/u);
+  });
+
   it("rejects an agent message emitted after turn completion", () => {
     const collector = createCodexResultEventCollector();
     collector.observeStdoutLine(JSON.stringify({ type: "turn.completed" }));

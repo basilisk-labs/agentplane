@@ -147,6 +147,7 @@ export {
   createSupervisorExecutionEpisodeJournal,
   digestSupervisorEpisodeValue,
   recoverSupervisorExecutionEpisodeJournal,
+  stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
   type SupervisorEpisodeBudgetStop,

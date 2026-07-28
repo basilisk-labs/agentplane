@@ -49,6 +49,16 @@ function readOptionalCodexAgentMessage(
   }
 }
 
+function readOptionalCodexUsage(
+  collector: ReturnType<typeof createCodexResultEventCollector>,
+): { input_tokens: number; output_tokens: number; total_tokens: number } | null {
+  try {
+    return collector.readUsage();
+  } catch {
+    return null;
+  }
+}
+
 function buildCodexArtifacts(
   opts: SupervisedRunnerArtifactInput,
 ): NonNullable<RunnerResult["artifacts"]> {
@@ -193,6 +203,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
       failureEventMessage: (result) => result.stderr_summary ?? "codex exec failed",
       buildBaseResult: ({ processResult, artifacts, output_paths }) => {
         const lastMessage = readOptionalCodexAgentMessage(resultEventCollector);
+        const providerUsage = readOptionalCodexUsage(resultEventCollector);
         const success = processResult.exit_code === 0;
         const ended_at = processResult.ended_at;
         const timedOut = processResult.timeout_reason !== null;
@@ -201,6 +212,7 @@ export class CodexRunnerAdapter implements RunnerAdapter {
           stdout_bytes: processResult.stdout_bytes,
           stderr_bytes: processResult.stderr_bytes,
           output_last_message_bytes: lastMessage === null ? null : byteLength(lastMessage),
+          ...(providerUsage ?? {}),
         };
         const baseResult = timedOut
           ? runnerAdapterFailureResult({

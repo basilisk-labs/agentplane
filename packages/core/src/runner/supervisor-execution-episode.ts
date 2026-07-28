@@ -276,6 +276,22 @@ function stoppedJournal(opts: {
   return createJournal(next);
 }
 
+/** Stop a completed or ready episode without inventing another operation. */
+export function stopSupervisorExecutionEpisode(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  reason: SupervisorEpisodeStopReason;
+  exhausted_dimensions?: readonly string[];
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  return stoppedJournal({
+    journal,
+    reason: opts.reason,
+    exhausted_dimensions: opts.exhausted_dimensions,
+    at: opts.now ?? new Date().toISOString(),
+  });
+}
+
 export function createSupervisorExecutionEpisodeJournal(input: {
   task_id: string;
   task_revision: number | null;

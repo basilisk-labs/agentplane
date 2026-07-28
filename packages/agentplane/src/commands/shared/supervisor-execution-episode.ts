@@ -8,9 +8,11 @@ import {
   migrateSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  stopSupervisorExecutionEpisode,
   type SupervisorEpisodeOperationKind,
   type SupervisorExecutionBudget,
   type SupervisorExecutionEpisodeJournal,
+  type SupervisorExecutionUsage,
 } from "@agentplaneorg/core/schemas";
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import { gitRevParse } from "@agentplaneorg/core/git";
@@ -37,7 +39,9 @@ const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
   max_total_tokens: 4_000_000,
   max_wall_time_ms: 4 * 60 * 60 * 1000,
   max_changed_files: 2000,
-  max_diff_lines: 100_000,
+  // The runner has no supervisor-observed line delta yet. A non-null default
+  // would falsely claim a hard limit while always charging zero.
+  max_diff_lines: null,
   max_no_progress_episodes: 3,
 };
 
@@ -100,6 +104,14 @@ function operationKind(decision: TaskRouteDecision): SupervisorEpisodeOperationK
   return "cli_operation";
 }
 
+function operationRole(opts: {
+  decision: TaskRouteDecision;
+  kind: SupervisorEpisodeOperationKind;
+}): "EXECUTOR" | "CURATOR" | "EVALUATOR" {
+  if (opts.kind === "evaluator_episode") return "EVALUATOR";
+  return opts.decision.task.owner.trim().toUpperCase() === "CURATOR" ? "CURATOR" : "EXECUTOR";
+}
+
 function stoppedExecution(opts: {
   decision: TaskRouteDecision;
   reason: string;
@@ -115,6 +127,48 @@ function stoppedExecution(opts: {
     audit: [],
     result: null,
     refreshed_decision: null,
+  };
+}
+
+function isNonNegativeInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
+function observedRunnerUsage(opts: {
+  result: Awaited<ReturnType<WorkflowSupervisorExecutor>>;
+  budget: SupervisorExecutionBudget;
+}): {
+  usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">>;
+  progress: unknown;
+  missing_dimensions: string[];
+} {
+  const lifecycle =
+    opts.result.operation_result?.kind === "runner_lifecycle"
+      ? opts.result.operation_result.value
+      : null;
+  if (lifecycle?.phase !== "executed" || lifecycle.result === null) {
+    return { usage: {}, progress: undefined, missing_dimensions: [] };
+  }
+  const metrics = lifecycle.result.metrics;
+  const evidence = lifecycle.result.evidence;
+  const usage: Partial<Omit<SupervisorExecutionUsage, "episodes" | "agent_runs">> = {};
+  const missing: string[] = [];
+  for (const field of ["input_tokens", "output_tokens", "total_tokens"] as const) {
+    if (isNonNegativeInteger(metrics?.[field])) usage[field] = metrics[field];
+    else if (opts.budget[`max_${field}`] !== null) missing.push(`${field}_telemetry`);
+  }
+  if (isNonNegativeInteger(metrics?.duration_ms)) usage.wall_time_ms = metrics.duration_ms;
+  else if (opts.budget.max_wall_time_ms !== null) missing.push("wall_time_ms_telemetry");
+  if (isNonNegativeInteger(evidence?.files_changed_count)) {
+    usage.changed_files = evidence.files_changed_count;
+  } else if (opts.budget.max_changed_files !== null) {
+    missing.push("changed_files_telemetry");
+  }
+  if (opts.budget.max_diff_lines !== null) missing.push("diff_lines_telemetry");
+  return {
+    usage,
+    progress: lifecycle.lifecycle.state_fingerprint,
+    missing_dimensions: missing.toSorted(),
   };
 }
 
@@ -162,6 +216,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     task_id: opts.decision.task.id,
   });
   const store = createSupervisorEpisodeStore(journalPath);
+  const budget = opts.budget ?? DEFAULT_SUPERVISOR_EXECUTION_BUDGET;
   const currentFingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
   const migration = migrateSupervisorExecutionEpisodeJournal({
     input: await store.read(),
@@ -169,7 +224,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       task_id: opts.decision.task.id,
       task_revision: opts.task_revision ?? null,
       state_fingerprint_digest: currentFingerprint,
-      budget: opts.budget ?? DEFAULT_SUPERVISOR_EXECUTION_BUDGET,
+      budget,
     },
   });
   let journal =
@@ -181,10 +236,11 @@ export async function supervisePersistedWorkflowEpisode(opts: {
       : migration.journal;
   await store.write(journal);
 
+  const kind = operationKind(opts.decision);
   const started = startSupervisorExecutionEpisode({
     journal,
-    role: operationKind(opts.decision) === "evaluator_episode" ? "EVALUATOR" : "EXECUTOR",
-    kind: operationKind(opts.decision),
+    role: operationRole({ decision: opts.decision, kind }),
+    kind,
     operation_identity: operation,
     precondition_fingerprint_digest: currentFingerprint,
     authority_ref: `workflow-operation:${operation.id}`,
@@ -215,6 +271,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     execute: async ({ operation: invoked }) => {
       try {
         const result = await opts.execute({ operation: invoked });
+        const observed = observedRunnerUsage({ result, budget: journal.budget });
         journal = completeSupervisorExecutionEpisode({
           journal,
           operation_key: started.operation_key,
@@ -223,9 +280,18 @@ export async function supervisePersistedWorkflowEpisode(opts: {
             observed_postconditions: result.observed_postconditions,
             exit_code: result.exit_code,
           },
+          usage: observed.usage,
+          ...(observed.progress === undefined ? {} : { progress: observed.progress }),
           failed: result.status !== "succeeded",
         });
-        completed = result.status === "succeeded";
+        if (result.status === "succeeded" && observed.missing_dimensions.length > 0) {
+          journal = stopSupervisorExecutionEpisode({
+            journal,
+            reason: "human_review",
+            exhausted_dimensions: observed.missing_dimensions,
+          });
+        }
+        completed = result.status === "succeeded" && journal.status === "running";
         await store.write(journal);
         return result;
       } catch (error) {
