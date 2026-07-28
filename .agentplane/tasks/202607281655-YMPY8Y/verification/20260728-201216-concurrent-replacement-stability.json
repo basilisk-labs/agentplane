@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607281655-YMPY8Y",
+  "recorded_at": "2026-07-28T20:12:16Z",
+  "scope": {
+    "implementation_commit": "8be946fefff686fb72c2ba3ef1f06c4077f11c5f",
+    "paths": [
+      "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+    ],
+    "objective": "Stabilize the concurrent replacement-process test by asserting the durable one-provider and persisted-journal invariants instead of nondeterministic competing process exit codes."
+  },
+  "checks": [
+    {
+      "id": "replacement-supervisor-tests",
+      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000 --reporter=verbose",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "2 test files and 22 tests passed. The independent-process case proves exactly one provider start, one failed original operation, and one linked completed replacement in the durable journal.",
+      "evidence_scope": "replacement evaluator execution and supervisor journal"
+    },
+    {
+      "id": "type-and-format",
+      "command": "bun run typecheck && bun run format:changed",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "Type checking passed and no changed files require formatting.",
+      "evidence_scope": "implementation safety"
+    },
+    {
+      "id": "policy-routing",
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "Policy routing validation passed.",
+      "evidence_scope": "repository policy contract"
+    },
+    {
+      "id": "post-integration-real-replacement",
+      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "status": "not_run",
+      "exit_code": null,
+      "result": "Deferred until integration into main. The release gate remains: retain the original operation_failed record and prove exactly one linked completed replacement episode.",
+      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
+    }
+  ]
+}
