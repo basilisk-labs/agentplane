@@ -1,10 +1,11 @@
 ---
 id: "202607282053-BYCY0Q"
 title: "Charge supervisor wall-time budget from observed execution"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -48,8 +49,8 @@ quality_review:
   findings:
     - "Замороженная проверка фиксирует команды и итоговые результаты, но не содержит необработанных журналов их выполнения."
 commit:
-  hash: "abba7d47a254194a5c0714268ad8c6731be2a4c1"
-  message: "🐛 BYCY0Q code: charge wall time from observed execution"
+  hash: "3458850edcaf1750bcf1b0d515c8037d29b26dc4"
+  message: "🐛 BYCY0Q code: record evaluator quality pass"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -57,6 +58,9 @@ comments:
   -
     author: "CODER"
     body: "Start: implementation commit abba7d47a charges wall-time only from supervisor-observed provider and runner execution."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -78,8 +82,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: focused supervisor/evaluator regression tests, typecheck, lint, format, policy routing, hotspots, and full test:fast passed on abba7d47a."
+  -
+    type: "status"
+    at: "2026-07-28T21:24:26.196Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T21:03:42.207Z"
+doc_updated_at: "2026-07-28T21:24:26.197Z"
 doc_updated_by: "CODER"
 description: "Make max_wall_time_ms charge cumulative supervisor-observed provider or runner duration rather than journal age, so external waits do not consume execution budget. Preserve durable episode history, terminal operation_failed rules, one explicit replacement authorization, and all other budget dimensions. Add deterministic core and evaluator coverage, then validate one post-integration replacement pilot if the journal remains eligible."
 sections:
@@ -137,6 +148,9 @@ sections:
       Impact: External waits no longer exhaust an otherwise unused evaluator episode budget.
       Resolution: Core and evaluator regression coverage preserve terminal failure history and single explicit replacement semantics.
 extensions:
+  implementation_commit:
+    hash: "c553cf67a0457761a6d4e1f9b1bcb373e29e099b"
+    message: "🐛 BYCY0Q code: record failed execution wall time"
   workflow_route_baseline:
     start_head_sha: "d1a9ac4c1ac9aee2e799ff2247b0f369be7f644c"
     version: 1

@@ -7,6 +7,13 @@
   "last_verified_diffstat_sha256": "sha256:cd9dcd5769d8a12a6988db86ee9e70578923b21a62192d14f6996bd59dc8d8cd",
   "pr_number": 4665,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4665",
+  "pre_merge_closure": {
+    "basis_commit": "3458850edcaf1750bcf1b0d515c8037d29b26dc4",
+    "branch": "task/202607282053-BYCY0Q/charge-supervisor-wall-time-budget-from-observed",
+    "pr_number": 4665,
+    "recorded_at": "2026-07-28T21:24:26.245Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607282053-BYCY0Q",
