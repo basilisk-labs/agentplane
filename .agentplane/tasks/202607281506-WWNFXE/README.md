@@ -1,10 +1,11 @@
 ---
 id: "202607281506-WWNFXE"
 title: "Enforce non-empty EVALUATOR pass findings"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -59,8 +60,8 @@ quality_review:
   findings:
     - "The post-rebase lifecycle update changes only task metadata; the semantic code target remains the evaluated commit and the live provider report supplies frozen evidence for the non-empty finding contract."
 commit:
-  hash: "8dfcc1e90cd75db180f4fac4dff418f91af90e80"
-  message: "Enforce evaluator pass findings"
+  hash: "21f0b21a56d85f458dd508d2e5b71797e14e4712"
+  message: "Record rebased evaluator findings review"
 comments:
   -
     author: "CODER"
@@ -71,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Rebased onto main after the evaluator schema repair; record the rewritten implementation SHA so the live EVALUATOR review and task metadata refer to the same code."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -99,8 +103,15 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rebased onto main after the evaluator schema repair; record the rewritten implementation SHA so the live EVALUATOR review and task metadata refer to the same code."
+  -
+    type: "status"
+    at: "2026-07-28T15:52:31.342Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T15:50:47.455Z"
+doc_updated_at: "2026-07-28T15:52:31.343Z"
 doc_updated_by: "CODER"
 description: "Quality-gate follow-up: align the Codex output schema and strict evaluator SGR validation with the branch_pr requirement that a pass review contains at least one evidence-backed finding, so an empty pass cannot leave a task permanently quality-stale."
 sections:
@@ -162,6 +173,9 @@ sections:
       Impact: Quality review becomes a finite gate rather than a stale-state loop.
       Resolution: Recorded local verification; the next EVALUATOR episode will exercise the live structured-output path.
 extensions:
+  implementation_commit:
+    hash: "e91beaf88aa26b2f0cb4b5e70fde44801708ccc8"
+    message: "Record rebased evaluator findings commit"
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
     version: 1
