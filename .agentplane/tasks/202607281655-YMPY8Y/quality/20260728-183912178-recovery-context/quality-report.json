@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T18:40:27.576Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "4aaa436b1a1dda5e314a5d93be8a6fcd21fd3b55",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "findings": [
+    "The frozen verification predates the evaluated implementation SHA and does not cover the compatibility-baseline changes added by the final commit."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "Run and record the critical compatibility and agent-efficiency baseline test against evaluated SHA 4aaa436b1a1dda5e314a5d93be8a6fcd21fd3b55.",
+    "Re-run and record the declared focused tests, typecheck, changed-file formatting, and routing validation after the final compatibility-baseline commit."
+  ],
+  "hidden_assumptions": [
+    "The compatibility-candidate ratchet is assumed to be mechanically correct despite being absent from the frozen command-level verification.",
+    "Checks recorded for implementation commit a6f138a66591 are assumed to remain valid after subsequent code-adjacent test and compatibility-contract changes."
+  ],
+  "residual_risks": [
+    "Refresh verification at evaluated SHA 4aaa436b1a1dda5e314a5d93be8a6fcd21fd3b55, including the changed critical compatibility test and baseline checker, then prepare a new frozen evaluator episode; retain the real 202607221850-8HBF4J replacement episode as the declared post-integration gate."
+  ]
+}

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -34,30 +34,31 @@ verification:
   note: "Rework verification passed on a6f138a66591 with exact command-level evidence; the real 8H replacement remains the explicit post-integration gate."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T18:26:18.970Z"
+  updated_at: "2026-07-28T18:40:27.576Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "9466b926c2d536264c028037d220d0f0cf8b8030"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "4aaa436b1a1dda5e314a5d93be8a6fcd21fd3b55"
   blueprint_digest: "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138"
   evidence_refs:
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607281655-YMPY8Y/README.md"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-observed-checks.json"
     - ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json"
-    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-183912178-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated SHA differs from the recorded implementation SHA only through refreshed task and evaluator evidence artifacts; the frozen diff shows no subsequent implementation-code drift, and the command-level record covers the replacement, negative, and concurrency-sensitive paths."
+    - "The frozen verification predates the evaluated implementation SHA and does not cover the compatibility-baseline changes added by the final commit."
 commit:
   hash: "9466b926c2d536264c028037d220d0f0cf8b8030"
   message: "📋 YMPY8Y task: refresh verification for evidence review"
