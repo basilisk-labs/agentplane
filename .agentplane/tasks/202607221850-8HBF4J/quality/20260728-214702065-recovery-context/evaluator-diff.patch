@@ -1,0 +1,48 @@
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/README.md b/.agentplane/tasks/202607221850-8HBF4J/README.md
+index efe56a623..de657f961 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/README.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/README.md
+@@ -4,7 +4,7 @@ title: "Supervise context assimilation post-processing"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 9
++revision: 10
+ origin:
+   system: "manual"
+ depends_on:
+@@ -42,11 +42,16 @@ verification:
+   updated_by: null
+   note: null
+   attempts: 0
+-commit: null
++commit:
++  hash: "47c01f6c33ca35c36d7b53d4d5a03d891384c1e3"
++  message: "Implement supervised context assimilation post-processing"
+ comments:
+   -
+     author: "CODER"
+     body: "Start: implement the supervised, resumable mechanical post-processing for context assimilation while preserving CURATOR semantic ownership."
++  -
++    author: "CODER"
++    body: "Implemented: supervised context assimilation post-processing; CURATOR emits only semantic SGR while CLI journals resumable mechanical phases and bounded evaluator rework. Local checks: typecheck; focused core/context tests (43); workflow coverage (52); compatibility contract; formatting and lint."
+ events:
+   -
+     type: "status"
+@@ -55,8 +60,15 @@ events:
+     from: "TODO"
+     to: "DOING"
+     note: "Start: implement the supervised, resumable mechanical post-processing for context assimilation while preserving CURATOR semantic ownership."
++  -
++    type: "status"
++    at: "2026-07-28T14:48:51.340Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implemented: supervised context assimilation post-processing; CURATOR emits only semantic SGR while CLI journals resumable mechanical phases and bounded evaluator rework. Local checks: typecheck; focused core/context tests (43); workflow coverage (52); compatibility contract; formatting and lint."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T13:53:08.890Z"
++doc_updated_at: "2026-07-28T14:48:51.340Z"
+ doc_updated_by: "CODER"
+ description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
+ sections:

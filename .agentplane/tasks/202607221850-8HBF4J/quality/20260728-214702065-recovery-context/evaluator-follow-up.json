@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607221850-8HBF4J-b81a02de3cc4125aac752fb8",
+  "task_id": "202607221850-8HBF4J",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Повторно подготовить и заморозить work order с полным diff реализации для evaluated_sha 20327772b02ab86f325009e4edcd4c313edc9d49 и исполняемыми результатами обязательных отрицательных, retry/recovery, stale-result и повторных semantic-rework сценариев.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Замороженный actual_diff не содержит изменений реализации: в нём есть только обновление README задачи, поэтому невозможно проверить поведение на evaluated_sha 20327772b02ab86f325009e4edcd4c313edc9d49.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3f5e94a81fb202a01c70b52897185158adef12aa52bdd6c2f4a9045615d1ed55",
+          "line": 1,
+          "lines": "1-48",
+          "section": "Полный замороженный diff"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
+          "sha256": "sha256:7c10c201d12e5cc56fa30d6d283ae0647f6a92a95ae86e18fdcc2bc86ca00311",
+          "line": 126,
+          "section": "Plan и Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
+          "line": 14,
+          "lines": "14-15",
+          "section": "verification_records и runner_history"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-result.json"
+}
