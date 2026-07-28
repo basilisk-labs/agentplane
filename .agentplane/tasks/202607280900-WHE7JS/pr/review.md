@@ -29,7 +29,9 @@ Created: 2026-07-28T09:02:22.621Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../cli/run-cli.core.task-next-action-json.test.ts | 133 +++++++++++++++++++++
+ .../src/commands/task/authority-grant.command.ts   |  16 ++-
+ 2 files changed, 147 insertions(+), 2 deletions(-)
 ```
 
 </details>
