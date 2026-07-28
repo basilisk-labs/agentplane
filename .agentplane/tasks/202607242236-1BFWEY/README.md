@@ -1,10 +1,10 @@
 ---
 id: "202607242236-1BFWEY"
 title: "Persist bounded supervisor execution episodes"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ verify:
   - "bun run schemas:check"
   - "bun run package:install-smoke"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-28T03:31:56.713Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -49,11 +49,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-28T03:32:16.664Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:50:15.041Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-28T03:32:16.664Z"
+doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
   Summary: |-
@@ -68,6 +78,40 @@ sections:
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: "- Revert supervisor budget/journal integration while preserving already persisted diagnostic records and the existing StateFingerprint, execution-receipt, and effect-in-doubt safety boundaries. - Retain version readers and migration recovery for any journal generation already written; never delete or reinterpret durable records during rollback. - Keep the feature behind an explicit compatibility boundary until schema migration, restart, rollback, and installed-package tests pass. - Re-run schema, lifecycle, guard, critical, type, install-smoke, and agent-efficiency checks before restoring supervised execution."
   Findings: "- The agentplane-loops runtime is design and test evidence for budgets, checkpoints, deterministic transitions, and bounded feedback only. This task must implement those properties inside the 0.7 typed supervisor and must not import the legacy public loop controller or create a second orchestration plane."
+extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-28T03:32:32.681Z"
+        authorityDigest: "sha256:b69dfcad80b66bb7c00b8f9bf4b1433fb86b01175b929d3243aca0d1d206b3bc"
+        digest: "sha256:148744c4892c1bb467b5c7be5591af31e9b8f3b3bec1502bf846f46dc92223e1"
+        operationDigest: "sha256:1c6ad6a08e48aaa62120a4c8be6265af957eb35b2abb05e8f9d7a980d156f9ff"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:0708ba9b2e477068202564d4cf4d624ede0b95ee67d484df8cf62bc8cd127f90"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:b69dfcad80b66bb7c00b8f9bf4b1433fb86b01175b929d3243aca0d1d206b3bc"
+        expiresAt: "2026-07-28T03:47:32.681Z"
+        id: "authority-85396e1a-dcc2-4347-a8ba-ddc4ae13de87"
+        issuedAt: "2026-07-28T03:32:32.681Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:1c6ad6a08e48aaa62120a4c8be6265af957eb35b2abb05e8f9d7a980d156f9ff"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:0708ba9b2e477068202564d4cf4d624ede0b95ee67d484df8cf62bc8cd127f90"
+        stateScopeDigest: "sha256:1cc9ede877816a55464cd799d60a0a69296c4f8bef5b55a63b36f4e6525b3970"
+    schemaVersion: 1
+  workflow_route_baseline:
+    start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
