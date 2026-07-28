@@ -4,7 +4,6 @@ import path from "node:path";
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
-  createSupervisorExecutionEpisodeJournal,
   migrateSupervisorExecutionEpisodeJournal,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
@@ -46,7 +45,7 @@ const DEFAULT_SUPERVISOR_EXECUTION_BUDGET: SupervisorExecutionBudget = {
   max_no_progress_episodes: 3,
 };
 
-type SupervisorEpisodeStore = {
+export type SupervisorEpisodeStore = {
   read: () => Promise<unknown>;
   write: (journal: SupervisorExecutionEpisodeJournal) => Promise<void>;
   path: string;
@@ -94,6 +93,47 @@ export function createSupervisorEpisodeStore(filePath: string): SupervisorEpisod
       await atomicWriteFile(filePath, `${JSON.stringify(journal, null, 2)}\n`, "utf8");
     },
   };
+}
+
+export function defaultSupervisorExecutionBudget(): SupervisorExecutionBudget {
+  return structuredClone(DEFAULT_SUPERVISOR_EXECUTION_BUDGET);
+}
+
+export async function openSupervisorExecutionEpisode(opts: {
+  git_root: string;
+  task_id: string;
+  task_revision: number | null;
+  state_fingerprint_digest: string;
+  budget?: SupervisorExecutionBudget;
+}): Promise<{
+  journal: SupervisorExecutionEpisodeJournal;
+  store: SupervisorEpisodeStore;
+  journal_path: string;
+}> {
+  const journalPath = await resolveSupervisorExecutionEpisodePath({
+    git_root: opts.git_root,
+    task_id: opts.task_id,
+  });
+  const store = createSupervisorEpisodeStore(journalPath);
+  const budget = opts.budget ?? defaultSupervisorExecutionBudget();
+  const migration = migrateSupervisorExecutionEpisodeJournal({
+    input: await store.read(),
+    create: {
+      task_id: opts.task_id,
+      task_revision: opts.task_revision,
+      state_fingerprint_digest: opts.state_fingerprint_digest,
+      budget,
+    },
+  });
+  const journal =
+    migration.source === "current"
+      ? recoverSupervisorExecutionEpisodeJournal({
+          journal: migration.journal,
+          state_fingerprint_digest: opts.state_fingerprint_digest,
+        })
+      : migration.journal;
+  await store.write(journal);
+  return { journal, store, journal_path: store.path };
 }
 
 function operationKind(decision: TaskRouteDecision): SupervisorEpisodeOperationKind {
@@ -191,52 +231,29 @@ export async function supervisePersistedWorkflowEpisode(opts: {
   journal: SupervisorExecutionEpisodeJournal;
   journal_path: string;
 }> {
+  const budget = opts.budget ?? defaultSupervisorExecutionBudget();
+  const currentFingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
+  const opened = await openSupervisorExecutionEpisode({
+    git_root: opts.git_root,
+    task_id: opts.decision.task.id,
+    task_revision: opts.task_revision ?? null,
+    state_fingerprint_digest: currentFingerprint,
+    budget,
+  });
+  let journal = opened.journal;
+  const store = opened.store;
   const operation =
     opts.decision.workflowStep.kind === "cli_operation"
       ? opts.decision.workflowStep.operation
       : null;
   if (!operation) {
     const inspected = await superviseWorkflowStep({ decision: opts.decision, mode: "inspect" });
-    const journal = createSupervisorExecutionEpisodeJournal({
-      task_id: opts.decision.task.id,
-      task_revision: opts.task_revision ?? null,
-      state_fingerprint_digest: opts.decision.workflowStep.preconditionFingerprint.digest,
-      budget: opts.budget ?? DEFAULT_SUPERVISOR_EXECUTION_BUDGET,
-    });
     return {
       execution: inspected,
       journal,
-      journal_path: await resolveSupervisorExecutionEpisodePath({
-        git_root: opts.git_root,
-        task_id: opts.decision.task.id,
-      }),
+      journal_path: opened.journal_path,
     };
   }
-
-  const journalPath = await resolveSupervisorExecutionEpisodePath({
-    git_root: opts.git_root,
-    task_id: opts.decision.task.id,
-  });
-  const store = createSupervisorEpisodeStore(journalPath);
-  const budget = opts.budget ?? DEFAULT_SUPERVISOR_EXECUTION_BUDGET;
-  const currentFingerprint = opts.decision.workflowStep.preconditionFingerprint.digest;
-  const migration = migrateSupervisorExecutionEpisodeJournal({
-    input: await store.read(),
-    create: {
-      task_id: opts.decision.task.id,
-      task_revision: opts.task_revision ?? null,
-      state_fingerprint_digest: currentFingerprint,
-      budget,
-    },
-  });
-  let journal =
-    migration.source === "current"
-      ? recoverSupervisorExecutionEpisodeJournal({
-          journal: migration.journal,
-          state_fingerprint_digest: currentFingerprint,
-        })
-      : migration.journal;
-  await store.write(journal);
 
   // A restart can observe the durable agent outcome before the route cursor
   // was advanced. Refresh and commit that observation first; launching a new
