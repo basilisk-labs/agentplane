@@ -24,13 +24,15 @@ import {
 } from "./ingest-sources.js";
 import { cmdContextReindex } from "./reindex.js";
 import {
+  claimContextIngestRunExecution,
+  releaseContextIngestRunExecution,
+} from "./ingest-run-execution-lease.js";
+import {
   acquireContextIngestRun,
   advanceContextIngestRun,
   assertContextIngestRunManifest,
   assertContextIngestRunSourceSet,
-  claimContextIngestRunExecution,
   contextIngestManifestFingerprint,
-  releaseContextIngestRunExecution,
   releaseContextIngestRunLease,
   type ContextIngestRunPhase,
 } from "./ingest-run-journal.js";

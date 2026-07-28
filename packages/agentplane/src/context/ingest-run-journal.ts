@@ -71,18 +71,6 @@ type ContextIngestRunLease = {
   version: 1;
 };
 
-type ContextIngestRunExecutionLease = {
-  pid: number;
-  run_id: string;
-  token: string;
-  version: 1;
-};
-
-export type ContextIngestRunExecutionClaim = Pick<
-  ContextIngestRunExecutionLease,
-  "run_id" | "token"
->;
-
 export type ContextIngestRunDiagnostic = {
   level: "issue" | "warning";
   message: string;
@@ -274,59 +262,6 @@ export async function releaseContextIngestRunLease(
   const lease = await readLease(activePath);
   if (lease?.run_id !== run.run_id) return;
   await unlink(activePath).catch((error: unknown) => {
-    if (isMissingError(error)) return;
-    throw error;
-  });
-}
-
-export async function claimContextIngestRunExecution(
-  root: string,
-  run: ContextIngestRunJournal,
-): Promise<ContextIngestRunExecutionClaim> {
-  const target = executionLeasePath(root, run.run_id);
-  await mkdir(path.dirname(target), { recursive: true });
-  const claim: ContextIngestRunExecutionLease = {
-    pid: process.pid,
-    run_id: run.run_id,
-    token: randomUUID(),
-    version: 1,
-  };
-  try {
-    await writeFile(target, `${JSON.stringify(claim, null, 2)}\n`, {
-      encoding: "utf8",
-      flag: "wx",
-    });
-    return claim;
-  } catch (error) {
-    if (!isAlreadyExistsError(error)) throw error;
-  }
-
-  const existing = await readExecutionLease(target);
-  if (existing === null) return await claimContextIngestRunExecution(root, run);
-  if (processIsAlive(existing.pid)) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message:
-        `context ingest run ${run.run_id} is already executing in process ${existing.pid}. ` +
-        "Wait for that execution to finish before retrying.",
-    });
-  }
-  await unlink(target).catch((cleanupError: unknown) => {
-    if (isMissingError(cleanupError)) return;
-    throw cleanupError;
-  });
-  return await claimContextIngestRunExecution(root, run);
-}
-
-export async function releaseContextIngestRunExecution(
-  root: string,
-  claim: ContextIngestRunExecutionClaim,
-): Promise<void> {
-  const target = executionLeasePath(root, claim.run_id);
-  const current = await readExecutionLease(target);
-  if (current?.token !== claim.token) return;
-  await unlink(target).catch((error: unknown) => {
     if (isMissingError(error)) return;
     throw error;
   });
@@ -538,29 +473,6 @@ async function readLease(activePath: string): Promise<ContextIngestRunLease | nu
   }
 }
 
-async function readExecutionLease(target: string): Promise<ContextIngestRunExecutionLease | null> {
-  try {
-    const raw = await readFile(target, "utf8");
-    const parsed = JSON.parse(raw) as Partial<ContextIngestRunExecutionLease>;
-    if (
-      parsed.version !== 1 ||
-      typeof parsed.pid !== "number" ||
-      typeof parsed.run_id !== "string" ||
-      typeof parsed.token !== "string"
-    ) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: `context ingest execution lease is malformed: ${target}`,
-      });
-    }
-    return parsed as ContextIngestRunExecutionLease;
-  } catch (error) {
-    if (isMissingError(error)) return null;
-    throw error;
-  }
-}
-
 function parseRun(raw: string): ContextIngestRunJournal {
   const parsed = JSON.parse(raw) as Partial<ContextIngestRunJournal>;
   if (
@@ -584,10 +496,6 @@ function parseRun(raw: string): ContextIngestRunJournal {
 
 function activeLeasePath(root: string): string {
   return path.join(root, ACTIVE_DIRECTORY, "source-set.lock.json");
-}
-
-function executionLeasePath(root: string, runId: string): string {
-  return path.join(root, ACTIVE_DIRECTORY, `${runId}.execution.json`);
 }
 
 function runPath(root: string, runId: string): string {
@@ -633,13 +541,4 @@ function isMissingError(error: unknown): boolean {
 
 function isNodeError(error: unknown, code: string): boolean {
   return typeof error === "object" && error !== null && "code" in error && error.code === code;
-}
-
-function processIsAlive(pid: number): boolean {
-  try {
-    process.kill(pid, 0);
-    return true;
-  } catch (error) {
-    return isNodeError(error, "EPERM");
-  }
 }
