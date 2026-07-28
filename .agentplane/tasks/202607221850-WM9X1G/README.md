@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 61
+revision: 62
 origin:
   system: "manual"
 depends_on:
@@ -39,15 +39,28 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  updated_at: "2026-07-28T11:56:35.735Z"
-  updated_by: "EVALUATOR"
-  note: "Verified: hosted Core CI passed for the fail-closed effect-resolution implementation; all commits after the reviewed implementation are task-local lifecycle artifacts."
+  provenance: "human_supplied"
+  updated_at: "2026-07-28T11:58:27.093Z"
+  updated_by: "HUMAN"
+  note: "Reviewed commit ca44988: legacy PR verification metadata was refreshed after the green hosted CI; implementation semantics remain unchanged from reviewed commit bc2a760."
   evaluated_sha: "2178f007a461564a29c8e7005adb38e23d1aa082"
   blueprint_digest: "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
   evidence_refs:
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-115826937-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-115826937-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-115826937-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-115826937-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221850-WM9X1G/README.md"
-    - "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-WM9X1G-journal-resumable-context-ingestion-phases/.agentplane/tasks/202607221850-WM9X1G/blueprint/resolved-snapshot.json"
-  findings: []
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-115826937-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-115826937-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-115826937-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "commit:ca44988; hosted Core CI 30356207415; checks: verify-static, verify-unit, test-windows, verify-cli-critical"
+  findings:
+    - "The only new committed paths are task-local verification and PR artifacts. The fail-closed active-claim logic remains bound to stable null, and all hosted required checks passed on the published implementation head."
 commit:
   hash: "8571f318229cc3f21af02ad411ef3432d5e6a907"
   message: "🚧 WM9X1G task: record final pre-merge closure authority"
