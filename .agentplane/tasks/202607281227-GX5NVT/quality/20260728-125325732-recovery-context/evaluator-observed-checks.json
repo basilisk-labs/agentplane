@@ -1,0 +1,12 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T12:41:39.128Z",
+    "updated_by": "TESTER",
+    "note": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/evaluator/evaluator-episode.stdin.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts; Result: pass (2 files, 5 tests), deterministic EPIPE becomes stdin_write_failure with no unhandled error. Command: bun run typecheck; Result: pass. Command: bun run test:fast; Result: pass (480 files, 3345 tests) with no unhandled errors. Scope: evaluator stdin dispatch and repository fast regression suite. Residual risk: hosted PR verification remains required."
+  },
+  "runner_history": []
+}
