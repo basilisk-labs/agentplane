@@ -15,7 +15,7 @@ import { describe, expect, it } from "vitest";
 import { runCli } from "../../cli/run-cli.js";
 import { projectTaskBriefFromPreparedWorkOrder } from "../../commands/task/brief-model.js";
 import { routePacket } from "../../commands/hermes/hermes-runtime.js";
-import { loadCommandContext } from "../../commands/shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
 import {
   evaluatePreparedAgentWorkOrderReadiness,
   prepareAgentWorkOrder,
@@ -31,7 +31,12 @@ const execFileAsync = promisify(execFile);
 type WorkOrderView = {
   work_order: {
     work_order_id: string;
-    state_fingerprint: unknown;
+    task: {
+      revision: number;
+    };
+    state_fingerprint: {
+      task_revision: number | null;
+    };
     verification_intent: unknown;
   };
   work_order_preparation: {
@@ -89,6 +94,15 @@ async function captureFailure(argv: string[]): Promise<{ code: number; stderr: s
   try {
     const code = await runCli(argv);
     return { code, stderr: io.stderr };
+  } finally {
+    io.restore();
+  }
+}
+
+async function runCliExpectSuccess(argv: string[]): Promise<void> {
+  const io = captureStdIO();
+  try {
+    expect(await runCli(argv)).toBe(0);
   } finally {
     io.restore();
   }
@@ -255,6 +269,49 @@ describe("AgentWorkOrder v2 surface integration", () => {
         expectSnakeCaseOnly(view.work_order_preparation);
       }
     }
+  });
+
+  it("prepares from the task branch snapshot when next-action runs from the base checkout", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = await createPreparedTask(root, "branch_pr");
+    const worktree = await createBranchPrTaskWorktree(root, taskId);
+    const baseContext = await loadCommandContext({ cwd: root, rootOverride: root });
+    const baseTask = await loadTaskFromContext({ ctx: baseContext, taskId });
+
+    await runCliExpectSuccess([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "Advance the task snapshot in the task worktree.",
+      "--updated-by",
+      "PLANNER",
+      "--root",
+      worktree,
+    ]);
+    await execFileAsync("git", ["add", ".agentplane/tasks", "--all"], { cwd: worktree });
+    await execFileAsync("git", ["commit", "-m", "test: advance task branch snapshot"], {
+      cwd: worktree,
+    });
+
+    const branchTask = await loadTaskFromContext({
+      ctx: baseContext,
+      taskId,
+      preferBranchSnapshot: true,
+    });
+    expect(branchTask.revision).toBeGreaterThan(baseTask.revision ?? 0);
+
+    const nextAction = (await captureJsonRun([
+      "task",
+      "next-action",
+      taskId,
+      "--json",
+      "--root",
+      root,
+    ])) as WorkOrderView;
+    expect(nextAction.work_order.task.revision).toBe(branchTask.revision);
+    expect(nextAction.work_order.state_fingerprint.task_revision).toBe(branchTask.revision);
   });
 
   it("uses one explicit remote opt-in through every comparable work-order surface", async () => {

@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607280606-PTG9C7/prevent-self-invalidating-side-effect-authority",
+  "created_at": "2026-07-28T06:15:22.323Z",
+  "diffstat_sha256": "sha256:55500b8fdbe38fdfcafe9d9088d2757134902286c63245f80fc28a290a55833d",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607280606-PTG9C7",
+  "updated_at": "2026-07-28T06:15:22.323Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
