@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -53,8 +53,8 @@ quality_review:
   findings:
     - "The frozen branch-wide patch and durable verification records cover the complete multi-commit delta, merge-base provenance, binary and rename handling, no-change behavior, fail-closed base resolution, verification-write failure, and concurrent verification."
 commit:
-  hash: "994506204fdb80b681ca671603756be10947d06f"
-  message: "🐛 FT85MC code: fail closed on verification evidence"
+  hash: "f0632c5d77073c64faea1ef52b0bf2d32a4cdf26"
+  message: "✅ FT85MC quality: refresh closure review evidence"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -74,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -135,8 +138,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T22:31:18.877Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T22:28:38.227Z"
+doc_updated_at: "2026-07-28T22:31:18.878Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -301,6 +311,9 @@ sections:
       Impact: EVALUATOR receives complete branch evidence and machine-readable verification records instead of only the final commit delta.
       Resolution: Use the recorded verification artifacts as frozen evidence for the independent evaluator episode.
 extensions:
+  implementation_commit:
+    hash: "66cf0428771389535048a925bd152f4ac663fcdc"
+    message: "🐛 FT85MC task: pre-merge closure"
   workflow_route_baseline:
     start_head_sha: "7f44e71fa8dbe12987744e4442ba0110dc150090"
     version: 1
