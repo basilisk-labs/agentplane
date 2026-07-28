@@ -797,6 +797,24 @@ describe("evaluator run command", () => {
       `${JSON.stringify({ ...supportedRecord, scope_digest: "sha256:stale-scope" })}\n`,
       "utf8",
     );
+    await writeFile(
+      path.join(root, `.agentplane/tasks/${taskId}/verification/copied-from-other-task.json`),
+      `${JSON.stringify({ ...supportedRecord, task_id: "202605240900-OTHER" })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, `.agentplane/tasks/${taskId}/verification/tampered-details-record.json`),
+      `${JSON.stringify({
+        ...supportedRecord,
+        details: String(supportedRecord.details).replace("1 test file", "2 test files"),
+      })}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, `.agentplane/tasks/${taskId}/verification/unsupported-schema-record.json`),
+      `${JSON.stringify({ ...supportedRecord, schema_version: 2 })}\n`,
+      "utf8",
+    );
 
     const { prepared } = await prepareTypedReview(root, taskId);
     const verificationEvidence = prepared.work_order.evidence.filter(
@@ -816,6 +834,9 @@ describe("evaluator run command", () => {
     expect(currentVerificationEvidence.path).not.toContain("incomplete-current-record.json");
     expect(currentVerificationEvidence.path).not.toContain("stale-implementation-record.json");
     expect(currentVerificationEvidence.path).not.toContain("stale-scope-record.json");
+    expect(currentVerificationEvidence.path).not.toContain("copied-from-other-task.json");
+    expect(currentVerificationEvidence.path).not.toContain("tampered-details-record.json");
+    expect(currentVerificationEvidence.path).not.toContain("unsupported-schema-record.json");
     expect(record).toMatchObject({
       kind: "task_verification_record",
       task_id: taskId,

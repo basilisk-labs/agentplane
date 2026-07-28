@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 
@@ -32,6 +33,15 @@ function hasConcreteCheckDetails(details: unknown): boolean {
   });
 }
 
+function hasValidRecordDigest(record: Record<string, unknown>): boolean {
+  const { digest, ...payload } = record;
+  return (
+    typeof digest === "string" &&
+    /^sha256:[a-f0-9]{64}$/u.test(digest) &&
+    digest === sha256(JSON.stringify(canonicalizeJson(payload)))
+  );
+}
+
 function matchesCurrentVerification(
   raw: unknown,
   task: TaskData,
@@ -44,13 +54,16 @@ function matchesCurrentVerification(
   }
   const record = raw as Record<string, unknown>;
   return (
+    record.schema_version === 1 &&
     record.kind === "task_verification_record" &&
+    record.task_id === task.id &&
     record.recorded_at === verification.updated_at &&
     record.result === verification.state &&
     record.verifier === verification.updated_by &&
     record.note === verification.note &&
     record.implementation_sha === evaluatedSha &&
     record.scope_digest === scopeDigest &&
+    hasValidRecordDigest(record) &&
     hasConcreteCheckDetails(record.details)
   );
 }

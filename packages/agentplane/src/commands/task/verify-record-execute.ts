@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -215,7 +217,7 @@ async function recordVerificationResult(opts: {
         scope: verificationScope,
         scope_digest: sha256(verificationScope),
       };
-      const digest = sha256(JSON.stringify(record));
+      const digest = sha256(JSON.stringify(canonicalizeJson(record)));
       const verificationDir = path.join(
         resolved.gitRoot,
         config.paths.workflow_dir,
