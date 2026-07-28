@@ -31,7 +31,6 @@ import {
   reconcileStaleTerminalTaskRunnerActiveClaim,
   reconcileTerminalTaskRunnerActiveClaim,
   recordActiveClaimCleanupFailure,
-  type TaskRunnerActiveClaimCleanupDiagnostic,
 } from "./task-run-active-claim-runtime.js";
 import { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
 export { renderTaskRunnerBootstrap } from "./task-run-bootstrap.js";
