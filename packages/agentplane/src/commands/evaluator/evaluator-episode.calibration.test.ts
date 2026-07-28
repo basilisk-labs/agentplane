@@ -125,6 +125,7 @@ function provider(
       ended_at: "2026-07-27T00:00:01.000Z",
       stdout_bytes: 12,
       stderr_bytes: 0,
+      provider_usage: { input_tokens: 100, output_tokens: 50, total_tokens: 150 },
     });
   };
 }
@@ -166,12 +167,18 @@ describe("evaluator episode calibration", () => {
     const { command, prepared } = await prepare(root, taskId);
     let captured: Parameters<EvaluatorEpisodeProvider>[0] | null = null;
 
-    await executePreparedEvaluatorEpisode({
+    const episode = await executePreparedEvaluatorEpisode({
       ctx: command,
       prepared,
       executor: provider(result(prepared, "pass"), (invocation) => {
         captured = invocation;
       }),
+    });
+
+    expect(episode.receipt.provider_usage).toEqual({
+      input_tokens: 100,
+      output_tokens: 50,
+      total_tokens: 150,
     });
 
     expect(captured?.argv).toEqual([
