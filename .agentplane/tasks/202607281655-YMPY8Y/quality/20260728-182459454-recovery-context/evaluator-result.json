@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The evaluated SHA differs from the recorded implementation SHA only through refreshed task and evaluator evidence artifacts; the frozen diff shows no subsequent implementation-code drift, and the command-level record covers the replacement, negative, and concurrency-sensitive paths.",
+      "broken_invariant": "No implementation invariant is broken; verification remains applicable because production code is unchanged after the recorded implementation SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0f02fb38c8e54b2b513da4be4b5fa2cb5210b25c9a0bc36858f44da98eb20deb",
+          "section": "Diff from the prior reviewed revision"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+          "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad",
+          "section": "scope and checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:013b2937767cb37f20af8f70cd3529f00357c94b9ad45b5b99d2c08e67303bf2",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "After integration, execute the declared real replacement episode for task 202607221850-8HBF4J and confirm that the original operation_failed record remains intact and exactly one linked replacement completes."
+  ],
+  "hidden_assumptions": [
+    "The filesystem used for supervisor journals preserves the atomic-write and lock-directory semantics relied on by compare-and-swap.",
+    "The explicitly deferred real provider episode is an integration-stage gate and is not required to establish pre-integration semantic correctness."
+  ]
+}

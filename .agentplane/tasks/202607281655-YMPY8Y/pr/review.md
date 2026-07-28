@@ -6,7 +6,7 @@ Created: 2026-07-28T16:57:04.791Z
 
 - Task: `202607281655-YMPY8Y`
 - Title: Authorize replacement evaluator episodes after terminal failure
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t`
 - Canonical task record: `.agentplane/tasks/202607281655-YMPY8Y/README.md`
 

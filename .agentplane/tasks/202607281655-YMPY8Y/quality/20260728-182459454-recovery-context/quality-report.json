@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T18:26:18.970Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "9466b926c2d536264c028037d220d0f0cf8b8030",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "findings": [
+    "The evaluated SHA differs from the recorded implementation SHA only through refreshed task and evaluator evidence artifacts; the frozen diff shows no subsequent implementation-code drift, and the command-level record covers the replacement, negative, and concurrency-sensitive paths."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-182459454-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "After integration, execute the declared real replacement episode for task 202607221850-8HBF4J and confirm that the original operation_failed record remains intact and exactly one linked replacement completes."
+  ],
+  "hidden_assumptions": [
+    "The filesystem used for supervisor journals preserves the atomic-write and lock-directory semantics relied on by compare-and-swap.",
+    "The explicitly deferred real provider episode is an integration-stage gate and is not required to establish pre-integration semantic correctness."
+  ],
+  "residual_risks": []
+}
