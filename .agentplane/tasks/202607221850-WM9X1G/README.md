@@ -2,10 +2,10 @@
 id: "202607221850-WM9X1G"
 title: "Journal resumable context-ingestion phases"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "The P1 and P2 review fixes are already bound to commit 98b1aa740 and no subsequent source code change occurred."
 commit:
-  hash: "98b1aa7400a67c7277fac1cbbcbb992574e19433"
-  message: "fix: harden resumable context ingest"
+  hash: "5ddb55bdca6b6f2140a68462af573b49354c618d"
+  message: "chore: authorize context ingest rework closure"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -77,6 +77,9 @@ comments:
   -
     author: "CODER"
     body: "Review rework committed: serialize same-run execution, preserve unknown backend outcomes, fingerprint semantic input, and use payload task_id."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -124,8 +127,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Review rework verified: focused context suite 26 passed; critical CLI suite 11/11 chunks passed; lint, typecheck, task-state, routing, and diff checks passed."
+  -
+    type: "status"
+    at: "2026-07-28T08:33:48.894Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T08:32:17.341Z"
+doc_updated_at: "2026-07-28T08:33:48.894Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -387,8 +397,8 @@ extensions:
         stateScopeDigest: "sha256:f46c2a7afb2d3f53fa72c6919fc52064166ce5e229f2cd83ba26cd571e945890"
     schemaVersion: 1
   implementation_commit:
-    hash: "659c271881e5c312121f3163f3700ac83c062ec9"
-    message: "chore: record context ingest quality review"
+    hash: "22606dfb114fc274dd427efff859b73c9bf47196"
+    message: "chore: verify context ingest review rework"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
