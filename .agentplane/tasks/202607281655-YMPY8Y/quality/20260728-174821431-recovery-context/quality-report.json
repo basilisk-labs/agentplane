@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T17:49:12.152Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "0dddf82e3c55afff089c046796f9b2706d70643f",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "findings": [
+    "Replacement authorization and lineage are not enforced atomically by the supervisor journal state machine.",
+    "Frozen verification evidence does not substantiate the declared checks or the required real replacement episode."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607281655-YMPY8Y/README.md"
+  ],
+  "missing_tests": [
+    "A core state-machine test proving that preparing a replacement cannot be followed by an unbound or differently bound operation.",
+    "A test proving replacement_of_operation_key cannot be supplied through the generic start path without a matching terminal operation_failed authorization.",
+    "Command-level tests for --replacement rejection after effect_in_doubt and after each exhausted budget dimension.",
+    "The declared real read-only --replacement provider episode for task 202607221850-8HBF4J, with evidence that the original failed operation remains unchanged and no provider effect is replayed."
+  ],
+  "hidden_assumptions": [
+    "Only executeEvaluatorSupervisorEpisode will call the exported replacement preparation and generic start functions in the required sequence.",
+    "Passing --replacement constitutes sufficient durable authorization even though the journal does not persist a pending authorized replacement before the next operation starts.",
+    "A replacement cannot be interleaved with another caller or operation between journal preparation and operation start.",
+    "The verification summary accurately represents successful commands despite the frozen observed-checks artifact containing no command records."
+  ],
+  "residual_risks": [
+    "Make replacement authorization and lineage one atomic journal transition, or persist a pending replacement constraint that start must consume only for the exact failed operation key. Reject arbitrary replacement metadata on generic starts, add negative and concurrency/interleaving coverage, and provide frozen command-level check evidence; retain the real provider episode as a required post-integration proof if it cannot validly run before integration."
+  ]
+}

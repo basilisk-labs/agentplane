@@ -1,0 +1,1135 @@
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/README.md b/.agentplane/tasks/202607281655-YMPY8Y/README.md
+index 7045b7b0c..fb5e63318 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/README.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/README.md
+@@ -4,7 +4,7 @@ title: "Authorize replacement evaluator episodes after terminal failure"
+ status: "DOING"
+ priority: "med"
+ owner: "CODER"
+-revision: 4
++revision: 6
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -41,7 +41,7 @@ events:
+     to: "DOING"
+     note: "Start: add the explicit, auditable replacement evaluator path required to continue the blocked semantic review without replaying the failed provider operation."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T16:55:51.958Z"
++doc_updated_at: "2026-07-28T17:31:51.253Z"
+ doc_updated_by: "CODER"
+ description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
+ sections:
+@@ -54,11 +54,17 @@ sections:
+     - Out of scope: unrelated refactors not required for "Authorize replacement evaluator episodes after terminal failure".
+   Plan: "1. Inspect the terminal evaluator journal and existing provider boundary to define a distinct replacement operation, not a retry. 2. Add an explicit replacement-only execution path that preserves failed operation history and accumulated usage, starts a new bounded episode, and refuses effect_in_doubt or implicit replay. 3. Cover operation_failed replacement, terminal-effect rejection, default no-retry behavior, and command-level persistence. 4. Run focused supervisor/evaluator tests, typecheck, formatting, routing, and one real read-only replacement provider episode before publishing."
+   Verify Steps: |-
+-    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++    1. Run `bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000`.
++       Expected: default retry remains blocked; `--replacement` creates a distinct bounded evaluator episode linked to the failed operation; `effect_in_doubt` and exhausted budgets remain terminal.
+ 
+-    1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+-    2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+-    3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
++    2. Run `bun run typecheck && bun run format:changed`.
++       Expected: type and formatting gates pass.
++
++    3. Run `node .agentplane/policy/check-routing.mjs`.
++       Expected: policy routing validation passes.
++
++    4. After integration, run one real `--replacement` evaluator episode for `202607221850-8HBF4J`.
++       Expected: the original `operation_failed` record is retained and a distinct provider work order completes without replaying it.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
+     <!-- END VERIFICATION RESULTS -->
+@@ -89,11 +95,17 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
+ 
+ ## Verify Steps
+ 
+-PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++1. Run `bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000`.
++   Expected: default retry remains blocked; `--replacement` creates a distinct bounded evaluator episode linked to the failed operation; `effect_in_doubt` and exhausted budgets remain terminal.
++
++2. Run `bun run typecheck && bun run format:changed`.
++   Expected: type and formatting gates pass.
++
++3. Run `node .agentplane/policy/check-routing.mjs`.
++   Expected: policy routing validation passes.
+ 
+-1. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
+-2. Run the most relevant validation step for the `code` task. Expected: it succeeds without unexpected regressions in touched scope.
+-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
++4. After integration, run one real `--replacement` evaluator episode for `202607221850-8HBF4J`.
++   Expected: the original `operation_failed` record is retained and a distinct provider work order completes without replaying it.
+ 
+ ## Verification
+ 
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..88b8b74d7
+--- /dev/null
++++ b/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+@@ -0,0 +1,575 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607281655-YMPY8Y",
++    "title": "Authorize replacement evaluator episodes after terminal failure",
++    "description": "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review.",
++    "tags": [
++      "code",
++      "evaluator",
++      "recovery",
++      "refactor",
++      "supervisor",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607281655-YMPY8Y",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138"
++  }
++}
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+index e69de29bb..2d66ef8ef 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/diffstat.txt
+@@ -0,0 +1,8 @@
++ .../evaluator/evaluator-execute-supervisor.ts      | 29 ++++++++
++ .../evaluator/evaluator-execute.command.test.ts    | 42 ++++++++++-
++ .../src/commands/evaluator/evaluator.command.ts    |  1 +
++ .../src/commands/evaluator/evaluator.spec.ts       |  9 +++
++ .../runner/supervisor-execution-episode.test.ts    | 83 ++++++++++++++++++++++
++ .../src/runner/supervisor-execution-episode.ts     | 57 +++++++++++++++
++ packages/core/src/schemas/index.ts                 |  1 +
++ 7 files changed, 220 insertions(+), 2 deletions(-)
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+index 7c1dc915b..70149edc3 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/github-body.md
+@@ -22,12 +22,19 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T16:57:04.791Z
++- Updated: 2026-07-28T16:57:08.231Z
+ - Branch: task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../evaluator/evaluator-execute-supervisor.ts      | 29 ++++++++
++ .../evaluator/evaluator-execute.command.test.ts    | 42 ++++++++++-
++ .../src/commands/evaluator/evaluator.command.ts    |  1 +
++ .../src/commands/evaluator/evaluator.spec.ts       |  9 +++
++ .../runner/supervisor-execution-episode.test.ts    | 83 ++++++++++++++++++++++
++ .../src/runner/supervisor-execution-episode.ts     | 57 +++++++++++++++
++ packages/core/src/schemas/index.ts                 |  1 +
++ 7 files changed, 220 insertions(+), 2 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+index 0d87cc189..2ef21fb11 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t",
+   "created_at": "2026-07-28T16:57:04.791Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:f781747f7f2b3db82d6ba5b1021e7dc4635f93d4c3718cc18392a95e24983e25",
+   "last_verified_at": null,
++  "pr_number": 4664,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4664",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607281655-YMPY8Y",
+-  "updated_at": "2026-07-28T16:57:04.791Z",
++  "updated_at": "2026-07-28T16:57:08.231Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+index fe9534e5a..5a69aa411 100644
+--- a/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
++++ b/.agentplane/tasks/202607281655-YMPY8Y/pr/review.md
+@@ -24,12 +24,19 @@ Created: 2026-07-28T16:57:04.791Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T16:57:04.791Z
++- Updated: 2026-07-28T16:57:08.231Z
+ - Branch: task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../evaluator/evaluator-execute-supervisor.ts      | 29 ++++++++
++ .../evaluator/evaluator-execute.command.test.ts    | 42 ++++++++++-
++ .../src/commands/evaluator/evaluator.command.ts    |  1 +
++ .../src/commands/evaluator/evaluator.spec.ts       |  9 +++
++ .../runner/supervisor-execution-episode.test.ts    | 83 ++++++++++++++++++++++
++ .../src/runner/supervisor-execution-episode.ts     | 57 +++++++++++++++
++ packages/core/src/schemas/index.ts                 |  1 +
++ 7 files changed, 220 insertions(+), 2 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+index c13f3e0bb..f70fb3bcc 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ import {
+   completeSupervisorExecutionEpisode,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+   startSupervisorExecutionEpisode,
+   stopSupervisorExecutionEpisode,
+@@ -207,6 +208,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+   task: TaskData;
+   evaluator: EvaluatorModule;
+   task_id: string;
++  replacement: boolean;
+ }): Promise<EvaluatorSupervisorExecution> {
+   const decision = await buildTaskRouteDecision({
+     ctx: opts.command,
+@@ -223,6 +225,28 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+     recover_intent: false,
+   });
+   let journal = opened.journal;
++  let replacementOfOperationKey: string | null = null;
++  if (opts.replacement) {
++    const failedOperation = journal.operations.at(-1);
++    try {
++      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++        journal,
++        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      });
++    } catch (error) {
++      throw new CliError({
++        exitCode: 2,
++        code: "E_USAGE",
++        message:
++          "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
++        context: {
++          stop_reason: journal.stop?.reason ?? null,
++          cause: error instanceof Error ? error.message : String(error),
++        },
++      });
++    }
++    replacementOfOperationKey = failedOperation?.operation_key ?? null;
++  }
+   if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
+     journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+       journal,
+@@ -275,6 +299,9 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+       evaluator: opts.evaluator,
+       provenance: "evaluator_supplied",
+     });
++    const replacementBinding = replacementOfOperationKey
++      ? { replacement_of_operation_key: replacementOfOperationKey }
++      : {};
+     const start = () =>
+       startSupervisorExecutionEpisode({
+         journal,
+@@ -283,6 +310,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+         operation_identity: {
+           evaluator_id: prepared.work_order.evaluator.id,
+           work_order_id: prepared.work_order.work_order_id,
++          ...replacementBinding,
+         },
+         precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+         authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
+@@ -292,6 +320,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+           prepared.work_order_path,
+         ),
+         effect_ref: prepared.work_order.work_order_id,
++        ...replacementBinding,
+       });
+     let started = start();
+     if (started.status === "stopped" && started.stop.reason === "stale_state") {
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index 22c5131e0..bfe574412 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -83,13 +83,26 @@ async function replaceCodexWithFailure(fakeBin: string): Promise<void> {
+   await chmod(path.join(fakeBin, "codex"), 0o755);
+ }
+ 
+-async function runWithFakeCodex(root: string, taskId: string, fakeBin: string) {
++async function runWithFakeCodex(
++  root: string,
++  taskId: string,
++  fakeBin: string,
++  executeArgs: string[] = [],
++) {
+   const previous = process.env.PATH;
+   process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
+   try {
+     const io = captureStdIO();
+     try {
+-      const code = await runCli(["evaluator", "execute", taskId, "--json", "--root", root]);
++      const code = await runCli([
++        "evaluator",
++        "execute",
++        taskId,
++        ...executeArgs,
++        "--json",
++        "--root",
++        root,
++      ]);
+       return { code, stdout: io.stdout, stderr: io.stderr };
+     } finally {
+       io.restore();
+@@ -359,5 +372,30 @@ describe("evaluator execute supervisor episode", () => {
+     expect(retry.code).toBe(8);
+     const afterRetry = validateSupervisorExecutionEpisodeJournal(await store.read());
+     expect(afterRetry.usage).toMatchObject({ episodes: 1, agent_runs: 1 });
++
++    await installFakeCodex(root);
++    const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
++    expect(replacement.code, replacement.stderr).toBe(0);
++    expect(JSON.parse(replacement.stdout)).toMatchObject({
++      verdict: "pass",
++      supervisor_episode: {
++        status: "running",
++        cursor: { phase: "ready", operation_key: null },
++        usage: { episodes: 2, agent_runs: 2, total_tokens: 150 },
++      },
++    });
++    const replaced = validateSupervisorExecutionEpisodeJournal(await store.read());
++    expect(replaced.operations[0]).toEqual(recorded.operations[0]);
++    expect(replaced).toMatchObject({
++      operations: [
++        { status: "failed" },
++        {
++          role: "EVALUATOR",
++          kind: "evaluator_episode",
++          status: "completed",
++          replacement_of_operation_key: recorded.operations[0]?.operation_key,
++        },
++      ],
++    });
+   });
+ });
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.command.ts b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+index b4efdad20..0815bc5e1 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.command.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.command.ts
+@@ -306,6 +306,7 @@ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async
+     task,
+     evaluator,
+     task_id: p.taskId,
++    replacement: p.replacement,
+   });
+ 
+   const currentTask = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator.spec.ts b/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
+index 87c77ebac..5d23df637 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator.spec.ts
+@@ -48,6 +48,7 @@ export type EvaluatorApplyParsed = {
+ export type EvaluatorExecuteParsed = {
+   taskId: string;
+   evaluator: string;
++  replacement: boolean;
+   json: boolean;
+ };
+ 
+@@ -176,6 +177,13 @@ export const evaluatorExecuteSpec: CommandSpec<EvaluatorExecuteParsed> = {
+       default: "recovery-context",
+       description: "Evaluator prompt module id to use.",
+     },
++    {
++      kind: "boolean",
++      name: "replacement",
++      default: false,
++      description:
++        "Explicitly start a new bounded evaluator operation after terminal operation_failed; never reopens the failed operation or effect_in_doubt.",
++    },
+     {
+       kind: "boolean",
+       name: "json",
+@@ -196,6 +204,7 @@ export const evaluatorExecuteSpec: CommandSpec<EvaluatorExecuteParsed> = {
+     taskId: String(raw.args.taskId ?? "").trim(),
+     evaluator:
+       typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
++    replacement: raw.opts.replacement === true,
+     json: raw.opts.json === true,
+   }),
+ };
+diff --git a/packages/core/src/runner/supervisor-execution-episode.test.ts b/packages/core/src/runner/supervisor-execution-episode.test.ts
+index f48c76918..f37343870 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.test.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.test.ts
+@@ -4,6 +4,7 @@ import {
+   completeSupervisorExecutionEpisode,
+   createSupervisorExecutionEpisodeJournal,
+   advanceSupervisorExecutionEpisodeState,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   recoverSupervisorExecutionEpisodeJournal,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+   startSupervisorExecutionEpisode,
+@@ -122,6 +123,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
+     const next = start({ journal: completed, now: "2026-07-28T00:00:02.000Z" });
+ 
+     expect(completed.usage).toMatchObject({ episodes: 1, agent_runs: 1, total_tokens: 15 });
++    expect(prepared.journal.operations[0]).not.toHaveProperty("replacement_of_operation_key");
+     expect(next).toMatchObject({
+       status: "stopped",
+       stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
+@@ -284,6 +286,87 @@ describe("SupervisorExecutionEpisodeJournal", () => {
+     }
+   });
+ 
++  it("opens an explicit replacement after a known failure without changing its history", () => {
++    const first = start({ journal: journal() });
++    if (first.status !== "started") throw new Error("expected started episode");
++    const failed = completeSupervisorExecutionEpisode({
++      journal: first.journal,
++      operation_key: first.operation_key,
++      result: { classification: "provider_failed_before_typed_result" },
++      failed: true,
++      now: "2026-07-28T00:00:01.000Z",
++    });
++    const failedOperation = failed.operations[0];
++    if (!failedOperation) throw new Error("expected failed operation");
++
++    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++      journal: failed,
++      state_fingerprint_digest: NEXT_FINGERPRINT,
++      now: "2026-07-28T00:00:02.000Z",
++    });
++    const next = startSupervisorExecutionEpisode({
++      journal: replacement,
++      role: "EVALUATOR",
++      kind: "evaluator_episode",
++      operation_identity: { replacement_of_operation_key: failedOperation.operation_key },
++      precondition_fingerprint_digest: NEXT_FINGERPRINT,
++      replacement_of_operation_key: failedOperation.operation_key,
++      now: "2026-07-28T00:00:03.000Z",
++    });
++    if (next.status !== "started") throw new Error("expected replacement operation");
++
++    expect(replacement).toMatchObject({
++      status: "running",
++      stop: null,
++      cursor: { phase: "ready", operation_key: null },
++      state_fingerprint_digest: NEXT_FINGERPRINT,
++      usage: { episodes: 1, agent_runs: 1 },
++      operations: [failedOperation],
++    });
++    expect(next.journal).toMatchObject({
++      usage: { episodes: 2, agent_runs: 2 },
++      operations: [
++        failedOperation,
++        {
++          status: "intent",
++          replacement_of_operation_key: failedOperation.operation_key,
++        },
++      ],
++    });
++  });
++
++  it("rejects replacement for effect-in-doubt or an exhausted known failure", () => {
++    const first = start({ journal: journal() });
++    if (first.status !== "started") throw new Error("expected started episode");
++    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
++      journal: first.journal,
++      state_fingerprint_digest: FINGERPRINT,
++      now: "2026-07-28T00:00:01.000Z",
++    });
++    const limited = start({ journal: journal({ max_episodes: 1, max_agent_runs: 1 }) });
++    if (limited.status !== "started") throw new Error("expected limited episode");
++    const exhaustedFailure = completeSupervisorExecutionEpisode({
++      journal: limited.journal,
++      operation_key: limited.operation_key,
++      result: { classification: "provider_failed_before_typed_result" },
++      failed: true,
++      now: "2026-07-28T00:00:01.000Z",
++    });
++
++    expect(() =>
++      prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++        journal: effectInDoubt,
++        state_fingerprint_digest: NEXT_FINGERPRINT,
++      }),
++    ).toThrow("requires a stopped operation_failed journal");
++    expect(() =>
++      prepareReplacementSupervisorExecutionEpisodeAfterFailure({
++        journal: exhaustedFailure,
++        state_fingerprint_digest: NEXT_FINGERPRINT,
++      }),
++    ).toThrow("requires remaining budget");
++  });
++
+   it("accounts for bounded feedback without storing its raw semantic content", () => {
+     const first = start({ journal: journal() });
+     if (first.status !== "started") throw new Error("expected started episode");
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index 698463fa9..dfdc74b78 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -92,6 +92,7 @@ const SUPERVISOR_EPISODE_OPERATION_ZOD_SCHEMA = z
+     authority_digest: SHA256_DIGEST_SCHEMA.nullable(),
+     work_order_ref: NON_EMPTY_STRING.nullable(),
+     effect_ref: NON_EMPTY_STRING.nullable(),
++    replacement_of_operation_key: SHA256_DIGEST_SCHEMA.nullable().optional(),
+     status: z.enum(SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES),
+     result_digest: SHA256_DIGEST_SCHEMA.nullable(),
+     postcondition_fingerprint_digest: SHA256_DIGEST_SCHEMA.nullable(),
+@@ -372,10 +373,15 @@ export function startSupervisorExecutionEpisode(opts: {
+   authority_digest?: string | null;
+   work_order_ref?: string | null;
+   effect_ref?: string | null;
++  replacement_of_operation_key?: string | null;
+   now?: string;
+ }): SupervisorEpisodeStartResult {
+   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+   const now = opts.now ?? new Date().toISOString();
++  const replacementReference = opts.replacement_of_operation_key?.trim();
++  const replacementBinding = replacementReference
++    ? { replacement_of_operation_key: replacementReference }
++    : {};
+   if (journal.status === "stopped") {
+     return {
+       status: "stopped",
+@@ -429,6 +435,7 @@ export function startSupervisorExecutionEpisode(opts: {
+     authority_digest: opts.authority_digest ?? null,
+     work_order_ref: opts.work_order_ref?.trim() ?? null,
+     effect_ref: opts.effect_ref?.trim() ?? null,
++    ...replacementBinding,
+   });
+   const operation = {
+     sequence: journal.operations.length + 1,
+@@ -441,6 +448,7 @@ export function startSupervisorExecutionEpisode(opts: {
+     authority_digest: opts.authority_digest ?? null,
+     work_order_ref: opts.work_order_ref?.trim() ?? null,
+     effect_ref: opts.effect_ref?.trim() ?? null,
++    ...replacementBinding,
+     status: "intent" as const,
+     result_digest: null,
+     postcondition_fingerprint_digest: null,
+@@ -628,3 +636,52 @@ export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
+   };
+   return createJournal(next);
+ }
++
++/**
++ * Open a distinct, explicitly authorized operation after a provider failure.
++ * The failed operation remains in the journal and the next start binds its
++ * replacement to that operation key. This is deliberately narrower than a
++ * retry: ambiguous effects and exhausted budgets stay terminal.
++ */
++export function prepareReplacementSupervisorExecutionEpisodeAfterFailure(opts: {
++  journal: SupervisorExecutionEpisodeJournal;
++  state_fingerprint_digest: string;
++  now?: string;
++}): SupervisorExecutionEpisodeJournal {
++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
++  const now = opts.now ?? new Date().toISOString();
++  const last = journal.operations.at(-1);
++  if (
++    journal.status !== "stopped" ||
++    journal.stop?.reason !== "operation_failed" ||
++    journal.cursor.phase !== "stopped" ||
++    last?.status !== "failed" ||
++    journal.stop?.operation_key !== last?.operation_key
++  ) {
++    throw new Error(
++      "Supervisor episode replacement requires a stopped operation_failed journal with a failed latest operation.",
++    );
++  }
++  const exhausted = exhaustedDimensions({
++    budget: journal.budget,
++    usage: journal.usage,
++    next_kind: last.kind,
++    now,
++    started_at: journal.started_at,
++  });
++  if (exhausted.length > 0) {
++    throw new Error(
++      `Supervisor episode replacement requires remaining budget; exhausted: ${exhausted.join(", ")}.`,
++    );
++  }
++  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
++    ...journal,
++    state_fingerprint_digest: opts.state_fingerprint_digest,
++    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
++    status: "running",
++    stop: null,
++    updated_at: now,
++    previous_digest: journal.digest,
++  };
++  return createJournal(next);
++}
+diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
+index 2ae89f4ac..185bdb29e 100644
+--- a/packages/core/src/schemas/index.ts
++++ b/packages/core/src/schemas/index.ts
+@@ -146,6 +146,7 @@ export {
+   completeSupervisorExecutionEpisode,
+   createSupervisorExecutionEpisodeJournal,
+   digestSupervisorEpisodeValue,
++  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
+   recoverSupervisorExecutionEpisodeJournal,
+   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
+   stopSupervisorExecutionEpisode,

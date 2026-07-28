@@ -4,7 +4,7 @@ title: "Authorize replacement evaluator episodes after terminal failure"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -15,19 +15,52 @@ tags:
   - "refactor"
   - "supervisor"
   - "v0.7"
-verify: []
+verify:
+  - "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000"
+  - "bun run typecheck"
+  - "bun run format:changed"
+  - "node .agentplane/policy/check-routing.mjs"
+  - "agentplane evaluator execute 202607221850-8HBF4J --replacement"
 plan_approval:
   state: "approved"
   updated_at: "2026-07-28T16:55:45.384Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-28T17:45:35.786Z"
+  updated_by: "TESTER"
+  note: "Focused replacement coverage passed: 19 tests; typecheck, changed-format, policy routing, and diff check passed. The required live replacement evaluator episode for 202607221850-8HBF4J remains an explicit post-integration proof."
   attempts: 0
-commit: null
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-28T17:49:12.152Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "0dddf82e3c55afff089c046796f9b2706d70643f"
+  blueprint_digest: "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138"
+  evidence_refs:
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/README.md"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Replacement authorization and lineage are not enforced atomically by the supervisor journal state machine."
+    - "Frozen verification evidence does not substantiate the declared checks or the required real replacement episode."
+commit:
+  hash: "0dddf82e3c55afff089c046796f9b2706d70643f"
+  message: "🚧 YMPY8Y task: authorize replacement evaluator episode"
 comments:
   -
     author: "CODER"
@@ -40,8 +73,20 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: add the explicit, auditable replacement evaluator path required to continue the blocked semantic review without replaying the failed provider operation."
+  -
+    type: "status"
+    at: "2026-07-28T17:44:41.959Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+  -
+    type: "verify"
+    at: "2026-07-28T17:45:35.786Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused replacement coverage passed: 19 tests; typecheck, changed-format, policy routing, and diff check passed. The required live replacement evaluator episode for 202607221850-8HBF4J remains an explicit post-integration proof."
 doc_version: 3
-doc_updated_at: "2026-07-28T17:31:51.253Z"
+doc_updated_at: "2026-07-28T17:45:36.485Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -67,11 +112,44 @@ sections:
        Expected: the original `operation_failed` record is retained and a distinct provider work order completes without replaying it.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-28T17:45:35.786Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused replacement coverage passed: 19 tests; typecheck, changed-format, policy routing, and diff check passed. The required live replacement evaluator episode for 202607221850-8HBF4J remains an explicit post-integration proof.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T17:44:41.959Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+    - old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607281655-YMPY8Y
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Default retry remains terminal; explicit replacement records a distinct linked operation; effect_in_doubt and exhausted budgets are rejected.
+      Impact: A known provider failure can be replaced only through an auditable bounded operation without mutating prior history.
+      Resolution: Local verification is recorded; run the real replacement provider episode after integration before closing the dependent recovery task.
 extensions:
   workflow_route_baseline:
     start_head_sha: "a9b9d6a834893013c30b5046d0c618cb23553638"
@@ -110,6 +188,36 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-28T17:45:35.786Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused replacement coverage passed: 19 tests; typecheck, changed-format, policy routing, and diff check passed. The required live replacement evaluator episode for 202607221850-8HBF4J remains an explicit post-integration proof.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T17:44:41.959Z, excerpt_hash=sha256:0f087dbea8b3ad632e23903978529270f8b4914cdb0875b69280177860432135
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281655-YMPY8Y-authorize-replacement-evaluator-episodes-after-t/.agentplane/tasks/202607281655-YMPY8Y/blueprint/resolved-snapshot.json
+- old_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- current_digest: 34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607281655-YMPY8Y
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607281655-YMPY8Y
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -118,3 +226,7 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Default retry remains terminal; explicit replacement records a distinct linked operation; effect_in_doubt and exhausted budgets are rejected.
+  Impact: A known provider failure can be replaced only through an auditable bounded operation without mutating prior history.
+  Resolution: Local verification is recorded; run the real replacement provider episode after integration before closing the dependent recovery task.

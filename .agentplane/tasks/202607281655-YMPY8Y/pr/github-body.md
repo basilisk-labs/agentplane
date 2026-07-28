@@ -15,8 +15,14 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Focused replacement coverage passed: 19 tests; typecheck, changed-format, policy routing, and diff
+check passed. The required live replacement evaluator episode for 202607221850-8HBF4J remains an
+explicit post-integration proof.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -27,14 +33,14 @@ Allow an explicitly authorized replacement evaluator episode after a terminal op
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator/evaluator-execute-supervisor.ts      | 29 ++++++++
- .../evaluator/evaluator-execute.command.test.ts    | 42 ++++++++++-
- .../src/commands/evaluator/evaluator.command.ts    |  1 +
- .../src/commands/evaluator/evaluator.spec.ts       |  9 +++
- .../runner/supervisor-execution-episode.test.ts    | 83 ++++++++++++++++++++++
- .../src/runner/supervisor-execution-episode.ts     | 57 +++++++++++++++
- packages/core/src/schemas/index.ts                 |  1 +
- 7 files changed, 220 insertions(+), 2 deletions(-)
+ .../evaluator/evaluator-execute-supervisor.ts      |  29 +++++
+ .../evaluator/evaluator-execute.command.test.ts    |  96 +++++++++++++++-
+ .../src/commands/evaluator/evaluator.command.ts    |   1 +
+ .../src/commands/evaluator/evaluator.spec.ts       |   9 ++
+ .../runner/supervisor-execution-episode.test.ts    | 128 +++++++++++++++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 102 +++++++++++++++-
+ packages/core/src/schemas/index.ts                 |   1 +
+ 7 files changed, 363 insertions(+), 3 deletions(-)
 ```
 
 </details>

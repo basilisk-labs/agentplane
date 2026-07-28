@@ -287,7 +287,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
   });
 
   it("opens an explicit replacement after a known failure without changing its history", () => {
-    const first = start({ journal: journal() });
+    const first = start({ journal: journal(), kind: "evaluator_episode" });
     if (first.status !== "started") throw new Error("expected started episode");
     const failed = completeSupervisorExecutionEpisode({
       journal: first.journal,
@@ -304,6 +304,37 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       state_fingerprint_digest: NEXT_FINGERPRINT,
       now: "2026-07-28T00:00:02.000Z",
     });
+    const startReplacement = (
+      opts: {
+        replacement_of_operation_key?: string;
+        role?: "EVALUATOR" | "EXECUTOR";
+        kind?: "evaluator_episode" | "agent_episode";
+      } = {},
+    ) =>
+      startSupervisorExecutionEpisode({
+        journal: replacement,
+        role: opts.role ?? "EVALUATOR",
+        kind: opts.kind ?? "evaluator_episode",
+        operation_identity: {
+          replacement_of_operation_key: opts.replacement_of_operation_key ?? null,
+        },
+        precondition_fingerprint_digest: NEXT_FINGERPRINT,
+        ...(opts.replacement_of_operation_key
+          ? { replacement_of_operation_key: opts.replacement_of_operation_key }
+          : {}),
+        now: "2026-07-28T00:00:03.000Z",
+      });
+    expect(() => startReplacement()).toThrow("requires the exact pending failed operation");
+    expect(() => startReplacement({ replacement_of_operation_key: NEXT_FINGERPRINT })).toThrow(
+      "requires the exact pending failed operation",
+    );
+    expect(() =>
+      startReplacement({
+        replacement_of_operation_key: failedOperation.operation_key,
+        role: "EXECUTOR",
+        kind: "agent_episode",
+      }),
+    ).toThrow("requires the exact pending failed operation");
     const next = startSupervisorExecutionEpisode({
       journal: replacement,
       role: "EVALUATOR",
@@ -318,7 +349,11 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     expect(replacement).toMatchObject({
       status: "running",
       stop: null,
-      cursor: { phase: "ready", operation_key: null },
+      cursor: {
+        phase: "ready",
+        operation_key: null,
+        replacement_of_operation_key: failedOperation.operation_key,
+      },
       state_fingerprint_digest: NEXT_FINGERPRINT,
       usage: { episodes: 1, agent_runs: 1 },
       operations: [failedOperation],
@@ -333,6 +368,16 @@ describe("SupervisorExecutionEpisodeJournal", () => {
         },
       ],
     });
+    expect(() =>
+      startSupervisorExecutionEpisode({
+        journal: journal(),
+        role: "EVALUATOR",
+        kind: "evaluator_episode",
+        operation_identity: { replacement_of_operation_key: failedOperation.operation_key },
+        precondition_fingerprint_digest: FINGERPRINT,
+        replacement_of_operation_key: failedOperation.operation_key,
+      }),
+    ).toThrow("requires a pending terminal operation_failed authorization");
   });
 
   it("rejects replacement for effect-in-doubt or an exhausted known failure", () => {

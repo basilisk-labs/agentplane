@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607281655-YMPY8Y-3d21c7bf8329e7ef78d478e4",
+  "task_id": "202607281655-YMPY8Y",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make replacement authorization and lineage one atomic journal transition, or persist a pending replacement constraint that start must consume only for the exact failed operation key. Reject arbitrary replacement metadata on generic starts, add negative and concurrency/interleaving coverage, and provide frozen command-level check evidence; retain the real provider episode as a required post-integration proof if it cannot validly run before integration.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Replacement authorization and lineage are not enforced atomically by the supervisor journal state machine.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:47c4e5ac9871ed501d79ded8b227fa7e1e0ce0794304c3ff112d8523e8468d18",
+          "line": 1030,
+          "lines": "1030-1124",
+          "section": "packages/core/src/runner/supervisor-execution-episode.ts"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "summary": "Frozen verification evidence does not substantiate the declared checks or the required real replacement episode.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:de27370a764f3016261ffa7020ada042209e14bbdf37f37ea86e938fd80be85e",
+          "line": 1,
+          "lines": "1-13",
+          "section": "observed checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:9b0a93cf8ade8920f7eb4da5cff4324bd16342827dfaa816076a026bbeb53caa",
+          "line": 104,
+          "lines": "104-109",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174821431-recovery-context/evaluator-result.json"
+}

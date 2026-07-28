@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Replacement authorization and lineage are not enforced by the supervisor journal state machine.",
+      "broken_invariant": "A replacement must be a distinct, explicitly authorized operation linked to the latest terminal failed operation. The preparation function converts the journal to an ordinary running/ready state, while startSupervisorExecutionEpisode accepts a missing, unrelated, or forged replacement_of_operation_key. Correct lineage therefore depends on caller discipline rather than a validated durable invariant.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:47c4e5ac9871ed501d79ded8b227fa7e1e0ce0794304c3ff112d8523e8468d18",
+          "section": "packages/core/src/runner/supervisor-execution-episode.ts and supervisor-execution-episode.test.ts"
+        }
+      ]
+    },
+    {
+      "id": "RCI-002",
+      "severity": "medium",
+      "summary": "Frozen verification evidence does not demonstrate the required real replacement episode or provide command-level check records.",
+      "broken_invariant": "The task requires focused checks plus one real read-only replacement provider episode, and the code DoD requires recorded command, result, evidence, and scope. The observed checks contain only a summary note, an empty declared_checks array, and no runner history; the task explicitly says the real episode remains pending.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-174557020-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:de27370a764f3016261ffa7020ada042209e14bbdf37f37ea86e938fd80be85e",
+          "section": "declared_checks, verification, runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/README.md",
+          "sha256": "sha256:659e8cce5defd094afcf22c8fc01c28af5ea91c1365d72973deb808cdf3d7a5d",
+          "section": "Verify Steps and Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "At the core state-machine boundary, prepare a replacement and then attempt to start without replacement_of_operation_key; the start must be rejected.",
+    "Attempt to start a replacement with a replacement_of_operation_key that does not equal the latest failed operation key; the start must be rejected.",
+    "Attempt to attach replacement_of_operation_key to a normal non-replacement episode; the start must be rejected.",
+    "Record and validate the required real read-only --replacement provider episode after integration, including preservation of the original failed operation and creation of a distinct linked work order."
+  ],
+  "hidden_assumptions": [
+    "Only executeEvaluatorSupervisorEpisode will call the exported replacement preparation and start APIs.",
+    "Passing --replacement is sufficient authorization even though no durable replacement-ready state or authorization record is encoded before start.",
+    "Callers will always copy the latest failed operation key correctly into both operation_identity and replacement_of_operation_key.",
+    "The verification summary is an adequate substitute for command-level evidence and the required real provider episode."
+  ],
+  "recovery_context": "Encode replacement authorization and the expected failed-operation key in durable validated journal state, require startSupervisorExecutionEpisode to consume that state with an exact lineage match, reject replacement metadata outside that state, add negative core tests, and attach command-level plus real-provider verification evidence before reevaluation."
+}
