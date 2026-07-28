@@ -12,8 +12,8 @@ Created: 2026-07-28T09:02:22.621Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-07-28T09:02:22.621Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T09:02:22.621Z
+- Updated: 2026-07-28T09:22:13.954Z
 - Branch: task/202607280900-WHE7JS/break-authority-close-lifecycle-feedback-loop
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

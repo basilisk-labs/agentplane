@@ -4,7 +4,7 @@ title: "Break authority-close lifecycle feedback loop"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 13
 origin:
   system: "manual"
 depends_on: []
@@ -27,16 +27,45 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-28T09:22:59.261Z"
+  updated_by: "TESTER"
+  note: "Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "human_supplied"
+  updated_at: "2026-07-28T09:23:17.513Z"
+  updated_by: "HUMAN"
+  note: "Reviewed the authority-grant lifecycle boundary: branch_pr grants now commit only task packet artifacts through the existing PR artifact helper, preserving all authority validation before mutation."
+  evaluated_sha: "03a98aa601a69dd8c89e5dc424ca2e0ed214d025"
+  blueprint_digest: "cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410"
+  evidence_refs:
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607280900-WHE7JS/README.md"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607280900-WHE7JS/quality/20260728-092317249-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+    - "bun run ci:local:fast"
+  findings:
+    - "No scope-digest, expiry, stale-input, or protected-operation policy was relaxed. The focused route regression proves a granted pr.open advances to an executable operation with a clean worktree; full fast CI passed."
+commit:
+  hash: "03a98aa601a69dd8c89e5dc424ca2e0ed214d025"
+  message: "fix: commit branch-pr authority records"
 comments:
   -
     author: "CODER"
     body: "Start: isolate authority and close-tail freshness from implementation verification without weakening protected merge gates."
+  -
+    author: "CODER"
+    body: "Implementation: committed branch_pr authority records automatically; added the route regression that proves the authorized PR operation remains executable."
 events:
   -
     type: "status"
@@ -45,8 +74,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: isolate authority and close-tail freshness from implementation verification without weakening protected merge gates."
+  -
+    type: "status"
+    at: "2026-07-28T09:22:45.351Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: committed branch_pr authority records automatically; added the route regression that proves the authorized PR operation remains executable."
+  -
+    type: "verify"
+    at: "2026-07-28T09:22:59.261Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open."
 doc_version: 3
-doc_updated_at: "2026-07-28T09:02:22.510Z"
+doc_updated_at: "2026-07-28T09:22:59.880Z"
 doc_updated_by: "CODER"
 description: "v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority record for pr.head.publish or integration.enqueue dirties the task worktree after pre-merge closure, which forces re-verification and a new closure, which in turn requires another publish authority. Make authority and closure evidence remain auditable without creating an infinite verification/publication loop. Preserve protected merge and hosted-check gates. Add a deterministic regression route covering authority grant -> close -> publish -> queue integration."
 sections:
@@ -71,11 +113,44 @@ sections:
     5. Publish a PR and require stable hosted checks before integrating. Expected: the PR head, review state, and merge queue agree; no manual provider merge is used.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-28T09:22:59.261Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T09:22:45.351Z, excerpt_hash=sha256:52fcdb54a6ac5d2e275518998c6d5e8482aa9d20bac2e445e9a05838c2d4d074
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280900-WHE7JS-break-authority-close-lifecycle-feedback-loop/.agentplane/tasks/202607280900-WHE7JS/blueprint/resolved-snapshot.json
+    - old_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+    - current_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607280900-WHE7JS
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607280900-WHE7JS
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: authority grant emitted committed and next-action became cli_operation pr.open
+      Impact: breaks the task-worktree dirty feedback loop without weakening authority scope or expiry
+      Resolution: verified against commit 03a98aa601a69dd8c89e5dc424ca2e0ed214d025
 extensions:
   agentplane.side_effect_authority:
     audit:
@@ -92,6 +167,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:af8f1a911e6dcc9a09a068f68ba9e71bf90280645b0aa8cbd0bae70078e59d12"
+      -
+        actor: "USER"
+        at: "2026-07-28T09:23:30.889Z"
+        authorityDigest: "sha256:da0fae580c156b0a5473fc67c35c299b3b7690df925f044b649611a90b3442c4"
+        digest: "sha256:36ab904c0b4ca37df662222265b709d039be64188fd547db271fbcc2ec6de2c3"
+        operationDigest: "sha256:64fd58d047fb90bdfbd444c255ae309e86e6ad57d37765e1678bc81744c92356"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:0c5c5058efd15e95304d32c5866983b1161881f37a6bdede065502f552346ddc"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:7afab48f7c7b2d93739a50b4f8140cb60b0c262dbbe6aa4c831670dd61221ab4"
     grants:
       -
         actor: "USER"
@@ -106,6 +194,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:af8f1a911e6dcc9a09a068f68ba9e71bf90280645b0aa8cbd0bae70078e59d12"
         stateScopeDigest: "sha256:6d1086ee329f82a88d40342f8e577d3f6d8015efd1e821cb8c20c2d25a29b684"
+      -
+        actor: "USER"
+        digest: "sha256:da0fae580c156b0a5473fc67c35c299b3b7690df925f044b649611a90b3442c4"
+        expiresAt: "2026-07-28T09:38:30.889Z"
+        id: "authority-9aa8c749-069b-4d42-b453-606c4f109a78"
+        issuedAt: "2026-07-28T09:23:30.889Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:64fd58d047fb90bdfbd444c255ae309e86e6ad57d37765e1678bc81744c92356"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:7afab48f7c7b2d93739a50b4f8140cb60b0c262dbbe6aa4c831670dd61221ab4"
+        stateScopeDigest: "sha256:9064b3f6cfd0821b09405717ece3ace8dee280f243c3be2224d1a6679a83630c"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
@@ -142,6 +243,36 @@ v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority r
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-28T09:22:59.261Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused authority/lifecycle tests, task-state, typecheck, critical suite, policy routing, and full local fast CI passed; the live authority grant auto-committed its packet and advanced directly to pr.open.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T09:22:45.351Z, excerpt_hash=sha256:52fcdb54a6ac5d2e275518998c6d5e8482aa9d20bac2e445e9a05838c2d4d074
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607280900-WHE7JS-break-authority-close-lifecycle-feedback-loop/.agentplane/tasks/202607280900-WHE7JS/blueprint/resolved-snapshot.json
+- old_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+- current_digest: cf78dccf3ca7848d369ebafa8399f797778df6099809e148df6eba5dea7c2410
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607280900-WHE7JS
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607280900-WHE7JS
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -150,3 +281,7 @@ v0.7 blocker discovered while integrating RF-18 (#4654): a persisted authority r
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: authority grant emitted committed and next-action became cli_operation pr.open
+  Impact: breaks the task-worktree dirty feedback loop without weakening authority scope or expiry
+  Resolution: verified against commit 03a98aa601a69dd8c89e5dc424ca2e0ed214d025
