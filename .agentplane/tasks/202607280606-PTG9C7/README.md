@@ -4,7 +4,7 @@ title: "Prevent self-invalidating side-effect authority records"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 14
 origin:
   system: "manual"
 depends_on: []
@@ -33,6 +33,31 @@ verification:
   updated_by: "TESTER"
   note: "Focused AgentWorkOrder integration and side-effect authority suites passed: 13 tests. Typecheck and policy routing passed. The base-checkout route for 202607242236-1BFWEY now resolves without a task-revision schema error."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-28T06:20:05.095Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "1ec387cd29895158d5157c446a3913cc9598e440"
+  blueprint_digest: "6c3c595869d15122f3c343194be31715fc6f619c829d8d906e248ed80ae88ad4"
+  evidence_refs:
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607280606-PTG9C7/README.md"
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Route resolution and AgentWorkOrder preparation now share branch snapshot precedence in branch_pr mode, so task.revision and state_fingerprint.task_revision cannot diverge solely by checkout."
+    - "The regression advances and commits the task worktree document, invokes task next-action from main, and asserts both revision fields equal the branch snapshot."
 commit:
   hash: "1ec387cd29895158d5157c446a3913cc9598e440"
   message: "🚧 PTG9C7 task: align work-order task snapshot"

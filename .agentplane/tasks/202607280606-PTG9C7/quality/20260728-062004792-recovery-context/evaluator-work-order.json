@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607280606-PTG9C7-684d7c7ad45f8521e167dfcd",
+  "prepared_at": "2026-07-28T06:20:04.792Z",
+  "task": {
+    "id": "202607280606-PTG9C7",
+    "revision": 13,
+    "objective": "Prevent self-invalidating side-effect authority records\n\nFix the branch_pr lifecycle defect where a task authority grant changes the task revision/state fingerprint and makes the freshly recorded authority invalid before the required pre-merge closure or route refresh can execute. Preserve fail-closed authorization and support the documented grant -> clean commit -> recompute route path without manual GitHub merge.",
+    "acceptance_criteria": [
+      "Focused authority lifecycle regression",
+      "bun run typecheck",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Fix the branch_pr lifecycle defect where a task authority grant changes the task revision/state fingerprint and makes the freshly recorded authority invalid before the required pre-merge closure or route refresh can execute. Preserve fail-closed authorization and support the documented grant -> clean commit -> recompute route path without manual GitHub merge.\n- Out of scope: unrelated refactors not required for \"Prevent self-invalidating side-effect authority records\".",
+      "Align branch_pr AgentWorkOrder preparation with the same task branch snapshot used by route resolution. Prevent a base-checkout task next-action or task brief from combining a stale local task revision with a newer route fingerprint. Preserve fail-closed side-effect authority semantics; do not weaken authority validation. Add a regression where the task worktree has a newer task revision than main and preparation from main succeeds with matching work-order task and fingerprint revisions.",
+      "1. Add a regression for branch_pr: update the task in its task worktree, commit it, then invoke task next-action from main. Expected: the work-order task revision equals state_fingerprint.task_revision and the command returns JSON rather than schema validation error. 2. Run the focused AgentWorkOrder integration test and side-effect authority tests. Expected: both pass, including fail-closed negative authority cases. 3. Run bun run typecheck and node .agentplane/policy/check-routing.mjs. Expected: both pass. 4. Re-run task next-action for supervisor task 202607242236-1BFWEY from its integration/base context. Expected: no AgentWorkOrder task revision mismatch."
+    ]
+  },
+  "evaluated_sha": "1ec387cd29895158d5157c446a3913cc9598e440",
+  "blueprint_digest": "6c3c595869d15122f3c343194be31715fc6f619c829d8d906e248ed80ae88ad4",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607280606-PTG9C7/README.md",
+      "sha256": "sha256:3b1591e815e33902342b8595af4e237b9f22a90a365915a00c5998097e98aa37",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:01fcb37cb638431a1d30e0a6e19f7890797111c33c9f515fab2ec19418f25509",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:b6544dbc6640d234600ef27ad6c0cde270c6be6a0d8f0c26fb18b84d728fb6b3",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607280606-PTG9C7/quality/20260728-062004792-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:25f9754f5df859d2e0e20545c84f5e7ccda12cd75a13ceb1d0e1fb685e431f2e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
