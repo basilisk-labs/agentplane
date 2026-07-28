@@ -46,6 +46,8 @@ async function setupBranchPrRoot(): Promise<string> {
   await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
   await execFileAsync("git", ["add", "."], { cwd: root });
   await execFileAsync("git", ["commit", "--no-verify", "-m", "seed"], { cwd: root });
+  await execFileAsync("git", ["branch", "-M", "main"], { cwd: root });
+  expect(await runCliSilent(["branch", "base", "set", "main", "--root", root])).toBe(0);
   return root;
 }
 
