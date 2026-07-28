@@ -4,7 +4,7 @@ title: "Break authority-close lifecycle feedback loop"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -77,6 +77,36 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  agentplane.side_effect_authority:
+    audit:
+      -
+        actor: "USER"
+        at: "2026-07-28T09:22:01.374Z"
+        authorityDigest: "sha256:af103b4aba5b99e7777b4476bee1e3d007d4670e4221791080f9017a351656bb"
+        digest: "sha256:0c5c5058efd15e95304d32c5866983b1161881f37a6bdede065502f552346ddc"
+        operationDigest: "sha256:5d7d27338ec14622ef194572b85ea7254b8c069eb1f84879e3e4cc270d855492"
+        operationId: "pr.open"
+        outcome: "approved"
+        policyRule: "workflow.external_reversible"
+        previousDigest: null
+        schemaVersion: 1
+        sequence: 1
+        stateFingerprintDigest: "sha256:af8f1a911e6dcc9a09a068f68ba9e71bf90280645b0aa8cbd0bae70078e59d12"
+    grants:
+      -
+        actor: "USER"
+        digest: "sha256:af103b4aba5b99e7777b4476bee1e3d007d4670e4221791080f9017a351656bb"
+        expiresAt: "2026-07-28T09:37:01.374Z"
+        id: "authority-83fccb78-1288-40cc-8eb9-5d3dff7173c2"
+        issuedAt: "2026-07-28T09:22:01.374Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:5d7d27338ec14622ef194572b85ea7254b8c069eb1f84879e3e4cc270d855492"
+        operationId: "pr.open"
+        policyRule: "workflow.external_reversible"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:af8f1a911e6dcc9a09a068f68ba9e71bf90280645b0aa8cbd0bae70078e59d12"
+        stateScopeDigest: "sha256:6d1086ee329f82a88d40342f8e577d3f6d8015efd1e821cb8c20c2d25a29b684"
+    schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
