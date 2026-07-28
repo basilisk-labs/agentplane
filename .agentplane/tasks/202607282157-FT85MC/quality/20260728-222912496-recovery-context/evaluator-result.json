@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen branch-wide patch and durable verification records cover the complete multi-commit delta, merge-base provenance, binary and rename handling, no-change behavior, fail-closed base resolution, verification-write failure, and concurrent verification.",
+      "broken_invariant": "None; the approved recovery-context invariants are satisfied by the frozen implementation and verification evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:c992d39fc1b2204131cb05706619b28f4d2bcb47ea6f5c56d891791273264371",
+          "section": "Implementation and focused regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222912496-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:711743bddc146453dee6aa964b183e11e2cf733bef8a66d2cb3b6e6a1eb9a7cd",
+          "section": "verification_records"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json",
+          "sha256": "sha256:f9bd92fd7407d4a98ed9e3dbc3667c2cd84adf984d1b8fcffa23f8de9c9eb43a",
+          "section": "Independent verification results"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:789252d0da16fdd9eca0b9bb565a76ae457744efa1346bff737cc847f5c98067",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The configured branch_pr base reference continues to identify the intended integration branch when evaluator evidence is prepared."
+  ]
+}
