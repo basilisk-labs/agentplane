@@ -262,7 +262,9 @@ describe("evaluator execute supervisor episode", () => {
 
     const failed = await runWithFakeCodex(root, taskId, fakeBin);
     expect(failed.code).toBe(8);
-    expect(failed.stderr).toContain("Codex evaluator provider failed before returning a typed result");
+    expect(failed.stderr).toContain(
+      "Codex evaluator provider failed before returning a typed result",
+    );
     expect(failed.stderr).toContain("classification=nonzero_exit exit_code=99 signal=none");
 
     const journalPath = await resolveSupervisorExecutionEpisodePath({
