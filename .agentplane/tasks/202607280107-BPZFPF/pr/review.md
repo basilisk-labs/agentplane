@@ -6,14 +6,14 @@ Created: 2026-07-28T01:07:40.176Z
 
 - Task: `202607280107-BPZFPF`
 - Title: Archive incident INC-20260727-01 task-context evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607280107-BPZFPF/reconcile-release-incident`
 - Canonical task record: `.agentplane/tasks/202607280107-BPZFPF/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified archive reconciliation: TaskEpisodeView authority and loss-prevention regression passed; policy routing, release incident gate, doctor, and diff checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

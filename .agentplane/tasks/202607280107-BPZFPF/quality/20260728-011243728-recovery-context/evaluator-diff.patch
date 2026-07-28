@@ -1,0 +1,614 @@
+diff --git a/.agentplane/policy/incidents.md b/.agentplane/policy/incidents.md
+index 152162bca..6371b1a79 100644
+--- a/.agentplane/policy/incidents.md
++++ b/.agentplane/policy/incidents.md
+@@ -1,4 +1,5 @@
+ # Policy Incidents Log
+ 
+ - Append-only. Required fields: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`; optional: `tags`, `match`, `advice`, `source_task`, `fixability`.
+-- id: INC-20260727-01 | date: 2026-07-27 | scope: immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets. | tags: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor | match: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor, immutable, identity, state, metadata, semantic, narrative, blueprint, selected | failure: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (tasks.doc.required_sections) as the structural authority. | advice: Keep RF-21 narrow: record the source as task_document_schema, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task. | rule: Analogous immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets. work MUST review and apply the recorded external incident advice before retrying. | evidence: task 202607221850-9C9WBP; commit 5f48099a0104 | enforcement: manual | fixability: repo-fixable | state: open
++
++No active incidents.
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/README.md b/.agentplane/tasks/202607280107-BPZFPF/README.md
+index 4d4ed6230..9299aa073 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/README.md
++++ b/.agentplane/tasks/202607280107-BPZFPF/README.md
+@@ -4,7 +4,7 @@ title: "Archive incident INC-20260727-01 task-context evidence"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 6
++revision: 7
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -41,7 +41,7 @@ events:
+     to: "DOING"
+     note: "Start: dedicated release-incident reconciliation in the assigned task worktree; scope is archive evidence and active-registry cleanup only after checks."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T01:07:40.040Z"
++doc_updated_at: "2026-07-28T01:09:45.640Z"
+ doc_updated_by: "CODER"
+ description: "Dedicated incident reconciliation for TaskEpisodeView section authority. Confirm the shipped RF-21 contract: task_document_schema is explicit, required-section omission or validation failure is enforced, and localized structural-heading coverage is present. Preserve final evidence in the historical archive and remove the active entry only after deterministic checks pass. Do not author a new semantic role or heading policy."
+ sections:
+@@ -54,11 +54,10 @@ sections:
+     - Out of scope: unrelated refactors not required for "Reconcile release incident INC-20260727-01".
+   Plan: "1. Re-read INC-20260727-01 and RF-21 evidence against the current main implementation; confirm TaskEpisodeView declares task_document_schema as its section authority and preserves explicit omission or validation failure. 2. Re-run the focused TaskEpisodeView regression suite plus the release-incident check; do not change semantic role or heading policy. 3. If the evidence is current and checks pass, move the complete incident record to docs/developer/incident-archive.mdx with task and command evidence, then remove it from the active registry. 4. Verify policy routing, doctor, and the release-incident gate; record residual risk that semantic role-policy remains intentionally deferred."
+   Verify Steps: |-
+-    PLANNER fallback scaffold for "Reconcile release incident INC-20260727-01". Replace with task-specific acceptance checks when PLANNER context is available.
+-
+-    1. Review the requested outcome for "Reconcile release incident INC-20260727-01". Expected: the visible result matches ## Summary and stays inside approved scope.
+-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++    1. Run `bun test packages/agentplane/src/runner/context/task-context.test.ts`. Expected: TaskEpisodeView keeps `task_document_schema` as the stated authority; missing, oversized, and localized required sections retain explicit loss prevention.
++    2. Run `node scripts/release/check-release-incidents.mjs` before archival. Expected: it fails only for `INC-20260727-01`, proving the active release blocker is precise.
++    3. Archive the complete incident entry with current implementation, regression, and reconciliation evidence; remove it from `.agentplane/policy/incidents.md` only after step 1 passes.
++    4. Run `node .agentplane/policy/check-routing.mjs`, `node scripts/release/check-release-incidents.mjs`, and `node packages/agentplane/bin/agentplane.js doctor`. Expected: policy routing, active-registry release gate, and repository diagnostics pass.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
+     <!-- END VERIFICATION RESULTS -->
+@@ -119,11 +118,10 @@ Dedicated incident review/fix for the release-blocking TaskEpisodeView section-a
+ 
+ ## Verify Steps
+ 
+-PLANNER fallback scaffold for "Reconcile release incident INC-20260727-01". Replace with task-specific acceptance checks when PLANNER context is available.
+-
+-1. Review the requested outcome for "Reconcile release incident INC-20260727-01". Expected: the visible result matches ## Summary and stays inside approved scope.
+-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
+-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++1. Run `bun test packages/agentplane/src/runner/context/task-context.test.ts`. Expected: TaskEpisodeView keeps `task_document_schema` as the stated authority; missing, oversized, and localized required sections retain explicit loss prevention.
++2. Run `node scripts/release/check-release-incidents.mjs` before archival. Expected: it fails only for `INC-20260727-01`, proving the active release blocker is precise.
++3. Archive the complete incident entry with current implementation, regression, and reconciliation evidence; remove it from `.agentplane/policy/incidents.md` only after step 1 passes.
++4. Run `node .agentplane/policy/check-routing.mjs`, `node scripts/release/check-release-incidents.mjs`, and `node packages/agentplane/bin/agentplane.js doctor`. Expected: policy routing, active-registry release gate, and repository diagnostics pass.
+ 
+ ## Verification
+ 
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607280107-BPZFPF/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..759cc61c2
+--- /dev/null
++++ b/.agentplane/tasks/202607280107-BPZFPF/blueprint/resolved-snapshot.json
+@@ -0,0 +1,457 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607280107-BPZFPF",
++    "title": "Reconcile release incident INC-20260727-01",
++    "description": "Dedicated incident review/fix for the release-blocking TaskEpisodeView section-authority entry. Verify the shipped RF-21 contract: task_document_schema is explicit, required-section omission or validation failure is enforced, and tests cover localized structural headings. Preserve final evidence in the incident archive and remove the active entry only after deterministic checks pass. Do not author a new semantic role/heading policy.",
++    "tags": [
++      "context",
++      "incident",
++      "release",
++      "rf-21",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "release",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "release.strict",
++    "version": 1,
++    "title": "Strict release",
++    "taskKinds": [
++      "release"
++    ],
++    "workflowModes": [
++      "direct",
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "release.strict",
++    "blueprintVersion": 1,
++    "title": "Strict release",
++    "taskId": "202607280107-BPZFPF",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "release"
++    },
++    "whySelected": [
++      "task kind resolved to release",
++      "workflow mode: branch_pr",
++      "mutation scope: release"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.release.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "deterministic_check",
++        "kind": "deterministic_check",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "release.approval",
++        "kind": "approval",
++        "producedBy": "approval_gate",
++        "required": true,
++        "description": "Release approval."
++      },
++      {
++        "id": "release.plan",
++        "kind": "artifact",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Release plan or candidate artifact."
++      },
++      {
++        "id": "release.check",
++        "kind": "check_result",
++        "producedBy": "deterministic_check",
++        "required": true,
++        "description": "Release gates."
++      },
++      {
++        "id": "release.publish",
++        "kind": "external_link",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Publish evidence."
++      },
++      {
++        "id": "release.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Release commit."
++      },
++      {
++        "id": "release.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.release.md"
++    ],
++    "allowedCommands": [
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "publish commands after approval",
++      "release gates"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Release work needs strict release policy, approval evidence, and rollback context."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.release.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "deterministic_check",
++      "kind": "deterministic_check",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "release.approval",
++      "kind": "approval",
++      "producedBy": "approval_gate",
++      "required": true,
++      "description": "Release approval."
++    },
++    {
++      "id": "release.plan",
++      "kind": "artifact",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Release plan or candidate artifact."
++    },
++    {
++      "id": "release.check",
++      "kind": "check_result",
++      "producedBy": "deterministic_check",
++      "required": true,
++      "description": "Release gates."
++    },
++    {
++      "id": "release.publish",
++      "kind": "external_link",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Publish evidence."
++    },
++    {
++      "id": "release.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Release commit."
++    },
++    {
++      "id": "release.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.release.md"
++  ],
++  "allowedCommands": [
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "publish commands after approval",
++    "release gates"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Release work needs strict release policy, approval evidence, and rollback context."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to release",
++    "workflow mode: branch_pr",
++    "mutation scope: release"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "922c75f254568486798a94b61ca2cda9bf97c1e7386b44929b3b683975d915e3"
++  }
++}
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt b/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt
+index e69de29bb..1d78ab77a 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ .agentplane/policy/incidents.md     | 3 ++-
++ docs/developer/incident-archive.mdx | 4 ++++
++ 2 files changed, 6 insertions(+), 1 deletion(-)
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md b/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md
+index b4233a952..d5945b5a3 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/github-body.md
+@@ -22,12 +22,14 @@ Dedicated incident review/fix for the release-blocking TaskEpisodeView section-a
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T01:07:40.176Z
++- Updated: 2026-07-28T01:09:13.903Z
+ - Branch: task/202607280107-BPZFPF/reconcile-release-incident
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .agentplane/policy/incidents.md     | 3 ++-
++ docs/developer/incident-archive.mdx | 4 ++++
++ 2 files changed, 6 insertions(+), 1 deletion(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json b/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json
+index 18a37448b..644879802 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607280107-BPZFPF/reconcile-release-incident",
+   "created_at": "2026-07-28T01:07:40.176Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:771335d65411f4cf8387a69986bd470f587de5733c3e4632eac33b579fc4abe7",
+   "last_verified_at": null,
++  "pr_number": 4649,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4649",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607280107-BPZFPF",
+-  "updated_at": "2026-07-28T01:07:40.176Z",
++  "updated_at": "2026-07-28T01:09:13.903Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607280107-BPZFPF/pr/review.md b/.agentplane/tasks/202607280107-BPZFPF/pr/review.md
+index 6e78a4829..ef394c972 100644
+--- a/.agentplane/tasks/202607280107-BPZFPF/pr/review.md
++++ b/.agentplane/tasks/202607280107-BPZFPF/pr/review.md
+@@ -24,12 +24,14 @@ Created: 2026-07-28T01:07:40.176Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T01:07:40.176Z
++- Updated: 2026-07-28T01:09:13.903Z
+ - Branch: task/202607280107-BPZFPF/reconcile-release-incident
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .agentplane/policy/incidents.md     | 3 ++-
++ docs/developer/incident-archive.mdx | 4 ++++
++ 2 files changed, 6 insertions(+), 1 deletion(-)
+ ```
+ 
+ </details>
+diff --git a/docs/developer/incident-archive.mdx b/docs/developer/incident-archive.mdx
+index 029287f61..7200dee18 100644
+--- a/docs/developer/incident-archive.mdx
++++ b/docs/developer/incident-archive.mdx
+@@ -4,6 +4,10 @@ Historical registry for workflow incidents that are no longer active.
+ 
+ Active incidents live in `.agentplane/policy/incidents.md`. Move entries here once the repo has a durable mitigation, a shipped repo fix, or an external constraint has been reduced to a documented fallback instead of an active blocker.
+ 
++## 2026-07-28 Task Episode Incident Reconciliation
++
++- id: INC-20260727-01 | date: 2026-07-27 | scope: immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets. | tags: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor | match: cognitive-load, context, milestone-beta1, refactor, rf-21, runner, v0.7, wave-supervisor, immutable, identity, state, metadata, semantic, narrative, blueprint, selected | failure: The current blueprint contract has no section-level role or heading metadata; TaskEpisodeView therefore reads the active task-document schema (`tasks.doc.required_sections`) as the structural authority. | advice: Keep RF-21 narrow: record the source as `task_document_schema`, enforce explicit omission or validation failure, and defer role-policy authoring to a follow-up context-policy task. | rule: Analogous immutable identity/state metadata, semantic narrative, blueprint-selected required sections, recent relevant events/comments, explicit compaction and omission receipts, v1 compatibility, and serialized-byte ratchets work MUST review and apply the recorded external incident advice before retrying. | evidence: source task `202607221850-9C9WBP`; PR [#4647](https://github.com/basilisk-labs/agentplane/pull/4647) merged `2d6582e7f017820668cbbbbe90c211e360e47394`; current main `78b62230d`; reconciliation task `202607280107-BPZFPF` reran `bun test packages/agentplane/src/runner/context/task-context.test.ts` (6 pass, 0 fail, 32 assertions), `node .agentplane/policy/check-routing.mjs` (pass), and `agentplane doctor` (pass; two unrelated historical missing-commit warnings remain). The shipped code declares `section_policy.source = "task_document_schema"`, records `required_section_unavailable`, and rejects an oversized required section with `task_episode_required_section_exceeds_budget`; the regression suite covers localized structural headings. | enforcement: TaskEpisodeView implementation plus focused regression test and release-incident gate | fixability: repo-fixable | state: archived | archived_by: task `202607280107-BPZFPF` | archive_reason: the original RF-21 fix is merged, its section-authority and loss-prevention contract was reconfirmed on current main, and no active operator follow-up remains. Semantic role/heading policy is intentionally deferred to a separate context-policy task.
++
+ ## 2026-07-27 Release Incident Reconciliation
+ 
+ - id: INC-20260725-01 | date: 2026-07-25 | scope: Replace the inherited local isRecord helper in KnowledgeRef with the canonical shared guard so guards:check passes on main before RF06b integration. | tags: reliability, v0.7, code | match: reliability, v0.7, code, replace, the, inherited, local, isrecord, helper, knowledgeref, with, canonical, shared, guard, guards, check | failure: Main introduced a local isRecord helper in KnowledgeRef while guards:check forbids local guard definitions. | advice: Import the canonical shared guard and remove the duplicate helper; retain existing KnowledgeRef behavior and tests. | rule: Analogous KnowledgeRef work MUST use the canonical shared record guard rather than define a duplicate local helper. | evidence: source task `202607251433-75Q4J6`; current main contains `c3680fe16` (restore canonical record guard), `packages/agentplane/src/context/knowledge-ref.ts` imports `isRecord` from `packages/agentplane/src/shared/guards.ts`, and `bun run guards:check` passed during this reconciliation. | enforcement: shared-guard check + trust-boundary ratchet | fixability: repo-fixable | state: archived | archived_by: task `202607270445-Y3V80T` | archive_reason: the fixed implementation and deterministic guard enforcement are present on main; the active entry no longer requires operator follow-up
