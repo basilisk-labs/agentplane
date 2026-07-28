@@ -40,8 +40,8 @@ Created: 2026-07-28T08:13:34.859Z
  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
  .../usecases/task-run-effect-resolution.test.ts    |  39 +-
  .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
- packages/agentplane/src/shared/stable-file.ts      |   9 +
- 12 files changed, 1377 insertions(+), 24 deletions(-)
+ packages/agentplane/src/shared/stable-file.ts      |  10 +
+ 12 files changed, 1378 insertions(+), 24 deletions(-)
 ```
 
 </details>

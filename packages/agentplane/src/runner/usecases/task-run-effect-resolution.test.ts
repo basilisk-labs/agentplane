@@ -232,7 +232,7 @@ describe("task runner effect resolution", () => {
           retirementWaitReads += 1;
           if (!collisionInjected) {
             collisionInjected = true;
-            throw new Error(`runner active claim changed while it was being read: ${args[0]}`);
+            throw new Error(`runner active claim path changed before it could be read: ${args[0]}`);
           }
         }
         return await originalRead(...args);

@@ -145,6 +145,7 @@ export function isStableFileReadCollision(error: unknown, label: string): boolea
   const message = error instanceof Error ? error.message : String(error);
   return [
     "changed before it could be read:",
+    "path changed before it could be read:",
     "changed while it was being read:",
     "path changed while it was being read:",
   ].some((detail) => message.startsWith(`${label} ${detail}`));
