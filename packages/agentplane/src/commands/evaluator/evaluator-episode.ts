@@ -25,6 +25,18 @@ const MAX_PROVIDER_STDERR_BYTES = 1024 * 1024;
 const CODEX_EVALUATOR_TIMEOUT_MS = 10 * 60 * 1000;
 
 const NON_EMPTY_STRING_SCHEMA = { type: "string", minLength: 1 } as const;
+const NULLABLE_NON_EMPTY_STRING_SCHEMA = {
+  type: ["string", "null"],
+  minLength: 1,
+} as const;
+const NULLABLE_SHA256_SCHEMA = {
+  type: ["string", "null"],
+  pattern: "^sha256:[a-f0-9]{64}$",
+} as const;
+const NULLABLE_POSITIVE_INTEGER_SCHEMA = {
+  type: ["integer", "null"],
+  minimum: 1,
+} as const;
 
 const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
   $schema: "http://json-schema.org/draft-07/schema#",
@@ -56,12 +68,16 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
               additionalProperties: false,
               properties: {
                 path: NON_EMPTY_STRING_SCHEMA,
-                sha256: { type: "string", pattern: "^sha256:[a-f0-9]{64}$" },
-                line: { type: "integer", minimum: 1 },
-                lines: NON_EMPTY_STRING_SCHEMA,
-                section: NON_EMPTY_STRING_SCHEMA,
+                sha256: NULLABLE_SHA256_SCHEMA,
+                line: NULLABLE_POSITIVE_INTEGER_SCHEMA,
+                lines: NULLABLE_NON_EMPTY_STRING_SCHEMA,
+                section: NULLABLE_NON_EMPTY_STRING_SCHEMA,
               },
-              required: ["path"],
+              // Codex structured output requires every declared property to
+              // appear in `required`. Source-reference metadata remains
+              // semantically optional by using null, which is normalized by
+              // the evaluator result validator before its typed SGR handoff.
+              required: ["path", "sha256", "line", "lines", "section"],
             },
           },
         },
@@ -70,7 +86,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
     },
     missing_tests: { type: "array", items: { type: "string" } },
     hidden_assumptions: { type: "array", items: { type: "string" } },
-    recovery_context: NON_EMPTY_STRING_SCHEMA,
+    recovery_context: NULLABLE_NON_EMPTY_STRING_SCHEMA,
   },
   required: [
     "schema_version",
@@ -80,6 +96,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
     "findings",
     "missing_tests",
     "hidden_assumptions",
+    "recovery_context",
   ],
 } as const;
 

@@ -428,6 +428,27 @@ function assertExactKeys(
   }
 }
 
+function normalizeEvaluatorStructuredNulls(raw: Record<string, unknown>): Record<string, unknown> {
+  const normalized: Record<string, unknown> = { ...raw };
+  if (normalized.recovery_context === null) delete normalized.recovery_context;
+  if (!Array.isArray(normalized.findings)) return normalized;
+  normalized.findings = normalized.findings.map((finding) => {
+    if (!finding || typeof finding !== "object" || Array.isArray(finding)) return finding;
+    const normalizedFinding: Record<string, unknown> = { ...finding };
+    if (!Array.isArray(normalizedFinding.evidence_refs)) return normalizedFinding;
+    normalizedFinding.evidence_refs = normalizedFinding.evidence_refs.map((evidence) => {
+      if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return evidence;
+      const normalizedEvidence: Record<string, unknown> = { ...evidence };
+      for (const field of ["sha256", "line", "lines", "section"] as const) {
+        if (normalizedEvidence[field] === null) delete normalizedEvidence[field];
+      }
+      return normalizedEvidence;
+    });
+    return normalizedFinding;
+  });
+  return normalized;
+}
+
 export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult {
   assertExactKeys(
     raw,
@@ -468,7 +489,7 @@ export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult 
       }
     }
   }
-  return validateEvaluatorSgrResult(raw);
+  return validateEvaluatorSgrResult(normalizeEvaluatorStructuredNulls(record));
 }
 
 export function readWorkOrder(raw: unknown): EvaluatorWorkOrder {
