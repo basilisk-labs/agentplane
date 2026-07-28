@@ -22,12 +22,19 @@ RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-27T23:42:49.681Z
+- Updated: 2026-07-27T23:43:10.504Z
 - Branch: task/202607221850-DRWR0V/extract-the-shared-typed-workflow-supervisor-fro
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
+ .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
+ .../src/commands/hermes/hermes.command.ts          |  61 +++-
+ .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
+ .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
+ .../src/commands/task/next-action.command.ts       |  12 +
+ scripts/baselines/trust-boundary-violations.json   |   9 -
+ 7 files changed, 760 insertions(+), 386 deletions(-)
 ```
 
 </details>

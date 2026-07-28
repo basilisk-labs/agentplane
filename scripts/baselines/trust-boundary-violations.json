@@ -110,15 +110,6 @@
   ],
   "violations": [
     {
-      "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/commands/hermes/hermes-runtime.ts:subprocess:runAgentplaneStep:ast:module:FunctionDeclaration:55a1dc9cd665:1",
-      "rule_id": "trust.no-rendered-command-orchestration",
-      "rf_owners": ["RF-06b", "RF-09", "RF-25"],
-      "owner_task_ids": ["202607221848-VBV9B1", "202607221850-DRWR0V", "202607221854-PGPR3J"],
-      "path": "packages/agentplane/src/commands/hermes/hermes-runtime.ts",
-      "locator": "subprocess:runAgentplaneStep:ast:module:FunctionDeclaration:55a1dc9cd665:1",
-      "rationale": "supervisor orchestration re-enters AgentPlane through a subprocess"
-    },
-    {
       "violation_id": "trust.no-rendered-command-orchestration:packages/agentplane/src/harness/hooks-lifecycle.ts:shell:child:ast:FunctionDeclaration:runLifecycleHook:1/ArrowFunction:anonymous:1/VariableDeclaration:child:1:CallExpression:405afbdea08e:1",
       "rule_id": "trust.no-rendered-command-orchestration",
       "rf_owners": ["RF-06b", "RF-09", "RF-25"],

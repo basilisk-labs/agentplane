@@ -1,0 +1,94 @@
+{
+  "suite": "critical-cli",
+  "totalDurationMs": 49185,
+  "chunks": [
+    {
+      "index": 1,
+      "durationMs": 6737,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  7 passed (7); Duration  6.57s (transform 1.21s, setup 0ms, import 1.53s, tests 4.98s, environment 0ms)"
+    },
+    {
+      "index": 2,
+      "durationMs": 2121,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  14 passed (14); Duration  1.95s (transform 1.29s, setup 0ms, import 1.61s, tests 279ms, environment 0ms)"
+    },
+    {
+      "index": 3,
+      "durationMs": 17288,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  10 passed (10); Duration  17.12s (transform 1.35s, setup 0ms, import 1.66s, tests 15.40s, environment 0ms)"
+    },
+    {
+      "index": 4,
+      "durationMs": 2199,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  10 passed (10); Duration  2.03s (transform 1.33s, setup 0ms, import 1.66s, tests 306ms, environment 0ms)"
+    },
+    {
+      "index": 5,
+      "durationMs": 2845,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  2 passed (2); Duration  2.68s (transform 1.26s, setup 0ms, import 1.60s, tests 1.01s, environment 0ms)"
+    },
+    {
+      "index": 6,
+      "durationMs": 2771,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  2 passed (2); Duration  2.60s (transform 1.28s, setup 0ms, import 1.64s, tests 902ms, environment 0ms)"
+    },
+    {
+      "index": 7,
+      "durationMs": 3001,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  3 passed (3); Duration  2.83s (transform 1.27s, setup 0ms, import 1.61s, tests 1.16s, environment 0ms)"
+    },
+    {
+      "index": 8,
+      "durationMs": 3100,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  5 passed (5); Duration  2.93s (transform 1.25s, setup 0ms, import 1.59s, tests 1.28s, environment 0ms)"
+    },
+    {
+      "index": 9,
+      "durationMs": 2566,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  2 passed (2); Duration  2.40s (transform 1.26s, setup 0ms, import 1.60s, tests 736ms, environment 0ms)"
+    },
+    {
+      "index": 10,
+      "durationMs": 2093,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet-regressions.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  5 passed (5); Duration  1.92s (transform 1.36s, setup 0ms, import 1.64s, tests 222ms, environment 0ms)"
+    },
+    {
+      "index": 11,
+      "durationMs": 4464,
+      "files": [
+        "packages/agentplane/src/cli/run-cli.critical.trust-boundary-ratchet.test.ts"
+      ],
+      "summary": "Test Files  1 passed (1); Tests  12 passed (12); Duration  4.29s (transform 1.31s, setup 0ms, import 1.59s, tests 2.64s, environment 0ms)"
+    }
+  ]
+}

@@ -7,18 +7,19 @@ import { createCliEmitter } from "../../cli/output.js";
 import type { CommandCtx, CommandHandler } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
+import { superviseWorkflowStep } from "../shared/workflow-supervisor.js";
 import {
-  executableStepFor,
   buildHermesLifecycleRecommendation,
   currentAgentplaneCommand,
+  executeHermesWorkflowOperation,
   HERMES_LIFECYCLE_ACTIONS,
   hermesCliCommand,
   hermesEnvSnapshot,
   loadHermesStateSnapshot,
   loadLaneRegistry,
+  prepareHermesRoute,
   reconcileHermesState,
   routePacket,
-  runAgentplaneStep,
   runHermesLifecycle,
   type HermesLifecycleAction,
 } from "./hermes-runtime.js";
@@ -122,42 +123,66 @@ export function makeRunHermesSuperviseHandler(
 ): CommandHandler<HermesSuperviseParsed> {
   return async (ctx, parsed) => {
     const commandCtx = await getCtx("hermes supervise");
-    const packet = await routePacket({
+    const routeOpts = {
       ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride ?? null,
       taskId: parsed.taskId,
       ...(parsed.remote ? { includeRemote: true } : {}),
+    };
+    const prepared = await prepareHermesRoute(routeOpts);
+    const packet = prepared.packet;
+    let refreshedPacket: typeof packet | null = null;
+    const supervision = await superviseWorkflowStep({
+      decision: prepared.decision,
+      mode: parsed.executeStep ? "execute" : "inspect",
+      execute: async ({ operation }) =>
+        await executeHermesWorkflowOperation({
+          ctx: commandCtx,
+          cwd: ctx.cwd,
+          rootOverride: ctx.rootOverride ?? null,
+          includeRemote: parsed.remote,
+          dryRun: parsed.dryRun,
+          operation,
+        }),
+      refresh: async () => {
+        const refreshed = await prepareHermesRoute(routeOpts);
+        refreshedPacket = refreshed.packet;
+        return refreshed.decision;
+      },
     });
-    const step = executableStepFor(packet);
     const lifecycleRecommendation = buildHermesLifecycleRecommendation(packet);
-    const stepResult =
-      parsed.executeStep && step.args
-        ? await runAgentplaneStep(step.args, commandCtx.resolvedProject.gitRoot, parsed.dryRun)
-        : null;
     const payload = {
       ...packet,
+      ...(refreshedPacket ? { refreshed_route: refreshedPacket } : {}),
       hermes_run: hermesEnvSnapshot(),
       hermes_comment_projection: packet.hermes_comment_projection,
       supervisor_policy: {
         execute_raw_shell_from_route: false,
-        execution_model: "classify_route_action_then_execute_allowlisted_agentplane_command",
+        execution_model: "shared_typed_workflow_operation_registry",
         max_route_steps_per_claim: 1,
+      },
+      workflow_supervision: {
+        schema: "agentplane.workflow-supervisor.v1",
+        executable: supervision.executable,
+        stop_reason: supervision.stop_reason,
+        operation_id: supervision.operation?.id ?? null,
+        audit: supervision.audit,
       },
       lifecycle_recommendation: lifecycleRecommendation,
       execution: {
         requested: parsed.executeStep,
         dry_run: parsed.dryRun,
-        action: step.code,
-        allowed: Boolean(step.args),
-        block_reason: step.reason,
-        result: stepResult,
+        action: packet.next_action.code,
+        allowed: supervision.executable,
+        block_reason: supervision.stop_reason,
+        result: supervision.result,
       },
     };
-    if (parsed.executeStep && !step.args && !parsed.dryRun) {
+    if (parsed.executeStep && !supervision.executable && !parsed.dryRun) {
       throw new CliError({
         code: "E_USAGE",
-        message: step.reason ?? "Hermes supervisor route step is not executable",
+        message: supervision.stop_reason ?? "Hermes supervisor route step is not executable",
       });
     }
     if (parsed.json) {
@@ -173,11 +198,11 @@ export function makeRunHermesSuperviseHandler(
           value: packet.terminal.hermes_root_complete_allowed,
         },
         { label: "execute_step", value: parsed.executeStep },
-        { label: "execution_allowed", value: Boolean(step.args) },
+        { label: "execution_allowed", value: supervision.executable },
       ]);
     }
-    if (stepResult?.executed === true && typeof stepResult.exit_code === "number") {
-      return stepResult.exit_code;
+    if (typeof supervision.result?.exit_code === "number") {
+      return supervision.result.exit_code;
     }
     return 0;
   };
