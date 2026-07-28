@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 36
+revision: 37
 origin:
   system: "manual"
 depends_on: []
@@ -63,8 +63,8 @@ quality_review:
   findings:
     - "The evaluated delta is limited to closure metadata and a frozen verification record; it does not alter the replacement execution contract, and the record preserves coverage for cross-process single-provider admission and pending-replacement recovery."
 commit:
-  hash: "cfd2a1c6cd5e3c1956a85e547f43723be362e593"
-  message: "🔍 YMPY8Y evaluator: record fresh hotspot quality pass"
+  hash: "492cc88528576025cb85b297262e35226adfbe52"
+  message: "🔍 YMPY8Y evaluator: record fresh static lint quality pass"
 comments:
   -
     author: "CODER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -177,8 +180,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Hosted static rework verified: all replacement-test lint findings are resolved while the eight command-level replacement scenarios remain green."
+  -
+    type: "status"
+    at: "2026-07-28T19:57:05.957Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T19:51:28.368Z"
+doc_updated_at: "2026-07-28T19:57:05.959Z"
 doc_updated_by: "CODER"
 description: "Allow an explicitly authorized replacement evaluator episode after a terminal operation_failed journal without reopening or mutating the failed operation. Preserve durable history, usage, and effect-in-doubt fail-closed behavior so a pre-provider failure does not permanently block an independent semantic review."
 sections:
@@ -484,8 +494,8 @@ sections:
       Resolution: Replaced unsafe any/await assertions with typed intermediate values and explicit sha256 assertions; lint, types, hotspot, compatibility, routing, and replacement tests pass at 620357a35317e18eaf63555b0270cdc5855203b2.
 extensions:
   implementation_commit:
-    hash: "93b6cc4311380a09b2148feb29e373f89edf5dd8"
-    message: "🧪 YMPY8Y task: freeze hotspot rework verification"
+    hash: "46008ad0693f0d94232392f4b384f2f5ecfde1f1"
+    message: "🧪 YMPY8Y task: freeze static lint rework verification"
   workflow_route_baseline:
     start_head_sha: "a9b9d6a834893013c30b5046d0c618cb23553638"
     version: 1
