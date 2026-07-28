@@ -1,0 +1,36 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+    "bun run typecheck",
+    "bun run format:changed",
+    "node .agentplane/policy/check-routing.mjs",
+    "agentplane evaluator execute 202607221850-8HBF4J --replacement"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T19:36:27.493Z",
+    "updated_by": "TESTER",
+    "note": "Hosted hotspot rework verified: evaluator verification-record collection is split into a dedicated helper and the 600-line contract gate passes."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+      "sha256": "sha256:be1f60cf99aad008d473ad2d9b3b5424a2191556e801e23b177255ad76ec10ad"
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-184101-compatibility-ratchet.json",
+      "sha256": "sha256:fc186a7415c6c44a995299db11ac27730674dea617dfed4caf117deb6a9b751b"
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-191822-hosted-ci-rework.json",
+      "sha256": "sha256:a78aacd0b73a906e3379a409a6dd64f3546c7fc6cc0845e3cf3ef15eed7503ee"
+    },
+    {
+      "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-193556-hotspot-rework.json",
+      "sha256": "sha256:71925fb0caecdfe3cb2bb46b0f3f31e3c2834915c5f821c0cf592a7c139b3875"
+    }
+  ],
+  "runner_history": []
+}
