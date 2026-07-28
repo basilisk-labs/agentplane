@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 57
+revision: 58
 origin:
   system: "manual"
 depends_on:
@@ -62,8 +62,8 @@ quality_review:
   findings:
     - "The collision branch still yields an unknown claim value, which cannot satisfy activeClaim === null; replacing explicit undefined with a bare return is type-equivalent. The Error message is test-only and does not affect production control flow."
 commit:
-  hash: "7a41ac8f29897a03713e25332c27002ff6f1e3f2"
-  message: "🚧 WM9X1G task: record refreshed pre-merge closure authority"
+  hash: "8571f318229cc3f21af02ad411ef3432d5e6a907"
+  message: "🚧 WM9X1G task: record final pre-merge closure authority"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -86,6 +86,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -206,8 +209,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T11:45:38.989Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T11:34:01.929Z"
+doc_updated_at: "2026-07-28T11:45:38.989Z"
 doc_updated_by: "CODER"
 description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
 sections:
@@ -997,8 +1007,8 @@ extensions:
         stateScopeDigest: "sha256:c62210a8aef16d7c4423469fb4dca52ab9248c6177285dbd8d35a6de33baeea4"
     schemaVersion: 1
   implementation_commit:
-    hash: "c170a930d8649b4b0ff06a9bb56a6e060bfb4719"
-    message: "🚧 WM9X1G task: keep effect resolution below hotspot threshold"
+    hash: "bc2a760e30227d164d8b40fcca2b151434d949cd"
+    message: "🚧 WM9X1G task: satisfy effect resolution lint contract"
   workflow_route_baseline:
     start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
     version: 1
