@@ -418,7 +418,7 @@ export async function executePreparedEvaluatorEpisode(opts: {
   };
 }
 
-export async function writeEvaluatorEpisodeReceipt(opts: {
+async function writeEvaluatorEpisodeReceipt(opts: {
   prepared: PreparedEvaluatorReview;
   receipt: EvaluatorEpisodeReceipt;
 }): Promise<string> {
