@@ -45,11 +45,7 @@ import {
   type TaskWorktreeCleanliness,
 } from "./task-worktree-cleanliness.js";
 import { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
-import { loadSideEffectAuthorityState } from "./side-effect-authority-store.js";
-import {
-  SIDE_EFFECT_AUTHORITY_EXTENSION_KEY,
-  withSideEffectAuthorityState,
-} from "./side-effect-authority.js";
+import { hydrateTaskSideEffectAuthority } from "./side-effect-authority-store.js";
 export { stabilizeWorkflowStepAfterFingerprint } from "./route-decision-fingerprint-stabilization.js";
 
 function isCliUsageOrIo(err: unknown): boolean {
@@ -384,25 +380,11 @@ export async function buildTaskRouteDecision(opts: {
     taskId: opts.taskId,
     preferBranchSnapshot: ctx.config.workflow_mode === "branch_pr",
   });
-  const authority = await loadSideEffectAuthorityState({
+  const task = await hydrateTaskSideEffectAuthority({
     gitRoot: ctx.resolvedProject.gitRoot,
     taskId: opts.taskId,
     task: loadedTask,
   });
-  const task = authority.state
-    ? {
-        ...loadedTask,
-        extensions: withSideEffectAuthorityState(loadedTask, authority.state),
-      }
-    : authority.source === "invalid"
-      ? {
-          ...loadedTask,
-          extensions: {
-            ...(loadedTask.extensions ?? {}),
-            [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: null,
-          },
-        }
-      : loadedTask;
   const resume = await buildTaskResumeContext({
     ctx,
     cwd: opts.cwd,

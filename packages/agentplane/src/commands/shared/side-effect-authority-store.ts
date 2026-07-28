@@ -7,8 +7,11 @@ import { gitRevParse } from "@agentplaneorg/core/git";
 import { isRecord } from "../../shared/guards.js";
 import {
   readSideEffectAuthorityState,
+  SIDE_EFFECT_AUTHORITY_EXTENSION_KEY,
+  withSideEffectAuthorityState,
   type SideEffectAuthorityState,
 } from "./side-effect-authority.js";
+import type { TaskData } from "../../backends/task-backend.js";
 
 const AUTHORITY_STORE_SCHEMA_VERSION = 1;
 const AUTHORITY_STORE_DIR = ["agentplane", "side-effect-authority"];
@@ -97,6 +100,30 @@ export async function loadSideEffectAuthorityState(opts: {
   return legacy
     ? { state: legacy, source: "task_extension" }
     : { state: null, source: "invalid", reason: "task authority state is malformed" };
+}
+
+export async function hydrateTaskSideEffectAuthority(opts: {
+  gitRoot: string;
+  taskId: string;
+  task: TaskData;
+}): Promise<TaskData> {
+  const authority = await loadSideEffectAuthorityState(opts);
+  if (authority.state) {
+    return {
+      ...opts.task,
+      extensions: withSideEffectAuthorityState(opts.task, authority.state),
+    };
+  }
+  if (authority.source === "invalid") {
+    return {
+      ...opts.task,
+      extensions: {
+        ...(opts.task.extensions ?? {}),
+        [SIDE_EFFECT_AUTHORITY_EXTENSION_KEY]: null,
+      },
+    };
+  }
+  return opts.task;
 }
 
 export async function persistSideEffectAuthorityState(opts: {
