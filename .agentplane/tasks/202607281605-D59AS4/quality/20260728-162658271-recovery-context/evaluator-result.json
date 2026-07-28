@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen evidence demonstrates safe stale-state reopening, terminal protection for failed or ambiguous effects, two bounded evaluator episodes, and preserved cumulative usage.",
+      "broken_invariant": "None; the approved recovery-context invariants are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0042ba43d8e1b91d385bed2f9e43ee4bc42c4dcf1efc7dfb47595f5caea2a693"
+        },
+        {
+          "path": ".agentplane/tasks/202607281605-D59AS4/README.md",
+          "sha256": "sha256:7b3c4e2b8d80b7957a22fed8f067f27a5ff9f11921c28a61c0c80ade94faf317",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

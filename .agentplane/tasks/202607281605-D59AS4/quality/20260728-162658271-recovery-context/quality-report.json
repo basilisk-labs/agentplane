@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281605-D59AS4",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T16:28:08.299Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "05b047545b610a5d7a75a125d50b9283de13b086",
+  "blueprint_digest": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6",
+  "findings": [
+    "The frozen evidence demonstrates safe stale-state reopening, terminal protection for failed or ambiguous effects, two bounded evaluator episodes, and preserved cumulative usage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607281605-D59AS4/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

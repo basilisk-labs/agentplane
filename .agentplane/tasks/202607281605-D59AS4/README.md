@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
 status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -32,31 +32,29 @@ verification:
   note: "Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks passed; stale-state reopening preserves usage while terminal stops remain protected."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T16:24:19.662Z"
+  updated_at: "2026-07-28T16:28:08.299Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "d74d6be94f2c5581daee824b0398adbd2138a59b"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "05b047545b610a5d7a75a125d50b9283de13b086"
   blueprint_digest: "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6"
   evidence_refs:
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607281605-D59AS4/README.md"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162215312-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The required second live evaluator episode and cumulative usage increase are not present in the frozen evidence; runner_history remains empty and the task document records only live episode 1."
-    - "The command regression changes task state before the second invocation, but it does not demonstrate that the newly added recovery branch for stale_state returned by the same start attempt is reached; the earlier journal-opening recovery path can satisfy the test."
+    - "The frozen evidence demonstrates safe stale-state reopening, terminal protection for failed or ambiguous effects, two bounded evaluator episodes, and preserved cumulative usage."
 commit:
   hash: "05b047545b610a5d7a75a125d50b9283de13b086"
   message: "test(evaluator): prove stale start recovery"

@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607281605-D59AS4-06859303d00e13122e37081d",
+  "prepared_at": "2026-07-28T16:26:58.271Z",
+  "task": {
+    "id": "202607281605-D59AS4",
+    "revision": 16,
+    "objective": "Recover completed evaluator supervisor journals for new episodes\n\nAllow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics.",
+    "acceptance_criteria": [
+      "bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
+      "bun run typecheck",
+      "bun run format:changed",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics.\n- Out of scope: unrelated refactors not required for \"Recover completed evaluator supervisor journals for new episodes\".",
+      "1. Inspect evaluator supervisor journal transition and recovery guards. 2. Permit only a completed stale-state journal to refresh its fingerprint and create a new episode. 3. Keep operation_failed and effect_in_doubt terminal. 4. Add focused unit and command-level regression tests, then run a real repeat evaluator episode. 5. Publish and integrate through the protected branch_pr route.",
+      "1. Confirm the safe reopen transition.\nCommand: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts\nExpected: a completed stale-state evaluator journal starts a second bounded episode; operation_failed and effect_in_doubt remain terminal.\n\n2. Check types and formatting.\nCommand: bun run typecheck && bun run format:changed\nExpected: no type or formatting regression.\n\n3. Check policy routing.\nCommand: node .agentplane/policy/check-routing.mjs\nExpected: routing validation succeeds.\n\n4. Exercise a repeated live evaluator episode.\nExpected: the second read-only provider episode succeeds and cumulative usage increases without reset."
+    ]
+  },
+  "evaluated_sha": "05b047545b610a5d7a75a125d50b9283de13b086",
+  "blueprint_digest": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607281605-D59AS4/README.md",
+      "sha256": "sha256:7b3c4e2b8d80b7957a22fed8f067f27a5ff9f11921c28a61c0c80ade94faf317",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:0042ba43d8e1b91d385bed2f9e43ee4bc42c4dcf1efc7dfb47595f5caea2a693",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-162658271-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:417bfd2070e8d25aba8d0b68cb8403ba3ed2d8b5ee0bf59c10d7546823a23c9d",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
