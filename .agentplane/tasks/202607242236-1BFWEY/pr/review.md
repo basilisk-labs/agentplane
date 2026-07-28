@@ -6,7 +6,7 @@ Created: 2026-07-28T03:32:16.784Z
 
 - Task: `202607242236-1BFWEY`
 - Title: Persist bounded supervisor execution episodes
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607242236-1BFWEY/persist-bounded-supervisor-execution-episodes`
 - Canonical task record: `.agentplane/tasks/202607242236-1BFWEY/README.md`
 
@@ -29,10 +29,10 @@ Created: 2026-07-28T03:32:16.784Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator-episode.calibration.test.ts          |  20 +-
- .../src/commands/evaluator/evaluator-episode.ts    |  44 +-
- .../evaluator/evaluator-execute.command.test.ts    | 253 +++++++++
- .../src/commands/evaluator/evaluator.command.ts    | 365 ++++++++++++-
+ .../evaluator-episode.calibration.test.ts          |  22 +-
+ .../src/commands/evaluator/evaluator-episode.ts    | 103 +++-
+ .../evaluator/evaluator-execute.command.test.ts    | 288 ++++++++++
+ .../src/commands/evaluator/evaluator.command.ts    | 381 ++++++++++++-
  .../src/commands/hermes/hermes.command.test.ts     |  42 +-
  .../src/commands/hermes/hermes.command.ts          |  53 +-
  .../shared/supervisor-execution-episode.test.ts    | 405 ++++++++++++++
@@ -45,7 +45,7 @@ Created: 2026-07-28T03:32:16.784Z
  .../runner/supervisor-execution-episode.test.ts    | 267 +++++++++
  .../src/runner/supervisor-execution-episode.ts     | 594 +++++++++++++++++++++
  packages/core/src/schemas/index.ts                 |  37 ++
- 16 files changed, 2606 insertions(+), 61 deletions(-)
+ 16 files changed, 2712 insertions(+), 67 deletions(-)
 ```
 
 </details>

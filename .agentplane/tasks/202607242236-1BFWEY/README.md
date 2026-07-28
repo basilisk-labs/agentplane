@@ -1,10 +1,11 @@
 ---
 id: "202607242236-1BFWEY"
 title: "Persist bounded supervisor execution episodes"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 20
 origin:
   system: "manual"
 depends_on:
@@ -49,31 +50,32 @@ verification:
   note: "Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T05:04:40.257Z"
+  updated_at: "2026-07-28T05:11:14.042Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "3f0c9de3cf19c8ce72bfb99d337c0be81d78fdc9"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "e639c4abae9ceb0f79c39f9f70d64738fdf2d643"
   blueprint_digest: "fae61bd2a7aa075ea797d72baa76b0ea0b2502b1995b11c5033ebdf9b4f22477"
   evidence_refs:
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607242236-1BFWEY/README.md"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-050440170-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607242236-1BFWEY/quality/20260728-051113917-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Evaluator execution persists intent before launch but turns a known nonzero provider exit into an effect-in-doubt recovery path; the next invocation cannot distinguish a graceful read-only provider failure from a crash."
-commit: null
+    - "The failure path preserves the pre-launch intent, records only classification/exit metadata through the typed runtime error, stores no provider stderr or model output in the journal, and keeps retry bounded by the stopped episode state."
+commit:
+  hash: "e639c4abae9ceb0f79c39f9f70d64738fdf2d643"
+  message: "Record evaluator provider failures safely"
 comments:
   -
     author: "CODER"
@@ -81,6 +83,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: durable bounded supervisor episode journal, migration, and Hermes vertical slice with targeted verification."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -108,8 +113,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Supervisor episode rework verified locally: persisted EXECUTOR, CURATOR, and EVALUATOR episodes recover fail-closed; private provider usage is budgeted without public-schema drift."
+  -
+    type: "status"
+    at: "2026-07-28T05:11:48.174Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T05:01:45.349Z"
+doc_updated_at: "2026-07-28T05:11:48.174Z"
 doc_updated_by: "CODER"
 description: "Define a durable supervisor episode journal and hard execution budgets for bounded EXECUTOR, CURATOR, EVALUATOR, and rework cycles, with deterministic checkpoints, resume without replay, bounded feedback deltas, persisted-format migration, and limits for episodes, agent runs, tokens, wall time, changed files, diff lines, and no-progress episodes; integrate with the typed supervisor and runner without exposing the legacy ap loop or LoopSpec surface."
 sections:
@@ -210,6 +222,19 @@ extensions:
         schemaVersion: 1
         sequence: 1
         stateFingerprintDigest: "sha256:0708ba9b2e477068202564d4cf4d624ede0b95ee67d484df8cf62bc8cd127f90"
+      -
+        actor: "USER"
+        at: "2026-07-28T05:11:33.405Z"
+        authorityDigest: "sha256:dcfdc60d6f3281df43d53a50a6fea79f1ab195b4b46d353644fba613891569f8"
+        digest: "sha256:904b0943f7ec19949ad82ca611147825dc5be65d04ff908fa026c9ccf1a18f4a"
+        operationDigest: "sha256:e2945d25d29654fb26cdc502d1e54bd9e623a55ed6aede165ab346ec9920b889"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:148744c4892c1bb467b5c7be5591af31e9b8f3b3bec1502bf846f46dc92223e1"
+        schemaVersion: 1
+        sequence: 2
+        stateFingerprintDigest: "sha256:6a900f164aac2b5e9f5bf90204dc385cc766a4de6500003835c49a597c1f53e8"
     grants:
       -
         actor: "USER"
@@ -224,6 +249,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:0708ba9b2e477068202564d4cf4d624ede0b95ee67d484df8cf62bc8cd127f90"
         stateScopeDigest: "sha256:1cc9ede877816a55464cd799d60a0a69296c4f8bef5b55a63b36f4e6525b3970"
+      -
+        actor: "USER"
+        digest: "sha256:dcfdc60d6f3281df43d53a50a6fea79f1ab195b4b46d353644fba613891569f8"
+        expiresAt: "2026-07-28T05:26:33.405Z"
+        id: "authority-bd4f7aa6-084a-4d5d-bfb9-b1bd196f74e5"
+        issuedAt: "2026-07-28T05:11:33.405Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:e2945d25d29654fb26cdc502d1e54bd9e623a55ed6aede165ab346ec9920b889"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:6a900f164aac2b5e9f5bf90204dc385cc766a4de6500003835c49a597c1f53e8"
+        stateScopeDigest: "sha256:9cce98f32a648dc1db71591015dad1539b8c1c013dc9bdc1c9cca2c73df1509a"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "08dd47769434fc336d23a80d2d47f4fb0a265d74"
