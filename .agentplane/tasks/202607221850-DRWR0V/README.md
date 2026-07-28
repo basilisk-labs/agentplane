@@ -2,10 +2,10 @@
 id: "202607221850-DRWR0V"
 title: "Extract the shared typed workflow supervisor from Hermes"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -41,29 +41,29 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T00:12:08.203Z"
+  updated_at: "2026-07-28T00:35:00.243Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "425ee76ab656e27805ca20a5184531a8bbfeac1c"
+  evaluated_sha: "2411e888b94442fbbfa3fb7df1655164c4914727"
   blueprint_digest: "718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-DRWR0V/README.md"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-003500119-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The supervisor rejects unregistered, cross-task, stale, non-authorized, duplicate, approval, semantic, human, wait, and terminal routes before execution; attempts refresh route state exactly once after execution."
+    - "Route decisions are validated before projection and execution, explicit semantic and approval stops remain terminal, and attempted operations always refresh route state before control can return."
 commit:
-  hash: "5daf51d4c3b9ae78b5a3aed8fe3b416431117f0b"
+  hash: "2411e888b94442fbbfa3fb7df1655164c4914727"
   message: "♻️ DRWR0V supervisor: satisfy static lint gates"
 comments:
   -
@@ -78,6 +78,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: static lint gate fixed and committed at 5daf51d4c3b9; lint report is clean."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -125,8 +128,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files with zero errors and warnings."
+  -
+    type: "status"
+    at: "2026-07-28T00:35:24.554Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T00:30:59.901Z"
+doc_updated_at: "2026-07-28T00:35:24.555Z"
 doc_updated_by: "CODER"
 description: "RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop over typed operations; make Hermes and CLI adapters use it without raw shell route execution."
 sections:
@@ -312,6 +322,19 @@ extensions:
         schemaVersion: 1
         sequence: 4
         stateFingerprintDigest: "sha256:f5e1f84ed7836973f423cd1b916025febe1a7236b56dfb4e965e5489384da645"
+      -
+        actor: "USER"
+        at: "2026-07-28T00:35:11.338Z"
+        authorityDigest: "sha256:099e5c7eda6bd6c0ba46dbbbfe5fbc04f3efdd4c912260cac93e7e087d8e7b8e"
+        digest: "sha256:ffbf95ebd3a766e073eb6cc13bd7e95e3685b375a09d4e0980bed2dcaf3e9841"
+        operationDigest: "sha256:daab60af0159efce940ea0a86d8ba89b92faec9f55f3a49b046a76a53bf660aa"
+        operationId: "task.pre_merge_close"
+        outcome: "approved"
+        policyRule: "workflow.external_high_risk"
+        previousDigest: "sha256:e955ea37268e495943b77546d90a06960882861ec428100e11b58c8051d5565f"
+        schemaVersion: 1
+        sequence: 5
+        stateFingerprintDigest: "sha256:60ccf4df9081b6204c7fb92c0170df0f1f2f3ad58cf845352482c701d5df3948"
     grants:
       -
         actor: "USER"
@@ -365,6 +388,19 @@ extensions:
         schemaVersion: 1
         stateFingerprintDigest: "sha256:f5e1f84ed7836973f423cd1b916025febe1a7236b56dfb4e965e5489384da645"
         stateScopeDigest: "sha256:5a716797b6800d9c083cf048a2ee07b135f6b06fa4f7a032858222de3009eeef"
+      -
+        actor: "USER"
+        digest: "sha256:099e5c7eda6bd6c0ba46dbbbfe5fbc04f3efdd4c912260cac93e7e087d8e7b8e"
+        expiresAt: "2026-07-28T00:50:11.338Z"
+        id: "authority-ba54e910-faca-4574-be4a-e1c57cb72362"
+        issuedAt: "2026-07-28T00:35:11.338Z"
+        kind: "side_effect_authority"
+        operationDigest: "sha256:daab60af0159efce940ea0a86d8ba89b92faec9f55f3a49b046a76a53bf660aa"
+        operationId: "task.pre_merge_close"
+        policyRule: "workflow.external_high_risk"
+        schemaVersion: 1
+        stateFingerprintDigest: "sha256:60ccf4df9081b6204c7fb92c0170df0f1f2f3ad58cf845352482c701d5df3948"
+        stateScopeDigest: "sha256:06ea6565fbe6169dcb7be75d923f66f6703d8716fbfab5739b7befb28551e79b"
     schemaVersion: 1
   workflow_route_baseline:
     start_head_sha: "2d6582e7f017820668cbbbbe90c211e360e47394"
