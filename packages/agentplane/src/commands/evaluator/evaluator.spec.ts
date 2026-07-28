@@ -48,6 +48,7 @@ export type EvaluatorApplyParsed = {
 export type EvaluatorExecuteParsed = {
   taskId: string;
   evaluator: string;
+  replacement: boolean;
   json: boolean;
 };
 
@@ -178,6 +179,13 @@ export const evaluatorExecuteSpec: CommandSpec<EvaluatorExecuteParsed> = {
     },
     {
       kind: "boolean",
+      name: "replacement",
+      default: false,
+      description:
+        "Explicitly start a new bounded evaluator operation after terminal operation_failed; never reopens the failed operation or effect_in_doubt.",
+    },
+    {
+      kind: "boolean",
       name: "json",
       default: false,
       description: "Emit machine-readable episode and recorded artifact paths.",
@@ -196,6 +204,7 @@ export const evaluatorExecuteSpec: CommandSpec<EvaluatorExecuteParsed> = {
     taskId: String(raw.args.taskId ?? "").trim(),
     evaluator:
       typeof raw.opts.evaluator === "string" ? raw.opts.evaluator.trim() : "recovery-context",
+    replacement: raw.opts.replacement === true,
     json: raw.opts.json === true,
   }),
 };

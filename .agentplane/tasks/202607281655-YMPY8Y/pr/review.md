@@ -24,12 +24,19 @@ Created: 2026-07-28T16:57:04.791Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T16:57:04.791Z
+- Updated: 2026-07-28T16:57:08.231Z
 - Branch: task/202607281655-YMPY8Y/authorize-replacement-evaluator-episodes-after-t
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../evaluator/evaluator-execute-supervisor.ts      | 29 ++++++++
+ .../evaluator/evaluator-execute.command.test.ts    | 42 ++++++++++-
+ .../src/commands/evaluator/evaluator.command.ts    |  1 +
+ .../src/commands/evaluator/evaluator.spec.ts       |  9 +++
+ .../runner/supervisor-execution-episode.test.ts    | 83 ++++++++++++++++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 57 +++++++++++++++
+ packages/core/src/schemas/index.ts                 |  1 +
+ 7 files changed, 220 insertions(+), 2 deletions(-)
 ```
 
 </details>

@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
   completeSupervisorExecutionEpisode,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
@@ -207,6 +208,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
   task: TaskData;
   evaluator: EvaluatorModule;
   task_id: string;
+  replacement: boolean;
 }): Promise<EvaluatorSupervisorExecution> {
   const decision = await buildTaskRouteDecision({
     ctx: opts.command,
@@ -223,6 +225,28 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
     recover_intent: false,
   });
   let journal = opened.journal;
+  let replacementOfOperationKey: string | null = null;
+  if (opts.replacement) {
+    const failedOperation = journal.operations.at(-1);
+    try {
+      journal = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+      });
+    } catch (error) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "Evaluator --replacement requires a terminal operation_failed journal with a failed latest operation and remaining budget.",
+        context: {
+          stop_reason: journal.stop?.reason ?? null,
+          cause: error instanceof Error ? error.message : String(error),
+        },
+      });
+    }
+    replacementOfOperationKey = failedOperation?.operation_key ?? null;
+  }
   if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
     journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
       journal,
@@ -275,6 +299,9 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       evaluator: opts.evaluator,
       provenance: "evaluator_supplied",
     });
+    const replacementBinding = replacementOfOperationKey
+      ? { replacement_of_operation_key: replacementOfOperationKey }
+      : {};
     const start = () =>
       startSupervisorExecutionEpisode({
         journal,
@@ -283,6 +310,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
         operation_identity: {
           evaluator_id: prepared.work_order.evaluator.id,
           work_order_id: prepared.work_order.work_order_id,
+          ...replacementBinding,
         },
         precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
         authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
@@ -292,6 +320,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
           prepared.work_order_path,
         ),
         effect_ref: prepared.work_order.work_order_id,
+        ...replacementBinding,
       });
     let started = start();
     if (started.status === "stopped" && started.stop.reason === "stale_state") {

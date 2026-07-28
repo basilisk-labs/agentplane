@@ -4,6 +4,7 @@ import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   advanceSupervisorExecutionEpisodeState,
+  prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
@@ -122,6 +123,7 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     const next = start({ journal: completed, now: "2026-07-28T00:00:02.000Z" });
 
     expect(completed.usage).toMatchObject({ episodes: 1, agent_runs: 1, total_tokens: 15 });
+    expect(prepared.journal.operations[0]).not.toHaveProperty("replacement_of_operation_key");
     expect(next).toMatchObject({
       status: "stopped",
       stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
@@ -282,6 +284,87 @@ describe("SupervisorExecutionEpisodeJournal", () => {
         }),
       ).toThrow("requires a stopped journal with a completed latest operation");
     }
+  });
+
+  it("opens an explicit replacement after a known failure without changing its history", () => {
+    const first = start({ journal: journal() });
+    if (first.status !== "started") throw new Error("expected started episode");
+    const failed = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { classification: "provider_failed_before_typed_result" },
+      failed: true,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const failedOperation = failed.operations[0];
+    if (!failedOperation) throw new Error("expected failed operation");
+
+    const replacement = prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+      journal: failed,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      now: "2026-07-28T00:00:02.000Z",
+    });
+    const next = startSupervisorExecutionEpisode({
+      journal: replacement,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { replacement_of_operation_key: failedOperation.operation_key },
+      precondition_fingerprint_digest: NEXT_FINGERPRINT,
+      replacement_of_operation_key: failedOperation.operation_key,
+      now: "2026-07-28T00:00:03.000Z",
+    });
+    if (next.status !== "started") throw new Error("expected replacement operation");
+
+    expect(replacement).toMatchObject({
+      status: "running",
+      stop: null,
+      cursor: { phase: "ready", operation_key: null },
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      usage: { episodes: 1, agent_runs: 1 },
+      operations: [failedOperation],
+    });
+    expect(next.journal).toMatchObject({
+      usage: { episodes: 2, agent_runs: 2 },
+      operations: [
+        failedOperation,
+        {
+          status: "intent",
+          replacement_of_operation_key: failedOperation.operation_key,
+        },
+      ],
+    });
+  });
+
+  it("rejects replacement for effect-in-doubt or an exhausted known failure", () => {
+    const first = start({ journal: journal() });
+    if (first.status !== "started") throw new Error("expected started episode");
+    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
+      journal: first.journal,
+      state_fingerprint_digest: FINGERPRINT,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const limited = start({ journal: journal({ max_episodes: 1, max_agent_runs: 1 }) });
+    if (limited.status !== "started") throw new Error("expected limited episode");
+    const exhaustedFailure = completeSupervisorExecutionEpisode({
+      journal: limited.journal,
+      operation_key: limited.operation_key,
+      result: { classification: "provider_failed_before_typed_result" },
+      failed: true,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+
+    expect(() =>
+      prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal: effectInDoubt,
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+      }),
+    ).toThrow("requires a stopped operation_failed journal");
+    expect(() =>
+      prepareReplacementSupervisorExecutionEpisodeAfterFailure({
+        journal: exhaustedFailure,
+        state_fingerprint_digest: NEXT_FINGERPRINT,
+      }),
+    ).toThrow("requires remaining budget");
   });
 
   it("accounts for bounded feedback without storing its raw semantic content", () => {

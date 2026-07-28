@@ -83,13 +83,26 @@ async function replaceCodexWithFailure(fakeBin: string): Promise<void> {
   await chmod(path.join(fakeBin, "codex"), 0o755);
 }
 
-async function runWithFakeCodex(root: string, taskId: string, fakeBin: string) {
+async function runWithFakeCodex(
+  root: string,
+  taskId: string,
+  fakeBin: string,
+  executeArgs: string[] = [],
+) {
   const previous = process.env.PATH;
   process.env.PATH = `${fakeBin}${path.delimiter}${previous ?? ""}`;
   try {
     const io = captureStdIO();
     try {
-      const code = await runCli(["evaluator", "execute", taskId, "--json", "--root", root]);
+      const code = await runCli([
+        "evaluator",
+        "execute",
+        taskId,
+        ...executeArgs,
+        "--json",
+        "--root",
+        root,
+      ]);
       return { code, stdout: io.stdout, stderr: io.stderr };
     } finally {
       io.restore();
@@ -359,5 +372,30 @@ describe("evaluator execute supervisor episode", () => {
     expect(retry.code).toBe(8);
     const afterRetry = validateSupervisorExecutionEpisodeJournal(await store.read());
     expect(afterRetry.usage).toMatchObject({ episodes: 1, agent_runs: 1 });
+
+    await installFakeCodex(root);
+    const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
+    expect(replacement.code, replacement.stderr).toBe(0);
+    expect(JSON.parse(replacement.stdout)).toMatchObject({
+      verdict: "pass",
+      supervisor_episode: {
+        status: "running",
+        cursor: { phase: "ready", operation_key: null },
+        usage: { episodes: 2, agent_runs: 2, total_tokens: 150 },
+      },
+    });
+    const replaced = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(replaced.operations[0]).toEqual(recorded.operations[0]);
+    expect(replaced).toMatchObject({
+      operations: [
+        { status: "failed" },
+        {
+          role: "EVALUATOR",
+          kind: "evaluator_episode",
+          status: "completed",
+          replacement_of_operation_key: recorded.operations[0]?.operation_key,
+        },
+      ],
+    });
   });
 });

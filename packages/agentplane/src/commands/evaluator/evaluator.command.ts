@@ -306,6 +306,7 @@ export const runEvaluatorExecute: CommandHandler<EvaluatorExecuteParsed> = async
     task,
     evaluator,
     task_id: p.taskId,
+    replacement: p.replacement,
   });
 
   const currentTask = await loadTaskFromContext({ ctx: command, taskId: p.taskId });
