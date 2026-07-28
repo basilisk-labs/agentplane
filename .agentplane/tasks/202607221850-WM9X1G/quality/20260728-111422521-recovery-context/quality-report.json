@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-WM9X1G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T11:14:22.690Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Reviewed commit 5ee3c3bb5: journal-only helpers are no longer public, and concurrent effect-resolution retries only an unstable active-claim read within the existing bounded observation loop.",
+  "evaluated_sha": "5ee3c3bb55e6a8a7905d7b9a6ee3f9595ffdebbb",
+  "blueprint_digest": "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e",
+  "findings": [
+    "No external source consumer imports the six journal helpers; removing their export modifiers eliminates the new Knip debt without changing runtime behavior.",
+    "A transient active-claim collision is represented as unknown and retried; only a stable null claim permits concurrent retirement convergence, and non-transient errors remain fail-closed."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/context/ingest-run-journal.ts",
+    "packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts",
+    "packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts",
+    "focused Vitest: effect-resolution 8/8; context ingest/check 27/27",
+    "bun run knip:check; bun run typecheck; bun run task-state:check; routing check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The local full test:fast process completed but its terminal result was not recoverable; the replacement hosted full CI remains mandatory before integration."
+  ]
+}

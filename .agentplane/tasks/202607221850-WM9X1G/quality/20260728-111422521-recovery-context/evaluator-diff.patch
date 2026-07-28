@@ -1,0 +1,200 @@
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt b/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
+index 23b3e9e57..a4cad78e0 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
+@@ -7,4 +7,6 @@
+  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
+  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+- 9 files changed, 1325 insertions(+), 20 deletions(-)
++ .../usecases/task-run-effect-resolution.test.ts    |  36 +-
++ .../runner/usecases/task-run-effect-resolution.ts  |  13 +
++ 11 files changed, 1373 insertions(+), 21 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+index 0f540d83c..0bdb269c3 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+@@ -41,7 +41,9 @@ ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
+  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
+  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+- 9 files changed, 1325 insertions(+), 20 deletions(-)
++ .../usecases/task-run-effect-resolution.test.ts    |  36 +-
++ .../runner/usecases/task-run-effect-resolution.ts  |  13 +
++ 11 files changed, 1373 insertions(+), 21 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+index aa92364f1..05d422e7d 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
+   "created_at": "2026-07-28T08:13:34.859Z",
+-  "diffstat_sha256": "sha256:fd530a9156deff0e2169f6fa262100c4f458de413e857ee5a9df924825678457",
++  "diffstat_sha256": "sha256:29bd423085197a576dbdee1b0c53b3bad541ef75fdddb243aac456772fc748bb",
+   "last_verified_at": "2026-07-28T08:57:37.751Z",
+   "last_verified_diffstat_sha256": "sha256:fd530a9156deff0e2169f6fa262100c4f458de413e857ee5a9df924825678457",
+   "pr_number": 4654,
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+index a70d59c9c..b1b3a6005 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+@@ -38,7 +38,9 @@ Created: 2026-07-28T08:13:34.859Z
+  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
+  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+- 9 files changed, 1325 insertions(+), 20 deletions(-)
++ .../usecases/task-run-effect-resolution.test.ts    |  36 +-
++ .../runner/usecases/task-run-effect-resolution.ts  |  13 +
++ 11 files changed, 1373 insertions(+), 21 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/context/ingest-run-journal.ts b/packages/agentplane/src/context/ingest-run-journal.ts
+index b26bd9e9e..1656d1e45 100644
+--- a/packages/agentplane/src/context/ingest-run-journal.ts
++++ b/packages/agentplane/src/context/ingest-run-journal.ts
+@@ -23,7 +23,7 @@ const PREPARATION_PHASES = [
+   "pack_writing",
+ ] as const;
+ 
+-export const CONTEXT_INGEST_RUN_PHASES = [
++const CONTEXT_INGEST_RUN_PHASES = [
+   ...PREPARATION_PHASES,
+   "pack_written",
+   "curator_running",
+@@ -76,7 +76,7 @@ export type ContextIngestRunDiagnostic = {
+   message: string;
+ };
+ 
+-export function contextIngestRequestFingerprint(
++function contextIngestRequestFingerprint(
+   parsed: Pick<ContextIngestParsed, "mode" | "sources">,
+ ): string {
+   return fingerprint({ mode: parsed.mode, sources: [...parsed.sources].toSorted() });
+@@ -91,7 +91,7 @@ export function contextIngestManifestFingerprint(manifest: ManifestLock): string
+   });
+ }
+ 
+-export function contextIngestSourceFingerprint(entries: ManifestEntry[]): string {
++function contextIngestSourceFingerprint(entries: ManifestEntry[]): string {
+   return fingerprint(normalizeEntries(entries));
+ }
+ 
+@@ -267,11 +267,11 @@ export async function releaseContextIngestRunLease(
+   });
+ }
+ 
+-export function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
++function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
+   return (PREPARATION_PHASES as readonly string[]).includes(phase);
+ }
+ 
+-export function contextIngestRunRetryCommand(run: ContextIngestRunJournal): string {
++function contextIngestRunRetryCommand(run: ContextIngestRunJournal): string {
+   if (run.request.mode === "all") return "agentplane context ingest --all";
+   if (run.request.mode === "changed") return "agentplane context ingest --changed";
+   return `agentplane context ingest ${run.request.sources.map((source) => JSON.stringify(source)).join(" ")}`;
+@@ -412,7 +412,7 @@ export function assertContextIngestRunManifest(
+   });
+ }
+ 
+-export async function readContextIngestRun(
++async function readContextIngestRun(
+   root: string,
+   runId: string,
+ ): Promise<ContextIngestRunJournal | null> {
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+index 443da4b20..fb40427f4 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+@@ -3,13 +3,14 @@ import { readFile, rm } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { evaluateStateFingerprintPrecondition } from "@agentplaneorg/core/schemas";
+-import { afterEach, describe, expect, it } from "vitest";
++import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import { loadCommandContext } from "../../commands/shared/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
+ import { advanceRunnerEffectJournal, startRunnerEffectOperation } from "../effect-operation.js";
+ import { evolveRunnerRunState, writeRunnerRunState } from "../artifacts.js";
+ import { RunnerRunRepository } from "../run-repository.js";
++import * as stableFile from "../stable-file.js";
+ import { readTaskRunnerActiveClaim } from "./task-run-active-claim.js";
+ import {
+   configureCustomRunner,
+@@ -216,6 +217,39 @@ describe("task runner effect resolution", () => {
+     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
+   });
+ 
++  it("retries an unstable active-claim observation while a concurrent resolution retires it", async () => {
++    const fixture = await uncertainEffectFixture();
++    const originalRead = stableFile.readStableRegularTextNoFollow;
++    let activeClaimReadCount = 0;
++    const readSpy = vi
++      .spyOn(stableFile, "readStableRegularTextNoFollow")
++      .mockImplementation(async (...args) => {
++        if (args[1] === "runner active claim") {
++          activeClaimReadCount += 1;
++          // The two resolve requests each validate the claim once, then the
++          // winner reads it to retire. The losing resolver observes it again
++          // while waiting for that retirement to settle.
++          if (activeClaimReadCount === 4) {
++            throw new Error(`runner active claim changed while it was being read: ${args[0]}`);
++          }
++        }
++        return await originalRead(...args);
++      });
++
++    try {
++      const input = resolutionInput(fixture);
++      const resolutions = await Promise.all([
++        resolveTaskRunnerEffect(input),
++        resolveTaskRunnerEffect(input),
++      ]);
++
++      expect(resolutions[0].resolution.digest).toBe(resolutions[1].resolution.digest);
++      expect(activeClaimReadCount).toBeGreaterThanOrEqual(5);
++    } finally {
++      readSpy.mockRestore();
++    }
++  });
++
+   it("rejects authority mismatch before creating an intent", async () => {
+     const fixture = await uncertainEffectFixture();
+     await expect(
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+index aded572ab..6eed2be30 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+@@ -107,6 +107,16 @@ function isConcurrentRetirementError(error: unknown): boolean {
+   );
+ }
+ 
++function isTransientActiveClaimReadCollision(error: unknown): boolean {
++  const message = error instanceof Error ? error.message : String(error);
++  return (
++    message.startsWith("runner active claim ") &&
++    (message.includes(" changed before it could be read:") ||
++      message.includes(" changed while it was being read:") ||
++      message.includes(" path changed while it was being read:"))
++  );
++}
++
+ async function waitForConcurrentResolutionRetirement(opts: {
+   repository: RunnerRunRepository;
+   git_root: string;
+@@ -123,6 +133,9 @@ async function waitForConcurrentResolutionRetirement(opts: {
+         workflow_dir: opts.workflow_dir,
+         task_id: opts.task_id,
+         run_id: opts.run_id,
++      }).catch((error: unknown) => {
++        if (isTransientActiveClaimReadCollision(error)) return undefined;
++        throw error;
+       }),
+     ]);
+     if (record.state.effect_resolution?.digest === opts.resolution.digest && !activeClaim) {
