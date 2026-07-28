@@ -5,6 +5,7 @@ import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
+  validateSupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
 import { mkGitRepoRoot } from "@agentplane/testkit";
 
@@ -310,6 +311,43 @@ describe("persisted supervisor execution episodes", () => {
       changed_files: 2,
     });
     expect(outcome.journal.status).toBe("running");
+  });
+
+  it("charges observed wall time when a runner executor throws", async () => {
+    const root = await mkGitRepoRoot();
+    const decision = fixtureDecision(root, 1);
+    const outcome = await supervisePersistedWorkflowEpisode({
+      decision,
+      git_root: root,
+      task_revision: 1,
+      execute: async () => {
+        await new Promise<void>((resolve) => setTimeout(resolve, 20));
+        throw new Error("runner fixture failed");
+      },
+      refresh: () => Promise.resolve(fixtureDecision(root, 2)),
+      budget: {
+        max_episodes: 2,
+        max_agent_runs: 2,
+        max_input_tokens: 10,
+        max_output_tokens: 10,
+        max_total_tokens: 20,
+        max_wall_time_ms: 10_000,
+        max_changed_files: 10,
+        max_diff_lines: null,
+        max_no_progress_episodes: 2,
+      },
+    });
+    const stored = validateSupervisorExecutionEpisodeJournal(
+      await createSupervisorEpisodeStore(outcome.journal_path).read(),
+    );
+
+    expect(outcome.execution).toMatchObject({ result: { status: "failed" } });
+    expect(stored).toMatchObject({
+      status: "stopped",
+      stop: { reason: "operation_failed" },
+      usage: { episodes: 1, agent_runs: 1 },
+    });
+    expect(stored.usage.wall_time_ms).toBeGreaterThan(0);
   });
 
   it("keeps a CURATOR context run in the same journal and budget boundary", async () => {

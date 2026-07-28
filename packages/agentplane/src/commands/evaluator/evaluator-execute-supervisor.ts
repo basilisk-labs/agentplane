@@ -393,6 +393,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       }
       journal = started.journal;
       let episode: Awaited<ReturnType<typeof executePreparedEvaluatorEpisode>>;
+      const providerStartedAt = Date.now();
       try {
         episode = await executePreparedEvaluatorEpisode({ ctx: opts.command, prepared });
       } catch (error) {
@@ -403,6 +404,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
           // output can contain sensitive data and belong neither in the task
           // record nor in the durable supervisor journal.
           result: evaluatorProviderFailureRecord(error),
+          usage: { wall_time_ms: Math.max(0, Date.now() - providerStartedAt) },
           failed: true,
         });
         await opened.store.write(journal);

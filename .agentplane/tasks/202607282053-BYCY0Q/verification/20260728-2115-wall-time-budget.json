@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607282053-BYCY0Q",
+  "scope": "Record failed provider and runner execution duration before replacement eligibility is evaluated; preserve external-wait semantics.",
+  "checks": [
+    {
+      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/shared/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000 --reporter=dot",
+      "status": "passed",
+      "exit_code": 0,
+      "summary": "31 tests; covers aged failed evaluator journal, a real provider exception that exhausts observed wall time before replacement, and a runner executor exception."
+    },
+    {
+      "command": "bun run typecheck",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "bun run format:changed",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "bun run lint:core",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "bun run hotspots:check",
+      "status": "passed",
+      "exit_code": 0,
+      "summary": "Passed with pre-existing hotspot warnings; no threshold breach."
+    },
+    {
+      "command": "bun run test:fast",
+      "status": "passed",
+      "exit_code": 0,
+      "summary": "481 files, 3362 tests."
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed",
+      "exit_code": 0
+    }
+  ]
+}

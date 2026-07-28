@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607282053-BYCY0Q-c485daae8d4750fdb27125bd",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282053-BYCY0Q-charge-supervisor-wall-time-budget-from-observed",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282053-BYCY0Q-charge-supervisor-wall-time-budget-from-observed/.agentplane/tasks/202607282053-BYCY0Q/quality/20260728-210406273-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-28T21:04:06.498Z",
+  "ended_at": "2026-07-28T21:05:45.604Z",
+  "stdout_bytes": 110896,
+  "stderr_bytes": 9257,
+  "provider_usage": {
+    "input_tokens": 397494,
+    "output_tokens": 4457,
+    "total_tokens": 401951
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:775b38dc537ae1858109b48cbbe29aa049f8b2b0f1066ed2671c85ed24ce6edb"
+}

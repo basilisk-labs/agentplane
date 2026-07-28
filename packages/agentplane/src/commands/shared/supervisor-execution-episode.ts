@@ -437,6 +437,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
     decision: opts.decision,
     mode: "execute",
     execute: async ({ operation: invoked }) => {
+      const operationStartedAt = Date.now();
       try {
         const result = await opts.execute({ operation: invoked });
         const observed = observedRunnerUsage({ result, budget: journal.budget });
@@ -467,6 +468,7 @@ export async function supervisePersistedWorkflowEpisode(opts: {
           journal,
           operation_key: started.operation_key,
           result: { error: error instanceof Error ? error.name : "unknown_error" },
+          usage: { wall_time_ms: Math.max(0, Date.now() - operationStartedAt) },
           failed: true,
         });
         await store.write(journal);

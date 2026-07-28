@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import {
   completeSupervisorExecutionEpisode,
   createSupervisorExecutionEpisodeJournal,
+  digestSupervisorEpisodeValue,
   prepareReplacementSupervisorExecutionEpisodeAfterFailure,
   recoverSupervisorExecutionEpisodeJournal,
   startSupervisorExecutionEpisode,
@@ -20,6 +21,7 @@ import {
   createSupervisorEpisodeStore,
   resolveSupervisorExecutionEpisodePath,
 } from "../shared/supervisor-execution-episode.js";
+import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import { cmdTaskAdd } from "../workflow.js";
 
 const execFileAsync = promisify(execFile);
@@ -119,8 +121,16 @@ async function installFakeCodex(root: string): Promise<string> {
   return bin;
 }
 
-async function replaceCodexWithFailure(fakeBin: string): Promise<void> {
-  await writeFile(path.join(fakeBin, "codex"), "#!/bin/sh\nexit 99\n", "utf8");
+async function replaceCodexWithFailure(fakeBin: string, delayMs = 0): Promise<void> {
+  const source = [
+    "#!/usr/bin/env node",
+    "const fs = require('node:fs');",
+    "const invocationLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;",
+    "if (invocationLog) fs.appendFileSync(invocationLog, 'provider-started\\n');",
+    `setTimeout(() => process.exit(99), ${delayMs});`,
+    "",
+  ].join("\n");
+  await writeFile(path.join(fakeBin, "codex"), source, "utf8");
   await chmod(path.join(fakeBin, "codex"), 0o755);
 }
 
@@ -471,6 +481,7 @@ describe("evaluator execute supervisor episode", () => {
       usage: { episodes: 1, agent_runs: 1 },
       operations: [{ role: "EVALUATOR", kind: "evaluator_episode", status: "failed" }],
     });
+    expect(recorded.usage.wall_time_ms).toBeGreaterThan(0);
     expect(JSON.stringify(recorded)).not.toContain("provider diagnostics");
 
     const retry = await runWithFakeCodex(root, taskId, fakeBin);
@@ -557,55 +568,34 @@ describe("evaluator execute supervisor episode", () => {
     expect(exhaustedReplacement.stderr).toContain("requires a terminal operation_failed journal");
   });
 
-  it("allows one replacement after external waiting when observed wall time remains", async () => {
+  it("allows one replacement after external waiting following a real provider failure", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202607280000-EE09";
     await addTask(root, taskId);
     await commitTarget(root);
     const fakeBin = await installFakeCodex(root);
+    await replaceCodexWithFailure(fakeBin);
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
     });
     const store = createSupervisorEpisodeStore(journalPath);
-    const fingerprint = `sha256:${"a".repeat(64)}`;
-    const seeded = createSupervisorExecutionEpisodeJournal({
-      task_id: taskId,
-      task_revision: 1,
-      state_fingerprint_digest: fingerprint,
-      budget: {
-        max_episodes: 3,
-        max_agent_runs: 3,
-        max_input_tokens: 1000,
-        max_output_tokens: 1000,
-        max_total_tokens: 2000,
-        max_wall_time_ms: 10_000,
-        max_changed_files: 10,
-        max_diff_lines: null,
-        max_no_progress_episodes: 2,
-      },
-      now: "2026-07-27T00:00:00.000Z",
-    });
-    const intent = startSupervisorExecutionEpisode({
-      journal: seeded,
-      role: "EVALUATOR",
-      kind: "evaluator_episode",
-      operation_identity: { fixture: "external-wait" },
-      precondition_fingerprint_digest: fingerprint,
-      now: "2026-07-27T00:00:00.000Z",
-    });
-    if (intent.status !== "started") throw new Error("expected failed evaluator fixture intent");
+    const failed = await runWithFakeCodex(root, taskId, fakeBin);
+    expect(failed.code).toBe(8);
+    const recordedFailure = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const { digest: _ignoredDigest, ...failurePayload } = recordedFailure;
+    const agedFailurePayload = {
+      ...failurePayload,
+      started_at: "2000-01-01T00:00:00.000Z",
+    };
     await store.write(
-      completeSupervisorExecutionEpisode({
-        journal: intent.journal,
-        operation_key: intent.operation_key,
-        result: { fixture: "provider-failed" },
-        usage: { wall_time_ms: 5 },
-        failed: true,
-        now: "2026-07-27T00:00:01.000Z",
+      validateSupervisorExecutionEpisodeJournal({
+        ...agedFailurePayload,
+        digest: digestSupervisorEpisodeValue(agedFailurePayload),
       }),
     );
+    await installFakeCodex(root);
 
     const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
 
@@ -618,13 +608,71 @@ describe("evaluator execute supervisor episode", () => {
         { status: "failed" },
         {
           status: "completed",
-          replacement_of_operation_key: intent.operation_key,
+          replacement_of_operation_key: recordedFailure.operations[0]?.operation_key,
         },
       ],
     });
-    expect(recorded.usage.wall_time_ms).toBeTypeOf("number");
-    expect(recorded.usage.wall_time_ms).toBeGreaterThanOrEqual(5);
-    expect(recorded.usage.wall_time_ms).toBeLessThan(10_000);
+    expect(recorded.usage.wall_time_ms).toBeGreaterThanOrEqual(recordedFailure.usage.wall_time_ms);
+  });
+
+  it("does not launch a replacement when a real provider failure exhausts observed wall time", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE10";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    const invocationLog = path.join(root, "provider-invocations.log");
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    const decision = await buildTaskRouteDecision({
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      includeRemote: false,
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    await store.write(
+      createSupervisorExecutionEpisodeJournal({
+        task_id: taskId,
+        task_revision: task.frontmatter.revision ?? null,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        budget: {
+          max_episodes: 50,
+          max_agent_runs: 50,
+          max_input_tokens: 3_000_000,
+          max_output_tokens: 1_000_000,
+          max_total_tokens: 4_000_000,
+          max_wall_time_ms: 1000,
+          max_changed_files: 2000,
+          max_diff_lines: null,
+          max_no_progress_episodes: 3,
+        },
+      }),
+    );
+    const previousLog = process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;
+    process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS = invocationLog;
+    try {
+      await replaceCodexWithFailure(fakeBin, 1100);
+      const failed = await runWithFakeCodex(root, taskId, fakeBin);
+      expect(failed.code).toBe(3);
+      const recordedFailure = validateSupervisorExecutionEpisodeJournal(await store.read());
+      expect(recordedFailure.usage.wall_time_ms).toBeGreaterThanOrEqual(1000);
+      expect(recordedFailure.budget.max_wall_time_ms).toBe(1000);
+      await installFakeCodex(root);
+
+      const replacement = await runWithFakeCodex(root, taskId, fakeBin, ["--replacement"]);
+
+      expect(replacement.code).toBe(2);
+      expect(replacement.stderr).toContain("requires a terminal operation_failed journal");
+      expect(await readFile(invocationLog, "utf8")).toBe("provider-started\n");
+    } finally {
+      if (previousLog === undefined) delete process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS;
+      else process.env.AGENTPLANE_FAKE_CODEX_INVOCATIONS = previousLog;
+    }
   });
 
   it("atomically consumes one replacement authorization before any second provider start", async () => {

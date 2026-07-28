@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607282053-BYCY0Q-c485daae8d4750fdb27125bd",
+  "task_id": "202607282053-BYCY0Q",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Следующему исполнителю нужно учитывать наблюдаемую длительность также в путях исключения провайдера и runner, затем заменить вручную подготовленный failure journal интеграционным тестом реального сбоя и приложить конкретные результаты обязательных проверок.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Новый расчёт полностью полагается на usage.wall_time_ms, но тест замены вручную записывает длительность неуспешного провайдера и поэтому не проверяет реальный путь provider failure. В рабочем пути завершение после исключения может не передать длительность, из-за чего неуспешный запуск не расходует max_wall_time_ms и замена получает завышенный остаток бюджета.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-210406273-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:f70a56a5343b026bf8ae082fced2cee7efe6e1bcf77f05a01d6044c4efc4c073",
+          "line": 709,
+          "lines": "665-732",
+          "section": "evaluator replacement test"
+        },
+        {
+          "path": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-210406273-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:f70a56a5343b026bf8ae082fced2cee7efe6e1bcf77f05a01d6044c4efc4c073",
+          "line": 810,
+          "lines": "792-839",
+          "section": "wall-time exhaustion calculation"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Замороженное свидетельство проверок содержит только итоговое утверждение TESTER: отсутствуют команды, результаты и записи, подтверждающие заявленные focused tests, typecheck, lint, format и test:fast.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-210406273-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:43202dc118a70ae4e0206454fb1bd709d5d455f99d9417a5111eefcb41172592",
+          "line": 3,
+          "lines": "1-12",
+          "section": "observed checks"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "line": 15,
+          "lines": "13-24",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607282053-BYCY0Q/quality/20260728-210406273-recovery-context/evaluator-result.json"
+}

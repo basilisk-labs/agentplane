@@ -1,0 +1,4 @@
+ .../evaluator/evaluator-execute.command.test.ts    | 70 ++++++++++++++++++++++
+ .../runner/supervisor-execution-episode.test.ts    | 39 ++++++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 15 +----
+ 3 files changed, 111 insertions(+), 13 deletions(-)

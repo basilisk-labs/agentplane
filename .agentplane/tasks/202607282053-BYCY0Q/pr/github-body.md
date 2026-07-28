@@ -15,19 +15,27 @@ Make max_wall_time_ms charge cumulative supervisor-observed provider or runner d
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified: focused supervisor/evaluator regression tests, typecheck, lint, format, policy routing,
+hotspots, and full test:fast passed on abba7d47a.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T20:54:50.543Z
+- Updated: 2026-07-28T20:54:54.418Z
 - Branch: task/202607282053-BYCY0Q/charge-supervisor-wall-time-budget-from-observed
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../evaluator/evaluator-execute.command.test.ts    | 70 ++++++++++++++++++++++
+ .../runner/supervisor-execution-episode.test.ts    | 39 ++++++++++++
+ .../src/runner/supervisor-execution-episode.ts     | 15 +----
+ 3 files changed, 111 insertions(+), 13 deletions(-)
 ```
 
 </details>
