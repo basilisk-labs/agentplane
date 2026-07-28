@@ -1,0 +1,48 @@
+diff --git a/.agentplane/tasks/202607280948-N3XC7M/README.md b/.agentplane/tasks/202607280948-N3XC7M/README.md
+index a61016984..91998f5c8 100644
+--- a/.agentplane/tasks/202607280948-N3XC7M/README.md
++++ b/.agentplane/tasks/202607280948-N3XC7M/README.md
+@@ -4,7 +4,7 @@ title: "Retry transient runner cancellation intent reads"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 7
++revision: 8
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -26,11 +26,16 @@ verification:
+   updated_by: null
+   note: null
+   attempts: 0
+-commit: null
++commit:
++  hash: "1a49629678f2a08df884ea70aa429ede775151fd"
++  message: "fix: retry runner cancellation intent reads"
+ comments:
+   -
+     author: "CODER"
+     body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implemented bounded retry for transient cancellation-intent publication collisions; malformed and unsafe reads remain fail-closed. Focused runner tests and typecheck pass; the full fast suite exposed independent teardown timeouts."
+ events:
+   -
+     type: "status"
+@@ -39,8 +44,15 @@ events:
+     from: "TODO"
+     to: "DOING"
+     note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-28T10:01:26.764Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implemented bounded retry for transient cancellation-intent publication collisions; malformed and unsafe reads remain fail-closed. Focused runner tests and typecheck pass; the full fast suite exposed independent teardown timeouts."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T09:49:46.640Z"
++doc_updated_at: "2026-07-28T10:01:26.764Z"
+ doc_updated_by: "CODER"
+ description: "Fix the CI-proven race where an atomically published runner cancellation intent changes during a stable read and is treated as a fatal execution error. Retry only transient immutable-publication collisions, preserve fail-closed behavior for malformed or unsafe records, and add deterministic regression coverage."
+ sections:

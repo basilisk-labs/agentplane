@@ -12,8 +12,8 @@ Created: 2026-07-28T09:49:46.757Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: The cancellation-intent regression, impacted runner files, typecheck, formatting, and diff checks pass. The local all-project fast run failed only in unrelated parallel teardown timeouts; hosted CI remains the merge gate.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,12 +24,14 @@ Created: 2026-07-28T09:49:46.757Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T09:49:46.757Z
+- Updated: 2026-07-28T09:51:06.067Z
 - Branch: task/202607280948-N3XC7M/retry-transient-runner-cancellation-intent-reads
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/runner/adapters/execution-control.test.ts  | 69 +++++++++++++++++++++-
+ .../src/runner/adapters/execution-control.ts       | 40 +++++++++----
+ 2 files changed, 97 insertions(+), 12 deletions(-)
 ```
 
 </details>
