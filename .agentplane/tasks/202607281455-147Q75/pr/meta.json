@@ -8,10 +8,10 @@
   "pr_number": 4660,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4660",
   "pre_merge_closure": {
-    "basis_commit": "2a83376fe1a6b69d98ece871ecd2b0c200a204ba",
+    "basis_commit": "4166c925343d0ea836bc65297689f4b179382602",
     "branch": "task/202607281455-147Q75/repair-evaluator-response-schema",
     "pr_number": 4660,
-    "recorded_at": "2026-07-28T15:11:53.714Z",
+    "recorded_at": "2026-07-28T15:38:08.751Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
