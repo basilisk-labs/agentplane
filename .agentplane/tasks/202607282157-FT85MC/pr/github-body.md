@@ -19,8 +19,9 @@ RF-QUALITY: evaluator review must freeze the complete task branch diff against i
 - Note:
 
 ```text
-Independent focused verification passed: complete branch delta, binary and rename evidence, durable
-verification records, direct fallback, and missing-base failure remain covered.
+Independent verification passed after the fail-closed fix: a verification write failure cannot
+persist success, and concurrent verifies leave final task state matched to exactly one durable
+record.
 ```
 - Canonical workflow state lives in the task README.
 
