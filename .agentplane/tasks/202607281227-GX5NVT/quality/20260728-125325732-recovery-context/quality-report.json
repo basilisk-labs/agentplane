@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281227-GX5NVT",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T12:53:25.885Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "The hosted failure was limited to test harness lint. The replacement mock preserves the same EPIPE event ordering while satisfying repository lint rules; evaluator stdin failure semantics are unchanged.",
+  "evaluated_sha": "62fa0310eb7acdf90385ce7ce7dd900ff8f9964d",
+  "blueprint_digest": "01e50c6e6be52a0e7a2cebf32aa6f8a3d70ea438ee9bcb35e88fc07149a779b2",
+  "findings": [
+    "Reviewed the revised mock: it preserves child on/emit ordering and PassThrough stdin behavior, so EPIPE is still dispatched before close and asserts the same stdin_write_failure contract.",
+    "The exact GitHub routed evaluator fast path now passes locally, including formatting, lint, build, and targeted evaluator tests."
+  ],
+  "evidence_refs": [
+    "packages/agentplane/src/commands/evaluator/evaluator-episode.stdin.test.ts",
+    "packages/agentplane/src/commands/evaluator/evaluator-episode.ts",
+    ".agentplane/tasks/202607281227-GX5NVT/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "The previous hosted failure was lint-only; the rerun must still confirm GitHub's fresh PR verification on the published head."
+  ]
+}
