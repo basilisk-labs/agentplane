@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607281655-YMPY8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T19:00:29.545Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "7d46071af90efdbfc80473de79339cb44148c27e",
+  "blueprint_digest": "34e29918e43eeb804003f15d8f35f548f11ce9abec4fd702725f31e2be11b138",
+  "findings": [
+    "The replacement implementation and compatibility ratchet are covered by frozen verification records; the required real provider episode is correctly deferred to the explicit post-integration gate."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-181738-replacement-rework.json",
+    ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-184101-compatibility-ratchet.json",
+    ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-185909648-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The post-integration environment and retained journal for task 202607221850-8HBF4J remain available for the mandatory real replacement episode."
+  ],
+  "residual_risks": []
+}
