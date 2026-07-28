@@ -4,7 +4,7 @@ title: "Freeze complete branch evidence for evaluator review"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -21,38 +21,39 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T22:08:53.597Z"
+  updated_at: "2026-07-28T22:19:19.341Z"
   updated_by: "TESTER"
-  note: "Focused evaluator evidence regression tests (17), Prettier, ESLint, typecheck, policy routing, and doctor passed. The work order now freezes the merge-base-to-target diff with base provenance; direct root/single-commit behavior and missing branch_pr base failure are covered."
+  note: "Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T22:10:01.064Z"
+  updated_at: "2026-07-28T22:20:55.685Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "fae38597465dbcea157645ec28f47ea3564c1481"
+  evaluated_sha: "d70a8672397ee9b45a09ce68ae5f48ad3d1b543e"
   blueprint_digest: "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9"
   evidence_refs:
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607282157-FT85MC/README.md"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json"
+    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen review contains no durable verification records: verification_records and runner_history are empty, while the only check evidence is a narrative verification note."
+    - "Verification state is persisted before the durable verification record is written, so a filesystem failure can leave the task verified without the machine-readable evidence required by evaluator review."
 commit:
-  hash: "fae38597465dbcea157645ec28f47ea3564c1481"
-  message: "🐛 FT85MC code: preserve direct evaluator fallback"
+  hash: "d70a8672397ee9b45a09ce68ae5f48ad3d1b543e"
+  message: "🐛 FT85MC code: freeze durable verification records"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -63,6 +64,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation amended: direct-mode single-commit fallback remains explicit while branch_pr review stays fail-closed without a resolvable base."
+  -
+    author: "CODER"
+    body: "Rework committed: durable verification records are produced by the supported verify command and evaluator regression coverage now includes full history, binary content, and rename detection."
 events:
   -
     type: "status"
@@ -91,8 +95,21 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused evaluator evidence regression tests (17), Prettier, ESLint, typecheck, policy routing, and doctor passed. The work order now freezes the merge-base-to-target diff with base provenance; direct root/single-commit behavior and missing branch_pr base failure are covered."
+  -
+    type: "status"
+    at: "2026-07-28T22:18:38.509Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework committed: durable verification records are produced by the supported verify command and evaluator regression coverage now includes full history, binary content, and rename detection."
+  -
+    type: "verify"
+    at: "2026-07-28T22:19:19.341Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered."
 doc_version: 3
-doc_updated_at: "2026-07-28T22:08:54.276Z"
+doc_updated_at: "2026-07-28T22:19:20.061Z"
 doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
@@ -134,6 +151,60 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607282157-FT85MC
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-28T22:19:19.341Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:18:38.509Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+    Details:
+
+    Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Scope: formatting of touched source and tests
+
+    Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass
+    Scope: static analysis of touched source and tests
+
+    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+    Result: pass (47 tests)
+    Scope: durable verification records and full evaluator evidence
+
+    Command: bun run typecheck
+    Result: pass
+    Scope: repository TypeScript build
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Scope: policy routing
+
+    Command: agentplane doctor
+    Result: pass with 3 pre-existing historical task-archive warnings
+    Scope: workflow contract and workspace health
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -202,6 +273,60 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607282157-FT85MC
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-28T22:19:19.341Z — VERIFY — ok
+
+By: TESTER
+
+Note: Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:18:38.509Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
+
+Details:
+
+Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Scope: formatting of touched source and tests
+
+Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass
+Scope: static analysis of touched source and tests
+
+Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+Result: pass (47 tests)
+Scope: durable verification records and full evaluator evidence
+
+Command: bun run typecheck
+Result: pass
+Scope: repository TypeScript build
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Scope: policy routing
+
+Command: agentplane doctor
+Result: pass with 3 pre-existing historical task-archive warnings
+Scope: workflow contract and workspace health
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

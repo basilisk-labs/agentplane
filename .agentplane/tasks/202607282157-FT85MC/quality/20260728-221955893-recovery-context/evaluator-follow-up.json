@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607282157-FT85MC-465a637f3d1efe9f7cf8e8ad",
+  "task_id": "202607282157-FT85MC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make verification-state persistence and durable-record creation fail closed as one consistency boundary, then add write-failure and concurrent-verification regression coverage before regenerating evaluator evidence.",
+  "findings": [
+    {
+      "id": "RC-002",
+      "summary": "Verification state is persisted before the durable verification record is written, so a filesystem failure can leave the task verified without the machine-readable evidence required by evaluator review.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:71f9c2167eb8dc82ca28b0002e378b37e64aa411ed124928d162334da790ebdd",
+          "section": "packages/agentplane/src/commands/task/verify-record-execute.ts: recordVerificationResult"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:6dfab0fc8580881b636aaaf7533b8a77b2a5cdbefc08b30d8d5496f7edfec264",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-result.json"
+}
