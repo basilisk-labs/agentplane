@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
   "created_at": "2026-07-28T08:13:34.859Z",
-  "diffstat_sha256": "sha256:29bd423085197a576dbdee1b0c53b3bad541ef75fdddb243aac456772fc748bb",
+  "diffstat_sha256": "sha256:ec023b3f374fd987879c102b98cc4e96dd1f4569224ae42214da0042c72390f3",
   "last_verified_at": "2026-07-28T08:57:37.751Z",
   "last_verified_diffstat_sha256": "sha256:fd530a9156deff0e2169f6fa262100c4f458de413e857ee5a9df924825678457",
   "pr_number": 4654,

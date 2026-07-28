@@ -41,9 +41,10 @@ ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
- .../usecases/task-run-effect-resolution.test.ts    |  36 +-
- .../runner/usecases/task-run-effect-resolution.ts  |  13 +
- 11 files changed, 1373 insertions(+), 21 deletions(-)
+ .../usecases/task-run-effect-resolution.test.ts    |  22 +
+ .../runner/usecases/task-run-effect-resolution.ts  |   4 +
+ packages/agentplane/src/shared/stable-file.ts      |   9 +
+ 12 files changed, 1360 insertions(+), 20 deletions(-)
 ```
 
 </details>
