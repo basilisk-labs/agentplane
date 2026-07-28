@@ -1,0 +1,18 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T23:12:33.985Z",
+    "updated_by": "TESTER",
+    "note": "Rework verified with canonical, task-bound evaluator evidence."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728231233985-503fe218300f70e1.json",
+      "sha256": "sha256:b7399fdbcfc8307a5cad74f046e33e4dce8a798bb8c2504eeb8885b7b3549c2d"
+    }
+  ],
+  "runner_history": []
+}
