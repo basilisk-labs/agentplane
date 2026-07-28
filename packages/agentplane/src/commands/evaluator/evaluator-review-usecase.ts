@@ -258,7 +258,7 @@ async function resolveEvaluatorDiffBaseRef(opts: {
     cliBaseOpt: null,
     mode: opts.ctx.config.workflow_mode,
   }).catch(() => null);
-  return base?.trim() || null;
+  return base?.trim() ?? null;
 }
 
 export async function renderActualDiff(
