@@ -5,6 +5,7 @@ import {
   createSupervisorExecutionEpisodeJournal,
   advanceSupervisorExecutionEpisodeState,
   recoverSupervisorExecutionEpisodeJournal,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
   type SupervisorExecutionBudget,
@@ -212,6 +213,75 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       status: "stopped",
       stop: { reason: "stale_state" },
     });
+  });
+
+  it("reopens only a completed stale-state journal with its bounded usage intact", () => {
+    const first = start({ journal: journal() });
+    if (first.status !== "started") throw new Error("expected started episode");
+    const completed = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { status: "ok" },
+      usage: { input_tokens: 10, output_tokens: 5, total_tokens: 15 },
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const ready = advanceSupervisorExecutionEpisodeState({
+      journal: completed,
+      state_fingerprint_digest: FINGERPRINT,
+      route_observation: { phase: "applied" },
+      now: "2026-07-28T00:00:02.000Z",
+    });
+    const stale = startSupervisorExecutionEpisode({
+      journal: ready,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { command: "next" },
+      precondition_fingerprint_digest: NEXT_FINGERPRINT,
+      now: "2026-07-28T00:00:03.000Z",
+    });
+    if (stale.status !== "stopped") throw new Error("expected stale-state stop");
+
+    const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+      journal: stale.journal,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      now: "2026-07-28T00:00:04.000Z",
+    });
+
+    expect(reopened).toMatchObject({
+      status: "running",
+      stop: null,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      cursor: { phase: "ready", operation_key: null },
+      usage: { episodes: 1, agent_runs: 1, total_tokens: 15 },
+      operations: [{ status: "completed" }],
+    });
+  });
+
+  it("does not reopen failed or effect-in-doubt journals as stale state", () => {
+    const prepared = start({ journal: journal() });
+    if (prepared.status !== "started") throw new Error("expected started episode");
+    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
+      journal: prepared.journal,
+      state_fingerprint_digest: FINGERPRINT,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const failed = completeSupervisorExecutionEpisode({
+      journal: prepared.journal,
+      operation_key: prepared.operation_key,
+      result: { status: "failed" },
+      failed: true,
+      now: "2026-07-28T00:00:01.000Z",
+    });
+
+    for (const stopped of [effectInDoubt, failed]) {
+      expect(() =>
+        reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+          journal: stopped,
+          state_fingerprint_digest: NEXT_FINGERPRINT,
+          now: "2026-07-28T00:00:02.000Z",
+        }),
+      ).toThrow("requires a stopped journal with a completed latest operation");
+    }
   });
 
   it("accounts for bounded feedback without storing its raw semantic content", () => {

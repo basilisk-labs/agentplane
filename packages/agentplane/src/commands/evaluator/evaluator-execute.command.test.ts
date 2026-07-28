@@ -203,6 +203,53 @@ describe("evaluator execute supervisor episode", () => {
     });
   });
 
+  it("starts a new evaluator episode after a completed stale-state stop", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE05";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    const initial = await runWithFakeCodex(root, taskId, fakeBin);
+    expect(initial.code).toBe(0);
+
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    const completed = validateSupervisorExecutionEpisodeJournal(await store.read());
+    const stale = startSupervisorExecutionEpisode({
+      journal: completed,
+      role: "EVALUATOR",
+      kind: "evaluator_episode",
+      operation_identity: { retry: "after-state-change" },
+      precondition_fingerprint_digest: `sha256:${"f".repeat(64)}`,
+    });
+    if (stale.status !== "stopped") throw new Error("expected stale-state stop");
+    await store.write(stale.journal);
+
+    const repeated = await runWithFakeCodex(root, taskId, fakeBin);
+
+    expect(repeated.code, repeated.stderr).toBe(0);
+    expect(JSON.parse(repeated.stdout)).toMatchObject({
+      verdict: "pass",
+      supervisor_episode: {
+        status: "running",
+        cursor: { phase: "ready", operation_key: null },
+        usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
+      },
+    });
+    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+      status: "running",
+      usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
+      operations: [
+        { role: "EVALUATOR", kind: "evaluator_episode", status: "completed" },
+        { role: "EVALUATOR", kind: "evaluator_episode", status: "completed" },
+      ],
+    });
+  });
+
   it("completes an evaluator intent from its durable outcome without launching Codex again", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -592,3 +592,39 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
   };
   return createJournal(next);
 }
+
+/**
+ * Reopen a journal only when its last provider operation completed durably and
+ * a later attempt was stopped before recording another intent because the
+ * route fingerprint changed. This preserves the accumulated budget while
+ * refusing to guess about failed or ambiguous provider effects.
+ */
+export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
+  journal: SupervisorExecutionEpisodeJournal;
+  state_fingerprint_digest: string;
+  now?: string;
+}): SupervisorExecutionEpisodeJournal {
+  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+  const now = opts.now ?? new Date().toISOString();
+  const last = journal.operations.at(-1);
+  if (
+    journal.status !== "stopped" ||
+    journal.stop?.reason !== "stale_state" ||
+    journal.cursor.phase !== "stopped" ||
+    last?.status !== "completed"
+  ) {
+    throw new Error(
+      "Supervisor episode stale-state reopening requires a stopped journal with a completed latest operation.",
+    );
+  }
+  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
+    ...journal,
+    state_fingerprint_digest: opts.state_fingerprint_digest,
+    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    status: "running",
+    stop: null,
+    updated_at: now,
+    previous_digest: journal.digest,
+  };
+  return createJournal(next);
+}

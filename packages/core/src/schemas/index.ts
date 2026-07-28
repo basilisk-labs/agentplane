@@ -147,6 +147,7 @@ export {
   createSupervisorExecutionEpisodeJournal,
   digestSupervisorEpisodeValue,
   recoverSupervisorExecutionEpisodeJournal,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
