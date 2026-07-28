@@ -1,9 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { buildStateFingerprint } from "@agentplaneorg/core/schemas";
 
 import { runCli } from "../../cli/run-cli.js";
-import { routeNeedsRunnerProjection } from "./hermes-runtime.js";
+import * as taskRunUsecases from "../../runner/usecases/task-run.js";
+import { executeHermesWorkflowOperation, routeNeedsRunnerProjection } from "./hermes-runtime.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import { captureStdIO, mkGitRepoRoot, runCliSilent } from "@agentplane/testkit";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -84,6 +85,63 @@ async function createRunnableDirectTask(root: string): Promise<string> {
 }
 
 describe("hermes adapter commands", () => {
+  it("returns the typed nonzero exit code when runner cleanup remains incomplete", async () => {
+    const executed = {
+      invocation: {
+        adapter_id: "codex",
+        run_id: "run-degraded-cleanup",
+        work_order_id: "work-order-degraded-cleanup",
+        run_dir: "/repo/runs/run-degraded-cleanup",
+        bundle_path: "/repo/runs/run-degraded-cleanup/bundle.json",
+        bootstrap_path: "/repo/runs/run-degraded-cleanup/bootstrap.md",
+        result_path: "/repo/runs/run-degraded-cleanup/result.json",
+      },
+      bundle: {},
+      state: { mode: "execute", status: "success" },
+      result: {
+        status: "success",
+        exit_code: 0,
+        started_at: "2026-07-28T00:00:00.000Z",
+        ended_at: "2026-07-28T00:00:01.000Z",
+        summary: "provider completed",
+      },
+      active_claim_cleanup: {
+        status: "cleanup_failed",
+        code: "E_RUNTIME",
+        message: "active claim could not be retired",
+        event_recorded: true,
+      },
+    } as unknown as Awaited<ReturnType<typeof taskRunUsecases.executeTaskRunnerExecution>>;
+    const executeSpy = vi
+      .spyOn(taskRunUsecases, "executeTaskRunnerExecution")
+      .mockResolvedValue(executed);
+    try {
+      const result = await executeHermesWorkflowOperation({
+        ctx: {} as never,
+        cwd: "/repo",
+        rootOverride: "/repo",
+        includeRemote: false,
+        dryRun: false,
+        operation: {
+          id: "runner.follow",
+          params: { mode: "run", taskId: "TASK-CLEANUP" },
+        } as never,
+      });
+      expect(result).toMatchObject({
+        status: "failed",
+        exit_code: 1,
+        operation_result: {
+          kind: "runner_lifecycle",
+          value: {
+            active_claim_cleanup: { status: "cleanup_failed" },
+          },
+        },
+      });
+    } finally {
+      executeSpy.mockRestore();
+    }
+  });
+
   it("renders a provider-safe enqueue projection", async () => {
     const root = await mkGitRepoRoot();
     const taskId = await createApprovedTask(root);

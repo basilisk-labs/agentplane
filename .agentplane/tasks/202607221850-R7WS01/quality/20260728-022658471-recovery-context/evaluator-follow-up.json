@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-R7WS01-96b4eeb6e8bc42925295141e",
+  "task_id": "202607221850-R7WS01",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Set Hermes exit_code from taskRunnerLifecycleExitCode(lifecycle) and add a narrow cleanup-failure regression test.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "executeHermesWorkflowOperation marks an execution with active_claim_cleanup as failed but currently forwards executed.result.exit_code, which can still be 0. This splits supervisor semantics from task-run's typed exit mapping.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-result.json"
+}

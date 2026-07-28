@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "executeHermesWorkflowOperation marks an execution with active_claim_cleanup as failed but currently forwards executed.result.exit_code, which can still be 0. This splits supervisor semantics from task-run's typed exit mapping.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-R7WS01/quality/20260728-022658471-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Hermes execution with active_claim_cleanup returns failed and a nonzero exit_code."
+  ],
+  "hidden_assumptions": [
+    "The provider exit code always reflects supervisor cleanup state."
+  ],
+  "recovery_context": "Set Hermes exit_code from taskRunnerLifecycleExitCode(lifecycle) and add a narrow cleanup-failure regression test."
+}

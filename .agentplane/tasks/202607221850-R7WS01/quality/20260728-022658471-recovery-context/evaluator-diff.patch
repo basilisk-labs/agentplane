@@ -1,0 +1,1119 @@
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt b/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt
+index e69de29bb..52631f73e 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/diffstat.txt
+@@ -0,0 +1,14 @@
++ .../src/cli/run-cli.core.task-run.test.ts          |   6 +
++ .../src/commands/hermes/hermes-runtime.ts          |  17 +-
++ .../src/commands/hermes/hermes.command.test.ts     |  45 +++++-
++ .../src/commands/shared/workflow-supervisor.ts     |   8 +
++ .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
++ .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
++ .../agentplane/src/commands/task/run.command.ts    |  41 ++---
++ .../task/task-run-effect-resolution.command.ts     |  28 ++--
++ .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
++ .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
++ .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
++ .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
++ .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
++ 13 files changed, 552 insertions(+), 60 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md b/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md
+index a8e0b91f7..93a630f1c 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/github-body.md
+@@ -24,12 +24,25 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T01:55:50.166Z
++- Updated: 2026-07-28T01:56:15.744Z
+ - Branch: task/202607221850-R7WS01/return-typed-runner-lifecycle-results
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../src/cli/run-cli.core.task-run.test.ts          |   6 +
++ .../src/commands/hermes/hermes-runtime.ts          |  17 +-
++ .../src/commands/hermes/hermes.command.test.ts     |  45 +++++-
++ .../src/commands/shared/workflow-supervisor.ts     |   8 +
++ .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
++ .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
++ .../agentplane/src/commands/task/run.command.ts    |  41 ++---
++ .../task/task-run-effect-resolution.command.ts     |  28 ++--
++ .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
++ .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
++ .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
++ .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
++ .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
++ 13 files changed, 552 insertions(+), 60 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/meta.json b/.agentplane/tasks/202607221850-R7WS01/pr/meta.json
+index 3cb7d5fb7..d56bd6627 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/meta.json
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/meta.json
+@@ -2,11 +2,14 @@
+   "base": "main",
+   "branch": "task/202607221850-R7WS01/return-typed-runner-lifecycle-results",
+   "created_at": "2026-07-28T01:55:50.166Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++  "diffstat_sha256": "sha256:da831a54df8e685f7cb8a449136121ba3ff3501a78568ca3c61e81df7cbb34c4",
+   "last_verified_at": null,
++  "pr_number": 4650,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4650",
+   "schema_version": 1,
++  "status": "OPEN",
+   "task_id": "202607221850-R7WS01",
+-  "updated_at": "2026-07-28T01:55:50.166Z",
++  "updated_at": "2026-07-28T01:56:15.744Z",
+   "verify": {
+     "status": "skipped"
+   }
+diff --git a/.agentplane/tasks/202607221850-R7WS01/pr/review.md b/.agentplane/tasks/202607221850-R7WS01/pr/review.md
+index 3fea7a892..95c56904d 100644
+--- a/.agentplane/tasks/202607221850-R7WS01/pr/review.md
++++ b/.agentplane/tasks/202607221850-R7WS01/pr/review.md
+@@ -24,12 +24,25 @@ Created: 2026-07-28T01:55:50.166Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T01:55:50.166Z
++- Updated: 2026-07-28T01:56:15.744Z
+ - Branch: task/202607221850-R7WS01/return-typed-runner-lifecycle-results
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../src/cli/run-cli.core.task-run.test.ts          |   6 +
++ .../src/commands/hermes/hermes-runtime.ts          |  17 +-
++ .../src/commands/hermes/hermes.command.test.ts     |  45 +++++-
++ .../src/commands/shared/workflow-supervisor.ts     |   8 +
++ .../src/commands/task/run-render.test.ts           | 138 ++++++++++++++++
++ .../agentplane/src/commands/task/run-render.ts     |  85 +++++++++-
++ .../agentplane/src/commands/task/run.command.ts    |  41 ++---
++ .../task/task-run-effect-resolution.command.ts     |  28 ++--
++ .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
++ .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
++ .../runner/usecases/task-run-lifecycle-result.ts   | 175 +++++++++++++++++++++
++ .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
++ .../agentplane/src/runner/usecases/task-run.ts     |  14 +-
++ 13 files changed, 552 insertions(+), 60 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+index 038ffcc9b..fc89ead4a 100644
+--- a/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.task-run.test.ts
+@@ -126,6 +126,7 @@ describe("runCli task run", () => {
+       invocation: {
+         adapter_id: "custom",
+         run_id: "run-degraded-cleanup",
++        work_order_id: "work-order-degraded-cleanup",
+         run_dir: "/repo/run",
+         bundle_path: "/repo/run/bundle.json",
+         bootstrap_path: "/repo/run/bootstrap.md",
+@@ -136,6 +137,11 @@ describe("runCli task run", () => {
+         exit_code: 0,
+         summary: "provider completed",
+       },
++      state: {
++        mode: "execute",
++        status: "success",
++      },
++      bundle: {},
+       active_claim_cleanup: cleanup,
+     } as unknown as Awaited<ReturnType<typeof taskRunUsecases.executeTaskRunnerExecution>>;
+     const executeSpy = vi
+diff --git a/packages/agentplane/src/commands/hermes/hermes-runtime.ts b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+index 1bf76e7fd..e50890cc7 100644
+--- a/packages/agentplane/src/commands/hermes/hermes-runtime.ts
++++ b/packages/agentplane/src/commands/hermes/hermes-runtime.ts
+@@ -6,6 +6,11 @@ import {
+   executeTaskRunnerExecution,
+   prepareTaskRunnerExecution,
+ } from "../../runner/usecases/task-run.js";
++import {
++  projectExecutedTaskRunnerLifecycleResult,
++  projectPreparedTaskRunnerLifecycleResult,
++  taskRunnerLifecycleExitCode,
++} from "../../runner/usecases/task-run-lifecycle-result.js";
+ import {
+   prepareAgentWorkOrder,
+   requirePreparedAgentWorkOrder,
+@@ -271,11 +276,16 @@ export async function executeHermesWorkflowOperation(opts: {
+       mode: "dry_run",
+       ...(opts.includeRemote ? { include_remote: true } : {}),
+     });
++    const lifecycle = projectPreparedTaskRunnerLifecycleResult({
++      task_id: taskId,
++      execution: prepared,
++    });
+     return {
+       status: "succeeded",
+       observed_postconditions: ["runner_state_observed"],
+       detail: `prepared runner invocation ${prepared.invocation.run_id} for ${taskId}`,
+       exit_code: null,
++      operation_result: { kind: "runner_lifecycle", value: lifecycle },
+     };
+   }
+ 
+@@ -286,12 +296,17 @@ export async function executeHermesWorkflowOperation(opts: {
+     task_id: taskId,
+     ...(opts.includeRemote ? { include_remote: true } : {}),
+   });
+-  const succeeded = executed.result.status === "success" && !executed.active_claim_cleanup;
++  const lifecycle = projectExecutedTaskRunnerLifecycleResult({
++    task_id: taskId,
++    execution: executed,
++  });
++  const succeeded = taskRunnerLifecycleExitCode(lifecycle) === 0;
+   return {
+     status: succeeded ? "succeeded" : "failed",
+     observed_postconditions: ["runner_state_observed"],
+     detail: executed.result.summary ?? `runner execution completed for ${taskId}`,
+     exit_code: executed.result.exit_code,
++    operation_result: { kind: "runner_lifecycle", value: lifecycle },
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/commands/hermes/hermes.command.test.ts b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+index 6536f4b90..c2758bcfc 100644
+--- a/packages/agentplane/src/commands/hermes/hermes.command.test.ts
++++ b/packages/agentplane/src/commands/hermes/hermes.command.test.ts
+@@ -233,7 +233,27 @@ describe("hermes adapter commands", () => {
+           requested: boolean;
+           dry_run: boolean;
+           allowed: boolean;
+-          result: { detail: string; exit_code: number | null };
++          result: {
++            detail: string;
++            exit_code: number | null;
++            operation_result: {
++              kind: string;
++              value: {
++                schema: string;
++                phase: string;
++                task_id: string;
++                invocation: { work_order_id: string };
++                lifecycle: {
++                  effect: {
++                    state: string;
++                    authority: { ref: string; digest: string } | null;
++                    observed_evidence: { code: string; digest: string | null } | null;
++                    claim_generation: string | null;
++                  };
++                };
++              };
++            };
++          };
+         };
+         workflow_supervision: { audit: { event: string }[] };
+         refreshed_route: { task: { id: string } };
+@@ -244,6 +264,29 @@ describe("hermes adapter commands", () => {
+       expect(payload.execution.allowed).toBe(true);
+       expect(payload.execution.result.detail).toContain(taskId);
+       expect(payload.execution.result.exit_code).toBeNull();
++      expect(payload.execution.result.operation_result).toMatchObject({
++        kind: "runner_lifecycle",
++        value: {
++          schema: "agentplane.task_runner_lifecycle_result.v1",
++          phase: "prepared",
++          task_id: taskId,
++          lifecycle: {
++            effect: {
++              state: "not_recorded",
++              authority: {
++                ref: expect.stringContaining("work-order:"),
++                digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
++              },
++              observed_evidence: {
++                code: "runner_effect_operation_prepared",
++                digest: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
++              },
++              claim_generation: expect.stringMatching(/^sha256:[0-9a-f]{64}$/u),
++            },
++          },
++        },
++      });
++      expect(payload.execution.result.operation_result.value.invocation.work_order_id).toContain(taskId);
+       expect(payload.workflow_supervision.audit.map((entry) => entry.event)).toEqual([
+         "decision_observed",
+         "operation_executed",
+diff --git a/packages/agentplane/src/commands/shared/workflow-supervisor.ts b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+index bb565b5d9..8b433e5d6 100644
+--- a/packages/agentplane/src/commands/shared/workflow-supervisor.ts
++++ b/packages/agentplane/src/commands/shared/workflow-supervisor.ts
+@@ -1,4 +1,5 @@
+ import type { TaskRouteDecision } from "./route-decision-types.js";
++import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+ import { projectWorkflowOperationArgv } from "./workflow-operation-projection.js";
+ import { WORKFLOW_OPERATION_REGISTRY, type WorkflowOperation } from "./workflow-step.js";
+ 
+@@ -23,11 +24,18 @@ type WorkflowSupervisorAuditEntry = {
+   detail: string;
+ };
+ 
++export type WorkflowSupervisorOperationPayload = {
++  kind: "runner_lifecycle";
++  value: TaskRunnerLifecycleResult;
++};
++
+ export type WorkflowSupervisorOperationResult = {
+   status: "succeeded" | "failed";
+   observed_postconditions: readonly string[];
+   detail: string;
+   exit_code: number | null;
++  /** Typed in-process data for migrated operation slices; never parsed from stdout. */
++  operation_result?: WorkflowSupervisorOperationPayload;
+ };
+ 
+ export type WorkflowSupervisorExecution = {
+diff --git a/packages/agentplane/src/commands/task/run-render.test.ts b/packages/agentplane/src/commands/task/run-render.test.ts
+index 98acc2538..f63ca29ff 100644
+--- a/packages/agentplane/src/commands/task/run-render.test.ts
++++ b/packages/agentplane/src/commands/task/run-render.test.ts
+@@ -4,13 +4,151 @@ import { captureStdIO } from "@agentplane/testkit";
+ import { readObservedProcessIdentity } from "../../runner/process-supervision/signals.js";
+ import type { LoadedTaskRunnerInspection } from "../../runner/usecases/task-run-inspect.js";
+ import {
++  projectExecutedTaskRunnerLifecycleResult,
++  type TaskRunnerLifecycleResult,
++} from "../../runner/usecases/task-run-lifecycle-result.js";
++import {
++  reportExecutedTaskRun,
+   reportRunnerStatus,
++  renderTaskRunnerLifecyclePayload,
+   renderRunnerStatusPayload,
+   renderTaskRunPayload,
+   runnerReconciliationWarning,
+ } from "./run-render.js";
+ 
+ describe("task run rendering", () => {
++  it("renders the typed effect lifecycle without parsing a runner report", () => {
++    const lifecycle = {
++      schema: "agentplane.task_runner_lifecycle_result.v1",
++      phase: "executed",
++      task_id: "TASK-EFFECT",
++      invocation: {
++        adapter_id: "codex",
++        run_id: "run-effect",
++        work_order_id: "work-order-effect",
++        run_dir: "/repo/runs/run-effect",
++        bundle_path: "/repo/runs/run-effect/bundle.json",
++        bootstrap_path: "/repo/runs/run-effect/bootstrap.md",
++        result_path: "/repo/runs/run-effect/result.json",
++      },
++      lifecycle: {
++        mode: "execute",
++        status: "failed",
++        state_fingerprint: null,
++        effect: {
++          state: "effect_in_doubt",
++          operation: {
++            operation_key: `sha256:${"a".repeat(64)}`,
++            operation_digest: `sha256:${"b".repeat(64)}`,
++            claim_generation: `sha256:${"c".repeat(64)}`,
++          },
++          authority: {
++            ref: "work-order:work-order-effect",
++            digest: `sha256:${"e".repeat(64)}`,
++          },
++          observed_evidence: {
++            code: "runner_adapter_effect_error",
++            digest: `sha256:${"f".repeat(64)}`,
++          },
++          claim_generation: `sha256:${"c".repeat(64)}`,
++          resolution: null,
++          resolution_provenance: null,
++          source_resolution: null,
++          source_resolution_provenance: null,
++        },
++        work_order_authority: null,
++      },
++      result: {
++        status: "failed",
++        exit_code: 1,
++        started_at: "2026-07-28T00:00:00.000Z",
++        ended_at: "2026-07-28T00:00:01.000Z",
++        summary: "provider outcome is uncertain",
++      },
++      active_claim_cleanup: null,
++    } as unknown as TaskRunnerLifecycleResult;
++
++    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
++    expect(payload).toMatchObject({
++      task_id: "TASK-EFFECT",
++      work_order_id: "work-order-effect",
++      lifecycle_result: {
++        lifecycle: {
++          effect: {
++            state: "effect_in_doubt",
++            operation: { claim_generation: `sha256:${"c".repeat(64)}` },
++            authority: { digest: `sha256:${"e".repeat(64)}` },
++            observed_evidence: { digest: `sha256:${"f".repeat(64)}` },
++            resolution: null,
++          },
++        },
++      },
++    });
++
++    const io = captureStdIO();
++    try {
++      reportExecutedTaskRun(payload, "TASK-EFFECT");
++      expect(io.stdout).toMatch(/work_order:\s+work-order-effect/u);
++      expect(io.stdout).toMatch(/effect:\s+effect_in_doubt/u);
++      expect(io.stdout).toMatch(new RegExp(`effect_authority:\\s+sha256:${"e".repeat(64)}`, "u"));
++      expect(io.stdout).toMatch(new RegExp(`effect_evidence:\\s+sha256:${"f".repeat(64)}`, "u"));
++      expect(io.stdout).toMatch(
++        new RegExp(`effect_claim_generation:\\s+sha256:${"c".repeat(64)}`, "u"),
++      );
++    } finally {
++      io.restore();
++    }
++
++    for (const verdict of ["applied", "not_applied"] as const) {
++      const resolved = projectExecutedTaskRunnerLifecycleResult({
++        task_id: "TASK-EFFECT",
++        execution: {
++          ...lifecycle,
++          bundle: {},
++          state: {
++            mode: "execute",
++            status: "blocked",
++            effect_resolution: {
++              verdict,
++              digest: `sha256:${"d".repeat(64)}`,
++            },
++          },
++          effect_operation: {
++            operation: {
++              authority_ref: "work-order:work-order-effect",
++              authority_digest: `sha256:${"e".repeat(64)}`,
++              claim_generation: `sha256:${"c".repeat(64)}`,
++            },
++            journal: {
++              observed_evidence: {
++                code: "operator_resolution_evidence",
++                digest: `sha256:${"f".repeat(64)}`,
++              },
++            },
++          },
++          source_effect_resolution: {
++            verdict: "not_applied",
++            digest: `sha256:${"g".repeat(64)}`,
++          },
++        } as unknown as Parameters<typeof projectExecutedTaskRunnerLifecycleResult>[0]["execution"],
++        source_effect_resolution: {
++          verdict: "not_applied",
++          digest: `sha256:${"g".repeat(64)}`,
++        } as unknown as TaskRunnerLifecycleResult["lifecycle"]["effect"]["source_resolution"],
++      });
++      expect(resolved.lifecycle.effect).toMatchObject({
++        state: verdict,
++        resolution: { verdict },
++        resolution_provenance: "operator_supplied",
++        authority: { digest: `sha256:${"e".repeat(64)}` },
++        observed_evidence: { digest: `sha256:${"f".repeat(64)}` },
++        claim_generation: `sha256:${"c".repeat(64)}`,
++        source_resolution: { verdict: "not_applied" },
++        source_resolution_provenance: "operator_supplied",
++      });
++    }
++  });
++
+   it("keeps execution status and verification confidence distinct", () => {
+     expect(
+       renderTaskRunPayload({
+diff --git a/packages/agentplane/src/commands/task/run-render.ts b/packages/agentplane/src/commands/task/run-render.ts
+index 70aa55bb1..3b8b69c58 100644
+--- a/packages/agentplane/src/commands/task/run-render.ts
++++ b/packages/agentplane/src/commands/task/run-render.ts
+@@ -5,6 +5,7 @@ import type {
+   TaskRunnerDiagnosticInspection,
+ } from "../../runner/usecases/task-run-inspect.js";
+ import type { TaskRunnerActiveClaimCleanupDiagnostic } from "../../runner/usecases/task-run-active-claim-runtime.js";
++import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
+ import type { RunnerLifecycleStatus } from "../../runner/types.js";
+ import {
+   isProcessAlive,
+@@ -51,6 +52,38 @@ export function renderTaskRunPayload(opts: {
+   };
+ }
+ 
++/**
++ * Compatibility renderer for the typed in-process lifecycle result. The
++ * existing top-level fields stay stable while the additive lifecycle object
++ * exposes durable effect and authority evidence without stdout parsing.
++ */
++export function renderTaskRunnerLifecyclePayload(result: TaskRunnerLifecycleResult) {
++  return {
++    ...renderTaskRunPayload({
++      taskId: result.task_id,
++      mode: result.lifecycle.mode,
++      adapterId: result.invocation.adapter_id,
++      runId: result.invocation.run_id,
++      runDir: result.invocation.run_dir,
++      bundlePath: result.invocation.bundle_path,
++      bootstrapPath: result.invocation.bootstrap_path ?? "",
++      resultPath: result.invocation.result_path,
++      ...(result.phase === "executed" ? { status: result.result?.status } : {}),
++      verificationState: result.result?.execution_receipt?.verification_state,
++      receiptPath: result.result?.execution_receipt?.path,
++      exitCode: result.result?.exit_code,
++      summary: result.result?.summary,
++      activeClaimCleanup: result.active_claim_cleanup ?? undefined,
++    }),
++    work_order_id: result.invocation.work_order_id,
++    lifecycle_result: result,
++  };
++}
++
++type TaskRunRendererPayload =
++  | ReturnType<typeof renderTaskRunPayload>
++  | ReturnType<typeof renderTaskRunnerLifecyclePayload>;
++
+ export function isTerminalRunnerStatus(status: RunnerLifecycleStatus): boolean {
+   return (
+     status === "success" || status === "failed" || status === "blocked" || status === "cancelled"
+@@ -379,7 +412,7 @@ export async function loadRunnerLogText(
+ }
+ 
+ export function reportPreparedTaskRun(
+-  payload: ReturnType<typeof renderTaskRunPayload>,
++  payload: TaskRunRendererPayload,
+   taskId: string,
+ ): void {
+   createCliEmitter().report(
+@@ -388,6 +421,24 @@ export function reportPreparedTaskRun(
+       { label: "mode", value: payload.mode },
+       { label: "adapter", value: payload.adapter_id },
+       { label: "run", value: payload.run_id },
++      ...("lifecycle_result" in payload
++        ? [
++            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
++            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
++            {
++              label: "effect_authority",
++              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
++            },
++            {
++              label: "effect_evidence",
++              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
++            },
++            {
++              label: "effect_claim_generation",
++              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
++            },
++          ]
++        : []),
+       { label: "bundle", value: payload.bundle_path },
+       { label: "bootstrap", value: payload.bootstrap_path },
+       { label: "result", value: payload.result_path },
+@@ -397,7 +448,7 @@ export function reportPreparedTaskRun(
+ }
+ 
+ export function reportExecutedTaskRun(
+-  payload: ReturnType<typeof renderTaskRunPayload>,
++  payload: TaskRunRendererPayload,
+   taskId: string,
+ ): void {
+   createCliEmitter().report(
+@@ -406,6 +457,36 @@ export function reportExecutedTaskRun(
+       { label: "mode", value: payload.mode },
+       { label: "adapter", value: payload.adapter_id },
+       { label: "run", value: payload.run_id },
++      ...("lifecycle_result" in payload
++        ? [
++            { label: "work_order", value: payload.lifecycle_result.invocation.work_order_id },
++            { label: "effect", value: payload.lifecycle_result.lifecycle.effect.state },
++            {
++              label: "effect_resolution",
++              value: payload.lifecycle_result.lifecycle.effect.resolution?.verdict ?? null,
++            },
++            {
++              label: "effect_authority",
++              value: payload.lifecycle_result.lifecycle.effect.authority?.digest ?? null,
++            },
++            {
++              label: "effect_evidence",
++              value: payload.lifecycle_result.lifecycle.effect.observed_evidence?.digest ?? null,
++            },
++            {
++              label: "effect_claim_generation",
++              value: payload.lifecycle_result.lifecycle.effect.claim_generation,
++            },
++            ...(payload.lifecycle_result.lifecycle.effect.source_resolution
++              ? [
++                  {
++                    label: "source_effect_resolution",
++                    value: payload.lifecycle_result.lifecycle.effect.source_resolution.verdict,
++                  },
++                ]
++              : []),
++          ]
++        : []),
+       { label: "status", value: payload.status ?? "unknown" },
+       { label: "verification", value: payload.verification_state ?? "unavailable" },
+       { label: "exit_code", value: payload.exit_code ?? null },
+diff --git a/packages/agentplane/src/commands/task/run.command.ts b/packages/agentplane/src/commands/task/run.command.ts
+index 1f8c31213..7836ade9a 100644
+--- a/packages/agentplane/src/commands/task/run.command.ts
++++ b/packages/agentplane/src/commands/task/run.command.ts
+@@ -5,6 +5,11 @@ import {
+   executeTaskRunnerExecution,
+   prepareTaskRunnerExecution,
+ } from "../../runner/usecases/task-run.js";
++import {
++  projectExecutedTaskRunnerLifecycleResult,
++  projectPreparedTaskRunnerLifecycleResult,
++  taskRunnerLifecycleExitCode,
++} from "../../runner/usecases/task-run-lifecycle-result.js";
+ import { RUNNER_SANDBOX_MODES } from "../../runner/types.js";
+ import {
+   loadTaskRunnerDiagnosticInspection,
+@@ -19,7 +24,7 @@ import {
+   renderRunnerDiagnosticStatusPayload,
+   renderRunnerStatusPayload,
+   runnerReconciliationWarning,
+-  renderTaskRunPayload,
++  renderTaskRunnerLifecyclePayload,
+   reportExecutedTaskRun,
+   reportPreparedTaskRun,
+   tailText,
+@@ -277,16 +282,11 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
+         danger_authority: dangerAuthority,
+         sandbox_override: parsed.sandbox,
+       });
+-      const payload = renderTaskRunPayload({
+-        taskId: parsed.taskId,
+-        mode: "dry_run",
+-        adapterId: prepared.invocation.adapter_id,
+-        runId: prepared.invocation.run_id,
+-        runDir: prepared.invocation.run_dir,
+-        bundlePath: prepared.invocation.bundle_path,
+-        bootstrapPath: prepared.invocation.bootstrap_path ?? "",
+-        resultPath: prepared.invocation.result_path,
++      const lifecycle = projectPreparedTaskRunnerLifecycleResult({
++        task_id: parsed.taskId,
++        execution: prepared,
+       });
++      const payload = renderTaskRunnerLifecyclePayload(lifecycle);
+       if (parsed.json) {
+         output.json(payload);
+       } else {
+@@ -304,28 +304,17 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
+       danger_authority: dangerAuthority,
+       sandbox_override: parsed.sandbox,
+     });
+-    const payload = renderTaskRunPayload({
+-      taskId: parsed.taskId,
+-      mode: "execute",
+-      adapterId: executed.invocation.adapter_id,
+-      runId: executed.invocation.run_id,
+-      runDir: executed.invocation.run_dir,
+-      bundlePath: executed.invocation.bundle_path,
+-      bootstrapPath: executed.invocation.bootstrap_path ?? "",
+-      resultPath: executed.invocation.result_path,
+-      status: executed.result.status,
+-      verificationState: executed.result.execution_receipt?.verification_state,
+-      receiptPath: executed.result.execution_receipt?.path,
+-      exitCode: executed.result.exit_code,
+-      summary: executed.result.summary,
+-      activeClaimCleanup: executed.active_claim_cleanup,
++    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
++      task_id: parsed.taskId,
++      execution: executed,
+     });
++    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
+     if (parsed.json) {
+       output.json(payload);
+     } else {
+       reportExecutedTaskRun(payload, parsed.taskId);
+     }
+-    return executed.result.status === "success" && !executed.active_claim_cleanup ? 0 : 1;
++    return taskRunnerLifecycleExitCode(lifecycle);
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/commands/task/task-run-effect-resolution.command.ts b/packages/agentplane/src/commands/task/task-run-effect-resolution.command.ts
+index 0271ced3d..686d6c678 100644
+--- a/packages/agentplane/src/commands/task/task-run-effect-resolution.command.ts
++++ b/packages/agentplane/src/commands/task/task-run-effect-resolution.command.ts
+@@ -3,12 +3,16 @@ import { RUNNER_EFFECT_RESOLUTION_VERDICT_VALUES } from "@agentplaneorg/core/sch
+ import { createCliEmitter, infoMessage } from "../../cli/output.js";
+ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+ import { resumeTaskRunnerEffectExecution } from "../../runner/usecases/task-run-lifecycle.js";
++import {
++  projectExecutedTaskRunnerLifecycleResult,
++  taskRunnerLifecycleExitCode,
++} from "../../runner/usecases/task-run-lifecycle-result.js";
+ import {
+   acceptLegacyTaskRunnerEffect,
+   resolveTaskRunnerEffect,
+ } from "../../runner/usecases/task-run-effect-resolution.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+-import { renderTaskRunPayload, reportExecutedTaskRun } from "./run-render.js";
++import { renderTaskRunnerLifecyclePayload, reportExecutedTaskRun } from "./run-render.js";
+ 
+ type TaskRunResolveEffectParsed = {
+   taskId: string;
+@@ -258,25 +262,15 @@ export function makeRunTaskRunResumeEffectHandler(
+       run_id: parsed.runId,
+       ...(parsed.newRunId ? { new_run_id: parsed.newRunId } : {}),
+     });
+-    const payload = renderTaskRunPayload({
+-      taskId: parsed.taskId,
+-      mode: "execute",
+-      adapterId: resumed.invocation.adapter_id,
+-      runId: resumed.invocation.run_id,
+-      runDir: resumed.invocation.run_dir,
+-      bundlePath: resumed.invocation.bundle_path,
+-      bootstrapPath: resumed.invocation.bootstrap_path ?? "",
+-      resultPath: resumed.invocation.result_path,
+-      status: resumed.result.status,
+-      verificationState: resumed.result.execution_receipt?.verification_state,
+-      receiptPath: resumed.result.execution_receipt?.path,
+-      exitCode: resumed.result.exit_code,
+-      summary: resumed.result.summary,
+-      activeClaimCleanup: resumed.active_claim_cleanup,
++    const lifecycle = projectExecutedTaskRunnerLifecycleResult({
++      task_id: parsed.taskId,
++      execution: resumed,
++      source_effect_resolution: resumed.source_effect_resolution,
+     });
++    const payload = renderTaskRunnerLifecyclePayload(lifecycle);
+     const output = createCliEmitter();
+     if (parsed.json) output.json(payload);
+     else reportExecutedTaskRun(payload, parsed.taskId);
+-    return resumed.result.status === "success" && !resumed.active_claim_cleanup ? 0 : 1;
++    return taskRunnerLifecycleExitCode(lifecycle);
+   };
+ }
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-journal.ts b/packages/agentplane/src/runner/usecases/task-run-effect-journal.ts
+index d0c2a0f57..5444170f7 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-journal.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-journal.ts
+@@ -1,4 +1,8 @@
+-import { digestRunnerEffectValue } from "@agentplaneorg/core/schemas";
++import {
++  digestRunnerEffectValue,
++  type RunnerEffectJournal,
++  type RunnerEffectOperation,
++} from "@agentplaneorg/core/schemas";
+ 
+ import {
+   advanceRunnerEffectJournal,
+@@ -16,6 +20,11 @@ import type {
+   RunnerStateFingerprintRecord,
+ } from "../types.js";
+ 
++export type TaskRunnerEffectOperationSnapshot = {
++  operation: RunnerEffectOperation;
++  journal: RunnerEffectJournal;
++};
++
+ export async function persistPreparedTaskRunnerEffectOperation(opts: {
+   repository: RunnerRunRepository;
+   bundle: RunnerContextBundle;
+@@ -24,7 +33,10 @@ export async function persistPreparedTaskRunnerEffectOperation(opts: {
+   task_id: string;
+   source_run_id?: string | null;
+   resolved_not_applied_source?: boolean;
+-}): Promise<RunnerRunState> {
++}): Promise<{
++  state: RunnerRunState;
++  effect_operation: TaskRunnerEffectOperationSnapshot;
++}> {
+   if (!opts.state.state_fingerprint) {
+     throw new Error(
+       `Runner prepared state is missing effect-journal fingerprint authority for ` +
+@@ -44,7 +56,13 @@ export async function persistPreparedTaskRunnerEffectOperation(opts: {
+     updated_at: new Date().toISOString(),
+   };
+   await opts.repository.writeState(state);
+-  return state;
++  return {
++    state,
++    effect_operation: {
++      operation: effectOperation.operation,
++      journal: effectOperation.journal,
++    },
++  };
+ }
+ 
+ export async function startTaskRunnerEffectOperation(opts: {
+@@ -102,8 +120,8 @@ async function recordTaskRunnerEffectAccepted(opts: {
+   session: StartedRunnerEffectOperation;
+   result: RunnerResult;
+   state_fingerprint: RunnerStateFingerprintRecord;
+-}): Promise<void> {
+-  await advanceRunnerEffectJournal({
++}): Promise<RunnerEffectJournal> {
++  return await advanceRunnerEffectJournal({
+     session: opts.session,
+     phase: "accepted",
+     evidence: {
+@@ -125,7 +143,7 @@ export async function persistTaskRunnerEffectAccepted<T>(opts: {
+   result: RunnerResult;
+   state_fingerprint: RunnerStateFingerprintRecord;
+   persist_post_effect_state: () => Promise<T>;
+-}): Promise<T> {
++}): Promise<{ state: T; journal: RunnerEffectJournal }> {
+   if (!opts.session) {
+     throw new Error(
+       `Runner adapter returned without a durable effect operation for ` +
+@@ -144,10 +162,10 @@ export async function persistTaskRunnerEffectAccepted<T>(opts: {
+     });
+     throw error;
+   }
+-  await recordTaskRunnerEffectAccepted({
++  const journal = await recordTaskRunnerEffectAccepted({
+     session: opts.session,
+     result: opts.result,
+     state_fingerprint: opts.state_fingerprint,
+   });
+-  return state;
++  return { state, journal };
+ }
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts
+index 5650776fb..960868c23 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-replay.ts
+@@ -1,4 +1,5 @@
+ import type { TaskData, TaskRunnerHistoryEntry } from "../../backends/task-backend.js";
++import type { RunnerEffectResolutionRef } from "@agentplaneorg/core/schemas";
+ import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+ import { CliError } from "../../shared/errors.js";
+ import { RunnerRunDirectoryBoundaryError } from "../run-directory-boundary.js";
+@@ -24,6 +25,7 @@ type FreshReplayExecution = ExecutedTaskRunnerExecution & {
+   ctx: CommandContext;
+   source_run_id: string;
+   source_status: RunnerLifecycleStatus;
++  source_effect_resolution: RunnerEffectResolutionRef | null;
+ };
+ 
+ function replaySourceGuidance(source: TaskRunnerHistoryEntry, taskId: string): string {
+@@ -254,6 +256,7 @@ async function executeFreshReplay(opts: {
+     run_id: opts.run_id,
+     task,
+   });
++  let sourceEffectResolution: RunnerEffectResolutionRef | null = null;
+   if (opts.action === "resume_effect") {
+     const sourceRepository = await RunnerRunRepository.openExistingTaskRun({
+       git_root: ctx.resolvedProject.gitRoot,
+@@ -281,6 +284,7 @@ async function executeFreshReplay(opts: {
+         },
+       });
+     }
++    sourceEffectResolution = sourceRecord.state.effect_resolution;
+   }
+   assertFreshReplayDangerAuthority(opts);
+   const destinationRunId = resolveFreshReplayRunId({
+@@ -323,6 +327,7 @@ async function executeFreshReplay(opts: {
+     ctx,
+     source_run_id: source.run_id,
+     source_status: source.status,
++    source_effect_resolution: sourceEffectResolution,
+   };
+ }
+ 
+@@ -339,8 +344,9 @@ export async function resumeTaskRunnerExecution(opts: {
+     ...opts,
+     action: "resume",
+   });
++  const { source_effect_resolution: _sourceEffectResolution, ...execution } = resumed;
+   return {
+-    ...resumed,
++    ...execution,
+     previous_status: resumed.source_status,
+   };
+ }
+@@ -373,8 +379,16 @@ export async function resumeTaskRunnerEffectExecution(opts: {
+     ...opts,
+     action: "resume_effect",
+   });
++  const sourceEffectResolution = resumed.source_effect_resolution;
++  if (!sourceEffectResolution) {
++    throw new Error(
++      `resume-effect completed without its required source resolution for ${opts.task_id}:${opts.run_id}.`,
++    );
++  }
++  const { source_effect_resolution: _sourceEffectResolution, ...execution } = resumed;
+   return {
+-    ...resumed,
++    ...execution,
+     previous_status: resumed.source_status,
++    source_effect_resolution: sourceEffectResolution,
+   };
+ }
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
+new file mode 100644
+index 000000000..4b8a3ccdf
+--- /dev/null
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-result.ts
+@@ -0,0 +1,175 @@
++import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
++
++import type { TaskRunnerActiveClaimCleanupDiagnostic } from "./task-run-active-claim-runtime.js";
++import type { TaskRunnerEffectOperationSnapshot } from "./task-run-effect-journal.js";
++import type {
++  ExecutedTaskRunnerExecution,
++  PreparedTaskRunnerExecution,
++} from "./task-run.js";
++import type {
++  RunnerInvocation,
++  RunnerLifecycleStatus,
++  RunnerResult,
++  RunnerRunState,
++} from "../types.js";
++
++export const TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA =
++  "agentplane.task_runner_lifecycle_result.v1" as const;
++
++export type TaskRunnerLifecycleEffectState =
++  | "not_recorded"
++  | "effect_in_doubt"
++  | "applied"
++  | "not_applied";
++
++export type TaskRunnerLifecycleResult = {
++  schema: typeof TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA;
++  phase: "prepared" | "executed";
++  task_id: string;
++  invocation: Pick<
++    RunnerInvocation,
++    | "adapter_id"
++    | "run_id"
++    | "work_order_id"
++    | "run_dir"
++    | "bundle_path"
++    | "bootstrap_path"
++    | "result_path"
++  >;
++  lifecycle: {
++    mode: RunnerRunState["mode"];
++    status: RunnerLifecycleStatus;
++    state_fingerprint: RunnerRunState["state_fingerprint"] | null;
++    /**
++     * These immutable references retain the effect authority, journal evidence,
++     * claim generation, and any operator-supplied resolution without parsing
++     * renderer output or replaying a provider operation.
++     */
++    effect: {
++      state: TaskRunnerLifecycleEffectState;
++      operation: RunnerRunState["effect_operation"] | null;
++      /** Exact authority and observed-evidence identities from the durable journal. */
++      authority: {
++        ref: string;
++        digest: string;
++      } | null;
++      observed_evidence: {
++        code: string;
++        digest: string | null;
++      } | null;
++      claim_generation: string | null;
++      resolution: RunnerRunState["effect_resolution"] | null;
++      resolution_provenance: "operator_supplied" | null;
++      source_resolution: RunnerRunState["effect_resolution"] | null;
++      source_resolution_provenance: "operator_supplied" | null;
++    };
++    work_order_authority: AgentWorkOrderV2["authority"] | null;
++  };
++  result: RunnerResult | null;
++  active_claim_cleanup: TaskRunnerActiveClaimCleanupDiagnostic | null;
++};
++
++function effectState(state: RunnerRunState): TaskRunnerLifecycleEffectState {
++  if (state.effect_resolution?.verdict === "applied") return "applied";
++  if (state.effect_resolution?.verdict === "not_applied") return "not_applied";
++  if (
++    state.state_fingerprint?.outcome === "effect_unknown" ||
++    state.state_fingerprint?.outcome === "post_state_unknown"
++  ) {
++    return "effect_in_doubt";
++  }
++  return "not_recorded";
++}
++
++function projectTaskRunnerLifecycleResult(opts: {
++  phase: TaskRunnerLifecycleResult["phase"];
++  task_id: string;
++  invocation: RunnerInvocation;
++  state: RunnerRunState;
++  bundle: PreparedTaskRunnerExecution["bundle"];
++  effect_operation?: TaskRunnerEffectOperationSnapshot;
++  result: RunnerResult | null;
++  active_claim_cleanup?: TaskRunnerActiveClaimCleanupDiagnostic;
++  source_effect_resolution?: RunnerRunState["effect_resolution"] | null;
++}): TaskRunnerLifecycleResult {
++  const effect = effectState(opts.state);
++  return {
++    schema: TASK_RUNNER_LIFECYCLE_RESULT_SCHEMA,
++    phase: opts.phase,
++    task_id: opts.task_id,
++    invocation: {
++      adapter_id: opts.invocation.adapter_id,
++      run_id: opts.invocation.run_id,
++      work_order_id: opts.invocation.work_order_id,
++      run_dir: opts.invocation.run_dir,
++      bundle_path: opts.invocation.bundle_path,
++      bootstrap_path: opts.invocation.bootstrap_path ?? null,
++      result_path: opts.invocation.result_path,
++    },
++    lifecycle: {
++      mode: opts.state.mode,
++      status: opts.state.status,
++      state_fingerprint: opts.state.state_fingerprint ?? null,
++      effect: {
++        state: effect,
++        operation: opts.state.effect_operation ?? null,
++        authority: opts.effect_operation
++          ? {
++              ref: opts.effect_operation.operation.authority_ref,
++              digest: opts.effect_operation.operation.authority_digest,
++            }
++          : null,
++        observed_evidence: opts.effect_operation?.journal.observed_evidence ?? null,
++        claim_generation:
++          opts.effect_operation?.operation.claim_generation ??
++          opts.state.effect_operation?.claim_generation ??
++          null,
++        resolution: opts.state.effect_resolution ?? null,
++        resolution_provenance: opts.state.effect_resolution ? "operator_supplied" : null,
++        source_resolution: opts.source_effect_resolution ?? null,
++        source_resolution_provenance: opts.source_effect_resolution ? "operator_supplied" : null,
++      },
++      work_order_authority: opts.bundle.work_order?.authority ?? null,
++    },
++    result: opts.result,
++    active_claim_cleanup: opts.active_claim_cleanup ?? null,
++  };
++}
++
++export function projectPreparedTaskRunnerLifecycleResult(opts: {
++  task_id: string;
++  execution: PreparedTaskRunnerExecution;
++}): TaskRunnerLifecycleResult {
++  return projectTaskRunnerLifecycleResult({
++    phase: "prepared",
++    task_id: opts.task_id,
++    invocation: opts.execution.invocation,
++    state: opts.execution.state,
++    bundle: opts.execution.bundle,
++    effect_operation: opts.execution.effect_operation,
++    result: null,
++  });
++}
++
++export function projectExecutedTaskRunnerLifecycleResult(opts: {
++  task_id: string;
++  execution: ExecutedTaskRunnerExecution;
++  source_effect_resolution?: RunnerRunState["effect_resolution"] | null;
++}): TaskRunnerLifecycleResult {
++  return projectTaskRunnerLifecycleResult({
++    phase: "executed",
++    task_id: opts.task_id,
++    invocation: opts.execution.invocation,
++    state: opts.execution.state,
++    bundle: opts.execution.bundle,
++    effect_operation: opts.execution.effect_operation,
++    result: opts.execution.result,
++    active_claim_cleanup: opts.execution.active_claim_cleanup,
++    source_effect_resolution: opts.source_effect_resolution,
++  });
++}
++
++export function taskRunnerLifecycleExitCode(result: TaskRunnerLifecycleResult): number {
++  if (result.phase === "prepared") return 0;
++  return result.result?.status === "success" && !result.active_claim_cleanup ? 0 : 1;
++}
+diff --git a/packages/agentplane/src/runner/usecases/task-run-lifecycle-shared.ts b/packages/agentplane/src/runner/usecases/task-run-lifecycle-shared.ts
+index cfedcba64..1b718818e 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-lifecycle-shared.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-lifecycle-shared.ts
+@@ -2,6 +2,7 @@ import { realpath } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { normalizeTaskStatus } from "@agentplaneorg/core/tasks";
++import type { RunnerEffectResolutionRef } from "@agentplaneorg/core/schemas";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
+@@ -45,6 +46,8 @@ export type EffectResumedTaskRunnerExecution = ExecutedTaskRunnerExecution & {
+   source_run_id: string;
+   source_status: RunnerLifecycleStatus;
+   previous_status: RunnerLifecycleStatus;
++  /** Immutable operator disposition that authorized this fresh effect attempt. */
++  source_effect_resolution: RunnerEffectResolutionRef;
+ };
+ 
+ export type RunnerReplayAction = "resume" | "retry" | "resume_effect";
+diff --git a/packages/agentplane/src/runner/usecases/task-run.ts b/packages/agentplane/src/runner/usecases/task-run.ts
+index e4e3e3939..6b01854f6 100644
+--- a/packages/agentplane/src/runner/usecases/task-run.ts
++++ b/packages/agentplane/src/runner/usecases/task-run.ts
+@@ -58,6 +58,7 @@ import {
+   recordTaskRunnerPostStateUnknown,
+   persistTaskRunnerEffectAccepted,
+   startTaskRunnerEffectOperation,
++  type TaskRunnerEffectOperationSnapshot,
+   type StartedRunnerEffectOperation,
+ } from "./task-run-effect-journal.js";
+ import { finalizeTaskRunnerActiveClaimCleanup } from "./task-run-active-claim-cleanup.js";
+@@ -92,6 +93,8 @@ export type PreparedTaskRunnerExecution = {
+   bundle: RunnerContextBundle;
+   invocation: RunnerInvocation;
+   state: RunnerRunState;
++  /** Durable operation and journal identity already established by preparation. */
++  effect_operation?: TaskRunnerEffectOperationSnapshot;
+   precondition_fingerprint?: StateFingerprint;
+   precondition_policy?: StateFingerprintPolicy;
+ };
+@@ -302,7 +305,7 @@ export async function prepareTaskRunnerExecution(opts: {
+     bootstrap_markdown: renderTaskRunnerBootstrap(bundle, invocation),
+     invocation,
+   });
+-  const stateWithEffectOperation = await persistPreparedTaskRunnerEffectOperation({
++  const preparedEffectOperation = await persistPreparedTaskRunnerEffectOperation({
+     repository,
+     bundle,
+     invocation,
+@@ -314,7 +317,8 @@ export async function prepareTaskRunnerExecution(opts: {
+   return {
+     bundle,
+     invocation,
+-    state: stateWithEffectOperation,
++    state: preparedEffectOperation.state,
++    effect_operation: preparedEffectOperation.effect_operation,
+     precondition_fingerprint,
+     precondition_policy,
+   };
+@@ -520,7 +524,7 @@ export async function executeTaskRunnerExecution(opts: {
+     const preconditionFingerprint = guardedExecution.precondition_fingerprint;
+     const preconditionPolicy = guardedExecution.precondition_policy;
+     const result = guardedExecution.result;
+-    const state = await persistTaskRunnerEffectAccepted({
++    const acceptedEffect = await persistTaskRunnerEffectAccepted({
+       session: effectOperation,
+       task_id: opts.task_id,
+       run_id: prepared.invocation.run_id,
+@@ -537,6 +541,7 @@ export async function executeTaskRunnerExecution(opts: {
+           state_fingerprint: guardedExecution.state_fingerprint,
+         }),
+     });
++    const state = acceptedEffect.state;
+     const claimedRunAuthority = await inspectTaskRunnerClaimedRunAuthority(
+       {
+         git_root: ctx.resolvedProject.gitRoot,
+@@ -549,6 +554,9 @@ export async function executeTaskRunnerExecution(opts: {
+     releaseActiveClaim = cleanupConfirmed;
+     completed = {
+       ...prepared,
++      effect_operation: prepared.effect_operation
++        ? { ...prepared.effect_operation, journal: acceptedEffect.journal }
++        : undefined,
+       precondition_fingerprint: preconditionFingerprint,
+       precondition_policy: preconditionPolicy,
+       state,
