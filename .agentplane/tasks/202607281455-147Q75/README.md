@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on: []
@@ -37,28 +37,29 @@ verification:
   attempts: 0
 quality_review:
   state: "pass"
-  provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T15:11:23.716Z"
-  updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "2a83376fe1a6b69d98ece871ecd2b0c200a204ba"
+  provenance: "human_supplied"
+  updated_at: "2026-07-28T15:36:51.396Z"
+  updated_by: "HUMAN"
+  note: "Independent review of the CI recovery patch: the null-normalization traversal now treats external arrays as unknown values before record narrowing, preserving the schema compatibility behavior while satisfying strict TypeScript safety."
+  evaluated_sha: "5fe3f261279c62fbcda629d4ee6cb539fdc956e1"
   blueprint_digest: "502c33075284ce6f9aa46423f98024e5cae094e841cac21d82f799f5898e4d05"
   evidence_refs:
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-153650388-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-153650388-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-153650388-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-153650388-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607281455-147Q75/README.md"
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-151123390-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-153650388-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-153650388-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607281455-147Q75/quality/20260728-153650388-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
+    - "packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts"
+    - "5fe3f261279c62fbcda629d4ee6cb539fdc956e1"
   findings:
-    - "The response schema requires every declared key and represents optional source metadata and recovery context as null-capable fields; strict validation removes null placeholders before frozen-evidence checks."
+    - "The normalization path preserves its read-only semantics: only null placeholders are removed from copied records, while non-record and array values remain opaque unknown values."
 commit:
   hash: "2a83376fe1a6b69d98ece871ecd2b0c200a204ba"
   message: "Record evaluator schema implementation"

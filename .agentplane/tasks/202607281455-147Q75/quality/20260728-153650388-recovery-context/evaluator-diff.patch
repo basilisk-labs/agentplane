@@ -1,0 +1,34 @@
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index 7a3f47a8d..57c8cecb9 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -432,18 +432,20 @@ function normalizeEvaluatorStructuredNulls(raw: Record<string, unknown>): Record
+   const normalized: Record<string, unknown> = { ...raw };
+   if (normalized.recovery_context === null) delete normalized.recovery_context;
+   if (!Array.isArray(normalized.findings)) return normalized;
+-  normalized.findings = normalized.findings.map((finding) => {
++  normalized.findings = (normalized.findings as unknown[]).map((finding: unknown): unknown => {
+     if (!finding || typeof finding !== "object" || Array.isArray(finding)) return finding;
+     const normalizedFinding: Record<string, unknown> = { ...finding };
+     if (!Array.isArray(normalizedFinding.evidence_refs)) return normalizedFinding;
+-    normalizedFinding.evidence_refs = normalizedFinding.evidence_refs.map((evidence) => {
+-      if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return evidence;
+-      const normalizedEvidence: Record<string, unknown> = { ...evidence };
+-      for (const field of ["sha256", "line", "lines", "section"] as const) {
+-        if (normalizedEvidence[field] === null) delete normalizedEvidence[field];
+-      }
+-      return normalizedEvidence;
+-    });
++    normalizedFinding.evidence_refs = (normalizedFinding.evidence_refs as unknown[]).map(
++      (evidence: unknown): unknown => {
++        if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) return evidence;
++        const normalizedEvidence: Record<string, unknown> = { ...evidence };
++        for (const field of ["sha256", "line", "lines", "section"] as const) {
++          if (normalizedEvidence[field] === null) delete normalizedEvidence[field];
++        }
++        return normalizedEvidence;
++      },
++    );
+     return normalizedFinding;
+   });
+   return normalized;
