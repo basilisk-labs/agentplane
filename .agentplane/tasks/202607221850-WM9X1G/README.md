@@ -4,7 +4,7 @@ title: "Journal resumable context-ingestion phases"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -39,27 +39,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T08:14:49.383Z"
+  updated_at: "2026-07-28T08:17:06.323Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "21cd8c94d46c6a130ce5bad53b787372b3ad61cd"
+  evaluated_sha: "659c271881e5c312121f3163f3700ac83c062ec9"
   blueprint_digest: "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-WM9X1G/README.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081705829-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Single source-set lease prevents competing manifest mutations; SHA-256 fingerprints and crash-boundary tests cover safe resume. Unknown backend creation remains fail-closed at task_creating."
+    - "The implementation diff remains unchanged: deterministic source-set locking, durable receipts, and fail-closed unknown task creation preserve the CLI-versus-agent boundary."
 commit:
   hash: "21cd8c94d46c6a130ce5bad53b787372b3ad61cd"
   message: "feat: journal resumable context ingestion"
