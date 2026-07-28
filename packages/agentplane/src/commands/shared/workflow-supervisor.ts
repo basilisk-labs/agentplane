@@ -102,10 +102,10 @@ function stopReason(decision: TaskRouteDecision): string {
     return "workflow supervisor rejected an operation whose postconditions do not match its registry entry";
   }
   const expectedArgv = projectWorkflowOperationArgv(step.operation);
+  const actualArgv = decision.executionPacket.exactArgv;
   if (
-    decision.executionPacket.exactArgv === null ||
-    expectedArgv.length !== decision.executionPacket.exactArgv.length ||
-    expectedArgv.some((value, index) => value !== decision.executionPacket.exactArgv?.[index])
+    expectedArgv.length !== actualArgv?.length ||
+    expectedArgv.some((value, index) => value !== actualArgv?.[index])
   ) {
     return "workflow supervisor rejected a route whose rendered argv does not match its typed operation";
   }

@@ -84,13 +84,14 @@ describe("workflow supervisor", () => {
     const refreshed = fixtureDecision();
     const execution = await superviseWorkflowStep({
       decision,
-      execute: async () => ({
-        status: "succeeded",
-        observed_postconditions: ["runner_state_observed"],
-        detail: "runner prepared",
-        exit_code: 0,
-      }),
-      refresh: async () => refreshed,
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["runner_state_observed"],
+          detail: "runner prepared",
+          exit_code: 0,
+        }),
+      refresh: () => Promise.resolve(refreshed),
     });
 
     expect(execution.executable).toBe(true);
@@ -113,9 +114,9 @@ describe("workflow supervisor", () => {
     const execution = await superviseWorkflowStep({
       decision: fixtureDecision({ exactArgv: ["sh", "-c", "agentplane task run anything"] }),
       mode: "inspect",
-      execute: async () => {
+      execute: () => {
         invoked = true;
-        throw new Error("must not execute");
+        return Promise.reject(new Error("must not execute"));
       },
     });
 
@@ -178,15 +179,16 @@ describe("workflow supervisor", () => {
     const execution = await superviseWorkflowStep({
       decision,
       completed_idempotency_keys: new Set([key]),
-      execute: async () => ({
-        status: "succeeded",
-        observed_postconditions: ["runner_state_observed"],
-        detail: "must not execute",
-        exit_code: 0,
-      }),
-      refresh: async () => {
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: ["runner_state_observed"],
+          detail: "must not execute",
+          exit_code: 0,
+        }),
+      refresh: () => {
         refreshed = true;
-        return decision;
+        return Promise.resolve(decision);
       },
     });
 
@@ -200,25 +202,24 @@ describe("workflow supervisor", () => {
     let refreshed = false;
     const crash = await superviseWorkflowStep({
       decision,
-      execute: async () => {
-        throw new Error("runner crash");
-      },
-      refresh: async () => {
+      execute: () => Promise.reject(new Error("runner crash")),
+      refresh: () => {
         refreshed = true;
-        return decision;
+        return Promise.resolve(decision);
       },
     });
     const missing = await superviseWorkflowStep({
       decision,
-      execute: async () => ({
-        status: "succeeded",
-        observed_postconditions: [],
-        detail: "runner result lacks durable observation",
-        exit_code: 0,
-      }),
-      refresh: async () => {
+      execute: () =>
+        Promise.resolve({
+          status: "succeeded" as const,
+          observed_postconditions: [],
+          detail: "runner result lacks durable observation",
+          exit_code: 0,
+        }),
+      refresh: () => {
         refreshed = true;
-        return decision;
+        return Promise.resolve(decision);
       },
     });
 

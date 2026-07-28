@@ -1,0 +1,10 @@
+{
+  "schema": "agentplane.lint-summary.v1",
+  "command": "bun run lint:core -- --format json --output-file <temporary report>",
+  "checked_files": 2028,
+  "error_count": 0,
+  "warning_count": 0,
+  "fatal_error_count": 0,
+  "recorded_at": "2026-07-28T00:29:00.000Z",
+  "raw_report_policy": "The full machine report was parsed locally but is not versioned because it exceeds the evaluator diff-freeze limit."
+}

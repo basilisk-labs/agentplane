@@ -19,8 +19,8 @@ RF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop 
 - Note:
 
 ```text
-Verified shared typed supervisor: registry-bound execution, route refresh after every attempt, and
-Hermes in-process runner adapter.
+Rework verification passed: hosted lint findings are fixed; local ESLint summary reports 2028 files
+with zero errors and warnings.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -32,14 +32,14 @@ Hermes in-process runner adapter.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/hermes/hermes-runtime.ts          | 164 ++++-----
- .../src/commands/hermes/hermes.command.test.ts     | 297 ++---------------
+ .../src/commands/hermes/hermes-runtime.ts          | 165 ++++-----
+ .../src/commands/hermes/hermes.command.test.ts     | 299 +++--------------
  .../src/commands/hermes/hermes.command.ts          |  61 +++-
- .../commands/shared/workflow-supervisor.test.ts    | 232 +++++++++++++
+ .../commands/shared/workflow-supervisor.test.ts    | 233 +++++++++++++
  .../src/commands/shared/workflow-supervisor.ts     | 371 +++++++++++++++++++++
  .../src/commands/task/next-action.command.ts       |  12 +
  scripts/baselines/trust-boundary-violations.json   |   9 -
- 7 files changed, 760 insertions(+), 386 deletions(-)
+ 7 files changed, 763 insertions(+), 387 deletions(-)
 ```
 
 </details>
