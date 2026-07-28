@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 55
+revision: 56
 origin:
   system: "manual"
 depends_on:
@@ -40,27 +40,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "human_supplied"
-  updated_at: "2026-07-28T11:33:09.914Z"
+  updated_at: "2026-07-28T11:44:35.818Z"
   updated_by: "HUMAN"
-  note: "Reviewed commit c170a930: stable active-claim read collisions are retried within the existing bounded observation loop, while only a stable null claim can complete concurrent retirement."
-  evaluated_sha: "c170a930d8649b4b0ff06a9bb56a6e060bfb4719"
+  note: "Reviewed commit bc2a760: the hosted lint fixes preserve the fail-closed retirement semantics reviewed previously."
+  evaluated_sha: "bc2a760e30227d164d8b40fcca2b151434d949cd"
   blueprint_digest: "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-113309759-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-113309759-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-113309759-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-113309759-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-114435656-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-114435656-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-114435656-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-114435656-recovery-context/evaluator-opinion.md"
     - ".agentplane/tasks/202607221850-WM9X1G/README.md"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-113309759-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-113309759-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-113309759-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-114435656-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-114435656-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-114435656-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
-    - "commit:c170a930; checks: task-run-effect-resolution.test.ts (8/8), hotspots:check, typecheck, knip:check"
+    - "commit:bc2a760; checks: focused ESLint, task-run-effect-resolution.test.ts (8/8), hotspots:check, typecheck, knip:check"
   findings:
-    - "The classifier accepts only the four exact stable-file collision messages for the runner active-claim label; unrelated observation failures still fail closed. The deterministic concurrent test injects a path-swap collision from the retirement-wait call and proves a second observation occurs."
+    - "The collision branch still yields an unknown claim value, which cannot satisfy activeClaim === null; replacing explicit undefined with a bare return is type-equivalent. The Error message is test-only and does not affect production control flow."
 commit:
   hash: "7a41ac8f29897a03713e25332c27002ff6f1e3f2"
   message: "🚧 WM9X1G task: record refreshed pre-merge closure authority"

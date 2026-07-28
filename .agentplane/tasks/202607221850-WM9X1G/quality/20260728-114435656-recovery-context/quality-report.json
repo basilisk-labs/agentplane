@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-WM9X1G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T11:44:35.818Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "Reviewed commit bc2a760: the hosted lint fixes preserve the fail-closed retirement semantics reviewed previously.",
+  "evaluated_sha": "bc2a760e30227d164d8b40fcca2b151434d949cd",
+  "blueprint_digest": "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e",
+  "findings": [
+    "The collision branch still yields an unknown claim value, which cannot satisfy activeClaim === null; replacing explicit undefined with a bare return is type-equivalent. The Error message is test-only and does not affect production control flow."
+  ],
+  "evidence_refs": [
+    "commit:bc2a760; checks: focused ESLint, task-run-effect-resolution.test.ts (8/8), hotspots:check, typecheck, knip:check"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": [
+    "A fresh hosted Core CI run on the final published PR head remains mandatory; the previous hosted run failed before this lint-only correction."
+  ]
+}
