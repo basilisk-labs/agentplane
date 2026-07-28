@@ -1,0 +1,89 @@
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt b/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
+index ab47a2027..8e02beea8 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/diffstat.txt
+@@ -7,7 +7,7 @@
+  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
+  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+- .../usecases/task-run-effect-resolution.test.ts    |  39 +-
++ .../usecases/task-run-effect-resolution.test.ts    |  41 +-
+  .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
+  packages/agentplane/src/shared/stable-file.ts      |  10 +
+- 12 files changed, 1378 insertions(+), 24 deletions(-)
++ 12 files changed, 1380 insertions(+), 24 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+index 2740f5de6..58d088941 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/github-body.md
+@@ -41,10 +41,10 @@ ci:local:fast; hosted PR #4654 is stable with 21/21 checks passing.
+  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
+  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+- .../usecases/task-run-effect-resolution.test.ts    |  39 +-
++ .../usecases/task-run-effect-resolution.test.ts    |  41 +-
+  .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
+  packages/agentplane/src/shared/stable-file.ts      |  10 +
+- 12 files changed, 1378 insertions(+), 24 deletions(-)
++ 12 files changed, 1380 insertions(+), 24 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+index 4dc6c1b6b..daf7b639f 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221850-WM9X1G/journal-resumable-context-ingestion-phases",
+   "created_at": "2026-07-28T08:13:34.859Z",
+-  "diffstat_sha256": "sha256:8a8a10eaee1dba421aaa2eea049ba3f4ed0edd42d2e1005699e92c75ee9b423f",
++  "diffstat_sha256": "sha256:df3a35cd85d6507bc2734bddc06f3143c7c04ba0fc124f30cc7dc56d5a7d667a",
+   "last_verified_at": "2026-07-28T08:57:37.751Z",
+   "last_verified_diffstat_sha256": "sha256:fd530a9156deff0e2169f6fa262100c4f458de413e857ee5a9df924825678457",
+   "pr_number": 4654,
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+index 79e43b38b..30cdb06b2 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/pr/review.md
+@@ -38,10 +38,10 @@ Created: 2026-07-28T08:13:34.859Z
+  .../agentplane/src/context/ingest-run-journal.ts   | 544 +++++++++++++++++++++
+  .../src/context/ingest-task-pack.test.ts           | 380 +++++++++++++-
+  packages/agentplane/src/context/ingest.ts          | 167 ++++++-
+- .../usecases/task-run-effect-resolution.test.ts    |  39 +-
++ .../usecases/task-run-effect-resolution.test.ts    |  41 +-
+  .../runner/usecases/task-run-effect-resolution.ts  |   8 +-
+  packages/agentplane/src/shared/stable-file.ts      |  10 +
+- 12 files changed, 1378 insertions(+), 24 deletions(-)
++ 12 files changed, 1380 insertions(+), 24 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+index e54728ccd..e0079ff81 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.test.ts
+@@ -227,7 +227,9 @@ describe("task runner effect resolution", () => {
+       .mockImplementation(async (...args) => {
+         const isRetirementWaitRead =
+           args[1] === "runner active claim" &&
+-          new Error().stack?.includes("waitForConcurrentResolutionRetirement");
++          new Error("capture retirement wait stack").stack?.includes(
++            "waitForConcurrentResolutionRetirement",
++          );
+         if (isRetirementWaitRead) {
+           retirementWaitReads += 1;
+           if (!collisionInjected) {
+diff --git a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+index af8d2423c..3a32e79d4 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-effect-resolution.ts
+@@ -123,7 +123,7 @@ async function waitForConcurrentResolutionRetirement(opts: {
+         task_id: opts.task_id,
+         run_id: opts.run_id,
+       }).catch((error: unknown) => {
+-        if (isStableFileReadCollision(error, "runner active claim")) return undefined;
++        if (isStableFileReadCollision(error, "runner active claim")) return;
+         throw error;
+       }),
+     ]);
