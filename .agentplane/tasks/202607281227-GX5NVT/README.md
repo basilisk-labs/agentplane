@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on: []
@@ -50,7 +50,7 @@ quality_review:
     - "Reviewed the revised mock: it preserves child on/emit ordering and PassThrough stdin behavior, so EPIPE is still dispatched before close and asserts the same stdin_write_failure contract."
     - "The exact GitHub routed evaluator fast path now passes locally, including formatting, lint, build, and targeted evaluator tests."
 commit:
-  hash: "3ed27b61ad5a6dcf754a3f1cea51654ee3a1d20e"
+  hash: "a50021a5bef906fd629ba9d8425812a57bd9d771"
   message: "🧩 GX5NVT task: refresh task artifacts after commit"
 comments:
   -
@@ -62,6 +62,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -90,8 +93,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T12:54:21.108Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T12:43:06.800Z"
+doc_updated_at: "2026-07-28T12:54:21.108Z"
 doc_updated_by: "CODER"
 description: "Prevent unhandled EPIPE when the evaluator provider closes stdin while the prompt is being dispatched; retain provider failure semantics and add a deterministic regression test."
 sections:
@@ -303,8 +313,8 @@ extensions:
         stateScopeDigest: "sha256:5ae641e1851d95562e227a3e805edd5bd1d20699de18da4dc28920c7cfcd04c0"
     schemaVersion: 1
   implementation_commit:
-    hash: "e8d2650798209554d4519eddcd9aba9999c34fd2"
-    message: "🚧 GX5NVT task: handle closed evaluator stdin"
+    hash: "62fa0310eb7acdf90385ce7ce7dd900ff8f9964d"
+    message: "🚧 GX5NVT task: satisfy evaluator test lint"
   workflow_route_baseline:
     start_head_sha: "47213e98e23ec136566a31bb1ef6c44f16d64690"
     version: 1
