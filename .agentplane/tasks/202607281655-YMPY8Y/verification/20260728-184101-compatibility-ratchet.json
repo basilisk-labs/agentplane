@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "kind": "agentplane_task_verification_record",
+  "task_id": "202607281655-YMPY8Y",
+  "recorded_at": "2026-07-28T18:41:01Z",
+  "scope": {
+    "implementation_commit": "4aaa436b1a1dda5e314a5d93be8a6fcd21fd3b55",
+    "paths": [
+      "packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts",
+      "scripts/baselines/v0.7-compatibility-candidate.json",
+      "scripts/checks/check-compatibility-contract-baseline.mjs"
+    ],
+    "objective": "Ratchet the reviewed v0.7 compatibility candidate for evaluator execute --replacement without changing the immutable v0.6.24 baseline."
+  },
+  "checks": [
+    {
+      "id": "compatibility-contract-ratchet",
+      "command": "bun run bench:compatibility:check",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "The immutable v0.6.24 baseline remained byte-identical and the reviewed v0.7 cumulative candidate accepted the single additive evaluator execute --replacement option (253 commands, 174 positional args, 814 options).",
+      "evidence_scope": "public CLI compatibility contract"
+    },
+    {
+      "id": "critical-cli-baseline",
+      "command": "bunx vitest run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts --testTimeout 60000",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "1 test file passed; 7 tests passed. The critical test pins the refreshed cumulative candidate surface and source-task provenance.",
+      "evidence_scope": "critical CLI compatibility and agent-efficiency baseline"
+    },
+    {
+      "id": "focused-supervisor-and-evaluator-tests",
+      "command": "bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts --testTimeout 60000",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "2 test files passed; 22 tests passed. Coverage retains failed-operation replacement, cross-process single-provider admission, and persisted pending-replacement recovery.",
+      "evidence_scope": "replacement supervisor and evaluator execution"
+    },
+    {
+      "id": "typescript-build",
+      "command": "bun run typecheck",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "scripts/checks/run-typescript-build.mjs completed successfully.",
+      "evidence_scope": "repository TypeScript build"
+    },
+    {
+      "id": "changed-format",
+      "command": "bun run format:changed",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "scripts/checks/check-changed-format.mjs reported all changed files formatted.",
+      "evidence_scope": "changed task implementation, contract ledger, and critical test"
+    },
+    {
+      "id": "policy-routing",
+      "command": "node .agentplane/policy/check-routing.mjs",
+      "status": "passed",
+      "exit_code": 0,
+      "result": "policy routing OK.",
+      "evidence_scope": "AGENTS gateway and loaded code-task policy graph"
+    },
+    {
+      "id": "post-integration-real-replacement",
+      "command": "agentplane evaluator execute 202607221850-8HBF4J --replacement",
+      "status": "not_run",
+      "exit_code": null,
+      "result": "Deferred until this implementation is integrated into main. It remains a required release gate: retain the original operation_failed record and prove exactly one linked completed replacement provider episode.",
+      "evidence_scope": "shared supervisor journal for the dependent context-assimilation task"
+    }
+  ]
+}
