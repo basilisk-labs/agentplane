@@ -21,8 +21,8 @@ RF-25d: make runner preparation, invocation, observation, evaluation, and lifecy
 - Note:
 
 ```text
-PASS (static rework): stale type import removed after contract extraction; no runner lifecycle
-behavior changed.
+PASS (dead-code rework): lifecycle-only exports are private; the public typed result and supervisor
+operation contract remain unchanged.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -45,10 +45,10 @@ behavior changed.
  .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
  .../src/runner/usecases/task-run-execution.ts      |  36 +++++
  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
- .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
+ .../runner/usecases/task-run-lifecycle-result.ts   | 171 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |  44 ++----
- 14 files changed, 643 insertions(+), 95 deletions(-)
+ 14 files changed, 642 insertions(+), 95 deletions(-)
 ```
 
 </details>

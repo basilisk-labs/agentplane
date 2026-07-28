@@ -13,7 +13,7 @@ Created: 2026-07-28T01:55:50.166Z
 ## Verification
 
 - State: ok
-- Note: PASS (static rework): stale type import removed after contract extraction; no runner lifecycle behavior changed.
+- Note: PASS (dead-code rework): lifecycle-only exports are private; the public typed result and supervisor operation contract remain unchanged.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -40,10 +40,10 @@ Created: 2026-07-28T01:55:50.166Z
  .../src/runner/usecases/task-run-effect-journal.ts |  34 +++-
  .../src/runner/usecases/task-run-execution.ts      |  36 +++++
  .../runner/usecases/task-run-lifecycle-replay.ts   |  18 ++-
- .../runner/usecases/task-run-lifecycle-result.ts   | 172 +++++++++++++++++++++
+ .../runner/usecases/task-run-lifecycle-result.ts   | 171 +++++++++++++++++++++
  .../runner/usecases/task-run-lifecycle-shared.ts   |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |  44 ++----
- 14 files changed, 643 insertions(+), 95 deletions(-)
+ 14 files changed, 642 insertions(+), 95 deletions(-)
 ```
 
 </details>
