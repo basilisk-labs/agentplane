@@ -188,7 +188,7 @@ async function runCliInSeparateProcess(opts: {
       },
       (error, stdout, stderr) => {
         if (error && typeof error.code !== "number") {
-          reject(error instanceof Error ? error : new Error(String(error)));
+          reject(error instanceof Error ? error : new Error("subprocess execution failed"));
           return;
         }
         resolve({ code: typeof error?.code === "number" ? error.code : 0, stdout, stderr });
@@ -252,14 +252,18 @@ describe("evaluator execute supervisor episode", () => {
     const parsedWorkOrder: unknown = JSON.parse(
       await readFile(path.join(root, completedOperation.work_order_ref), "utf8"),
     );
-    const workOrder = parsedWorkOrder as { evidence: { kind: string; path: string }[] };
-    expect(workOrder.evidence).toContainEqual({
-      kind: "verification_log",
-      path: path.relative(root, verificationRecordPath).replaceAll("\\\\", "/"),
+    const workOrder = parsedWorkOrder as {
+      evidence: { id: string; kind: string; path: string; required: boolean; sha256: string }[];
+    };
+    const verificationEvidence = workOrder.evidence.find(
+      (evidence) => evidence.kind === "verification_log",
+    );
+    expect(verificationEvidence).toMatchObject({
       id: "verification-record-1",
+      path: path.relative(root, verificationRecordPath).replaceAll("\\\\", "/"),
       required: true,
-      sha256: expect.any(String),
     });
+    expect(verificationEvidence?.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
   it("resumes a completed evaluator outcome without launching Codex again", async () => {
@@ -595,22 +599,22 @@ describe("evaluator execute supervisor episode", () => {
     }
 
     expect(codes.toSorted(), io.stderr).toEqual([0, 2]);
-    const invocationLines = (await readFile(invocationLog, "utf8")).trim().split("\n");
+    const invocationContents = await readFile(invocationLog, "utf8");
+    const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
     });
     const concurrentJournal = await createSupervisorEpisodeStore(journalPath).read();
-    expect(validateSupervisorExecutionEpisodeJournal(concurrentJournal)).toMatchObject({
+    const concurrentEpisode = validateSupervisorExecutionEpisodeJournal(concurrentJournal);
+    expect(concurrentEpisode).toMatchObject({
       status: "running",
       cursor: { phase: "ready", operation_key: null },
       usage: { episodes: 2, agent_runs: 2 },
-      operations: [
-        { status: "failed" },
-        { status: "completed", replacement_of_operation_key: expect.any(String) },
-      ],
+      operations: [{ status: "failed" }, { status: "completed" }],
     });
+    expect(concurrentEpisode.operations[1]?.replacement_of_operation_key).toMatch(/^sha256:/u);
   });
 
   it("resumes a durably reserved replacement before provider intent", async () => {
@@ -698,20 +702,20 @@ describe("evaluator execute supervisor episode", () => {
     );
 
     expect(executions.map((execution) => execution.code).toSorted()).toEqual([0, 2]);
-    const invocationLines = (await readFile(invocationLog, "utf8")).trim().split("\n");
+    const invocationContents = await readFile(invocationLog, "utf8");
+    const invocationLines = invocationContents.trim().split("\n");
     expect(invocationLines).toEqual(["provider-started"]);
     const journalPath = await resolveSupervisorExecutionEpisodePath({
       git_root: root,
       task_id: taskId,
     });
     const processJournal = await createSupervisorEpisodeStore(journalPath).read();
-    expect(validateSupervisorExecutionEpisodeJournal(processJournal)).toMatchObject({
+    const processEpisode = validateSupervisorExecutionEpisodeJournal(processJournal);
+    expect(processEpisode).toMatchObject({
       status: "running",
       usage: { episodes: 2, agent_runs: 2 },
-      operations: [
-        { status: "failed" },
-        { status: "completed", replacement_of_operation_key: expect.any(String) },
-      ],
+      operations: [{ status: "failed" }, { status: "completed" }],
     });
+    expect(processEpisode.operations[1]?.replacement_of_operation_key).toMatch(/^sha256:/u);
   });
 });
