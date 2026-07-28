@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The evaluated delta removes only the nondeterministic competing-process exit-code assertion; it retains assertions for exactly one provider start, one preserved failed operation, one linked completed replacement, and bounded accumulated usage.",
+      "broken_invariant": "None observed: the durable concurrency invariant is single-provider admission with preserved failed-operation history and a distinct linked replacement episode, and the frozen verification covers that invariant.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-201259368-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:bbfd13565056e17cd26c8af3b8c6d35f085c6422d8cc008f68c1646d0bee15e1",
+          "section": "packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/verification/20260728-201216-concurrent-replacement-stability.json",
+          "sha256": "sha256:c2dc37cbe50f4f82c4bef9c89fb135cef09b5d59ef841becefc69a562f9f24f9",
+          "section": "checks/replacement-supervisor-tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607281655-YMPY8Y/quality/20260728-201259368-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:5023e069063ac679e7e94918ecd42009897f358477f3b2a8a4046b71f234e5f9",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The required real replacement episode for task 202607221850-8HBF4J is intentionally deferred until integration and remains a release gate; current evidence uses a fake read-only provider and does not prove behavior against the shared post-integration journal."
+  ]
+}
