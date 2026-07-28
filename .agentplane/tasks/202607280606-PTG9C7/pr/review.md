@@ -12,8 +12,8 @@ Created: 2026-07-28T06:15:22.323Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused AgentWorkOrder integration and side-effect authority suites passed: 13 tests. Typecheck and policy routing passed. The base-checkout route for 202607242236-1BFWEY now resolves without a task-revision schema error.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -24,7 +24,7 @@ Created: 2026-07-28T06:15:22.323Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-28T06:15:22.323Z
+- Updated: 2026-07-28T06:18:34.004Z
 - Branch: task/202607280606-PTG9C7/prevent-self-invalidating-side-effect-authority
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
