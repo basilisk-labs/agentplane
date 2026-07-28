@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: All matched files use Prettier code style.\nScope: canonical verification digest and evaluator record admission\n\nCommand: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: exit code 0; no lint findings.\nScope: canonical verification digest and evaluator record admission\n\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts\nResult: pass\nEvidence: Test Files 4 passed; Tests 50 passed.\nScope: full branch diff, durable verification, cross-task copy and tamper exclusion\n\nCommand: bun run typecheck\nResult: pass\nEvidence: node scripts/checks/run-typescript-build.mjs exited 0.\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: hotspot threshold check passed.\nScope: runtime and test file-size policy\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: repository policy routing\n\nCommand: agentplane doctor\nResult: pass\nEvidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.\nScope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors.\nScope: current task worktree",
+  "digest": "sha256:503fe218300f70e1f54fbecdff95827275d0820fc910a4b5ced0f52556a24d7c",
+  "implementation_sha": "b66acd190a7820431d76e62c202e58d6e04bdf58",
+  "kind": "task_verification_record",
+  "note": "Rework verified with canonical, task-bound evaluator evidence.",
+  "recorded_at": "2026-07-28T23:12:33.985Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
+  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
+  "task_id": "202607282157-FT85MC",
+  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
+  "verifier": "TESTER"
+}
