@@ -3971,6 +3971,7 @@ agentplane evaluator execute <task-id> [options]
 Options:
 
 - `--evaluator <id>`: Evaluator prompt module id to use. (default=recovery-context)
+- `--replacement`: Explicitly start a new bounded evaluator operation after terminal operation_failed; never reopens the failed operation or effect_in_doubt. (default=false)
 - `--json`: Emit machine-readable episode and recorded artifact paths. (default=false)
 
 ### evaluator list

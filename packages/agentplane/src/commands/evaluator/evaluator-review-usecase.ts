@@ -301,8 +301,9 @@ export async function prepareEvaluatorReview(opts: {
     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
   });
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
+  const recordPaths = await verificationRecordPaths(taskRoot);
   const verificationRecords = await Promise.all(
-    (await verificationRecordPaths(taskRoot)).map((filePath, index) =>
+    recordPaths.map((filePath, index) =>
       freezeFile({
         gitRoot,
         id: `verification-record-${String(index + 1)}`,
