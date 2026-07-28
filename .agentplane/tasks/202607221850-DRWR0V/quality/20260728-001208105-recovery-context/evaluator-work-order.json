@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221850-DRWR0V-c5e4f9e2de8e8a924606c827",
+  "prepared_at": "2026-07-28T00:12:08.105Z",
+  "task": {
+    "id": "202607221850-DRWR0V",
+    "revision": 10,
+    "objective": "Extract the shared typed workflow supervisor from Hermes\n\nRF-09/RF-25c: implement one in-process decide, execute, refresh, and audit loop over typed operations; make Hermes and CLI adapters use it without raw shell route execution.",
+    "acceptance_criteria": [
+      "bun run guards:check",
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: shared supervisor use case, typed operation registry/executor, state refresh after each operation, idempotency/postcondition enforcement, compatibility adapters for Hermes and CLI, uniform audit log, and hard stops for plan approval and semantic closeout.\n- Out of scope: full context/direct/branch_pr lifecycle automation, which is delivered by dependent vertical slices.",
+      "1. Define supervisor input/output and typed operation executor ports.\n2. Move Hermes route classification and allowlisted execution onto the common reducer and registry.\n3. Execute at most one safe step, observe it, refresh state, and decide again until a typed stop.\n4. Reject raw shell strings, stale fingerprints, missing authority, plan approval, and semantic closeout.\n5. Add caller-parity, idempotency, audit, crash, and stop-condition fixtures.",
+      "1. Feed identical state through Hermes and CLI adapters. Expected: both produce the same typed step, operation result, refreshed fingerprint, and audit entry.\n2. Supply a raw shell route or unregistered operation. Expected: the supervisor rejects it before execution.\n3. Exercise approval, semantic closeout, wait, crash, and repeated-idempotency cases. Expected: bounded typed stops and no duplicated side effect.\n4. Run supervisor/Hermes/route tests, lifecycle invariants, guards, and typecheck."
+    ]
+  },
+  "evaluated_sha": "425ee76ab656e27805ca20a5184531a8bbfeac1c",
+  "blueprint_digest": "718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221850-DRWR0V/README.md",
+      "sha256": "sha256:402d312cdb55916b7edaa1c2672634445a3537e4e39151b6e651ffa2ae951373",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:e8256d516cac595287e17b85679f1837b18b35fda0d8da00b4c11317143d26a8",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:68d7c4983c86052ac9fc2aa16ea97eec17ed6dd040aa241e1a285949faa84959",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:1c8ac6efb27bea499809b7ac66609e2eb516f85674403a63952868683145a8fe",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

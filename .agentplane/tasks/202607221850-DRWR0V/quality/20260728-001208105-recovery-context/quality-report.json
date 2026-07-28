@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-DRWR0V",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T00:12:08.203Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "425ee76ab656e27805ca20a5184531a8bbfeac1c",
+  "blueprint_digest": "718eba7013d12b83c5fd630518a34c07055d7c030b3f21d07b4ef16bc1f69102",
+  "findings": [
+    "The supervisor rejects unregistered, cross-task, stale, non-authorized, duplicate, approval, semantic, human, wait, and terminal routes before execution; attempts refresh route state exactly once after execution."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-DRWR0V/quality/20260728-001208105-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
