@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-WM9X1G",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T08:14:49.383Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "21cd8c94d46c6a130ce5bad53b787372b3ad61cd",
+  "blueprint_digest": "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e",
+  "findings": [
+    "Single source-set lease prevents competing manifest mutations; SHA-256 fingerprints and crash-boundary tests cover safe resume. Unknown backend creation remains fail-closed at task_creating."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

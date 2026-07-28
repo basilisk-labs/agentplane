@@ -1,0 +1,1964 @@
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/README.md b/.agentplane/tasks/202607221850-WM9X1G/README.md
+index 6ac096fd5..0046ac8f5 100644
+--- a/.agentplane/tasks/202607221850-WM9X1G/README.md
++++ b/.agentplane/tasks/202607221850-WM9X1G/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221850-WM9X1G"
+ title: "Journal resumable context-ingestion phases"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 8
+ origin:
+   system: "manual"
+ depends_on:
+@@ -26,9 +26,9 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-28T07:46:15.347Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -37,11 +37,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "ORCHESTRATOR"
++    body: "Start: implement the approved resumable ingest journal vertical slice, preserving semantic work as an agent-owned phase."
++events:
++  -
++    type: "status"
++    at: "2026-07-28T07:46:21.325Z"
++    author: "ORCHESTRATOR"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: implement the approved resumable ingest journal vertical slice, preserving semantic work as an agent-owned phase."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:50:14.033Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-28T07:46:21.325Z"
++doc_updated_by: "ORCHESTRATOR"
+ description: "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair."
+ sections:
+   Summary: |-
+@@ -51,12 +61,7 @@ sections:
+   Scope: |-
+     - In scope: versioned run journal, exact task/run identity, phase fingerprints and idempotency keys, crash injection, retry/resume/repair, divergence diagnosis, lock ownership, and context doctor visibility.
+     - Out of scope: a fake distributed transaction across task backend and filesystem.
+-  Plan: |-
+-    1. Define journal phases, state transitions, ownership, and recovery metadata.
+-    2. Persist exact typed mutation results before advancing phases.
+-    3. Make each filesystem/backend operation idempotent against its fingerprint and postconditions.
+-    4. Add resume and targeted repair commands/diagnostics.
+-    5. Inject crashes at every boundary and verify no duplicate task, lock, or applied knowledge.
++  Plan: "1. Add a versioned run journal with immutable run identity, phase fingerprints, receipts, and postconditions for deterministic ingest boundaries. 2. Resume the matching run instead of using task-list diffs; persist source lock, task creation receipt, and task-pack completion idempotently. 3. Surface incomplete or divergent run state through context doctor with a bounded recovery route, without automating semantic apply. 4. Add fault-injection seams and focused tests for crash/retry, same-versus-changed fingerprints, and manifest/task/pack divergence. 5. Run declared task-state, critical, focused context, and type checks; record evidence."
+   Verify Steps: |-
+     1. Crash after each journal phase and resume. Expected: execution continues from the first incomplete operation with no duplicate task, lock, manifest, pack, or semantic apply.
+     2. Create manifest/task/pack divergence. Expected: context doctor reports the exact inconsistency and a bounded repair action.
+@@ -70,6 +75,10 @@ sections:
+     - Restore the previous compatibility path behind an explicit feature/compatibility boundary.
+     - Re-run lifecycle, focused, and type checks before resuming dependent work.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "89a82f010479eb2583e414fb49c930d4819b5777"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+@@ -85,11 +94,7 @@ RF-18: persist an idempotent assimilation run journal so task creation, manifest
+ 
+ ## Plan
+ 
+-1. Define journal phases, state transitions, ownership, and recovery metadata.
+-2. Persist exact typed mutation results before advancing phases.
+-3. Make each filesystem/backend operation idempotent against its fingerprint and postconditions.
+-4. Add resume and targeted repair commands/diagnostics.
+-5. Inject crashes at every boundary and verify no duplicate task, lock, or applied knowledge.
++1. Add a versioned run journal with immutable run identity, phase fingerprints, receipts, and postconditions for deterministic ingest boundaries. 2. Resume the matching run instead of using task-list diffs; persist source lock, task creation receipt, and task-pack completion idempotently. 3. Surface incomplete or divergent run state through context doctor with a bounded recovery route, without automating semantic apply. 4. Add fault-injection seams and focused tests for crash/retry, same-versus-changed fingerprints, and manifest/task/pack divergence. 5. Run declared task-state, critical, focused context, and type checks; record evidence.
+ 
+ ## Verify Steps
+ 
+diff --git a/.agentplane/tasks/202607221850-WM9X1G/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221850-WM9X1G/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..458d940df
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-WM9X1G/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221850-WM9X1G",
++    "title": "Journal resumable context-ingestion phases",
++    "description": "RF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair.",
++    "tags": [
++      "context",
++      "ingest",
++      "milestone-beta1",
++      "refactor",
++      "rf-18",
++      "saga",
++      "v0.7",
++      "wave-supervisor"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221850-WM9X1G",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e"
++  }
++}
+diff --git a/packages/agentplane/src/commands/context/check.unit.test.ts b/packages/agentplane/src/commands/context/check.unit.test.ts
+index 2a335f930..5722bac0b 100644
+--- a/packages/agentplane/src/commands/context/check.unit.test.ts
++++ b/packages/agentplane/src/commands/context/check.unit.test.ts
+@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import type { CommandContext } from "../shared/task-backend.js";
+ import { cmdContextDoctor } from "./doctor.js";
++import { cmdContextIngest } from "./ingest.js";
+ import { cmdContextInit } from "./init.js";
+ import { cmdContextWikiReport } from "./wiki-reports.js";
+ 
+@@ -140,4 +141,43 @@ describe("context cross-surface integrity", () => {
+       cmdContextDoctor({ cwd: root, parsed: { fix: false, label: "check" } }),
+     ).rejects.toThrow(/wiki connectivity reports are stale/u);
+   });
++
++  it("reports journaled task and receipt divergence with a bounded resume action", async () => {
++    const root = await tempRoot();
++    await initMaximum(root);
++    await write(root, "context/raw/divergence.md", "# Divergence\n\nPersist this source.\n");
++    const taskId = "202607021205-DOCTOR";
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++
++    await expect(
++      cmdContextIngest({
++        ctx,
++        cwd: root,
++        parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
++        createTask: () =>
++          Promise.resolve({
++            task_id: taskId,
++            revision: 1,
++            backend_id: "local",
++            artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++          }),
++        afterJournalPhase: (phase) => {
++          if (phase === "task_created") throw new Error("forced task-created crash");
++        },
++      }),
++    ).rejects.toThrow(/forced task-created crash/u);
++
++    await expect(
++      cmdContextDoctor({ cwd: root, parsed: { fix: false, label: "doctor" } }),
++    ).rejects.toThrow(
++      /task\/receipt divergence[\s\S]*resume with agentplane context ingest --changed/u,
++    );
++  });
+ });
+diff --git a/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts b/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
+index f38cd6f3a..66d97a25b 100644
+--- a/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
++++ b/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
+@@ -3,8 +3,11 @@ import os from "node:os";
+ import path from "node:path";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
++import type { CommandContext } from "../shared/task-backend.js";
++import { inspectContextIngestRuns } from "../../context/ingest-run-journal.js";
+ import { cmdContextExtractionApply } from "./extraction.js";
+ import { cmdContextGraphValidate } from "./graph.js";
++import { cmdContextIngest } from "./ingest.js";
+ 
+ let tempRoots: string[] = [];
+ 
+@@ -32,13 +35,15 @@ describe("context extraction apply", () => {
+   it("materializes facts, graph rows, provenance, and coverage from context_extraction SGR", async () => {
+     const root = await tempRoot();
+     const otherCwd = await tempRoot();
++    const taskId = "202605130501-CTXMAX";
++    await write(root, "context/raw/research/source.md", "# Source\n\nMaximum assimilation.\n");
+     await write(
+       root,
+       "context/extraction.json",
+       JSON.stringify({
+         schema_version: 1,
+         kind: "context_extraction",
+-        task_id: "202605130501-CTXMAX",
++        task_id: taskId,
+         reasoning: [{ label: "entity-first", summary: "Extract before wiki synthesis." }],
+         source_refs: [{ path: "context/raw/research/source.md", lines: "1-6" }],
+         extracted_items: [
+@@ -110,10 +115,30 @@ describe("context extraction apply", () => {
+     );
+ 
+     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
++    const context = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++    await cmdContextIngest({
++      ctx: context,
++      cwd: root,
++      parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
++      createTask: () =>
++        Promise.resolve({
++          task_id: taskId,
++          revision: 1,
++          backend_id: "local",
++          artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++        }),
++    });
+     await cmdContextExtractionApply({
+       cwd: otherCwd,
+       rootOverride: root,
+-      parsed: { file: "context/extraction.json", taskId: "202605130501-CTXMAX", dryRun: false },
++      parsed: { file: "context/extraction.json", taskId, dryRun: false },
+     });
+     await cmdContextGraphValidate({ cwd: root, parsed: {} });
+ 
+@@ -147,6 +172,13 @@ describe("context extraction apply", () => {
+     expect(out.mock.calls.map((call) => String(call[0])).join("")).toContain(
+       "items=5 input_source_paths=1 source_paths=1 source_refs=5 facts=1 entities=2 edges=1",
+     );
++    const diagnostics = await inspectContextIngestRuns(root);
++    expect(
++      diagnostics.some(
++        (diagnostic) =>
++          diagnostic.level === "warning" && diagnostic.message.includes("artifacts_applied"),
++      ),
++    ).toBe(true);
+   });
+ 
+   it("reports input source scope separately from applied extraction source paths", async () => {
+diff --git a/packages/agentplane/src/commands/context/extraction.ts b/packages/agentplane/src/commands/context/extraction.ts
+index 7210781ac..6cabc3e57 100644
+--- a/packages/agentplane/src/commands/context/extraction.ts
++++ b/packages/agentplane/src/commands/context/extraction.ts
+@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import { applyContextExtractionResult } from "../../context/extraction-writer.js";
++import { advanceContextIngestRunForTask } from "../../context/ingest-run-journal.js";
+ 
+ export async function cmdContextExtractionApply(opts: {
+   cwd: string;
+@@ -11,6 +12,12 @@ export async function cmdContextExtractionApply(opts: {
+   const root = path.resolve(opts.rootOverride ?? opts.cwd);
+   const filePath = path.resolve(root, opts.parsed.file);
+   const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
++  if (!opts.parsed.dryRun && opts.parsed.taskId) {
++    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
++      phase: "semantic_result_received",
++      semantic: { extraction_file: opts.parsed.file },
++    });
++  }
+   const result = await applyContextExtractionResult({
+     root,
+     raw,
+@@ -18,6 +25,12 @@ export async function cmdContextExtractionApply(opts: {
+     dryRun: opts.parsed.dryRun,
+     synthesizeWiki: opts.parsed.synthesizeWiki,
+   });
++  if (!opts.parsed.dryRun && opts.parsed.taskId) {
++    await advanceContextIngestRunForTask(root, opts.parsed.taskId, {
++      phase: "artifacts_applied",
++      semantic: { extraction_file: opts.parsed.file },
++    });
++  }
+   process.stdout.write(
+     [
+       `context extraction apply${opts.parsed.dryRun ? " (dry-run)" : ""}: items=${result.items} input_source_paths=${result.input_source_paths} source_paths=${result.source_paths} source_refs=${result.source_refs} facts=${result.facts} entities=${result.entities} edges=${result.edges} provenance=${result.provenance}`,
+diff --git a/packages/agentplane/src/commands/context/finalize.ts b/packages/agentplane/src/commands/context/finalize.ts
+index 598f35230..9ff6af218 100644
+--- a/packages/agentplane/src/commands/context/finalize.ts
++++ b/packages/agentplane/src/commands/context/finalize.ts
+@@ -8,6 +8,7 @@ import { cmdContextReindex } from "./reindex.js";
+ import { cmdContextVerifyTask } from "./verify-task.js";
+ import { cmdContextWikiIndex, cmdContextWikiLint } from "./wiki.js";
+ import { cmdContextWikiReport } from "./wiki-reports.js";
++import { advanceContextIngestRunForTask } from "../../context/ingest-run-journal.js";
+ 
+ type FinalizeInput = {
+   cwd: string;
+@@ -135,6 +136,10 @@ export async function runContextFinalization(
+ 
+ export async function cmdContextFinalizeTask(input: FinalizeInput): Promise<number> {
+   const summary = await runContextFinalization(input);
++  const root = path.resolve(input.rootOverride ?? input.cwd);
++  await advanceContextIngestRunForTask(root, input.parsed.taskId, { phase: "validated" });
++  await advanceContextIngestRunForTask(root, input.parsed.taskId, { phase: "evaluated" });
++  await advanceContextIngestRunForTask(root, input.parsed.taskId, { phase: "finalized" });
+   process.stdout.write(`context finalize-task ${input.parsed.taskId}: ok\n`);
+   process.stdout.write(`${JSON.stringify(summary)}\n`);
+   return 0;
+diff --git a/packages/agentplane/src/context/doctor.ts b/packages/agentplane/src/context/doctor.ts
+index f6f106fd3..53c15e3c0 100644
+--- a/packages/agentplane/src/context/doctor.ts
++++ b/packages/agentplane/src/context/doctor.ts
+@@ -13,6 +13,7 @@ import { readHarvestReport } from "./harvest-tasks-artifacts.js";
+ import { readContextProjection } from "./reindex.js";
+ import { checkSqliteProjection } from "./sqlite.js";
+ import { validateContextCrossSurfaceIntegrity } from "./integrity.js";
++import { inspectContextIngestRuns } from "./ingest-run-journal.js";
+ 
+ export async function cmdContextDoctor(opts: {
+   cwd: string;
+@@ -143,6 +144,10 @@ export async function cmdContextDoctor(opts: {
+   }
+ 
+   const manifestSources = await collectManifestSources(root);
++  for (const diagnostic of await inspectContextIngestRuns(root)) {
++    if (diagnostic.level === "issue") issues.push(diagnostic.message);
++    else warnings.push(diagnostic.message);
++  }
+   await checkWikiSourceRefs(root, manifestSources, issues);
+   for (const file of [
+     ".agentplane/context/derived/facts/facts.jsonl",
+diff --git a/packages/agentplane/src/context/ingest-run-journal.ts b/packages/agentplane/src/context/ingest-run-journal.ts
+new file mode 100644
+index 000000000..9bb41b074
+--- /dev/null
++++ b/packages/agentplane/src/context/ingest-run-journal.ts
+@@ -0,0 +1,526 @@
++import { createHash, randomUUID } from "node:crypto";
++import { mkdir, readFile, readdir, rename, unlink, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++import type { TaskCreationResult } from "../commands/task/new.js";
++import { CliError } from "../shared/errors.js";
++
++import {
++  readManifest,
++  type ContextIngestParsed,
++  type ManifestEntry,
++  type ManifestLock,
++} from "./ingest-manifest.js";
++
++const JOURNAL_DIRECTORY = ".agentplane/context/ingest-runs";
++const ACTIVE_DIRECTORY = `${JOURNAL_DIRECTORY}/active`;
++
++const PREPARATION_PHASES = [
++  "planned",
++  "source_set_locked",
++  "task_creating",
++  "task_created",
++  "pack_writing",
++] as const;
++
++export const CONTEXT_INGEST_RUN_PHASES = [
++  ...PREPARATION_PHASES,
++  "pack_written",
++  "curator_running",
++  "semantic_result_received",
++  "artifacts_applied",
++  "validated",
++  "evaluated",
++  "finalized",
++] as const;
++
++export type ContextIngestRunPhase = (typeof CONTEXT_INGEST_RUN_PHASES)[number];
++
++type ContextIngestRequest = {
++  fingerprint: string;
++  mode: ContextIngestParsed["mode"];
++  sources: string[];
++};
++
++type ContextIngestSourceSet = {
++  full_inventory: ManifestEntry[];
++  manifest: ManifestLock;
++  manifest_fingerprint: string;
++  previous_manifest_fingerprint: string;
++  selected: ManifestEntry[];
++  selected_fingerprint: string;
++};
++
++export type ContextIngestRunJournal = {
++  created_at: string;
++  pack?: { span_count: number };
++  phase: ContextIngestRunPhase;
++  request: ContextIngestRequest;
++  run_id: string;
++  semantic?: { extraction_file: string };
++  source_set: ContextIngestSourceSet;
++  task?: TaskCreationResult;
++  updated_at: string;
++  version: 1;
++};
++
++type ContextIngestRunLease = {
++  acquired_at: string;
++  request_fingerprint: string;
++  run_id: string;
++  version: 1;
++};
++
++export type ContextIngestRunDiagnostic = {
++  level: "issue" | "warning";
++  message: string;
++};
++
++export function contextIngestRequestFingerprint(
++  parsed: Pick<ContextIngestParsed, "mode" | "sources">,
++): string {
++  return fingerprint({ mode: parsed.mode, sources: [...parsed.sources].toSorted() });
++}
++
++export function contextIngestManifestFingerprint(manifest: ManifestLock): string {
++  return fingerprint({
++    sources: normalizeEntries(manifest.sources),
++    version: manifest.version,
++    wiki_scaffold: manifest.wiki_scaffold ?? null,
++    workspace_hash: manifest.workspace_hash,
++  });
++}
++
++export function contextIngestSourceFingerprint(entries: ManifestEntry[]): string {
++  return fingerprint(normalizeEntries(entries));
++}
++
++export async function acquireContextIngestRun(opts: {
++  allowCreate: boolean;
++  manifest: ManifestLock;
++  parsed: Pick<ContextIngestParsed, "mode" | "sources">;
++  previousManifest: ManifestLock;
++  root: string;
++  selected: ManifestEntry[];
++}): Promise<ContextIngestRunJournal | null> {
++  const requestFingerprint = contextIngestRequestFingerprint(opts.parsed);
++  const activePath = activeLeasePath(opts.root);
++  await mkdir(path.dirname(activePath), { recursive: true });
++
++  const existingLease = await readLease(activePath);
++  if (existingLease !== null) {
++    const run = await readContextIngestRun(opts.root, existingLease.run_id);
++    if (run === null) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message:
++          `context ingest lease points to a missing run journal: ${existingLease.run_id}. ` +
++          "Run context doctor and repair the journal before retrying.",
++      });
++    }
++    if (isResumableContextIngestPhase(run.phase)) {
++      if (run.request.fingerprint !== requestFingerprint) {
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message:
++            `context ingest run ${run.run_id} owns the source-set lock. ` +
++            "Run context doctor before starting a different ingestion request.",
++        });
++      }
++      return run;
++    }
++    await releaseContextIngestRunLease(opts.root, run);
++  }
++
++  if (!opts.allowCreate) return null;
++
++  const now = new Date().toISOString();
++  const run: ContextIngestRunJournal = {
++    created_at: now,
++    phase: "planned",
++    request: {
++      fingerprint: requestFingerprint,
++      mode: opts.parsed.mode,
++      sources: [...opts.parsed.sources].toSorted(),
++    },
++    run_id: `ingest-${randomUUID()}`,
++    source_set: {
++      full_inventory: cloneEntries(opts.manifest.sources),
++      manifest: cloneManifest(opts.manifest),
++      manifest_fingerprint: contextIngestManifestFingerprint(opts.manifest),
++      previous_manifest_fingerprint: contextIngestManifestFingerprint(opts.previousManifest),
++      selected: cloneEntries(opts.selected),
++      selected_fingerprint: contextIngestSourceFingerprint(opts.selected),
++    },
++    updated_at: now,
++    version: 1,
++  };
++  await writeContextIngestRun(opts.root, run);
++  const lease: ContextIngestRunLease = {
++    acquired_at: now,
++    request_fingerprint: requestFingerprint,
++    run_id: run.run_id,
++    version: 1,
++  };
++  try {
++    await writeFile(activePath, `${JSON.stringify(lease, null, 2)}\n`, {
++      encoding: "utf8",
++      flag: "wx",
++    });
++    return run;
++  } catch (error) {
++    if (!isAlreadyExistsError(error)) throw error;
++    await unlink(runPath(opts.root, run.run_id)).catch((cleanupError: unknown) => {
++      if (isMissingError(cleanupError)) return;
++      throw cleanupError;
++    });
++    const winner = await readLease(activePath);
++    if (winner === null) throw error;
++    const winnerRun = await readContextIngestRun(opts.root, winner.run_id);
++    if (winnerRun === null) throw error;
++    if (winnerRun.request.fingerprint !== requestFingerprint) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message:
++          `context ingest run ${winnerRun.run_id} owns the source-set lock. ` +
++          "Run context doctor before starting a different ingestion request.",
++      });
++    }
++    return winnerRun;
++  }
++}
++
++export async function advanceContextIngestRun(
++  root: string,
++  run: ContextIngestRunJournal,
++  update: {
++    pack?: { span_count: number };
++    phase: ContextIngestRunPhase;
++    semantic?: { extraction_file: string };
++    task?: TaskCreationResult;
++  },
++): Promise<ContextIngestRunJournal> {
++  const next: ContextIngestRunJournal = {
++    ...run,
++    ...(update.pack === undefined ? {} : { pack: update.pack }),
++    ...(update.semantic === undefined ? {} : { semantic: update.semantic }),
++    ...(update.task === undefined ? {} : { task: update.task }),
++    phase: update.phase,
++    updated_at: new Date().toISOString(),
++  };
++  await writeContextIngestRun(root, next);
++  return next;
++}
++
++export async function advanceContextIngestRunForTask(
++  root: string,
++  taskId: string,
++  update: {
++    phase: ContextIngestRunPhase;
++    semantic?: { extraction_file: string };
++  },
++): Promise<ContextIngestRunJournal | null> {
++  const runs = await readContextIngestRuns(root);
++  const matches = runs
++    .filter((run) => run.task?.task_id === taskId)
++    .toSorted((left, right) => left.updated_at.localeCompare(right.updated_at));
++  const run = matches.at(-1);
++  if (run === undefined) return null;
++
++  const currentIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(run.phase);
++  const requestedIndex = CONTEXT_INGEST_RUN_PHASES.indexOf(update.phase);
++  if (requestedIndex <= currentIndex) return run;
++  return await advanceContextIngestRun(root, run, update);
++}
++
++export async function releaseContextIngestRunLease(
++  root: string,
++  run: ContextIngestRunJournal,
++): Promise<void> {
++  const activePath = activeLeasePath(root);
++  const lease = await readLease(activePath);
++  if (lease?.run_id !== run.run_id) return;
++  await unlink(activePath).catch((error: unknown) => {
++    if (isMissingError(error)) return;
++    throw error;
++  });
++}
++
++export function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
++  return (PREPARATION_PHASES as readonly string[]).includes(phase);
++}
++
++export function contextIngestRunRetryCommand(run: ContextIngestRunJournal): string {
++  if (run.request.mode === "all") return "agentplane context ingest --all";
++  if (run.request.mode === "changed") return "agentplane context ingest --changed";
++  return `agentplane context ingest ${run.request.sources.map((source) => JSON.stringify(source)).join(" ")}`;
++}
++
++export async function inspectContextIngestRuns(
++  root: string,
++): Promise<ContextIngestRunDiagnostic[]> {
++  const entries = await readContextIngestRuns(root);
++  const manifest = await readManifest(root);
++  const diagnostics: ContextIngestRunDiagnostic[] = [];
++  for (const run of entries) {
++    if (run.phase === "finalized") continue;
++    const retry = contextIngestRunRetryCommand(run);
++    const taskId = run.task?.task_id;
++    if (
++      run.phase !== "planned" &&
++      isResumableContextIngestPhase(run.phase) &&
++      contextIngestManifestFingerprint(manifest) !== run.source_set.manifest_fingerprint
++    ) {
++      diagnostics.push({
++        level: "issue",
++        message:
++          `context ingest run ${run.run_id} has manifest/run divergence; inspect the locked source set ` +
++          `before repairing and resuming with ${retry}.`,
++      });
++      continue;
++    }
++    if (run.phase === "pack_written" && taskId !== undefined) {
++      diagnostics.push({
++        level: "warning",
++        message: `context ingest run ${run.run_id} prepared CURATOR task ${taskId}; await semantic work.`,
++      });
++      continue;
++    }
++    if (run.phase === "semantic_result_received" && taskId !== undefined) {
++      const extraction = run.semantic?.extraction_file ?? "the original extraction SGR file";
++      diagnostics.push({
++        level: "warning",
++        message:
++          `context ingest run ${run.run_id} received semantic output for ${taskId}; ` +
++          `repeat context extraction apply for ${extraction} if artifacts were not applied.`,
++      });
++      continue;
++    }
++    if (
++      (run.phase === "artifacts_applied" ||
++        run.phase === "validated" ||
++        run.phase === "evaluated") &&
++      taskId !== undefined
++    ) {
++      diagnostics.push({
++        level: "warning",
++        message:
++          `context ingest run ${run.run_id} is incomplete at ${run.phase}; ` +
++          `continue with agentplane context finalize-task ${taskId}.`,
++      });
++      continue;
++    }
++    if (!isResumableContextIngestPhase(run.phase)) continue;
++    if (run.phase === "task_creating") {
++      diagnostics.push({
++        level: "issue",
++        message:
++          `context ingest run ${run.run_id} has unknown task creation outcome; inspect the task backend ` +
++          `before retrying (${retry}).`,
++      });
++      continue;
++    }
++    if (run.phase === "task_created" && run.task !== undefined) {
++      const receiptPath = path.join(
++        root,
++        ".agentplane/tasks",
++        run.task.task_id,
++        "task-creation.json",
++      );
++      if (!(await fileExists(receiptPath))) {
++        diagnostics.push({
++          level: "issue",
++          message:
++            `context ingest run ${run.run_id} has task/receipt divergence for ${run.task.task_id}; ` +
++            `resume with ${retry}.`,
++        });
++        continue;
++      }
++    }
++    if (run.phase === "pack_writing" && run.task !== undefined) {
++      const packPath = path.join(root, ".agentplane/tasks", run.task.task_id, "context-pack.md");
++      if (!(await fileExists(packPath))) {
++        diagnostics.push({
++          level: "issue",
++          message:
++            `context ingest run ${run.run_id} has task/pack divergence for ${run.task.task_id}; ` +
++            `resume with ${retry}.`,
++        });
++        continue;
++      }
++    }
++    diagnostics.push({
++      level: "warning",
++      message: `context ingest run ${run.run_id} is incomplete at ${run.phase}; resume with ${retry}.`,
++    });
++  }
++  return diagnostics;
++}
++
++export function assertContextIngestRunSourceSet(
++  run: ContextIngestRunJournal,
++  currentEntries: ManifestEntry[],
++): void {
++  const currentByPath = new Map(currentEntries.map((entry) => [entry.path, entry]));
++  for (const locked of run.source_set.selected) {
++    const current = currentByPath.get(locked.path);
++    if (current?.sha256 === locked.sha256) continue;
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message:
++        `context ingest run ${run.run_id} cannot resume because selected source fingerprint changed: ` +
++        `${locked.path}. Run context doctor, then repair or start a new assimilation run explicitly.`,
++    });
++  }
++}
++
++export function assertContextIngestRunManifest(
++  run: ContextIngestRunJournal,
++  currentManifest: ManifestLock,
++): void {
++  if (contextIngestManifestFingerprint(currentManifest) === run.source_set.manifest_fingerprint) {
++    return;
++  }
++  throw new CliError({
++    exitCode: 3,
++    code: "E_VALIDATION",
++    message:
++      `context ingest run ${run.run_id} cannot resume because manifest/run fingerprints diverged. ` +
++      "Run context doctor, then repair the manifest or start a new assimilation run explicitly.",
++  });
++}
++
++export async function readContextIngestRun(
++  root: string,
++  runId: string,
++): Promise<ContextIngestRunJournal | null> {
++  try {
++    const raw = await readFile(runPath(root, runId), "utf8");
++    return parseRun(raw);
++  } catch (error) {
++    if (isMissingError(error)) return null;
++    throw error;
++  }
++}
++
++async function readContextIngestRuns(root: string): Promise<ContextIngestRunJournal[]> {
++  const directory = path.join(root, JOURNAL_DIRECTORY);
++  let entries: string[] = [];
++  try {
++    entries = await readdir(directory);
++  } catch (error) {
++    if (isMissingError(error)) return [];
++    throw error;
++  }
++  const runs: ContextIngestRunJournal[] = [];
++  for (const entry of entries.filter((name) => name.endsWith(".json")).toSorted()) {
++    const run = await readContextIngestRun(root, entry.slice(0, -".json".length));
++    if (run !== null) runs.push(run);
++  }
++  return runs;
++}
++
++async function writeContextIngestRun(root: string, run: ContextIngestRunJournal): Promise<void> {
++  const target = runPath(root, run.run_id);
++  await mkdir(path.dirname(target), { recursive: true });
++  const temporary = `${target}.${randomUUID()}.tmp`;
++  await writeFile(temporary, `${JSON.stringify(run, null, 2)}\n`, "utf8");
++  await rename(temporary, target);
++}
++
++async function readLease(activePath: string): Promise<ContextIngestRunLease | null> {
++  try {
++    const raw = await readFile(activePath, "utf8");
++    const parsed = JSON.parse(raw) as Partial<ContextIngestRunLease>;
++    if (
++      parsed.version !== 1 ||
++      typeof parsed.request_fingerprint !== "string" ||
++      typeof parsed.run_id !== "string" ||
++      typeof parsed.acquired_at !== "string"
++    ) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message: `context ingest lease is malformed: ${activePath}`,
++      });
++    }
++    return parsed as ContextIngestRunLease;
++  } catch (error) {
++    if (isMissingError(error)) return null;
++    throw error;
++  }
++}
++
++function parseRun(raw: string): ContextIngestRunJournal {
++  const parsed = JSON.parse(raw) as Partial<ContextIngestRunJournal>;
++  if (
++    parsed.version !== 1 ||
++    typeof parsed.run_id !== "string" ||
++    typeof parsed.phase !== "string" ||
++    !CONTEXT_INGEST_RUN_PHASES.includes(parsed.phase as ContextIngestRunPhase) ||
++    parsed.request === undefined ||
++    parsed.source_set === undefined ||
++    typeof parsed.created_at !== "string" ||
++    typeof parsed.updated_at !== "string"
++  ) {
++    throw new CliError({
++      exitCode: 3,
++      code: "E_VALIDATION",
++      message: "context ingest run journal is malformed",
++    });
++  }
++  return parsed as ContextIngestRunJournal;
++}
++
++function activeLeasePath(root: string): string {
++  return path.join(root, ACTIVE_DIRECTORY, "source-set.lock.json");
++}
++
++function runPath(root: string, runId: string): string {
++  return path.join(root, JOURNAL_DIRECTORY, `${runId}.json`);
++}
++
++function cloneManifest(manifest: ManifestLock): ManifestLock {
++  return {
++    ...manifest,
++    sources: cloneEntries(manifest.sources),
++  };
++}
++
++function cloneEntries(entries: ManifestEntry[]): ManifestEntry[] {
++  return entries.map((entry) => ({ ...entry }));
++}
++
++function normalizeEntries(entries: ManifestEntry[]): ManifestEntry[] {
++  return cloneEntries(entries).toSorted((left, right) => left.path.localeCompare(right.path));
++}
++
++function fingerprint(value: unknown): string {
++  return `sha256:${createHash("sha256").update(JSON.stringify(value)).digest("hex")}`;
++}
++
++async function fileExists(candidate: string): Promise<boolean> {
++  try {
++    await readFile(candidate);
++    return true;
++  } catch (error) {
++    if (isMissingError(error)) return false;
++    throw error;
++  }
++}
++
++function isAlreadyExistsError(error: unknown): boolean {
++  return isNodeError(error, "EEXIST");
++}
++
++function isMissingError(error: unknown): boolean {
++  return isNodeError(error, "ENOENT");
++}
++
++function isNodeError(error: unknown, code: string): boolean {
++  return typeof error === "object" && error !== null && "code" in error && error.code === code;
++}
+diff --git a/packages/agentplane/src/context/ingest-task-pack.test.ts b/packages/agentplane/src/context/ingest-task-pack.test.ts
+index b098a702f..034c24340 100644
+--- a/packages/agentplane/src/context/ingest-task-pack.test.ts
++++ b/packages/agentplane/src/context/ingest-task-pack.test.ts
+@@ -1,4 +1,4 @@
+-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
++import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ import type { CommandContext } from "../commands/shared/task-backend.js";
+ import type { TaskNewParsed } from "../commands/task/new.js";
+ import { cmdContextIngest } from "./ingest.js";
++import { inspectContextIngestRuns } from "./ingest-run-journal.js";
+ 
+ let tempRoots: string[] = [];
+ 
+@@ -340,4 +341,291 @@ describe("context ingest task pack", () => {
+       artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
+     });
+   });
++
++  it("resumes a journaled task creation after task-pack failure without creating a duplicate task", async () => {
++    const root = await tempRoot();
++    await write(root, "context/raw/retry.md", "# Retry\n\nPersisted source.\n");
++    const taskId = "202607021202-RETRY1";
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++    const createTask = vi.fn(() =>
++      Promise.resolve({
++        task_id: taskId,
++        revision: 1,
++        backend_id: "local",
++        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++      }),
++    );
++    let packAttempt = 0;
++    const writeTaskPack = vi.fn(() => {
++      packAttempt += 1;
++      if (packAttempt === 1) throw new Error("forced task-pack failure");
++      return Promise.resolve({
++        taskDir: path.join(root, ".agentplane/tasks", taskId),
++        spanCount: 1,
++      });
++    });
++    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
++
++    await expect(
++      cmdContextIngest({ ctx, cwd: root, parsed, createTask, writeTaskPack }),
++    ).rejects.toThrow(/forced task-pack failure/u);
++    await expect(
++      cmdContextIngest({ ctx, cwd: root, parsed, createTask, writeTaskPack }),
++    ).resolves.toBe(0);
++
++    expect(createTask).toHaveBeenCalledTimes(1);
++    expect(writeTaskPack).toHaveBeenCalledTimes(2);
++    const ingestRunDirectory = await readdir(path.join(root, ".agentplane/context/ingest-runs"));
++    const journalFiles = ingestRunDirectory.filter((entry) => entry.endsWith(".json"));
++    expect(journalFiles).toHaveLength(1);
++    await expect(
++      readJson<{ phase: string }>(root, `.agentplane/context/ingest-runs/${journalFiles[0]}`),
++    ).resolves.toMatchObject({
++      phase: "pack_written",
++    });
++  });
++
++  for (const crashPhase of [
++    "source_set_locked",
++    "task_created",
++    "pack_writing",
++    "pack_written",
++  ] as const) {
++    it(`resumes safely after a crash at the ${crashPhase} journal boundary`, async () => {
++      const root = await tempRoot();
++      await write(
++        root,
++        `context/raw/${crashPhase}.md`,
++        `# ${crashPhase}\n\nPersist this source.\n`,
++      );
++      const taskId = `20260702120-${crashPhase.slice(0, 6)}`;
++      const ctx = {
++        resolvedProject: { gitRoot: root },
++        config: { paths: { workflow_dir: ".agentplane/tasks" } },
++        taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++        backendId: "local",
++        backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++        memo: {},
++      } as unknown as CommandContext;
++      const createTask = vi.fn(() =>
++        Promise.resolve({
++          task_id: taskId,
++          revision: 1,
++          backend_id: "local",
++          artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++        }),
++      );
++      const writeTaskPack = vi.fn(() =>
++        Promise.resolve({ taskDir: path.join(root, ".agentplane/tasks", taskId), spanCount: 1 }),
++      );
++      const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
++
++      await expect(
++        cmdContextIngest({
++          ctx,
++          cwd: root,
++          parsed,
++          createTask,
++          writeTaskPack,
++          afterJournalPhase: (phase) => {
++            if (phase === crashPhase) throw new Error(`forced ${crashPhase} crash`);
++          },
++        }),
++      ).rejects.toThrow(`forced ${crashPhase} crash`);
++      await expect(
++        cmdContextIngest({ ctx, cwd: root, parsed, createTask, writeTaskPack }),
++      ).resolves.toBe(0);
++
++      expect(createTask).toHaveBeenCalledTimes(1);
++      expect(writeTaskPack).toHaveBeenCalledTimes(1);
++    });
++  }
++
++  it("rejects a resume when the journaled source fingerprint changed", async () => {
++    const root = await tempRoot();
++    await write(root, "context/raw/fingerprint.md", "# Fingerprint\n\nFirst version.\n");
++    const taskId = "202607021203-FINGER";
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++    const createTask = vi.fn(() =>
++      Promise.resolve({
++        task_id: taskId,
++        revision: 1,
++        backend_id: "local",
++        artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++      }),
++    );
++    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
++
++    await expect(
++      cmdContextIngest({
++        ctx,
++        cwd: root,
++        parsed,
++        createTask,
++        writeTaskPack: () => Promise.reject(new Error("forced task-pack failure")),
++      }),
++    ).rejects.toThrow(/forced task-pack failure/u);
++    await write(root, "context/raw/fingerprint.md", "# Fingerprint\n\nChanged version.\n");
++
++    await expect(
++      cmdContextIngest({
++        ctx,
++        cwd: root,
++        parsed,
++        createTask,
++        writeTaskPack: vi.fn(),
++      }),
++    ).rejects.toThrow(/selected source fingerprint changed/u);
++    expect(createTask).toHaveBeenCalledTimes(1);
++  });
++
++  it("diagnoses manifest/run divergence before a resumable task creation continues", async () => {
++    const root = await tempRoot();
++    await write(root, "context/raw/manifest.md", "# Manifest\n\nKeep the locked source set.\n");
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++    const parsed = { sources: [], mode: "changed" as const, dryRun: false, indexOnly: false };
++
++    await expect(
++      cmdContextIngest({
++        ctx,
++        cwd: root,
++        parsed,
++        afterJournalPhase: (phase) => {
++          if (phase === "source_set_locked") throw new Error("forced source-lock crash");
++        },
++      }),
++    ).rejects.toThrow(/forced source-lock crash/u);
++    await write(
++      root,
++      ".agentplane/context/manifest.lock.json",
++      JSON.stringify({
++        version: 1,
++        generated_at: new Date(0).toISOString(),
++        workspace_hash: "sha256:manually-diverged",
++        sources: [],
++      }),
++    );
++
++    await expect(cmdContextIngest({ ctx, cwd: root, parsed })).rejects.toThrow(
++      /manifest\/run fingerprints diverged/u,
++    );
++    const diagnostics = await inspectContextIngestRuns(root);
++    expect(
++      diagnostics.some(
++        (diagnostic) =>
++          diagnostic.level === "issue" && diagnostic.message.includes("manifest/run divergence"),
++      ),
++    ).toBe(true);
++  });
++
++  it("keeps a single source-set lock while a different ingestion request is incomplete", async () => {
++    const root = await tempRoot();
++    await write(root, "context/raw/first.md", "# First\n\nFirst ingestion request.\n");
++    await write(root, "context/raw/second.md", "# Second\n\nSecond ingestion request.\n");
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++    const createTask = vi.fn();
++
++    await expect(
++      cmdContextIngest({
++        ctx,
++        cwd: root,
++        parsed: {
++          sources: ["context/raw/first.md"],
++          mode: "sources",
++          dryRun: false,
++          indexOnly: false,
++        },
++        createTask,
++        afterJournalPhase: (phase) => {
++          if (phase === "source_set_locked") throw new Error("forced source-lock crash");
++        },
++      }),
++    ).rejects.toThrow(/forced source-lock crash/u);
++
++    await expect(
++      cmdContextIngest({
++        ctx,
++        cwd: root,
++        parsed: {
++          sources: ["context/raw/second.md"],
++          mode: "sources",
++          dryRun: false,
++          indexOnly: false,
++        },
++        createTask,
++      }),
++    ).rejects.toThrow(/owns the source-set lock/u);
++    expect(createTask).not.toHaveBeenCalled();
++    await expect(
++      readdir(path.join(root, ".agentplane/context/ingest-runs/active")),
++    ).resolves.toEqual(["source-set.lock.json"]);
++  });
++
++  it("reports task and receipt divergence after a crash at the task-created boundary", async () => {
++    const root = await tempRoot();
++    await write(root, "context/raw/divergence.md", "# Divergence\n\nKeep evidence.\n");
++    const taskId = "202607021204-DIVRGN";
++    const ctx = {
++      resolvedProject: { gitRoot: root },
++      config: { paths: { workflow_dir: ".agentplane/tasks" } },
++      taskBackend: { listTasks: vi.fn(() => Promise.resolve([])) },
++      backendId: "local",
++      backendConfigPath: path.join(root, ".agentplane/backends/local/backend.json"),
++      memo: {},
++    } as unknown as CommandContext;
++
++    await expect(
++      cmdContextIngest({
++        ctx,
++        cwd: root,
++        parsed: { sources: [], mode: "changed", dryRun: false, indexOnly: false },
++        createTask: () =>
++          Promise.resolve({
++            task_id: taskId,
++            revision: 1,
++            backend_id: "local",
++            artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++          }),
++        afterJournalPhase: (phase) => {
++          if (phase === "task_created") throw new Error("forced task-created crash");
++        },
++      }),
++    ).rejects.toThrow(/forced task-created crash/u);
++
++    const diagnostics = await inspectContextIngestRuns(root);
++    expect(
++      diagnostics.some(
++        (diagnostic) =>
++          diagnostic.level === "issue" && diagnostic.message.includes("task/receipt divergence"),
++      ),
++    ).toBe(true);
++  });
+ });
+diff --git a/packages/agentplane/src/context/ingest.ts b/packages/agentplane/src/context/ingest.ts
+index f80b5faa8..04377f5b9 100644
+--- a/packages/agentplane/src/context/ingest.ts
++++ b/packages/agentplane/src/context/ingest.ts
+@@ -23,6 +23,15 @@ import {
+   mergeCompleteSourceInventory,
+ } from "./ingest-sources.js";
+ import { cmdContextReindex } from "./reindex.js";
++import {
++  acquireContextIngestRun,
++  advanceContextIngestRun,
++  assertContextIngestRunManifest,
++  assertContextIngestRunSourceSet,
++  contextIngestManifestFingerprint,
++  releaseContextIngestRunLease,
++  type ContextIngestRunPhase,
++} from "./ingest-run-journal.js";
+ 
+ export type { ContextIngestParsed, ManifestEntry } from "./ingest-manifest.js";
+ 
+@@ -32,6 +41,7 @@ export async function cmdContextIngest(opts: {
+   rootOverride?: string;
+   parsed: ContextIngestParsed;
+   createTask?: typeof runTaskNewParsed;
++  afterJournalPhase?: (phase: ContextIngestRunPhase) => Promise<void> | void;
+   writeTaskPack?: typeof writeContextTaskPack;
+ }): Promise<number> {
+   const ctx =
+@@ -74,9 +84,8 @@ export async function cmdContextIngest(opts: {
+       wiki_scaffold: lock.wiki_scaffold,
+       sources: completeRows,
+     };
+-    await writeManifest(root, sourceLockedManifest);
+-
+     if (opts.parsed.indexOnly) {
++      await writeManifest(root, sourceLockedManifest);
+       return cmdContextReindex({
+         cwd: root,
+         rootOverride: opts.rootOverride,
+@@ -88,36 +97,161 @@ export async function cmdContextIngest(opts: {
+       });
+     }
+ 
+-    if (indexModeRows.length === 0) {
++    const run = await acquireContextIngestRun({
++      allowCreate: indexModeRows.length > 0,
++      manifest: sourceLockedManifest,
++      parsed: opts.parsed,
++      previousManifest: lock,
++      root,
++      selected: indexModeRows,
++    });
++    if (run === null) {
++      await writeManifest(root, sourceLockedManifest);
+       process.stdout.write("no new or changed sources detected for context assimilation\n");
+       return 0;
+     }
++    assertContextIngestRunSourceSet(run, completeRows);
+ 
++    if (run.phase === "task_creating") {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message:
++          `context ingest run ${run.run_id} has an unknown task creation outcome. ` +
++          "Run context doctor and inspect the task backend before retrying.",
++      });
++    }
++
++    if (run.phase !== "planned") {
++      assertContextIngestRunManifest(run, lock);
++    }
++
++    if (run.phase === "planned") {
++      const currentFingerprint = contextIngestManifestFingerprint(lock);
++      if (
++        currentFingerprint !== run.source_set.previous_manifest_fingerprint &&
++        currentFingerprint !== run.source_set.manifest_fingerprint
++      ) {
++        throw new CliError({
++          exitCode: 3,
++          code: "E_VALIDATION",
++          message:
++            `context ingest run ${run.run_id} cannot lock sources because the manifest changed concurrently. ` +
++            "Run context doctor before retrying.",
++        });
++      }
++      if (currentFingerprint !== run.source_set.manifest_fingerprint) {
++        await writeManifest(root, run.source_set.manifest);
++      }
++      const locked = await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
++      await opts.afterJournalPhase?.(locked.phase);
++      return await continueContextIngest(opts, ctx, root, locked);
++    }
++
++    return await continueContextIngest(opts, ctx, root, run);
++  } catch (err) {
++    if (err instanceof CliError) throw err;
++    throw mapBackendError(err, { command: "context ingest", root: opts.rootOverride ?? null });
++  }
++}
++
++async function continueContextIngest(
++  opts: {
++    cwd: string;
++    rootOverride?: string;
++    parsed: ContextIngestParsed;
++    createTask?: typeof runTaskNewParsed;
++    afterJournalPhase?: (phase: ContextIngestRunPhase) => Promise<void> | void;
++    writeTaskPack?: typeof writeContextTaskPack;
++  },
++  ctx: CommandContext,
++  root: string,
++  initialRun: Exclude<Awaited<ReturnType<typeof acquireContextIngestRun>>, null>,
++): Promise<number> {
++  let run = initialRun;
++  if (run.phase === "source_set_locked") {
++    run = await advanceContextIngestRun(root, run, { phase: "task_creating" });
+     const workspaceMode = await readContextWorkspaceMode(root);
+-    const taskParsed = createTaskNewParsed(opts.parsed, indexModeRows, workspaceMode);
++    const taskParsed = createTaskNewParsed(opts.parsed, run.source_set.selected, workspaceMode);
+     const createTask = opts.createTask ?? runTaskNewParsed;
+-    const contextCreated: TaskCreationResult = await createTask({
+-      ctx,
+-      cwd: opts.cwd,
+-      rootOverride: opts.rootOverride,
+-      parsed: taskParsed,
++    let contextCreated: TaskCreationResult;
++    try {
++      contextCreated = await createTask({
++        ctx,
++        cwd: opts.cwd,
++        rootOverride: opts.rootOverride,
++        parsed: taskParsed,
++      });
++    } catch (error) {
++      await advanceContextIngestRun(root, run, { phase: "source_set_locked" });
++      throw error;
++    }
++    run = await advanceContextIngestRun(root, run, {
++      phase: "task_created",
++      task: contextCreated,
+     });
+-    await writeContextTaskCreationReceipt({ root, result: contextCreated });
++    await opts.afterJournalPhase?.(run.phase);
++  }
++
++  if (run.phase === "task_created") {
++    if (run.task === undefined) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message: `context ingest run ${run.run_id} is missing its task creation receipt.`,
++      });
++    }
++    await writeContextTaskCreationReceipt({ root, result: run.task });
++    run = await advanceContextIngestRun(root, run, { phase: "pack_writing" });
++    await opts.afterJournalPhase?.(run.phase);
++  }
++
++  if (run.phase === "pack_writing") {
++    if (run.task === undefined) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message: `context ingest run ${run.run_id} cannot write a task pack without a task receipt.`,
++      });
++    }
+     const writeTaskPack = opts.writeTaskPack ?? writeContextTaskPack;
+-    const pack = await writeTaskPack({
+-      root,
+-      taskId: contextCreated.task_id,
+-      sources: indexModeRows,
+-      creation: contextCreated,
++    let pack: Awaited<ReturnType<typeof writeContextTaskPack>>;
++    try {
++      pack = await writeTaskPack({
++        root,
++        taskId: run.task.task_id,
++        sources: run.source_set.selected,
++        creation: run.task,
++      });
++    } catch (error) {
++      await advanceContextIngestRun(root, run, { phase: "task_created" });
++      throw error;
++    }
++    run = await advanceContextIngestRun(root, run, {
++      pack: { span_count: pack.spanCount },
++      phase: "pack_written",
+     });
++    await opts.afterJournalPhase?.(run.phase);
++    await releaseContextIngestRunLease(root, run);
++  }
+ 
++  if (run.phase === "pack_written") {
++    if (run.task === undefined || run.pack === undefined) {
++      throw new CliError({
++        exitCode: 3,
++        code: "E_VALIDATION",
++        message: `context ingest run ${run.run_id} is missing completed task-pack evidence.`,
++      });
++    }
+     process.stdout.write(
+-      `context ingestion task created: ${contextCreated.task_id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${pack.spanCount})\n`,
++      `context ingestion task created: ${run.task.task_id} (${buildTaskIdHint({ mode: opts.parsed.mode, sources: opts.parsed.sources })}; task pack spans=${run.pack.span_count})\n`,
+     );
+-
+     return 0;
+-  } catch (err) {
+-    if (err instanceof CliError) throw err;
+-    throw mapBackendError(err, { command: "context ingest", root: opts.rootOverride ?? null });
+   }
++
++  throw new CliError({
++    exitCode: 3,
++    code: "E_VALIDATION",
++    message: `context ingest run ${run.run_id} is not resumable from phase ${run.phase}.`,
++  });
+ }

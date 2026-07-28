@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221850-WM9X1G-c022f750be5b18d30e34d49f",
+  "prepared_at": "2026-07-28T08:14:49.014Z",
+  "task": {
+    "id": "202607221850-WM9X1G",
+    "revision": 11,
+    "objective": "Journal resumable context-ingestion phases\n\nRF-18: persist an idempotent assimilation run journal so task creation, manifest, pack, semantic apply, reindex, validation, evaluation, and finalize phases can safely resume or repair.",
+    "acceptance_criteria": [
+      "bun run task-state:check",
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: versioned run journal, exact task/run identity, phase fingerprints and idempotency keys, crash injection, retry/resume/repair, divergence diagnosis, lock ownership, and context doctor visibility.\n- Out of scope: a fake distributed transaction across task backend and filesystem.",
+      "1. Add a versioned run journal with immutable run identity, phase fingerprints, receipts, and postconditions for deterministic ingest boundaries. 2. Resume the matching run instead of using task-list diffs; persist source lock, task creation receipt, and task-pack completion idempotently. 3. Surface incomplete or divergent run state through context doctor with a bounded recovery route, without automating semantic apply. 4. Add fault-injection seams and focused tests for crash/retry, same-versus-changed fingerprints, and manifest/task/pack divergence. 5. Run declared task-state, critical, focused context, and type checks; record evidence.",
+      "1. Crash after each journal phase and resume. Expected: execution continues from the first incomplete operation with no duplicate task, lock, manifest, pack, or semantic apply.\n2. Create manifest/task/pack divergence. Expected: context doctor reports the exact inconsistency and a bounded repair action.\n3. Repeat a completed phase with the same and a changed fingerprint. Expected: same is a no-op; changed is rejected or explicitly repaired.\n4. Run focused context ingest/doctor tests, task-state check, and typecheck."
+    ]
+  },
+  "evaluated_sha": "21cd8c94d46c6a130ce5bad53b787372b3ad61cd",
+  "blueprint_digest": "d587448aa75d42afb275925699cfaef6dc362e70dd62838a5ae2f6e6b68d350e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221850-WM9X1G/README.md",
+      "sha256": "sha256:7be7bca2fadf706a3ccfa042124dfdc46ef73cf6c8639f0f9b19b81008cc85d6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d2a5a754575bc3db85258193dd28bff129140658b304b841327648aa0be9021d",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:ab5b62f3758aae577d6f3c4ce0c7f8c0224cc1487c98943be86e1c7c40ed58b9",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221850-WM9X1G/quality/20260728-081449014-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:e8a27a1b8e640acd35c1bb98c91079f017e172d4896751453fd4c79c07ad3aa7",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
