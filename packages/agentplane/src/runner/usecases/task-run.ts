@@ -1,8 +1,3 @@
-import {
-  type StateFingerprint,
-  type StateFingerprintPolicy,
-  type StateFingerprintPreconditionDiagnostic,
-} from "@agentplaneorg/core/schemas";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
@@ -58,7 +53,6 @@ import {
   recordTaskRunnerPostStateUnknown,
   persistTaskRunnerEffectAccepted,
   startTaskRunnerEffectOperation,
-  type TaskRunnerEffectOperationSnapshot,
   type StartedRunnerEffectOperation,
 } from "./task-run-effect-journal.js";
 import { finalizeTaskRunnerActiveClaimCleanup } from "./task-run-active-claim-cleanup.js";
@@ -85,31 +79,16 @@ import {
   type RunnerExecutionContract,
   type RunnerInvocation,
   type RunnerRecipeContext,
-  type RunnerResult,
-  type RunnerRunState,
   type RunnerTarget,
 } from "../types.js";
-export type PreparedTaskRunnerExecution = {
-  bundle: RunnerContextBundle;
-  invocation: RunnerInvocation;
-  state: RunnerRunState;
-  /** Durable operation and journal identity already established by preparation. */
-  effect_operation?: TaskRunnerEffectOperationSnapshot;
-  precondition_fingerprint?: StateFingerprint;
-  precondition_policy?: StateFingerprintPolicy;
-};
-export type ExecutedTaskRunnerExecution = Omit<
+import type {
+  ExecutedTaskRunnerExecution,
   PreparedTaskRunnerExecution,
-  "precondition_fingerprint" | "precondition_policy"
-> & {
-  precondition_fingerprint: StateFingerprint;
-  precondition_policy: StateFingerprintPolicy;
-  result: RunnerResult;
-  state_before: StateFingerprint;
-  state_after: StateFingerprint;
-  precondition: StateFingerprintPreconditionDiagnostic;
-  active_claim_cleanup?: TaskRunnerActiveClaimCleanupDiagnostic;
-};
+} from "./task-run-execution.js";
+export type {
+  ExecutedTaskRunnerExecution,
+  PreparedTaskRunnerExecution,
+} from "./task-run-execution.js";
 export type { TaskRunnerReplayProvenance } from "./task-run-replay-anchor.js";
 
 export async function prepareTaskRunnerExecution(opts: {
