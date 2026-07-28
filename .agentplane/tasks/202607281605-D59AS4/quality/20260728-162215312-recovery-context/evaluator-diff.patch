@@ -1,0 +1,2472 @@
+diff --git a/.agentplane/tasks/202607281605-D59AS4/README.md b/.agentplane/tasks/202607281605-D59AS4/README.md
+index aedd8bf4a..516ac77f4 100644
+--- a/.agentplane/tasks/202607281605-D59AS4/README.md
++++ b/.agentplane/tasks/202607281605-D59AS4/README.md
+@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
+ status: "DOING"
+ priority: "med"
+ owner: "CODER"
+-revision: 9
++revision: 12
+ origin:
+   system: "manual"
+ depends_on: []
+@@ -26,11 +26,37 @@ plan_approval:
+   updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
+-  note: null
++  state: "ok"
++  updated_at: "2026-07-28T16:15:50.843Z"
++  updated_by: "TESTER"
++  note: "Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks passed; stale-state reopening preserves usage while terminal stops remain protected."
+   attempts: 0
++quality_review:
++  state: "rework"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-28T16:17:17.030Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned rework with 2 typed finding(s)."
++  evaluated_sha: "395c5c3248bc87364098cfa7f7d51f2987025489"
++  blueprint_digest: "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6"
++  evidence_refs:
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-follow-up.json"
++    - ".agentplane/tasks/202607281605-D59AS4/README.md"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion."
++    - "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks."
+ commit:
+   hash: "395c5c3248bc87364098cfa7f7d51f2987025489"
+   message: "fix(evaluator): reopen completed stale supervisor journals"
+@@ -56,8 +82,14 @@ events:
+     from: "DOING"
+     to: "DOING"
+     note: "Implementation: reopened only completed stale-state evaluator journals; preserved failed and ambiguous-effect terminal stops; added focused regression coverage."
++  -
++    type: "verify"
++    at: "2026-07-28T16:15:50.843Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks passed; stale-state reopening preserves usage while terminal stops remain protected."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T16:14:59.272Z"
++doc_updated_at: "2026-07-28T16:18:30.995Z"
+ doc_updated_by: "CODER"
+ description: "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics."
+ sections:
+@@ -86,11 +118,42 @@ sections:
+     Expected: the second read-only provider episode succeeds and cumulative usage increases without reset.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-28T16:15Z — TESTER — local checks
++
++    - Command: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++      Result: pass
++      Evidence: core build succeeded; 2 files and 17 tests passed.
++      Scope: completed stale-state reopening, terminal effect guards, and a second fake-Codex evaluator episode with cumulative usage.
++
++    - Command: bun run typecheck
++      Result: pass
++      Evidence: scripts/checks/run-typescript-build.mjs exited 0.
++      Scope: workspace type safety for the exported core helper and evaluator call site.
++
++    - Command: bun run format:changed
++      Result: pass
++      Evidence: changed-file formatter reported no formatting errors.
++      Scope: all changed implementation and test files.
++
++    - Command: node .agentplane/policy/check-routing.mjs
++      Result: pass
++      Evidence: policy routing OK.
++      Scope: policy gateway invariants.
++
++    ### 2026-07-28T16:17Z — EVALUATOR — live episode 1
++
++    - Command: ap evaluator execute 202607281605-D59AS4 --evaluator recovery-context --json
++      Result: provider completed; semantic verdict rework only because the second live episode was not yet recorded.
++      Evidence: quality/20260728-161624416-recovery-context/evaluator-episode.json records read-only Codex usage input=167909, output=2091, total=170000 and unchanged workspace.
++      Scope: first durable EVALUATOR supervisor episode and provider telemetry.
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert task-related commit(s).
+     - Re-run required checks to confirm rollback safety.
+-  Findings: ""
++  Findings: |-
++    - Observation: 17 focused tests passed, plus typecheck, changed-file formatting, and routing validation.
++      Impact: A completed evaluator journal can now start a bounded follow-up episode after a state refresh without resetting budget usage.
++      Resolution: Core guards reject failed and effect-in-doubt journals; evaluator command reopens only the completed stale-state form.
+ extensions:
+   workflow_route_baseline:
+     start_head_sha: "c8df32a5e5a1b160e9ab74e0ae6f3a97224d186f"
+@@ -132,6 +195,34 @@ Expected: the second read-only provider episode succeeds and cumulative usage in
+ ## Verification
+ 
+ <!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-28T16:15Z — TESTER — local checks
++
++- Command: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++  Result: pass
++  Evidence: core build succeeded; 2 files and 17 tests passed.
++  Scope: completed stale-state reopening, terminal effect guards, and a second fake-Codex evaluator episode with cumulative usage.
++
++- Command: bun run typecheck
++  Result: pass
++  Evidence: scripts/checks/run-typescript-build.mjs exited 0.
++  Scope: workspace type safety for the exported core helper and evaluator call site.
++
++- Command: bun run format:changed
++  Result: pass
++  Evidence: changed-file formatter reported no formatting errors.
++  Scope: all changed implementation and test files.
++
++- Command: node .agentplane/policy/check-routing.mjs
++  Result: pass
++  Evidence: policy routing OK.
++  Scope: policy gateway invariants.
++
++### 2026-07-28T16:17Z — EVALUATOR — live episode 1
++
++- Command: ap evaluator execute 202607281605-D59AS4 --evaluator recovery-context --json
++  Result: provider completed; semantic verdict rework only because the second live episode was not yet recorded.
++  Evidence: quality/20260728-161624416-recovery-context/evaluator-episode.json records read-only Codex usage input=167909, output=2091, total=170000 and unchanged workspace.
++  Scope: first durable EVALUATOR supervisor episode and provider telemetry.
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -140,3 +231,7 @@ Expected: the second read-only provider episode succeeds and cumulative usage in
+ - Re-run required checks to confirm rollback safety.
+ 
+ ## Findings
++
++- Observation: 17 focused tests passed, plus typecheck, changed-file formatting, and routing validation.
++  Impact: A completed evaluator journal can now start a bounded follow-up episode after a state refresh without resetting budget usage.
++  Resolution: Core guards reject failed and effect-in-doubt journals; evaluator command reopens only the completed stale-state form.
+diff --git a/.agentplane/tasks/202607281605-D59AS4/pr/diffstat.txt b/.agentplane/tasks/202607281605-D59AS4/pr/diffstat.txt
+index e69de29bb..86e97f0e3 100644
+--- a/.agentplane/tasks/202607281605-D59AS4/pr/diffstat.txt
++++ b/.agentplane/tasks/202607281605-D59AS4/pr/diffstat.txt
+@@ -0,0 +1,6 @@
++ .../evaluator/evaluator-execute-supervisor.ts      |  8 +++
++ .../evaluator/evaluator-execute.command.test.ts    | 47 +++++++++++++++
++ .../runner/supervisor-execution-episode.test.ts    | 70 ++++++++++++++++++++++
++ .../src/runner/supervisor-execution-episode.ts     | 36 +++++++++++
++ packages/core/src/schemas/index.ts                 |  1 +
++ 5 files changed, 162 insertions(+)
+diff --git a/.agentplane/tasks/202607281605-D59AS4/pr/github-body.md b/.agentplane/tasks/202607281605-D59AS4/pr/github-body.md
+index a7e76c330..e9c2e9728 100644
+--- a/.agentplane/tasks/202607281605-D59AS4/pr/github-body.md
++++ b/.agentplane/tasks/202607281605-D59AS4/pr/github-body.md
+@@ -15,19 +15,29 @@ Allow a completed evaluator supervisor episode stopped only for stale state to r
+ 
+ ## Verification
+ 
+-- State: pending
+-- Note: Not recorded yet.
++- State: ok
++- Note:
++
++```text
++Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks
++passed; stale-state reopening preserves usage while terminal stops remain protected.
++```
+ - Canonical workflow state lives in the task README.
+ 
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T16:06:20.759Z
++- Updated: 2026-07-28T16:07:49.726Z
+ - Branch: task/202607281605-D59AS4/recover-evaluator-supervisor-journals
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../evaluator/evaluator-execute-supervisor.ts      |  8 +++
++ .../evaluator/evaluator-execute.command.test.ts    | 47 +++++++++++++++
++ .../runner/supervisor-execution-episode.test.ts    | 70 ++++++++++++++++++++++
++ .../src/runner/supervisor-execution-episode.ts     | 36 +++++++++++
++ packages/core/src/schemas/index.ts                 |  1 +
++ 5 files changed, 162 insertions(+)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281605-D59AS4/pr/meta.json b/.agentplane/tasks/202607281605-D59AS4/pr/meta.json
+index 074223fcf..06b3c2f6a 100644
+--- a/.agentplane/tasks/202607281605-D59AS4/pr/meta.json
++++ b/.agentplane/tasks/202607281605-D59AS4/pr/meta.json
+@@ -2,8 +2,9 @@
+   "base": "main",
+   "branch": "task/202607281605-D59AS4/recover-evaluator-supervisor-journals",
+   "created_at": "2026-07-28T16:06:20.759Z",
+-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+-  "last_verified_at": null,
++  "diffstat_sha256": "sha256:6cedaf7446c4a2cf07b54227acc82738054ce8259056a89306be71305f5eb33e",
++  "last_verified_at": "2026-07-28T16:15:50.843Z",
++  "last_verified_diffstat_sha256": "sha256:6cedaf7446c4a2cf07b54227acc82738054ce8259056a89306be71305f5eb33e",
+   "pr_number": 4662,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4662",
+   "schema_version": 1,
+@@ -11,6 +12,6 @@
+   "task_id": "202607281605-D59AS4",
+   "updated_at": "2026-07-28T16:07:49.726Z",
+   "verify": {
+-    "status": "skipped"
++    "status": "pass"
+   }
+ }
+diff --git a/.agentplane/tasks/202607281605-D59AS4/pr/review.md b/.agentplane/tasks/202607281605-D59AS4/pr/review.md
+index e88a26493..5e2316d93 100644
+--- a/.agentplane/tasks/202607281605-D59AS4/pr/review.md
++++ b/.agentplane/tasks/202607281605-D59AS4/pr/review.md
+@@ -12,8 +12,8 @@ Created: 2026-07-28T16:06:20.759Z
+ 
+ ## Verification
+ 
+-- State: pending
+-- Note: Not recorded yet.
++- State: ok
++- Note: Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks passed; stale-state reopening preserves usage while terminal stops remain protected.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+@@ -24,12 +24,17 @@ Created: 2026-07-28T16:06:20.759Z
+ <details>
+ <summary>Raw evidence</summary>
+ 
+-- Updated: 2026-07-28T16:06:20.759Z
++- Updated: 2026-07-28T16:07:49.726Z
+ - Branch: task/202607281605-D59AS4/recover-evaluator-supervisor-journals
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
+-No changes detected.
++ .../evaluator/evaluator-execute-supervisor.ts      |  8 +++
++ .../evaluator/evaluator-execute.command.test.ts    | 47 +++++++++++++++
++ .../runner/supervisor-execution-episode.test.ts    | 70 ++++++++++++++++++++++
++ .../src/runner/supervisor-execution-episode.ts     | 36 +++++++++++
++ packages/core/src/schemas/index.ts                 |  1 +
++ 5 files changed, 162 insertions(+)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-blueprint.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-blueprint.json
+new file mode 100644
+index 000000000..23118b11e
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-blueprint.json
+@@ -0,0 +1,575 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607281605-D59AS4",
++    "title": "Recover completed evaluator supervisor journals for new episodes",
++    "description": "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics.",
++    "tags": [
++      "code",
++      "supervisor",
++      "evaluator",
++      "recovery",
++      "refactor",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607281605-D59AS4",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6"
++  }
++}
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-diff.patch b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-diff.patch
+new file mode 100644
+index 000000000..dc0de6d37
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-diff.patch
+@@ -0,0 +1,912 @@
++diff --git a/.agentplane/tasks/202607281605-D59AS4/README.md b/.agentplane/tasks/202607281605-D59AS4/README.md
++index fb3d5ab80..12131e85a 100644
++--- a/.agentplane/tasks/202607281605-D59AS4/README.md
+++++ b/.agentplane/tasks/202607281605-D59AS4/README.md
++@@ -4,7 +4,7 @@ title: "Recover completed evaluator supervisor journals for new episodes"
++ status: "DOING"
++ priority: "med"
++ owner: "CODER"
++-revision: 5
+++revision: 8
++ origin:
++   system: "manual"
++ depends_on: []
++@@ -15,7 +15,11 @@ tags:
++   - "recovery"
++   - "refactor"
++   - "v0.7"
++-verify: []
+++verify:
+++  - "bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts"
+++  - "bun run typecheck"
+++  - "bun run format:changed"
+++  - "node .agentplane/policy/check-routing.mjs"
++ plan_approval:
++   state: "approved"
++   updated_at: "2026-07-28T16:06:02.030Z"
++@@ -41,7 +45,7 @@ events:
++     to: "DOING"
++     note: "Start: investigate and repair safe reopening of completed stale-state evaluator supervisor journals without weakening terminal protection for ambiguous provider effects."
++ doc_version: 3
++-doc_updated_at: "2026-07-28T16:06:20.538Z"
+++doc_updated_at: "2026-07-28T16:13:50.135Z"
++ doc_updated_by: "CODER"
++ description: "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics."
++ sections:
++@@ -54,11 +58,20 @@ sections:
++     - Out of scope: unrelated refactors not required for "Recover completed evaluator supervisor journals for new episodes".
++   Plan: "1. Inspect evaluator supervisor journal transition and recovery guards. 2. Permit only a completed stale-state journal to refresh its fingerprint and create a new episode. 3. Keep operation_failed and effect_in_doubt terminal. 4. Add focused unit and command-level regression tests, then run a real repeat evaluator episode. 5. Publish and integrate through the protected branch_pr route."
++   Verify Steps: |-
++-    PLANNER fallback scaffold for "Recover completed evaluator supervisor journals for new episodes". Replace with task-specific acceptance checks when PLANNER context is available.
+++    1. Confirm the safe reopen transition.
+++    Command: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+++    Expected: a completed stale-state evaluator journal starts a second bounded episode; operation_failed and effect_in_doubt remain terminal.
++ 
++-    1. Review the requested outcome for "Recover completed evaluator supervisor journals for new episodes". Expected: the visible result matches ## Summary and stays inside approved scope.
++-    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++-    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+++    2. Check types and formatting.
+++    Command: bun run typecheck && bun run format:changed
+++    Expected: no type or formatting regression.
+++
+++    3. Check policy routing.
+++    Command: node .agentplane/policy/check-routing.mjs
+++    Expected: routing validation succeeds.
+++
+++    4. Exercise a repeated live evaluator episode.
+++    Expected: the second read-only provider episode succeeds and cumulative usage increases without reset.
++   Verification: |-
++     <!-- BEGIN VERIFICATION RESULTS -->
++     <!-- END VERIFICATION RESULTS -->
++@@ -89,11 +102,20 @@ Allow a completed evaluator supervisor episode stopped only for stale state to r
++ 
++ ## Verify Steps
++ 
++-PLANNER fallback scaffold for "Recover completed evaluator supervisor journals for new episodes". Replace with task-specific acceptance checks when PLANNER context is available.
+++1. Confirm the safe reopen transition.
+++Command: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+++Expected: a completed stale-state evaluator journal starts a second bounded episode; operation_failed and effect_in_doubt remain terminal.
+++
+++2. Check types and formatting.
+++Command: bun run typecheck && bun run format:changed
+++Expected: no type or formatting regression.
+++
+++3. Check policy routing.
+++Command: node .agentplane/policy/check-routing.mjs
+++Expected: routing validation succeeds.
++ 
++-1. Review the requested outcome for "Recover completed evaluator supervisor journals for new episodes". Expected: the visible result matches ## Summary and stays inside approved scope.
++-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++-3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
+++4. Exercise a repeated live evaluator episode.
+++Expected: the second read-only provider episode succeeds and cumulative usage increases without reset.
++ 
++ ## Verification
++ 
++diff --git a/.agentplane/tasks/202607281605-D59AS4/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607281605-D59AS4/blueprint/resolved-snapshot.json
++new file mode 100644
++index 000000000..23118b11e
++--- /dev/null
+++++ b/.agentplane/tasks/202607281605-D59AS4/blueprint/resolved-snapshot.json
++@@ -0,0 +1,575 @@
+++{
+++  "schemaVersion": 1,
+++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
+++  "resolverInput": {
+++    "taskId": "202607281605-D59AS4",
+++    "title": "Recover completed evaluator supervisor journals for new episodes",
+++    "description": "Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics.",
+++    "tags": [
+++      "code",
+++      "supervisor",
+++      "evaluator",
+++      "recovery",
+++      "refactor",
+++      "v0.7"
+++    ],
+++    "owner": "CODER",
+++    "workflowMode": "branch_pr",
+++    "workflowGitCapabilities": {
+++      "workflowMode": "branch_pr",
+++      "implementationCommitLocation": "task_worktree",
+++      "finishCommitSource": "explicit_hash",
+++      "closeTailRequired": true,
+++      "lifecycleCommentCommitLocation": "task_worktree",
+++      "finishCommitFromComment": false
+++    },
+++    "mutation": "code",
+++    "touchedPaths": [],
+++    "recipeHints": [],
+++    "riskFlags": []
+++  },
+++  "selectedBlueprint": {
+++    "id": "code.branch_pr",
+++    "version": 1,
+++    "title": "Branch PR code change",
+++    "taskKinds": [
+++      "code"
+++    ],
+++    "workflowModes": [
+++      "branch_pr"
+++    ]
+++  },
+++  "plan": {
+++    "schemaVersion": 1,
+++    "blueprintId": "code.branch_pr",
+++    "blueprintVersion": 1,
+++    "title": "Branch PR code change",
+++    "taskId": "202607281605-D59AS4",
+++    "workflowMode": "branch_pr",
+++    "workflowGitCapabilities": {
+++      "workflowMode": "branch_pr",
+++      "implementationCommitLocation": "task_worktree",
+++      "finishCommitSource": "explicit_hash",
+++      "closeTailRequired": true,
+++      "lifecycleCommentCommitLocation": "task_worktree",
+++      "finishCommitFromComment": false
+++    },
+++    "taskIntent": {
+++      "mutationScope": "code"
+++    },
+++    "whySelected": [
+++      "task kind resolved to code",
+++      "workflow mode: branch_pr",
+++      "mutation scope: code"
+++    ],
+++    "states": [
+++      {
+++        "id": "intake",
+++        "kind": "intake",
+++        "mode": "agentic",
+++        "required": true,
+++        "protected": false,
+++        "allowedCommands": [],
+++        "policyModules": [],
+++        "evidenceKinds": []
+++      },
+++      {
+++        "id": "scope",
+++        "kind": "scope",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": false,
+++        "allowedCommands": [],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "assumptions"
+++        ]
+++      },
+++      {
+++        "id": "approval_gate",
+++        "kind": "approval_gate",
+++        "mode": "approval",
+++        "required": true,
+++        "protected": true,
+++        "allowedCommands": [],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "approval"
+++        ]
+++      },
+++      {
+++        "id": "context_resolve",
+++        "kind": "context_resolve",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": false,
+++        "allowedCommands": [],
+++        "policyModules": [
+++          ".agentplane/policy/security.must.md",
+++          ".agentplane/policy/dod.core.md",
+++          ".agentplane/policy/dod.code.md",
+++          ".agentplane/policy/workflow.branch_pr.md"
+++        ],
+++        "evidenceKinds": [
+++          "context_manifest"
+++        ]
+++      },
+++      {
+++        "id": "worktree_start",
+++        "kind": "worktree_start",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": true,
+++        "allowedCommands": [
+++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+++        ],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "changed_paths"
+++        ]
+++      },
+++      {
+++        "id": "work_unit",
+++        "kind": "work_unit",
+++        "mode": "agentic",
+++        "required": true,
+++        "protected": false,
+++        "allowedCommands": [],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "changed_paths"
+++        ]
+++      },
+++      {
+++        "id": "fast_local_checks",
+++        "kind": "fast_local_checks",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": false,
+++        "allowedCommands": [
+++          "agentplane task verify-show <task-id>",
+++          "project focused checks"
+++        ],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "check_result"
+++        ]
+++      },
+++      {
+++        "id": "pr_artifact",
+++        "kind": "pr_artifact",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": false,
+++        "allowedCommands": [
+++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+++        ],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "artifact",
+++          "external_link"
+++        ]
+++      },
+++      {
+++        "id": "verify_record",
+++        "kind": "verify_record",
+++        "mode": "record",
+++        "required": true,
+++        "protected": true,
+++        "allowedCommands": [],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "check_result"
+++        ]
+++      },
+++      {
+++        "id": "quality_gate",
+++        "kind": "quality_gate",
+++        "mode": "agentic",
+++        "required": true,
+++        "protected": true,
+++        "allowedCommands": [
+++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
+++        ],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "quality_report"
+++        ]
+++      },
+++      {
+++        "id": "hosted_checks",
+++        "kind": "hosted_checks",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": false,
+++        "allowedCommands": [],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "check_result",
+++          "external_link"
+++        ]
+++      },
+++      {
+++        "id": "publish_or_integrate",
+++        "kind": "publish_or_integrate",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": true,
+++        "allowedCommands": [
+++          "agentplane integrate <task-id> --branch <branch> --run-verify"
+++        ],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "commit",
+++          "external_link"
+++        ]
+++      },
+++      {
+++        "id": "finish",
+++        "kind": "finish",
+++        "mode": "deterministic",
+++        "required": true,
+++        "protected": true,
+++        "allowedCommands": [],
+++        "policyModules": [],
+++        "evidenceKinds": [
+++          "commit"
+++        ]
+++      }
+++    ],
+++    "requiredEvidence": [
+++      {
+++        "id": "code_pr.paths",
+++        "kind": "changed_paths",
+++        "producedBy": "work_unit",
+++        "required": true,
+++        "description": "Changed source paths."
+++      },
+++      {
+++        "id": "code_pr.fast_checks",
+++        "kind": "check_result",
+++        "producedBy": "fast_local_checks",
+++        "required": true,
+++        "description": "Fast local checks."
+++      },
+++      {
+++        "id": "code_pr.pr",
+++        "kind": "external_link",
+++        "producedBy": "pr_artifact",
+++        "required": true,
+++        "description": "Pull request artifact."
+++      },
+++      {
+++        "id": "code_pr.verify",
+++        "kind": "check_result",
+++        "producedBy": "verify_record",
+++        "required": true,
+++        "description": "Task branch verification."
+++      },
+++      {
+++        "id": "code_pr.quality",
+++        "kind": "quality_report",
+++        "producedBy": "quality_gate",
+++        "required": true,
+++        "description": "EVALUATOR quality verdict."
+++      },
+++      {
+++        "id": "code_pr.hosted",
+++        "kind": "check_result",
+++        "producedBy": "hosted_checks",
+++        "required": true,
+++        "description": "Hosted check evidence."
+++      },
+++      {
+++        "id": "code_pr.commit",
+++        "kind": "commit",
+++        "producedBy": "publish_or_integrate",
+++        "required": true,
+++        "description": "Integration commit."
+++      }
+++    ],
+++    "policyModules": [
+++      ".agentplane/policy/dod.code.md",
+++      ".agentplane/policy/dod.core.md",
+++      ".agentplane/policy/security.must.md",
+++      ".agentplane/policy/workflow.branch_pr.md"
+++    ],
+++    "allowedCommands": [
+++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
+++      "agentplane integrate <task-id> --branch <branch> --run-verify",
+++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+++      "agentplane task verify-show <task-id>",
+++      "agentplane verify <task-id> --ok|--rework",
+++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+++      "project focused checks"
+++    ],
+++    "contextBudget": {
+++      "maxPolicyModules": 4,
+++      "maxPromptBlocks": 14,
+++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
+++    },
+++    "contextManifest": [],
+++    "acceptedRecipeExtensions": [],
+++    "rejectedRecipeExtensions": [],
+++    "stopReasons": []
+++  },
+++  "nodes": [
+++    {
+++      "id": "intake",
+++      "kind": "intake",
+++      "mode": "agentic",
+++      "required": true,
+++      "protected": false,
+++      "allowedCommands": [],
+++      "policyModules": [],
+++      "evidenceKinds": []
+++    },
+++    {
+++      "id": "scope",
+++      "kind": "scope",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": false,
+++      "allowedCommands": [],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "assumptions"
+++      ]
+++    },
+++    {
+++      "id": "approval_gate",
+++      "kind": "approval_gate",
+++      "mode": "approval",
+++      "required": true,
+++      "protected": true,
+++      "allowedCommands": [],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "approval"
+++      ]
+++    },
+++    {
+++      "id": "context_resolve",
+++      "kind": "context_resolve",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": false,
+++      "allowedCommands": [],
+++      "policyModules": [
+++        ".agentplane/policy/security.must.md",
+++        ".agentplane/policy/dod.core.md",
+++        ".agentplane/policy/dod.code.md",
+++        ".agentplane/policy/workflow.branch_pr.md"
+++      ],
+++      "evidenceKinds": [
+++        "context_manifest"
+++      ]
+++    },
+++    {
+++      "id": "worktree_start",
+++      "kind": "worktree_start",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": true,
+++      "allowedCommands": [
+++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
+++      ],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "changed_paths"
+++      ]
+++    },
+++    {
+++      "id": "work_unit",
+++      "kind": "work_unit",
+++      "mode": "agentic",
+++      "required": true,
+++      "protected": false,
+++      "allowedCommands": [],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "changed_paths"
+++      ]
+++    },
+++    {
+++      "id": "fast_local_checks",
+++      "kind": "fast_local_checks",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": false,
+++      "allowedCommands": [
+++        "agentplane task verify-show <task-id>",
+++        "project focused checks"
+++      ],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "check_result"
+++      ]
+++    },
+++    {
+++      "id": "pr_artifact",
+++      "kind": "pr_artifact",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": false,
+++      "allowedCommands": [
+++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
+++      ],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "artifact",
+++        "external_link"
+++      ]
+++    },
+++    {
+++      "id": "verify_record",
+++      "kind": "verify_record",
+++      "mode": "record",
+++      "required": true,
+++      "protected": true,
+++      "allowedCommands": [],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "check_result"
+++      ]
+++    },
+++    {
+++      "id": "quality_gate",
+++      "kind": "quality_gate",
+++      "mode": "agentic",
+++      "required": true,
+++      "protected": true,
+++      "allowedCommands": [
+++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
+++      ],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "quality_report"
+++      ]
+++    },
+++    {
+++      "id": "hosted_checks",
+++      "kind": "hosted_checks",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": false,
+++      "allowedCommands": [],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "check_result",
+++        "external_link"
+++      ]
+++    },
+++    {
+++      "id": "publish_or_integrate",
+++      "kind": "publish_or_integrate",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": true,
+++      "allowedCommands": [
+++        "agentplane integrate <task-id> --branch <branch> --run-verify"
+++      ],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "commit",
+++        "external_link"
+++      ]
+++    },
+++    {
+++      "id": "finish",
+++      "kind": "finish",
+++      "mode": "deterministic",
+++      "required": true,
+++      "protected": true,
+++      "allowedCommands": [],
+++      "policyModules": [],
+++      "evidenceKinds": [
+++        "commit"
+++      ]
+++    }
+++  ],
+++  "requiredEvidence": [
+++    {
+++      "id": "code_pr.paths",
+++      "kind": "changed_paths",
+++      "producedBy": "work_unit",
+++      "required": true,
+++      "description": "Changed source paths."
+++    },
+++    {
+++      "id": "code_pr.fast_checks",
+++      "kind": "check_result",
+++      "producedBy": "fast_local_checks",
+++      "required": true,
+++      "description": "Fast local checks."
+++    },
+++    {
+++      "id": "code_pr.pr",
+++      "kind": "external_link",
+++      "producedBy": "pr_artifact",
+++      "required": true,
+++      "description": "Pull request artifact."
+++    },
+++    {
+++      "id": "code_pr.verify",
+++      "kind": "check_result",
+++      "producedBy": "verify_record",
+++      "required": true,
+++      "description": "Task branch verification."
+++    },
+++    {
+++      "id": "code_pr.quality",
+++      "kind": "quality_report",
+++      "producedBy": "quality_gate",
+++      "required": true,
+++      "description": "EVALUATOR quality verdict."
+++    },
+++    {
+++      "id": "code_pr.hosted",
+++      "kind": "check_result",
+++      "producedBy": "hosted_checks",
+++      "required": true,
+++      "description": "Hosted check evidence."
+++    },
+++    {
+++      "id": "code_pr.commit",
+++      "kind": "commit",
+++      "producedBy": "publish_or_integrate",
+++      "required": true,
+++      "description": "Integration commit."
+++    }
+++  ],
+++  "policyModules": [
+++    ".agentplane/policy/dod.code.md",
+++    ".agentplane/policy/dod.core.md",
+++    ".agentplane/policy/security.must.md",
+++    ".agentplane/policy/workflow.branch_pr.md"
+++  ],
+++  "allowedCommands": [
+++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
+++    "agentplane integrate <task-id> --branch <branch> --run-verify",
+++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
+++    "agentplane task verify-show <task-id>",
+++    "agentplane verify <task-id> --ok|--rework",
+++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
+++    "project focused checks"
+++  ],
+++  "contextBudget": {
+++    "maxPolicyModules": 4,
+++    "maxPromptBlocks": 14,
+++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
+++  },
+++  "contextManifest": [],
+++  "acceptedRecipeExtensions": [],
+++  "rejectedRecipeExtensions": [],
+++  "stopReasons": [],
+++  "selectionReasons": [
+++    "task kind resolved to code",
+++    "workflow mode: branch_pr",
+++    "mutation scope: code"
+++  ],
+++  "digest": {
+++    "algorithm": "sha256",
+++    "value": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6"
+++  }
+++}
++diff --git a/.agentplane/tasks/202607281605-D59AS4/pr/meta.json b/.agentplane/tasks/202607281605-D59AS4/pr/meta.json
++index b39c2ff2d..074223fcf 100644
++--- a/.agentplane/tasks/202607281605-D59AS4/pr/meta.json
+++++ b/.agentplane/tasks/202607281605-D59AS4/pr/meta.json
++@@ -4,9 +4,12 @@
++   "created_at": "2026-07-28T16:06:20.759Z",
++   "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++   "last_verified_at": null,
+++  "pr_number": 4662,
+++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4662",
++   "schema_version": 1,
+++  "status": "OPEN",
++   "task_id": "202607281605-D59AS4",
++-  "updated_at": "2026-07-28T16:06:20.759Z",
+++  "updated_at": "2026-07-28T16:07:49.726Z",
++   "verify": {
++     "status": "skipped"
++   }
++diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++index c1620dbc5..2537c2d83 100644
++--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
++ import path from "node:path";
++ import {
++   completeSupervisorExecutionEpisode,
+++  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++   startSupervisorExecutionEpisode,
++   stopSupervisorExecutionEpisode,
++   type SupervisorExecutionEpisodeJournal,
++@@ -222,6 +223,13 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
++     recover_intent: false,
++   });
++   let journal = opened.journal;
+++  if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
+++    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+++      journal,
+++      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+++    });
+++    await opened.store.write(journal);
+++  }
++   let outcome: CompletedEvaluatorOutcome;
++ 
++   if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
++diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++index 16c048230..a4217d338 100644
++--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++@@ -203,6 +203,53 @@ describe("evaluator execute supervisor episode", () => {
++     });
++   });
++ 
+++  it("starts a new evaluator episode after a completed stale-state stop", async () => {
+++    const root = await mkGitRepoRoot();
+++    await writeDefaultConfig(root);
+++    const taskId = "202607280000-EE05";
+++    await addTask(root, taskId);
+++    await commitTarget(root);
+++    const fakeBin = await installFakeCodex(root);
+++    const initial = await runWithFakeCodex(root, taskId, fakeBin);
+++    expect(initial.code).toBe(0);
+++
+++    const journalPath = await resolveSupervisorExecutionEpisodePath({
+++      git_root: root,
+++      task_id: taskId,
+++    });
+++    const store = createSupervisorEpisodeStore(journalPath);
+++    const completed = validateSupervisorExecutionEpisodeJournal(await store.read());
+++    const stale = startSupervisorExecutionEpisode({
+++      journal: completed,
+++      role: "EVALUATOR",
+++      kind: "evaluator_episode",
+++      operation_identity: { retry: "after-state-change" },
+++      precondition_fingerprint_digest: `sha256:${"f".repeat(64)}`,
+++    });
+++    if (stale.status !== "stopped") throw new Error("expected stale-state stop");
+++    await store.write(stale.journal);
+++
+++    const repeated = await runWithFakeCodex(root, taskId, fakeBin);
+++
+++    expect(repeated.code, repeated.stderr).toBe(0);
+++    expect(JSON.parse(repeated.stdout)).toMatchObject({
+++      verdict: "pass",
+++      supervisor_episode: {
+++        status: "running",
+++        cursor: { phase: "ready", operation_key: null },
+++        usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
+++      },
+++    });
+++    expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+++      status: "running",
+++      usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
+++      operations: [
+++        { role: "EVALUATOR", kind: "evaluator_episode", status: "completed" },
+++        { role: "EVALUATOR", kind: "evaluator_episode", status: "completed" },
+++      ],
+++    });
+++  });
+++
++   it("completes an evaluator intent from its durable outcome without launching Codex again", async () => {
++     const root = await mkGitRepoRoot();
++     await writeDefaultConfig(root);
++diff --git a/packages/core/src/runner/supervisor-execution-episode.test.ts b/packages/core/src/runner/supervisor-execution-episode.test.ts
++index 800743d6c..f48c76918 100644
++--- a/packages/core/src/runner/supervisor-execution-episode.test.ts
+++++ b/packages/core/src/runner/supervisor-execution-episode.test.ts
++@@ -5,6 +5,7 @@ import {
++   createSupervisorExecutionEpisodeJournal,
++   advanceSupervisorExecutionEpisodeState,
++   recoverSupervisorExecutionEpisodeJournal,
+++  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++   startSupervisorExecutionEpisode,
++   validateSupervisorExecutionEpisodeJournal,
++   type SupervisorExecutionBudget,
++@@ -214,6 +215,75 @@ describe("SupervisorExecutionEpisodeJournal", () => {
++     });
++   });
++ 
+++  it("reopens only a completed stale-state journal with its bounded usage intact", () => {
+++    const first = start({ journal: journal() });
+++    if (first.status !== "started") throw new Error("expected started episode");
+++    const completed = completeSupervisorExecutionEpisode({
+++      journal: first.journal,
+++      operation_key: first.operation_key,
+++      result: { status: "ok" },
+++      usage: { input_tokens: 10, output_tokens: 5, total_tokens: 15 },
+++      now: "2026-07-28T00:00:01.000Z",
+++    });
+++    const ready = advanceSupervisorExecutionEpisodeState({
+++      journal: completed,
+++      state_fingerprint_digest: FINGERPRINT,
+++      route_observation: { phase: "applied" },
+++      now: "2026-07-28T00:00:02.000Z",
+++    });
+++    const stale = startSupervisorExecutionEpisode({
+++      journal: ready,
+++      role: "EVALUATOR",
+++      kind: "evaluator_episode",
+++      operation_identity: { command: "next" },
+++      precondition_fingerprint_digest: NEXT_FINGERPRINT,
+++      now: "2026-07-28T00:00:03.000Z",
+++    });
+++    if (stale.status !== "stopped") throw new Error("expected stale-state stop");
+++
+++    const reopened = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+++      journal: stale.journal,
+++      state_fingerprint_digest: NEXT_FINGERPRINT,
+++      now: "2026-07-28T00:00:04.000Z",
+++    });
+++
+++    expect(reopened).toMatchObject({
+++      status: "running",
+++      stop: null,
+++      state_fingerprint_digest: NEXT_FINGERPRINT,
+++      cursor: { phase: "ready", operation_key: null },
+++      usage: { episodes: 1, agent_runs: 1, total_tokens: 15 },
+++      operations: [{ status: "completed" }],
+++    });
+++  });
+++
+++  it("does not reopen failed or effect-in-doubt journals as stale state", () => {
+++    const prepared = start({ journal: journal() });
+++    if (prepared.status !== "started") throw new Error("expected started episode");
+++    const effectInDoubt = recoverSupervisorExecutionEpisodeJournal({
+++      journal: prepared.journal,
+++      state_fingerprint_digest: FINGERPRINT,
+++      now: "2026-07-28T00:00:01.000Z",
+++    });
+++    const failed = completeSupervisorExecutionEpisode({
+++      journal: prepared.journal,
+++      operation_key: prepared.operation_key,
+++      result: { status: "failed" },
+++      failed: true,
+++      now: "2026-07-28T00:00:01.000Z",
+++    });
+++
+++    for (const stopped of [effectInDoubt, failed]) {
+++      expect(() =>
+++        reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+++          journal: stopped,
+++          state_fingerprint_digest: NEXT_FINGERPRINT,
+++          now: "2026-07-28T00:00:02.000Z",
+++        }),
+++      ).toThrow("requires a stopped journal with a completed latest operation");
+++    }
+++  });
+++
++   it("accounts for bounded feedback without storing its raw semantic content", () => {
++     const first = start({ journal: journal() });
++     if (first.status !== "started") throw new Error("expected started episode");
++diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
++index 16fac92ab..698463fa9 100644
++--- a/packages/core/src/runner/supervisor-execution-episode.ts
+++++ b/packages/core/src/runner/supervisor-execution-episode.ts
++@@ -592,3 +592,39 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
++   };
++   return createJournal(next);
++ }
+++
+++/**
+++ * Reopen a journal only when its last provider operation completed durably and
+++ * a later attempt was stopped before recording another intent because the
+++ * route fingerprint changed. This preserves the accumulated budget while
+++ * refusing to guess about failed or ambiguous provider effects.
+++ */
+++export function reopenCompletedSupervisorExecutionEpisodeAfterStaleState(opts: {
+++  journal: SupervisorExecutionEpisodeJournal;
+++  state_fingerprint_digest: string;
+++  now?: string;
+++}): SupervisorExecutionEpisodeJournal {
+++  const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
+++  const now = opts.now ?? new Date().toISOString();
+++  const last = journal.operations.at(-1);
+++  if (
+++    journal.status !== "stopped" ||
+++    journal.stop?.reason !== "stale_state" ||
+++    journal.cursor.phase !== "stopped" ||
+++    last?.status !== "completed"
+++  ) {
+++    throw new Error(
+++      "Supervisor episode stale-state reopening requires a stopped journal with a completed latest operation.",
+++    );
+++  }
+++  const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
+++    ...journal,
+++    state_fingerprint_digest: opts.state_fingerprint_digest,
+++    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+++    status: "running",
+++    stop: null,
+++    updated_at: now,
+++    previous_digest: journal.digest,
+++  };
+++  return createJournal(next);
+++}
++diff --git a/packages/core/src/schemas/index.ts b/packages/core/src/schemas/index.ts
++index 4d8b419c5..2ae89f4ac 100644
++--- a/packages/core/src/schemas/index.ts
+++++ b/packages/core/src/schemas/index.ts
++@@ -147,6 +147,7 @@ export {
++   createSupervisorExecutionEpisodeJournal,
++   digestSupervisorEpisodeValue,
++   recoverSupervisorExecutionEpisodeJournal,
+++  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
++   stopSupervisorExecutionEpisode,
++   startSupervisorExecutionEpisode,
++   validateSupervisorExecutionEpisodeJournal,
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-episode.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-episode.json
+new file mode 100644
+index 000000000..a5f58a0ea
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-episode.json
+@@ -0,0 +1,40 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_episode_receipt",
++  "work_order_id": "evaluator-work-order-202607281605-D59AS4-5879ce763dc8d790916fc749",
++  "provider": "codex",
++  "authority": {
++    "sandbox": "read-only",
++    "writable_roots": []
++  },
++  "argv": [
++    "codex",
++    "-a",
++    "never",
++    "exec",
++    "--ignore-user-config",
++    "--strict-config",
++    "--disable",
++    "hooks",
++    "--ephemeral",
++    "--json",
++    "-C",
++    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281605-D59AS4-recover-evaluator-supervisor-journals",
++    "-s",
++    "read-only",
++    "--output-schema",
++    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607281605-D59AS4-recover-evaluator-supervisor-journals/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.schema.json",
++    "-"
++  ],
++  "started_at": "2026-07-28T16:16:25.516Z",
++  "ended_at": "2026-07-28T16:17:16.265Z",
++  "stdout_bytes": 99445,
++  "stderr_bytes": 5261,
++  "provider_usage": {
++    "input_tokens": 167909,
++    "output_tokens": 2091,
++    "total_tokens": 170000
++  },
++  "workspace_state": "unchanged",
++  "result_sha256": "sha256:123ac55989545a040c61f4d27bac073957157d6053e7bbc9369730b3d4f48ae3"
++}
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-follow-up.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-follow-up.json
+new file mode 100644
+index 000000000..717cb13d3
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-follow-up.json
+@@ -0,0 +1,44 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_rework_work_order",
++  "source_work_order_id": "evaluator-work-order-202607281605-D59AS4-5879ce763dc8d790916fc749",
++  "task_id": "202607281605-D59AS4",
++  "verdict": "rework",
++  "next_owner": "CODER",
++  "instruction": "Implementation-level positive and terminal-stop regressions are present, but the required live repeat episode and command-level verification evidence must be executed and frozen before this review can pass.",
++  "findings": [
++    {
++      "id": "RC-001",
++      "summary": "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607281605-D59AS4/README.md",
++          "sha256": "sha256:2db4d9ac0a6f149072e05a47c65ff1abe77b4ee58a0d8698a83928646698477c",
++          "section": "Verify Steps"
++        },
++        {
++          "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
++          "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
++          "section": "runner_history"
++        }
++      ]
++    },
++    {
++      "id": "RC-002",
++      "summary": "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/policy/dod.code.md",
++          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
++          "section": "Verification evidence contract"
++        },
++        {
++          "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
++          "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
++          "section": "verification"
++        }
++      ]
++    }
++  ],
++  "source_result": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.json"
++}
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json
+new file mode 100644
+index 000000000..6b9d9fcfd
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json
+@@ -0,0 +1,17 @@
++{
++  "task_status": "DOING",
++  "declared_checks": [
++    "bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
++    "bun run typecheck",
++    "bun run format:changed",
++    "node .agentplane/policy/check-routing.mjs"
++  ],
++  "verification": {
++    "state": "ok",
++    "attempts": 0,
++    "updated_at": "2026-07-28T16:15:50.843Z",
++    "updated_by": "TESTER",
++    "note": "Focused supervisor and evaluator regression tests, TypeScript build, formatting, and routing checks passed; stale-state reopening preserves usage while terminal stops remain protected."
++  },
++  "runner_history": []
++}
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-opinion.md b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-opinion.md
+new file mode 100644
+index 000000000..5712d50aa
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-opinion.md
+@@ -0,0 +1,25 @@
++# Semantic quality review: rework
++
++Provenance: evaluator_supplied
++
++EVALUATOR returned rework with 2 typed finding(s).
++
++## Findings
++- The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion.
++- Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks.
++
++## Evidence
++- .agentplane/tasks/202607281605-D59AS4/README.md
++- .agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json
++- .agentplane/policy/dod.code.md
++
++## Missing Tests
++- Run and record the declared repeated live evaluator episode, proving that a second read-only provider invocation succeeds and cumulative episodes, agent_runs, and total_tokens increase without reset.
++- Record independently attributable results for the focused tests, typecheck, formatting check, and routing validation, including key output and behavioral scope.
++
++## Hidden Assumptions
++- The fake-Codex command regression is assumed to represent the real provider recovery path despite the explicit live-episode requirement.
++- The aggregate TESTER note is assumed to prove every declared command although the frozen evidence contains no command executions or runner history.
++
++## Residual Risks
++- Implementation-level positive and terminal-stop regressions are present, but the required live repeat episode and command-level verification evidence must be executed and frozen before this review can pass.
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-prompt.md b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-prompt.md
+new file mode 100644
+index 000000000..137d902cb
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-prompt.md
+@@ -0,0 +1,82 @@
++# AgentPlane EVALUATOR episode
++
++AgentPlane prepared and froze the authoritative review input. Perform the semantic evaluation; do not reproduce CLI discovery or lifecycle work.
++This prompt does not execute an evaluator. A caller must run the evaluator in the work-order authority boundary and persist its returned typed result at the declared output path.
++Do not edit implementation, task lifecycle, policy, or evidence files. You may read the frozen evidence and run read-only checks only.
++
++- task_id: 202607281605-D59AS4
++- task_readme: .agentplane/tasks/202607281605-D59AS4/README.md
++- work_order: .agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-work-order.json
++- result_output: .agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.json
++- report_path: .agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/quality-report.json
++- provenance: evaluator_supplied
++
++## Required result
++
++Return exactly one `sgr.evaluator_result.v1` JSON object through the evaluator result channel. The caller, not the read-only evaluator, persists it at `result_output`. It must contain:
++- schema_version: 1
++- kind: evaluator_result
++- evaluator_id: the evaluator id from the work order
++- verdict: pass | rework | blocked | human_review
++- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs
++- missing_tests and hidden_assumptions: string arrays
++- recovery_context: required non-empty string for rework, blocked, or human_review; for human_review it must be the single decision question for the human owner
++
++Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.
++The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.
++
++## Evaluator module
++
++---
++id: recovery-context
++title: Recovery Context Invariant Review
++version: 1
++status: preview
++profile: EVALUATOR
++tags:
++  - recovery
++  - invariants
++  - concurrency
++---
++
++# Recovery Context Invariant Review
++
++Use this evaluator only when the primary implementation path already produced a concrete change or when recovery context is needed after an interruption.
++
++## Inputs
++
++- Task id, task README, approved plan, and Verify Steps.
++- Current diff or PR patch.
++- Relevant comments, review findings, incidents, and recovery/handoff context.
++- Known concurrent-agent activity and task-artifact drift classification, if present.
++
++## Review Procedure
++
++1. Reconstruct the intended contract from the task, not from the implementation summary.
++2. Compare the diff against explicit invariants, stop rules, negative cases, and user constraints.
++3. Check whether recovery context changes the interpretation of the task or exposes stale assumptions.
++4. Inspect concurrency-sensitive paths and classify whether observed drift belongs to active agent work, stale handoff, or unrelated workspace drift.
++5. Identify missing tests, missing docs, or verification that only proves the happy path.
++6. Do not execute fixes. Return review findings only.
++7. When recording the result, use `agentplane evaluator run <task-id> --provenance evaluator_supplied` so the task gets prompt,
++   `quality-report.json`, and opinion artifacts. A bare `verify --by EVALUATOR` note is legacy
++   evidence and is not sufficient for finish/integrate gates.
++
++## Output
++
++Return a concise structured review:
++
++- `verdict`: `pass`, `rework`, `blocked`, or `human_review`.
++- `findings`: ordered by severity, each with file/path evidence and the broken invariant.
++- `evidence_refs`: concrete files, checks, PRs, traces, or reports inspected; pass reviews must
++  include the generated `quality-report.json`.
++- `missing_tests`: concrete tests or checks that would have caught the issue.
++- `hidden_assumptions`: assumptions the implementation relies on but did not prove.
++- `residual_risks`: known risks after the review.
++- `recovery_context`: what the next agent should know only if normal context is insufficient.
++
++## Stop Rules
++
++- Use `blocked` when required task context, diff, or recovery context is missing.
++- Use `rework` when behavior diverges from the approved contract even if local checks pass.
++- Use `pass` only when the implementation and verification evidence cover positive, negative, and concurrency-sensitive paths relevant to the task.
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.json
+new file mode 100644
+index 000000000..520697c3d
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.json
+@@ -0,0 +1,53 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_result",
++  "evaluator_id": "recovery-context",
++  "verdict": "rework",
++  "findings": [
++    {
++      "id": "RC-001",
++      "severity": "high",
++      "summary": "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion.",
++      "broken_invariant": "All declared Verify Steps must be executed and recorded, and pass requires evidence covering the real repeated provider episode with cumulative usage preserved.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607281605-D59AS4/README.md",
++          "sha256": "sha256:2db4d9ac0a6f149072e05a47c65ff1abe77b4ee58a0d8698a83928646698477c",
++          "section": "Verify Steps"
++        },
++        {
++          "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
++          "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
++          "section": "runner_history"
++        }
++      ]
++    },
++    {
++      "id": "RC-002",
++      "severity": "medium",
++      "summary": "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks.",
++      "broken_invariant": "The code DoD requires command-level verification records with Command, Result, Evidence, and Scope; a single aggregate note is insufficient.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/policy/dod.code.md",
++          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
++          "section": "Verification evidence contract"
++        },
++        {
++          "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
++          "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
++          "section": "verification"
++        }
++      ]
++    }
++  ],
++  "missing_tests": [
++    "Run and record the declared repeated live evaluator episode, proving that a second read-only provider invocation succeeds and cumulative episodes, agent_runs, and total_tokens increase without reset.",
++    "Record independently attributable results for the focused tests, typecheck, formatting check, and routing validation, including key output and behavioral scope."
++  ],
++  "hidden_assumptions": [
++    "The fake-Codex command regression is assumed to represent the real provider recovery path despite the explicit live-episode requirement.",
++    "The aggregate TESTER note is assumed to prove every declared command although the frozen evidence contains no command executions or runner history."
++  ],
++  "recovery_context": "Implementation-level positive and terminal-stop regressions are present, but the required live repeat episode and command-level verification evidence must be executed and frozen before this review can pass."
++}
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.schema.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.schema.json
+new file mode 100644
+index 000000000..66852c0ab
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-result.schema.json
+@@ -0,0 +1,149 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "title": "AgentPlane EvaluatorSgrResult",
++  "description": "Read-only EVALUATOR output. AgentPlane validates frozen evidence and owns all persistence.",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "schema_version": {
++      "type": "integer",
++      "enum": [
++        1
++      ]
++    },
++    "kind": {
++      "type": "string",
++      "enum": [
++        "evaluator_result"
++      ]
++    },
++    "evaluator_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "verdict": {
++      "type": "string",
++      "enum": [
++        "pass",
++        "rework",
++        "blocked",
++        "human_review"
++      ]
++    },
++    "findings": {
++      "type": "array",
++      "minItems": 1,
++      "items": {
++        "type": "object",
++        "additionalProperties": false,
++        "properties": {
++          "id": {
++            "type": "string",
++            "minLength": 1
++          },
++          "severity": {
++            "type": "string",
++            "enum": [
++              "low",
++              "medium",
++              "high"
++            ]
++          },
++          "summary": {
++            "type": "string",
++            "minLength": 1
++          },
++          "broken_invariant": {
++            "type": "string",
++            "minLength": 1
++          },
++          "evidence_refs": {
++            "type": "array",
++            "minItems": 1,
++            "items": {
++              "type": "object",
++              "additionalProperties": false,
++              "properties": {
++                "path": {
++                  "type": "string",
++                  "minLength": 1
++                },
++                "sha256": {
++                  "type": [
++                    "string",
++                    "null"
++                  ],
++                  "pattern": "^sha256:[a-f0-9]{64}$"
++                },
++                "line": {
++                  "type": [
++                    "integer",
++                    "null"
++                  ],
++                  "minimum": 1
++                },
++                "lines": {
++                  "type": [
++                    "string",
++                    "null"
++                  ],
++                  "minLength": 1
++                },
++                "section": {
++                  "type": [
++                    "string",
++                    "null"
++                  ],
++                  "minLength": 1
++                }
++              },
++              "required": [
++                "path",
++                "sha256",
++                "line",
++                "lines",
++                "section"
++              ]
++            }
++          }
++        },
++        "required": [
++          "id",
++          "severity",
++          "summary",
++          "broken_invariant",
++          "evidence_refs"
++        ]
++      }
++    },
++    "missing_tests": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      }
++    },
++    "hidden_assumptions": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      }
++    },
++    "recovery_context": {
++      "type": [
++        "string",
++        "null"
++      ],
++      "minLength": 1
++    }
++  },
++  "required": [
++    "schema_version",
++    "kind",
++    "evaluator_id",
++    "verdict",
++    "findings",
++    "missing_tests",
++    "hidden_assumptions",
++    "recovery_context"
++  ]
++}
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-work-order.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-work-order.json
+new file mode 100644
+index 000000000..820d89526
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-work-order.json
+@@ -0,0 +1,97 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_work_order",
++  "work_order_id": "evaluator-work-order-202607281605-D59AS4-5879ce763dc8d790916fc749",
++  "prepared_at": "2026-07-28T16:16:24.416Z",
++  "task": {
++    "id": "202607281605-D59AS4",
++    "revision": 10,
++    "objective": "Recover completed evaluator supervisor journals for new episodes\n\nAllow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics.",
++    "acceptance_criteria": [
++      "bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts",
++      "bun run typecheck",
++      "bun run format:changed",
++      "node .agentplane/policy/check-routing.mjs",
++      "- In scope: Allow a completed evaluator supervisor episode stopped only for stale state to reopen safely for a new provider episode, while preserving terminal protection for ambiguous or failed provider effects. This unblocks the 0.7 context-assimilation task without changing CURATOR semantics.\n- Out of scope: unrelated refactors not required for \"Recover completed evaluator supervisor journals for new episodes\".",
++      "1. Inspect evaluator supervisor journal transition and recovery guards. 2. Permit only a completed stale-state journal to refresh its fingerprint and create a new episode. 3. Keep operation_failed and effect_in_doubt terminal. 4. Add focused unit and command-level regression tests, then run a real repeat evaluator episode. 5. Publish and integrate through the protected branch_pr route.",
++      "1. Confirm the safe reopen transition.\nCommand: bun run --filter=@agentplaneorg/core build && bunx vitest run packages/core/src/runner/supervisor-execution-episode.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts\nExpected: a completed stale-state evaluator journal starts a second bounded episode; operation_failed and effect_in_doubt remain terminal.\n\n2. Check types and formatting.\nCommand: bun run typecheck && bun run format:changed\nExpected: no type or formatting regression.\n\n3. Check policy routing.\nCommand: node .agentplane/policy/check-routing.mjs\nExpected: routing validation succeeds.\n\n4. Exercise a repeated live evaluator episode.\nExpected: the second read-only provider episode succeeds and cumulative usage increases without reset."
++    ]
++  },
++  "evaluated_sha": "395c5c3248bc87364098cfa7f7d51f2987025489",
++  "blueprint_digest": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6",
++  "evaluator": {
++    "id": "recovery-context",
++    "profile": "EVALUATOR",
++    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
++  },
++  "authority": {
++    "sandbox": "read-only",
++    "writable_roots": [],
++    "allowed_tool_classes": [
++      "repository_read",
++      "git_read",
++      "run_checks",
++      "report_result"
++    ],
++    "external_side_effects": []
++  },
++  "result_contract": "sgr.evaluator_result.v1",
++  "evidence": [
++    {
++      "id": "task-document",
++      "kind": "task_document",
++      "path": ".agentplane/tasks/202607281605-D59AS4/README.md",
++      "sha256": "sha256:2db4d9ac0a6f149072e05a47c65ff1abe77b4ee58a0d8698a83928646698477c",
++      "required": true
++    },
++    {
++      "id": "actual-diff",
++      "kind": "actual_diff",
++      "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-diff.patch",
++      "sha256": "sha256:209f478dfbe00733fff8f5ad8671b8bd45c215646bf50751add59e22e44f730f",
++      "required": true
++    },
++    {
++      "id": "observed-checks",
++      "kind": "observed_checks",
++      "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
++      "sha256": "sha256:61e9ede9b06d60ac1016f7fcdb121e834a9a6b6cbb8e6c06def4f1b1dc050fb0",
++      "required": true
++    },
++    {
++      "id": "blueprint",
++      "kind": "blueprint",
++      "path": ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-blueprint.json",
++      "sha256": "sha256:417bfd2070e8d25aba8d0b68cb8403ba3ed2d8b5ee0bf59c10d7546823a23c9d",
++      "required": true
++    },
++    {
++      "id": "policy-1",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.code.md",
++      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
++      "required": true
++    },
++    {
++      "id": "policy-2",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.core.md",
++      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
++      "required": true
++    },
++    {
++      "id": "policy-3",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/security.must.md",
++      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
++      "required": true
++    },
++    {
++      "id": "policy-4",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/workflow.branch_pr.md",
++      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
++      "required": true
++    }
++  ]
++}
+diff --git a/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/quality-report.json b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/quality-report.json
+new file mode 100644
+index 000000000..f9c889a14
+--- /dev/null
++++ b/.agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/quality-report.json
+@@ -0,0 +1,32 @@
++{
++  "schema_version": 1,
++  "task_id": "202607281605-D59AS4",
++  "evaluator_id": "recovery-context",
++  "evaluator_profile": "EVALUATOR",
++  "generated_at": "2026-07-28T16:17:17.030Z",
++  "provenance": "evaluator_supplied",
++  "verdict": "rework",
++  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
++  "evaluated_sha": "395c5c3248bc87364098cfa7f7d51f2987025489",
++  "blueprint_digest": "cf3c9c5a682cf107a572f89969c24888f9d75da28cda60d16c6598ee6c4ceba6",
++  "findings": [
++    "The required repeated live evaluator episode is not evidenced; the frozen check record contains no runner history and only a summary assertion.",
++    "Verification evidence does not record exact commands, results, output summaries, or covered scope for the declared checks."
++  ],
++  "evidence_refs": [
++    ".agentplane/tasks/202607281605-D59AS4/README.md",
++    ".agentplane/tasks/202607281605-D59AS4/quality/20260728-161624416-recovery-context/evaluator-observed-checks.json",
++    ".agentplane/policy/dod.code.md"
++  ],
++  "missing_tests": [
++    "Run and record the declared repeated live evaluator episode, proving that a second read-only provider invocation succeeds and cumulative episodes, agent_runs, and total_tokens increase without reset.",
++    "Record independently attributable results for the focused tests, typecheck, formatting check, and routing validation, including key output and behavioral scope."
++  ],
++  "hidden_assumptions": [
++    "The fake-Codex command regression is assumed to represent the real provider recovery path despite the explicit live-episode requirement.",
++    "The aggregate TESTER note is assumed to prove every declared command although the frozen evidence contains no command executions or runner history."
++  ],
++  "residual_risks": [
++    "Implementation-level positive and terminal-stop regressions are present, but the required live repeat episode and command-level verification evidence must be executed and frozen before this review can pass."
++  ]
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+index 2537c2d83..c13f3e0bb 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute-supervisor.ts
+@@ -275,23 +275,33 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
+       evaluator: opts.evaluator,
+       provenance: "evaluator_supplied",
+     });
+-    const started = startSupervisorExecutionEpisode({
+-      journal,
+-      role: "EVALUATOR",
+-      kind: "evaluator_episode",
+-      operation_identity: {
+-        evaluator_id: prepared.work_order.evaluator.id,
+-        work_order_id: prepared.work_order.work_order_id,
+-      },
+-      precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+-      authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
+-      authority_digest: decision.workflowStep.preconditionFingerprint.digest,
+-      work_order_ref: relativeToProject(
+-        opts.command.resolvedProject.gitRoot,
+-        prepared.work_order_path,
+-      ),
+-      effect_ref: prepared.work_order.work_order_id,
+-    });
++    const start = () =>
++      startSupervisorExecutionEpisode({
++        journal,
++        role: "EVALUATOR",
++        kind: "evaluator_episode",
++        operation_identity: {
++          evaluator_id: prepared.work_order.evaluator.id,
++          work_order_id: prepared.work_order.work_order_id,
++        },
++        precondition_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++        authority_ref: `evaluator:${prepared.work_order.evaluator.id}:read-only`,
++        authority_digest: decision.workflowStep.preconditionFingerprint.digest,
++        work_order_ref: relativeToProject(
++          opts.command.resolvedProject.gitRoot,
++          prepared.work_order_path,
++        ),
++        effect_ref: prepared.work_order.work_order_id,
++      });
++    let started = start();
++    if (started.status === "stopped" && started.stop.reason === "stale_state") {
++      journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
++        journal: started.journal,
++        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
++      });
++      await opened.store.write(journal);
++      started = start();
++    }
+     if (started.status !== "started") {
+       await opened.store.write(started.journal);
+       throw new CliError({
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+index a4217d338..a8e69905e 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts
+@@ -213,21 +213,27 @@ describe("evaluator execute supervisor episode", () => {
+     const initial = await runWithFakeCodex(root, taskId, fakeBin);
+     expect(initial.code).toBe(0);
+ 
+-    const journalPath = await resolveSupervisorExecutionEpisodePath({
+-      git_root: root,
+-      task_id: taskId,
+-    });
+-    const store = createSupervisorEpisodeStore(journalPath);
+-    const completed = validateSupervisorExecutionEpisodeJournal(await store.read());
+-    const stale = startSupervisorExecutionEpisode({
+-      journal: completed,
+-      role: "EVALUATOR",
+-      kind: "evaluator_episode",
+-      operation_identity: { retry: "after-state-change" },
+-      precondition_fingerprint_digest: `sha256:${"f".repeat(64)}`,
+-    });
+-    if (stale.status !== "stopped") throw new Error("expected stale-state stop");
+-    await store.write(stale.journal);
++    const docIo = captureStdIO();
++    try {
++      expect(
++        await runCli([
++          "task",
++          "doc",
++          "set",
++          taskId,
++          "--section",
++          "Findings",
++          "--text",
++          "Task state changed after the first evaluator episode.",
++          "--updated-by",
++          "CODER",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++    } finally {
++      docIo.restore();
++    }
+ 
+     const repeated = await runWithFakeCodex(root, taskId, fakeBin);
+ 
+@@ -240,6 +246,11 @@ describe("evaluator execute supervisor episode", () => {
+         usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
+       },
+     });
++    const journalPath = await resolveSupervisorExecutionEpisodePath({
++      git_root: root,
++      task_id: taskId,
++    });
++    const store = createSupervisorEpisodeStore(journalPath);
+     expect(validateSupervisorExecutionEpisodeJournal(await store.read())).toMatchObject({
+       status: "running",
+       usage: { episodes: 2, agent_runs: 2, total_tokens: 300 },
