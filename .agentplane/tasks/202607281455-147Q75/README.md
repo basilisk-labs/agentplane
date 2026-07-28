@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -61,8 +61,8 @@ quality_review:
   findings:
     - "The normalization path preserves its read-only semantics: only null placeholders are removed from copied records, while non-record and array values remain opaque unknown values."
 commit:
-  hash: "2a83376fe1a6b69d98ece871ecd2b0c200a204ba"
-  message: "Record evaluator schema implementation"
+  hash: "4166c925343d0ea836bc65297689f4b179382602"
+  message: "Record evaluator CI recovery review"
 comments:
   -
     author: "CODER"
@@ -73,6 +73,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -101,8 +104,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-28T15:38:08.670Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T15:11:53.641Z"
+doc_updated_at: "2026-07-28T15:38:08.671Z"
 doc_updated_by: "CODER"
 description: "Release-blocking follow-up: make the evaluator typed-result JSON Schema compatible with the current Codex structured-output validator, preserve optional evidence fields through explicit nullable values, and add a regression test proving evaluator execution reaches a typed result instead of failing before the provider turn."
 sections:
@@ -164,6 +174,9 @@ sections:
       Impact: Codex can begin the EVALUATOR turn instead of failing schema validation before review.
       Resolution: Recorded local verification; the subsequent independent EVALUATOR episode will prove the live provider path.
 extensions:
+  implementation_commit:
+    hash: "5fe3f261279c62fbcda629d4ee6cb539fdc956e1"
+    message: "Fix evaluator null normalization lint"
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
     version: 1
