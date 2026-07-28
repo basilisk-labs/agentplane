@@ -288,7 +288,8 @@ export async function prepareEvaluatorReview(opts: {
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
   const recordPaths = await verificationRecordPaths(
     path.dirname(taskReadmePath),
-    opts.task.verification,
+    opts.task,
+    evaluatedSha,
   );
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>
