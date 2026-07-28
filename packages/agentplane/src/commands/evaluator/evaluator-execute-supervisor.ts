@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import {
   completeSupervisorExecutionEpisode,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   stopSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
@@ -222,6 +223,13 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
     recover_intent: false,
   });
   let journal = opened.journal;
+  if (journal.status === "stopped" && journal.stop?.reason === "stale_state") {
+    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+      journal,
+      state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+    });
+    await opened.store.write(journal);
+  }
   let outcome: CompletedEvaluatorOutcome;
 
   if (journal.status === "running" && journal.cursor.phase === "intent_recorded") {
