@@ -4,7 +4,7 @@ title: "Freeze complete branch evidence for evaluator review"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 4
+revision: 5
 origin:
   system: "manual"
 depends_on: []
@@ -25,11 +25,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "bc0977d49c9996e9577a11f56bbfbb7bb5486673"
+  message: "🐛 FT85MC code: freeze full evaluator branch diff"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: isolate the evaluator evidence contract so quality review always receives the complete branch change and concrete verification evidence."
+  -
+    author: "CODER"
+    body: "Implementation committed: complete evaluator branch diff freezing, explicit diff base provenance, and regression coverage are ready for independent verification."
 events:
   -
     type: "status"
@@ -38,9 +43,16 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: isolate the evaluator evidence contract so quality review always receives the complete branch change and concrete verification evidence."
+  -
+    type: "status"
+    at: "2026-07-28T22:06:59.963Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: complete evaluator branch diff freezing, explicit diff base provenance, and regression coverage are ready for independent verification."
 doc_version: 3
-doc_updated_at: "2026-07-28T21:58:01.832Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-07-28T22:06:59.963Z"
+doc_updated_by: "CODER"
 description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
 sections:
   Summary: |-
