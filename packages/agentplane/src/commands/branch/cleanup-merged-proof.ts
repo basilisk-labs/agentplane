@@ -20,6 +20,7 @@ import {
   observeExistingGithubPrByNumber,
   type GithubPrLookupResult,
 } from "../pr/internal/sync-github.js";
+import { resolveDefaultGithubRepo, runGhApiJson } from "../pr/internal/gh-api.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import {
   taskCloseAlreadyRecordedOnBase,
@@ -28,6 +29,10 @@ import {
 import { isAuthorityOnlyTaskReadmeAdvance } from "../shared/quality-review-target.js";
 
 type CleanupBranchKind = "task" | "task-close";
+
+type GithubCommitRecord = {
+  parents?: Array<{ sha?: string | null }>;
+};
 
 export type CleanupCandidate = {
   taskId: string;
@@ -223,6 +228,35 @@ async function validateMergedProviderReceipt(opts: {
 }
 
 /**
+ * GitHub's "Update branch" produces a merge commit whose parents are the
+ * task branch head and a commit already contained by the protected base. The
+ * provider can retain that head after its task branch was deleted, so local
+ * ref equality is not available during cleanup. This shape proves the update
+ * added only base context to the exact local task head.
+ */
+async function isProviderBaseUpdateOfLocalHead(opts: {
+  gitRoot: string;
+  baseBranch: string;
+  branchHeadSha: string;
+  providerHeadSha: string;
+}): Promise<boolean> {
+  try {
+    const repo = await resolveDefaultGithubRepo(opts.gitRoot);
+    const commit = await runGhApiJson<GithubCommitRecord>(opts.gitRoot, [
+      `repos/${repo}/commits/${opts.providerHeadSha}`,
+    ]);
+    const parents = (commit.parents ?? [])
+      .map((parent) => parent.sha?.trim() ?? "")
+      .filter(Boolean);
+    if (parents.length !== 2 || !parents.includes(opts.branchHeadSha)) return false;
+    const baseParent = parents.find((parent) => parent !== opts.branchHeadSha);
+    return Boolean(baseParent && (await gitIsAncestor(opts.gitRoot, baseParent, opts.baseBranch)));
+  } catch {
+    return false;
+  }
+}
+
+/**
  * A durable authority record can be written after the provider has merged the
  * task branch but before local cleanup runs. The record must not let arbitrary
  * post-merge work masquerade as merged content, so accept only a non-empty
@@ -327,6 +361,19 @@ async function targetedCleanupProof(opts: {
       taskId: opts.taskId,
       providerHeadSha: providerReceipt.observedHeadSha,
       branchHeadSha: branchHead,
+    }))
+  ) {
+    providerReceipt = { ...providerReceipt, reason: null };
+  }
+
+  if (
+    providerReceipt.reason &&
+    providerReceipt.observedHeadSha &&
+    (await isProviderBaseUpdateOfLocalHead({
+      gitRoot: opts.gitRoot,
+      baseBranch: opts.baseBranch,
+      branchHeadSha: branchHead,
+      providerHeadSha: providerReceipt.observedHeadSha,
     }))
   ) {
     providerReceipt = { ...providerReceipt, reason: null };

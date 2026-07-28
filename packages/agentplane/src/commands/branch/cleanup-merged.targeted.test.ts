@@ -220,6 +220,7 @@ async function installFakeGh(opts: {
   headSha?: string;
   baseRef?: string;
   mergeCommitSha?: string;
+  providerUpdateBaseSha?: string;
 }): Promise<string> {
   const fakeBin = await mkdtemp(path.join(os.tmpdir(), "agentplane-cleanup-gh-"));
   const scriptPath = path.join(fakeBin, "fake-gh.mjs");
@@ -233,11 +234,23 @@ async function installFakeGh(opts: {
     head: { ref: opts.fixture.branch, sha: opts.headSha ?? opts.fixture.branchHead },
     base: { ref: opts.baseRef ?? "main" },
   };
+  const providerUpdatePayload =
+    opts.providerUpdateBaseSha && opts.headSha
+      ? {
+          sha: opts.headSha,
+          parents: [{ sha: opts.fixture.branchHead }, { sha: opts.providerUpdateBaseSha }],
+        }
+      : null;
   await writeFile(
     scriptPath,
     [
       "const args = process.argv.slice(2);",
       'if (args[0] !== "api") process.exit(90);',
+      providerUpdatePayload
+        ? `if (args[1] === ${JSON.stringify(
+            `repos/example/repo/commits/${opts.headSha}`,
+          )}) { console.log(${JSON.stringify(JSON.stringify(providerUpdatePayload))}); process.exit(0); }`
+        : "",
       opts.kind === "found"
         ? `console.log(${JSON.stringify(JSON.stringify(payload))});`
         : opts.kind === "not_found"
@@ -525,6 +538,52 @@ describe("cleanup merged targeted provider proof", { timeout: TEST_TIMEOUT_MS },
     expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
     expect(await pathExists(fixture.worktreePath)).toBe(true);
     expect(await gitBranchExists(fixture.root, fixture.unrelatedBranch)).toBe(true);
+  });
+
+  it("cleans after a provider-generated update branch head merges the local task head with base", async () => {
+    const fixture = await createTargetedFixture();
+    const fakeBin = await installFakeGh({
+      kind: "found",
+      fixture,
+      headSha: "1".repeat(40),
+      providerUpdateBaseSha: fixture.mergeCommit,
+    });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("proof=provider_merge");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(false);
+    expect(await pathExists(fixture.worktreePath)).toBe(false);
+  });
+
+  it("keeps cleanup blocked when a provider update head lacks a base-ancestry parent", async () => {
+    const fixture = await createTargetedFixture();
+    const fakeBin = await installFakeGh({
+      kind: "found",
+      fixture,
+      headSha: "2".repeat(40),
+      providerUpdateBaseSha: "0".repeat(40),
+    });
+    const result = await runWithFakeGh(fakeBin, [
+      "cleanup",
+      "merged",
+      "--task-id",
+      fixture.taskId,
+      "--yes",
+      "--root",
+      fixture.root,
+    ]);
+    expect(result.code).toBe(5);
+    expect(result.stderr).toContain("provider head mismatch");
+    expect(await gitBranchExists(fixture.root, fixture.branch)).toBe(true);
+    expect(await pathExists(fixture.worktreePath)).toBe(true);
   });
 
   it("cleans a provider-merged task with a local authority-only post-merge tail", async () => {
