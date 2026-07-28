@@ -13,7 +13,7 @@ Created: 2026-07-28T16:57:04.791Z
 ## Verification
 
 - State: ok
-- Note: Hosted static rework verified: all replacement-test lint findings are resolved while the eight command-level replacement scenarios remain green.
+- Note: Concurrent replacement verification passed for implementation 8be946fefff686fb72c2ba3ef1f06c4077f11c5f.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
