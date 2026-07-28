@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on:
@@ -65,8 +65,8 @@ quality_review:
   findings:
     - "No blocking finding: task-run execution contracts are isolated in a dedicated type module; Hermes checks concrete typed values rather than assigning matcher any values."
 commit:
-  hash: "fb7da2d8aac146ef830003f4b2ab20e220f5c2d2"
-  message: "🛡️ R7WS01 task: authorize fresh format closure"
+  hash: "9013722fdf3806b630cdce0a39610e671216af5a"
+  message: "🛡️ R7WS01 task: authorize rework closure"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -153,8 +156,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "PASS (hosted rework): split execution contracts keeps task-run below the hotspot threshold and replaces unsafe Hermes matcher assignments with typed assertions."
+  -
+    type: "status"
+    at: "2026-07-28T02:56:13.467Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-28T02:54:35.937Z"
+doc_updated_at: "2026-07-28T02:56:13.467Z"
 doc_updated_by: "CODER"
 description: "RF-25d: make runner preparation, invocation, observation, evaluation, and lifecycle operations return typed in-process results with compatibility renderers instead of stdout parsing."
 sections:
@@ -669,8 +679,8 @@ extensions:
         stateScopeDigest: "sha256:6d13b42978a9ba115f8705cb0fabb438263cd29b3938bf49880f110c14bbc46e"
     schemaVersion: 1
   implementation_commit:
-    hash: "96ff9bab8db6e431077c9a7f60b357735e011f80"
-    message: "🎨 R7WS01 runner: format typed lifecycle paths"
+    hash: "8cd703b66e4c14daae26b244f551e705068e178d"
+    message: "♻️ R7WS01 runner: split execution contracts"
   workflow_route_baseline:
     start_head_sha: "a27841b280b516dfb52d900db5559ba87adc4224"
     version: 1
