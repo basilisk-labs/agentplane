@@ -1,0 +1,18 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T01:13:52.720Z",
+    "updated_by": "CODER",
+    "note": "Updated release-readiness expectations to enforce CURATOR semantic-only prompts; focused contract tests pass and the isolated runner cancellation test passes."
+  },
+  "verification_records": [],
+  "runner_history": []
+}

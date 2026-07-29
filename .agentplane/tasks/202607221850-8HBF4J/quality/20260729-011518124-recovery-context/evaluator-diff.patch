@@ -1,0 +1,147 @@
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+index 2e984752a..d966e23fc 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+@@ -7,6 +7,7 @@
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../commands/context/extraction-apply.unit.test.ts |   2 +-
++ .../src/commands/context/release-readiness.test.ts |  47 +-
+  packages/agentplane/src/context/doctor.ts          |   2 +-
+  .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
+  .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
+@@ -19,4 +20,4 @@
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 21 files changed, 1791 insertions(+), 197 deletions(-)
++ 22 files changed, 1808 insertions(+), 227 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+index c37e5d195..5852bb38a 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+@@ -41,6 +41,7 @@ tests pass and the isolated runner cancellation test passes.
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../commands/context/extraction-apply.unit.test.ts |   2 +-
++ .../src/commands/context/release-readiness.test.ts |  47 +-
+  packages/agentplane/src/context/doctor.ts          |   2 +-
+  .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
+  .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
+@@ -53,7 +54,7 @@ tests pass and the isolated runner cancellation test passes.
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 21 files changed, 1791 insertions(+), 197 deletions(-)
++ 22 files changed, 1808 insertions(+), 227 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+index 5c2bd6e52..bf19af2c2 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
+   "created_at": "2026-07-28T13:53:55.558Z",
+-  "diffstat_sha256": "sha256:7cb18063a3ebc38340e635d8041478b5cdf7b190c1c12627aad3bacf6b5fffcb",
++  "diffstat_sha256": "sha256:c4547940a5c3cba317862cbb57e5933fede9d715ea5fa8ea0b1f4766a550ae5c",
+   "last_verified_at": "2026-07-29T01:13:52.720Z",
+   "last_verified_diffstat_sha256": "sha256:7cb18063a3ebc38340e635d8041478b5cdf7b190c1c12627aad3bacf6b5fffcb",
+   "pr_number": 4659,
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+index 2236d85be..99d5376bc 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+@@ -38,6 +38,7 @@ Created: 2026-07-28T13:53:55.558Z
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../commands/context/extraction-apply.unit.test.ts |   2 +-
++ .../src/commands/context/release-readiness.test.ts |  47 +-
+  packages/agentplane/src/context/doctor.ts          |   2 +-
+  .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
+  .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
+@@ -50,7 +51,7 @@ Created: 2026-07-28T13:53:55.558Z
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 21 files changed, 1791 insertions(+), 197 deletions(-)
++ 22 files changed, 1808 insertions(+), 227 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/context/release-readiness.test.ts b/packages/agentplane/src/commands/context/release-readiness.test.ts
+index b52612954..8a4b8cf6e 100644
+--- a/packages/agentplane/src/commands/context/release-readiness.test.ts
++++ b/packages/agentplane/src/commands/context/release-readiness.test.ts
+@@ -745,30 +745,16 @@ describe("context release readiness guards", () => {
+     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_module_ref).toBe(
+       "framework/template/generated.artifact/context_assimilation/v2",
+     );
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("context.maximum_assimilation");
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("agentplane context reindex --include-raw");
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("frontmatter");
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("Reconcile semantically: compare each source term");
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("keep local detail under stable headings");
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("Link first meaningful mentions");
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("agentplane context wiki index context/wiki");
+-    expect(
+-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
+-    ).toContain("reuse `canonical_entity_id`");
++    const prompt =
++      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
++    expect(prompt).toContain("context.maximum_assimilation");
++    expect(prompt).toContain("Reconcile semantically: compare each source term");
++    expect(prompt).toContain("reuse `canonical_entity_id`");
++    expect(prompt).toContain("Return only that semantic result");
++    expect(prompt).toContain("CLI supervision materializes the formal layer");
++    expect(prompt).toContain("Do not replay or operate lifecycle steps");
++    expect(prompt).not.toContain("agentplane context reindex --include-raw");
++    expect(prompt).not.toContain("agentplane context wiki index context/wiki");
+     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
+       layout_strategy: "adaptive",
+       frontmatter_required: true,
+@@ -864,8 +850,9 @@ describe("context release readiness guards", () => {
+     const prompt =
+       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
+     expect(prompt).toContain("source-shaped topology decision");
+-    expect(prompt).toContain("[[canonical-page|Label]]");
+-    expect(prompt).toContain("agentplane evaluator run");
++    expect(prompt).toContain("CURATOR owns this judgment");
++    expect(prompt).toContain("CLI-owned mechanical operations");
++    expect(prompt).not.toContain("agentplane evaluator run");
+     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
+       "maximum_assimilation",
+     );
+@@ -912,12 +899,12 @@ describe("context release readiness guards", () => {
+       "canonical-snapshot.json",
+       "extraction-contract.json",
+       "source-shaped topology decision",
+-      "[[canonical-page|Label]]",
+-      "numeric notes",
+-      "practical retrieval through wiki/derived entrypoints",
++      "CURATOR owns this judgment",
++      "Page decisions must support stable identity",
++      "CLI supervision materializes the formal layer",
+       "SGR v2 `context_extraction` JSON file",
+       "Every significant span needs a coverage row",
+-      "raw files disappear",
++      "Raw sources remain source-of-truth",
+     ]) {
+       expect(maximumPrompt).toContain(expected);
+     }
