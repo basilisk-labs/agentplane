@@ -1,10 +1,10 @@
 ---
 id: "202607221850-0SFMS7"
 title: "Supervise direct task execution end to end"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 8
 origin:
   system: "manual"
 depends_on:
@@ -31,9 +31,9 @@ verify:
   - "bun run lifecycle:invariants"
   - "bun run test:critical"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-07-29T01:35:28.740Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -42,11 +42,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: continue branch_pr task in the dedicated task worktree."
+events:
+  -
+    type: "status"
+    at: "2026-07-29T01:35:45.315Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: continue branch_pr task in the dedicated task worktree."
 doc_version: 3
-doc_updated_at: "2026-07-22T18:50:26.059Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-29T01:35:45.315Z"
+doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
   Summary: |-
@@ -76,6 +86,10 @@ sections:
     - Restore the previous compatibility path behind an explicit feature/compatibility boundary.
     - Re-run lifecycle, focused, and type checks before resuming dependent work.
   Findings: ""
+extensions:
+  workflow_route_baseline:
+    start_head_sha: "950e9cd2f222c12d16e930bdb8a3e39237659651"
+    version: 1
 id_source: "generated"
 ---
 ## Summary
