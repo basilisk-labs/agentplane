@@ -4,7 +4,7 @@ title: "Prevent evaluator self-referential evidence in recovery-context review"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 origin:
   system: "manual"
 depends_on: []
@@ -22,10 +22,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-29T10:44:01.710Z"
+  updated_by: "TESTER"
+  note: "Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head."
   attempts: 0
 commit:
   hash: "95ea07baae4d70773c3d4797e94eaa39ebee9c3f"
@@ -52,8 +52,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation: removed the self-referential evaluator evidence requirement and added prompt-level regression coverage. Validation: evaluator suite 41/41; ci:contract passed."
+  -
+    type: "verify"
+    at: "2026-07-29T10:44:01.710Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head."
 doc_version: 3
-doc_updated_at: "2026-07-29T10:42:43.553Z"
+doc_updated_at: "2026-07-29T10:44:02.998Z"
 doc_updated_by: "CODER"
 description: "Repair the recovery-context evaluator prompt contract so evaluator findings cite only frozen work-order evidence and cannot cite evaluator-generated work-order or report paths. Add a focused regression test and prove a replacement evaluator episode can be recorded for the blocked beta.1 qualification."
 sections:
@@ -73,11 +79,44 @@ sections:
     3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-29T10:44:01.710Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T10:42:43.553Z, excerpt_hash=sha256:6ed44c9887884241f638dfbb9b64dac35ec0d9a649684aba23d6867674604d00
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/tmp/integration-clean-main-branch-0SFMS7/.agentplane/tmp/evaluator-recovery-fix-base-20260729/.agentplane/worktrees/202607291035-XXKY7B-prevent-evaluator-self-referential-evidence-in-r/.agentplane/tasks/202607291035-XXKY7B/blueprint/resolved-snapshot.json
+    - old_digest: 435770db05798b9dff128e1b32632452d244afbed820e54ee89464480ced8a3e
+    - current_digest: 435770db05798b9dff128e1b32632452d244afbed820e54ee89464480ced8a3e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291035-XXKY7B
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607291035-XXKY7B
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: The constructed recovery-context prompt now permits only frozen work-order evidence and explicitly excludes evaluator-generated paths.
+      Impact: A provider response can no longer be instructed to cite a path that the CLI must reject.
+      Resolution: Both built-in and repository evaluator modules were aligned; the prompt-level assertion prevents divergence.
 extensions:
   workflow_route_baseline:
     start_head_sha: "b90a9e6df9ae35a1a518e1ffa73903d6e5784d35"
@@ -110,6 +149,36 @@ PLANNER fallback scaffold for "Prevent evaluator self-referential evidence in re
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-29T10:44:01.710Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T10:42:43.553Z, excerpt_hash=sha256:6ed44c9887884241f638dfbb9b64dac35ec0d9a649684aba23d6867674604d00
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/tmp/integration-clean-main-branch-0SFMS7/.agentplane/tmp/evaluator-recovery-fix-base-20260729/.agentplane/worktrees/202607291035-XXKY7B-prevent-evaluator-self-referential-evidence-in-r/.agentplane/tasks/202607291035-XXKY7B/blueprint/resolved-snapshot.json
+- old_digest: 435770db05798b9dff128e1b32632452d244afbed820e54ee89464480ced8a3e
+- current_digest: 435770db05798b9dff128e1b32632452d244afbed820e54ee89464480ced8a3e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291035-XXKY7B
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607291035-XXKY7B
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -118,3 +187,7 @@ PLANNER fallback scaffold for "Prevent evaluator self-referential evidence in re
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: The constructed recovery-context prompt now permits only frozen work-order evidence and explicitly excludes evaluator-generated paths.
+  Impact: A provider response can no longer be instructed to cite a path that the CLI must reject.
+  Resolution: Both built-in and repository evaluator modules were aligned; the prompt-level assertion prevents divergence.
