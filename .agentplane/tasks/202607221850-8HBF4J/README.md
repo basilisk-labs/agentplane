@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on:
@@ -70,8 +70,8 @@ quality_review:
     - "Diagnostics now depend on explicit read-only journal exports, and all production and test consumers import the diagnostics module directly."
     - "Both prior hotspot files are below the hard 600-line limit, and focused plus full verification passed without an allowlist exception."
 commit:
-  hash: "ef713615f1423c81871c8a7bf3c2e2de55ec1241"
-  message: "🧩 8HBF4J context: record docs evaluation"
+  hash: "44a2b77aea8217c476fa20cfc3c07ed8b0a59d24"
+  message: "🧩 8HBF4J context: record hotspot evaluation"
 comments:
   -
     author: "CODER"
@@ -82,6 +82,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -138,8 +141,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard."
+  -
+    type: "status"
+    at: "2026-07-29T00:57:38.437Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T00:55:02.742Z"
+doc_updated_at: "2026-07-29T00:57:38.437Z"
 doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -302,8 +312,8 @@ sections:
       Resolution: Ready for a fresh EVALUATOR review and pre-merge closure refresh.
 extensions:
   implementation_commit:
-    hash: "963e293db08884671bc4c262fef7d79aaaf46084"
-    message: "🧩 8HBF4J context: refresh CLI reference"
+    hash: "22cc0f2d658b61b574cbc79d342d31f1ed37b2e4"
+    message: "🐛 8HBF4J code: split context hotspots"
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
     version: 1
