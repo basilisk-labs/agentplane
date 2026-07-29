@@ -12,7 +12,8 @@ export type EvaluatorEvidenceKind =
   | "blueprint"
   | "policy_module"
   | "knowledge_ref"
-  | "runtime_evidence";
+  | "runtime_evidence"
+  | "qualification_packet";
 
 export type FrozenEvaluatorEvidence = {
   id: string;

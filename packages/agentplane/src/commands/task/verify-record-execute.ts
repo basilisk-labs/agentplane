@@ -36,6 +36,8 @@ import {
   nowIso,
 } from "./shared.js";
 import { resolveVerifyRecordInput } from "./verify-record-input.js";
+import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
+import { parseVerificationCheckDetails } from "../shared/verification-details.js";
 import type {
   ExecuteVerifyRecordCommandOptions,
   VerifyState,
@@ -198,6 +200,17 @@ async function recordVerificationResult(opts: {
         guidance: "fill it before running `agentplane verify ...`",
       });
       const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+      if (
+        opts.state === "ok" &&
+        isQualificationTask(current) &&
+        parseVerificationCheckDetails(opts.details) === null
+      ) {
+        throw new CliError({
+          code: "E_VALIDATION",
+          message:
+            "Qualification verification requires structured --details with Command, Result, Evidence, and Scope for every check.",
+        });
+      }
       const record = {
         schema_version: 1,
         kind: "task_verification_record",
@@ -225,13 +238,19 @@ async function recordVerificationResult(opts: {
         "verification",
       );
       await mkdir(verificationDir, { recursive: true });
-      await writeJsonStableIfChanged(
-        path.join(verificationDir, verificationRecordName(at, digest)),
-        {
-          ...record,
-          digest,
-        },
-      );
+      const verificationPath = path.join(verificationDir, verificationRecordName(at, digest));
+      await writeJsonStableIfChanged(verificationPath, {
+        ...record,
+        digest,
+      });
+      if (opts.state === "ok" && isQualificationTask(current)) {
+        await writeQualificationPacket({
+          ctx,
+          task: current,
+          recordPath: verificationPath,
+          recordedAt: at,
+        });
+      }
 
       const execution = executeTaskVerificationTransitionRequest({
         task: current,

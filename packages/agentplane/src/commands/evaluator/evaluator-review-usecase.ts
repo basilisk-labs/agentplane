@@ -13,7 +13,6 @@ import {
   buildTaskBlueprintResolvedSnapshot,
 } from "../blueprint/snapshot-artifact.js";
 import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
@@ -30,6 +29,7 @@ import {
   readVerifiedSupervisorJournalHistory,
   writeEvaluatorArtifact,
 } from "./evaluator-review-artifacts.js";
+import { resolveEvaluatorReviewTarget } from "./evaluator-qualification-review.js";
 import {
   verificationRecordPaths,
   verificationRuntimeEvidencePaths,
@@ -51,7 +51,6 @@ export {
   uniqueStrings,
   type HumanEvaluatorReviewInput,
 } from "./evaluator-review-shared.js";
-
 export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
 
 const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
@@ -109,6 +108,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
               "policy_module",
               "knowledge_ref",
               "runtime_evidence",
+              "qualification_packet",
             ]),
             path: z.string().trim().min(1),
             sha256: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
@@ -227,12 +227,10 @@ export async function prepareEvaluatorReview(opts: {
   const paths = reportPaths(reviewDir);
   const taskRoot = path.join(gitRoot, opts.ctx.config.paths.workflow_dir, opts.task.id);
   const taskReadmePath = path.join(taskRoot, "README.md");
-  const evaluatedSha = await resolveQualityReviewTargetSha({
-    gitRoot,
-    workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskId: opts.task.id,
-    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
-    previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+  const { evaluatedSha, qualificationPacket } = await resolveEvaluatorReviewTarget({
+    ctx: opts.ctx,
+    task: opts.task,
+    reason: "preparation",
   });
   const diffBaseSha = await resolveEvaluatorDiffBase({
     gitRoot,
@@ -300,6 +298,13 @@ export async function prepareEvaluatorReview(opts: {
       taskId: opts.task.id,
       verifiedRuntimeEvidencePaths: runtimeEvidencePaths,
     }),
+    qualification_packet: qualificationPacket
+      ? {
+          path: relative(gitRoot, qualificationPacket.path),
+          digest: qualificationPacket.packet.digest,
+          reviewed_sha: qualificationPacket.packet.reviewed_sha,
+        }
+      : null,
   };
   await writeEvaluatorArtifact({
     filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),
@@ -343,6 +348,17 @@ export async function prepareEvaluatorReview(opts: {
     }),
     ...verificationRecords,
     ...runtimeEvidence,
+    ...(qualificationPacket
+      ? [
+          await freezeEvaluatorFile({
+            gitRoot,
+            id: "qualification-packet",
+            kind: "qualification_packet",
+            filePath: qualificationPacket.path,
+            required: true,
+          }),
+        ]
+      : []),
     await freezeEvaluatorFile({
       gitRoot,
       id: "blueprint",
@@ -544,20 +560,17 @@ export async function assertWorkOrderCurrent(opts: {
   task: TaskData;
   workOrder: EvaluatorWorkOrder;
 }): Promise<void> {
-  const currentRevision = opts.task.revision ?? null;
-  if (currentRevision !== opts.workOrder.task.revision) {
+  if ((opts.task.revision ?? null) !== opts.workOrder.task.revision) {
     throw new CliError({
       code: "E_VALIDATION",
       message: "Evaluator work order is stale because the task revision changed after preparation.",
     });
   }
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  const currentSha = await resolveQualityReviewTargetSha({
-    gitRoot,
-    workflowDir: opts.ctx.config.paths.workflow_dir,
-    taskId: opts.task.id,
-    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
-    previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+  const { evaluatedSha: currentSha } = await resolveEvaluatorReviewTarget({
+    ctx: opts.ctx,
+    task: opts.task,
+    reason: "staleness",
   });
   if (currentSha !== opts.workOrder.evaluated_sha) {
     throw new CliError({

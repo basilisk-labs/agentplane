@@ -1,62 +1,29 @@
-import { execFile } from "node:child_process";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { promisify } from "node:util";
 import { readTask } from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { parseCommandArgv } from "../../cli/spec/parse.js";
-import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import { loadCommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
-import { cmdTaskAdd } from "../workflow.js";
-import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 
 import { runEvaluatorRun } from "./evaluator.command.js";
 import {
-  prepareEvaluatorReview,
   renderActualDiff,
   resolveEvaluatorDiffBase,
   type PreparedEvaluatorReview,
 } from "./evaluator-review-usecase.js";
 import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
 import { evaluatorRunSpec } from "./evaluator.spec.js";
-
-const execFileAsync = promisify(execFile);
-
-async function addTask(root: string, taskId: string): Promise<void> {
-  await cmdTaskAdd({
-    cwd: root,
-    taskIds: [taskId],
-    title: "Task",
-    description: "Desc",
-    status: "TODO",
-    priority: "med",
-    owner: "CODER",
-    tags: ["nodejs"],
-    dependsOn: [],
-    verify: [],
-    commentAuthor: null,
-    commentBody: null,
-  });
-}
-
-async function commitPath(
-  root: string,
-  relPath: string,
-  content: string,
-  message: string,
-): Promise<string> {
-  const target = path.join(root, relPath);
-  await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(target, content, "utf8");
-  await execFileAsync("git", ["add", "--", relPath], { cwd: root });
-  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
-  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-  return stdout.trim();
-}
+import {
+  addTask,
+  commitPath,
+  execFileAsync,
+  prepareTypedReview,
+} from "./evaluator-test-helpers.js";
 
 async function readEvaluatedSha(
   root: string,
@@ -98,31 +65,6 @@ async function setPrimaryBatchOwnership(
       }),
     }),
   });
-}
-
-async function prepareTypedReview(
-  root: string,
-  taskId: string,
-): Promise<{
-  command: Awaited<ReturnType<typeof loadCommandContext>>;
-  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
-  prepared: PreparedEvaluatorReview;
-}> {
-  const command = await loadCommandContext({ cwd: root, rootOverride: root });
-  const task = await loadTaskFromContext({ ctx: command, taskId });
-  const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
-  const evaluator = catalog.find((entry) => entry.id === "recovery-context");
-  if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
-  return {
-    command,
-    task,
-    prepared: await prepareEvaluatorReview({
-      ctx: command,
-      task,
-      evaluator,
-      provenance: "evaluator_supplied",
-    }),
-  };
 }
 
 function typedEvaluatorResult(

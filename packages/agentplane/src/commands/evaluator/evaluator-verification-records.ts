@@ -5,8 +5,8 @@ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+import { parseVerificationCheckDetails } from "../shared/verification-details.js";
 
-const CHECK_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
 const RUNTIME_EVIDENCE_PREFIX = ".agentplane/cache/";
 const MAX_RUNTIME_EVIDENCE_FILES = 16;
 
@@ -26,20 +26,7 @@ function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
 }
 
 function hasConcreteCheckDetails(details: unknown): boolean {
-  if (typeof details !== "string" || !details.trim()) return false;
-  const checks = details.trim().split(/\n\s*\n/gu);
-  return checks.every((check) => {
-    const fields = new Map(
-      check.split("\n").map((line) => {
-        const [field, ...value] = line.split(":");
-        return [field?.trim(), value.join(":").trim()] as const;
-      }),
-    );
-    return (
-      CHECK_FIELDS.every((field) => fields.get(field)) &&
-      ["pass", "fail"].includes(fields.get("Result") ?? "")
-    );
-  });
+  return parseVerificationCheckDetails(details) !== null;
 }
 
 function detailsEvidencePaths(details: unknown): string[] {
