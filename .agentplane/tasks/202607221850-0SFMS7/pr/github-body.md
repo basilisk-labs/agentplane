@@ -15,8 +15,13 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note:
+
+```text
+Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification
+lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -31,12 +36,18 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
  ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
  .../src/commands/shared/workflow-step-factory.ts   |  20 +-
  .../shared/workflow-step-projections.test.ts       |  16 +-
+ .../commands/task/direct-task-finalization.test.ts |  97 ++++
+ .../src/commands/task/direct-task-finalization.ts  | 108 ++++
+ .../task/direct-task-supervisor-closeout.ts        | 329 +++++++++++
  .../direct-task-supervisor-formal-operation.ts     | 101 ++++
- .../commands/task/direct-task-supervisor.test.ts   | 325 ++++++++++++
- .../src/commands/task/direct-task-supervisor.ts    | 563 +++++++++++++++++++++
+ .../task/direct-task-supervisor-observation.ts     |  64 +++
+ .../commands/task/direct-task-supervisor.test.ts   | 630 +++++++++++++++++++++
+ .../src/commands/task/direct-task-supervisor.ts    | 572 +++++++++++++++++++
+ .../commands/task/direct-task-verification.test.ts | 104 ++++
+ .../src/commands/task/direct-task-verification.ts  | 131 +++++
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
- 9 files changed, 1138 insertions(+), 75 deletions(-)
+ 15 files changed, 2285 insertions(+), 75 deletions(-)
 ```
 
 </details>

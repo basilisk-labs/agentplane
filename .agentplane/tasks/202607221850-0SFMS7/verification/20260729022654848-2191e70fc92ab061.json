@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:2191e70fc92ab061ed3b8ac1bd7e3955e537f37439566684a19e507cb43f61db",
+  "implementation_sha": "8bfdaa6b53fddac810941a5956908782893af5e9",
+  "kind": "task_verification_record",
+  "note": "Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage.",
+  "recorded_at": "2026-07-29T02:26:54.848Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run the approved direct golden task. Expected: EXECUTOR performs zero AgentPlane lifecycle calls; supervisor starts, observes, evaluates, verifies, and finalizes.\n2. Change route state after every operation fixture. Expected: the supervisor recomputes from fresh state and never executes a stale next step.\n3. Exercise approval required, missing knowledge, evaluator rework, out-of-scope write, and adapter crash. Expected: bounded typed stops/retries with no synthesized semantic summary.\n4. Compare baseline metrics. Expected: lifecycle/tool/duplicate-context cost decreases without lower verified success or safety.\n5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac",
+  "task_id": "202607221850-0SFMS7",
+  "verification_command": "agentplane verify 202607221850-0SFMS7 --rework --by TESTER",
+  "verifier": "TESTER"
+}

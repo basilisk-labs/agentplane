@@ -4,7 +4,7 @@ title: "Supervise direct task execution end to end"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -36,16 +36,46 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-  attempts: 0
+  state: "needs_rework"
+  updated_at: "2026-07-29T02:26:54.848Z"
+  updated_by: "TESTER"
+  note: "Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage."
+  attempts: 1
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-29T02:26:30.649Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "8bfdaa6b53fddac810941a5956908782893af5e9"
+  blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
+  evidence_refs:
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/README.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The supervisor reports the task as finalized without executing the task finish lifecycle operation."
+    - "A passing evaluator verdict is converted into formal verification without evidence that the declared checks ran."
+    - "The frozen evidence does not demonstrate the required golden-path metrics comparison or concurrency-sensitive stale-route behavior."
 commit: null
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: direct CLI supervision in 8bfdaa6b53fd; focused, workflow, lifecycle, critical, and fast checks passed. ci:contract is blocked only by pre-existing clone-baseline drift with no RF-10a clone cluster."
 events:
   -
     type: "status"
@@ -54,8 +84,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-29T02:24:57.738Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: direct CLI supervision in 8bfdaa6b53fd; focused, workflow, lifecycle, critical, and fast checks passed. ci:contract is blocked only by pre-existing clone-baseline drift with no RF-10a clone cluster."
+  -
+    type: "verify"
+    at: "2026-07-29T02:26:54.848Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage."
 doc_version: 3
-doc_updated_at: "2026-07-29T01:35:45.315Z"
+doc_updated_at: "2026-07-29T02:26:55.481Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -80,12 +123,45 @@ sections:
     5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-29T02:26:54.848Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T02:24:57.738Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221850-0SFMS7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
     - Restore the previous compatibility path behind an explicit feature/compatibility boundary.
     - Re-run lifecycle, focused, and type checks before resuming dependent work.
-  Findings: ""
+  Findings: |-
+    - Observation: quality/20260729-022523522-recovery-context/evaluator-result.json
+      Impact: The direct supervisor cannot claim verified finalization safely.
+      Resolution: Implement real CLI finish, gate verification on declared checks, and add end-to-end stale-route and metrics coverage before replacement evaluation.
 extensions:
   workflow_route_baseline:
     start_head_sha: "950e9cd2f222c12d16e930bdb8a3e39237659651"
@@ -122,6 +198,36 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-29T02:26:54.848Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T02:24:57.738Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221850-0SFMS7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -131,3 +237,7 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 - Re-run lifecycle, focused, and type checks before resuming dependent work.
 
 ## Findings
+
+- Observation: quality/20260729-022523522-recovery-context/evaluator-result.json
+  Impact: The direct supervisor cannot claim verified finalization safely.
+  Resolution: Implement real CLI finish, gate verification on declared checks, and add end-to-end stale-route and metrics coverage before replacement evaluation.

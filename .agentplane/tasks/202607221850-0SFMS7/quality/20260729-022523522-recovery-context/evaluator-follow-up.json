@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-566b69c0be69ac2fe8480232",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace the no-op finalize journal action with the actual CLI-owned finish transition, gate verification on recorded results for every declared check or approved skips, and add end-to-end evidence for stale-route concurrency, required negative cases, and the 0.6.24 metrics comparison before requesting reevaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The supervisor reports the task as finalized without executing the task finish lifecycle operation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b8d39974a8f6e952341972db9559256c783389e1d87ed8771b746ff594889401",
+          "section": "direct-task-supervisor.ts finalize operation"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b4d32d6e06013ae6d1dfcf25d14485e52873b95e2887926d2d46b5db0c9c71e3",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "A passing evaluator verdict is converted into formal verification without evidence that the declared checks ran.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b8d39974a8f6e952341972db9559256c783389e1d87ed8771b746ff594889401",
+          "section": "direct-task-supervisor.ts task_verify operation"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b61147ba0daf81f84257e8dd1ca03640421e8a585023c877046ed72959352295",
+          "section": "verification_records and runner_history"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "The frozen evidence does not demonstrate the required golden-path metrics comparison or concurrency-sensitive stale-route behavior.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b4d32d6e06013ae6d1dfcf25d14485e52873b95e2887926d2d46b5db0c9c71e3",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b61147ba0daf81f84257e8dd1ca03640421e8a585023c877046ed72959352295",
+          "section": "declared_checks, verification_records, and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b8d39974a8f6e952341972db9559256c783389e1d87ed8771b746ff594889401",
+          "section": "added direct supervision tests"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-result.json"
+}

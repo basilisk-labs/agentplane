@@ -1,0 +1,2202 @@
+diff --git a/.agentplane/tasks/202607221850-0SFMS7/README.md b/.agentplane/tasks/202607221850-0SFMS7/README.md
+index d65e39efb..b666dbfd2 100644
+--- a/.agentplane/tasks/202607221850-0SFMS7/README.md
++++ b/.agentplane/tasks/202607221850-0SFMS7/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221850-0SFMS7"
+ title: "Supervise direct task execution end to end"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 6
++revision: 8
+ origin:
+   system: "manual"
+ depends_on:
+@@ -31,9 +31,9 @@ verify:
+   - "bun run lifecycle:invariants"
+   - "bun run test:critical"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-29T01:35:28.740Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -42,11 +42,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-29T01:35:45.315Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:50:26.059Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-29T01:35:45.315Z"
++doc_updated_by: "CODER"
+ description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
+ sections:
+   Summary: |-
+@@ -76,6 +86,10 @@ sections:
+     - Restore the previous compatibility path behind an explicit feature/compatibility boundary.
+     - Re-run lifecycle, focused, and type checks before resuming dependent work.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "950e9cd2f222c12d16e930bdb8a3e39237659651"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..7a42bf647
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+@@ -0,0 +1,583 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221850-0SFMS7",
++    "title": "Supervise direct task execution end to end",
++    "description": "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops.",
++    "tags": [
++      "direct",
++      "milestone-beta1",
++      "refactor",
++      "rf-10",
++      "supervisor",
++      "v0.7",
++      "wave-supervisor"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221850-0SFMS7",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
++  }
++}
+diff --git a/.agentplane/tasks/202607221850-0SFMS7/pr/diffstat.txt b/.agentplane/tasks/202607221850-0SFMS7/pr/diffstat.txt
+new file mode 100644
+index 000000000..06829f439
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-0SFMS7/pr/diffstat.txt
+@@ -0,0 +1,10 @@
++ .../run-cli.core.direct-task-supervision.test.ts   |  68 +++
++ ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
++ .../src/commands/shared/workflow-step-factory.ts   |  20 +-
++ .../shared/workflow-step-projections.test.ts       |  16 +-
++ .../direct-task-supervisor-formal-operation.ts     | 101 ++++
++ .../commands/task/direct-task-supervisor.test.ts   | 325 ++++++++++++
++ .../src/commands/task/direct-task-supervisor.ts    | 563 +++++++++++++++++++++
++ .../agentplane/src/commands/task/run.command.ts    |  44 +-
++ .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
++ 9 files changed, 1138 insertions(+), 75 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-0SFMS7/pr/github-body.md b/.agentplane/tasks/202607221850-0SFMS7/pr/github-body.md
+new file mode 100644
+index 000000000..385488207
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-0SFMS7/pr/github-body.md
+@@ -0,0 +1,42 @@
++Task: `202607221850-0SFMS7`
++Title: Supervise direct task execution end to end
++Canonical task record: `.agentplane/tasks/202607221850-0SFMS7/README.md`
++
++## Summary
++
++Supervise direct task execution end to end
++
++RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops.
++
++## Scope
++
++- In scope: direct workflow lifecycle automation, state refresh after each operation, zero EXECUTOR lifecycle calls, start/check/evaluate/finalize operations, retries, approvals, waits, human input, and golden scenario metrics.
++- Out of scope: branch_pr provider/PR/merge integration.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T01:36:05.310Z
++- Branch: task/202607221850-0SFMS7/supervise-direct-task-execution-end-to-end
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../run-cli.core.direct-task-supervision.test.ts   |  68 +++
++ ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
++ .../src/commands/shared/workflow-step-factory.ts   |  20 +-
++ .../shared/workflow-step-projections.test.ts       |  16 +-
++ .../direct-task-supervisor-formal-operation.ts     | 101 ++++
++ .../commands/task/direct-task-supervisor.test.ts   | 325 ++++++++++++
++ .../src/commands/task/direct-task-supervisor.ts    | 563 +++++++++++++++++++++
++ .../agentplane/src/commands/task/run.command.ts    |  44 +-
++ .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
++ 9 files changed, 1138 insertions(+), 75 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221850-0SFMS7/pr/github-title.txt b/.agentplane/tasks/202607221850-0SFMS7/pr/github-title.txt
+new file mode 100644
+index 000000000..0ac3d149d
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-0SFMS7/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 0SFMS7 task: Supervise direct task execution end to end [202607221850-0SFMS7]
+diff --git a/.agentplane/tasks/202607221850-0SFMS7/pr/meta.json b/.agentplane/tasks/202607221850-0SFMS7/pr/meta.json
+new file mode 100644
+index 000000000..c91128652
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-0SFMS7/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221850-0SFMS7/supervise-direct-task-execution-end-to-end",
++  "created_at": "2026-07-29T01:35:45.453Z",
++  "diffstat_sha256": "sha256:543b33d1dc3caca03654c24ece65525fb4721a110fc69bbc0c127fa7d9577ece",
++  "last_verified_at": null,
++  "pr_number": 4667,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4667",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221850-0SFMS7",
++  "updated_at": "2026-07-29T01:36:05.310Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221850-0SFMS7/pr/review.md b/.agentplane/tasks/202607221850-0SFMS7/pr/review.md
+new file mode 100644
+index 000000000..12bbb5063
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-0SFMS7/pr/review.md
+@@ -0,0 +1,45 @@
++# PR Review
++
++Created: 2026-07-29T01:35:45.453Z
++
++## Task
++
++- Task: `202607221850-0SFMS7`
++- Title: Supervise direct task execution end to end
++- Status: DOING
++- Branch: `task/202607221850-0SFMS7/supervise-direct-task-execution-end-to-end`
++- Canonical task record: `.agentplane/tasks/202607221850-0SFMS7/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T01:36:05.310Z
++- Branch: task/202607221850-0SFMS7/supervise-direct-task-execution-end-to-end
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../run-cli.core.direct-task-supervision.test.ts   |  68 +++
++ ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
++ .../src/commands/shared/workflow-step-factory.ts   |  20 +-
++ .../shared/workflow-step-projections.test.ts       |  16 +-
++ .../direct-task-supervisor-formal-operation.ts     | 101 ++++
++ .../commands/task/direct-task-supervisor.test.ts   | 325 ++++++++++++
++ .../src/commands/task/direct-task-supervisor.ts    | 563 +++++++++++++++++++++
++ .../agentplane/src/commands/task/run.command.ts    |  44 +-
++ .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
++ 9 files changed, 1138 insertions(+), 75 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts b/packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts
+new file mode 100644
+index 000000000..1a1e34b93
+--- /dev/null
++++ b/packages/agentplane/src/cli/run-cli.core.direct-task-supervision.test.ts
+@@ -0,0 +1,68 @@
++import { describe, expect, it } from "vitest";
++
++import { runCli } from "./run-cli.js";
++import {
++  captureStdIO,
++  defaultConfig,
++  mkGitRepoRootWithBranch,
++  writeConfig,
++} from "@agentplane/testkit/cli-core-pr-flow";
++import { installRunCliIntegrationHarness } from "@agentplane/testkit";
++
++installRunCliIntegrationHarness();
++
++describe("runCli direct task supervision", () => {
++  it("stops before starting an EXECUTOR when the plan still requires approval", async () => {
++    const root = await mkGitRepoRootWithBranch("main");
++    const config = defaultConfig();
++    config.workflow_mode = "direct";
++    await writeConfig(root, config);
++
++    const createIo = captureStdIO();
++    let taskId = "";
++    try {
++      expect(
++        await runCli([
++          "task",
++          "new",
++          "--title",
++          "Direct supervision approval stop",
++          "--description",
++          "Ensure the direct supervisor never starts a provider before plan approval.",
++          "--priority",
++          "med",
++          "--owner",
++          "CODER",
++          "--tag",
++          "code",
++          "--root",
++          root,
++        ]),
++      ).toBe(0);
++      taskId = createIo.stdout.trim();
++    } finally {
++      createIo.restore();
++    }
++
++    const runIo = captureStdIO();
++    try {
++      expect(await runCli(["task", "run", taskId, "--json", "--root", root])).toBe(0);
++      const payload = JSON.parse(runIo.stdout) as {
++        schema: string;
++        status: string;
++        executor: unknown;
++        evaluator: unknown;
++        stop: { code: string; operation_id: string | null };
++      };
++      expect(payload).toMatchObject({
++        schema: "agentplane.direct_task_supervision.v1",
++        status: "stopped",
++        executor: null,
++        evaluator: null,
++        stop: { code: "approval_required", operation_id: null },
++      });
++    } finally {
++      runIo.restore();
++    }
++  });
++});
+diff --git a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+index ff6879b83..ddac05103 100644
+--- a/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts
+@@ -107,7 +107,7 @@ describe("runCli route decision direct closeout", () => {
+     }
+   });
+ 
+-  it("routes a newly started direct task to a semantic implementation episode, not a runner route", async () => {
++  it("routes a newly started direct task to the typed EXECUTOR runner operation", async () => {
+     const root = await mkGitRepoRootWithBranch("main");
+     const config = defaultConfig();
+     config.workflow_mode = "direct";
+@@ -148,8 +148,8 @@ describe("runCli route decision direct closeout", () => {
+         workflow_step: {
+           kind: string;
+           id: string;
+-          episode?: { purpose: string; role: string; taskId: string };
+-          execution: { semanticMutationAllowed: boolean };
++          operation?: { id: string; params: { mode: string; taskId: string } };
++          execution: { actionKind: string };
+         };
+         execution_packet: {
+           actionKind: string;
+@@ -174,30 +174,24 @@ describe("runCli route decision direct closeout", () => {
+       expect(parsed.route_oracle.phase).toBe("direct_execution");
+       expect(parsed.next_action).toMatchObject({
+         code: "continue_direct",
+-        command: null,
++        command: `agentplane task run ${taskId}`,
+       });
+-      expect(parsed.route_oracle.nextCommand).toBeNull();
++      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task run ${taskId}`);
+       expect(parsed.workflow_step).toMatchObject({
+-        kind: "agent_episode",
+-        id: "agent.direct_implementation",
+-        episode: { purpose: "implementation", role: "CODER", taskId },
+-        execution: { semanticMutationAllowed: true },
++        kind: "cli_operation",
++        id: "runner.follow",
++        operation: { id: "runner.follow", params: { mode: "run", taskId } },
++        execution: { actionKind: "local_command" },
+       });
+       expect(parsed.execution_packet).toMatchObject({
+-        actionKind: "stop",
++        actionKind: "local_command",
+         safeToMutate: true,
+         mutationPathHint: root,
+-        exactArgv: null,
+-      });
+-      expect(parsed.operator_guidance.executor_context).toMatchObject({
+-        executor: "current_agent",
+-        current_agent_must_execute: true,
+-        instruction: "current_agent_performs_semantic_work",
++        exactArgv: ["agentplane", "task", "run", taskId],
+       });
+       expect(parsed.operator_guidance.runner_context).toMatchObject({
+-        runner_is_required: false,
+-        runner_is_allowed_now: false,
+-        runner_failure_means: "not_runner_route",
++        runner_is_required: true,
++        runner_is_allowed_now: true,
+       });
+     } finally {
+       nextIo.restore();
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-factory.ts b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+index 659e7a358..38013a211 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-factory.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+@@ -218,25 +218,13 @@ export function directStep(state: WorkflowRouteState): WorkflowStep {
+       selectedBlocker: null,
+     });
+   }
+-  return agentEpisodeStep({
++  return cliOperationStep({
+     state,
+-    id: "agent.direct_implementation",
++    operationId: "runner.follow",
++    params: { mode: "run", taskId: id },
+     code: "continue_direct",
+-    phase: "direct_execution",
+-    checkout: "current_checkout",
+-    role: "CODER",
+-    purpose: "implementation",
+     summary:
+-      "hand the direct-mode task to CODER for semantic implementation in the current checkout",
+-    objective:
+-      "Complete the task's semantic implementation in the current checkout, then record evidence-based verification before direct closeout.",
+-    semanticMutationAllowed: true,
+-    mustNot: [
+-      "do not complete or close the task before semantic implementation is verified with recorded evidence",
+-      "do not treat a missing runner artifact as a reason to replace the CODER semantic episode with a read-only CLI command",
+-    ],
+-    returnControlWhen:
+-      "after the CODER completes semantic implementation and records evidence-based verification; recompute task next-action before direct closeout",
++      "launch the prepared direct-mode EXECUTOR episode through the configured runner adapter",
+     selectedBlocker: null,
+   });
+ }
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts b/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts
+index 9a4882d51..2a4aea154 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-projections.test.ts
+@@ -640,7 +640,7 @@ describe("WorkflowStep execution projections", () => {
+     });
+   });
+ 
+-  it("gives an active direct semantic implementation episode its checkout mutation authority", () => {
++  it("gives a direct EXECUTOR runner operation its checkout mutation authority", () => {
+     const directResume = {
+       ...resume,
+       branch: "main",
+@@ -667,19 +667,19 @@ describe("WorkflowStep execution projections", () => {
+     });
+ 
+     expect(step).toMatchObject({
+-      kind: "agent_episode",
+-      id: "agent.direct_implementation",
++      kind: "cli_operation",
++      id: "runner.follow",
+       authoritativeCheckout: "current_checkout",
+-      episode: { purpose: "implementation", role: "CODER", taskId: task.id },
+-      compatibility: { code: "continue_direct", command: null },
+-      execution: { semanticMutationAllowed: true },
++      operation: { id: "runner.follow", params: { mode: "run", taskId: task.id } },
++      compatibility: { code: "continue_direct", command: `agentplane task run ${task.id}` },
++      execution: { actionKind: "local_command" },
+     });
+     expect(oracle.mutationPathHint).toBe("/repo");
+     expect(packet).toMatchObject({
+-      actionKind: "stop",
++      actionKind: "local_command",
+       safeToMutate: true,
+       mutationPathHint: "/repo",
+-      exactArgv: null,
++      exactArgv: ["agentplane", "task", "run", task.id],
+     });
+   });
+ 
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+new file mode 100644
+index 000000000..1fb786e64
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor-formal-operation.ts
+@@ -0,0 +1,101 @@
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  startSupervisorExecutionEpisode,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++
++import { CliError } from "../../shared/errors.js";
++import { openSupervisorExecutionEpisode } from "../shared/supervisor-execution-episode.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++
++export async function recordDirectTaskFormalOperation(opts: {
++  git_root: string;
++  task_id: string;
++  id: "task_verify" | "finalize";
++  run: () => Promise<Record<string, unknown>> | Record<string, unknown>;
++  decision: () => Promise<TaskRouteDecision>;
++}): Promise<{
++  journal: SupervisorExecutionEpisodeJournal;
++  journal_path: string;
++  decision: TaskRouteDecision;
++}> {
++  const before = await opts.decision();
++  const opened = await openSupervisorExecutionEpisode({
++    git_root: opts.git_root,
++    task_id: opts.task_id,
++    task_revision: null,
++    state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++    recover_intent: false,
++  });
++  let journal = opened.journal;
++  if (journal.status === "stopped") {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: `Direct task supervisor journal is stopped (${journal.stop?.reason ?? "unknown"}).`,
++    });
++  }
++  if (journal.cursor.phase === "completed") {
++    journal = advanceSupervisorExecutionEpisodeState({
++      journal,
++      state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++      route_observation: { direct_task_operation: opts.id, resumed: true },
++    });
++    await opened.store.write(journal);
++  }
++  if (journal.cursor.phase !== "ready") {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message:
++        "Direct task supervisor has an unresolved operation intent; resolve it before continuing.",
++    });
++  }
++  const started = startSupervisorExecutionEpisode({
++    journal,
++    role: "EXECUTOR",
++    kind: "cli_operation",
++    operation_identity: { direct_task_operation: opts.id },
++    precondition_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
++    authority_ref: `direct-task-supervisor:${opts.id}`,
++    authority_digest: before.workflowStep.preconditionFingerprint.digest,
++    effect_ref: opts.id,
++  });
++  if (started.status !== "started") {
++    await opened.store.write(started.journal);
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: `Direct task supervisor cannot start ${opts.id}: ${started.status}.`,
++    });
++  }
++  journal = started.journal;
++  await opened.store.write(journal);
++  try {
++    const result = await opts.run();
++    journal = completeSupervisorExecutionEpisode({
++      journal,
++      operation_key: started.operation_key,
++      result: { direct_task_operation: opts.id, result },
++    });
++    await opened.store.write(journal);
++  } catch (error) {
++    journal = completeSupervisorExecutionEpisode({
++      journal,
++      operation_key: started.operation_key,
++      result: {
++        direct_task_operation: opts.id,
++        error: error instanceof Error ? error.name : "unknown",
++      },
++      failed: true,
++    });
++    await opened.store.write(journal);
++    throw error;
++  }
++  const after = await opts.decision();
++  journal = advanceSupervisorExecutionEpisodeState({
++    journal,
++    state_fingerprint_digest: after.workflowStep.preconditionFingerprint.digest,
++    route_observation: { direct_task_operation: opts.id, step_id: after.workflowStep.id },
++  });
++  await opened.store.write(journal);
++  return { journal, journal_path: opened.journal_path, decision: after };
++}
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+new file mode 100644
+index 000000000..fbd3c0fda
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+@@ -0,0 +1,325 @@
++import type * as CoreSchemas from "@agentplaneorg/core/schemas";
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++const mocks = vi.hoisted(() => ({
++  advance: vi.fn(),
++  applyEvaluator: vi.fn(),
++  buildDecision: vi.fn(),
++  complete: vi.fn(),
++  executeEvaluator: vi.fn(),
++  loadCatalog: vi.fn(),
++  loadTask: vi.fn(),
++  open: vi.fn(),
++  start: vi.fn(),
++  supervise: vi.fn(),
++  verify: vi.fn(),
++}));
++
++vi.mock("@agentplaneorg/core/schemas", async (importOriginal) => ({
++  ...(await importOriginal<typeof CoreSchemas>()),
++  advanceSupervisorExecutionEpisodeState: mocks.advance,
++  completeSupervisorExecutionEpisode: mocks.complete,
++  startSupervisorExecutionEpisode: mocks.start,
++}));
++vi.mock("../../evaluators/catalog.js", () => ({ loadEvaluatorCatalog: mocks.loadCatalog }));
++vi.mock("../evaluator/evaluator-execute-supervisor.js", () => ({
++  executeEvaluatorSupervisorEpisode: mocks.executeEvaluator,
++}));
++vi.mock("../evaluator/evaluator-review-apply.js", () => ({
++  applyEvaluatorSgrReview: mocks.applyEvaluator,
++}));
++vi.mock("../shared/route-decision.js", () => ({ buildTaskRouteDecision: mocks.buildDecision }));
++vi.mock("../shared/supervisor-execution-episode.js", () => ({
++  supervisePersistedWorkflowEpisode: mocks.supervise,
++  openSupervisorExecutionEpisode: mocks.open,
++}));
++vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
++vi.mock("./verify-record.js", () => ({ cmdVerifyParsed: mocks.verify }));
++
++import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
++
++const TASK_ID = "202607290000-RF10A1";
++const FINGERPRINT = {
++  digest: "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++} as const;
++
++const journal = {
++  status: "running",
++  cursor: { episode: 2, phase: "ready", operation_key: null },
++  usage: {
++    episodes: 2,
++    agent_runs: 1,
++    input_tokens: 1,
++    output_tokens: 1,
++    total_tokens: 2,
++    wall_time_ms: 1,
++    changed_files: 1,
++    diff_lines: 0,
++    no_progress_episodes: 0,
++  },
++  stop: null,
++  digest: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
++} as const;
++
++function decision(opts: {
++  id: string;
++  code: string;
++  operation?: { id: "task.start" | "runner.follow"; params: Record<string, unknown> };
++}) {
++  return {
++    workflowMode: "direct",
++    task: { id: TASK_ID, title: "RF-10 direct supervision", status: "DOING", owner: "CODER" },
++    workflowStep: {
++      id: opts.id,
++      phase: "direct_execution",
++      summary: opts.id,
++      compatibility: { code: opts.code, command: null, summary: opts.id, requiresApproval: false },
++      preconditionFingerprint: FINGERPRINT,
++      ...(opts.operation
++        ? { kind: "cli_operation", operation: opts.operation }
++        : { kind: "terminal", outcome: { type: "input_required", taskId: TASK_ID } }),
++    },
++  } as never;
++}
++
++describe("direct task supervisor", () => {
++  beforeEach(() => {
++    vi.clearAllMocks();
++  });
++
++  it("keeps evaluator rework as a typed stop after one started EXECUTOR episode", async () => {
++    const start = decision({
++      id: "task.start",
++      code: "start_direct",
++      operation: {
++        id: "task.start",
++        params: { taskId: TASK_ID, author: "CODER", body: "Start: direct." },
++      },
++    });
++    const runner = decision({
++      id: "runner.follow",
++      code: "continue_direct",
++      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
++    });
++    const rework = decision({
++      id: "agent.implementation_rework",
++      code: "implementation_rework_required",
++    });
++    const lifecycle = {
++      phase: "executed",
++      invocation: { run_id: "run-executor" },
++      result: {
++        status: "success",
++        execution_receipt: {
++          path: ".agentplane/tasks/run-executor/execution-receipt.json",
++          sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
++          verification_state: "observed_success",
++          observed_by: "agentplane",
++        },
++        semantic_result: {
++          provenance: "agent_reported",
++          value: { kind: "agent_semantic_result", status: "completed" },
++        },
++      },
++    } as never;
++
++    mocks.buildDecision.mockResolvedValueOnce(start).mockResolvedValueOnce(rework);
++    mocks.supervise
++      .mockResolvedValueOnce({
++        journal,
++        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++        execution: {
++          executable: true,
++          result: { status: "succeeded" },
++          refreshed_decision: runner,
++        },
++      })
++      .mockResolvedValueOnce({
++        journal,
++        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++        execution: {
++          executable: true,
++          result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
++          refreshed_decision: runner,
++        },
++      });
++    mocks.loadCatalog.mockResolvedValue([{ id: "recovery-context" }]);
++    mocks.loadTask.mockResolvedValue({ id: TASK_ID, quality_review: null });
++    mocks.executeEvaluator.mockResolvedValue({
++      result: { evaluator_id: "recovery-context", verdict: "rework" },
++      result_path: "/repo/.agentplane/tasks/evaluator-result.json",
++      report_path: "/repo/.agentplane/tasks/evaluator-report.json",
++      work_order_path: "/repo/.agentplane/tasks/evaluator-work-order.json",
++      journal,
++      store: { path: "/repo/.git/agentplane/supervisor/episodes/journal.json", write: vi.fn() },
++    });
++    mocks.applyEvaluator.mockResolvedValue({
++      result_path: ".agentplane/tasks/evaluator-result.json",
++      report_path: ".agentplane/tasks/evaluator-report.json",
++    });
++    mocks.advance.mockReturnValue(journal);
++
++    const result = await superviseDirectTaskRun({
++      ctx: { cwd: "/repo", rootOverride: null } as never,
++      command: { resolvedProject: { gitRoot: "/repo" } } as never,
++      task_id: TASK_ID,
++      include_remote: false,
++    });
++
++    expect(mocks.supervise).toHaveBeenCalledTimes(2);
++    expect(mocks.executeEvaluator).toHaveBeenCalledTimes(1);
++    expect(result).toMatchObject({
++      status: "stopped",
++      executor: { run_id: "run-executor", semantic_status: "completed" },
++      evaluator: { evaluator_id: "recovery-context", verdict: "rework" },
++      stop: { code: "evaluator_rework" },
++    });
++  });
++
++  it("stops for a bounded knowledge request without starting an EVALUATOR", async () => {
++    const runner = decision({
++      id: "runner.follow",
++      code: "continue_direct",
++      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
++    });
++    const lifecycle = {
++      phase: "executed",
++      invocation: { run_id: "run-needs-context" },
++      result: {
++        status: "success",
++        execution_receipt: {
++          path: ".agentplane/tasks/run-needs-context/execution-receipt.json",
++          sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
++          verification_state: "observed_success",
++          observed_by: "agentplane",
++        },
++        semantic_result: {
++          provenance: "agent_reported",
++          value: { kind: "agent_semantic_result", status: "needs_context" },
++        },
++      },
++    } as never;
++    mocks.buildDecision.mockResolvedValue(runner);
++    mocks.supervise.mockResolvedValue({
++      journal,
++      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      execution: {
++        executable: true,
++        result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
++        refreshed_decision: runner,
++      },
++    });
++
++    const result = await superviseDirectTaskRun({
++      ctx: { cwd: "/repo", rootOverride: null } as never,
++      command: { resolvedProject: { gitRoot: "/repo" } } as never,
++      task_id: TASK_ID,
++      include_remote: false,
++    });
++
++    expect(result).toMatchObject({ status: "stopped", stop: { code: "missing_knowledge" } });
++    expect(mocks.executeEvaluator).not.toHaveBeenCalled();
++  });
++
++  it("turns an EXECUTOR adapter crash into a typed stop", async () => {
++    const runner = decision({
++      id: "runner.follow",
++      code: "continue_direct",
++      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
++    });
++    mocks.buildDecision.mockResolvedValue(runner);
++    mocks.supervise.mockRejectedValue(new Error("adapter exited unexpectedly"));
++
++    const result = await superviseDirectTaskRun({
++      ctx: { cwd: "/repo", rootOverride: null } as never,
++      command: { resolvedProject: { gitRoot: "/repo" } } as never,
++      task_id: TASK_ID,
++      include_remote: false,
++    });
++
++    expect(result).toMatchObject({
++      status: "stopped",
++      stop: { code: "executor_adapter_crash", operation_id: "runner.follow" },
++    });
++  });
++
++  it("records only evaluator evidence before formal verification and finalization", async () => {
++    const runner = decision({
++      id: "runner.follow",
++      code: "continue_direct",
++      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
++    });
++    const lifecycle = {
++      phase: "executed",
++      invocation: { run_id: "run-pass" },
++      result: {
++        status: "success",
++        execution_receipt: {
++          path: ".agentplane/tasks/run-pass/execution-receipt.json",
++          sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
++          verification_state: "observed_success",
++          observed_by: "agentplane",
++        },
++        semantic_result: {
++          provenance: "agent_reported",
++          value: { kind: "agent_semantic_result", status: "completed" },
++        },
++      },
++    } as never;
++    const store = {
++      path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
++      write: vi.fn(),
++    };
++    mocks.buildDecision.mockResolvedValue(runner);
++    mocks.supervise.mockResolvedValue({
++      journal,
++      journal_path: store.path,
++      execution: {
++        executable: true,
++        result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
++        refreshed_decision: runner,
++      },
++    });
++    mocks.loadCatalog.mockResolvedValue([{ id: "recovery-context" }]);
++    mocks.loadTask.mockResolvedValue({ id: TASK_ID, quality_review: null });
++    mocks.executeEvaluator.mockResolvedValue({
++      result: { evaluator_id: "recovery-context", verdict: "pass" },
++      result_path: "/repo/.agentplane/tasks/evaluator-result.json",
++      report_path: "/repo/.agentplane/tasks/evaluator-report.json",
++      work_order_path: "/repo/.agentplane/tasks/evaluator-work-order.json",
++      journal,
++      store,
++    });
++    mocks.applyEvaluator.mockResolvedValue({
++      result_path: ".agentplane/tasks/evaluator-result.json",
++      report_path: ".agentplane/tasks/evaluator-report.json",
++    });
++    mocks.open.mockResolvedValue({ journal, journal_path: store.path, store });
++    mocks.start.mockReturnValue({ status: "started", journal, operation_key: "sha256:operation" });
++    mocks.complete.mockReturnValue(journal);
++    mocks.advance.mockReturnValue(journal);
++    mocks.verify.mockResolvedValue(0);
++
++    const result = await superviseDirectTaskRun({
++      ctx: { cwd: "/repo", rootOverride: null } as never,
++      command: { resolvedProject: { gitRoot: "/repo" } } as never,
++      task_id: TASK_ID,
++      include_remote: false,
++    });
++
++    expect(result).toMatchObject({
++      status: "finalized",
++      evaluator: { evaluator_id: "recovery-context", verdict: "pass" },
++      stop: null,
++    });
++    expect(mocks.verify).toHaveBeenCalledWith(
++      expect.objectContaining({
++        by: "SUPERVISOR",
++        state: "ok",
++      }),
++    );
++    const [verifyPayload] = mocks.verify.mock.calls[0] as unknown as [{ details: string }];
++    expect(verifyPayload.details).toContain(".agentplane/tasks/evaluator-result.json");
++    expect(mocks.open).toHaveBeenCalledTimes(2);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/direct-task-supervisor.ts b/packages/agentplane/src/commands/task/direct-task-supervisor.ts
+new file mode 100644
+index 000000000..0216ab589
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/direct-task-supervisor.ts
+@@ -0,0 +1,563 @@
++import {
++  advanceSupervisorExecutionEpisodeState,
++  type SupervisorExecutionEpisodeJournal,
++} from "@agentplaneorg/core/schemas";
++import path from "node:path";
++
++import type { CommandCtx } from "../../cli/spec/spec.js";
++import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
++import { CliError } from "../../shared/errors.js";
++import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
++import {
++  projectExecutedTaskRunnerLifecycleResult,
++  taskRunnerLifecycleExitCode,
++  type TaskRunnerLifecycleResult,
++} from "../../runner/usecases/task-run-lifecycle-result.js";
++import { applyEvaluatorSgrReview } from "../evaluator/evaluator-review-apply.js";
++import { executeEvaluatorSupervisorEpisode } from "../evaluator/evaluator-execute-supervisor.js";
++import { buildTaskRouteDecision } from "../shared/route-decision.js";
++import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
++import type { TaskRouteDecision } from "../shared/route-decision-types.js";
++import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
++import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
++import { cmdTaskStartReady } from "./start-ready.js";
++import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
++import { cmdVerifyParsed } from "./verify-record.js";
++
++const DIRECT_TASK_SUPERVISION_SCHEMA = "agentplane.direct_task_supervision.v1" as const;
++const DEFAULT_EVALUATOR_ID = "recovery-context";
++
++type DirectTaskSupervisorStopCode =
++  | "approval_required"
++  | "human_input_required"
++  | "wait_required"
++  | "terminal_route"
++  | "unsupported_route_operation"
++  | "route_refresh_failed"
++  | "supervisor_stopped"
++  | "executor_adapter_crash"
++  | "runner_failed"
++  | "runner_receipt_unobserved"
++  | "executor_result_missing"
++  | "executor_blocked"
++  | "missing_knowledge"
++  | "executor_semantic_failed"
++  | "evaluator_rework"
++  | "evaluator_human_review"
++  | "evaluator_blocked"
++  | "evaluator_adapter_crash";
++
++export type DirectTaskSupervisorStop = {
++  code: DirectTaskSupervisorStopCode;
++  reason: string;
++  route_step_id: string;
++  operation_id: string | null;
++};
++
++type JournalProjection = {
++  path: string;
++  status: SupervisorExecutionEpisodeJournal["status"];
++  cursor: SupervisorExecutionEpisodeJournal["cursor"];
++  usage: SupervisorExecutionEpisodeJournal["usage"];
++  stop: SupervisorExecutionEpisodeJournal["stop"];
++  digest: SupervisorExecutionEpisodeJournal["digest"];
++};
++
++export type DirectTaskSupervisorResult = {
++  schema: typeof DIRECT_TASK_SUPERVISION_SCHEMA;
++  task_id: string;
++  workflow_mode: "direct";
++  status: "finalized" | "stopped";
++  phase: string;
++  route: {
++    step_id: string;
++    code: string;
++  };
++  stop: DirectTaskSupervisorStop | null;
++  executor: {
++    run_id: string;
++    receipt: NonNullable<NonNullable<TaskRunnerLifecycleResult["result"]>["execution_receipt"]>;
++    semantic_status: "completed";
++  } | null;
++  evaluator: {
++    evaluator_id: string;
++    verdict: "pass" | "rework" | "blocked" | "human_review";
++    result_path: string;
++    report_path: string;
++    receipt_path: string;
++  } | null;
++  journal: JournalProjection | null;
++};
++
++export type DirectTaskSupervisorOptions = {
++  ctx: CommandCtx;
++  command: CommandContext;
++  task_id: string;
++  include_remote: boolean;
++  sandbox_override?: string;
++  danger_authority?: {
++    danger_full_access_authorized: true;
++    provenance: "explicit_operator";
++    source: string;
++  } | null;
++};
++
++function journalProjection(
++  journal: SupervisorExecutionEpisodeJournal,
++  pathValue: string,
++): JournalProjection {
++  return {
++    path: pathValue,
++    status: journal.status,
++    cursor: journal.cursor,
++    usage: journal.usage,
++    stop: journal.stop,
++    digest: journal.digest,
++  };
++}
++
++function routeCode(decision: TaskRouteDecision): string {
++  return decision.workflowStep.compatibility.code;
++}
++
++function routeStop(decision: TaskRouteDecision): DirectTaskSupervisorStop {
++  const step = decision.workflowStep;
++  const operationId = step.kind === "cli_operation" ? step.operation.id : null;
++  const code: DirectTaskSupervisorStopCode =
++    step.kind === "approval"
++      ? "approval_required"
++      : step.kind === "human_input"
++        ? "human_input_required"
++        : step.kind === "wait"
++          ? "wait_required"
++          : step.kind === "terminal"
++            ? "terminal_route"
++            : "unsupported_route_operation";
++  return {
++    code,
++    reason: step.summary,
++    route_step_id: step.id,
++    operation_id: operationId,
++  };
++}
++
++function stoppedResult(opts: {
++  decision: TaskRouteDecision;
++  stop: DirectTaskSupervisorStop;
++  journal?: JournalProjection | null;
++  executor?: DirectTaskSupervisorResult["executor"];
++  evaluator?: DirectTaskSupervisorResult["evaluator"];
++}): DirectTaskSupervisorResult {
++  return {
++    schema: DIRECT_TASK_SUPERVISION_SCHEMA,
++    task_id: opts.decision.task.id,
++    workflow_mode: "direct",
++    status: "stopped",
++    phase: opts.decision.workflowStep.phase,
++    route: { step_id: opts.decision.workflowStep.id, code: routeCode(opts.decision) },
++    stop: opts.stop,
++    executor: opts.executor ?? null,
++    evaluator: opts.evaluator ?? null,
++    journal: opts.journal ?? null,
++  };
++}
++
++function assertedDirect(decision: TaskRouteDecision): void {
++  if (decision.workflowMode !== "direct") {
++    throw new CliError({
++      code: "E_USAGE",
++      message: "Direct task supervision is available only when workflow.mode=direct.",
++    });
++  }
++}
++
++function observedExecutor(
++  lifecycle: TaskRunnerLifecycleResult,
++):
++  | { executor: DirectTaskSupervisorResult["executor"] }
++  | { stop: DirectTaskSupervisorStopCode; reason: string } {
++  if (lifecycle.phase !== "executed" || lifecycle.result?.status !== "success") {
++    return { stop: "runner_failed", reason: "The EXECUTOR runner did not complete successfully." };
++  }
++  const receipt = lifecycle.result.execution_receipt;
++  if (receipt?.verification_state !== "observed_success") {
++    return {
++      stop: "runner_receipt_unobserved",
++      reason: "The EXECUTOR result has no supervisor-observed success receipt.",
++    };
++  }
++  const semantic = lifecycle.result.semantic_result?.value;
++  if (semantic?.kind !== "agent_semantic_result") {
++    return {
++      stop: "executor_result_missing",
++      reason: "The EXECUTOR result has no current typed semantic result.",
++    };
++  }
++  if (semantic.status === "needs_context") {
++    return {
++      stop: "missing_knowledge",
++      reason: "The EXECUTOR requested bounded additional context.",
++    };
++  }
++  if (semantic.status === "blocked") {
++    return { stop: "executor_blocked", reason: "The EXECUTOR returned a typed blocked result." };
++  }
++  if (semantic.status === "failed") {
++    return {
++      stop: "executor_semantic_failed",
++      reason: "The EXECUTOR returned a typed semantic failure.",
++    };
++  }
++  return {
++    executor: {
++      run_id: lifecycle.invocation.run_id,
++      receipt,
++      semantic_status: "completed",
++    },
++  };
++}
++
++async function executeDirectOperation(opts: {
++  input: DirectTaskSupervisorOptions;
++  operation: Parameters<
++    NonNullable<Parameters<typeof supervisePersistedWorkflowEpisode>[0]["execute"]>
++  >[0]["operation"];
++}): Promise<WorkflowSupervisorOperationResult> {
++  const { input, operation } = opts;
++  if (operation.id === "task.start") {
++    const started = await cmdTaskStartReady({
++      ctx: input.command,
++      cwd: input.ctx.cwd,
++      rootOverride: input.ctx.rootOverride,
++      taskId: operation.params.taskId,
++      author: operation.params.author,
++      body: operation.params.body,
++      force: false,
++      yes: false,
++      quiet: true,
++    });
++    return {
++      status: started === 0 ? "succeeded" : "failed",
++      observed_postconditions: started === 0 ? ["task_status_doing"] : [],
++      detail: `recorded direct task start for ${operation.params.taskId}`,
++      exit_code: started,
++    };
++  }
++  if (operation.id !== "runner.follow" || operation.params.mode !== "run") {
++    return {
++      status: "failed",
++      observed_postconditions: [],
++      detail: `Direct task supervisor has no in-process executor for ${operation.id}`,
++      exit_code: 1,
++    };
++  }
++  const executed = await executeTaskRunnerExecution({
++    ctx: input.command,
++    cwd: input.ctx.cwd,
++    rootOverride: input.ctx.rootOverride ?? null,
++    task_id: operation.params.taskId,
++    ...(input.include_remote ? { include_remote: true } : {}),
++    ...(input.danger_authority ? { danger_authority: input.danger_authority } : {}),
++    ...(input.sandbox_override ? { sandbox_override: input.sandbox_override } : {}),
++  });
++  const lifecycle = projectExecutedTaskRunnerLifecycleResult({
++    task_id: operation.params.taskId,
++    execution: executed,
++  });
++  const exitCode = taskRunnerLifecycleExitCode(lifecycle);
++  return {
++    status: exitCode === 0 ? "succeeded" : "failed",
++    observed_postconditions: ["runner_state_observed"],
++    detail: executed.result.summary ?? `runner execution completed for ${operation.params.taskId}`,
++    exit_code: exitCode,
++    operation_result: { kind: "runner_lifecycle", value: lifecycle },
++  };
++}
++
++/**
++ * Own the direct golden path. The only semantic provider episodes are the
++ * EXECUTOR runner and a read-only EVALUATOR; all lifecycle transitions and
++ * route recomputation remain CLI-owned and durable in the supervisor journal.
++ */
++export async function superviseDirectTaskRun(
++  input: DirectTaskSupervisorOptions,
++): Promise<DirectTaskSupervisorResult> {
++  const decision = async () =>
++    await buildTaskRouteDecision({
++      ctx: input.command,
++      cwd: input.ctx.cwd,
++      rootOverride: input.ctx.rootOverride ?? null,
++      taskId: input.task_id,
++      includeRemote: input.include_remote,
++    });
++
++  let current = await decision();
++  assertedDirect(current);
++  let journal: JournalProjection | null = null;
++
++  for (let operations = 0; operations < 2; operations += 1) {
++    const step = current.workflowStep;
++    if (step.kind !== "cli_operation")
++      return stoppedResult({ decision: current, stop: routeStop(current), journal });
++    const operation = step.operation;
++    const supportsOperation =
++      operation.id === "task.start" ||
++      (operation.id === "runner.follow" && operation.params.mode === "run");
++    if (!supportsOperation) {
++      return stoppedResult({
++        decision: current,
++        journal,
++        stop: {
++          code: "unsupported_route_operation",
++          reason: `Direct task supervisor does not execute ${operation.id} in the golden path.`,
++          route_step_id: step.id,
++          operation_id: operation.id,
++        },
++      });
++    }
++    let persisted: Awaited<ReturnType<typeof supervisePersistedWorkflowEpisode>>;
++    try {
++      persisted = await supervisePersistedWorkflowEpisode({
++        decision: current,
++        git_root: input.command.resolvedProject.gitRoot,
++        task_revision: null,
++        execute: async ({ operation: invoked }) =>
++          await executeDirectOperation({ input, operation: invoked }),
++        refresh: decision,
++      });
++    } catch {
++      return stoppedResult({
++        decision: current,
++        journal,
++        stop: {
++          code: operation.id === "runner.follow" ? "executor_adapter_crash" : "supervisor_stopped",
++          reason:
++            operation.id === "runner.follow"
++              ? "The EXECUTOR adapter crashed after its durable operation intent was recorded."
++              : "A formal CLI pre-operation failed after its durable operation intent was recorded.",
++          route_step_id: step.id,
++          operation_id: operation.id,
++        },
++      });
++    }
++    journal = journalProjection(persisted.journal, persisted.journal_path);
++    const execution = persisted.execution;
++    if (!execution.executable || execution.refreshed_decision === null) {
++      return stoppedResult({
++        decision: current,
++        journal,
++        stop: {
++          code:
++            execution.refreshed_decision === null
++              ? "route_refresh_failed"
++              : "unsupported_route_operation",
++          reason:
++            execution.stop_reason ?? "Direct task supervisor could not execute the current route.",
++          route_step_id: step.id,
++          operation_id: operation.id,
++        },
++      });
++    }
++    current = execution.refreshed_decision;
++    if (persisted.journal.status === "stopped") {
++      return stoppedResult({
++        decision: current,
++        journal,
++        stop: {
++          code: "supervisor_stopped",
++          reason: `Supervisor journal stopped: ${persisted.journal.stop?.reason ?? "unknown"}.`,
++          route_step_id: current.workflowStep.id,
++          operation_id: operation.id,
++        },
++      });
++    }
++    if (operation.id === "task.start") continue;
++
++    const lifecycle =
++      execution.result?.operation_result?.kind === "runner_lifecycle"
++        ? execution.result.operation_result.value
++        : null;
++    if (!lifecycle) {
++      return stoppedResult({
++        decision: current,
++        journal,
++        stop: {
++          code: "runner_failed",
++          reason: "Runner execution returned no typed lifecycle receipt.",
++          route_step_id: current.workflowStep.id,
++          operation_id: operation.id,
++        },
++      });
++    }
++    const observed = observedExecutor(lifecycle);
++    if ("stop" in observed) {
++      return stoppedResult({
++        decision: current,
++        journal,
++        stop: {
++          code: observed.stop,
++          reason: observed.reason,
++          route_step_id: current.workflowStep.id,
++          operation_id: operation.id,
++        },
++      });
++    }
++
++    const evaluators = await loadEvaluatorCatalog({
++      projectRoot: input.command.resolvedProject.gitRoot,
++      includeBuiltin: true,
++    });
++    const evaluator = evaluators.find((entry) => entry.id === DEFAULT_EVALUATOR_ID);
++    if (!evaluator) {
++      throw new CliError({
++        code: "E_RUNTIME",
++        message: `Direct task supervision requires evaluator ${DEFAULT_EVALUATOR_ID}.`,
++      });
++    }
++    const task = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
++    let evaluatorExecution: Awaited<ReturnType<typeof executeEvaluatorSupervisorEpisode>>;
++    try {
++      evaluatorExecution = await executeEvaluatorSupervisorEpisode({
++        ctx: input.ctx,
++        command: input.command,
++        task,
++        evaluator,
++        task_id: input.task_id,
++        replacement: false,
++      });
++    } catch {
++      return stoppedResult({
++        decision: current,
++        journal,
++        executor: observed.executor,
++        stop: {
++          code: "evaluator_adapter_crash",
++          reason: "The read-only EVALUATOR adapter crashed before a typed verdict was applied.",
++          route_step_id: current.workflowStep.id,
++          operation_id: "runner.follow",
++        },
++      });
++    }
++    const currentTask = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
++    const resultRef = path.relative(
++      input.command.resolvedProject.gitRoot,
++      evaluatorExecution.result_path,
++    );
++    const alreadyApplied = currentTask.quality_review?.evidence_refs?.includes(resultRef) ?? false;
++    const applied = alreadyApplied
++      ? {
++          report_path: path.relative(
++            input.command.resolvedProject.gitRoot,
++            evaluatorExecution.report_path,
++          ),
++          result_path: resultRef,
++        }
++      : await applyEvaluatorSgrReview({
++          ctx: input.command,
++          task: currentTask,
++          workOrderPath: evaluatorExecution.work_order_path,
++          result: evaluatorExecution.result,
++        });
++    current = await decision();
++    let evaluatorJournal = advanceSupervisorExecutionEpisodeState({
++      journal: evaluatorExecution.journal,
++      state_fingerprint_digest: current.workflowStep.preconditionFingerprint.digest,
++      route_observation: { step_id: current.workflowStep.id },
++    });
++    await evaluatorExecution.store.write(evaluatorJournal);
++    journal = journalProjection(evaluatorJournal, evaluatorExecution.store.path);
++    const evaluatorResult = {
++      evaluator_id: evaluatorExecution.result.evaluator_id,
++      verdict: evaluatorExecution.result.verdict,
++      result_path: applied.result_path,
++      report_path: applied.report_path,
++      receipt_path: path.relative(
++        input.command.resolvedProject.gitRoot,
++        path.join(path.dirname(evaluatorExecution.result_path), "evaluator-episode.json"),
++      ),
++    } as const;
++    if (evaluatorExecution.result.verdict !== "pass") {
++      const code: DirectTaskSupervisorStopCode =
++        evaluatorExecution.result.verdict === "rework"
++          ? "evaluator_rework"
++          : evaluatorExecution.result.verdict === "human_review"
++            ? "evaluator_human_review"
++            : "evaluator_blocked";
++      return stoppedResult({
++        decision: current,
++        journal,
++        executor: observed.executor,
++        evaluator: evaluatorResult,
++        stop: {
++          code,
++          reason: `EVALUATOR returned ${evaluatorExecution.result.verdict}.`,
++          route_step_id: current.workflowStep.id,
++          operation_id: "runner.follow",
++        },
++      });
++    }
++
++    const verified = await recordDirectTaskFormalOperation({
++      git_root: input.command.resolvedProject.gitRoot,
++      task_id: input.task_id,
++      id: "task_verify",
++      decision,
++      run: async () => {
++        await cmdVerifyParsed({
++          ctx: input.command,
++          cwd: input.ctx.cwd,
++          rootOverride: input.ctx.rootOverride,
++          taskId: input.task_id,
++          state: "ok",
++          by: "SUPERVISOR",
++          note: "Verified: independent EVALUATOR pass is recorded in the task quality artifacts.",
++          details: [
++            "EvaluatorEvidence:",
++            `- evaluator: ${evaluatorResult.evaluator_id}`,
++            `- result: ${evaluatorResult.result_path}`,
++            `- report: ${evaluatorResult.report_path}`,
++            `- receipt: ${evaluatorResult.receipt_path}`,
++          ].join("\n"),
++          localOnly: false,
++          repoFixable: false,
++          incidentTags: [],
++          incidentMatch: [],
++          quiet: true,
++        });
++        return { verification: "ok", evaluator_result: evaluatorResult.result_path };
++      },
++    });
++    journal = journalProjection(verified.journal, verified.journal_path);
++    const finalized = await recordDirectTaskFormalOperation({
++      git_root: input.command.resolvedProject.gitRoot,
++      task_id: input.task_id,
++      id: "finalize",
++      decision,
++      run: () => ({ finalized: true }),
++    });
++    journal = journalProjection(finalized.journal, finalized.journal_path);
++    return {
++      schema: DIRECT_TASK_SUPERVISION_SCHEMA,
++      task_id: input.task_id,
++      workflow_mode: "direct",
++      status: "finalized",
++      phase: "finalized",
++      route: { step_id: finalized.decision.workflowStep.id, code: routeCode(finalized.decision) },
++      stop: null,
++      executor: observed.executor,
++      evaluator: evaluatorResult,
++      journal,
++    };
++  }
++  return stoppedResult({
++    decision: current,
++    journal,
++    stop: {
++      code: "unsupported_route_operation",
++      reason: "Direct task supervision exceeded its bounded formal pre-operation sequence.",
++      route_step_id: current.workflowStep.id,
++      operation_id:
++        current.workflowStep.kind === "cli_operation" ? current.workflowStep.operation.id : null,
++    },
++  });
++}
+diff --git a/packages/agentplane/src/commands/task/run.command.ts b/packages/agentplane/src/commands/task/run.command.ts
+index 7836ade9a..659985fab 100644
+--- a/packages/agentplane/src/commands/task/run.command.ts
++++ b/packages/agentplane/src/commands/task/run.command.ts
+@@ -30,6 +30,7 @@ import {
+   tailText,
+ } from "./run-render.js";
+ import { followRunnerLogs } from "./run-logs-follow.js";
++import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
+ 
+ export {
+   makeRunTaskRunResolveEffectHandler,
+@@ -68,7 +69,7 @@ export type TaskRunReconcileParsed = {
+ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
+   id: ["task", "run"],
+   group: "Task",
+-  summary: "Run an AgentPlane task through the configured runner adapter.",
++  summary: "Supervise a direct task or run a prepared task through the configured runner adapter.",
+   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+   options: [
+     {
+@@ -110,7 +111,8 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
+     },
+   ],
+   notes: [
+-    "The task must already be DOING; use `agentplane task start-ready ...` first.",
++    "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
++    "In branch_pr workflow mode, the task must already be DOING; use `agentplane task start-ready ...` first.",
+     "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
+   ],
+   parse: (raw) => ({
+@@ -295,6 +297,44 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
+       return 0;
+     }
+ 
++    if (commandCtx.config?.workflow_mode === "direct") {
++      const supervised = await superviseDirectTaskRun({
++        ctx,
++        command: commandCtx,
++        task_id: parsed.taskId,
++        include_remote: parsed.remote,
++        ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
++        ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
++      });
++      if (parsed.json) {
++        output.json(supervised);
++      } else {
++        output.report(
++          [
++            { label: "task", value: supervised.task_id },
++            { label: "status", value: supervised.status },
++            { label: "phase", value: supervised.phase },
++            { label: "route", value: supervised.route.step_id },
++            { label: "executor_run", value: supervised.executor?.run_id ?? null },
++            { label: "evaluator", value: supervised.evaluator?.evaluator_id ?? null },
++            { label: "evaluator_verdict", value: supervised.evaluator?.verdict ?? null },
++            { label: "stop", value: supervised.stop?.code ?? null },
++            { label: "journal", value: supervised.journal?.path ?? null },
++          ],
++          { header: infoMessage(`direct task supervision: ${parsed.taskId}`) },
++        );
++      }
++      return supervised.stop?.code === "runner_failed" ||
++        supervised.stop?.code === "executor_adapter_crash" ||
++        supervised.stop?.code === "runner_receipt_unobserved" ||
++        supervised.stop?.code === "executor_result_missing" ||
++        supervised.stop?.code === "executor_semantic_failed" ||
++        supervised.stop?.code === "evaluator_adapter_crash" ||
++        supervised.stop?.code === "route_refresh_failed"
++        ? 1
++        : 0;
++    }
++
+     const executed = await executeTaskRunnerExecution({
+       ctx: commandCtx,
+       cwd: ctx.cwd,
+diff --git a/packages/agentplane/src/runner/usecases/task-run-active-claim.test.ts b/packages/agentplane/src/runner/usecases/task-run-active-claim.test.ts
+index b76249ded..11f294d47 100644
+--- a/packages/agentplane/src/runner/usecases/task-run-active-claim.test.ts
++++ b/packages/agentplane/src/runner/usecases/task-run-active-claim.test.ts
+@@ -3,9 +3,7 @@ import path from "node:path";
+ 
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+-import { captureStdIO, installRunCliIntegrationHarness, mkGitRepoRoot } from "@agentplane/testkit";
+-
+-import { runCli } from "../../cli/run-cli.js";
++import { mkGitRepoRoot } from "@agentplane/testkit";
+ import { loadCommandContext } from "../../commands/shared/task-backend.js";
+ import { TaskStore } from "../../commands/shared/task-store/store.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -44,7 +42,6 @@ import {
+   writeTerminalSuccess,
+ } from "./task-run-active-claim.testkit.js";
+ 
+-installRunCliIntegrationHarness();
+ const originalPath = process.env.PATH;
+ 
+ afterEach(() => {
+@@ -718,7 +715,7 @@ describe("task-run active claim hardening", () => {
+     );
+   });
+ 
+-  it("retains the active claim and degrades the CLI when terminal cleanup leaves a live process", async () => {
++  it("retains the active claim when terminal cleanup leaves a live process", async () => {
+     const root = await mkGitRepoRoot();
+     await configureCustomRunner({
+       root,
+@@ -762,27 +759,14 @@ describe("task-run active claim hardening", () => {
+       return result;
+     });
+ 
+-    const io = captureStdIO();
+-    let payload: {
+-      run_id: string;
+-      status: string;
+-      lifecycle_status: string;
+-      active_claim_cleanup: {
+-        status: string;
+-        event_recorded: boolean;
+-        context?: { reason?: string };
+-      };
+-    };
+-    try {
+-      expect(await runCli(["task", "run", taskId, "--json", "--root", root])).toBe(1);
+-      payload = JSON.parse(io.stdout) as typeof payload;
+-    } finally {
+-      io.restore();
+-    }
++    const executed = await executeTaskRunnerExecution({
++      cwd: root,
++      rootOverride: root,
++      task_id: taskId,
++    });
+ 
+-    expect(payload!).toMatchObject({
+-      status: "success",
+-      lifecycle_status: "degraded",
++    expect(executed).toMatchObject({
++      result: { status: "success" },
+       active_claim_cleanup: {
+         status: "cleanup_failed",
+         event_recorded: true,
+@@ -795,25 +779,25 @@ describe("task-run active claim hardening", () => {
+       git_root: root,
+       workflow_dir: ".agentplane/tasks",
+       task_id: taskId,
+-      run_id: payload!.run_id,
++      run_id: executed.invocation.run_id,
+     });
+     expect(retained).toMatchObject({
+       task_id: taskId,
+-      run_id: payload!.run_id,
++      run_id: executed.invocation.run_id,
+       operation: "execute",
+     });
+     const retainedPaths = await resolveSupervisorTaskRunnerPaths({
+       git_root: root,
+       workflow_dir: ".agentplane/tasks",
+       task_id: taskId,
+-      run_id: payload!.run_id,
++      run_id: executed.invocation.run_id,
+     });
+     await writeFile(
+       path.join(retainedPaths.task_dir, "active-run-claim.json"),
+       `${JSON.stringify(
+         staleClaim({
+           task_id: taskId,
+-          run_id: payload!.run_id,
++          run_id: executed.invocation.run_id,
+           generation: retained!.generation,
+         }),
+       )}\n`,
+@@ -830,7 +814,7 @@ describe("task-run active claim hardening", () => {
+     ).rejects.toMatchObject({
+       code: "E_RUNTIME",
+       context: {
+-        run_id: payload!.run_id,
++        run_id: executed.invocation.run_id,
+         reason: "run_not_recoverable:terminal_cleanup_unverified",
+       },
+     });
