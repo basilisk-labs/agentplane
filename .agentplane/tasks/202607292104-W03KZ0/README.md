@@ -4,7 +4,7 @@ title: "Measure SHA-bound RF-04 candidate performance"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -30,11 +30,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "ac7bd6a2a0febfd5ee927eb217c8d8f66bde5384"
+  message: "🧪 W03KZ0 task: preserve RF-04 driver diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation committed: ac7bd6a2a0febfd5ee927eb217c8d8f66bde5384. Focused candidate comparator test and scripts catalog check pass. The authorized capture preflight for 64fd6cd8a2cff4da0cbff5a8db44ef2a7992d097 stopped before any provider episode because the installed Codex CLI reports 0.146.0-alpha.3.1 while the RF-04 driver pins 0.145.0-alpha.18; failed-capture receipt is retained under the ignored candidate cache. No retry was performed."
 events:
   -
     type: "status"
@@ -43,8 +48,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-29T21:28:54.763Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation committed: ac7bd6a2a0febfd5ee927eb217c8d8f66bde5384. Focused candidate comparator test and scripts catalog check pass. The authorized capture preflight for 64fd6cd8a2cff4da0cbff5a8db44ef2a7992d097 stopped before any provider episode because the installed Codex CLI reports 0.146.0-alpha.3.1 while the RF-04 driver pins 0.145.0-alpha.18; failed-capture receipt is retained under the ignored candidate cache. No retry was performed."
 doc_version: 3
-doc_updated_at: "2026-07-29T21:06:49.461Z"
+doc_updated_at: "2026-07-29T21:28:54.763Z"
 doc_updated_by: "CODER"
 description: "Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria."
 sections:
