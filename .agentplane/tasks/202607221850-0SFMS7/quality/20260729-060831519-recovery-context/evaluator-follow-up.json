@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-bad134d748f953b4f0042224",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Следующая ревизия должна сохранить реализацию, но заменить утверждения наблюдаемыми замороженными доказательствами на точном evaluated_sha: выполнить полный direct golden path, записать результаты всех четырёх обязательных проверок и реальные метрики сравнения с 0.6.24. Изменение clone-baseline следует либо удалить, либо отдельно повторно одобрить как существенный дрейф и затем подтвердить успешным ci:contract.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Для оцениваемой ревизии отсутствуют замороженные результаты всех четырёх обязательных проверок: verification_records и runner_history пусты, direct_supervision отсутствует, хотя задача помечена как проверенная.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+          "section": "verification_records, runner_history, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:2995e275acb1ed294dfb41fff96d591554ca466dcffb5e2653c9140d43501f01",
+          "section": "Verify Steps; Verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Сравнение с базовой версией 0.6.24 всё ещё не подтверждено наблюдаемым golden-path запуском: тест подставляет искусственно уменьшенные значения кандидата, а число вызовов инструментов базовой версии выводится из ожидаемой трассы.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b14b8db35aec33fb5a241efe81fcb13f1e27ff110619f0350c57948e794627a6",
+          "line": 2420,
+          "section": "direct-task-supervision-benchmark.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+          "section": "direct_supervision"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "Патч повышает допустимую базовую дубликацию после ранее зафиксированного сбоя ci:contract, но замороженные доказательства не подтверждают ни отдельное одобрение изменения критерия проверки, ни успешный ci:contract на оцениваемом SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b14b8db35aec33fb5a241efe81fcb13f1e27ff110619f0350c57948e794627a6",
+          "line": 5934,
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:2995e275acb1ed294dfb41fff96d591554ca466dcffb5e2653c9140d43501f01",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+          "section": "declared_checks, verification_records"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-result.json"
+}

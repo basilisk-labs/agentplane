@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T06:09:50.357Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "17038aecbbecc0fbd1e2ff3a0bf7f3ccebbe2873",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "Для оцениваемой ревизии отсутствуют замороженные результаты всех четырёх обязательных проверок: verification_records и runner_history пусты, direct_supervision отсутствует, хотя задача помечена как проверенная.",
+    "Сравнение с базовой версией 0.6.24 всё ещё не подтверждено наблюдаемым golden-path запуском: тест подставляет искусственно уменьшенные значения кандидата, а число вызовов инструментов базовой версии выводится из ожидаемой трассы.",
+    "Патч повышает допустимую базовую дубликацию после ранее зафиксированного сбоя ci:contract, но замороженные доказательства не подтверждают ни отдельное одобрение изменения критерия проверки, ни успешный ci:contract на оцениваемом SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Замороженный end-to-end запуск утверждённой direct-задачи на evaluated_sha с реальными артефактами start, EXECUTOR receipt, всех объявленных проверок, EVALUATOR pass и finalize.",
+    "Наблюдаемое сравнение с 0.6.24, где lifecycle calls, tool calls и duplicate context вычисляются из выполненных сопоставимых сценариев, а не из искусственных значений или ожидаемой трассы.",
+    "Успешный bun run ci:contract на evaluated_sha либо явно одобренный skip/drift с причиной, риском и владельцем одобрения."
+  ],
+  "hidden_assumptions": [
+    "Пустые verification_records и runner_history считаются достаточными, потому что README содержит текстовое утверждение о прохождении проверок.",
+    "Ожидаемая базовая трасса эквивалентна фактически наблюдаемому числу вызовов инструментов.",
+    "Обновление clone-baseline после сбоя проверки не изменяет критерий приёмки и не требует повторного одобрения.",
+    "Положительные модульные тесты с моками достаточны для доказательства полного direct golden-path поведения и конкурентной безопасности."
+  ],
+  "residual_risks": [
+    "Следующая ревизия должна сохранить реализацию, но заменить утверждения наблюдаемыми замороженными доказательствами на точном evaluated_sha: выполнить полный direct golden path, записать результаты всех четырёх обязательных проверок и реальные метрики сравнения с 0.6.24. Изменение clone-baseline следует либо удалить, либо отдельно повторно одобрить как существенный дрейф и затем подтвердить успешным ci:contract."
+  ]
+}

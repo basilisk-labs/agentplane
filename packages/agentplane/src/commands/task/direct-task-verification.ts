@@ -3,12 +3,14 @@ import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
 import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 const CHECK_TIMEOUT_MS = 10 * 60_000;
 const CHECK_OUTPUT_LIMIT = 4000;
 const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:_-]*$/u;
+const AGENTPLANE_BIN = resolveAgentplaneBinPath();
 
 type DirectTaskCheck = {
   command: string;
@@ -54,7 +56,9 @@ function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | n
     };
   }
   if (command === "agentplane doctor") {
-    return { executable: "agentplane", args: ["doctor"], script: null };
+    // Re-enter through the active package binary rather than PATH. The
+    // supervised CLI may be launched repo-locally without a global installation.
+    return { executable: process.execPath, args: [AGENTPLANE_BIN, "doctor"], script: null };
   }
   return null;
 }

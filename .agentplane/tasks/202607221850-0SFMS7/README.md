@@ -4,7 +4,7 @@ title: "Supervise direct task execution end to end"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 17
 origin:
   system: "manual"
 depends_on:
@@ -44,30 +44,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T05:21:42.129Z"
+  updated_at: "2026-07-29T06:09:50.357Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "21049ad1809d882215c83ad97350aa5dd6cdb36d"
+  evaluated_sha: "17038aecbbecc0fbd1e2ff3a0bf7f3ccebbe2873"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The evaluated revision has no frozen verification records or runner history for any declared mandatory check, while the task was marked verified by CODER with no command evidence."
-    - "The required 0.6.24 cost comparison remains synthetic: candidate lifecycle, tool-call, duplicate-context, and safety values are hard-coded in a unit test instead of being derived from an executed direct golden-path episode; baseline tool calls are inferred from an expected trace rather than observed measurements."
-    - "The patch updates the repository clone baseline to the current duplication totals after the mandatory contract check had failed, without frozen evidence showing that the increase was approved or that the evaluated SHA subsequently passed the contract check."
+    - "Для оцениваемой ревизии отсутствуют замороженные результаты всех четырёх обязательных проверок: verification_records и runner_history пусты, direct_supervision отсутствует, хотя задача помечена как проверенная."
+    - "Сравнение с базовой версией 0.6.24 всё ещё не подтверждено наблюдаемым golden-path запуском: тест подставляет искусственно уменьшенные значения кандидата, а число вызовов инструментов базовой версии выводится из ожидаемой трассы."
+    - "Патч повышает допустимую базовую дубликацию после ранее зафиксированного сбоя ci:contract, но замороженные доказательства не подтверждают ни отдельное одобрение изменения критерия проверки, ни успешный ci:contract на оцениваемом SHA."
 commit: null
 comments:
   -

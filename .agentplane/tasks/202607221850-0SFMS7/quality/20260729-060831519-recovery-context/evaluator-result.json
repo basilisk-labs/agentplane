@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Для оцениваемой ревизии отсутствуют замороженные результаты всех четырёх обязательных проверок: verification_records и runner_history пусты, direct_supervision отсутствует, хотя задача помечена как проверенная.",
+      "broken_invariant": "Проверки из Verify Steps должны быть выполнены и записаны; pass допустим только при наличии доказательств положительных, отрицательных и чувствительных к конкурентности путей.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+          "section": "verification_records, runner_history, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:2995e275acb1ed294dfb41fff96d591554ca466dcffb5e2653c9140d43501f01",
+          "section": "Verify Steps; Verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "Сравнение с базовой версией 0.6.24 всё ещё не подтверждено наблюдаемым golden-path запуском: тест подставляет искусственно уменьшенные значения кандидата, а число вызовов инструментов базовой версии выводится из ожидаемой трассы.",
+      "broken_invariant": "Требуется сравнить фактически измеренные затраты и безопасность выполненного direct golden-path сценария с базовой версией 0.6.24 без снижения проверенного успеха или безопасности.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b14b8db35aec33fb5a241efe81fcb13f1e27ff110619f0350c57948e794627a6",
+          "line": 2420,
+          "section": "direct-task-supervision-benchmark.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+          "section": "direct_supervision"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "high",
+      "summary": "Патч повышает допустимую базовую дубликацию после ранее зафиксированного сбоя ci:contract, но замороженные доказательства не подтверждают ни отдельное одобрение изменения критерия проверки, ни успешный ci:contract на оцениваемом SHA.",
+      "broken_invariant": "Изменение обязательного критерия проверки является существенным дрейфом и требует повторного одобрения; обязательный ci:contract должен пройти на оцениваемой ревизии с записанным доказательством.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b14b8db35aec33fb5a241efe81fcb13f1e27ff110619f0350c57948e794627a6",
+          "line": 5934,
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:2995e275acb1ed294dfb41fff96d591554ca466dcffb5e2653c9140d43501f01",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-060831519-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+          "section": "declared_checks, verification_records"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Замороженный end-to-end запуск утверждённой direct-задачи на evaluated_sha с реальными артефактами start, EXECUTOR receipt, всех объявленных проверок, EVALUATOR pass и finalize.",
+    "Наблюдаемое сравнение с 0.6.24, где lifecycle calls, tool calls и duplicate context вычисляются из выполненных сопоставимых сценариев, а не из искусственных значений или ожидаемой трассы.",
+    "Успешный bun run ci:contract на evaluated_sha либо явно одобренный skip/drift с причиной, риском и владельцем одобрения."
+  ],
+  "hidden_assumptions": [
+    "Пустые verification_records и runner_history считаются достаточными, потому что README содержит текстовое утверждение о прохождении проверок.",
+    "Ожидаемая базовая трасса эквивалентна фактически наблюдаемому числу вызовов инструментов.",
+    "Обновление clone-baseline после сбоя проверки не изменяет критерий приёмки и не требует повторного одобрения.",
+    "Положительные модульные тесты с моками достаточны для доказательства полного direct golden-path поведения и конкурентной безопасности."
+  ],
+  "recovery_context": "Следующая ревизия должна сохранить реализацию, но заменить утверждения наблюдаемыми замороженными доказательствами на точном evaluated_sha: выполнить полный direct golden path, записать результаты всех четырёх обязательных проверок и реальные метрики сравнения с 0.6.24. Изменение clone-baseline следует либо удалить, либо отдельно повторно одобрить как существенный дрейф и затем подтвердить успешным ci:contract."
+}
