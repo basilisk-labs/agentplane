@@ -26,6 +26,7 @@ export const SUPERVISOR_EPISODE_OPERATION_STATUS_VALUES = [
 export const SUPERVISOR_EPISODE_STATUS_VALUES = ["running", "stopped"] as const;
 export const SUPERVISOR_EPISODE_STOP_REASON_VALUES = [
   "budget_exhausted",
+  "completed",
   "effect_in_doubt",
   "human_review",
   "operation_failed",

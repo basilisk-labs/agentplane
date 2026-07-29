@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   resolveCommit: vi.fn(),
   runChecks: vi.fn(),
   start: vi.fn(),
+  stop: vi.fn(),
   supervise: vi.fn(),
   verify: vi.fn(),
   verifyDirect: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock("@agentplaneorg/core/schemas", async (importOriginal) => ({
   advanceSupervisorExecutionEpisodeState: mocks.advance,
   completeSupervisorExecutionEpisode: mocks.complete,
   startSupervisorExecutionEpisode: mocks.start,
+  stopSupervisorExecutionEpisode: mocks.stop,
 }));
 vi.mock("../../evaluators/catalog.js", () => ({ loadEvaluatorCatalog: mocks.loadCatalog }));
 vi.mock("../evaluator/evaluator-execute-supervisor.js", () => ({
@@ -87,6 +89,18 @@ const journal = {
   digest: "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 } as const;
 
+const terminalJournal = {
+  ...journal,
+  status: "stopped",
+  cursor: { episode: 2, phase: "stopped", operation_key: null },
+  stop: {
+    reason: "completed",
+    exhausted_dimensions: [],
+    operation_key: null,
+    at: "2026-07-29T08:36:00.000Z",
+  },
+} as const;
+
 function decision(opts: {
   id: string;
   code: string;
@@ -140,6 +154,7 @@ describe("direct task supervisor", () => {
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/golden-metrics.json`,
       comparison: { passed: true },
     });
+    mocks.stop.mockReturnValue(terminalJournal);
     const completion = decision({
       id: "task.complete.input",
       code: "complete_direct",
@@ -520,6 +535,7 @@ describe("direct task supervisor", () => {
       status: "finalized",
       evaluator: { evaluator_id: "recovery-context", verdict: "pass" },
       stop: null,
+      journal: { status: "stopped", cursor: { phase: "stopped" }, stop: { reason: "completed" } },
     });
     expect(mocks.verifyDirect.mock.calls[0]?.[0]).toMatchObject({
       task: { verify: ["bun run test:critical"] },
@@ -544,6 +560,10 @@ describe("direct task supervisor", () => {
         committed_scope_enforced: true,
       }),
     );
+    expect(mocks.stop).toHaveBeenCalledWith(
+      expect.objectContaining({ journal, reason: "completed" }),
+    );
+    expect(store.write).toHaveBeenCalledWith(terminalJournal);
     expect(result.golden_metrics).toEqual({
       artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/golden-metrics.json`,
       comparison: { passed: true },

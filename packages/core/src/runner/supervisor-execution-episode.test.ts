@@ -8,6 +8,7 @@ import {
   recoverSupervisorExecutionEpisodeJournal,
   reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   retryFailedSupervisorExecutionEpisode,
+  stopSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
   validateSupervisorExecutionEpisodeJournal,
   type SupervisorExecutionBudget,
@@ -186,6 +187,22 @@ describe("SupervisorExecutionEpisodeJournal", () => {
       cursor: { phase: "stopped" },
       stop: { reason: "effect_in_doubt", operation_key: prepared.operation_key },
     });
+  });
+
+  it("records successful completion as a terminal journal that cannot start another operation", () => {
+    const terminal = stopSupervisorExecutionEpisode({
+      journal: journal(),
+      reason: "completed",
+      now: "2026-07-28T00:00:01.000Z",
+    });
+    const next = start({ journal: terminal, now: "2026-07-28T00:00:02.000Z" });
+
+    expect(terminal).toMatchObject({
+      status: "stopped",
+      cursor: { phase: "stopped", operation_key: null },
+      stop: { reason: "completed", exhausted_dimensions: [] },
+    });
+    expect(next).toMatchObject({ status: "stopped", stop: { reason: "completed" } });
   });
 
   it("retries only a durably failed CLI operation without resetting shared usage", () => {
