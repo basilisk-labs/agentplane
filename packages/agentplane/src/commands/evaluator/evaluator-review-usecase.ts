@@ -42,7 +42,13 @@ import {
   safePathSegment,
   timestampPathSegment,
 } from "./evaluator-quality-artifacts.js";
-import { isWithinRoot, relative, uniqueStrings } from "./evaluator-review-shared.js";
+import {
+  evaluatorAcceptanceCriteria,
+  evaluatorObjective,
+  isWithinRoot,
+  relative,
+  uniqueStrings,
+} from "./evaluator-review-shared.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
 
 export {
@@ -132,25 +138,6 @@ export type PreparedEvaluatorReview = {
 
 function sha256(value: string | Buffer): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
-}
-
-function taskSection(task: TaskData, name: string): string | null {
-  const section = task.sections?.[name];
-  return typeof section === "string" && section.trim() ? section.trim() : null;
-}
-
-function acceptanceCriteria(task: TaskData): string[] {
-  const criteria = uniqueStrings([
-    ...(task.verify ?? []),
-    taskSection(task, "Scope") ?? "",
-    taskSection(task, "Plan") ?? "",
-    taskSection(task, "Verify Steps") ?? "",
-  ]).slice(0, 64);
-  return criteria.length > 0 ? criteria : [`Review the approved outcome for ${task.title}.`];
-}
-
-function evaluatorObjective(task: TaskData): string {
-  return taskSection(task, "Summary") ?? task.description?.trim() ?? task.title;
 }
 
 async function assertTaskReviewWorkspaceClean(opts: {
@@ -404,7 +391,7 @@ export async function prepareEvaluatorReview(opts: {
       id: opts.task.id,
       revision: opts.task.revision ?? null,
       objective: evaluatorObjective(opts.task),
-      acceptance_criteria: acceptanceCriteria(opts.task),
+      acceptance_criteria: evaluatorAcceptanceCriteria(opts.task),
     },
     evaluated_sha: evaluatedSha,
     diff_base_sha: diffBaseSha,

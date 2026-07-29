@@ -1,5 +1,6 @@
 import path from "node:path";
 
+import type { TaskData } from "../../backends/task-backend.js";
 import type { EvaluatorRunVerdict } from "./evaluator.spec.js";
 
 export type HumanEvaluatorReviewInput = {
@@ -25,4 +26,23 @@ export function isWithinRoot(root: string, target: string): boolean {
 
 export function uniqueStrings(values: readonly string[]): string[] {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
+}
+
+function taskSection(task: TaskData, name: string): string | null {
+  const section = task.sections?.[name];
+  return typeof section === "string" && section.trim() ? section.trim() : null;
+}
+
+export function evaluatorAcceptanceCriteria(task: TaskData): string[] {
+  const criteria = uniqueStrings([
+    ...(task.verify ?? []),
+    taskSection(task, "Scope") ?? "",
+    taskSection(task, "Plan") ?? "",
+    taskSection(task, "Verify Steps") ?? "",
+  ]).slice(0, 64);
+  return criteria.length > 0 ? criteria : [`Review the approved outcome for ${task.title}.`];
+}
+
+export function evaluatorObjective(task: TaskData): string {
+  return taskSection(task, "Summary") ?? task.description?.trim() ?? task.title;
 }
