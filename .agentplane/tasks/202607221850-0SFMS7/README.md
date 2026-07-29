@@ -4,7 +4,7 @@ title: "Supervise direct task execution end to end"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 11
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -44,30 +44,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T02:26:30.649Z"
+  updated_at: "2026-07-29T03:01:44.808Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "8bfdaa6b53fddac810941a5956908782893af5e9"
+  evaluated_sha: "da88b1ed4305b3a70bf39633cf3739fb5e4f4609"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The supervisor reports the task as finalized without executing the task finish lifecycle operation."
-    - "A passing evaluator verdict is converted into formal verification without evidence that the declared checks ran."
-    - "The frozen evidence does not demonstrate the required golden-path metrics comparison or concurrency-sensitive stale-route behavior."
+    - "Committed out-of-scope EXECUTOR changes are accepted as the implementation commit. The finalization guard rejects only dirty non-task paths, then accepts any changed HEAD without inspecting the committed path set against the approved scope."
+    - "The required comparison with the 0.6.24 baseline is still absent. The implementation reports provider episode count, lifecycle-event delta, and declared-check count, but supplies no lifecycle-call, tool-call, or duplicate-context baseline values and no pass/fail comparison."
+    - "The frozen check evidence contains no runner history or verification records for the evaluated SHA, so none of the four declared checks is demonstrated to have run on this revision."
 commit: null
 comments:
   -

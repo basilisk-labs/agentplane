@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T03:01:44.808Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "da88b1ed4305b3a70bf39633cf3739fb5e4f4609",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "Committed out-of-scope EXECUTOR changes are accepted as the implementation commit. The finalization guard rejects only dirty non-task paths, then accepts any changed HEAD without inspecting the committed path set against the approved scope.",
+    "The required comparison with the 0.6.24 baseline is still absent. The implementation reports provider episode count, lifecycle-event delta, and declared-check count, but supplies no lifecycle-call, tool-call, or duplicate-context baseline values and no pass/fail comparison.",
+    "The frozen check evidence contains no runner history or verification records for the evaluated SHA, so none of the four declared checks is demonstrated to have run on this revision."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/policy/dod.core.md",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "An end-to-end case where the EXECUTOR commits a file outside the approved scope and the supervisor returns a typed drift/out-of-scope stop before verification and finish.",
+    "A golden-scenario measurement test that compares lifecycle calls, tool calls, duplicate-context volume, verified success, and safety against the 0.6.24 baseline with explicit thresholds.",
+    "Recorded execution of bun run ci:contract, bun run coverage:workflow-suite, bun run lifecycle:invariants, and bun run test:critical against evaluated SHA da88b1ed4305b3a70bf39633cf3739fb5e4f4609."
+  ],
+  "hidden_assumptions": [
+    "Any HEAD change distinct from the pre-execution commit is assumed to belong to the approved implementation scope.",
+    "Three local counters are assumed to be sufficient evidence of lower orchestration cost despite the contract requiring a comparison with an external baseline.",
+    "Unit tests embedded in the patch are assumed to pass even though the frozen observed-check evidence records no execution."
+  ],
+  "residual_risks": [
+    "The previous finalization, declared-check, and stale-route defects appear addressed in code, but replacement evaluation cannot pass yet: validate committed paths against approved scope, add the explicit 0.6.24 cost/quality comparison, and provide recorded results for every declared check on the evaluated SHA."
+  ]
+}

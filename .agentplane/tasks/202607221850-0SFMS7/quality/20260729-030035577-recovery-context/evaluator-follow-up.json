@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-cd4f4b1d1b7d4c9697d749e8",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "The previous finalization, declared-check, and stale-route defects appear addressed in code, but replacement evaluation cannot pass yet: validate committed paths against approved scope, add the explicit 0.6.24 cost/quality comparison, and provide recorded results for every declared check on the evaluated SHA.",
+  "findings": [
+    {
+      "id": "RC-004",
+      "summary": "Committed out-of-scope EXECUTOR changes are accepted as the implementation commit. The finalization guard rejects only dirty non-task paths, then accepts any changed HEAD without inspecting the committed path set against the approved scope.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:15abab62d77f42da9ac46967cdef940bce53ad7d3fed7a4b556f3f3f5aa4ac2b",
+          "lines": "direct-task-finalization.ts and direct-task-finalization.test.ts",
+          "section": "resolveDirectImplementationCommit"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:14ea72cbc4e5bbe7d4569c53e218b4df1fefd6d83b02d1695a1698a5abaa459a",
+          "section": "Scope and Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    },
+    {
+      "id": "RC-005",
+      "summary": "The required comparison with the 0.6.24 baseline is still absent. The implementation reports provider episode count, lifecycle-event delta, and declared-check count, but supplies no lifecycle-call, tool-call, or duplicate-context baseline values and no pass/fail comparison.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:15abab62d77f42da9ac46967cdef940bce53ad7d3fed7a4b556f3f3f5aa4ac2b",
+          "lines": "DirectTaskSupervisorMetrics and golden-path assertions",
+          "section": "direct-task-supervisor.ts and direct-task-supervisor.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:14ea72cbc4e5bbe7d4569c53e218b4df1fefd6d83b02d1695a1698a5abaa459a",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-006",
+      "summary": "The frozen check evidence contains no runner history or verification records for the evaluated SHA, so none of the four declared checks is demonstrated to have run on this revision.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:5d8123f227cc376360d2242104ae7f9af9cc9c81cd49d7b33e8c8c560de3ced6",
+          "section": "declared_checks, verification_records, runner_history"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:14ea72cbc4e5bbe7d4569c53e218b4df1fefd6d83b02d1695a1698a5abaa459a",
+          "section": "verify and Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-result.json"
+}

@@ -27,6 +27,7 @@ import {
 } from "./direct-task-supervisor-closeout.js";
 import { readDirectTaskHead } from "./direct-task-finalization.js";
 import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
+import { DIRECT_TASK_SUPERVISION_GOLDEN_COST } from "./direct-task-supervision-benchmark.js";
 
 const DIRECT_TASK_SUPERVISION_SCHEMA = "agentplane.direct_task_supervision.v1" as const;
 const DEFAULT_EVALUATOR_ID = "recovery-context";
@@ -73,6 +74,7 @@ type DirectTaskSupervisorMetrics = {
   provider_episodes: number;
   executor_lifecycle_event_delta: number | null;
   declared_checks: number;
+  golden_cost: typeof DIRECT_TASK_SUPERVISION_GOLDEN_COST;
 };
 
 export type DirectTaskSupervisorResult = {
@@ -173,11 +175,22 @@ function stoppedResult(opts: {
     executor: opts.executor ?? null,
     evaluator: opts.evaluator ?? null,
     journal: opts.journal ?? null,
-    metrics: opts.metrics ?? {
-      provider_episodes: 0,
-      executor_lifecycle_event_delta: null,
-      declared_checks: 0,
-    },
+    metrics: opts.metrics ?? directTaskSupervisorMetrics(),
+  };
+}
+
+function directTaskSupervisorMetrics(
+  opts: {
+    provider_episodes?: number;
+    executor_lifecycle_event_delta?: number | null;
+    declared_checks?: number;
+  } = {},
+): DirectTaskSupervisorMetrics {
+  return {
+    provider_episodes: opts.provider_episodes ?? 0,
+    executor_lifecycle_event_delta: opts.executor_lifecycle_event_delta ?? null,
+    declared_checks: opts.declared_checks ?? 0,
+    golden_cost: DIRECT_TASK_SUPERVISION_GOLDEN_COST,
   };
 }
 
@@ -400,11 +413,11 @@ export async function superviseDirectTaskRun(
         decision: current,
         journal,
         executor: observed.executor,
-        metrics: {
+        metrics: directTaskSupervisorMetrics({
           provider_episodes: providerEpisodes,
           executor_lifecycle_event_delta: executorLifecycleEventDelta,
           declared_checks: declaredChecks,
-        },
+        }),
         stop: {
           code: "executor_lifecycle_mutation",
           reason:
@@ -500,11 +513,11 @@ export async function superviseDirectTaskRun(
         journal,
         executor: observed.executor,
         evaluator: evaluatorResult,
-        metrics: {
+        metrics: directTaskSupervisorMetrics({
           provider_episodes: providerEpisodes,
           executor_lifecycle_event_delta: executorLifecycleEventDelta,
           declared_checks: declaredChecks,
-        },
+        }),
         stop: {
           code,
           reason: `EVALUATOR returned ${evaluatorExecution.result.verdict}.`,
@@ -522,6 +535,7 @@ export async function superviseDirectTaskRun(
       evaluator: evaluatorResult,
       decision,
       execution_base_commit: executionBaseCommit,
+      allowed_paths: lifecycle.lifecycle?.work_order_authority?.writable_roots ?? [],
       journal: { journal: evaluatorJournal, journal_path: evaluatorExecution.store.path },
     });
     declaredChecks = closeout.declared_checks;
@@ -532,11 +546,11 @@ export async function superviseDirectTaskRun(
         journal,
         executor: observed.executor,
         evaluator: evaluatorResult,
-        metrics: {
+        metrics: directTaskSupervisorMetrics({
           provider_episodes: providerEpisodes,
           executor_lifecycle_event_delta: executorLifecycleEventDelta,
           declared_checks: declaredChecks,
-        },
+        }),
         stop: closeout.stop,
       });
     }
@@ -551,11 +565,11 @@ export async function superviseDirectTaskRun(
       executor: observed.executor,
       evaluator: evaluatorResult,
       journal,
-      metrics: {
+      metrics: directTaskSupervisorMetrics({
         provider_episodes: providerEpisodes,
         executor_lifecycle_event_delta: executorLifecycleEventDelta,
         declared_checks: declaredChecks,
-      },
+      }),
     };
   }
   return stoppedResult({
