@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "Verification covers the required dependency-present, dependency-blocked, policy, and doctor checks, but preserves summarized outcomes rather than raw command output or runner history.",
+      "broken_invariant": "No required invariant is broken; the residual auditability limitation does not invalidate the SHA-bound command-level verification record or the frozen implementation diff.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/verification/20260729184729882-4bd60f50fa4c7639.json",
+          "sha256": "sha256:8e0d87243570187e462e473a6a4a9f2c8b09f7c1a3153334b31cbec68905548c"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-185410968-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:05b2273c4cd226e3bf3b44a303f892bc2d5c4c25328682df1b776ec7f90ee229"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-185410968-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8380346b6864524e413eabef8a304b4244f5fddd8456bc426459ab6422299836"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The summarized TESTER evidence accurately reflects the reported command outputs; no raw runner transcript is frozen.",
+    "Changes between implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1 and evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815 do not alter the beta.1 dependency semantics shown in the frozen diff."
+  ]
+}

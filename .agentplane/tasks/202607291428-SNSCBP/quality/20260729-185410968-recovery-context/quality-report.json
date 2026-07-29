@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291428-SNSCBP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T18:55:56.320Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "65e6b7c925b1ef6f504cabd5c154ee400d509815",
+  "blueprint_digest": "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d",
+  "findings": [
+    "Verification covers the required dependency-present, dependency-blocked, policy, and doctor checks, but preserves summarized outcomes rather than raw command output or runner history."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291428-SNSCBP/verification/20260729184729882-4bd60f50fa4c7639.json",
+    ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-185410968-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-185410968-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The summarized TESTER evidence accurately reflects the reported command outputs; no raw runner transcript is frozen.",
+    "Changes between implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1 and evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815 do not alter the beta.1 dependency semantics shown in the frozen diff."
+  ],
+  "residual_risks": []
+}
