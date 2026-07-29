@@ -30,8 +30,8 @@ Implement a candidate-SHA RF-04 measurement route that records actual token, lat
  package.json                                       |   2 +
  ...cli.critical.agent-efficiency-candidate.test.ts | 167 ++++
  scripts/README.md                                  |  32 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 879 +++++++++++++++++++++
- 4 files changed, 1065 insertions(+), 15 deletions(-)
+ .../bench/capture-agent-efficiency-candidate.mjs   | 884 +++++++++++++++++++++
+ 4 files changed, 1070 insertions(+), 15 deletions(-)
 ```
 
 </details>
