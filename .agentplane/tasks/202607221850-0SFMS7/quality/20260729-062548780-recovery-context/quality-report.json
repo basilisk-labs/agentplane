@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T06:27:00.742Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "0f4f7dd9da92cc03a56b2c43eef122b29447874f",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "Для оцениваемого SHA отсутствуют замороженные результаты обязательных проверок и наблюдаемого прямого запуска: verification_records и runner_history пусты, direct_supervision равен null, хотя задача помечена как проверенная.",
+    "Сравнение с версией 0.6.24 не основано на наблюдаемом golden-path запуске кандидата: тест конструирует показатели кандидата как baseline минус один, а число вызовов инструментов базовой версии выводится из ожидаемой трассы.",
+    "Патч изменяет scripts/baselines/clone-baseline.json после зафиксированного сбоя ci:contract, но замороженные доказательства не содержат успешного ci:contract на оцениваемом SHA или отдельного обоснования и одобрения изменения порога."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Замороженный end-to-end запуск прямой задачи на оцениваемом SHA с наблюдаемыми результатами всех четырёх обязательных команд, нулевым числом lifecycle-вызовов EXECUTOR и успешной финализацией.",
+    "Измерительный golden-path тест, который получает показатели кандидата из реального журнала супервизора и runner evidence, а не из вручную заданных значений относительно baseline.",
+    "Проверка ci:contract на оцениваемом SHA после изменения clone-baseline с доказательством, что изменение порога не маскирует дубликацию в RF-10a путях."
+  ],
+  "hidden_assumptions": [
+    "Состояние verification=ok предполагается достаточным без связанных замороженных записей выполнения.",
+    "Ожидаемая lifecycle-трасса предполагается эквивалентной фактически измеренному числу вызовов инструментов базовой версии.",
+    "Обновление clone-baseline предполагается допустимым и не ухудшающим критерий качества без отдельного наблюдаемого подтверждения."
+  ],
+  "residual_risks": [
+    "Следующему исполнителю нужно повторно сформировать доказательства на текущем оцениваемом SHA: выполнить и заморозить четыре обязательные проверки, сохранить direct_supervision и runner/verification records реального golden-path запуска, заменить синтетические показатели кандидата наблюдаемыми метриками и подтвердить успешный ci:contract после явно обоснованного изменения clone-baseline."
+  ]
+}
