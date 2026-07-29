@@ -77,6 +77,23 @@ describe("direct task finalization", () => {
     ).resolves.toEqual({ status: "ready", commit: "def456" });
   });
 
+  it("accepts a new parent directory reported beside its committed implementation file", async () => {
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "def456\n", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "docs/rf10-proof.md\n", stderr: "" });
+
+    await expect(
+      resolveDirectImplementationCommit({
+        command,
+        cwd: "/repo",
+        task_id: TASK_ID,
+        execution_base_commit: "abc123",
+        allowed_paths: ["docs"],
+        observed_changed_paths: ["docs", "docs/rf10-proof.md"],
+      }),
+    ).resolves.toEqual({ status: "ready", commit: "def456" });
+  });
+
   it("does not accept an unchanged HEAD as an implementation", async () => {
     mocks.runProcess.mockResolvedValueOnce({ exitCode: 0, stdout: "abc123\n", stderr: "" });
 

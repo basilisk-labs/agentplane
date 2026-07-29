@@ -83,6 +83,13 @@ function normalizedObservedPaths(paths: readonly string[]): string[] {
   ].toSorted();
 }
 
+function isCommittedDirectoryObservation(
+  entry: string,
+  committedPaths: readonly string[],
+): boolean {
+  return committedPaths.some((committedPath) => committedPath.startsWith(`${entry}/`));
+}
+
 function normalizedAuthorityPaths(opts: {
   cwd: string;
   allowed_paths: readonly string[];
@@ -200,7 +207,13 @@ export async function resolveDirectImplementationCommit(opts: {
     };
   }
   const committed = new Set(changed);
-  const uncommittedObservedPaths = observedNonTaskPaths.filter((entry) => !committed.has(entry));
+  // Filesystem snapshots can include a newly-created parent directory alongside
+  // the committed file. Git's name-only range reports files, not directories,
+  // so accept such a directory marker only when it is an exact parent of an
+  // implementation path in the immutable committed range.
+  const uncommittedObservedPaths = observedNonTaskPaths.filter(
+    (entry) => !committed.has(entry) && !isCommittedDirectoryObservation(entry, changed),
+  );
   if (uncommittedObservedPaths.length > 0) {
     return {
       status: "missing",
