@@ -6,14 +6,14 @@ Created: 2026-07-29T01:35:45.453Z
 
 - Task: `202607221850-0SFMS7`
 - Title: Supervise direct task execution end to end
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221850-0SFMS7/supervise-direct-task-execution-end-to-end`
 - Canonical task record: `.agentplane/tasks/202607221850-0SFMS7/README.md`
 
 ## Verification
 
 - State: ok
-- Note: RF-10a direct supervision is verified with a finalized live golden path, active-binary docs checks, bounded EVALUATOR process-tree coverage, observed efficiency metrics, and full repository gates.
+- Note: RF-10a final live golden path, frozen runtime evidence, and full repository gates passed on cb23e156a8c6.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,13 +33,16 @@ Created: 2026-07-29T01:35:45.453Z
  ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
  .../evaluator/evaluator-episode.stdin.test.ts      |  37 +-
  .../src/commands/evaluator/evaluator-episode.ts    |  26 +-
- .../evaluator/evaluator-review-artifacts.ts        | 100 +++
- .../commands/evaluator/evaluator-review-usecase.ts | 113 ++-
+ .../evaluator/evaluator-review-artifacts.ts        | 153 ++++
+ .../commands/evaluator/evaluator-review-shared.ts  |  28 +
+ .../commands/evaluator/evaluator-review-usecase.ts | 191 +++--
  .../evaluator/evaluator-run.command.test.ts        |  43 ++
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 133 ++++
+ .../evaluator/evaluator-verification-records.ts    |  80 +-
  .../src/commands/shared/workflow-step-factory.ts   |  20 +-
  .../shared/workflow-step-projections.test.ts       |  16 +-
- .../commands/task/direct-task-finalization.test.ts | 221 ++++++
- .../src/commands/task/direct-task-finalization.ts  | 352 +++++++++
+ .../commands/task/direct-task-finalization.test.ts | 238 ++++++
+ .../src/commands/task/direct-task-finalization.ts  | 365 +++++++++
  .../task/direct-task-supervision-benchmark.test.ts |  94 +++
  .../task/direct-task-supervision-benchmark.ts      |  60 ++
  .../direct-task-supervision-measurement.test.ts    |  36 +
@@ -47,24 +50,26 @@ Created: 2026-07-29T01:35:45.453Z
  .../task/direct-task-supervisor-closeout.test.ts   | 178 +++++
  .../task/direct-task-supervisor-closeout.ts        | 452 ++++++++++++
  .../task/direct-task-supervisor-evaluator.ts       |  73 ++
- ...direct-task-supervisor-formal-operation.test.ts |  98 +++
+ ...direct-task-supervisor-formal-operation.test.ts | 147 ++++
  .../direct-task-supervisor-formal-operation.ts     | 116 +++
  .../task/direct-task-supervisor-implementation.ts  |  56 ++
  .../direct-task-supervisor-observation.test.ts     |  48 ++
  .../task/direct-task-supervisor-observation.ts     |  69 ++
  .../commands/task/direct-task-supervisor-result.ts | 140 ++++
- .../commands/task/direct-task-supervisor.test.ts   | 787 +++++++++++++++++++++
- .../src/commands/task/direct-task-supervisor.ts    | 522 ++++++++++++++
+ .../commands/task/direct-task-supervisor.test.ts   | 819 +++++++++++++++++++++
+ .../src/commands/task/direct-task-supervisor.ts    | 522 +++++++++++++
  .../commands/task/direct-task-verification.test.ts | 138 ++++
  .../src/commands/task/direct-task-verification.ts  | 168 +++++
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
+ .../src/runner/context/task-context.test.ts        |   1 -
+ .../agentplane/src/runner/context/task-context.ts  |  10 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
  .../task-run-bootstrap.result-examples.test.ts     |  14 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  11 +-
  .../usecases/task-run-context.integration.test.ts  |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |   6 -
  scripts/baselines/clone-baseline.json              |  24 +-
- 35 files changed, 4111 insertions(+), 174 deletions(-)
+ 40 files changed, 4569 insertions(+), 210 deletions(-)
 ```
 
 </details>
