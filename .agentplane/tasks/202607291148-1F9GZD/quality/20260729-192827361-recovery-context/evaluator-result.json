@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Для evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb отсутствуют замороженные записи выполнения обязательных проверок; имеющаяся в задаче верификация относится к более раннему SHA 28b541f8.",
+      "broken_invariant": "Вердикт pass допустим только при наличии детерминированных доказательств положительных, отрицательных и чувствительных к конкурентным изменениям проверок для фактически оцениваемого SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b530be09ca4a427f2a2e0daa937eca528d66349805ba8ea86768fa6324ef3b3d",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:b04af22bbf2314c1eb69c575b9b17b8baff9696dcbf68ff20867b97c20455a06",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Зафиксировать успешный запуск `bun run test:fast -- packages/agentplane/src/commands/evaluator` на evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb.",
+    "Зафиксировать успешный запуск `bun run ci:contract` на evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb."
+  ],
+  "hidden_assumptions": [
+    "Результаты проверок на SHA 28b541f82687e465f36e5ecd50e98efdb806f85e сохраняются после переноса изменения на текущую базу и последующего рефакторинга hotspot.",
+    "Изменения между ранее проверенным SHA и evaluated_sha не затронули отрицательные и concurrency-sensitive сценарии квалификационного пакета."
+  ],
+  "recovery_context": "Повторно выполните и заморозьте обе объявленные проверки на SHA 17e0f8f246d207483014ac16ec43af657296b9fb; без SHA-bound verification records семантический обзор не может завершиться вердиктом pass.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
