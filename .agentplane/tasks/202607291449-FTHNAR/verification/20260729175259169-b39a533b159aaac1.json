@@ -1,0 +1,15 @@
+{
+  "details": "Command: GitHub Actions Core CI verify-contract format:check\nResult: rework\nEvidence: Run 30477148477 job 90661687851 reports only packages/core/src/git/git-client.ts formatting; no test or behavioral failure.\nScope: mechanical formatting repair restricted to the changed Git helper.",
+  "digest": "sha256:b39a533b159aaac177219e5a6902d3bbe7bd350d0c973af500d229c7270a023c",
+  "implementation_sha": "bd7c05394f2bff64e7f36af18ee176cad0649cff",
+  "kind": "task_verification_record",
+  "note": "GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not Prettier-formatted; source behavior and focused tests remain passing.",
+  "recorded_at": "2026-07-29T17:52:59.169Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication, stale rewritten tracking-ref refresh, and force-with-lease publication resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. These six checks are the committed semantic evidence required before EVALUATOR can permit publication. PR publication, integration-queue proof, hosted checks, and merge are subsequent CLI-owned lifecycle gates and are not preconditions for EVALUATOR review.",
+  "scope_digest": "sha256:88f02061b31ed1c3ee8b43e0652ee69c22b85e71988cd7d87b6db35963997992",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --rework --by TESTER",
+  "verifier": "TESTER"
+}

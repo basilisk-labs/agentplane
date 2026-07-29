@@ -15,12 +15,12 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-All six declared local check groups pass at implementation SHA 50928b487; refreshes only
-deterministic evidence after evaluator block.
+GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not
+Prettier-formatted; source behavior and focused tests remain passing.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -54,14 +54,14 @@ deterministic evidence after evaluator block.
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
  .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 +++
  packages/core/src/git/git-client.test.ts           |  84 +++++++-
- packages/core/src/git/git-client.ts                |  75 ++++++-
+ packages/core/src/git/git-client.ts                |  73 ++++++-
  packages/core/src/git/index.ts                     |   1 +
  packages/core/src/index.ts                         |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-store.ts              |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  19 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- 29 files changed, 811 insertions(+), 33 deletions(-)
+ 29 files changed, 809 insertions(+), 33 deletions(-)
 ```
 
 </details>

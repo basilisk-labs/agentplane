@@ -20,11 +20,11 @@
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
  .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 +++
  packages/core/src/git/git-client.test.ts           |  84 +++++++-
- packages/core/src/git/git-client.ts                |  75 ++++++-
+ packages/core/src/git/git-client.ts                |  73 ++++++-
  packages/core/src/git/index.ts                     |   1 +
  packages/core/src/index.ts                         |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-store.ts              |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  19 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- 29 files changed, 811 insertions(+), 33 deletions(-)
+ 29 files changed, 809 insertions(+), 33 deletions(-)

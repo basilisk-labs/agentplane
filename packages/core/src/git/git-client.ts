@@ -239,9 +239,7 @@ export async function gitBranchUpstream(cwd: string, branch: string): Promise<st
       : `refs/remotes/${target.remote}/${target.remoteBranch}`;
   try {
     await gitRevParse(cwd, [trackingRef]);
-    return target.remote === "."
-      ? target.remoteBranch
-      : `${target.remote}/${target.remoteBranch}`;
+    return target.remote === "." ? target.remoteBranch : `${target.remote}/${target.remoteBranch}`;
   } catch {
     return null;
   }
