@@ -39,6 +39,7 @@
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../src/runner/context/task-context.test.ts        |   1 -
  .../agentplane/src/runner/context/task-context.ts  |  11 +-
+ .../usecases/agent-work-order.integration.test.ts  |  31 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
  .../task-run-bootstrap.result-examples.test.ts     |  14 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  11 +-
@@ -47,4 +48,4 @@
  .../runner/supervisor-execution-episode.test.ts    |  44 ++
  .../src/runner/supervisor-execution-episode.ts     |  22 +-
  scripts/baselines/clone-baseline.json              |  24 +-
- 49 files changed, 5159 insertions(+), 250 deletions(-)
+ 50 files changed, 5181 insertions(+), 259 deletions(-)

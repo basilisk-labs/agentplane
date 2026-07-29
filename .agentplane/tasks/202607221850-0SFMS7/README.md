@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 39
+revision: 40
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T09:08:32.473Z"
+  updated_at: "2026-07-29T09:31:34.272Z"
   updated_by: "CODER"
-  note: "Verified: current implementation head links terminal runtime evidence and evaluator-budget closeout coverage for fresh quality review."
+  note: "Verified: compact runner work-order contract and full unit suite are current for fresh quality review."
   attempts: 0
 quality_review:
   state: "pass"
@@ -192,8 +192,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T09:31:34.272Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: compact runner work-order contract and full unit suite are current for fresh quality review."
 doc_version: 3
-doc_updated_at: "2026-07-29T09:12:32.735Z"
+doc_updated_at: "2026-07-29T09:31:35.118Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -677,6 +683,51 @@ sections:
     Result: pass
     Evidence: terminal output recorded for implementation commit `3532417852f2de3a06b7afeeef0311c94ff3c38a`
     Scope: full repository contract validation for evaluator-budget closeout and terminal-journal persistence.
+
+    Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+    Result: pass
+    Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+    Scope: fresh standalone direct control task: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, persisted terminal journal (`stopped` / `completed`), and observed RF-10 metrics (3/4/15383 versus frozen 7/7/20562 baseline).
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T09:31:34.272Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: compact runner work-order contract and full unit suite are current for fresh quality review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T09:12:32.735Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    Command: `bun run --cwd packages/agentplane test src/runner/usecases/agent-work-order.integration.test.ts src/runner/usecases/task-run-context.integration.test.ts && bun run test:fast`
+    Result: pass
+    Evidence: packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts | packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+    Scope: the runner AgentWorkOrder remains compact while task brief, next-action, and Hermes retain the CLI preparation projection; local and explicit remote policy surfaces remain consistent.
+
+    Command: `bun run ci:contract`
+    Result: pass
+    Evidence: terminal output recorded for implementation commit `f7f5ff871ef5e65c06f541eab6c2892c322f0ff1`
+    Scope: full repository contract validation after repairing the hosted unit-surface regression.
 
     Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
     Result: pass
@@ -1213,6 +1264,51 @@ Command: `bun run ci:contract`
 Result: pass
 Evidence: terminal output recorded for implementation commit `3532417852f2de3a06b7afeeef0311c94ff3c38a`
 Scope: full repository contract validation for evaluator-budget closeout and terminal-journal persistence.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+Scope: fresh standalone direct control task: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, persisted terminal journal (`stopped` / `completed`), and observed RF-10 metrics (3/4/15383 versus frozen 7/7/20562 baseline).
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T09:31:34.272Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: compact runner work-order contract and full unit suite are current for fresh quality review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T09:12:32.735Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+Command: `bun run --cwd packages/agentplane test src/runner/usecases/agent-work-order.integration.test.ts src/runner/usecases/task-run-context.integration.test.ts && bun run test:fast`
+Result: pass
+Evidence: packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts | packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+Scope: the runner AgentWorkOrder remains compact while task brief, next-action, and Hermes retain the CLI preparation projection; local and explicit remote policy surfaces remain consistent.
+
+Command: `bun run ci:contract`
+Result: pass
+Evidence: terminal output recorded for implementation commit `f7f5ff871ef5e65c06f541eab6c2892c322f0ff1`
+Scope: full repository contract validation after repairing the hosted unit-surface regression.
 
 Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
 Result: pass

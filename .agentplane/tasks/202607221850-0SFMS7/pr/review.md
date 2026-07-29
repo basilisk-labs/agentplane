@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: Verified: current implementation head links terminal runtime evidence and evaluator-budget closeout coverage for fresh quality review.
+- Note: Verified: compact runner work-order contract and full unit suite are current for fresh quality review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -70,6 +70,7 @@ Created: 2026-07-29T01:35:45.453Z
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../src/runner/context/task-context.test.ts        |   1 -
  .../agentplane/src/runner/context/task-context.ts  |  11 +-
+ .../usecases/agent-work-order.integration.test.ts  |  31 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
  .../task-run-bootstrap.result-examples.test.ts     |  14 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  11 +-
@@ -78,7 +79,7 @@ Created: 2026-07-29T01:35:45.453Z
  .../runner/supervisor-execution-episode.test.ts    |  44 ++
  .../src/runner/supervisor-execution-episode.ts     |  22 +-
  scripts/baselines/clone-baseline.json              |  24 +-
- 49 files changed, 5159 insertions(+), 250 deletions(-)
+ 50 files changed, 5181 insertions(+), 259 deletions(-)
 ```
 
 </details>
