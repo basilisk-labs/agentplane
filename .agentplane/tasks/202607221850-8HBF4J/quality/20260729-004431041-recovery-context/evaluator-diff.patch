@@ -1,0 +1,269 @@
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/README.md b/.agentplane/tasks/202607221850-8HBF4J/README.md
+index 4e61d876f..c5bdb3376 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/README.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/README.md
+@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
+ status: "DONE"
+ priority: "high"
+ owner: "CODER"
+-revision: 18
++revision: 19
+ origin:
+   system: "manual"
+ depends_on:
+@@ -39,9 +39,9 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-07-29T00:35:53.655Z"
++  updated_at: "2026-07-29T00:43:36.841Z"
+   updated_by: "CODER"
+-  note: "Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage."
++  note: "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
+   attempts: 0
+ quality_review:
+   state: "pass"
+@@ -116,8 +116,14 @@ events:
+     from: "DOING"
+     to: "DONE"
+     note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "verify"
++    at: "2026-07-29T00:43:36.841Z"
++    author: "CODER"
++    state: "ok"
++    note: "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
+ doc_version: 3
+-doc_updated_at: "2026-07-29T00:39:04.811Z"
++doc_updated_at: "2026-07-29T00:43:37.664Z"
+ doc_updated_by: "CODER"
+ description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
+ sections:
+@@ -197,6 +203,36 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    ### 2026-07-29T00:43:36.841Z — VERIFY — ok
++
++    By: CODER
++
++    Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:39:04.811Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
++    - old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++    - current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
+@@ -210,6 +246,10 @@ sections:
+     - Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
+       Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
+       Resolution: Ready for a fresh EVALUATOR review on the current task branch.
++
++    - Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
++      Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
++      Resolution: Ready to republish the task branch for a fresh hosted check.
+ extensions:
+   implementation_commit:
+     hash: "e6dfdcad95e425b7c5db3699d0733c61decb704c"
+@@ -305,6 +345,36 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++### 2026-07-29T00:43:36.841Z — VERIFY — ok
++
++By: CODER
++
++Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:39:04.811Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
++- old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++- current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -322,3 +392,7 @@ DecisionContextRef:
+ - Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
+   Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
+   Resolution: Ready for a fresh EVALUATOR review on the current task branch.
++
++- Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
++  Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
++  Resolution: Ready to republish the task branch for a fresh hosted check.
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+index 172876e9e..052691ad5 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+@@ -1,3 +1,4 @@
++ docs/user/cli-reference.generated.mdx              |  20 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
+@@ -13,4 +14,4 @@
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1629 insertions(+), 67 deletions(-)
++ 16 files changed, 1649 insertions(+), 67 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+index cecb6b0ac..f660f9bc6 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+@@ -16,12 +16,7 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
+ ## Verification
+ 
+ - State: ok
+-- Note:
+-
+-```text
+-Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix,
+-durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
+-```
++- Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
+ - Canonical workflow state lives in the task README.
+ 
+ <details>
+@@ -32,6 +27,7 @@ durable repeated rework cursor coverage, and shared token/no-progress budget-sto
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
++ docs/user/cli-reference.generated.mdx              |  20 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
+@@ -47,7 +43,7 @@ durable repeated rework cursor coverage, and shared token/no-progress budget-sto
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1629 insertions(+), 67 deletions(-)
++ 16 files changed, 1649 insertions(+), 67 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+index ffc3009bf..3ee8e434b 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+@@ -2,9 +2,9 @@
+   "base": "main",
+   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
+   "created_at": "2026-07-28T13:53:55.558Z",
+-  "diffstat_sha256": "sha256:8b99d8862289694fd8061b1f3aaeb519bc2d497f7c7273066d47276559c43c17",
+-  "last_verified_at": "2026-07-29T00:35:53.655Z",
+-  "last_verified_diffstat_sha256": "sha256:0414676abf3679eb596f2dfc331f4e0ec99b3943dd7565fe3a51956d864721e5",
++  "diffstat_sha256": "sha256:351f0e17f7a64e4a45ecb2f41b316e8852e9d2481db4ce4c84692dfd44e570d6",
++  "last_verified_at": "2026-07-29T00:43:36.841Z",
++  "last_verified_diffstat_sha256": "sha256:8b99d8862289694fd8061b1f3aaeb519bc2d497f7c7273066d47276559c43c17",
+   "pr_number": 4659,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4659",
+   "pre_merge_closure": {
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+index 784e44896..c5c92c072 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+@@ -13,7 +13,7 @@ Created: 2026-07-28T13:53:55.558Z
+ ## Verification
+ 
+ - State: ok
+-- Note: Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
++- Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+@@ -29,6 +29,7 @@ Created: 2026-07-28T13:53:55.558Z
+ - Head: computed live by `agentplane pr check` / `agentplane integrate`
+ 
+ ```text
++ docs/user/cli-reference.generated.mdx              |  20 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
+@@ -44,7 +45,7 @@ Created: 2026-07-28T13:53:55.558Z
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1629 insertions(+), 67 deletions(-)
++ 16 files changed, 1649 insertions(+), 67 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/docs/user/cli-reference.generated.mdx b/docs/user/cli-reference.generated.mdx
+index 2f1820cc1..4ab900106 100644
+--- a/docs/user/cli-reference.generated.mdx
++++ b/docs/user/cli-reference.generated.mdx
+@@ -198,6 +198,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
+   - [context learn tasks](#context-learn-tasks)
+   - [context search](#context-search)
+   - [context show](#context-show)
++  - [context supervise-task](#context-supervise-task)
+   - [context wiki explain](#context-wiki-explain)
+   - [context wiki index](#context-wiki-index)
+   - [context wiki link](#context-wiki-link)
+@@ -3871,6 +3872,25 @@ Usage:
+ agentplane context show <source-ref>
+ ```
+ 
++### context supervise-task
++
++Run resumable CLI-owned post-processing for one CURATOR context result.
++
++Records the already-produced semantic SGR result, then applies, validates, indexes, evaluates, records ACR, and finalizes deterministic context work under one bounded supervisor episode.
++
++Usage:
++
++```text
++agentplane context supervise-task <task-id> --extraction <sgr-json> [options]
++```
++
++Options:
++
++- `--extraction <sgr-json>`: CURATOR-produced schema-valid context_extraction SGR file. (required)
++- `--smoke-query <query>`: Optional retrieval check; defaults to a semantic entity from the SGR.
++- `--evaluator <id>`: Read-only evaluator module id. (default=recovery-context)
++- `--json`: Emit machine-readable result. (default=false)
++
+ ### context wiki explain
+ 
+ Print a wiki page's Agentplane context frontmatter.

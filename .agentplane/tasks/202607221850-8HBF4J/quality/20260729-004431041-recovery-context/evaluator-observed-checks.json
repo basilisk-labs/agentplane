@@ -1,0 +1,18 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T00:43:36.841Z",
+    "updated_by": "CODER",
+    "note": "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
+  },
+  "verification_records": [],
+  "runner_history": []
+}
