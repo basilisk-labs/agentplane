@@ -19,8 +19,9 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 - Note:
 
 ```text
-Verification: workflow-step 24/24, route-decision 10/10, SGR contracts 26/26, critical compatibility
-baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility ratchet passed.
+Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers
+6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet
+passed.
 ```
 - Canonical workflow state lives in the task README.
 

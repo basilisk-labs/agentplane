@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on: []
@@ -23,9 +23,9 @@ plan_approval:
   note: "Standing approval granted by the user for the AgentPlane 0.7 refactor and recovery work."
 verification:
   state: "ok"
-  updated_at: "2026-07-29T16:10:55.644Z"
+  updated_at: "2026-07-29T16:17:48.714Z"
   updated_by: "TESTER"
-  note: "Verification: workflow-step 24/24, route-decision 10/10, SGR contracts 26/26, critical compatibility baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility ratchet passed."
+  note: "Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers 6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet passed."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -156,8 +156,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: rework the deterministic-evidence refresh route so it compares the EVALUATOR SHA with the effective semantic target rather than a later artifact-only commit."
+  -
+    type: "verify"
+    at: "2026-07-29T16:17:48.714Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers 6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet passed."
 doc_version: 3
-doc_updated_at: "2026-07-29T16:15:05.222Z"
+doc_updated_at: "2026-07-29T16:17:49.420Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -396,6 +402,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T16:17:48.714Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers 6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:15:05.222Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -416,6 +452,10 @@ sections:
     - Observation: Hosted CI exposed an unrecorded deterministic_evidence_gap contract delta.
       Impact: The protected PR could not merge while the candidate omitted the new public evaluator field.
       Resolution: Recorded FTHNAR provenance and exact digests in the cumulative candidate without changing the immutable v0.6.24 anchor.
+
+    - Observation: The original evidence-refresh predicate compared against artifact HEAD instead of the resolver-selected semantic target.
+      Impact: A valid deterministic evidence block could not reach TESTER after lifecycle artifacts were committed.
+      Resolution: Route decision now supplies the shared semantic target; reducer coverage proves artifact-only commits keep the TESTER refresh handoff.
 extensions:
   workflow_route_baseline:
     start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
@@ -666,6 +706,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T16:17:48.714Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers 6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:15:05.222Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -690,3 +760,7 @@ DecisionContextRef:
 - Observation: Hosted CI exposed an unrecorded deterministic_evidence_gap contract delta.
   Impact: The protected PR could not merge while the candidate omitted the new public evaluator field.
   Resolution: Recorded FTHNAR provenance and exact digests in the cumulative candidate without changing the immutable v0.6.24 anchor.
+
+- Observation: The original evidence-refresh predicate compared against artifact HEAD instead of the resolver-selected semantic target.
+  Impact: A valid deterministic evidence block could not reach TESTER after lifecycle artifacts were committed.
+  Resolution: Route decision now supplies the shared semantic target; reducer coverage proves artifact-only commits keep the TESTER refresh handoff.
