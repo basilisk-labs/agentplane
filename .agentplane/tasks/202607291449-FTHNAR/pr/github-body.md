@@ -16,7 +16,7 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 ## Verification
 
 - State: ok
-- Note: Verified e9ef623: four declared checks passed with frozen command-level results.
+- Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
 - Canonical workflow state lives in the task README.
 
 <details>
