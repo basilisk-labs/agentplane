@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: Verified: direct golden-metrics evidence, focused suites, and the full contract are recorded for evaluator review.
+- Note: Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

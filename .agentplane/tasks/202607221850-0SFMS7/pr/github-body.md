@@ -16,12 +16,7 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified: direct golden-metrics evidence, focused suites, and the full contract are recorded for
-evaluator review.
-```
+- Note: Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review.
 - Canonical workflow state lives in the task README.
 
 <details>
