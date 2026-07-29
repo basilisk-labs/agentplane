@@ -79,7 +79,11 @@ export async function ensureStableRunnerArtifactDirectoryChain(
       stats = await lstat(current, { bigint: true });
     } catch (error) {
       if ((error as NodeJS.ErrnoException | null)?.code !== "ENOENT") throw error;
-      await mkdir(current, { recursive: false, mode: 0o700 });
+      try {
+        await mkdir(current, { recursive: false, mode: 0o700 });
+      } catch (mkdirError) {
+        if ((mkdirError as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw mkdirError;
+      }
       stats = await lstat(current, { bigint: true });
     }
     if (!stats.isDirectory() || stats.isSymbolicLink()) {
