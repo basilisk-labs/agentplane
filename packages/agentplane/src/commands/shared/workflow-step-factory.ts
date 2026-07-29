@@ -359,6 +359,32 @@ export function verificationStep(state: WorkflowRouteState): WorkflowStep {
   });
 }
 
+export function qualityEvidenceRefreshStep(state: WorkflowRouteState): WorkflowStep {
+  return agentEpisodeStep({
+    state,
+    id: "agent.quality_evidence_refresh",
+    code: "quality_evidence_refresh_required",
+    phase: "quality_evidence_refresh_needed",
+    checkout: "task_worktree",
+    role: "TESTER",
+    purpose: "verification",
+    summary:
+      "a fresh EVALUATOR block is bound to the current work unit; refresh only the declared deterministic verification evidence before another semantic review",
+    objective:
+      "Execute the declared verification contract against the reviewed work unit and record its evidence without changing implementation or assigning a semantic quality verdict.",
+    mustNot: [
+      "do not change implementation, task scope, or the EVALUATOR verdict while refreshing deterministic evidence",
+      "do not publish, queue, close, or integrate the PR before a fresh EVALUATOR review follows the verification record",
+      "do not synthesize a semantic verdict from the refreshed mechanical checks",
+    ],
+    returnControlWhen:
+      "after TESTER records fresh verification evidence; recompute the route and return semantic review to EVALUATOR",
+    verificationCandidate: "agentplane task verify-show <task-id>",
+    evidenceMissing: ["fresh_verification_record", "fresh_evaluator_quality_review"],
+    selectedBlocker: routeBlockerFor(state, "quality_review_stale"),
+  });
+}
+
 export function qualityReviewStep(state: WorkflowRouteState): WorkflowStep {
   return agentEpisodeStep({
     state,
