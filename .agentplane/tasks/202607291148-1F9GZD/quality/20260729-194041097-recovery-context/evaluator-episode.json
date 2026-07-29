@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607291148-1F9GZD-a73ca484a41a616bbc8f982b",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/quality/20260729-194041097-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-29T19:40:41.726Z",
+  "ended_at": "2026-07-29T19:41:25.563Z",
+  "stdout_bytes": 94120,
+  "stderr_bytes": 6159,
+  "provider_usage": {
+    "input_tokens": 144270,
+    "output_tokens": 1834,
+    "total_tokens": 146104
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:a2f4ed25accbfb8370cb2ae2e1761e307b842df3be73c2b7b199e0147f386648"
+}

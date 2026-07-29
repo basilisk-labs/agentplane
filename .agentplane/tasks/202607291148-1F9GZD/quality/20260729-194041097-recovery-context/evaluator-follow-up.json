@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-a73ca484a41a616bbc8f982b",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Повторить обязательные проверки на точном evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb и подготовить новый work order с замороженными SHA-привязанными записями результатов.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Для evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb отсутствуют замороженные записи выполнения обязательных проверок; доступная верификация привязана к более раннему SHA 28b541f82687e465f36e5ecd50e98efdb806f85e.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-194041097-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b530be09ca4a427f2a2e0daa937eca528d66349805ba8ea86768fa6324ef3b3d",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:484f3e340c691430163c2098dee178af619a055bdfb8541bb00ccf54ce3adade",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-194041097-recovery-context/evaluator-result.json"
+}
