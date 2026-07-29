@@ -3,6 +3,8 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { resolveAgentplaneBinPath } from "../../shared/package-paths.js";
+
 const mocks = vi.hoisted(() => ({ runProcess: vi.fn() }));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
@@ -98,7 +100,11 @@ describe("direct task verification", () => {
     );
     expect(mocks.runProcess).toHaveBeenNthCalledWith(
       2,
-      expect.objectContaining({ command: "agentplane", args: ["doctor"], cwd }),
+      expect.objectContaining({
+        command: process.execPath,
+        args: [resolveAgentplaneBinPath(), "doctor"],
+        cwd,
+      }),
     );
   });
 
