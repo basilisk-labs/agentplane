@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: Verified: concurrent runner directory creation rework is current for fresh quality review.
+- Note: Verified: runner directory race rework covers all declared checks for fresh quality review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

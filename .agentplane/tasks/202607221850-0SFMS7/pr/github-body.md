@@ -16,7 +16,7 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 ## Verification
 
 - State: ok
-- Note: Verified: concurrent runner directory creation rework is current for fresh quality review.
+- Note: Verified: runner directory race rework covers all declared checks for fresh quality review.
 - Canonical workflow state lives in the task README.
 
 <details>

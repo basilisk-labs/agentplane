@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "medium",
+      "summary": "The current verification record for evaluated SHA 9722a740 does not record execution of three mandatory declared checks: coverage:workflow-suite, lifecycle:invariants, and test:critical. No approved skips are recorded.",
+      "broken_invariant": "The code DoD requires every check listed in the task Verify Steps to be executed or explicitly skipped with approval; passing test:fast and ci:contract does not establish that the three separately declared commands ran against the evaluated change.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b5cefa66d0af3aff8591f12aad6b116b34b2eb11ba8985f19b2896bbca510e42",
+          "section": "verify and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729095623537-88ebeb3cb3be93c9.json",
+          "sha256": "sha256:4913d0816877d1b1e8f9b1da1ec85407ef2937123bd971f4043261cbf523aeb5",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:6adb68de8da19a862511e417553f22695a29d84619a907d7856c50ced9e2c5c5",
+          "section": "declared_checks"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Record passing runs of `bun run coverage:workflow-suite`, `bun run lifecycle:invariants`, and `bun run test:critical` against the evaluated concurrency fix, or record policy-compliant approved skips."
+  ],
+  "hidden_assumptions": [
+    "The verification assumes `bun run test:fast` and `bun run ci:contract` are acceptable substitutes for the three separately declared commands, but neither the frozen evidence nor an approved skip establishes that equivalence."
+  ],
+  "recovery_context": "The concurrency fix itself has focused process-race and full-suite evidence, but quality cannot pass until the current verification packet explicitly covers all four declared task checks or records approved skips with their risks."
+}

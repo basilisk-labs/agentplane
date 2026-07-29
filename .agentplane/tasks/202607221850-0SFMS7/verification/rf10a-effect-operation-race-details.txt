@@ -18,6 +18,21 @@ Result: pass
 Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
 Scope: rebuilt repo-local runtime and full repository contract validation after the hosted `verify-unit` rework.
 
+Command: `bun run coverage:workflow-suite`
+Result: pass
+Evidence: workflow coverage suite (14 files, 52 tests) and workflow harness contract (5 source targets)
+Scope: declared workflow coverage check for the evaluated concurrency rework.
+
+Command: `bun run lifecycle:invariants`
+Result: pass
+Evidence: lifecycle invariant check (8 invariants)
+Scope: declared lifecycle safety check for the evaluated concurrency rework.
+
+Command: `bun run test:critical`
+Result: pass
+Evidence: critical CLI suite (11 chunks, 72 tests)
+Scope: declared critical behavior check for the evaluated concurrency rework.
+
 Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
 Result: pass
 Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
