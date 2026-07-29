@@ -22,7 +22,7 @@ const EVALUATOR_EPISODE_RECEIPT_FILE = "evaluator-episode.json";
 const EVALUATOR_RESULT_SCHEMA_FILE = "evaluator-result.schema.json";
 const MAX_PROVIDER_STDOUT_BYTES = 16 * 1024 * 1024;
 const MAX_PROVIDER_STDERR_BYTES = 1024 * 1024;
-const CODEX_EVALUATOR_TIMEOUT_MS = 10 * 60 * 1000;
+const CODEX_EVALUATOR_TIMEOUT_MS = 2 * 60 * 1000;
 
 const NON_EMPTY_STRING_SCHEMA = { type: "string", minLength: 1 } as const;
 const NULLABLE_NON_EMPTY_STRING_SCHEMA = {
@@ -271,6 +271,21 @@ function tail(value: string, next: string, limit: number): string {
   return combined.length <= limit ? combined : combined.slice(-limit);
 }
 
+function terminateEvaluatorProcess(child: ReturnType<typeof spawn>): void {
+  // `codex` starts a launcher that can keep the inherited stdio pipes open
+  // after the launcher dies. Give the provider its own process group and
+  // terminate that group, so a timeout always settles the EVALUATOR episode.
+  if (process.platform !== "win32" && typeof child.pid === "number" && child.pid > 0) {
+    try {
+      process.kill(-child.pid, "SIGKILL");
+      return;
+    } catch {
+      // Fall through to the direct child when the group no longer exists.
+    }
+  }
+  child.kill("SIGKILL");
+}
+
 export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (invocation) =>
   await new Promise<EvaluatorEpisodeProviderResult>((resolve, reject) => {
     const [command, ...args] = invocation.argv;
@@ -282,6 +297,7 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
     const collector = createCodexResultEventCollector();
     const child = spawn(command, args, {
       cwd: invocation.repository_root,
+      detached: process.platform !== "win32",
       env: {
         ...process.env,
         AGENTPLANE_EVALUATOR_WORK_ORDER_ID: invocation.work_order_id,
@@ -298,7 +314,7 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
     let stdinError: Error | null = null;
     const timeout = setTimeout(() => {
       limitError = new Error(`Codex evaluator exceeded ${CODEX_EVALUATOR_TIMEOUT_MS}ms.`);
-      child.kill("SIGKILL");
+      terminateEvaluatorProcess(child);
     }, CODEX_EVALUATOR_TIMEOUT_MS);
     const finish = (error?: Error, value?: EvaluatorEpisodeProviderResult) => {
       if (settled) return;
@@ -312,7 +328,7 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
       stdoutBytes += chunk.length;
       if (stdoutBytes > MAX_PROVIDER_STDOUT_BYTES) {
         limitError = new Error("Codex evaluator exceeded the stdout safety limit.");
-        child.kill("SIGKILL");
+        terminateEvaluatorProcess(child);
         return;
       }
       stdoutBuffer += chunk.toString("utf8");
@@ -329,13 +345,13 @@ export const executeCodexEvaluatorEpisode: EvaluatorEpisodeProvider = async (inv
       stderrTail = tail(stderrTail, chunk.toString("utf8"), 4096);
       if (stderrBytes > MAX_PROVIDER_STDERR_BYTES) {
         limitError = new Error("Codex evaluator exceeded the stderr safety limit.");
-        child.kill("SIGKILL");
+        terminateEvaluatorProcess(child);
       }
     });
     child.stdin.once("error", (error) => {
       if (settled) return;
       stdinError = error;
-      child.kill("SIGKILL");
+      terminateEvaluatorProcess(child);
     });
     child.on("close", (code, signal) => {
       if (limitError) {

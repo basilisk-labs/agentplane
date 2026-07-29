@@ -1,0 +1,19 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T05:20:00.582Z",
+    "updated_by": "CODER",
+    "note": "RF-10a rework verified on commit 21049ad18."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "direct_supervision": null
+}
