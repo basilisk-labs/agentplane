@@ -15,12 +15,12 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: needs_rework
+- State: ok
 - Note:
 
 ```text
-GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not
-Prettier-formatted; source behavior and focused tests remain passing.
+All six declared local check groups and CI formatting pass at implementation SHA 714faf44fb5a;
+refreshes deterministic evidence after formatting-only rework.
 ```
 - Canonical workflow state lives in the task README.
 
