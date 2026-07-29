@@ -38,12 +38,24 @@ import {
   EVALUATOR_OPINION_FILE,
   EVALUATOR_PROMPT_FILE,
   QUALITY_REPORT_FILE,
-  relativeArtifactPath,
   renderEvaluatorPrompt,
   safePathSegment,
   timestampPathSegment,
 } from "./evaluator-quality-artifacts.js";
-import type { EvaluatorRunProvenance, EvaluatorRunVerdict } from "./evaluator.spec.js";
+import {
+  isWithinRoot,
+  relative,
+  uniqueStrings,
+  type HumanEvaluatorReviewInput,
+} from "./evaluator-review-shared.js";
+import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
+
+export {
+  isWithinRoot,
+  relative,
+  uniqueStrings,
+  type HumanEvaluatorReviewInput,
+} from "./evaluator-review-shared.js";
 
 export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
 
@@ -124,38 +136,13 @@ export type PreparedEvaluatorReview = {
   result_path: string;
 };
 
-export type HumanEvaluatorReviewInput = {
-  verdict: EvaluatorRunVerdict;
-  summary: string;
-  findings: string[];
-  evidence_refs: string[];
-  missing_tests: string[];
-  hidden_assumptions: string[];
-  residual_risks: string[];
-};
-
 function sha256(value: string | Buffer): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
-}
-
-export function relative(gitRoot: string, target: string): string {
-  return relativeArtifactPath(gitRoot, target);
-}
-
-export function isWithinRoot(root: string, target: string): boolean {
-  const value = path.relative(root, target);
-  return (
-    value !== "" && !value.startsWith(`..${path.sep}`) && value !== ".." && !path.isAbsolute(value)
-  );
 }
 
 function taskSection(task: TaskData, name: string): string | null {
   const section = task.sections?.[name];
   return typeof section === "string" && section.trim() ? section.trim() : null;
-}
-
-export function uniqueStrings(values: readonly string[]): string[] {
-  return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
 }
 
 function acceptanceCriteria(task: TaskData): string[] {
