@@ -1,0 +1,1084 @@
+diff --git a/.agentplane/tasks/202607221908-MR9EA9/README.md b/.agentplane/tasks/202607221908-MR9EA9/README.md
+index 39d10507c..1e69dcac8 100644
+--- a/.agentplane/tasks/202607221908-MR9EA9/README.md
++++ b/.agentplane/tasks/202607221908-MR9EA9/README.md
+@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-beta.1 milestone"
+ status: "TODO"
+ priority: "high"
+ owner: "TESTER"
+-revision: 8
++revision: 9
+ origin:
+   system: "manual"
+ depends_on:
+@@ -16,6 +16,7 @@ depends_on:
+   - "202607221850-WM9X1G"
+   - "202607221908-9M2FBQ"
+   - "202607242236-1BFWEY"
++  - "202607291148-1F9GZD"
+ tags:
+   - "milestone-0-7-0-beta-1"
+   - "quality"
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/README.md b/.agentplane/tasks/202607291428-SNSCBP/README.md
+new file mode 100644
+index 000000000..58bf1a301
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/README.md
+@@ -0,0 +1,456 @@
++---
++id: "202607291428-SNSCBP"
++title: "Gate beta.1 qualification on SHA-bound evaluator evidence"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "high"
++owner: "CODER"
++revision: 17
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "docs"
++  - "quality"
++  - "v0.7"
++task_kind: "docs"
++mutation_scope: "docs"
++blueprint_request: "docs.change"
++verify:
++  - "agentplane doctor"
++  - "node .agentplane/policy/check-routing.mjs"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-29T18:14:30.161Z"
++  updated_by: "ORCHESTRATOR"
++  note: "Approved evidence-only rework: precise dependency, negative-route, policy, and doctor checks."
++verification:
++  state: "ok"
++  updated_at: "2026-07-29T18:16:47.199Z"
++  updated_by: "TESTER"
++  note: "Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-29T18:23:31.523Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 1 typed finding(s)."
++  evaluated_sha: "6c8a2220d5e5fcb2896a11b13aa57300a3038b43"
++  blueprint_digest: "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d"
++  evidence_refs:
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607291428-SNSCBP/README.md"
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607291428-SNSCBP/verification/20260729181647199-63f5276082638cce.json"
++    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/dod.docs.md"
++    - ".agentplane/policy/security.must.md"
++  findings:
++    - "The SHA-bound verification record identifies the exact commands and outcomes but preserves summarized evidence rather than raw command output or runner history."
++commit:
++  hash: "6c8a2220d5e5fcb2896a11b13aa57300a3038b43"
++  message: "chore(task): seal beta gate review evidence"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implementation: added 202607291148-1F9GZD as the beta.1 qualification dependency so the milestone cannot advance without merged SHA-bound evaluator evidence."
++  -
++    author: "CODER"
++    body: "Start: freeze SHA-bound beta.1 dependency gate evidence after evaluator block."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-07-29T14:28:55.544Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-29T14:29:55.122Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation: added 202607291148-1F9GZD as the beta.1 qualification dependency so the milestone cannot advance without merged SHA-bound evaluator evidence."
++  -
++    type: "verify"
++    at: "2026-07-29T14:30:26.373Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified beta.1 qualification graph requires the SHA-bound evaluator evidence task."
++  -
++    type: "verify"
++    at: "2026-07-29T14:32:42.822Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified beta.1 route blocks on the missing SHA-bound evaluator evidence task."
++  -
++    type: "status"
++    at: "2026-07-29T18:14:30.679Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Start: freeze SHA-bound beta.1 dependency gate evidence after evaluator block."
++  -
++    type: "verify"
++    at: "2026-07-29T18:16:47.199Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220."
++  -
++    type: "status"
++    at: "2026-07-29T18:25:13.882Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++doc_version: 3
++doc_updated_at: "2026-07-29T18:25:13.882Z"
++doc_updated_by: "CODER"
++description: "Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence."
++sections:
++  Summary: |-
++    Gate beta.1 qualification on SHA-bound evaluator evidence
++
++    Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.
++  Scope: |-
++    - In scope: Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.
++    - Out of scope: unrelated refactors not required for "Gate beta.1 qualification on SHA-bound evaluator evidence".
++  Plan: "1. Preserve the committed beta.1 dependency on 202607291148-1F9GZD. 2. Replace fallback verification with deterministic dependency-present, dependency-blocked, policy, and doctor evidence bound to the implementation SHA. 3. Freeze a fresh TESTER record and obtain EVALUATOR review without changing semantic scope. 4. Publish and integrate this metadata-only gate before the evidence implementation PR."
++  Verify Steps: "1. Run node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9. Expected: depends_on includes 202607291148-1F9GZD in the task branch. 2. Run node packages/agentplane/bin/agentplane.js task active. Expected: beta.1 qualification remains blocked while 202607291148-1F9GZD is incomplete or absent from main. 3. Run node .agentplane/policy/check-routing.mjs and node packages/agentplane/bin/agentplane.js doctor. Expected: policy routing and workflow doctor pass. 4. Record command-level verification evidence bound to the committed dependency change SHA, then require a fresh EVALUATOR review. PR publication, integration queue, hosted checks, and merge are subsequent CLI-owned gates."
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-29T14:30:26.373Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified beta.1 qualification graph requires the SHA-bound evaluator evidence task.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:29:55.122Z, excerpt_hash=sha256:e165be8d473658499cc960ddc80021b819d5c2129e665a00e14ca5c2a8a0d63f
++
++    Details:
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK.
++    Scope: metadata-only task routing.
++
++    Command: node packages/agentplane/bin/agentplane.js doctor
++    Result: pass
++    Evidence: 0 errors; two pre-existing historical DONE-task commit warnings.
++    Scope: repository workflow health.
++
++    Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
++    Result: pass
++    Evidence: depends_on includes 202607291148-1F9GZD in committed README at 11ee94a6a.
++    Scope: beta.1 qualification dependency graph.
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
++    - old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++    - current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607291428-SNSCBP
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T14:32:42.822Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified beta.1 route blocks on the missing SHA-bound evaluator evidence task.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:30:27.022Z, excerpt_hash=sha256:e165be8d473658499cc960ddc80021b819d5c2129e665a00e14ca5c2a8a0d63f
++
++    Details:
++
++    Command: node packages/agentplane/bin/agentplane.js task active
++    Result: pass
++    Evidence: 202607221908-MR9EA9 reports deps=missing:202607291148-1F9GZD, so beta.1 cannot advance before this task is present and completed on main.
++    Scope: negative dependency-closure proof.
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK.
++    Scope: metadata-only task routing.
++
++    Command: node packages/agentplane/bin/agentplane.js doctor
++    Result: pass
++    Evidence: 0 errors; only two historical DONE-task commit warnings outside this task.
++    Scope: repository workflow health.
++
++    Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
++    Result: pass
++    Evidence: committed depends_on includes 202607291148-1F9GZD at 11ee94a6a.
++    Scope: positive dependency-graph proof.
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
++    - old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++    - current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T18:16:47.199Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T18:14:30.679Z, excerpt_hash=sha256:67971c6d3d364d920acecf7bc427e378cdc073c0392c98dc293a620408099675
++
++    Details:
++
++    Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
++    Result: pass
++    Evidence: depends_on lists 202607291148-1F9GZD in the beta.1 qualification task at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.
++    Scope: positive dependency-present proof.
++
++    Command: node packages/agentplane/bin/agentplane.js task active
++    Result: pass
++    Evidence: 202607221908-MR9EA9 remains TODO with deps=missing:202607291148-1F9GZD, so beta.1 qualification cannot advance while the evidence task is incomplete or absent from main.
++    Scope: negative dependency-blocked proof.
++
++    Command: node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor
++    Result: pass
++    Evidence: policy routing passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.
++    Scope: policy and workflow integrity.
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
++    - old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++    - current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Gate beta.1 qualification on SHA-bound evaluator evidence
++
++Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.
++
++## Scope
++
++- In scope: Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.
++- Out of scope: unrelated refactors not required for "Gate beta.1 qualification on SHA-bound evaluator evidence".
++
++## Plan
++
++1. Preserve the committed beta.1 dependency on 202607291148-1F9GZD. 2. Replace fallback verification with deterministic dependency-present, dependency-blocked, policy, and doctor evidence bound to the implementation SHA. 3. Freeze a fresh TESTER record and obtain EVALUATOR review without changing semantic scope. 4. Publish and integrate this metadata-only gate before the evidence implementation PR.
++
++## Verify Steps
++
++1. Run node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9. Expected: depends_on includes 202607291148-1F9GZD in the task branch. 2. Run node packages/agentplane/bin/agentplane.js task active. Expected: beta.1 qualification remains blocked while 202607291148-1F9GZD is incomplete or absent from main. 3. Run node .agentplane/policy/check-routing.mjs and node packages/agentplane/bin/agentplane.js doctor. Expected: policy routing and workflow doctor pass. 4. Record command-level verification evidence bound to the committed dependency change SHA, then require a fresh EVALUATOR review. PR publication, integration queue, hosted checks, and merge are subsequent CLI-owned gates.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-29T14:30:26.373Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified beta.1 qualification graph requires the SHA-bound evaluator evidence task.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:29:55.122Z, excerpt_hash=sha256:e165be8d473658499cc960ddc80021b819d5c2129e665a00e14ca5c2a8a0d63f
++
++Details:
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK.
++Scope: metadata-only task routing.
++
++Command: node packages/agentplane/bin/agentplane.js doctor
++Result: pass
++Evidence: 0 errors; two pre-existing historical DONE-task commit warnings.
++Scope: repository workflow health.
++
++Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
++Result: pass
++Evidence: depends_on includes 202607291148-1F9GZD in committed README at 11ee94a6a.
++Scope: beta.1 qualification dependency graph.
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
++- old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++- current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607291428-SNSCBP
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T14:32:42.822Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified beta.1 route blocks on the missing SHA-bound evaluator evidence task.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:30:27.022Z, excerpt_hash=sha256:e165be8d473658499cc960ddc80021b819d5c2129e665a00e14ca5c2a8a0d63f
++
++Details:
++
++Command: node packages/agentplane/bin/agentplane.js task active
++Result: pass
++Evidence: 202607221908-MR9EA9 reports deps=missing:202607291148-1F9GZD, so beta.1 cannot advance before this task is present and completed on main.
++Scope: negative dependency-closure proof.
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK.
++Scope: metadata-only task routing.
++
++Command: node packages/agentplane/bin/agentplane.js doctor
++Result: pass
++Evidence: 0 errors; only two historical DONE-task commit warnings outside this task.
++Scope: repository workflow health.
++
++Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
++Result: pass
++Evidence: committed depends_on includes 202607291148-1F9GZD at 11ee94a6a.
++Scope: positive dependency-graph proof.
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
++- old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++- current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T18:16:47.199Z — VERIFY — ok
++
++By: TESTER
++
++Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T18:14:30.679Z, excerpt_hash=sha256:67971c6d3d364d920acecf7bc427e378cdc073c0392c98dc293a620408099675
++
++Details:
++
++Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
++Result: pass
++Evidence: depends_on lists 202607291148-1F9GZD in the beta.1 qualification task at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.
++Scope: positive dependency-present proof.
++
++Command: node packages/agentplane/bin/agentplane.js task active
++Result: pass
++Evidence: 202607221908-MR9EA9 remains TODO with deps=missing:202607291148-1F9GZD, so beta.1 qualification cannot advance while the evidence task is incomplete or absent from main.
++Scope: negative dependency-blocked proof.
++
++Command: node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor
++Result: pass
++Evidence: policy routing passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.
++Scope: policy and workflow integrity.
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
++- old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++- current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..dbf150146
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
+@@ -0,0 +1,404 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607291428-SNSCBP",
++    "title": "Gate beta.1 qualification on SHA-bound evaluator evidence",
++    "description": "Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.",
++    "tags": [
++      "docs",
++      "quality",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "docs",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "docs",
++    "mutationScope": "docs",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "docs.change"
++  },
++  "selectedBlueprint": {
++    "id": "docs.change",
++    "version": 1,
++    "title": "Documentation change",
++    "taskKinds": [
++      "docs"
++    ],
++    "workflowModes": [
++      "direct",
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "docs.change",
++    "blueprintVersion": 1,
++    "title": "Documentation change",
++    "taskId": "202607291428-SNSCBP",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "docs",
++      "mutationScope": "docs",
++      "blueprintRequest": "docs.change"
++    },
++    "whySelected": [
++      "explicit blueprint requested: docs.change",
++      "task intent kind: docs",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: docs"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.docs.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "deterministic_check",
++        "kind": "deterministic_check",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "artifact_write",
++        "kind": "artifact_write",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "docs.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed documentation paths."
++      },
++      {
++        "id": "docs.check",
++        "kind": "check_result",
++        "producedBy": "deterministic_check",
++        "required": true,
++        "description": "Documentation checks."
++      },
++      {
++        "id": "docs.artifact",
++        "kind": "artifact",
++        "producedBy": "artifact_write",
++        "required": true,
++        "description": "Updated documentation artifact."
++      },
++      {
++        "id": "docs.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/dod.docs.md",
++      ".agentplane/policy/security.must.md"
++    ],
++    "allowedCommands": [
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "documentation checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 3,
++      "maxPromptBlocks": 10,
++      "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.docs.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "deterministic_check",
++      "kind": "deterministic_check",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "artifact_write",
++      "kind": "artifact_write",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "docs.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed documentation paths."
++    },
++    {
++      "id": "docs.check",
++      "kind": "check_result",
++      "producedBy": "deterministic_check",
++      "required": true,
++      "description": "Documentation checks."
++    },
++    {
++      "id": "docs.artifact",
++      "kind": "artifact",
++      "producedBy": "artifact_write",
++      "required": true,
++      "description": "Updated documentation artifact."
++    },
++    {
++      "id": "docs.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/dod.docs.md",
++    ".agentplane/policy/security.must.md"
++  ],
++  "allowedCommands": [
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "documentation checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 3,
++    "maxPromptBlocks": 10,
++    "rationale": "Documentation changes need docs DoD and minimal workflow/security policy."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: docs.change",
++    "task intent kind: docs",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: docs"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d"
++  }
++}
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/pr/diffstat.txt b/.agentplane/tasks/202607291428-SNSCBP/pr/diffstat.txt
+new file mode 100644
+index 000000000..f63f42659
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/pr/diffstat.txt
+@@ -0,0 +1,2 @@
++ .agentplane/tasks/202607221908-MR9EA9/README.md | 3 ++-
++ 1 file changed, 2 insertions(+), 1 deletion(-)
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/pr/github-body.md b/.agentplane/tasks/202607291428-SNSCBP/pr/github-body.md
+new file mode 100644
+index 000000000..bd1da819b
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/pr/github-body.md
+@@ -0,0 +1,34 @@
++Task: `202607291428-SNSCBP`
++Title: Gate beta.1 qualification on SHA-bound evaluator evidence
++Canonical task record: `.agentplane/tasks/202607291428-SNSCBP/README.md`
++
++## Summary
++
++Gate beta.1 qualification on SHA-bound evaluator evidence
++
++Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.
++
++## Scope
++
++- In scope: Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.
++- Out of scope: unrelated refactors not required for "Gate beta.1 qualification on SHA-bound evaluator evidence".
++
++## Verification
++
++- State: ok
++- Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T14:29:19.281Z
++- Branch: task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/tasks/202607221908-MR9EA9/README.md | 3 ++-
++ 1 file changed, 2 insertions(+), 1 deletion(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/pr/github-title.txt b/.agentplane/tasks/202607291428-SNSCBP/pr/github-title.txt
+new file mode 100644
+index 000000000..7f23de7ab
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/pr/github-title.txt
+@@ -0,0 +1 @@
++✅ SNSCBP task: Gate beta.1 qualification on SHA-bound evaluator evidence [202607291428-SNSCBP]
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/pr/meta.json b/.agentplane/tasks/202607291428-SNSCBP/pr/meta.json
+new file mode 100644
+index 000000000..96da0409c
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator",
++  "created_at": "2026-07-29T14:28:55.639Z",
++  "diffstat_sha256": "sha256:55b11dcf183c6e9af5c4b11e70864646cb37e5255c1faef9c2364b1242f7b5d3",
++  "last_verified_at": "2026-07-29T18:16:47.199Z",
++  "last_verified_diffstat_sha256": "sha256:55b11dcf183c6e9af5c4b11e70864646cb37e5255c1faef9c2364b1242f7b5d3",
++  "pr_number": 4671,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4671",
++  "pre_merge_closure": {
++    "basis_commit": "6c8a2220d5e5fcb2896a11b13aa57300a3038b43",
++    "branch": "task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator",
++    "pr_number": 4671,
++    "recorded_at": "2026-07-29T18:25:13.941Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607291428-SNSCBP",
++  "updated_at": "2026-07-29T14:29:19.281Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/pr/review.md b/.agentplane/tasks/202607291428-SNSCBP/pr/review.md
+new file mode 100644
+index 000000000..1764d5c43
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/pr/review.md
+@@ -0,0 +1,37 @@
++# PR Review
++
++Created: 2026-07-29T14:28:55.639Z
++
++## Task
++
++- Task: `202607291428-SNSCBP`
++- Title: Gate beta.1 qualification on SHA-bound evaluator evidence
++- Status: DONE
++- Branch: `task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator`
++- Canonical task record: `.agentplane/tasks/202607291428-SNSCBP/README.md`
++
++## Verification
++
++- State: ok
++- Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T14:29:19.281Z
++- Branch: task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .agentplane/tasks/202607221908-MR9EA9/README.md | 3 ++-
++ 1 file changed, 2 insertions(+), 1 deletion(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/verification/20260729143026373-733ce81813596a49.json b/.agentplane/tasks/202607291428-SNSCBP/verification/20260729143026373-733ce81813596a49.json
+new file mode 100644
+index 000000000..079e3485c
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/verification/20260729143026373-733ce81813596a49.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: metadata-only task routing.\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: 0 errors; two pre-existing historical DONE-task commit warnings.\nScope: repository workflow health.\n\nCommand: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9\nResult: pass\nEvidence: depends_on includes 202607291148-1F9GZD in committed README at 11ee94a6a.\nScope: beta.1 qualification dependency graph.",
++  "digest": "sha256:733ce81813596a492dd308e7b96d1cc1455fa2f7527ab442fcb6415b65295c7b",
++  "implementation_sha": "11ee94a6a1b57df493e333d6f23ede0bc75086c9",
++  "kind": "task_verification_record",
++  "note": "Verified beta.1 qualification graph requires the SHA-bound evaluator evidence task.",
++  "recorded_at": "2026-07-29T14:30:26.373Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "PLANNER fallback scaffold for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
++  "scope_digest": "sha256:e165be8d473658499cc960ddc80021b819d5c2129e665a00e14ca5c2a8a0d63f",
++  "task_id": "202607291428-SNSCBP",
++  "verification_command": "agentplane verify 202607291428-SNSCBP --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/verification/20260729143242822-af7dd2db4aea00fc.json b/.agentplane/tasks/202607291428-SNSCBP/verification/20260729143242822-af7dd2db4aea00fc.json
+new file mode 100644
+index 000000000..3b474b4b7
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/verification/20260729143242822-af7dd2db4aea00fc.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: node packages/agentplane/bin/agentplane.js task active\nResult: pass\nEvidence: 202607221908-MR9EA9 reports deps=missing:202607291148-1F9GZD, so beta.1 cannot advance before this task is present and completed on main.\nScope: negative dependency-closure proof.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: metadata-only task routing.\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: 0 errors; only two historical DONE-task commit warnings outside this task.\nScope: repository workflow health.\n\nCommand: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9\nResult: pass\nEvidence: committed depends_on includes 202607291148-1F9GZD at 11ee94a6a.\nScope: positive dependency-graph proof.",
++  "digest": "sha256:af7dd2db4aea00fcc91bfe9ce9ad1e00656934b9985c7dca5d0ee438113133ec",
++  "implementation_sha": "11ee94a6a1b57df493e333d6f23ede0bc75086c9",
++  "kind": "task_verification_record",
++  "note": "Verified beta.1 route blocks on the missing SHA-bound evaluator evidence task.",
++  "recorded_at": "2026-07-29T14:32:42.822Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "PLANNER fallback scaffold for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
++  "scope_digest": "sha256:e165be8d473658499cc960ddc80021b819d5c2129e665a00e14ca5c2a8a0d63f",
++  "task_id": "202607291428-SNSCBP",
++  "verification_command": "agentplane verify 202607291428-SNSCBP --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607291428-SNSCBP/verification/20260729181647199-63f5276082638cce.json b/.agentplane/tasks/202607291428-SNSCBP/verification/20260729181647199-63f5276082638cce.json
+new file mode 100644
+index 000000000..467bdac83
+--- /dev/null
++++ b/.agentplane/tasks/202607291428-SNSCBP/verification/20260729181647199-63f5276082638cce.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9\nResult: pass\nEvidence: depends_on lists 202607291148-1F9GZD in the beta.1 qualification task at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.\nScope: positive dependency-present proof.\n\nCommand: node packages/agentplane/bin/agentplane.js task active\nResult: pass\nEvidence: 202607221908-MR9EA9 remains TODO with deps=missing:202607291148-1F9GZD, so beta.1 qualification cannot advance while the evidence task is incomplete or absent from main.\nScope: negative dependency-blocked proof.\n\nCommand: node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: policy routing passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.\nScope: policy and workflow integrity.",
++  "digest": "sha256:63f5276082638cceb306dadb9bb2179bb4d9f77297709bf32881aa52a3ca888c",
++  "implementation_sha": "6c8a2220d5e5fcb2896a11b13aa57300a3038b43",
++  "kind": "task_verification_record",
++  "note": "Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.",
++  "recorded_at": "2026-07-29T18:16:47.199Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Run node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9. Expected: depends_on includes 202607291148-1F9GZD in the task branch. 2. Run node packages/agentplane/bin/agentplane.js task active. Expected: beta.1 qualification remains blocked while 202607291148-1F9GZD is incomplete or absent from main. 3. Run node .agentplane/policy/check-routing.mjs and node packages/agentplane/bin/agentplane.js doctor. Expected: policy routing and workflow doctor pass. 4. Record command-level verification evidence bound to the committed dependency change SHA, then require a fresh EVALUATOR review. PR publication, integration queue, hosted checks, and merge are subsequent CLI-owned gates.",
++  "scope_digest": "sha256:67971c6d3d364d920acecf7bc427e378cdc073c0392c98dc293a620408099675",
++  "task_id": "202607291428-SNSCBP",
++  "verification_command": "agentplane verify 202607291428-SNSCBP --ok --by TESTER",
++  "verifier": "TESTER"
++}
