@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen evidence reports verification as successful but contains no deterministic verification records, runner history, or runtime evidence supporting that claim.",
+      "broken_invariant": "Pass requires frozen deterministic evidence covering the declared focused tests, routing validation, and doctor check; a verification status and summary note alone do not prove those checks executed against the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-152711908-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:9b8b5fede138caafcefe1a4c2bf31aa0a97504519569e360bf9485779487b358",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze the command-level results for `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`.",
+    "Freeze the command-level results for `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`.",
+    "Freeze the command-level results for `node .agentplane/policy/check-routing.mjs`.",
+    "Freeze the command-level results for `node packages/agentplane/bin/agentplane.js doctor`."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes checks run against evaluated SHA e9ef6239774c4e2cff481d200a369c22225b38a1 despite the absence of frozen command records.",
+    "ISO timestamp strings used by the recovery predicate remain canonical and lexicographically comparable."
+  ],
+  "recovery_context": "Refresh and freeze the declared deterministic verification evidence for evaluated SHA e9ef6239774c4e2cff481d200a369c22225b38a1, then obtain a new EVALUATOR review without changing implementation or semantic-review ownership.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

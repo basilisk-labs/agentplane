@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T15:32:50.421Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "e9ef6239774c4e2cff481d200a369c22225b38a1",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "Regression coverage injects recovery_reason directly into route state and does not prove that an evaluator result is persisted, normalized, reloaded, and then routed to the bounded TESTER evidence-refresh episode."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153123032-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607291449-FTHNAR/verification/20260729153045049-45a1e66a801bf33a.json"
+  ],
+  "missing_tests": [
+    "Add an integration or use-case test that applies a blocked evaluator result with recovery_reason=deterministic_evidence_gap, reloads the task through the backend normalization path, and confirms next-action delegates only to TESTER; then record execution of that test.",
+    "Add the corresponding negative persistence test proving an evaluator block without recovery_reason, or with a non-evidence-gap semantic finding, reloads without selecting evidence refresh."
+  ],
+  "hidden_assumptions": [
+    "The newly added recovery_reason field survives evaluator result validation, review persistence, task serialization, backend normalization, and route reconstruction unchanged.",
+    "The focused route tests are representative of persisted production task state even though they bypass the evaluator-review application path."
+  ],
+  "residual_risks": [
+    "Verify the recovery discriminator across the complete evaluator-result-to-task-route persistence boundary, including the unrelated-block negative case, and rerun the focused deterministic checks before requesting a fresh EVALUATOR review."
+  ]
+}
