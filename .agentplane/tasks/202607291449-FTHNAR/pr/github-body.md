@@ -15,13 +15,8 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: correct the primary task plan after CLI rejected batch inclusion of the already-DONE R1
-task; retain the tested source repair in FTH and supersede the duplicate PR.
-```
+- State: ok
+- Note: Corrected primary packaging retains the same semantic implementation and all combined checks pass.
 - Canonical workflow state lives in the task README.
 
 <details>

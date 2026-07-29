@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 47
 origin:
   system: "manual"
 depends_on: []
@@ -22,39 +22,41 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-29T17:11:50.510Z"
+  state: "ok"
+  updated_at: "2026-07-29T17:13:28.722Z"
   updated_by: "TESTER"
-  note: "Rework: correct the primary task plan after CLI rejected batch inclusion of the already-DONE R1 task; retain the tested source repair in FTH and supersede the duplicate PR."
-  attempts: 1
+  note: "Corrected primary packaging retains the same semantic implementation and all combined checks pass."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T17:09:48.535Z"
+  updated_at: "2026-07-29T17:13:43.123Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 3 typed finding(s)."
   evaluated_sha: "13d29967da9d6f5de77780ac92b3180916968b72"
   blueprint_digest: "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e"
   evidence_refs:
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607291449-FTHNAR/README.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/verification/20260729170933602-8e378ff840124c4c.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/verification/20260729171328722-3fe4fb9327f32a08.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-171342406-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The semantic quality target remains bound to the implementation commit rather than later task artifacts, so closure evidence does not invalidate a completed review."
-    - "Task branch publication refreshes only the required remote-tracking ref, while configured-upstream fallback requires that ref to resolve."
-    - "The combined regressions cover evaluator routing, publication behavior, and the previously live missing_upstream failure mode."
-commit: null
+    - "The source repair is bounded to publication tracking and configured-upstream resolution; it does not mutate origin fetch configuration."
+    - "The existing FTH semantic route binds evaluator freshness to the implementation SHA, which avoids artifact-only closure loops."
+    - "The final primary plan accurately records #4673 as superseded rather than fabricating an invalid branch_pr batch."
+commit:
+  hash: "f446aa2cbc2573b64ebf9dd6674d5096d59d69be"
+  message: "📝 FTHNAR task: correct primary rework packaging"
 comments:
   -
     author: "CODER"
@@ -80,6 +82,12 @@ comments:
   -
     author: "CODER"
     body: "Implementation: added the included constrained-refspec publication repair and regression coverage to the primary FTH branch."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Implementation: primary FTH rework packaging corrected; semantic implementation remains commit 13d29967da9d."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -237,8 +245,28 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Rework: correct the primary task plan after CLI rejected batch inclusion of the already-DONE R1 task; retain the tested source repair in FTH and supersede the duplicate PR."
+  -
+    type: "status"
+    at: "2026-07-29T17:12:49.471Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: primary FTH rework packaging corrected; semantic implementation remains commit 13d29967da9d."
+  -
+    type: "verify"
+    at: "2026-07-29T17:13:28.722Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Corrected primary packaging retains the same semantic implementation and all combined checks pass."
+  -
+    type: "status"
+    at: "2026-07-29T17:14:11.516Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T17:12:09.645Z"
+doc_updated_at: "2026-07-29T17:14:11.517Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -776,6 +804,46 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T17:13:28.722Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Corrected primary packaging retains the same semantic implementation and all combined checks pass.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:12:49.471Z, excerpt_hash=sha256:4224e02e6626f82e3581ba675f45e8bb8d0d5e6704a3c49850d13c6eb39a6337
+
+    Details:
+
+    Command: bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: 46 tests passed, 0 failed.
+    Scope: constrained-refspec publication plus evaluator evidence-refresh and stale-quality routing.
+
+    Command: bun run typecheck; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; agentplane doctor
+    Result: pass
+    Evidence: typecheck, structural/policy gates, and doctor completed without errors; doctor retains only historical missing-commit warnings.
+    Scope: combined primary FTH branch after packaging correction.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -818,10 +886,16 @@ sections:
       Resolution: FTH remains the sole primary task carrying the code; #4673 will be closed as superseded after FTH publishes.
       Promotion: incident-candidate
       Fixability: repo-fixable
+
+    - Observation: The final primary plan contains a single FTH task and explicitly supersedes the duplicate R1 PR rather than declaring an invalid batch.
+      Impact: The primary PR can now satisfy branch_pr ownership rules without losing the constrained-refspec source repair.
+      Resolution: Publish #4672 as the sole integration target, then close #4673 as superseded.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
 extensions:
   implementation_commit:
-    hash: "b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345"
-    message: "♻️ FTHNAR route: restore CI hotspot budgets"
+    hash: "13d29967da9d6f5de77780ac92b3180916968b72"
+    message: "♻️ FTHNAR pr: restore constrained-refspec head tracking"
   workflow_route_baseline:
     start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
     version: 1
@@ -1371,6 +1445,46 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T17:13:28.722Z — VERIFY — ok
+
+By: TESTER
+
+Note: Corrected primary packaging retains the same semantic implementation and all combined checks pass.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:12:49.471Z, excerpt_hash=sha256:4224e02e6626f82e3581ba675f45e8bb8d0d5e6704a3c49850d13c6eb39a6337
+
+Details:
+
+Command: bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: 46 tests passed, 0 failed.
+Scope: constrained-refspec publication plus evaluator evidence-refresh and stale-quality routing.
+
+Command: bun run typecheck; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; agentplane doctor
+Result: pass
+Evidence: typecheck, structural/policy gates, and doctor completed without errors; doctor retains only historical missing-commit warnings.
+Scope: combined primary FTH branch after packaging correction.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1415,5 +1529,11 @@ DecisionContextRef:
 - Observation: Branch-pr batch validation rejects a DONE task absent from the primary worktree.
   Impact: Recording R1 as included would create an invalid lifecycle graph.
   Resolution: FTH remains the sole primary task carrying the code; #4673 will be closed as superseded after FTH publishes.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
+
+- Observation: The final primary plan contains a single FTH task and explicitly supersedes the duplicate R1 PR rather than declaring an invalid batch.
+  Impact: The primary PR can now satisfy branch_pr ownership rules without losing the constrained-refspec source repair.
+  Resolution: Publish #4672 as the sole integration target, then close #4673 as superseded.
   Promotion: incident-candidate
   Fixability: repo-fixable

@@ -6,14 +6,14 @@ Created: 2026-07-29T14:50:37.577Z
 
 - Task: `202607291449-FTHNAR`
 - Title: Permit evidence refresh after evaluator review gaps
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
 - Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: correct the primary task plan after CLI rejected batch inclusion of the already-DONE R1 task; retain the tested source repair in FTH and supersede the duplicate PR.
+- State: ok
+- Note: Corrected primary packaging retains the same semantic implementation and all combined checks pass.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
