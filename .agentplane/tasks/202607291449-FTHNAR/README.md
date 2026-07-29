@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Standing approval granted by the user for the AgentPlane 0.7 refactor and recovery work."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-29T16:30:20.448Z"
+  state: "ok"
+  updated_at: "2026-07-29T16:36:44.768Z"
   updated_by: "TESTER"
-  note: "Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines)."
-  attempts: 1
+  note: "Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -181,8 +181,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines)."
+  -
+    type: "verify"
+    at: "2026-07-29T16:36:44.768Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets."
 doc_version: 3
-doc_updated_at: "2026-07-29T16:30:21.382Z"
+doc_updated_at: "2026-07-29T16:36:45.497Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -521,6 +527,86 @@ sections:
     Result: fail
     Evidence: hotspot-report reports packages/agentplane/src/commands/shared/workflow-step-branch.ts at 619 lines; threshold is 600.
     Scope: structural extraction only; preserve FTHNAR recovery-route behavior and its existing tests.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T16:36:44.768Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:30:21.382Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
+    Result: pass
+    Evidence: focused unit output: 21 pass, 0 fail, 131 expectations.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: bun test packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+    Result: pass
+    Evidence: focused unit output: 4 pass, 0 fail; recovery refresh, artifact descendants, negative block, and EVALUATOR return covered.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: focused unit output: 10 pass, 0 fail, 11 expectations.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: focused Vitest output: 6 pass, 0 fail.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: bun run hotspots:check
+    Result: pass
+    Evidence: workflow-step-branch is 595 lines; oversized test baseline OK with 10 entries and 11370 total lines.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: doctor OK; errors=0; warnings=2 are historical missing DONE-task commit hashes outside this task.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build check exited 0.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: bunx eslint packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/commands/shared/workflow-step-branch-state.ts packages/agentplane/src/commands/shared/workflow-step-quality.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+    Result: pass
+    Evidence: ESLint exited 0 for all changed implementation and test files.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+    Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts --pool=forks --maxWorkers 4 --testTimeout 120000 --hookTimeout 120000
+    Result: pass
+    Evidence: critical compatibility output: 7 pass, 0 fail.
+    Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
 
     BlueprintSnapshotRef:
     - state: current
@@ -918,6 +1004,86 @@ Command: GitHub Actions Core CI / verify-contract (run 30470755976, job 90640167
 Result: fail
 Evidence: hotspot-report reports packages/agentplane/src/commands/shared/workflow-step-branch.ts at 619 lines; threshold is 600.
 Scope: structural extraction only; preserve FTHNAR recovery-route behavior and its existing tests.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T16:36:44.768Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:30:21.382Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
+Result: pass
+Evidence: focused unit output: 21 pass, 0 fail, 131 expectations.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: bun test packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+Result: pass
+Evidence: focused unit output: 4 pass, 0 fail; recovery refresh, artifact descendants, negative block, and EVALUATOR return covered.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: focused unit output: 10 pass, 0 fail, 11 expectations.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: focused Vitest output: 6 pass, 0 fail.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: bun run hotspots:check
+Result: pass
+Evidence: workflow-step-branch is 595 lines; oversized test baseline OK with 10 entries and 11370 total lines.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: doctor OK; errors=0; warnings=2 are historical missing DONE-task commit hashes outside this task.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build check exited 0.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: bunx eslint packages/agentplane/src/commands/shared/workflow-step-branch.ts packages/agentplane/src/commands/shared/workflow-step-branch-state.ts packages/agentplane/src/commands/shared/workflow-step-quality.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/workflow-step-quality.test.ts
+Result: pass
+Evidence: ESLint exited 0 for all changed implementation and test files.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
+
+Command: node node_modules/vitest/vitest.mjs --config vitest.config.ts run packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts --pool=forks --maxWorkers 4 --testTimeout 120000 --hookTimeout 120000
+Result: pass
+Evidence: critical compatibility output: 7 pass, 0 fail.
+Scope: implementation b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345.
 
 BlueprintSnapshotRef:
 - state: current

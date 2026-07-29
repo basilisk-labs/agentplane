@@ -12,8 +12,8 @@ Created: 2026-07-29T14:50:37.577Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines).
+- State: ok
+- Note: Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

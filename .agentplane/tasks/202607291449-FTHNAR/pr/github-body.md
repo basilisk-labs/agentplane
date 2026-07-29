@@ -15,13 +15,8 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module
-limit (619 lines).
-```
+- State: ok
+- Note: Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets.
 - Canonical workflow state lives in the task README.
 
 <details>
