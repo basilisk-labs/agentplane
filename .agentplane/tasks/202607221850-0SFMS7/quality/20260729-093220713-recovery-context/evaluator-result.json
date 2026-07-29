@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RF10-PASS-001",
+      "severity": "low",
+      "summary": "Реализация и замороженные доказательства покрывают полный прямой цикл: EXECUTOR не выполняет lifecycle-вызовы, маршруты пересчитываются после операций, отрицательные и типизированные остановки проверены, область записи ограничена, журнал достигает терминального состояния, а затраты ниже базовой линии 0.6.24 без снижения подтверждённого успеха.",
+      "broken_invariant": "Нарушений утверждённого контракта и инвариантов восстановления не обнаружено.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:af20b81ad847a253be89f73daa944e2f768bba830918b699cfbdb5f3aaf306fa"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729093134272-a1da4c207aaafa66.json",
+          "sha256": "sha256:ca8f72f459aa0dc279a0cef1bd420a32fbb41e25474a87ef05b214c7034a7e12",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json",
+          "sha256": "sha256:3ccd9f852be0fdbcdbce6e2794fc808b711dddb56b8d50527fc9aea817ec59c9"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json",
+          "sha256": "sha256:0e624b2c42a3b455891b55778b00fa0dc9e16032ecfc84b8ce1d6e7e0e3c500d",
+          "section": "comparison"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json",
+          "sha256": "sha256:0d2fffa7cef94e3be7c7d682a31939e28c4aa3127131f7ebd4407f62fbf43cea",
+          "section": "operations"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
