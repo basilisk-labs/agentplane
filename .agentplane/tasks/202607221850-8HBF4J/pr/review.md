@@ -13,7 +13,7 @@ Created: 2026-07-28T13:53:55.558Z
 ## Verification
 
 - State: ok
-- Note: Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
+- Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,6 +29,7 @@ Created: 2026-07-28T13:53:55.558Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ docs/user/cli-reference.generated.mdx              |  20 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
@@ -44,7 +45,7 @@ Created: 2026-07-28T13:53:55.558Z
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
  .../check-compatibility-contract-baseline.mjs      |  67 +++
- 15 files changed, 1629 insertions(+), 67 deletions(-)
+ 16 files changed, 1649 insertions(+), 67 deletions(-)
 ```
 
 </details>

@@ -1,3 +1,4 @@
+ docs/user/cli-reference.generated.mdx              |  20 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
  .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
@@ -13,4 +14,4 @@
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
  .../check-compatibility-contract-baseline.mjs      |  67 +++
- 15 files changed, 1629 insertions(+), 67 deletions(-)
+ 16 files changed, 1649 insertions(+), 67 deletions(-)

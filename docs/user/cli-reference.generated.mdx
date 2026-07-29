@@ -198,6 +198,7 @@ Field names and casing are exact. Optional fields are omitted when no value is a
   - [context learn tasks](#context-learn-tasks)
   - [context search](#context-search)
   - [context show](#context-show)
+  - [context supervise-task](#context-supervise-task)
   - [context wiki explain](#context-wiki-explain)
   - [context wiki index](#context-wiki-index)
   - [context wiki link](#context-wiki-link)
@@ -3870,6 +3871,25 @@ Usage:
 ```text
 agentplane context show <source-ref>
 ```
+
+### context supervise-task
+
+Run resumable CLI-owned post-processing for one CURATOR context result.
+
+Records the already-produced semantic SGR result, then applies, validates, indexes, evaluates, records ACR, and finalizes deterministic context work under one bounded supervisor episode.
+
+Usage:
+
+```text
+agentplane context supervise-task <task-id> --extraction <sgr-json> [options]
+```
+
+Options:
+
+- `--extraction <sgr-json>`: CURATOR-produced schema-valid context_extraction SGR file. (required)
+- `--smoke-query <query>`: Optional retrieval check; defaults to a semantic entity from the SGR.
+- `--evaluator <id>`: Read-only evaluator module id. (default=recovery-context)
+- `--json`: Emit machine-readable result. (default=false)
 
 ### context wiki explain
 
