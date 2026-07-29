@@ -13,7 +13,7 @@ Created: 2026-07-28T13:53:55.558Z
 ## Verification
 
 - State: ok
-- Note: Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard.
+- Note: Updated release-readiness expectations to enforce CURATOR semantic-only prompts; focused contract tests pass and the isolated runner cancellation test passes.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
