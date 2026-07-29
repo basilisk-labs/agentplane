@@ -15,14 +15,14 @@ Repair the recovery-context evaluator prompt contract so evaluator findings cite
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head.
 - Canonical workflow state lives in the task README.
 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-29T10:37:41.423Z
+- Updated: 2026-07-29T10:42:20.564Z
 - Branch: task/202607291035-XXKY7B/prevent-evaluator-self-referential-evidence-in-r
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

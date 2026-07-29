@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:a38e501ac8bddf21e275d58c3083e22d7b7ab57fdc84bc914bd6f159aa1d50d4",
+  "implementation_sha": "d925672c79688af9661c8fef1212d342ff3abd5f",
+  "kind": "task_verification_record",
+  "note": "Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head.",
+  "recorded_at": "2026-07-29T10:44:01.710Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Prevent evaluator self-referential evidence in recovery-context review\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Prevent evaluator self-referential evidence in recovery-context review\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:6ed44c9887884241f638dfbb9b64dac35ec0d9a649684aba23d6867674604d00",
+  "task_id": "202607291035-XXKY7B",
+  "verification_command": "agentplane verify 202607291035-XXKY7B --ok --by TESTER",
+  "verifier": "TESTER"
+}
