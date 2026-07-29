@@ -73,6 +73,7 @@ const FORBIDDEN_PAYLOAD_KEYS = new Set([
   "reasoning_text",
 ]);
 const NO_EXPECTED_SOURCE_VALUE = Symbol("no-expected-source-value");
+const CODEX_CLI_VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u;
 
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -100,6 +101,23 @@ function exactKeys(value, keys, label) {
 
 export function sha256(value) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+export function runtimeBridgeTargetRoot(repoRoot) {
+  return path.join(path.resolve(repoRoot), ".agentplane", "cache", "rf04-runtime-bridge");
+}
+
+export function runtimeBridgePaths(repoRoot, codexCliVersion) {
+  if (typeof codexCliVersion !== "string" || !CODEX_CLI_VERSION_PATTERN.test(codexCliVersion)) {
+    throw new Error("runtime bridge requires an exact Codex CLI version");
+  }
+  const root = path.join(runtimeBridgeTargetRoot(repoRoot), `codex-${codexCliVersion}`);
+  return {
+    baselinePath: path.join(root, "baseline.json"),
+    evidenceDirectory: path.join(root, "evidence"),
+    envelopeDirectory: path.join(root, "envelopes"),
+    root,
+  };
 }
 
 function prefixedSha256(value) {

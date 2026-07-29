@@ -148,6 +148,7 @@ export function assertReplayCaptureTargets({
   outputPath,
   registryPath,
   repoRoot,
+  runtimeBridgeTargetRoot = null,
   sourceDirectory,
   testTargetRoot = null,
 }) {
@@ -158,6 +159,18 @@ export function assertReplayCaptureTargets({
     sourceDirectory: path.join(repoRoot, "scripts/bench/agent-efficiency-replay-envelopes"),
   };
   const targets = { evidenceDirectory, outputPath, registryPath, sourceDirectory };
+  const expectedRuntimeBridgeTargetRoot = path.join(
+    repoRoot,
+    ".agentplane",
+    "cache",
+    "rf04-runtime-bridge",
+  );
+  if (
+    runtimeBridgeTargetRoot !== null &&
+    path.resolve(runtimeBridgeTargetRoot) !== path.resolve(expectedRuntimeBridgeTargetRoot)
+  ) {
+    throw new Error("runtime bridge capture root is not authorized");
+  }
   for (const [name, value] of Object.entries(targets)) {
     const resolved = path.resolve(value);
     const canonicalPath = path.resolve(canonical[name]);
@@ -165,7 +178,11 @@ export function assertReplayCaptureTargets({
       testTargetRoot !== null &&
       isInside(path.resolve(testTargetRoot), resolved) &&
       resolved !== path.resolve(testTargetRoot);
-    if (resolved !== canonicalPath && !allowedTestPath) {
+    const allowedRuntimeBridgePath =
+      runtimeBridgeTargetRoot !== null &&
+      isInside(path.resolve(runtimeBridgeTargetRoot), resolved) &&
+      resolved !== path.resolve(runtimeBridgeTargetRoot);
+    if (resolved !== canonicalPath && !allowedTestPath && !allowedRuntimeBridgePath) {
       throw new Error(`${name} is not an authorized RF-04 capture target`);
     }
   }

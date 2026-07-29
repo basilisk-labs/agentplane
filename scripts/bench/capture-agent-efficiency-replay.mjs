@@ -41,7 +41,12 @@ import {
   installReplayArtifactTransaction,
   replayDriverDiagnosticCode,
 } from "../lib/agent-efficiency-replay-safety.mjs";
-import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
+import {
+  defineCheck,
+  isDirectRun,
+  parseScriptArgs,
+  runScriptMain,
+} from "../lib/script-runtime.mjs";
 import {
   assertReplayDependencyClaim,
   createReplayDependencyManifest,
@@ -52,7 +57,11 @@ import {
   initializeAnchorCheckout,
   installFixtureRegistryOverlay,
 } from "./internal/agent-efficiency-capture-runtime.mjs";
-import { CODEX_REPLAY_CLI_VERSION } from "./internal/agent-efficiency-codex-runtime.mjs";
+import {
+  CODEX_REPLAY_CLI_VERSION,
+  CODEX_REPLAY_CLI_VERSION_ENV,
+  resolveCodexReplayCliVersion,
+} from "./internal/agent-efficiency-codex-runtime.mjs";
 
 export { buildReplayGitEnvironment } from "../lib/agent-efficiency-replay-safety.mjs";
 export { replayAnchorCloneArgs } from "./internal/agent-efficiency-capture-runtime.mjs";
@@ -185,6 +194,7 @@ function targetExists(target) {
 
 function captureWithDriver({
   anchor,
+  codexCliVersion,
   dependencyManifest,
   driverIdentity,
   driverPath,
@@ -311,7 +321,7 @@ function captureWithDriver({
         ];
         const contractEnvironment = createReplayDriverContractEnvironment({
           anchor,
-          codexCliVersion: CODEX_REPLAY_CLI_VERSION,
+          codexCliVersion,
           dependencyClaim,
           driverIdentity,
           evidenceOutputPath,
@@ -477,6 +487,9 @@ export function captureAgentEfficiencyReplay(options) {
     throw new Error(`--runs must be an integer >= ${MINIMUM_REPLAY_RUNS}`);
   }
   assertGitCommitAvailable(repoRoot, options.anchor);
+  const codexCliVersion = resolveCodexReplayCliVersion({
+    [CODEX_REPLAY_CLI_VERSION_ENV]: options.codexCliVersion ?? CODEX_REPLAY_CLI_VERSION,
+  });
   const registry = readFixtureRegistry(options.registryPath, { historicalBaseline: true });
   const fixtureDigest = fixtureRegistrySha256(registry);
   let requestedDriverIdentity = null;
@@ -490,6 +503,7 @@ export function captureAgentEfficiencyReplay(options) {
     outputPath: options.outputPath,
     registryPath: options.registryPath,
     repoRoot,
+    runtimeBridgeTargetRoot: options.runtimeBridgeTargetRoot ?? null,
     sourceDirectory: options.sourceDirectory,
     testTargetRoot,
   });
@@ -508,11 +522,13 @@ export function captureAgentEfficiencyReplay(options) {
       outputPath: options.outputPath,
       registryPath: options.registryPath,
       repoRoot,
+      runtimeBridgeTargetRoot: options.runtimeBridgeTargetRoot ?? null,
       sourceDirectory: options.sourceDirectory,
       testTargetRoot,
     });
     const captureResult = captureWithDriver({
       anchor: options.anchor,
+      codexCliVersion,
       dependencyManifest,
       driverIdentity: requestedDriverIdentity,
       driverPath: options.driverPath,
@@ -581,4 +597,6 @@ const main = defineCheck({
   },
 });
 
-runScriptMain(main);
+if (isDirectRun(import.meta.url)) {
+  runScriptMain(main);
+}

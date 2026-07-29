@@ -339,6 +339,32 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
         testTargetRoot: path.join(repository, ".agentplane/cache/rf04-test-targets"),
       }),
     ).toThrow("pairwise disjoint");
+
+    const runtimeBridgeRoot = path.join(repository, ".agentplane/cache/rf04-runtime-bridge");
+    const bridgeTarget = path.join(runtimeBridgeRoot, "codex-0.146.0-alpha.3.1");
+    mkdirSync(bridgeTarget, { recursive: true });
+    expect(() =>
+      safety.assertReplayCaptureTargets({
+        driverPath: path.join(repository, "scripts/bench/driver.mjs"),
+        evidenceDirectory: path.join(bridgeTarget, "evidence"),
+        outputPath: path.join(bridgeTarget, "baseline.json"),
+        registryPath: path.join(repository, "scripts/bench/agent-efficiency-fixtures.json"),
+        repoRoot: repository,
+        runtimeBridgeTargetRoot: runtimeBridgeRoot,
+        sourceDirectory: path.join(bridgeTarget, "envelopes"),
+      }),
+    ).not.toThrow();
+    expect(() =>
+      safety.assertReplayCaptureTargets({
+        driverPath: path.join(repository, "scripts/bench/driver.mjs"),
+        evidenceDirectory: path.join(bridgeTarget, "evidence"),
+        outputPath: path.join(bridgeTarget, "baseline.json"),
+        registryPath: path.join(repository, "scripts/bench/agent-efficiency-fixtures.json"),
+        repoRoot: repository,
+        runtimeBridgeTargetRoot: path.join(repository, ".agentplane/cache/untrusted-bridge"),
+        sourceDirectory: path.join(bridgeTarget, "envelopes"),
+      }),
+    ).toThrow("runtime bridge capture root is not authorized");
   });
 
   it("publishes all three artifacts together and restores every prior byte on validation failure", async () => {
