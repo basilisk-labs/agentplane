@@ -4,6 +4,7 @@ import path from "node:path";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
+import type { TaskData } from "../../backends/task-backend.js";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
@@ -11,6 +12,7 @@ import {
   assertQualificationEvidenceLineage,
   isQualificationTask,
 } from "../task/qualification-packet.js";
+import { resolveQualificationDependencyLeaves } from "../task/qualification-packet-dependencies.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 
 import {
@@ -28,6 +30,40 @@ describe("evaluator qualification packet", () => {
       }),
     ).toBe(true);
     expect(isQualificationTask({ tags: ["code", "quality", "v0.7"] })).toBe(false);
+  });
+
+  it("resolves terminal dependency leaves and rejects missing nodes or cycles", async () => {
+    const tasks = new Map<string, TaskData>([
+      ["aggregate", { id: "aggregate", depends_on: ["leaf-a", "leaf-b"] } as TaskData],
+      ["leaf-a", { id: "leaf-a", depends_on: [] } as TaskData],
+      ["leaf-b", { id: "leaf-b", depends_on: [] } as TaskData],
+    ]);
+    const backend = { getTask: (taskId: string) => Promise.resolve(tasks.get(taskId) ?? null) };
+    await expect(
+      resolveQualificationDependencyLeaves({
+        backend,
+        taskId: "qualification",
+        dependsOn: ["aggregate"],
+      }),
+    ).resolves.toMatchObject({
+      rootDependencyIds: ["aggregate"],
+      terminalLeaves: [{ id: "leaf-a" }, { id: "leaf-b" }],
+    });
+    await expect(
+      resolveQualificationDependencyLeaves({
+        backend,
+        taskId: "qualification",
+        dependsOn: ["missing"],
+      }),
+    ).rejects.toThrow("Qualification dependency task missing is missing");
+    tasks.set("leaf-b", { id: "leaf-b", depends_on: ["aggregate"] } as TaskData);
+    await expect(
+      resolveQualificationDependencyLeaves({
+        backend,
+        taskId: "qualification",
+        dependsOn: ["aggregate"],
+      }),
+    ).rejects.toThrow("Qualification dependency cycle detected");
   });
 
   it("makes non-qualification explicit in frozen evaluator checks", async () => {
@@ -83,7 +119,9 @@ describe("evaluator qualification packet", () => {
       ),
     );
     const taskId = "202607290900-AB12";
+    const aggregateId = "202607290901-AG01";
     const leafId = "202607290901-CD34";
+    const incompleteLeafId = "202607290901-EF56";
     const leafEvaluatedSha = await commitPath(
       root,
       "src/leaf-evaluation.ts",
@@ -91,7 +129,9 @@ describe("evaluator qualification packet", () => {
       "test: leaf evaluator target",
     );
     await addTask(root, taskId);
+    await addTask(root, aggregateId);
     await addTask(root, leafId);
+    await addTask(root, incompleteLeafId);
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     const qualityReportPath = `.agentplane/tasks/${leafId}/quality/pass/quality-report.json`;
     await applyTaskMutation({
@@ -127,11 +167,16 @@ describe("evaluator qualification packet", () => {
       taskId,
       build: () => ({
         intents: setTaskFieldsIntent({
-          depends_on: [leafId],
+          depends_on: [aggregateId],
           tags: ["quality", "release-gate", "milestone-0-7-0-beta-1"],
           verify: ["bun run ci:contract"],
         }),
       }),
+    });
+    await applyTaskMutation({
+      ctx,
+      taskId: aggregateId,
+      build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId] }) }),
     });
     await mkdir(path.join(root, path.dirname(qualityReportPath)), { recursive: true });
     await writeFile(
@@ -262,6 +307,34 @@ describe("evaluator qualification packet", () => {
     });
     await applyTaskMutation({
       ctx,
+      taskId: aggregateId,
+      build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId, incompleteLeafId] }) }),
+    });
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        taskId,
+        state: "ok",
+        by: "TESTER",
+        note: "Qualification checks passed on the reviewed SHA.",
+        details:
+          "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
+        quiet: true,
+      }),
+    ).rejects.toThrow(`Qualification dependency leaf ${incompleteLeafId} is not DONE`);
+    await applyTaskMutation({
+      ctx,
+      taskId: aggregateId,
+      build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId] }) }),
+    });
+    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: restore qualification leaves"], {
+      cwd: root,
+    });
+    await applyTaskMutation({
+      ctx,
       taskId: leafId,
       build: (current) => ({
         intents: setTaskFieldsIntent({
@@ -382,7 +455,8 @@ describe("evaluator qualification packet", () => {
       task_id: taskId,
       implementation_sha: reviewedSha,
       dependency_closure: {
-        declared_leaf_ids: [leafId],
+        root_dependency_ids: [aggregateId],
+        terminal_leaf_ids: [leafId],
         leaves: [
           {
             task_id: leafId,
