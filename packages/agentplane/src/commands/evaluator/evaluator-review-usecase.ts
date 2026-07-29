@@ -121,7 +121,6 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
   .strict();
 
 export type EvaluatorWorkOrder = z.infer<typeof EVALUATOR_WORK_ORDER_SCHEMA>;
-
 export type PreparedEvaluatorReview = {
   work_order: EvaluatorWorkOrder;
   work_order_path: string;
@@ -302,7 +301,8 @@ export async function prepareEvaluatorReview(opts: {
       ? {
           path: relative(gitRoot, qualificationPacket.path),
           digest: qualificationPacket.packet.digest,
-          reviewed_sha: qualificationPacket.packet.reviewed_sha,
+          implementation_sha: qualificationPacket.packet.implementation_sha,
+          evidence_commit: evaluatedSha,
         }
       : null,
   };

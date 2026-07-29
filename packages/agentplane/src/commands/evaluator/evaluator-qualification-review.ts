@@ -6,12 +6,13 @@ import type { CommandContext } from "../shared/task-backend.js";
 import {
   isQualificationTask,
   readCurrentQualificationPacket,
-  type QualificationPacket,
+  resolveQualificationEvidenceCommit,
+  type CurrentQualificationPacket,
 } from "../task/qualification-packet.js";
 
 export type ResolvedEvaluatorReviewTarget = {
   evaluatedSha: string | null;
-  qualificationPacket: { path: string; packet: QualificationPacket } | null;
+  qualificationPacket: CurrentQualificationPacket | null;
 };
 
 export async function resolveEvaluatorReviewTarget(opts: {
@@ -35,14 +36,17 @@ export async function resolveEvaluatorReviewTarget(opts: {
           : "Evaluator work order is stale because the qualification packet is missing or invalid.",
     });
   }
-  const evaluatedSha =
-    qualificationPacket?.packet.reviewed_sha ??
-    (await resolveQualityReviewTargetSha({
-      gitRoot,
-      workflowDir,
-      taskId: opts.task.id,
-      taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
-      previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
-    }));
-  return { evaluatedSha, qualificationPacket };
+  const evaluatedSha = qualificationPacket
+    ? await resolveQualificationEvidenceCommit({ gitRoot, qualificationPacket })
+    : await resolveQualityReviewTargetSha({
+        gitRoot,
+        workflowDir,
+        taskId: opts.task.id,
+        taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+        previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+      });
+  return {
+    evaluatedSha,
+    qualificationPacket,
+  };
 }

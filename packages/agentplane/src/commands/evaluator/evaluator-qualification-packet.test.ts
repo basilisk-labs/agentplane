@@ -192,18 +192,32 @@ describe("evaluator qualification packet", () => {
       quiet: true,
     });
 
+    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
+      "requires current HEAD to contain the exact qualification packet",
+    );
+    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}`, "scripts/baselines"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "chore: seal qualification evidence"], {
+      cwd: root,
+    });
+    const { stdout: evidenceCommitOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const evidenceCommit = evidenceCommitOutput.trim();
+
     const { prepared } = await prepareTypedReview(root, taskId);
     const packetEvidence = prepared.work_order.evidence.find(
       (entry) => entry.kind === "qualification_packet",
     );
-    expect(prepared.work_order.evaluated_sha).toBe(reviewedSha);
+    expect(prepared.work_order.evaluated_sha).toBe(evidenceCommit);
     expect(packetEvidence).toBeDefined();
     const packet = JSON.parse(
       await readFile(path.join(root, packetEvidence?.path ?? ""), "utf8"),
     ) as Record<string, unknown>;
     expect(packet).toMatchObject({
       task_id: taskId,
-      reviewed_sha: reviewedSha,
+      implementation_sha: reviewedSha,
       dependency_closure: {
         declared_leaf_ids: [leafId],
         leaves: [
@@ -227,9 +241,24 @@ describe("evaluator qualification packet", () => {
     expect(packetEvidence?.path).toContain(
       `/tasks/${taskId}/evidence/qualification-packet.v1.json`,
     );
+    const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
+    await writeFile(
+      leafReadmePath,
+      `${await readFile(leafReadmePath, "utf8")}\n<!-- post-seal drift -->\n`,
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${leafId}/README.md`], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["commit", "-m", "test: drift qualification leaf"], {
+      cwd: root,
+    });
+    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
+      "does not match the sealed packet",
+    );
     await writeFile(
       path.join(root, packetEvidence?.path ?? ""),
-      `${JSON.stringify({ ...packet, reviewed_sha: "a".repeat(40) }, null, 2)}\n`,
+      `${JSON.stringify({ ...packet, implementation_sha: "a".repeat(40) }, null, 2)}\n`,
       "utf8",
     );
     await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
