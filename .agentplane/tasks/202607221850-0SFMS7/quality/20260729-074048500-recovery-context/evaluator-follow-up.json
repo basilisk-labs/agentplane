@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-77da69549f200e6b77662df6",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Repair the evaluator evidence-freezing path so the work order for the current review target includes the concrete verification record and preserved direct-supervision/runtime artifacts, then regenerate the frozen packet and rerun this evaluation.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen review packet still contains no concrete verification records or direct-runtime evidence for the evaluated SHA, despite reporting verification success.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d38f5e8dc1b5d2ae6a1aaf27f3c46f0dd1df2d943929f0f5e2c355d6ca67ce14",
+          "line": 16,
+          "lines": "16-19",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:a34e084109faa9e54603534d7e2ad3abde904aabff296656acb576f6e60ca61f",
+          "line": 349,
+          "lines": "349-378",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "line": 13,
+          "lines": "13-28",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-result.json"
+}

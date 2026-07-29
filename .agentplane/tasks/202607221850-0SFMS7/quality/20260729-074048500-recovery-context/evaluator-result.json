@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen review packet still contains no concrete verification records or direct-runtime evidence for the evaluated SHA, despite reporting verification success.",
+      "broken_invariant": "A pass requires frozen evidence covering the positive, negative, and concurrency-sensitive paths in the approved Verify Steps; a verification note alone does not substantiate those results.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d38f5e8dc1b5d2ae6a1aaf27f3c46f0dd1df2d943929f0f5e2c355d6ca67ce14",
+          "line": 16,
+          "lines": "16-19",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:a34e084109faa9e54603534d7e2ad3abde904aabff296656acb576f6e60ca61f",
+          "line": 349,
+          "lines": "349-378",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "line": 13,
+          "lines": "13-28",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An end-to-end evaluator-review preparation test using the real task-history shape, proving that the verification record and preserved direct-runtime evidence are frozen after lifecycle-artifact and quality-target commits.",
+    "A regression assertion that evaluator-observed-checks.json is rejected or flagged when verification.state is ok but verification_records, runner_history, runtime_evidence, and direct_supervision are all empty for a task requiring runtime and concurrency-sensitive verification."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that resolving the intended quality-review target automatically makes earlier verification and runtime artifacts discoverable in the frozen evaluator packet.",
+    "The successful verification note is assumed to be an adequate substitute for independently frozen command, runtime, negative-path, and concurrency evidence."
+  ],
+  "recovery_context": "Repair the evaluator evidence-freezing path so the work order for the current review target includes the concrete verification record and preserved direct-supervision/runtime artifacts, then regenerate the frozen packet and rerun this evaluation."
+}
