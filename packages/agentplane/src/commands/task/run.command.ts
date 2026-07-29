@@ -30,6 +30,7 @@ import {
   tailText,
 } from "./run-render.js";
 import { followRunnerLogs } from "./run-logs-follow.js";
+import { superviseDirectTaskRun } from "./direct-task-supervisor.js";
 
 export {
   makeRunTaskRunResolveEffectHandler,
@@ -68,7 +69,7 @@ export type TaskRunReconcileParsed = {
 export const taskRunSpec: CommandSpec<TaskRunParsed> = {
   id: ["task", "run"],
   group: "Task",
-  summary: "Run an AgentPlane task through the configured runner adapter.",
+  summary: "Supervise a direct task or run a prepared task through the configured runner adapter.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -110,7 +111,8 @@ export const taskRunSpec: CommandSpec<TaskRunParsed> = {
     },
   ],
   notes: [
-    "The task must already be DOING; use `agentplane task start-ready ...` first.",
+    "In direct workflow mode, this command starts an approved task, runs the EXECUTOR, records the observed receipt, and invokes the independent EVALUATOR. It stops with a typed result for approval, missing context, rework, or human review.",
+    "In branch_pr workflow mode, the task must already be DOING; use `agentplane task start-ready ...` first.",
     "With the default Codex adapter, the runner prompt starts with `/goal ...` and then includes the AgentPlane bundle contract.",
   ],
   parse: (raw) => ({
@@ -293,6 +295,44 @@ export function makeRunTaskRunHandler(getCtx: (cmd: string) => Promise<CommandCo
         reportPreparedTaskRun(payload, parsed.taskId);
       }
       return 0;
+    }
+
+    if (commandCtx.config?.workflow_mode === "direct") {
+      const supervised = await superviseDirectTaskRun({
+        ctx,
+        command: commandCtx,
+        task_id: parsed.taskId,
+        include_remote: parsed.remote,
+        ...(parsed.sandbox ? { sandbox_override: parsed.sandbox } : {}),
+        ...(dangerAuthority ? { danger_authority: dangerAuthority } : {}),
+      });
+      if (parsed.json) {
+        output.json(supervised);
+      } else {
+        output.report(
+          [
+            { label: "task", value: supervised.task_id },
+            { label: "status", value: supervised.status },
+            { label: "phase", value: supervised.phase },
+            { label: "route", value: supervised.route.step_id },
+            { label: "executor_run", value: supervised.executor?.run_id ?? null },
+            { label: "evaluator", value: supervised.evaluator?.evaluator_id ?? null },
+            { label: "evaluator_verdict", value: supervised.evaluator?.verdict ?? null },
+            { label: "stop", value: supervised.stop?.code ?? null },
+            { label: "journal", value: supervised.journal?.path ?? null },
+          ],
+          { header: infoMessage(`direct task supervision: ${parsed.taskId}`) },
+        );
+      }
+      return supervised.stop?.code === "runner_failed" ||
+        supervised.stop?.code === "executor_adapter_crash" ||
+        supervised.stop?.code === "runner_receipt_unobserved" ||
+        supervised.stop?.code === "executor_result_missing" ||
+        supervised.stop?.code === "executor_semantic_failed" ||
+        supervised.stop?.code === "evaluator_adapter_crash" ||
+        supervised.stop?.code === "route_refresh_failed"
+        ? 1
+        : 0;
     }
 
     const executed = await executeTaskRunnerExecution({

@@ -107,7 +107,7 @@ describe("runCli route decision direct closeout", () => {
     }
   });
 
-  it("routes a newly started direct task to a semantic implementation episode, not a runner route", async () => {
+  it("routes a newly started direct task to the typed EXECUTOR runner operation", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "direct";
@@ -148,8 +148,8 @@ describe("runCli route decision direct closeout", () => {
         workflow_step: {
           kind: string;
           id: string;
-          episode?: { purpose: string; role: string; taskId: string };
-          execution: { semanticMutationAllowed: boolean };
+          operation?: { id: string; params: { mode: string; taskId: string } };
+          execution: { actionKind: string };
         };
         execution_packet: {
           actionKind: string;
@@ -174,30 +174,24 @@ describe("runCli route decision direct closeout", () => {
       expect(parsed.route_oracle.phase).toBe("direct_execution");
       expect(parsed.next_action).toMatchObject({
         code: "continue_direct",
-        command: null,
+        command: `agentplane task run ${taskId}`,
       });
-      expect(parsed.route_oracle.nextCommand).toBeNull();
+      expect(parsed.route_oracle.nextCommand).toBe(`agentplane task run ${taskId}`);
       expect(parsed.workflow_step).toMatchObject({
-        kind: "agent_episode",
-        id: "agent.direct_implementation",
-        episode: { purpose: "implementation", role: "CODER", taskId },
-        execution: { semanticMutationAllowed: true },
+        kind: "cli_operation",
+        id: "runner.follow",
+        operation: { id: "runner.follow", params: { mode: "run", taskId } },
+        execution: { actionKind: "local_command" },
       });
       expect(parsed.execution_packet).toMatchObject({
-        actionKind: "stop",
+        actionKind: "local_command",
         safeToMutate: true,
         mutationPathHint: root,
-        exactArgv: null,
-      });
-      expect(parsed.operator_guidance.executor_context).toMatchObject({
-        executor: "current_agent",
-        current_agent_must_execute: true,
-        instruction: "current_agent_performs_semantic_work",
+        exactArgv: ["agentplane", "task", "run", taskId],
       });
       expect(parsed.operator_guidance.runner_context).toMatchObject({
-        runner_is_required: false,
-        runner_is_allowed_now: false,
-        runner_failure_means: "not_runner_route",
+        runner_is_required: true,
+        runner_is_allowed_now: true,
       });
     } finally {
       nextIo.restore();

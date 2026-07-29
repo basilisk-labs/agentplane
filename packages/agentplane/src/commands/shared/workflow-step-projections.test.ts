@@ -640,7 +640,7 @@ describe("WorkflowStep execution projections", () => {
     });
   });
 
-  it("gives an active direct semantic implementation episode its checkout mutation authority", () => {
+  it("gives a direct EXECUTOR runner operation its checkout mutation authority", () => {
     const directResume = {
       ...resume,
       branch: "main",
@@ -667,19 +667,19 @@ describe("WorkflowStep execution projections", () => {
     });
 
     expect(step).toMatchObject({
-      kind: "agent_episode",
-      id: "agent.direct_implementation",
+      kind: "cli_operation",
+      id: "runner.follow",
       authoritativeCheckout: "current_checkout",
-      episode: { purpose: "implementation", role: "CODER", taskId: task.id },
-      compatibility: { code: "continue_direct", command: null },
-      execution: { semanticMutationAllowed: true },
+      operation: { id: "runner.follow", params: { mode: "run", taskId: task.id } },
+      compatibility: { code: "continue_direct", command: `agentplane task run ${task.id}` },
+      execution: { actionKind: "local_command" },
     });
     expect(oracle.mutationPathHint).toBe("/repo");
     expect(packet).toMatchObject({
-      actionKind: "stop",
+      actionKind: "local_command",
       safeToMutate: true,
       mutationPathHint: "/repo",
-      exactArgv: null,
+      exactArgv: ["agentplane", "task", "run", task.id],
     });
   });
 
