@@ -13,7 +13,7 @@ Created: 2026-07-29T14:50:37.577Z
 ## Verification
 
 - State: ok
-- Note: Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc.
+- Note: All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
