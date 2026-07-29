@@ -4,7 +4,7 @@ title: "Measure SHA-bound RF-04 candidate performance"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 origin:
   system: "manual"
 depends_on: []
@@ -30,7 +30,9 @@ verification:
   updated_by: "TESTER"
   note: "Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent."
   attempts: 1
-commit: null
+commit:
+  hash: "58fc7c1d7927e026d7a9346e8143d50a7ef2dd5f"
+  message: "📊 W03KZ0 task: bind candidate runtime provenance"
 comments:
   -
     author: "CODER"
@@ -38,6 +40,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: ac7bd6a2a0febfd5ee927eb217c8d8f66bde5384. Focused candidate comparator test and scripts catalog check pass. The authorized capture preflight for 64fd6cd8a2cff4da0cbff5a8db44ef2a7992d097 stopped before any provider episode because the installed Codex CLI reports 0.146.0-alpha.3.1 while the RF-04 driver pins 0.145.0-alpha.18; failed-capture receipt is retained under the ignored candidate cache. No retry was performed."
+  -
+    author: "CODER"
+    body: "Implementation rework committed: candidate captures now require an explicit Codex CLI version, bind it to every driver envelope and measurement, and keep historical RF-04 validation anchored to its frozen harness. Offline RF-04 replay check, focused critical tests, current 0.146.0-alpha.3.1 preflight, formatting, and scripts catalog check pass."
 events:
   -
     type: "status"
@@ -59,8 +64,15 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent."
+  -
+    type: "status"
+    at: "2026-07-29T21:44:58.343Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation rework committed: candidate captures now require an explicit Codex CLI version, bind it to every driver envelope and measurement, and keep historical RF-04 validation anchored to its frozen harness. Offline RF-04 replay check, focused critical tests, current 0.146.0-alpha.3.1 preflight, formatting, and scripts catalog check pass."
 doc_version: 3
-doc_updated_at: "2026-07-29T21:31:37.937Z"
+doc_updated_at: "2026-07-29T21:44:58.343Z"
 doc_updated_by: "CODER"
 description: "Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria."
 sections:
