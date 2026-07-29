@@ -304,7 +304,7 @@ export async function prepareEvaluatorReview(opts: {
           implementation_sha: qualificationPacket.packet.implementation_sha,
           evidence_commit: evaluatedSha,
         }
-      : null,
+      : { state: "not_required", reason: "not a milestone qualification task" },
   };
   await writeEvaluatorArtifact({
     filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),

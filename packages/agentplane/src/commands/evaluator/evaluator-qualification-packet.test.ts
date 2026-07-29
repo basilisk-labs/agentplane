@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
+import { isQualificationTask } from "../task/qualification-packet.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 
 import {
@@ -17,6 +18,58 @@ import {
 } from "./evaluator-test-helpers.js";
 
 describe("evaluator qualification packet", () => {
+  it("classifies the beta milestone taxonomy without promoting technical support tasks", () => {
+    expect(
+      isQualificationTask({
+        tags: ["milestone-0-7-0-beta-1", "quality", "release-gate", "v0.7"],
+      }),
+    ).toBe(true);
+    expect(isQualificationTask({ tags: ["code", "quality", "v0.7"] })).toBe(false);
+  });
+
+  it("makes non-qualification explicit in frozen evaluator checks", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607291149-AB13";
+    await addTask(root, taskId);
+    await commitPath(
+      root,
+      "src/support.ts",
+      "export const support = true;\n",
+      "feat: support task",
+    );
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
+    await cmdVerifyParsed({
+      ctx,
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      state: "ok",
+      by: "TESTER",
+      note: "Support-task checks passed.",
+      details:
+        "Command: bun run test:fast\nResult: pass\nEvidence: targeted suite\nScope: support task",
+      quiet: true,
+    });
+    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: seal support verification"], {
+      cwd: root,
+    });
+
+    const { prepared } = await prepareTypedReview(root, taskId);
+    const observedEvidence = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "observed_checks",
+    );
+    expect(observedEvidence).toBeDefined();
+    const observed = JSON.parse(
+      await readFile(path.join(root, observedEvidence?.path ?? ""), "utf8"),
+    ) as Record<string, unknown>;
+    expect(observed.qualification_packet).toEqual({
+      state: "not_required",
+      reason: "not a milestone qualification task",
+    });
+  });
+
   it("prepares a SHA-bound qualification packet before evaluator review", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
