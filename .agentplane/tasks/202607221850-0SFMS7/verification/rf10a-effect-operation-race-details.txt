@@ -1,0 +1,24 @@
+Command: `bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts`
+Result: pass (10 tests)
+Evidence: packages/agentplane/src/runner/effect-operation.test.ts | packages/agentplane/src/runner/run-directory-boundary.ts
+Scope: concurrent creation of a shared runner operation directory accepts the expected `EEXIST` race, while independent supervisor processes still elect exactly one adapter-spawn winner.
+
+Command: `for effect_race_iteration in {1..80}; do CI=1 bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts -t "elects one adapter spawn across independent supervisor processes" >/dev/null 2>&1 || exit 1; done`
+Result: pass (80/80)
+Evidence: focused process-race test under CI mode
+Scope: repeated independent worker races complete with one winner and one loser; no transient directory-creation failure was observed.
+
+Command: `bun run test:fast`
+Result: pass (493 files, 3440 tests)
+Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
+Scope: full unit suite after the concurrency fix.
+
+Command: `bun run framework:dev:bootstrap && bun run ci:contract`
+Result: pass
+Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
+Scope: rebuilt repo-local runtime and full repository contract validation after the hosted `verify-unit` rework.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+Scope: independent direct control evidence remains terminal (`stopped` / `completed`) and retains the observed RF-10 cost reduction (3/4/15383 versus frozen 7/7/20562 baseline).
