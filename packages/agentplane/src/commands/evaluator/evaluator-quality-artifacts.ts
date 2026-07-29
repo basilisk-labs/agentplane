@@ -1,5 +1,3 @@
-import path from "node:path";
-
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
 import type { EvaluatorRunParsed, EvaluatorRunProvenance } from "./evaluator.spec.js";
 
@@ -37,10 +35,6 @@ export function safePathSegment(value: string): string {
 
 export function timestampPathSegment(at: string): string {
   return at.replaceAll(/[-:.]/g, "").replace("T", "-").replace("Z", "");
-}
-
-export function relativeArtifactPath(gitRoot: string, absPath: string): string {
-  return path.relative(gitRoot, absPath).replaceAll("\\", "/");
 }
 
 export function renderEvaluatorPrompt(opts: {

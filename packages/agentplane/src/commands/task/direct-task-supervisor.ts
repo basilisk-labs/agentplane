@@ -32,6 +32,7 @@ import {
   directTaskSupervisorMetrics,
   measureDuplicateExecutorContextBytes,
 } from "./direct-task-supervision-measurement.js";
+import { recordDirectTaskSupervisionGoldenMetrics } from "./direct-task-supervision-golden-metrics.js";
 
 export type { DirectTaskSupervisorResult } from "./direct-task-supervisor-result.js";
 
@@ -487,6 +488,21 @@ export async function superviseDirectTaskRun(
         stop: closeout.stop,
       });
     }
+    const metrics = directTaskSupervisorMetrics({
+      provider_episodes: providerEpisodes,
+      executor_lifecycle_event_delta: executorLifecycleEventDelta,
+      declared_checks: declaredChecks,
+      lifecycle_calls: lifecycleCalls,
+      tool_calls: toolCalls,
+      duplicate_executor_context_bytes: duplicateExecutorContextBytes,
+    });
+    const goldenMetrics = await recordDirectTaskSupervisionGoldenMetrics({
+      command: input.command,
+      task_id: input.task_id,
+      metrics,
+      verified_success: true,
+      committed_scope_enforced: implementation.status === "ready",
+    });
     return {
       schema: DIRECT_TASK_SUPERVISION_SCHEMA,
       task_id: input.task_id,
@@ -498,14 +514,8 @@ export async function superviseDirectTaskRun(
       executor: observed.executor,
       evaluator: evaluatorResult,
       journal,
-      metrics: directTaskSupervisorMetrics({
-        provider_episodes: providerEpisodes,
-        executor_lifecycle_event_delta: executorLifecycleEventDelta,
-        declared_checks: declaredChecks,
-        lifecycle_calls: lifecycleCalls,
-        tool_calls: toolCalls,
-        duplicate_executor_context_bytes: duplicateExecutorContextBytes,
-      }),
+      metrics,
+      golden_metrics: goldenMetrics,
     };
   }
   return stoppedResult({

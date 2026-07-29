@@ -76,7 +76,8 @@ async function verifiedRuntimeEvidencePath(opts: {
   if (!isWithinRoot(opts.gitRoot, candidate)) return null;
   try {
     const resolved = await realpath(candidate);
-    if (!isWithinRoot(opts.realGitRoot, resolved) || !(await stat(resolved)).isFile()) return null;
+    const metadata = await stat(resolved);
+    if (!isWithinRoot(opts.realGitRoot, resolved) || !metadata.isFile()) return null;
     return candidate;
   } catch {
     return null;

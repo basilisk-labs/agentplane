@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
+import { isRecord } from "../../shared/guards.js";
 import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
@@ -13,6 +14,10 @@ import { cmdTaskAdd } from "../workflow.js";
 import { prepareEvaluatorReview } from "./evaluator-review-usecase.js";
 
 const execFileAsync = promisify(execFile);
+
+function hasStringPath(value: unknown): value is { path: string } {
+  return isRecord(value) && typeof value.path === "string";
+}
 
 async function addTask(root: string, taskId: string): Promise<void> {
   await cmdTaskAdd({
@@ -97,9 +102,8 @@ describe("evaluator runtime evidence", () => {
       quiet: true,
     });
     const task = await loadTaskFromContext({ ctx: command, taskId });
-    const evaluator = (
-      await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true })
-    ).find((entry) => entry.id === "recovery-context");
+    const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+    const evaluator = catalog.find((entry) => entry.id === "recovery-context");
     if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
     const prepared = await prepareEvaluatorReview({
       ctx: command,
@@ -203,9 +207,8 @@ describe("evaluator runtime evidence", () => {
     await commitTaskArtifacts(root, taskId, "test: record lifecycle descendant verification");
 
     const task = await loadTaskFromContext({ ctx: command, taskId });
-    const evaluator = (
-      await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true })
-    ).find((entry) => entry.id === "recovery-context");
+    const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+    const evaluator = catalog.find((entry) => entry.id === "recovery-context");
     if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
     const prepared = await prepareEvaluatorReview({
       ctx: command,
@@ -233,11 +236,19 @@ describe("evaluator runtime evidence", () => {
     const observed = JSON.parse(
       await readFile(path.join(root, observedEvidence.path), "utf8"),
     ) as Record<string, unknown>;
-    expect(observed.verification_records).toEqual([
-      expect.objectContaining({ path: expect.any(String) }),
-    ]);
-    expect(observed.runtime_evidence).toEqual(
-      expect.arrayContaining([expect.objectContaining({ path: implementationEvidence })]),
-    );
+    const verificationRecords = observed.verification_records;
+    expect(Array.isArray(verificationRecords)).toBe(true);
+    expect(
+      Array.isArray(verificationRecords) &&
+        verificationRecords.some((entry) => hasStringPath(entry)),
+    ).toBe(true);
+    const runtimeEvidence = observed.runtime_evidence;
+    expect(Array.isArray(runtimeEvidence)).toBe(true);
+    expect(
+      Array.isArray(runtimeEvidence) &&
+        runtimeEvidence.some(
+          (entry) => hasStringPath(entry) && entry.path === implementationEvidence,
+        ),
+    ).toBe(true);
   });
 });

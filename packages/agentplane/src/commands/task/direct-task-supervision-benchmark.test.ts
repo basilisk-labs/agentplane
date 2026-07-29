@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { compareDirectTaskSupervisionGoldenPath } from "./direct-task-supervision-benchmark.js";
+import {
+  compareDirectTaskSupervisionGoldenPath,
+  DIRECT_TASK_SUPERVISION_PRE_V07_BASELINE,
+} from "./direct-task-supervision-benchmark.js";
 
 function frozenV0624DirectBaseline() {
   const baseline = JSON.parse(
@@ -61,6 +64,7 @@ describe("direct task supervision golden cost", () => {
       tool_calls: 7,
       duplicate_executor_context_bytes: 20_562,
     });
+    expect(DIRECT_TASK_SUPERVISION_PRE_V07_BASELINE).toEqual(baseline);
     expect(comparison).toEqual({
       lifecycle_calls_reduced: true,
       tool_calls_reduced: true,

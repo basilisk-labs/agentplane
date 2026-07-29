@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
   finalizeDirect: vi.fn(),
   readHead: vi.fn(),
   readStatus: vi.fn(),
+  recordGoldenMetrics: vi.fn(),
   recordEvidence: vi.fn(),
   resolveCommit: vi.fn(),
   runChecks: vi.fn(),
@@ -52,6 +53,9 @@ vi.mock("./direct-task-finalization.js", () => ({
 vi.mock("./direct-task-supervisor-closeout.js", () => ({
   finalizeDirectTask: mocks.finalizeDirect,
   verifyDirectTask: mocks.verifyDirect,
+}));
+vi.mock("./direct-task-supervision-golden-metrics.js", () => ({
+  recordDirectTaskSupervisionGoldenMetrics: mocks.recordGoldenMetrics,
 }));
 vi.mock("./direct-task-verification.js", () => ({
   runDirectTaskVerification: mocks.runChecks,
@@ -132,6 +136,10 @@ describe("direct task supervisor", () => {
       implementation_commit: "def456",
     });
     mocks.resolveCommit.mockResolvedValue({ status: "ready", commit: "def456" });
+    mocks.recordGoldenMetrics.mockResolvedValue({
+      artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/golden-metrics.json`,
+      comparison: { passed: true },
+    });
     const completion = decision({
       id: "task.complete.input",
       code: "complete_direct",
@@ -529,6 +537,17 @@ describe("direct task supervisor", () => {
         declared_checks: 1,
       }),
     );
+    expect(mocks.recordGoldenMetrics).toHaveBeenCalledWith(
+      expect.objectContaining({
+        task_id: TASK_ID,
+        verified_success: true,
+        committed_scope_enforced: true,
+      }),
+    );
+    expect(result.golden_metrics).toEqual({
+      artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/golden-metrics.json`,
+      comparison: { passed: true },
+    });
     expect(result.metrics).toEqual({
       provider_episodes: 2,
       executor_lifecycle_event_delta: 0,
