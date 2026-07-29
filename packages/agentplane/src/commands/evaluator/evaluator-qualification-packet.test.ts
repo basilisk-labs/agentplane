@@ -7,7 +7,10 @@ import { describe, expect, it } from "vitest";
 import { loadCommandContext } from "../shared/task-backend.js";
 import { applyTaskMutation } from "../shared/task-mutation.js";
 import { setTaskFieldsIntent } from "../shared/task-store.js";
-import { isQualificationTask } from "../task/qualification-packet.js";
+import {
+  assertQualificationEvidenceLineage,
+  isQualificationTask,
+} from "../task/qualification-packet.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 
 import {
@@ -81,6 +84,12 @@ describe("evaluator qualification packet", () => {
     );
     const taskId = "202607290900-AB12";
     const leafId = "202607290901-CD34";
+    const leafEvaluatedSha = await commitPath(
+      root,
+      "src/leaf-evaluation.ts",
+      "export const leafEvaluation = true;\n",
+      "test: leaf evaluator target",
+    );
     await addTask(root, taskId);
     await addTask(root, leafId);
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
@@ -104,7 +113,7 @@ describe("evaluator qualification packet", () => {
             updated_at: "2026-07-29T09:01:00.000Z",
             updated_by: "EVALUATOR",
             note: "Leaf evaluator passed.",
-            evaluated_sha: null,
+            evaluated_sha: leafEvaluatedSha,
             blueprint_digest: null,
             evidence_refs: [qualityReportPath],
             findings: [],
@@ -127,7 +136,11 @@ describe("evaluator qualification packet", () => {
     await mkdir(path.join(root, path.dirname(qualityReportPath)), { recursive: true });
     await writeFile(
       path.join(root, qualityReportPath),
-      `${JSON.stringify({ task_id: leafId, verdict: "pass" }, null, 2)}\n`,
+      `${JSON.stringify(
+        { task_id: leafId, verdict: "pass", evaluated_sha: leafEvaluatedSha },
+        null,
+        2,
+      )}\n`,
       "utf8",
     );
     await mkdir(path.join(root, `.agentplane/tasks/${leafId}/pr`), { recursive: true });
@@ -145,7 +158,7 @@ describe("evaluator qualification packet", () => {
       )}\n`,
       "utf8",
     );
-    await execFileAsync("git", ["add", "--", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore: close qualification leaf"], {
       cwd: root,
     });
@@ -246,6 +259,44 @@ describe("evaluator qualification packet", () => {
       ].join("\n"),
       "utf8",
     );
+    await applyTaskMutation({
+      ctx,
+      taskId: leafId,
+      build: (current) => ({
+        intents: setTaskFieldsIntent({
+          quality_review: {
+            ...current.quality_review!,
+            evaluated_sha: "b".repeat(40),
+          },
+        }),
+      }),
+    });
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        taskId,
+        state: "ok",
+        by: "TESTER",
+        note: "Qualification checks passed on the reviewed SHA.",
+        details:
+          "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
+        quiet: true,
+      }),
+    ).rejects.toThrow("bound to its current evaluator reviewed SHA");
+    await applyTaskMutation({
+      ctx,
+      taskId: leafId,
+      build: (current) => ({
+        intents: setTaskFieldsIntent({
+          quality_review: {
+            ...current.quality_review!,
+            evaluated_sha: leafEvaluatedSha,
+          },
+        }),
+      }),
+    });
     await cmdVerifyParsed({
       ctx,
       cwd: root,
@@ -260,14 +311,14 @@ describe("evaluator qualification packet", () => {
     });
 
     await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
-      "requires current HEAD to contain the exact qualification packet",
+      "requires committed implementation evidence",
     );
     await execFileAsync(
       "git",
       [
         "add",
         "--",
-        `.agentplane/tasks/${taskId}`,
+        ".agentplane",
         "scripts/baselines",
         "scripts/bench/capture-agent-efficiency-replay.mjs",
       ],
@@ -329,6 +380,19 @@ describe("evaluator qualification packet", () => {
     expect(packetEvidence?.path).toContain(
       `/tasks/${taskId}/evidence/qualification-packet.v1.json`,
     );
+    const { stdout: divergentCommitOutput } = await execFileAsync(
+      "git",
+      ["commit-tree", `${evidenceCommit}^{tree}`, "-m", "test: divergent qualification evidence"],
+      { cwd: root },
+    );
+    const divergentCommit = divergentCommitOutput.trim();
+    await expect(
+      assertQualificationEvidenceLineage({
+        gitRoot: root,
+        implementationSha: reviewedSha,
+        evidenceCommit: divergentCommit,
+      }),
+    ).rejects.toThrow("must descend from the packet's verified implementation SHA");
     const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
     await writeFile(
       leafReadmePath,

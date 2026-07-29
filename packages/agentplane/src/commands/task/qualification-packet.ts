@@ -204,6 +204,13 @@ async function readPassingQualityReport(opts: {
   workflowDir: string;
   task: TaskData;
 }): Promise<{ path: string; sha256: `sha256:${string}` }> {
+  const evaluatedSha = opts.task.quality_review?.evaluated_sha;
+  if (!isSha(evaluatedSha)) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Qualification leaf ${opts.task.id} lacks a current evaluator reviewed SHA.`,
+    });
+  }
   const taskPrefix = `${opts.workflowDir.replaceAll(/\/+$/gu, "")}/${opts.task.id}/quality/`;
   const candidates = (opts.task.quality_review?.evidence_refs ?? [])
     .filter(
@@ -214,13 +221,19 @@ async function readPassingQualityReport(opts: {
     const filePath = path.resolve(opts.gitRoot, candidate);
     assertPathWithinRoot(opts.gitRoot, filePath, "Qualification quality report");
     const report = await readJson(filePath, "Qualification quality report");
-    if (report.value.verdict === "pass") {
+    if (
+      report.value.task_id === opts.task.id &&
+      report.value.verdict === "pass" &&
+      report.value.evaluated_sha === evaluatedSha
+    ) {
       return { path: candidate, sha256: sha256(report.raw) };
     }
   }
   throw new CliError({
     code: "E_VALIDATION",
-    message: `Qualification leaf ${opts.task.id} lacks an evaluator passing quality-report artifact.`,
+    message:
+      `Qualification leaf ${opts.task.id} lacks a passing quality-report artifact ` +
+      "bound to its current evaluator reviewed SHA.",
   });
 }
 
@@ -521,6 +534,26 @@ async function readFileAtCommit(opts: {
  * the packet. The packet retains the implementation SHA separately; this
  * sealing commit makes the immutable evidence itself reviewable.
  */
+export async function assertQualificationEvidenceLineage(opts: {
+  gitRoot: string;
+  implementationSha: string;
+  evidenceCommit: string;
+}): Promise<void> {
+  try {
+    await execFileAsync(
+      "git",
+      ["merge-base", "--is-ancestor", opts.implementationSha, opts.evidenceCommit],
+      { cwd: opts.gitRoot },
+    );
+  } catch {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Qualification evidence commit must descend from the packet's verified implementation SHA.",
+    });
+  }
+}
+
 export async function resolveQualificationEvidenceCommit(opts: {
   gitRoot: string;
   qualificationPacket: CurrentQualificationPacket;
@@ -533,6 +566,11 @@ export async function resolveQualificationEvidenceCommit(opts: {
       message: "Qualification review requires a resolvable current HEAD commit.",
     });
   }
+  await assertQualificationEvidenceLineage({
+    gitRoot: opts.gitRoot,
+    implementationSha: opts.qualificationPacket.packet.implementation_sha,
+    evidenceCommit: commit,
+  });
   const seen = new Map<string, `sha256:${string}`>();
   for (const artifact of qualificationPinnedArtifacts(opts.qualificationPacket, opts.gitRoot)) {
     const previous = seen.get(artifact.path);
