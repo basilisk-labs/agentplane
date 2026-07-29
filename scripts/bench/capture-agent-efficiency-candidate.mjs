@@ -38,6 +38,7 @@ import {
   assertGitCommitAvailable,
   assertRepoPathNoSymlinkEscape,
   installReplayArtifactTransaction,
+  replayDriverDiagnosticCode,
 } from "../lib/agent-efficiency-replay-safety.mjs";
 import {
   defineCheck,
@@ -219,7 +220,11 @@ function runChecked(command, args, options, label) {
     throw new Error(`${label} failed to start or exceeded its fixed timeout`);
   }
   if (result.status !== 0) {
-    throw new Error(`${label} failed with exit ${result.status}`);
+    const diagnostic = replayDriverDiagnosticCode(result.stderr);
+    throw new Error(
+      `${label} failed with exit ${result.status}` +
+        (diagnostic ? ` (RF04_DRIVER_ERROR:${diagnostic})` : ""),
+    );
   }
 }
 
