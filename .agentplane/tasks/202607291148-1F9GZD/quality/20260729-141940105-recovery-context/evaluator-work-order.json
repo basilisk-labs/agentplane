@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607291148-1F9GZD-3b811bd6d807d74612fa6ee2",
+  "prepared_at": "2026-07-29T14:19:40.105Z",
+  "task": {
+    "id": "202607291148-1F9GZD",
+    "revision": 21,
+    "objective": "Formalize SHA-bound qualification packets for evaluator review\n\nGenerate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run test:fast -- packages/agentplane/src/commands/evaluator",
+      "- In scope: Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.\n- Out of scope: unrelated refactors not required for \"Formalize SHA-bound qualification packets for evaluator review\".",
+      "1. Reproduce the beta.1 evaluator rework against a metadata-only qualification task and define the single reviewed-SHA contract. 2. Extend the CLI evidence builder to generate a deterministic qualification packet containing verified check records, per-leaf dependency closure and lifecycle evidence, and RF-04 baseline-versus-current metric values. 3. Freeze that packet into the evaluator work order and make metadata-only qualification reviews target the packet commit rather than a stale source-only SHA. 4. Add focused regression tests for packet contents, SHA binding, closure completeness, and metric comparison. 5. Run focused evaluator tests and ci:contract; keep the change limited to CLI evidence and review routing.",
+      "1. Add focused tests that prepare a metadata-only qualification task with structured verification details and assert that the frozen evaluator work order contains one SHA-bound qualification packet, accepted verification evidence, per-leaf dependency closure, and RF-04 baseline-versus-current metrics. 2. Add a regression that fails if a packet is bound to a stale reviewed SHA or has incomplete dependency lifecycle evidence. 3. Run bun run test:fast -- packages/agentplane/src/commands/evaluator and the new targeted test files. Expected: all pass. 4. Run bun run ci:contract. Expected: full repository contract passes. 5. Inspect the packet schema and evaluator prompt evidence list. Expected: an EVALUATOR can cite only frozen packet evidence and can evaluate a metadata-only qualification change at its actual reviewed SHA."
+    ]
+  },
+  "evaluated_sha": "28b541f82687e465f36e5ecd50e98efdb806f85e",
+  "diff_base_sha": "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa",
+  "blueprint_digest": "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+      "sha256": "sha256:5a4a04515cc198703e07c8163ebe8499a126cd6e37ca428f0ea202c47d9bc985",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:1e0d7a08cd04fcb771265af9775fa14768446fb7ad801e2ae06fa3b60c960aa4",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:a9fa11997493fe2b22d0049709bd5f8d88bbf747e7b3fad055725b57c0307c5f",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:eb2e5fae2d88fb39c7eba652d6e115f860947f5d1a8e58944863045943430cc2",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

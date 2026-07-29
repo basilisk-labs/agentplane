@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-6170053aa11bb235411c7f0a",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Derive dependency status and verification metadata from the task document at implementation_sha, or explicitly reconcile current backend fields against the parsed SHA-pinned document; add a post-SHA drift regression before rerunning focused evaluator tests and ci:contract.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "Dependency closure records DONE and verification state from the current task backend, while only hashing the dependency README at the reviewed SHA; it never proves that the README at that SHA contains those lifecycle states. Post-SHA task-state drift can therefore produce a packet that falsely claims SHA-bound closure.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-135755309-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:cfb579fe37931d1776f7eaf3b10380716b68236d2f57040a482f8278a6d883e2",
+          "section": "packages/agentplane/src/commands/task/qualification-packet.ts: buildDependencyClosure"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-135755309-recovery-context/evaluator-result.json"
+}

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "high",
+      "summary": "Dependency closure records DONE and verification state from the current task backend, while only hashing the dependency README at the reviewed SHA; it never proves that the README at that SHA contains those lifecycle states. Post-SHA task-state drift can therefore produce a packet that falsely claims SHA-bound closure.",
+      "broken_invariant": "Every dependency verification and lifecycle claim in the qualification packet must be proven at the single reviewed SHA, not copied from mutable current backend state.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-135755309-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:cfb579fe37931d1776f7eaf3b10380716b68236d2f57040a482f8278a6d883e2",
+          "section": "packages/agentplane/src/commands/task/qualification-packet.ts: buildDependencyClosure"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Create a dependency whose README at the reviewed implementation SHA is not DONE or lacks accepted verification, then update only the current backend state to DONE/ok before packet generation; qualification packet creation must fail.",
+    "Assert that each emitted dependency lifecycle field is derived from and agrees with the dependency task document read at the reviewed SHA."
+  ],
+  "hidden_assumptions": [
+    "The current task backend state is assumed to be identical to the dependency task state committed at the qualification implementation SHA.",
+    "Hashing a dependency README is assumed to prove lifecycle claims even though its committed contents are not parsed or reconciled with those claims."
+  ],
+  "recovery_context": "Derive dependency status and verification metadata from the task document at implementation_sha, or explicitly reconcile current backend fields against the parsed SHA-pinned document; add a post-SHA drift regression before rerunning focused evaluator tests and ci:contract."
+}

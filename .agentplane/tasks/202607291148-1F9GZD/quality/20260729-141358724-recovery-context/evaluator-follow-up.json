@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-9ae0755d8687587fb3e568da",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Следующему исполнителю нужно проверить финальную логику pinning на SHA 6b848381 или новом потомке, записать durable verification для этого же проверенного состояния и затем заново подготовить замороженный evaluator work order.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "Финальная реализация не проверена на оцениваемом SHA: последняя зафиксированная проверка относится к 8a94a0a, после неё в 6b848381 добавлено существенное исправление привязки жизненного цикла зависимостей и изменены тесты.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:e6a14ab5bc565742675185ccebaa05d8bcbba884cc0ab784a8cfa30aa2814813",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141358724-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:702df9ee0ac16fe694dcd0ebdebf2735a8da39ec0c9d5aa61c02b2b839c93f99",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141358724-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:ff68df46faea296b54d58549be1a5b6854ceb866b5907ab4d866abf9ca3fc9d6",
+          "section": "qualification-packet-pinned-task.ts and qualification-packet.ts"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141358724-recovery-context/evaluator-result.json"
+}

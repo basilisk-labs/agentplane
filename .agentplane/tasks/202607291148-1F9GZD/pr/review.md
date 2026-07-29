@@ -6,14 +6,14 @@ Created: 2026-07-29T11:49:50.615Z
 
 - Task: `202607291148-1F9GZD`
 - Title: Formalize SHA-bound qualification packets for evaluator review
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291148-1F9GZD/formalize-sha-bound-qualification-packets-for-ev`
 - Canonical task record: `.agentplane/tasks/202607291148-1F9GZD/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified 8a94a0a: qualification evidence traverses terminal dependency leaves.
+- Note: Verified SHA-bound dependency lifecycle packet on 28b541f8.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,7 @@ Created: 2026-07-29T11:49:50.615Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator-qualification-packet.test.ts         | 545 +++++++++++++++++++
+ .../evaluator-qualification-packet.test.ts         | 581 +++++++++++++++++++++
  .../evaluator/evaluator-qualification-review.ts    |  52 ++
  .../evaluator/evaluator-review-artifacts.ts        |   3 +-
  .../commands/evaluator/evaluator-review-usecase.ts |  47 +-
@@ -38,12 +38,13 @@ Created: 2026-07-29T11:49:50.615Z
  .../evaluator/evaluator-verification-records.ts    |  17 +-
  .../src/commands/shared/verification-details.ts    |  36 ++
  .../task/qualification-packet-artifacts.ts         |  70 +++
- .../task/qualification-packet-dependencies.ts      |  51 ++
+ .../task/qualification-packet-dependencies.ts      |  57 ++
  .../src/commands/task/qualification-packet-json.ts |  43 ++
+ .../task/qualification-packet-pinned-task.ts       |  91 ++++
  .../src/commands/task/qualification-packet-rf04.ts | 256 +++++++++
- .../src/commands/task/qualification-packet.ts      | 592 +++++++++++++++++++++
+ .../src/commands/task/qualification-packet.ts      | 556 ++++++++++++++++++++
  .../src/commands/task/verify-record-execute.ts     |  33 +-
- 14 files changed, 1784 insertions(+), 105 deletions(-)
+ 15 files changed, 1881 insertions(+), 105 deletions(-)
 ```
 
 </details>
