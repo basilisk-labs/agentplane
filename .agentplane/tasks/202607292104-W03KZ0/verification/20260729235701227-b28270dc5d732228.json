@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:b28270dc5d732228729cdfb87774397ed16751c966030c474b0bd45066e46c8b",
+  "implementation_sha": "2790e0b0e485adf0505d9d3899d4c74b922a2e3d",
+  "kind": "task_verification_record",
+  "note": "RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider retry was performed.",
+  "recorded_at": "2026-07-29T23:57:01.227Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.",
+  "scope_digest": "sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1",
+  "task_id": "202607292104-W03KZ0",
+  "verification_command": "agentplane verify 202607292104-W03KZ0 --rework --by CODER",
+  "verifier": "CODER"
+}

@@ -19,10 +19,9 @@ Implement a candidate-SHA RF-04 measurement route that records actual token, lat
 - Note:
 
 ```text
-RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50
-runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its
-runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is
-0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.
+RF-04 runtime bridge and candidate evidence are complete and deterministic, but the matched-runtime
+comparison fails its declared latency gates; beta.1 qualification remains blocked and no provider
+retry was performed.
 ```
 - Canonical workflow state lives in the task README.
 
