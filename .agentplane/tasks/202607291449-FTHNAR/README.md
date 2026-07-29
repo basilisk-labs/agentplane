@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on: []
@@ -69,6 +69,9 @@ comments:
   -
     author: "CODER"
     body: "Start: hosted CI exposed an unrecorded evaluator recovery-contract delta; restore the approved candidate and rerun the full gate."
+  -
+    author: "CODER"
+    body: "Start: rework the deterministic-evidence refresh route so it compares the EVALUATOR SHA with the effective semantic target rather than a later artifact-only commit."
 events:
   -
     type: "status"
@@ -146,8 +149,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verification: workflow-step 24/24, route-decision 10/10, SGR contracts 26/26, critical compatibility baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility ratchet passed."
+  -
+    type: "status"
+    at: "2026-07-29T16:15:05.222Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: rework the deterministic-evidence refresh route so it compares the EVALUATOR SHA with the effective semantic target rather than a later artifact-only commit."
 doc_version: 3
-doc_updated_at: "2026-07-29T16:10:56.569Z"
+doc_updated_at: "2026-07-29T16:15:05.222Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:

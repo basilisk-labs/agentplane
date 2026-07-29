@@ -852,6 +852,7 @@ describe("typed WorkflowStep reducer", () => {
           },
         },
         prFlow: prFlow("OPEN"),
+        qualityReviewTargetSha: resume.head_sha,
         blockers: [
           { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
         ],
@@ -869,6 +870,44 @@ describe("typed WorkflowStep reducer", () => {
       },
     });
     expect(step.compatibility.command).toBeNull();
+  });
+
+  it("refreshes deterministic evidence when later commits contain only task artifacts", () => {
+    const semanticSha = "2222222222222222222222222222222222222222";
+    const artifactSha = "3333333333333333333333333333333333333333";
+    const openPr = prFlow("OPEN");
+    const step = reduceRouteState(
+      routeState({
+        task: {
+          ...task,
+          verification: { state: "ok", updated_at: "2026-07-29T14:40:00.000Z" },
+          quality_review: {
+            state: "blocked",
+            provenance: "evaluator_supplied",
+            updated_at: "2026-07-29T14:40:56.727Z",
+            updated_by: "EVALUATOR",
+            note: "Frozen verification evidence is missing.",
+            evaluated_sha: semanticSha,
+            blueprint_digest: "fixture-blueprint",
+            evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
+            findings: ["Frozen deterministic verification evidence is missing."],
+            recovery_reason: "deterministic_evidence_gap",
+          },
+        },
+        resume: { ...resume, head_sha: artifactSha },
+        prFlow: { ...openPr, branch: { ...openPr.branch, headSha: artifactSha } },
+        qualityReviewTargetSha: semanticSha,
+        blockers: [
+          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
+        ],
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      phase: "quality_evidence_refresh_needed",
+      episode: { purpose: "verification", role: "TESTER" },
+    });
   });
 
   it("does not refresh an unclassified semantic EVALUATOR block even when its evidence is current", () => {

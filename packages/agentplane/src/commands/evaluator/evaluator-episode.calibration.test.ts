@@ -174,6 +174,7 @@ function persistedBranchRouteStep(opts: {
       { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
     ],
     batchOwnership: { role: "none" },
+    qualityReviewTargetSha: opts.evaluatedSha,
     taskWorktree: {
       state: "clean",
       branch,
