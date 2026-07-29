@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -45,29 +45,28 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T07:31:44.211Z"
+  updated_at: "2026-07-29T07:42:01.031Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "03577c779d3770139fb398385969e5194bd8f86b"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "57637d15372425b7afb0e08d8225b19ced89f244"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen verification packet does not substantiate the direct golden path or the required negative and concurrency-sensitive behavior at the evaluated SHA."
-    - "The recorded successful verification and prior quality review target an older commit than the work order's evaluated SHA, leaving the final change unevaluated by the supplied evidence."
+    - "The frozen review packet still contains no concrete verification records or direct-runtime evidence for the evaluated SHA, despite reporting verification success."
 commit:
   hash: "cb23e156a8c6ec8a9d851ed67d4410f4c515b502"
   message: "🚧 0SFMS7 task: use shared evaluator record guard"
@@ -140,7 +139,7 @@ events:
     state: "ok"
     note: "RF-10a closure target classification now preserves verified implementation evidence across lifecycle artifacts; focused and full regression gates passed on 57637d153."
 doc_version: 3
-doc_updated_at: "2026-07-29T07:39:56.598Z"
+doc_updated_at: "2026-07-29T07:42:01.052Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T07:42:01.031Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "57637d15372425b7afb0e08d8225b19ced89f244",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "The frozen review packet still contains no concrete verification records or direct-runtime evidence for the evaluated SHA, despite reporting verification success."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074048500-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "An end-to-end evaluator-review preparation test using the real task-history shape, proving that the verification record and preserved direct-runtime evidence are frozen after lifecycle-artifact and quality-target commits.",
+    "A regression assertion that evaluator-observed-checks.json is rejected or flagged when verification.state is ok but verification_records, runner_history, runtime_evidence, and direct_supervision are all empty for a task requiring runtime and concurrency-sensitive verification."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes that resolving the intended quality-review target automatically makes earlier verification and runtime artifacts discoverable in the frozen evaluator packet.",
+    "The successful verification note is assumed to be an adequate substitute for independently frozen command, runtime, negative-path, and concurrency evidence."
+  ],
+  "residual_risks": [
+    "Repair the evaluator evidence-freezing path so the work order for the current review target includes the concrete verification record and preserved direct-supervision/runtime artifacts, then regenerate the frozen packet and rerun this evaluation."
+  ]
+}
