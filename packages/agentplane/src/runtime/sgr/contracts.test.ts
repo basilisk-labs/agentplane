@@ -542,9 +542,7 @@ describe("SGR reliability contracts", () => {
       recovery_reason: "deterministic_evidence_gap",
     } as const;
 
-    expect(validateEvaluatorSgrResult(blocked).recovery_reason).toBe(
-      "deterministic_evidence_gap",
-    );
+    expect(validateEvaluatorSgrResult(blocked).recovery_reason).toBe("deterministic_evidence_gap");
     expect(() => validateEvaluatorSgrResult({ ...blocked, verdict: "rework" })).toThrow(
       "only for blocked",
     );

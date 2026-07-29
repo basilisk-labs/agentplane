@@ -6,7 +6,7 @@ Created: 2026-07-29T14:50:37.577Z
 
 - Task: `202607291449-FTHNAR`
 - Title: Permit evidence refresh after evaluator review gaps
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
 - Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
 
@@ -30,6 +30,7 @@ Created: 2026-07-29T14:50:37.577Z
 
 ```text
  .../src/backends/task-backend/shared/normalize.ts  |   5 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  18 ++-
  .../evaluator-episode.calibration.test.ts          | 161 +++++++++++++++++++++
  .../src/commands/evaluator/evaluator-episode.ts    |   2 +
  .../evaluator/evaluator-quality-artifacts.ts       |   1 +
@@ -40,11 +41,13 @@ Created: 2026-07-29T14:50:37.577Z
  .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++
  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  29 ++++
+ .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 ++++
  packages/core/src/index.ts                         |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-store.ts              |   2 +
- 15 files changed, 370 insertions(+)
+ .../baselines/v0.7-compatibility-candidate.json    |  19 +--
+ .../check-compatibility-contract-baseline.mjs      |  10 +-
+ 18 files changed, 396 insertions(+), 19 deletions(-)
 ```
 
 </details>

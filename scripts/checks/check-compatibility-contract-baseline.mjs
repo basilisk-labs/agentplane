@@ -344,6 +344,7 @@ function validateReviewedCandidate({
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
     "202607281655-YMPY8Y",
+    "202607291449-FTHNAR",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -664,7 +665,11 @@ function validateReviewedCandidate({
     );
   }
   const expectedDeltaSources = {
-    agent_facing_context_contracts: ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
+    agent_facing_context_contracts: [
+      "202607221848-1HWR0R",
+      "202607221849-8YYZ9X",
+      "202607291449-FTHNAR",
+    ],
     cli_topology: cliSourceTasks,
     machine_output_contract: ["202607221848-ABG7SD"],
     workflow_schema: ["202607221846-4VB97J"],
@@ -768,7 +773,8 @@ function validateReviewedCandidate({
           normalized_bytes: afterEvaluatorContract.normalized_bytes,
           normalized_sha256: afterEvaluatorContract.normalized_sha256,
         },
-        change: "adds evaluator human_review as a typed semantic escalation verdict",
+        change:
+          "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
       },
       {
         path: afterContextSource.path,
