@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   ensureGitClean: vi.fn(),
   gitDiffNames: vi.fn(),
   gitDiffStat: vi.fn(),
+  gitRefreshBranchTrackingRef: vi.fn(),
   gitBranchExists: vi.fn(),
   gitBranchUpstream: vi.fn(),
   gitCurrentBranch: vi.fn(),
@@ -42,6 +43,7 @@ vi.mock("@agentplaneorg/core/git", () => ({
   findWorktreeForBranch: mocks.findWorktreeForBranch,
   gitDiffNames: mocks.gitDiffNames,
   gitDiffStat: mocks.gitDiffStat,
+  gitRefreshBranchTrackingRef: mocks.gitRefreshBranchTrackingRef,
   gitEnv: () => process.env,
   resolveBaseBranch: mocks.resolveBaseBranch,
 }));
@@ -163,6 +165,7 @@ function seedCommon(): void {
   mocks.ensureCommittedPrArtifactsOnBranch.mockResolvedValue();
   mocks.gitDiffNames.mockReset().mockResolvedValue(["src/app.ts"]);
   mocks.gitDiffStat.mockResolvedValue("src/app.ts | 1 +\n");
+  mocks.gitRefreshBranchTrackingRef.mockResolvedValue();
   mocks.gitBranchUpstream.mockImplementation((_gitRoot: string, branch: string) =>
     branch === "task/T-1" ? "origin/task/T-1" : null,
   );
@@ -246,6 +249,11 @@ describe("pr/integrate/internal/prepare", () => {
     const { prepareIntegrate } = await import("./prepare.js");
     seedCommon();
     mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+    });
 
     await expect(
       prepareIntegrate({
@@ -378,6 +386,23 @@ describe("pr/integrate/internal/prepare", () => {
       base: "main",
       branchHeadSha: "deadbeef",
     });
+  });
+
+  it("refreshes the configured task tracking ref before validating its published head", async () => {
+    const { prepareIntegrate } = await import("./prepare.js");
+    seedCommon();
+    mocks.loadCommandContext.mockResolvedValue(mkCtx("branch_pr"));
+    mocks.parsePrMeta.mockReturnValue({
+      branch: "task/T-1",
+      head_sha: "deadbeef",
+      last_verified_sha: null,
+    });
+
+    await expect(
+      prepareIntegrate({ cwd: "/repo", taskId: "T-1", runVerify: false }),
+    ).resolves.toMatchObject({ branchHeadSha: "deadbeef" });
+
+    expect(mocks.gitRefreshBranchTrackingRef).toHaveBeenCalledWith("/repo", "task/T-1");
   });
 
   it("allows branches to remove the optional tasks export snapshot from tracked state", async () => {

@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts\nResult: pass\nEvidence: focused unit output: 25 pass, 0 fail, 136 expectations; includes evidence-refresh routing.\nScope: reviewed semantic target d96688db9606265c051cdeabb626925092a879ef.\n\nCommand: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: focused unit output: 10 pass, 0 fail, 11 expectations; preserves stale-review publication block.\nScope: reviewed semantic target d96688db9606265c051cdeabb626925092a879ef.\n\nCommand: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/shared/route-decision-blockers.quality-review.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: focused Vitest output: 6 pass, 0 fail; covers the unrelated blocked-quality-review guard.\nScope: reviewed semantic target d96688db9606265c051cdeabb626925092a879ef.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: reviewed semantic target d96688db9606265c051cdeabb626925092a879ef.\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: doctor OK; errors=0; warnings=2 are historical missing DONE-task commit hashes outside this task.\nScope: reviewed semantic target d96688db9606265c051cdeabb626925092a879ef.",
+  "digest": "sha256:c49689c994e9100c62016980b4f0a1f4b21f37e47f928a63a6c8093d8f77f778",
+  "implementation_sha": "5faf3e2bac90d7730a254aaaccdb7c1d0794c6f7",
+  "kind": "task_verification_record",
+  "note": "Verified d96688db: fresh deterministic evidence covers all declared checks plus the independent blocked-quality-review regression.",
+  "recorded_at": "2026-07-29T16:23:18.461Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
+  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
+  "verifier": "TESTER"
+}

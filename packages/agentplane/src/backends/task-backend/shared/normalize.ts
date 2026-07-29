@@ -59,6 +59,10 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
     value.blueprint_digest === null || typeof value.blueprint_digest === "string"
       ? value.blueprint_digest
       : null;
+  const recoveryReason =
+    value.recovery_reason === "deterministic_evidence_gap"
+      ? "deterministic_evidence_gap"
+      : undefined;
   return {
     state,
     ...(provenance ? { provenance } : {}),
@@ -69,6 +73,7 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
     blueprint_digest: blueprintDigest,
     evidence_refs: normalizeStringArray(value.evidence_refs) ?? [],
     findings: normalizeStringArray(value.findings) ?? [],
+    ...(recoveryReason ? { recovery_reason: recoveryReason } : {}),
   };
 }
 

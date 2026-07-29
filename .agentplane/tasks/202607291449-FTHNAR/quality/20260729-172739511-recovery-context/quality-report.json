@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T17:28:31.670Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "c02ee8dc3475241f03ece468902f5e54da3f68c4",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "Frozen observed checks contain no declared checks, verification records, runner history, or runtime evidence; the verification note alone does not provide deterministic command-level evidence for the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "Frozen command-level results for the focused workflow-route, Git helper, publication, and integration-preparation regression suites.",
+    "Frozen results for typecheck, focused lint, hotspot, routing-policy, and doctor checks."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes checks that ran against evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4.",
+    "Mock-based integration-preparation coverage is sufficient until the later controlled real-queue proof."
+  ],
+  "residual_risks": [
+    "Refresh and freeze deterministic command-level verification evidence for evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4, then obtain a new EVALUATOR review before publication."
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T17:27:10.808Z",
+    "updated_by": "TESTER",
+    "note": "Verified d5f74d5c: workflow-route 31/31, constrained-refspec core/publication 15/15, integration preparation 24/24, typecheck, focused lint, hotspot/policy routing, and doctor passed. Provider publication and queue proof remain the next controlled lifecycle steps."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}

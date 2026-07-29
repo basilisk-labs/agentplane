@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "coverage.bounded-recovery-route",
+      "severity": "low",
+      "summary": "The frozen diff and verification record show that deterministic-evidence refresh is restricted to a current evaluator-supplied deterministic_evidence_gap block, returns control to EVALUATOR after refresh, and preserves publication blockers.",
+      "broken_invariant": "No invariant is broken; positive, negative, semantic-target, and unrelated blocked-review paths are covered by the frozen evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3073f255ec2ea1bc17c279e02310fe50dd4a205a502eb84e4dbbc9bb715578e2",
+          "section": "Implementation and regression coverage"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729162318461-c49689c994e9100c.json",
+          "sha256": "sha256:24d576859621310a7a1f7253267622c6e4bf2532afeacaea72f36f720438b0bb",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Verification-record command summaries are accepted as authoritative deterministic evidence because the frozen evaluator input does not include raw runner output.",
+    "ISO-8601 verification and review timestamps remain normalized and lexically comparable."
+  ]
+}

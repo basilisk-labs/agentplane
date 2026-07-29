@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607291428-SNSCBP-68b9fed93ecf3033ad663133",
+  "prepared_at": "2026-07-29T18:51:22.705Z",
+  "task": {
+    "id": "202607291428-SNSCBP",
+    "revision": 19,
+    "objective": "Gate beta.1 qualification on SHA-bound evaluator evidence\n\nAdd the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.",
+    "acceptance_criteria": [
+      "agentplane doctor",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.\n- Out of scope: unrelated refactors not required for \"Gate beta.1 qualification on SHA-bound evaluator evidence\".",
+      "1. Preserve the committed beta.1 dependency on 202607291148-1F9GZD. 2. Replace fallback verification with deterministic dependency-present, dependency-blocked, policy, and doctor evidence bound to the implementation SHA. 3. Freeze a fresh TESTER record and obtain EVALUATOR review without changing semantic scope. 4. Publish and integrate this metadata-only gate before the evidence implementation PR.",
+      "1. Run node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9. Expected: depends_on includes 202607291148-1F9GZD in the task branch. 2. Run node packages/agentplane/bin/agentplane.js task active. Expected: beta.1 qualification remains blocked while 202607291148-1F9GZD is incomplete or absent from main. 3. Run node .agentplane/policy/check-routing.mjs and node packages/agentplane/bin/agentplane.js doctor. Expected: policy routing and workflow doctor pass. 4. Record command-level verification evidence bound to the committed dependency change SHA, then require a fresh EVALUATOR review. PR publication, integration queue, hosted checks, and merge are subsequent CLI-owned gates."
+    ]
+  },
+  "evaluated_sha": "65e6b7c925b1ef6f504cabd5c154ee400d509815",
+  "diff_base_sha": "e51bb69fcbf16fab182f66ec39aca7d6c48d3189",
+  "blueprint_digest": "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/README.md",
+      "sha256": "sha256:1973d567492e0361f7669f6a1a46439019c77debfe938b86fc97340cea60e106",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-185122705-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:8380346b6864524e413eabef8a304b4244f5fddd8456bc426459ab6422299836",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-185122705-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:05b2273c4cd226e3bf3b44a303f892bc2d5c4c25328682df1b776ec7f90ee229",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/verification/20260729184729882-4bd60f50fa4c7639.json",
+      "sha256": "sha256:8e0d87243570187e462e473a6a4a9f2c8b09f7c1a3153334b31cbec68905548c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-185122705-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d646ae948914f18bd2aecd5388bda51048e8827e9fa49c69906ba1344e89372f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

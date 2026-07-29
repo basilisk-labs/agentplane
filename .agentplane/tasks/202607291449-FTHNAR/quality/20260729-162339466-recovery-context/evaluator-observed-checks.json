@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T16:23:18.461Z",
+    "updated_by": "TESTER",
+    "note": "Verified d96688db: fresh deterministic evidence covers all declared checks plus the independent blocked-quality-review regression."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729162318461-c49689c994e9100c.json",
+      "sha256": "sha256:24d576859621310a7a1f7253267622c6e4bf2532afeacaea72f36f720438b0bb"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}

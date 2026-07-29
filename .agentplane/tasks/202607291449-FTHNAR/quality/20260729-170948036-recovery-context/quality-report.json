@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T17:09:48.535Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "13d29967da9d6f5de77780ac92b3180916968b72",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "The semantic quality target remains bound to the implementation commit rather than later task artifacts, so closure evidence does not invalidate a completed review.",
+    "Task branch publication refreshes only the required remote-tracking ref, while configured-upstream fallback requires that ref to resolve.",
+    "The combined regressions cover evaluator routing, publication behavior, and the previously live missing_upstream failure mode."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The remote publication target accepts an explicit single-ref fetch for the branch just published."
+  ],
+  "residual_risks": []
+}

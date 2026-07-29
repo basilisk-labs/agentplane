@@ -1,0 +1,15 @@
+{
+  "details": "Command: GitHub Actions Core CI / verify-contract (run 30470755976, job 90640167676)\nResult: fail\nEvidence: hotspot-report reports packages/agentplane/src/commands/shared/workflow-step-branch.ts at 619 lines; threshold is 600.\nScope: structural extraction only; preserve FTHNAR recovery-route behavior and its existing tests.",
+  "digest": "sha256:5de8489b5b7761d9f957f93c2d886d852c39878dd455633a73d3cece55af1fe1",
+  "implementation_sha": "cdf9437d8afcaa31c6e8c084071291b8fa63c616",
+  "kind": "task_verification_record",
+  "note": "Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines).",
+  "recorded_at": "2026-07-29T16:30:20.448Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
+  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --rework --by TESTER",
+  "verifier": "TESTER"
+}

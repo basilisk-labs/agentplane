@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts\nResult: pass\nEvidence: 22 pass; includes current EVALUATOR-blocked evidence-refresh route.\nScope: route reducer and execution-packet behavior.\n\nCommand: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: 10 pass; stale quality review remains ahead of PR-head publication.\nScope: branch_pr publication safety.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: policy gateway compatibility.\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: 0 errors; two historical DONE-task commit warnings outside this task.\nScope: repository workflow health.",
+  "digest": "sha256:8b2f0cc0ece7db0c51d11977c1e9ff1ac2fdca8d2163b2b27b981c709e472180",
+  "implementation_sha": "425cc4268bb9ce250abf7ed0d19d1017cae0954b",
+  "kind": "task_verification_record",
+  "note": "Verified bounded evidence-refresh routing and protected quality-review handoff.",
+  "recorded_at": "2026-07-29T15:01:06.145Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
+  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
+  "verifier": "TESTER"
+}

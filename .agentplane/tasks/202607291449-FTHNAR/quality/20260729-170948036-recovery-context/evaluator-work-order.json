@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607291449-FTHNAR-5df39a8b7b34de1555a4f0fd",
+  "prepared_at": "2026-07-29T17:09:48.036Z",
+  "task": {
+    "id": "202607291449-FTHNAR",
+    "revision": 37,
+    "objective": "Permit evidence refresh after evaluator review gaps\n\nRestore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.",
+    "acceptance_criteria": [
+      "- In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.\n- Out of scope: unrelated refactors not required for \"Permit evidence refresh after evaluator review gaps\".",
+      "1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Include dependent task 202607291650-R1N8C5 on this primary FTH PR because its constrained-refspec publication repair is required to publish this branch, while this branch contains the freshness logic required for that repair to close. 3. Add the R1 source and regression coverage to this branch without changing origin fetch configuration. 4. Re-run FTH and R1 focused tests, typecheck, lint, structural policy checks, and live pr flow alignment. 5. Publish the combined FTH PR, complete a fresh evaluator review, wait for hosted checks, then integrate the single primary PR.",
+      "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct.\n2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication creates the task tracking ref and AgentPlane resolves it.\n3. Run bun run typecheck. Expected: TypeScript typecheck passes.\n4. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope.\n5. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors.\n6. Publish the primary FTH PR with --include-task 202607291650-R1N8C5 and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned.\n7. Wait for the hosted matrix to settle. Expected: no failing required check."
+    ]
+  },
+  "evaluated_sha": "13d29967da9d6f5de77780ac92b3180916968b72",
+  "diff_base_sha": "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/README.md",
+      "sha256": "sha256:beefc9d2732921feb46a92e4f9eb2c6e1ca40fbb9107fbb94a43cafb91c87cf2",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:478a3bc78558614664cd55b474dad46299a4bf3230ab8b355d53a4518af6a55a",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:799d55a1e07c149db8b30155f383584946d60699325a438be84cfb00ceeba8b4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729170933602-8e378ff840124c4c.json",
+      "sha256": "sha256:c23d29edbf690c289704ad54ffb8d00b4ed6f07701d9addd9a1e1549f6bf88ca",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-170948036-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:fd2d6f4a1afa66e0363ff4276c0a107402878622ad7f09d44e77f3b8d617d517",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

@@ -1,6 +1,8 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
+import { preMergeCommit, primaryIncludeTaskIds } from "./workflow-step-branch-state.js";
+import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import {
   approvalStep,
   branchImplementationStep,
@@ -8,6 +10,7 @@ import {
   commonExecution,
   implementationReworkStep,
   includedBatchStep,
+  qualityEvidenceRefreshStep,
   qualityReviewStep,
   routeBlockerFor,
   routeBlockerSnapshot,
@@ -18,11 +21,6 @@ import {
   workSlug,
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
-
-function primaryIncludeTaskIds(state: WorkflowRouteState): readonly string[] {
-  if (state.batchOwnership.role !== "primary") return [];
-  return [...state.batchOwnership.includedTaskIds];
-}
 
 function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
   return terminalStep({
@@ -38,10 +36,6 @@ function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
     evidenceMissing: ["task_branch_head"],
     selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
   });
-}
-
-function preMergeCommit(state: WorkflowRouteState): string | null {
-  return state.prFlow?.branch.headSha ?? null;
 }
 
 function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
@@ -521,6 +515,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   }
   if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
     return verificationStep(state);
+  }
+  if (needsQualityEvidenceRefresh(state)) {
+    return qualityEvidenceRefreshStep(state);
   }
   if (
     state.blockers.some(

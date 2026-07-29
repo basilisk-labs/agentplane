@@ -225,6 +225,7 @@ export type EvaluatorSgrResult = {
   missing_tests: string[];
   hidden_assumptions: string[];
   recovery_context?: string;
+  recovery_reason?: "deterministic_evidence_gap";
 };
 
 export type BlueprintRejectedRoute = {

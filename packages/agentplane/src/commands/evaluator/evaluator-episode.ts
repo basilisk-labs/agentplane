@@ -88,6 +88,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
     missing_tests: { type: "array", items: { type: "string" } },
     hidden_assumptions: { type: "array", items: { type: "string" } },
     recovery_context: NULLABLE_NON_EMPTY_STRING_SCHEMA,
+    recovery_reason: { type: ["string", "null"], enum: ["deterministic_evidence_gap", null] },
   },
   required: [
     "schema_version",
@@ -98,6 +99,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
     "missing_tests",
     "hidden_assumptions",
     "recovery_context",
+    "recovery_reason",
   ],
 } as const;
 

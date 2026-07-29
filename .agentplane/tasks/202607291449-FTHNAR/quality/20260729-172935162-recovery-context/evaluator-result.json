@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "finding.missing-frozen-deterministic-evidence",
+      "severity": "high",
+      "summary": "The frozen review packet contains no deterministic check results for the evaluated SHA; the verification state and note do not prove the declared checks passed.",
+      "broken_invariant": "Pass requires frozen verification evidence covering the relevant positive, negative, and concurrency-sensitive paths, and the code DoD requires all declared Verify Steps to be executed with command-level results recorded.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:368772a92441a2e556864cfc92b01df783aca11409fca2ba3dfd5a63f50d4e40",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/README.md",
+          "sha256": "sha256:71582c11416adc02051bf54857077e15a607a2c895e80d9ce5d0e4ef003c6cd0",
+          "section": "Verify Steps and latest verification event"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze command-level results for the focused workflow routing tests, constrained-refspec Git/publication tests, integration-preparation tests, typecheck, focused lint, hotspot check, policy routing check, and doctor at evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4.",
+    "Freeze evidence that the real integration queue accepts PR #4672 from a clean constrained-refspec base checkout.",
+    "Freeze hosted required-check results and proof that PR #4673 remains closed while PR #4672 is the sole merge target."
+  ],
+  "hidden_assumptions": [
+    "The latest TESTER verification note is assumed to summarize successful command execution despite the frozen observed-checks artifact containing no command results.",
+    "Earlier verification records are assumed to remain applicable to evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4 without SHA-bound frozen evidence.",
+    "The constrained-refspec queue behavior is assumed to match unit-test behavior without frozen real-queue evidence."
+  ],
+  "recovery_context": "Refresh deterministic verification evidence for evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4, including every declared local check, the clean-base constrained-refspec queue proof, hosted required checks, and PR #4672/#4673 state; then obtain a fresh EVALUATOR review before publication.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

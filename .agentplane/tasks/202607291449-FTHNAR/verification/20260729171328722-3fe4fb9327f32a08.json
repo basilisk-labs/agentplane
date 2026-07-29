@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: 46 tests passed, 0 failed.\nScope: constrained-refspec publication plus evaluator evidence-refresh and stale-quality routing.\n\nCommand: bun run typecheck; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; agentplane doctor\nResult: pass\nEvidence: typecheck, structural/policy gates, and doctor completed without errors; doctor retains only historical missing-commit warnings.\nScope: combined primary FTH branch after packaging correction.",
+  "digest": "sha256:3fe4fb9327f32a08cada8d94c30b1fc5f40df27e6906e73251ace7f00fb9728a",
+  "implementation_sha": "f446aa2cbc2573b64ebf9dd6674d5096d59d69be",
+  "kind": "task_verification_record",
+  "note": "Corrected primary packaging retains the same semantic implementation and all combined checks pass.",
+  "recorded_at": "2026-07-29T17:13:28.722Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct.\n2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication creates the task tracking ref and AgentPlane resolves it.\n3. Run bun run typecheck. Expected: TypeScript typecheck passes.\n4. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope.\n5. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors.\n6. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned.\n7. Wait for the hosted matrix to settle. Expected: no failing required check.\n8. Close superseded PR #4673 without deleting its remote branch. Expected: the duplicate PR is closed only after #4672 carries the source repair.",
+  "scope_digest": "sha256:4224e02e6626f82e3581ba675f45e8bb8d0d5e6704a3c49850d13c6eb39a6337",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
+  "verifier": "TESTER"
+}

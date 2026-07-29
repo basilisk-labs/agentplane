@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "medium",
+      "summary": "Regression coverage injects recovery_reason directly into route state and does not prove that an evaluator result is persisted, normalized, reloaded, and then routed to the bounded TESTER evidence-refresh episode.",
+      "broken_invariant": "The blocked-to-verification recovery route must work through the real evaluator-review persistence boundary, not only from a synthetic in-memory task fixture.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153123032-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:2fd5c1fe9ce9c12a0f656f48e3dd28ff397dad78abd1e38bda245636cbfb0126",
+          "lines": "1030-1342"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729153045049-45a1e66a801bf33a.json",
+          "sha256": "sha256:bef36d4c6802d47ef5c7a6a127ab816fc9136702ec368adb9ec72c06df1f3234",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add an integration or use-case test that applies a blocked evaluator result with recovery_reason=deterministic_evidence_gap, reloads the task through the backend normalization path, and confirms next-action delegates only to TESTER; then record execution of that test.",
+    "Add the corresponding negative persistence test proving an evaluator block without recovery_reason, or with a non-evidence-gap semantic finding, reloads without selecting evidence refresh."
+  ],
+  "hidden_assumptions": [
+    "The newly added recovery_reason field survives evaluator result validation, review persistence, task serialization, backend normalization, and route reconstruction unchanged.",
+    "The focused route tests are representative of persisted production task state even though they bypass the evaluator-review application path."
+  ],
+  "recovery_context": "Verify the recovery discriminator across the complete evaluator-result-to-task-route persistence boundary, including the unrelated-block negative case, and rerun the focused deterministic checks before requesting a fresh EVALUATOR review."
+}

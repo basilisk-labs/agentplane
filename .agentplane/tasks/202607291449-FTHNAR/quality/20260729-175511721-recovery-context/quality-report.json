@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T17:56:30.826Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "714faf44fb5afbaebddddb84fa80385dd9a4bccc",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "The evaluated SHA preserves the bounded evidence-refresh and constrained-refspec recovery contract; the post-review source delta is formatting-only and fresh deterministic verification covers the resulting commit."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-175511721-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607291449-FTHNAR/verification/20260729175502358-c8cca09e27c2346a.json",
+    ".agentplane/tasks/202607291449-FTHNAR/README.md"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The configured push target remains readable by git fetch when it differs from the remote fetch URL."
+  ],
+  "residual_risks": []
+}

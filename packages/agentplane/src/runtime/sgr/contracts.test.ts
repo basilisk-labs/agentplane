@@ -521,6 +521,33 @@ describe("SGR reliability contracts", () => {
     expect(result.findings).toHaveLength(1);
   });
 
+  it("accepts the deterministic evidence-gap recovery reason only for blocked results", () => {
+    const blocked = {
+      schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+      kind: "evaluator_result",
+      evaluator_id: "recovery-context",
+      verdict: "blocked",
+      findings: [
+        {
+          id: "finding.missing-frozen-verification",
+          severity: "medium",
+          summary: "The reviewed unit has no frozen deterministic verification evidence.",
+          broken_invariant: "The CLI must not treat an unproven verification as complete.",
+          evidence_refs: [sourceRef],
+        },
+      ],
+      missing_tests: [],
+      hidden_assumptions: [],
+      recovery_context: "Record the declared deterministic verification evidence.",
+      recovery_reason: "deterministic_evidence_gap",
+    } as const;
+
+    expect(validateEvaluatorSgrResult(blocked).recovery_reason).toBe("deterministic_evidence_gap");
+    expect(() => validateEvaluatorSgrResult({ ...blocked, verdict: "rework" })).toThrow(
+      "only for blocked",
+    );
+  });
+
   it.each(["pass", "rework", "blocked", "human_review"] as const)(
     "rejects %s evaluator results without findings",
     (verdict) => {

@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607291449-FTHNAR-7ea3dd32b69a5fde0e3dcd6a",
+  "prepared_at": "2026-07-29T17:33:09.191Z",
+  "task": {
+    "id": "202607291449-FTHNAR",
+    "revision": 63,
+    "objective": "Permit evidence refresh after evaluator review gaps\n\nRestore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.",
+    "acceptance_criteria": [
+      "- In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.\n- Out of scope: unrelated refactors not required for \"Permit evidence refresh after evaluator review gaps\".",
+      "1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Extend the constrained-refspec repair with one reusable Git helper that refreshes a configured task tracking ref without changing remote.fetch. 3. Require protected integration preparation to use that helper before comparing the task branch head to upstream, so base checkout validation is independent of a broad fetch refspec. 4. Keep R1 and PR #4673 as superseded traceability; FTH #4672 remains the only merge target. 5. Before publication, freeze only the local semantic evidence: focused unit tests, typecheck, lint, structural checks, and doctor; EVALUATOR reviews this committed evidence and the implementation SHA. 6. Only after an EVALUATOR pass, let CLI own the formal provider lane: publish #4672, prove queue enqueue from the constrained-refspec base checkout, wait for stable hosted checks, integrate, and preserve the closed #4673 traceability.",
+      "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. These six checks are the committed semantic evidence required before EVALUATOR can permit publication. PR publication, integration-queue proof, hosted checks, and merge are subsequent CLI-owned lifecycle gates and are not preconditions for EVALUATOR review."
+    ]
+  },
+  "evaluated_sha": "c02ee8dc3475241f03ece468902f5e54da3f68c4",
+  "diff_base_sha": "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/README.md",
+      "sha256": "sha256:52d48e6cd34b60bde78800de70da359d8605926421bca5cda87f9ed7cf4f5ee6",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:3a4566934a493992a993c1aa3b9750b71ab4fa3f18c137ed4a1d6514216fef50",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:e02c9f2168f73e42bc00c12e7f9966cf1f6cb065a9daac093ccceb0a1ffb4ec4",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729173242102-51d4d8c73cd1183e.json",
+      "sha256": "sha256:18ca7f37a2b4b3004649eb6e8d9750c5e55df81ed4e9d79699685eac3a8faa76",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:fd2d6f4a1afa66e0363ff4276c0a107402878622ad7f09d44e77f3b8d617d517",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

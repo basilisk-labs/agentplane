@@ -1,0 +1,15 @@
+{
+  "details": "Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9\nResult: pass\nEvidence: depends_on includes 202607291148-1F9GZD at the reviewed branch head.\nScope: beta.1 dependency-present requirement.\n\nCommand: node packages/agentplane/bin/agentplane.js task active\nResult: pass\nEvidence: 202607221908-MR9EA9 reports deps=missing:202607291148-1F9GZD while the evidence task is incomplete on main.\nScope: beta.1 dependency-blocked requirement.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: task policy contract.\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: workflow doctor reported no errors; only the established historical missing-commit warnings remain.\nScope: workflow health.",
+  "digest": "sha256:4bd60f50fa4c7639ee0fdcbeb66bebfd1b273f3e54e841728d69b1153618fe3e",
+  "implementation_sha": "c4828d746754389d2be48bca9ccba274ff3a88d1",
+  "kind": "task_verification_record",
+  "note": "Dependency-present, dependency-blocked, policy, and doctor evidence passes after provider branch update at implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1.",
+  "recorded_at": "2026-07-29T18:47:29.882Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9. Expected: depends_on includes 202607291148-1F9GZD in the task branch. 2. Run node packages/agentplane/bin/agentplane.js task active. Expected: beta.1 qualification remains blocked while 202607291148-1F9GZD is incomplete or absent from main. 3. Run node .agentplane/policy/check-routing.mjs and node packages/agentplane/bin/agentplane.js doctor. Expected: policy routing and workflow doctor pass. 4. Record command-level verification evidence bound to the committed dependency change SHA, then require a fresh EVALUATOR review. PR publication, integration queue, hosted checks, and merge are subsequent CLI-owned gates.",
+  "scope_digest": "sha256:67971c6d3d364d920acecf7bc427e378cdc073c0392c98dc293a620408099675",
+  "task_id": "202607291428-SNSCBP",
+  "verification_command": "agentplane verify 202607291428-SNSCBP --ok --by TESTER",
+  "verifier": "TESTER"
+}
