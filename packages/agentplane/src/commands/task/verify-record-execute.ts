@@ -1,5 +1,8 @@
-import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
+
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
@@ -48,6 +51,25 @@ function verificationStateToQualityReviewState(state: string): "pass" | "rework"
   if (state === "ok") return "pass";
   if (state === "blocked_external") return "blocked";
   return "rework";
+}
+
+function sha256(value: string): `sha256:${string}` {
+  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
+}
+
+function verificationRecordName(at: string, digest: string): string {
+  const timestamp = at.replaceAll(/[^0-9]/gu, "");
+  return `${timestamp}-${digest.slice("sha256:".length, "sha256:".length + 16)}.json`;
+}
+
+function verificationCommand(opts: {
+  command: ExecuteVerifyRecordCommandOptions["command"];
+  taskId: string;
+  state: VerifyState;
+  by: string;
+}): string {
+  const stateFlag = opts.state === "ok" ? "--ok" : "--rework";
+  return `agentplane ${opts.command} ${opts.taskId} ${stateFlag} --by ${opts.by}`;
 }
 
 async function appendBlueprintSnapshotReference(
@@ -141,6 +163,7 @@ async function recordVerificationResult(opts: {
   finding?: VerifyStructuredFindingInput | null;
   collectIncidents?: boolean;
   quiet: boolean;
+  command: ExecuteVerifyRecordCommandOptions["command"];
 }): Promise<void> {
   const ctx =
     opts.ctx ??
@@ -174,6 +197,42 @@ async function recordVerificationResult(opts: {
         action: "record verification",
         guidance: "fill it before running `agentplane verify ...`",
       });
+      const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
+      const record = {
+        schema_version: 1,
+        kind: "task_verification_record",
+        task_id: opts.taskId,
+        recorded_at: at,
+        verification_command: verificationCommand({
+          command: opts.command,
+          taskId: opts.taskId,
+          state: opts.state,
+          by: opts.by,
+        }),
+        result: opts.state,
+        verifier: opts.by,
+        note: opts.note,
+        details: opts.details?.trim() ?? null,
+        implementation_sha: evaluatedSha,
+        scope: verificationScope,
+        scope_digest: sha256(verificationScope),
+      };
+      const digest = sha256(JSON.stringify(canonicalizeJson(record)));
+      const verificationDir = path.join(
+        resolved.gitRoot,
+        config.paths.workflow_dir,
+        opts.taskId,
+        "verification",
+      );
+      await mkdir(verificationDir, { recursive: true });
+      await writeJsonStableIfChanged(
+        path.join(verificationDir, verificationRecordName(at, digest)),
+        {
+          ...record,
+          digest,
+        },
+      );
+
       const execution = executeTaskVerificationTransitionRequest({
         task: current,
         at,
@@ -349,6 +408,7 @@ export async function executeVerifyRecordCommand(
       finding: opts.finding,
       collectIncidents: opts.collectIncidents,
       quiet: opts.quiet,
+      command: opts.command,
     });
     return 0;
   } catch (err) {

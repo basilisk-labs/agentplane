@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607282157-FT85MC-c81b40cc8bd5df609895e4de",
+  "task_id": "202607282157-FT85MC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework the verification-evidence path so a real durable verification record is created, discovered, and included in the frozen evaluator work order; then regenerate the review evidence and add explicit binary/rename regression coverage.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen review contains no durable verification records: verification_records and runner_history are empty, while the only check evidence is a narrative verification note.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:14dd44c60fb16b4f346a4fb837b10b8cc8a3c31c7651b8f03283abde9bfbdc4c",
+          "section": "verification_records and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:fd770ec8d50417c6398c680f5a240da2109278f4189117f03fc422339d5c5c5e",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-220908430-recovery-context/evaluator-result.json"
+}

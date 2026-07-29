@@ -1,0 +1,3518 @@
+diff --git a/.agentplane/tasks/202607282157-FT85MC/README.md b/.agentplane/tasks/202607282157-FT85MC/README.md
+new file mode 100644
+index 000000000..484b41535
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/README.md
+@@ -0,0 +1,1526 @@
++---
++id: "202607282157-FT85MC"
++title: "Freeze complete branch evidence for evaluator review"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "high"
++owner: "CODER"
++revision: 32
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "evaluator"
++  - "quality"
++  - "v0.7"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-28T21:58:01.517Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "ok"
++  updated_at: "2026-07-28T23:12:33.985Z"
++  updated_by: "TESTER"
++  note: "Rework verified with canonical, task-bound evaluator evidence."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-28T23:14:41.659Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 1 typed finding(s)."
++  evaluated_sha: "b66acd190a7820431d76e62c202e58d6e04bdf58"
++  blueprint_digest: "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9"
++  evidence_refs:
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607282157-FT85MC/README.md"
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607282157-FT85MC/verification/20260728231233985-503fe218300f70e1.json"
++    - ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231326646-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The implementation freezes the complete merge-base-to-evaluated-SHA patch, excludes recursive quality artifacts, preserves explicit no-work-unit evidence, and fails closed when a branch_pr base cannot be resolved."
++commit:
++  hash: "f0632c5d77073c64faea1ef52b0bf2d32a4cdf26"
++  message: "✅ FT85MC quality: refresh closure review evidence"
++comments:
++  -
++    author: "ORCHESTRATOR"
++    body: "Start: isolate the evaluator evidence contract so quality review always receives the complete branch change and concrete verification evidence."
++  -
++    author: "CODER"
++    body: "Implementation committed: complete evaluator branch diff freezing, explicit diff base provenance, and regression coverage are ready for independent verification."
++  -
++    author: "CODER"
++    body: "Implementation amended: direct-mode single-commit fallback remains explicit while branch_pr review stays fail-closed without a resolvable base."
++  -
++    author: "CODER"
++    body: "Rework committed: durable verification records are produced by the supported verify command and evaluator regression coverage now includes full history, binary content, and rename detection."
++  -
++    author: "CODER"
++    body: "Rework committed: durable verification evidence is written before task state, so a write failure cannot mark the task verified; concurrent verification coverage proves the final state matches one persisted record."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-07-28T21:58:01.832Z"
++    author: "ORCHESTRATOR"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: isolate the evaluator evidence contract so quality review always receives the complete branch change and concrete verification evidence."
++  -
++    type: "status"
++    at: "2026-07-28T22:06:59.963Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: complete evaluator branch diff freezing, explicit diff base provenance, and regression coverage are ready for independent verification."
++  -
++    type: "status"
++    at: "2026-07-28T22:08:52.841Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation amended: direct-mode single-commit fallback remains explicit while branch_pr review stays fail-closed without a resolvable base."
++  -
++    type: "verify"
++    at: "2026-07-28T22:08:53.597Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Focused evaluator evidence regression tests (17), Prettier, ESLint, typecheck, policy routing, and doctor passed. The work order now freezes the merge-base-to-target diff with base provenance; direct root/single-commit behavior and missing branch_pr base failure are covered."
++  -
++    type: "status"
++    at: "2026-07-28T22:18:38.509Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Rework committed: durable verification records are produced by the supported verify command and evaluator regression coverage now includes full history, binary content, and rename detection."
++  -
++    type: "verify"
++    at: "2026-07-28T22:19:19.341Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered."
++  -
++    type: "status"
++    at: "2026-07-28T22:25:57.692Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Rework committed: durable verification evidence is written before task state, so a write failure cannot mark the task verified; concurrent verification coverage proves the final state matches one persisted record."
++  -
++    type: "verify"
++    at: "2026-07-28T22:26:35.776Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Independent verification passed after the fail-closed fix: a verification write failure cannot persist success, and concurrent verifies leave final task state matched to exactly one durable record."
++  -
++    type: "status"
++    at: "2026-07-28T22:28:38.226Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "status"
++    at: "2026-07-28T22:31:18.877Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DONE"
++    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++  -
++    type: "verify"
++    at: "2026-07-28T22:40:43.586Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline."
++  -
++    type: "verify"
++    at: "2026-07-28T22:45:03.307Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied."
++  -
++    type: "verify"
++    at: "2026-07-28T22:53:29.224Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded."
++  -
++    type: "verify"
++    at: "2026-07-28T22:55:43.061Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified with durable command-level evidence for the current evaluator review."
++  -
++    type: "verify"
++    at: "2026-07-28T23:01:16.841Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified with concrete, evaluator-admissible command evidence."
++  -
++    type: "verify"
++    at: "2026-07-28T23:04:43.027Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified with bounded full diff and concrete evaluator evidence."
++  -
++    type: "verify"
++    at: "2026-07-28T23:08:53.498Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified with SHA- and scope-bound evaluator evidence."
++  -
++    type: "verify"
++    at: "2026-07-28T23:12:33.985Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Rework verified with canonical, task-bound evaluator evidence."
++doc_version: 3
++doc_updated_at: "2026-07-28T23:12:34.900Z"
++doc_updated_by: "CODER"
++description: "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior."
++sections:
++  Summary: |-
++    Freeze complete branch evidence for evaluator review
++
++    RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++  Scope: |-
++    - In scope: RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++    - Out of scope: unrelated refactors not required for "Freeze complete branch evidence for evaluator review".
++  Plan: "1. Reproduce the evaluator evidence gap using a multi-commit branch and identify the authoritative merge base for a branch_pr task. 2. Replace one-commit snapshotting with a bounded full branch patch from that merge base to the evaluated SHA, including binary/rename-safe content and a fail-closed error if base resolution is unavailable. 3. Freeze machine-readable verification records in the same work order and cover their discovery. 4. Add focused regression tests for complete multi-commit evidence, no-change handling, and base-resolution failure. 5. Run focused tests, formatting, typecheck, policy routing, and an independent evaluator review before PR integration."
++  Verify Steps: |-
++    1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.
++    2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.
++    3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-28T22:08:53.597Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Focused evaluator evidence regression tests (17), Prettier, ESLint, typecheck, policy routing, and doctor passed. The work order now freezes the merge-base-to-target diff with base provenance; direct root/single-commit behavior and missing branch_pr base failure are covered.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:08:52.841Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607282157-FT85MC
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T22:19:19.341Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:18:38.509Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Scope: formatting of touched source and tests
++
++    Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Scope: static analysis of touched source and tests
++
++    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass (47 tests)
++    Scope: durable verification records and full evaluator evidence
++
++    Command: bun run typecheck
++    Result: pass
++    Scope: repository TypeScript build
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Scope: policy routing
++
++    Command: agentplane doctor
++    Result: pass with 3 pre-existing historical task-archive warnings
++    Scope: workflow contract and workspace health
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T22:26:35.776Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Independent verification passed after the fail-closed fix: a verification write failure cannot persist success, and concurrent verifies leave final task state matched to exactly one durable record.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:25:57.692Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Scope: formatting of touched source and tests
++
++    Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Scope: static analysis of touched source and tests
++
++    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass (49 tests)
++    Scope: full branch evidence, durable verification records, write-failure and concurrent verification behavior
++
++    Command: bun run typecheck
++    Result: pass
++    Scope: repository TypeScript build
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Scope: policy routing
++
++    Command: agentplane doctor
++    Result: pass with 3 pre-existing historical task-archive warnings
++    Scope: workflow contract and workspace health
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T22:40:43.586Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:31:18.878Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++    Result: pass
++    Scope: formatting of touched source and tests
++
++    Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++    Result: pass
++    Scope: static analysis of touched source and tests
++
++    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass (49 tests)
++    Scope: evaluator diff evidence and verification durability
++
++    Command: bun run typecheck
++    Result: pass
++    Scope: repository TypeScript build
++
++    Command: bun run hotspots:check
++    Result: pass
++    Scope: source and test hotspot contracts
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Scope: policy routing
++
++    Command: agentplane doctor
++    Result: pass with 3 pre-existing historical task-archive warnings
++    Scope: workflow contract and workspace health
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T22:45:03.307Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:40:44.335Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++    Result: pass
++    Scope: formatting of touched source and tests
++
++    Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++    Result: pass
++    Scope: static analysis of touched source and tests
++
++    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass (50 tests)
++    Scope: evaluator diff evidence including root commit without a branch base
++
++    Command: bun run typecheck
++    Result: pass
++    Scope: repository TypeScript build
++
++    Command: bun run hotspots:check
++    Result: pass
++    Scope: source and test hotspot contracts
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Scope: policy routing
++
++    Command: agentplane doctor
++    Result: pass with 3 pre-existing historical task-archive warnings
++    Scope: workflow contract and workspace health
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T22:53:29.224Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:45:04.072Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T22:55:43.061Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified with durable command-level evidence for the current evaluator review.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:53:29.896Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check evaluator review, verification record, task verification, and workflow hook files
++    Result: pass
++    Scope: all files changed for FT85MC rework
++
++    Command: bunx eslint evaluator review, verification record, task verification, and workflow hook files
++    Result: pass
++    Scope: all files changed for FT85MC rework
++
++    Command: bunx vitest run verify-record.unit.test.ts verify-record.durability.unit.test.ts workflow.verify-hooks.test.ts evaluator-run.command.test.ts
++    Result: pass (4 files, 50 tests)
++    Scope: durable verification writer, concurrent verification, evaluator evidence discovery
++
++    Command: bun run typecheck
++    Result: pass
++    Scope: repository TypeScript build
++
++    Command: bun run hotspots:check
++    Result: pass
++    Scope: runtime limit 600 lines; evaluator-review-usecase below limit; test baseline accepted
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Scope: policy routing
++
++    Command: agentplane doctor
++    Result: pass (0 errors; 3 pre-existing historical DONE-task warnings)
++    Scope: workflow, workspace, branch_pr, runtime, blueprint, prompt graph, archive
++
++    Command: git diff --check
++    Result: pass
++    Scope: current task worktree
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T23:01:16.841Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified with concrete, evaluator-admissible command evidence.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:55:43.752Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: All matched files use Prettier code style.
++    Scope: evaluator verification-record admission and its regression test
++
++    Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: exit code 0; no lint findings.
++    Scope: evaluator verification-record admission and its regression test
++
++    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: Test Files 4 passed; Tests 50 passed.
++    Scope: verification durability, concurrency, workflow hooks, evaluator evidence discovery
++
++    Command: bun run typecheck
++    Result: pass
++    Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++    Scope: repository TypeScript build
++
++    Command: bun run hotspots:check
++    Result: pass
++    Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
++    Scope: runtime and test file-size policy
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK.
++    Scope: repository policy routing
++
++    Command: agentplane doctor
++    Result: pass
++    Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++    Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++    Command: git diff --check
++    Result: pass
++    Evidence: no whitespace errors.
++    Scope: current task worktree
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T23:04:43.027Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified with bounded full diff and concrete evaluator evidence.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:01:17.549Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: All matched files use Prettier code style.
++    Scope: evaluator diff freezing, quality artifact exclusion, verification-record admission
++
++    Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: exit code 0; no lint findings.
++    Scope: evaluator diff freezing, quality artifact exclusion, verification-record admission
++
++    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: Test Files 4 passed; Tests 50 passed.
++    Scope: full branch diff, binary and rename handling, durable verification and evaluator evidence
++
++    Command: bun run typecheck
++    Result: pass
++    Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++    Scope: repository TypeScript build
++
++    Command: bun run hotspots:check
++    Result: pass
++    Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
++    Scope: runtime and test file-size policy
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK.
++    Scope: repository policy routing
++
++    Command: agentplane doctor
++    Result: pass
++    Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++    Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++    Command: git diff --check
++    Result: pass
++    Evidence: no whitespace errors.
++    Scope: current task worktree
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T23:08:53.498Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified with SHA- and scope-bound evaluator evidence.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:04:43.711Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: All matched files use Prettier code style.
++    Scope: evaluator diff freezing and verification-record admission
++
++    Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: exit code 0; no lint findings.
++    Scope: evaluator diff freezing and verification-record admission
++
++    Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: Test Files 4 passed; Tests 50 passed.
++    Scope: full branch diff, binary and rename handling, durable verification, stale record exclusion
++
++    Command: bun run typecheck
++    Result: pass
++    Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++    Scope: repository TypeScript build
++
++    Command: bun run hotspots:check
++    Result: pass
++    Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
++    Scope: runtime and test file-size policy
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK.
++    Scope: repository policy routing
++
++    Command: agentplane doctor
++    Result: pass
++    Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++    Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++    Command: git diff --check
++    Result: pass
++    Evidence: no whitespace errors.
++    Scope: current task worktree
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-28T23:12:33.985Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Rework verified with canonical, task-bound evaluator evidence.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:08:54.226Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++    Details:
++
++    Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: All matched files use Prettier code style.
++    Scope: canonical verification digest and evaluator record admission
++
++    Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++    Result: pass
++    Evidence: exit code 0; no lint findings.
++    Scope: canonical verification digest and evaluator record admission
++
++    Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++    Result: pass
++    Evidence: Test Files 4 passed; Tests 50 passed.
++    Scope: full branch diff, durable verification, cross-task copy and tamper exclusion
++
++    Command: bun run typecheck
++    Result: pass
++    Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++    Scope: repository TypeScript build
++
++    Command: bun run hotspots:check
++    Result: pass
++    Evidence: hotspot threshold check passed.
++    Scope: runtime and test file-size policy
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK.
++    Scope: repository policy routing
++
++    Command: agentplane doctor
++    Result: pass
++    Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++    Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++    Command: git diff --check
++    Result: pass
++    Evidence: no whitespace errors.
++    Scope: current task worktree
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++    - old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: All three task-specific Verify Steps passed with 17 focused tests and static checks.
++      Impact: EVALUATOR receives complete branch evidence and machine-readable verification records instead of only the final commit delta.
++      Resolution: Use the recorded verification artifacts as frozen evidence for the independent evaluator episode.
++
++    - Observation: Focused evaluator and verification tests: 50 passed; prettier, eslint, typecheck, hotspot threshold, policy routing, and diff check passed.
++      Impact: A failed task-state transition can no longer freeze an orphan verification record as authoritative evaluator evidence.
++      Resolution: Bound record discovery to persisted verification state and added the orphan-record regression fixture.
++extensions:
++  implementation_commit:
++    hash: "66cf0428771389535048a925bd152f4ac663fcdc"
++    message: "🐛 FT85MC task: pre-merge closure"
++  workflow_route_baseline:
++    start_head_sha: "7f44e71fa8dbe12987744e4442ba0110dc150090"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Freeze complete branch evidence for evaluator review
++
++RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++
++## Scope
++
++- In scope: RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++- Out of scope: unrelated refactors not required for "Freeze complete branch evidence for evaluator review".
++
++## Plan
++
++1. Reproduce the evaluator evidence gap using a multi-commit branch and identify the authoritative merge base for a branch_pr task. 2. Replace one-commit snapshotting with a bounded full branch patch from that merge base to the evaluated SHA, including binary/rename-safe content and a fail-closed error if base resolution is unavailable. 3. Freeze machine-readable verification records in the same work order and cover their discovery. 4. Add focused regression tests for complete multi-commit evidence, no-change handling, and base-resolution failure. 5. Run focused tests, formatting, typecheck, policy routing, and an independent evaluator review before PR integration.
++
++## Verify Steps
++
++1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.
++2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.
++3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-28T22:08:53.597Z — VERIFY — ok
++
++By: TESTER
++
++Note: Focused evaluator evidence regression tests (17), Prettier, ESLint, typecheck, policy routing, and doctor passed. The work order now freezes the merge-base-to-target diff with base provenance; direct root/single-commit behavior and missing branch_pr base failure are covered.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:08:52.841Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607282157-FT85MC
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T22:19:19.341Z — VERIFY — ok
++
++By: TESTER
++
++Note: Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:18:38.509Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Scope: formatting of touched source and tests
++
++Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Scope: static analysis of touched source and tests
++
++Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass (47 tests)
++Scope: durable verification records and full evaluator evidence
++
++Command: bun run typecheck
++Result: pass
++Scope: repository TypeScript build
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Scope: policy routing
++
++Command: agentplane doctor
++Result: pass with 3 pre-existing historical task-archive warnings
++Scope: workflow contract and workspace health
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T22:26:35.776Z — VERIFY — ok
++
++By: TESTER
++
++Note: Independent verification passed after the fail-closed fix: a verification write failure cannot persist success, and concurrent verifies leave final task state matched to exactly one durable record.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:25:57.692Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Scope: formatting of touched source and tests
++
++Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Scope: static analysis of touched source and tests
++
++Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass (49 tests)
++Scope: full branch evidence, durable verification records, write-failure and concurrent verification behavior
++
++Command: bun run typecheck
++Result: pass
++Scope: repository TypeScript build
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Scope: policy routing
++
++Command: agentplane doctor
++Result: pass with 3 pre-existing historical task-archive warnings
++Scope: workflow contract and workspace health
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T22:40:43.586Z — VERIFY — ok
++
++By: TESTER
++
++Note: Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:31:18.878Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++Result: pass
++Scope: formatting of touched source and tests
++
++Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++Result: pass
++Scope: static analysis of touched source and tests
++
++Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass (49 tests)
++Scope: evaluator diff evidence and verification durability
++
++Command: bun run typecheck
++Result: pass
++Scope: repository TypeScript build
++
++Command: bun run hotspots:check
++Result: pass
++Scope: source and test hotspot contracts
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Scope: policy routing
++
++Command: agentplane doctor
++Result: pass with 3 pre-existing historical task-archive warnings
++Scope: workflow contract and workspace health
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T22:45:03.307Z — VERIFY — ok
++
++By: TESTER
++
++Note: Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:40:44.335Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++Result: pass
++Scope: formatting of touched source and tests
++
++Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++Result: pass
++Scope: static analysis of touched source and tests
++
++Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass (50 tests)
++Scope: evaluator diff evidence including root commit without a branch base
++
++Command: bun run typecheck
++Result: pass
++Scope: repository TypeScript build
++
++Command: bun run hotspots:check
++Result: pass
++Scope: source and test hotspot contracts
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Scope: policy routing
++
++Command: agentplane doctor
++Result: pass with 3 pre-existing historical task-archive warnings
++Scope: workflow contract and workspace health
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T22:53:29.224Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:45:04.072Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T22:55:43.061Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified with durable command-level evidence for the current evaluator review.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:53:29.896Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check evaluator review, verification record, task verification, and workflow hook files
++Result: pass
++Scope: all files changed for FT85MC rework
++
++Command: bunx eslint evaluator review, verification record, task verification, and workflow hook files
++Result: pass
++Scope: all files changed for FT85MC rework
++
++Command: bunx vitest run verify-record.unit.test.ts verify-record.durability.unit.test.ts workflow.verify-hooks.test.ts evaluator-run.command.test.ts
++Result: pass (4 files, 50 tests)
++Scope: durable verification writer, concurrent verification, evaluator evidence discovery
++
++Command: bun run typecheck
++Result: pass
++Scope: repository TypeScript build
++
++Command: bun run hotspots:check
++Result: pass
++Scope: runtime limit 600 lines; evaluator-review-usecase below limit; test baseline accepted
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Scope: policy routing
++
++Command: agentplane doctor
++Result: pass (0 errors; 3 pre-existing historical DONE-task warnings)
++Scope: workflow, workspace, branch_pr, runtime, blueprint, prompt graph, archive
++
++Command: git diff --check
++Result: pass
++Scope: current task worktree
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T23:01:16.841Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified with concrete, evaluator-admissible command evidence.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T22:55:43.752Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: All matched files use Prettier code style.
++Scope: evaluator verification-record admission and its regression test
++
++Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: exit code 0; no lint findings.
++Scope: evaluator verification-record admission and its regression test
++
++Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: Test Files 4 passed; Tests 50 passed.
++Scope: verification durability, concurrency, workflow hooks, evaluator evidence discovery
++
++Command: bun run typecheck
++Result: pass
++Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++Scope: repository TypeScript build
++
++Command: bun run hotspots:check
++Result: pass
++Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
++Scope: runtime and test file-size policy
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK.
++Scope: repository policy routing
++
++Command: agentplane doctor
++Result: pass
++Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++Command: git diff --check
++Result: pass
++Evidence: no whitespace errors.
++Scope: current task worktree
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T23:04:43.027Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified with bounded full diff and concrete evaluator evidence.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:01:17.549Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: All matched files use Prettier code style.
++Scope: evaluator diff freezing, quality artifact exclusion, verification-record admission
++
++Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: exit code 0; no lint findings.
++Scope: evaluator diff freezing, quality artifact exclusion, verification-record admission
++
++Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: Test Files 4 passed; Tests 50 passed.
++Scope: full branch diff, binary and rename handling, durable verification and evaluator evidence
++
++Command: bun run typecheck
++Result: pass
++Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++Scope: repository TypeScript build
++
++Command: bun run hotspots:check
++Result: pass
++Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
++Scope: runtime and test file-size policy
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK.
++Scope: repository policy routing
++
++Command: agentplane doctor
++Result: pass
++Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++Command: git diff --check
++Result: pass
++Evidence: no whitespace errors.
++Scope: current task worktree
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T23:08:53.498Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified with SHA- and scope-bound evaluator evidence.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:04:43.711Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: All matched files use Prettier code style.
++Scope: evaluator diff freezing and verification-record admission
++
++Command: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: exit code 0; no lint findings.
++Scope: evaluator diff freezing and verification-record admission
++
++Command: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: Test Files 4 passed; Tests 50 passed.
++Scope: full branch diff, binary and rename handling, durable verification, stale record exclusion
++
++Command: bun run typecheck
++Result: pass
++Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++Scope: repository TypeScript build
++
++Command: bun run hotspots:check
++Result: pass
++Evidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.
++Scope: runtime and test file-size policy
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK.
++Scope: repository policy routing
++
++Command: agentplane doctor
++Result: pass
++Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++Command: git diff --check
++Result: pass
++Evidence: no whitespace errors.
++Scope: current task worktree
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-28T23:12:33.985Z — VERIFY — ok
++
++By: TESTER
++
++Note: Rework verified with canonical, task-bound evaluator evidence.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T23:08:54.226Z, excerpt_hash=sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb
++
++Details:
++
++Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: All matched files use Prettier code style.
++Scope: canonical verification digest and evaluator record admission
++
++Command: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++Result: pass
++Evidence: exit code 0; no lint findings.
++Scope: canonical verification digest and evaluator record admission
++
++Command: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++Result: pass
++Evidence: Test Files 4 passed; Tests 50 passed.
++Scope: full branch diff, durable verification, cross-task copy and tamper exclusion
++
++Command: bun run typecheck
++Result: pass
++Evidence: node scripts/checks/run-typescript-build.mjs exited 0.
++Scope: repository TypeScript build
++
++Command: bun run hotspots:check
++Result: pass
++Evidence: hotspot threshold check passed.
++Scope: runtime and test file-size policy
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK.
++Scope: repository policy routing
++
++Command: agentplane doctor
++Result: pass
++Evidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.
++Scope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive
++
++Command: git diff --check
++Result: pass
++Evidence: no whitespace errors.
++Scope: current task worktree
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607282157-FT85MC-freeze-full-evaluator-evidence/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
++- old_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- current_digest: a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607282157-FT85MC
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: All three task-specific Verify Steps passed with 17 focused tests and static checks.
++  Impact: EVALUATOR receives complete branch evidence and machine-readable verification records instead of only the final commit delta.
++  Resolution: Use the recorded verification artifacts as frozen evidence for the independent evaluator episode.
++
++- Observation: Focused evaluator and verification tests: 50 passed; prettier, eslint, typecheck, hotspot threshold, policy routing, and diff check passed.
++  Impact: A failed task-state transition can no longer freeze an orphan verification record as authoritative evaluator evidence.
++  Resolution: Bound record discovery to persisted verification state and added the orphan-record regression fixture.
+diff --git a/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..3469d5229
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/blueprint/resolved-snapshot.json
+@@ -0,0 +1,573 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607282157-FT85MC",
++    "title": "Freeze complete branch evidence for evaluator review",
++    "description": "RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.",
++    "tags": [
++      "code",
++      "evaluator",
++      "quality",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607282157-FT85MC",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9"
++  }
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/diffstat.txt b/.agentplane/tasks/202607282157-FT85MC/pr/diffstat.txt
+new file mode 100644
+index 000000000..1587b530d
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/diffstat.txt
+@@ -0,0 +1,12 @@
++ .../commands/evaluator/evaluator-diff-evidence.ts  | 108 ++++++++++
++ .../commands/evaluator/evaluator-review-apply.ts   |   6 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  63 +++---
++ .../evaluator/evaluator-run.command.test.ts        | 224 ++++++++++++++++++++-
++ .../evaluator/evaluator-verification-records.ts    | 100 ++++++++-
++ .../commands/shared/quality-review-target.test.ts  |  27 +++
++ .../src/commands/shared/quality-review-target.ts   |   8 +-
++ .../src/commands/task/verify-record-execute.ts     |  62 +++++-
++ .../task/verify-record.durability.unit.test.ts     |  79 ++++++++
++ .../src/commands/task/verify-record.unit.test.ts   |  10 +-
++ .../src/commands/workflow.verify-hooks.test.ts     |  81 +++++++-
++ 11 files changed, 723 insertions(+), 45 deletions(-)
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/github-body.md b/.agentplane/tasks/202607282157-FT85MC/pr/github-body.md
+new file mode 100644
+index 000000000..9a53f6545
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/github-body.md
+@@ -0,0 +1,44 @@
++Task: `202607282157-FT85MC`
++Title: Freeze complete branch evidence for evaluator review
++Canonical task record: `.agentplane/tasks/202607282157-FT85MC/README.md`
++
++## Summary
++
++Freeze complete branch evidence for evaluator review
++
++RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++
++## Scope
++
++- In scope: RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.
++- Out of scope: unrelated refactors not required for "Freeze complete branch evidence for evaluator review".
++
++## Verification
++
++- State: ok
++- Note: Rework verified with canonical, task-bound evaluator evidence.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-28T21:58:46.533Z
++- Branch: task/202607282157-FT85MC/freeze-full-evaluator-evidence
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/evaluator/evaluator-diff-evidence.ts  | 108 ++++++++++
++ .../commands/evaluator/evaluator-review-apply.ts   |   6 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  63 +++---
++ .../evaluator/evaluator-run.command.test.ts        | 224 ++++++++++++++++++++-
++ .../evaluator/evaluator-verification-records.ts    | 100 ++++++++-
++ .../commands/shared/quality-review-target.test.ts  |  27 +++
++ .../src/commands/shared/quality-review-target.ts   |   8 +-
++ .../src/commands/task/verify-record-execute.ts     |  62 +++++-
++ .../task/verify-record.durability.unit.test.ts     |  79 ++++++++
++ .../src/commands/task/verify-record.unit.test.ts   |  10 +-
++ .../src/commands/workflow.verify-hooks.test.ts     |  81 +++++++-
++ 11 files changed, 723 insertions(+), 45 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/github-title.txt b/.agentplane/tasks/202607282157-FT85MC/pr/github-title.txt
+new file mode 100644
+index 000000000..07bce5127
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/github-title.txt
+@@ -0,0 +1 @@
++✅ FT85MC task: Freeze complete branch evidence for evaluator review [202607282157-FT85MC]
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/meta.json b/.agentplane/tasks/202607282157-FT85MC/pr/meta.json
+new file mode 100644
+index 000000000..bd6c7cf6d
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607282157-FT85MC/freeze-full-evaluator-evidence",
++  "created_at": "2026-07-28T21:58:43.037Z",
++  "diffstat_sha256": "sha256:0bbce0efef2837108eb8aea2479391967f9d5bfba35551975c643ea372874997",
++  "last_verified_at": "2026-07-28T23:12:33.985Z",
++  "last_verified_diffstat_sha256": "sha256:a9a23ef0fe8084bc3b36e567c717e238f83e183ed7679527642417a537158b3b",
++  "pr_number": 4666,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4666",
++  "pre_merge_closure": {
++    "basis_commit": "f0632c5d77073c64faea1ef52b0bf2d32a4cdf26",
++    "branch": "task/202607282157-FT85MC/freeze-full-evaluator-evidence",
++    "pr_number": 4666,
++    "recorded_at": "2026-07-28T22:31:18.928Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607282157-FT85MC",
++  "updated_at": "2026-07-28T21:58:46.533Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/pr/review.md b/.agentplane/tasks/202607282157-FT85MC/pr/review.md
+new file mode 100644
+index 000000000..2eef14ff5
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/pr/review.md
+@@ -0,0 +1,47 @@
++# PR Review
++
++Created: 2026-07-28T21:58:43.037Z
++
++## Task
++
++- Task: `202607282157-FT85MC`
++- Title: Freeze complete branch evidence for evaluator review
++- Status: DONE
++- Branch: `task/202607282157-FT85MC/freeze-full-evaluator-evidence`
++- Canonical task record: `.agentplane/tasks/202607282157-FT85MC/README.md`
++
++## Verification
++
++- State: ok
++- Note: Rework verified with canonical, task-bound evaluator evidence.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-28T21:58:46.533Z
++- Branch: task/202607282157-FT85MC/freeze-full-evaluator-evidence
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/evaluator/evaluator-diff-evidence.ts  | 108 ++++++++++
++ .../commands/evaluator/evaluator-review-apply.ts   |   6 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  63 +++---
++ .../evaluator/evaluator-run.command.test.ts        | 224 ++++++++++++++++++++-
++ .../evaluator/evaluator-verification-records.ts    | 100 ++++++++-
++ .../commands/shared/quality-review-target.test.ts  |  27 +++
++ .../src/commands/shared/quality-review-target.ts   |   8 +-
++ .../src/commands/task/verify-record-execute.ts     |  62 +++++-
++ .../task/verify-record.durability.unit.test.ts     |  79 ++++++++
++ .../src/commands/task/verify-record.unit.test.ts   |  10 +-
++ .../src/commands/workflow.verify-hooks.test.ts     |  81 +++++++-
++ 11 files changed, 723 insertions(+), 45 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json
+new file mode 100644
+index 000000000..ee46dd838
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nScope: formatting of touched source and tests\n\nCommand: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nScope: static analysis of touched source and tests\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass (47 tests)\nScope: durable verification records and full evaluator evidence\n\nCommand: bun run typecheck\nResult: pass\nScope: repository TypeScript build\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nScope: policy routing\n\nCommand: agentplane doctor\nResult: pass with 3 pre-existing historical task-archive warnings\nScope: workflow contract and workspace health",
++  "digest": "sha256:bcf3aae8adcb185a130715340bfc896600ad17a7ee87060adf71364705de19dc",
++  "implementation_sha": "d70a8672397ee9b45a09ce68ae5f48ad3d1b543e",
++  "kind": "task_verification_record",
++  "note": "Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered.",
++  "recorded_at": "2026-07-28T22:19:19.341Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json
+new file mode 100644
+index 000000000..d05630482
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nScope: formatting of touched source and tests\n\nCommand: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nScope: static analysis of touched source and tests\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass (49 tests)\nScope: full branch evidence, durable verification records, write-failure and concurrent verification behavior\n\nCommand: bun run typecheck\nResult: pass\nScope: repository TypeScript build\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nScope: policy routing\n\nCommand: agentplane doctor\nResult: pass with 3 pre-existing historical task-archive warnings\nScope: workflow contract and workspace health",
++  "digest": "sha256:0969e3c9f2f25475795b4304e6750769abad087c7d727a18964f493bdfce7105",
++  "implementation_sha": "994506204fdb80b681ca671603756be10947d06f",
++  "kind": "task_verification_record",
++  "note": "Independent verification passed after the fail-closed fix: a verification write failure cannot persist success, and concurrent verifies leave final task state matched to exactly one durable record.",
++  "recorded_at": "2026-07-28T22:26:35.776Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728224043586-0205aa4bd9698f63.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728224043586-0205aa4bd9698f63.json
+new file mode 100644
+index 000000000..d97a2dfa0
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728224043586-0205aa4bd9698f63.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts\nResult: pass\nScope: formatting of touched source and tests\n\nCommand: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts\nResult: pass\nScope: static analysis of touched source and tests\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass (49 tests)\nScope: evaluator diff evidence and verification durability\n\nCommand: bun run typecheck\nResult: pass\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nScope: source and test hotspot contracts\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nScope: policy routing\n\nCommand: agentplane doctor\nResult: pass with 3 pre-existing historical task-archive warnings\nScope: workflow contract and workspace health",
++  "digest": "sha256:0205aa4bd9698f639aa30c455cce1b2379ade9d956396b95c29b0977bc4d0950",
++  "implementation_sha": "d4fa2ae38ff3010059bcfaf3fe6d595314b385d6",
++  "kind": "task_verification_record",
++  "note": "Independent verification passed for the hosted-contract rework: evaluator diff evidence is modularized and the durability test remains below the oversized-test baseline.",
++  "recorded_at": "2026-07-28T22:40:43.586Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728224503307-29683d476586f630.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728224503307-29683d476586f630.json
+new file mode 100644
+index 000000000..a60665bac
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728224503307-29683d476586f630.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts\nResult: pass\nScope: formatting of touched source and tests\n\nCommand: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts\nResult: pass\nScope: static analysis of touched source and tests\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass (50 tests)\nScope: evaluator diff evidence including root commit without a branch base\n\nCommand: bun run typecheck\nResult: pass\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nScope: source and test hotspot contracts\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nScope: policy routing\n\nCommand: agentplane doctor\nResult: pass with 3 pre-existing historical task-archive warnings\nScope: workflow contract and workspace health",
++  "digest": "sha256:29683d476586f630d8fd55752ad37c7772cd9f213a0d0e7df965030f854d2978",
++  "implementation_sha": "618d1f9de3e4b5d473dc005b553490fa3d78262b",
++  "kind": "task_verification_record",
++  "note": "Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied.",
++  "recorded_at": "2026-07-28T22:45:03.307Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728225329224-09b45351c8dd8de9.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728225329224-09b45351c8dd8de9.json
+new file mode 100644
+index 000000000..27048fcdd
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728225329224-09b45351c8dd8de9.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:09b45351c8dd8de959f8af1acc31f2864c8a30398b80e71d0641dea155b4f2ca",
++  "implementation_sha": "a3d401d9e9afdd6d5634fd7ddd8a226826895d7c",
++  "kind": "task_verification_record",
++  "note": "Rework verified: evaluator evidence now admits only a durable record that exactly matches persisted task verification; orphan post-transition records are excluded.",
++  "recorded_at": "2026-07-28T22:53:29.224Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728225543061-e033ad9caec75582.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728225543061-e033ad9caec75582.json
+new file mode 100644
+index 000000000..3f119adac
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728225543061-e033ad9caec75582.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check evaluator review, verification record, task verification, and workflow hook files\nResult: pass\nScope: all files changed for FT85MC rework\n\nCommand: bunx eslint evaluator review, verification record, task verification, and workflow hook files\nResult: pass\nScope: all files changed for FT85MC rework\n\nCommand: bunx vitest run verify-record.unit.test.ts verify-record.durability.unit.test.ts workflow.verify-hooks.test.ts evaluator-run.command.test.ts\nResult: pass (4 files, 50 tests)\nScope: durable verification writer, concurrent verification, evaluator evidence discovery\n\nCommand: bun run typecheck\nResult: pass\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nScope: runtime limit 600 lines; evaluator-review-usecase below limit; test baseline accepted\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nScope: policy routing\n\nCommand: agentplane doctor\nResult: pass (0 errors; 3 pre-existing historical DONE-task warnings)\nScope: workflow, workspace, branch_pr, runtime, blueprint, prompt graph, archive\n\nCommand: git diff --check\nResult: pass\nScope: current task worktree",
++  "digest": "sha256:e033ad9caec755823b8686a1c3bbbfdc76e71e84e15bf7a4059ab2754d6e0c26",
++  "implementation_sha": "6d411661eef470acec14af1f8e2939de7a8a605d",
++  "kind": "task_verification_record",
++  "note": "Rework verified with durable command-level evidence for the current evaluator review.",
++  "recorded_at": "2026-07-28T22:55:43.061Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728230116841-4fa2450ec9835016.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728230116841-4fa2450ec9835016.json
+new file mode 100644
+index 000000000..12bd03c06
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728230116841-4fa2450ec9835016.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: All matched files use Prettier code style.\nScope: evaluator verification-record admission and its regression test\n\nCommand: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: exit code 0; no lint findings.\nScope: evaluator verification-record admission and its regression test\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: Test Files 4 passed; Tests 50 passed.\nScope: verification durability, concurrency, workflow hooks, evaluator evidence discovery\n\nCommand: bun run typecheck\nResult: pass\nEvidence: node scripts/checks/run-typescript-build.mjs exited 0.\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.\nScope: runtime and test file-size policy\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: repository policy routing\n\nCommand: agentplane doctor\nResult: pass\nEvidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.\nScope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors.\nScope: current task worktree",
++  "digest": "sha256:4fa2450ec9835016742edd0f707eff415054fe81f0647732ad1033726efbfd19",
++  "implementation_sha": "6a3fb92b89ed2c1e8641166c07e4438a2e6c0764",
++  "kind": "task_verification_record",
++  "note": "Rework verified with concrete, evaluator-admissible command evidence.",
++  "recorded_at": "2026-07-28T23:01:16.841Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728230443027-9b1ce9fa67c234df.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728230443027-9b1ce9fa67c234df.json
+new file mode 100644
+index 000000000..522ec835b
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728230443027-9b1ce9fa67c234df.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: All matched files use Prettier code style.\nScope: evaluator diff freezing, quality artifact exclusion, verification-record admission\n\nCommand: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: exit code 0; no lint findings.\nScope: evaluator diff freezing, quality artifact exclusion, verification-record admission\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: Test Files 4 passed; Tests 50 passed.\nScope: full branch diff, binary and rename handling, durable verification and evaluator evidence\n\nCommand: bun run typecheck\nResult: pass\nEvidence: node scripts/checks/run-typescript-build.mjs exited 0.\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.\nScope: runtime and test file-size policy\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: repository policy routing\n\nCommand: agentplane doctor\nResult: pass\nEvidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.\nScope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors.\nScope: current task worktree",
++  "digest": "sha256:9b1ce9fa67c234df3f93b5eeaefc49d5ad001636fae757faf7a6e0dfd363be12",
++  "implementation_sha": "abf96ea4fa8497b26776655a8fb889bf6fdebab8",
++  "kind": "task_verification_record",
++  "note": "Rework verified with bounded full diff and concrete evaluator evidence.",
++  "recorded_at": "2026-07-28T23:04:43.027Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728230853498-d66d9c9cbd276c1e.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728230853498-d66d9c9cbd276c1e.json
+new file mode 100644
+index 000000000..796cb77cf
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728230853498-d66d9c9cbd276c1e.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: All matched files use Prettier code style.\nScope: evaluator diff freezing and verification-record admission\n\nCommand: bunx eslint packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: exit code 0; no lint findings.\nScope: evaluator diff freezing and verification-record admission\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: Test Files 4 passed; Tests 50 passed.\nScope: full branch diff, binary and rename handling, durable verification, stale record exclusion\n\nCommand: bun run typecheck\nResult: pass\nEvidence: node scripts/checks/run-typescript-build.mjs exited 0.\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: hotspot threshold check passed; evaluator-review-usecase remains below the 600-line limit.\nScope: runtime and test file-size policy\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: repository policy routing\n\nCommand: agentplane doctor\nResult: pass\nEvidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.\nScope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors.\nScope: current task worktree",
++  "digest": "sha256:d66d9c9cbd276c1ed93b61e6f90f8c3aaad01997305d8411958fd226d64f20dd",
++  "implementation_sha": "c4d78a1d25a2d6f6b0c812057c796192f0b71b3c",
++  "kind": "task_verification_record",
++  "note": "Rework verified with SHA- and scope-bound evaluator evidence.",
++  "recorded_at": "2026-07-28T23:08:53.498Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607282157-FT85MC/verification/20260728231233985-503fe218300f70e1.json b/.agentplane/tasks/202607282157-FT85MC/verification/20260728231233985-503fe218300f70e1.json
+new file mode 100644
+index 000000000..0026a8e75
+--- /dev/null
++++ b/.agentplane/tasks/202607282157-FT85MC/verification/20260728231233985-503fe218300f70e1.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: All matched files use Prettier code style.\nScope: canonical verification digest and evaluator record admission\n\nCommand: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nEvidence: exit code 0; no lint findings.\nScope: canonical verification digest and evaluator record admission\n\nCommand: bunx vitest run packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts\nResult: pass\nEvidence: Test Files 4 passed; Tests 50 passed.\nScope: full branch diff, durable verification, cross-task copy and tamper exclusion\n\nCommand: bun run typecheck\nResult: pass\nEvidence: node scripts/checks/run-typescript-build.mjs exited 0.\nScope: repository TypeScript build\n\nCommand: bun run hotspots:check\nResult: pass\nEvidence: hotspot threshold check passed.\nScope: runtime and test file-size policy\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: repository policy routing\n\nCommand: agentplane doctor\nResult: pass\nEvidence: doctor OK; errors 0; warnings 3, all pre-existing historic DONE-task commit metadata.\nScope: workflow, workspace, branch_pr, runtime, blueprints, prompt graph, archive\n\nCommand: git diff --check\nResult: pass\nEvidence: no whitespace errors.\nScope: current task worktree",
++  "digest": "sha256:503fe218300f70e1f54fbecdff95827275d0820fc910a4b5ced0f52556a24d7c",
++  "implementation_sha": "b66acd190a7820431d76e62c202e58d6e04bdf58",
++  "kind": "task_verification_record",
++  "note": "Rework verified with canonical, task-bound evaluator evidence.",
++  "recorded_at": "2026-07-28T23:12:33.985Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
++  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
++  "task_id": "202607282157-FT85MC",
++  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts b/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
+new file mode 100644
+index 000000000..bb4fca632
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-diff-evidence.ts
+@@ -0,0 +1,108 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++import { gitMergeBase, gitRevParse, resolveBaseBranch } from "@agentplaneorg/core/git";
++import { execFileAsync } from "@agentplaneorg/core/process";
++
++import { CliError } from "../../shared/errors.js";
++import { parsePrMetaForwardCompatible } from "../shared/pr-meta.js";
++import type { CommandContext } from "../shared/task-backend.js";
++
++export async function resolveEvaluatorDiffBase(opts: {
++  gitRoot: string;
++  evaluatedSha: string | null;
++  baseRef: string | null;
++  allowSingleCommitFallback?: boolean;
++}): Promise<string | null> {
++  if (!opts.evaluatedSha) return null;
++  const baseRef = opts.baseRef?.trim();
++  if (!baseRef) {
++    if (opts.allowSingleCommitFallback) {
++      return await gitRevParse(opts.gitRoot, [`${opts.evaluatedSha}^`]).catch(() => null);
++    }
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Unable to freeze the actual diff for evaluator review: task base branch is unavailable.",
++    });
++  }
++  try {
++    return await gitMergeBase(opts.gitRoot, baseRef, opts.evaluatedSha);
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Unable to resolve the evaluator diff base from ${baseRef}: ${
++        error instanceof Error ? error.message : String(error)
++      }`,
++    });
++  }
++}
++
++export async function resolveEvaluatorDiffBaseRef(opts: {
++  ctx: CommandContext;
++  taskId: string;
++}): Promise<string | null> {
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const metaPath = path.join(
++    gitRoot,
++    opts.ctx.config.paths.workflow_dir,
++    opts.taskId,
++    "pr",
++    "meta.json",
++  );
++  try {
++    const meta = parsePrMetaForwardCompatible(await readFile(metaPath, "utf8"), opts.taskId);
++    if (meta.base?.trim()) return meta.base.trim();
++  } catch (error) {
++    if (
++      (error as NodeJS.ErrnoException | null)?.code !== "ENOENT" &&
++      opts.ctx.config.workflow_mode === "branch_pr"
++    ) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Unable to read the evaluator diff base from task PR metadata: ${
++          error instanceof Error ? error.message : String(error)
++        }`,
++      });
++    }
++  }
++  const base = await resolveBaseBranch({
++    cwd: gitRoot,
++    rootOverride: gitRoot,
++    cliBaseOpt: null,
++    mode: opts.ctx.config.workflow_mode,
++  }).catch(() => null);
++  return base?.trim() ?? null;
++}
++
++export async function renderActualDiff(
++  gitRoot: string,
++  evaluatedSha: string | null,
++  diffBaseSha: string | null,
++  taskArtifactRoot?: string,
++): Promise<string> {
++  if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
++  try {
++    const artifactRoot = taskArtifactRoot?.trim().replaceAll("\\", "/").replaceAll(/\/+$/gu, "");
++    const qualityExclude = artifactRoot
++      ? ["--", ".", `:(exclude,glob)${artifactRoot}/quality/**`]
++      : [];
++    const { stdout } = await execFileAsync(
++      "git",
++      [
++        ...(diffBaseSha
++          ? ["diff", "--no-ext-diff", "--find-renames", "--binary", diffBaseSha, evaluatedSha]
++          : ["show", "--format=", "--root", "--find-renames", "--binary", evaluatedSha]),
++        ...qualityExclude,
++      ],
++      { cwd: gitRoot, maxBuffer: 16 * 1024 * 1024 },
++    );
++    return stdout || "No file diff was recorded for the evaluated commit.\n";
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Unable to freeze the actual diff for evaluator review: ${
++        error instanceof Error ? error.message : String(error)
++      }`,
++    });
++  }
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+index f2b48d15e..4fb2efa61 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+@@ -18,9 +18,7 @@ import {
+ import {
+   assertResultEvidenceIsFrozen,
+   assertWorkOrderCurrent,
+-  evaluatorSummary,
+   isWithinRoot,
+-  qualityState,
+   readWorkOrder,
+   relative,
+   reportPaths,
+@@ -196,8 +194,8 @@ export async function applyEvaluatorSgrReview(opts: {
+     evaluator_profile: workOrder.evaluator.profile,
+     generated_at: at,
+     provenance: "evaluator_supplied",
+-    verdict: qualityState(result.verdict),
+-    summary: evaluatorSummary(result),
++    verdict: result.verdict,
++    summary: `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`,
+     evaluated_sha: workOrder.evaluated_sha,
+     blueprint_digest: workOrder.blueprint_digest,
+     findings: result.findings.map((finding) => finding.summary),
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index e528024ff..34cac31a0 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -1,7 +1,6 @@
+ import { createHash } from "node:crypto";
+ import { mkdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+-import { execFileAsync } from "@agentplaneorg/core/process";
+ import { z } from "zod";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+@@ -19,6 +18,11 @@ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.j
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import type { EvaluatorModule } from "../../evaluators/catalog.js";
++import {
++  renderActualDiff,
++  resolveEvaluatorDiffBase,
++  resolveEvaluatorDiffBaseRef,
++} from "./evaluator-diff-evidence.js";
+ import { verificationRecordPaths } from "./evaluator-verification-records.js";
+ import {
+   EVALUATOR_OPINION_FILE,
+@@ -31,6 +35,8 @@ import {
+ } from "./evaluator-quality-artifacts.js";
+ import type { EvaluatorRunProvenance, EvaluatorRunVerdict } from "./evaluator.spec.js";
+ 
++export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
++
+ const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
+ const EVALUATOR_RESULT_FILE = "evaluator-result.json";
+ const EVALUATOR_DIFF_FILE = "evaluator-diff.patch";
+@@ -52,6 +58,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
+       })
+       .strict(),
+     evaluated_sha: z.string().trim().min(1).nullable(),
++    diff_base_sha: z.string().trim().min(1).nullable().optional(),
+     blueprint_digest: z.string().trim().min(1).nullable(),
+     evaluator: z
+       .object({
+@@ -189,25 +196,6 @@ async function freezeFile(opts: {
+   };
+ }
+ 
+-async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
+-  if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
+-  try {
+-    const { stdout } = await execFileAsync(
+-      "git",
+-      ["show", "--format=", "--find-renames", "--binary", evaluatedSha],
+-      { cwd: gitRoot, maxBuffer: 1024 * 1024 },
+-    );
+-    return stdout || "No file diff was recorded for the evaluated commit.\n";
+-  } catch (error) {
+-    throw new CliError({
+-      code: "E_VALIDATION",
+-      message: `Unable to freeze the actual diff for evaluator review: ${
+-        error instanceof Error ? error.message : String(error)
+-      }`,
+-    });
+-  }
+-}
+-
+ async function assertTaskReviewWorkspaceClean(opts: {
+   ctx: CommandContext;
+   taskId: string;
+@@ -233,6 +221,7 @@ function workOrderId(opts: {
+   taskId: string;
+   revision: number | null;
+   evaluatedSha: string | null;
++  diffBaseSha: string | null;
+   evidence: EvaluatorWorkOrder["evidence"];
+ }): string {
+   const digest = sha256(
+@@ -240,6 +229,7 @@ function workOrderId(opts: {
+       task_id: opts.taskId,
+       revision: opts.revision,
+       evaluated_sha: opts.evaluatedSha,
++      diff_base_sha: opts.diffBaseSha,
+       evidence: opts.evidence.map((entry) => [entry.id, entry.sha256]),
+     }),
+   ).slice("sha256:".length, "sha256:".length + 24);
+@@ -287,8 +277,20 @@ export async function prepareEvaluatorReview(opts: {
+     taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
+   });
++  const diffBaseSha = await resolveEvaluatorDiffBase({
++    gitRoot,
++    evaluatedSha,
++    baseRef: evaluatedSha
++      ? await resolveEvaluatorDiffBaseRef({ ctx: opts.ctx, taskId: opts.task.id })
++      : null,
++    allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
++  });
+   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
+-  const recordPaths = await verificationRecordPaths(path.dirname(taskReadmePath));
++  const recordPaths = await verificationRecordPaths(
++    path.dirname(taskReadmePath),
++    opts.task,
++    evaluatedSha,
++  );
+   const verificationRecords = await Promise.all(
+     recordPaths.map((filePath, index) =>
+       freezeFile({
+@@ -313,7 +315,12 @@ export async function prepareEvaluatorReview(opts: {
+   await mkdir(reviewDir, { recursive: true });
+   await writeFile(
+     path.join(reviewDir, EVALUATOR_DIFF_FILE),
+-    await renderActualDiff(gitRoot, evaluatedSha),
++    await renderActualDiff(
++      gitRoot,
++      evaluatedSha,
++      diffBaseSha,
++      path.join(opts.ctx.config.paths.workflow_dir, opts.task.id),
++    ),
+     "utf8",
+   );
+   await writeFile(
+@@ -387,6 +394,7 @@ export async function prepareEvaluatorReview(opts: {
+       taskId: opts.task.id,
+       revision: opts.task.revision ?? null,
+       evaluatedSha,
++      diffBaseSha,
+       evidence,
+     }),
+     prepared_at: at,
+@@ -397,6 +405,7 @@ export async function prepareEvaluatorReview(opts: {
+       acceptance_criteria: acceptanceCriteria(opts.task),
+     },
+     evaluated_sha: evaluatedSha,
++    diff_base_sha: diffBaseSha,
+     blueprint_digest: blueprint.digest.value,
+     evaluator: {
+       id: opts.evaluator.id,
+@@ -587,13 +596,3 @@ export async function assertWorkOrderCurrent(opts: {
+     }
+   }
+ }
+-
+-export function qualityState(
+-  verdict: EvaluatorRunVerdict,
+-): "pass" | "rework" | "blocked" | "human_review" {
+-  return verdict;
+-}
+-
+-export function evaluatorSummary(result: EvaluatorSgrResult): string {
+-  return `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`;
+-}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index 429797494..3df73019f 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -1,5 +1,5 @@
+ import { execFile } from "node:child_process";
+-import { mkdir, readFile, writeFile } from "node:fs/promises";
++import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ import { readTask } from "@agentplaneorg/core/tasks";
+@@ -10,12 +10,15 @@ import { parseCommandArgv } from "../../cli/spec/parse.js";
+ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+ import { applyTaskMutation } from "../shared/task-mutation.js";
+ import { setTaskFieldsIntent } from "../shared/task-store.js";
++import { cmdVerifyParsed } from "../task/verify-record.js";
+ import { cmdTaskAdd } from "../workflow.js";
+ import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
+ 
+ import { runEvaluatorRun } from "./evaluator.command.js";
+ import {
+   prepareEvaluatorReview,
++  renderActualDiff,
++  resolveEvaluatorDiffBase,
+   type PreparedEvaluatorReview,
+ } from "./evaluator-review-usecase.js";
+ import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
+@@ -626,6 +629,225 @@ describe("evaluator run command", () => {
+     });
+   });
+ 
++  it("freezes the complete branch delta from the merge base through the evaluated SHA", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const baseSha = await commitPath(
++      root,
++      "src/rename-before.ts",
++      "export const renamed = true;\n",
++      "chore: establish base",
++    );
++    const taskId = "202605240900-EV15";
++    await addTask(root, taskId);
++    await commitPath(
++      root,
++      `.agentplane/tasks/${taskId}/quality/previous-evaluator-diff.patch`,
++      "stale evaluator patch that must not recurse into the next evaluator diff\n",
++      "test: persist prior evaluator evidence",
++    );
++    const prDir = path.join(root, `.agentplane/tasks/${taskId}/pr`);
++    await mkdir(prDir, { recursive: true });
++    await writeFile(
++      path.join(prDir, "meta.json"),
++      `${JSON.stringify({
++        schema_version: 1,
++        task_id: taskId,
++        branch: `task/${taskId}/fixture`,
++        created_at: "2026-01-01T00:00:00.000Z",
++        updated_at: "2026-01-01T00:00:00.000Z",
++        status: "OPEN",
++        verify: { status: "skipped" },
++        base: baseSha,
++      })}\n`,
++      "utf8",
++    );
++    await commitPath(root, "src/first-change.ts", "export const first = true;\n", "feat: first");
++    await commitPath(root, "src/second-change.ts", "export const second = true;\n", "feat: second");
++    const binaryPath = path.join(root, "fixtures", "payload.bin");
++    await mkdir(path.dirname(binaryPath), { recursive: true });
++    await writeFile(binaryPath, Buffer.from([0x00, 0xff, 0x2a, 0x7f]));
++    await execFileAsync("git", ["add", "--", "fixtures/payload.bin"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: add binary fixture"], { cwd: root });
++    await execFileAsync("git", ["mv", "src/rename-before.ts", "src/rename-after.ts"], {
++      cwd: root,
++    });
++    await execFileAsync("git", ["commit", "-m", "test: rename fixture"], { cwd: root });
++    const { stdout: evaluatedOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const evaluatedSha = evaluatedOutput.trim();
++
++    const { prepared } = await prepareTypedReview(root, taskId);
++    const actualDiff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
++    if (!actualDiff) throw new Error("Missing frozen actual-diff evidence.");
++
++    expect(prepared.work_order).toMatchObject({
++      evaluated_sha: evaluatedSha,
++      diff_base_sha: baseSha,
++    });
++    const frozenDiff = await readFile(path.join(root, actualDiff.path), "utf8");
++    expect(frozenDiff).toContain("src/first-change.ts");
++    expect(frozenDiff).toContain("src/second-change.ts");
++    expect(frozenDiff).toContain("GIT binary patch");
++    expect(frozenDiff).toContain("rename from src/rename-before.ts");
++    expect(frozenDiff).toContain("rename to src/rename-after.ts");
++    expect(frozenDiff).not.toContain("stale evaluator patch that must not recurse");
++  });
++
++  it("keeps no-work-unit evidence empty and fails closed when its configured base is missing", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    await commitPath(root, "README.md", "base\n", "chore: establish base");
++    const evaluatedSha = await commitPath(
++      root,
++      "src/evaluated.ts",
++      "export const evaluated = true;\n",
++      "feat: evaluated",
++    );
++
++    await expect(renderActualDiff(root, null, null)).resolves.toBe(
++      "No committed task work unit is available for semantic evaluation.\n",
++    );
++    await expect(
++      resolveEvaluatorDiffBase({
++        gitRoot: root,
++        evaluatedSha,
++        baseRef: "refs/heads/does-not-exist",
++      }),
++    ).rejects.toMatchObject({ code: "E_VALIDATION" });
++  });
++
++  it("rejects an unresolved branch_pr base even when the evaluated commit is the repository root", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const rootSha = await commitPath(root, "README.md", "root\n", "chore: root commit");
++
++    await expect(
++      resolveEvaluatorDiffBase({
++        gitRoot: root,
++        evaluatedSha: rootSha,
++        baseRef: null,
++      }),
++    ).rejects.toMatchObject({ code: "E_VALIDATION" });
++    await expect(
++      resolveEvaluatorDiffBase({
++        gitRoot: root,
++        evaluatedSha: rootSha,
++        baseRef: null,
++        allowSingleCommitFallback: true,
++      }),
++    ).resolves.toBeNull();
++  });
++
++  it("freezes the durable verification record created through the supported verification path", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202605240900-EV16";
++    await addTask(root, taskId);
++    await commitPath(root, "src/evaluated.ts", "export const evaluated = true;\n", "feat: target");
++    const command = await loadCommandContext({ cwd: root, rootOverride: root });
++    await cmdVerifyParsed({
++      ctx: command,
++      cwd: root,
++      rootOverride: root,
++      taskId,
++      state: "ok",
++      by: "TESTER",
++      note: "Focused evaluator checks passed.",
++      details:
++        "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nEvidence: 1 test file passed\nScope: evaluator evidence",
++      quiet: true,
++    });
++    const verificationDir = path.join(root, `.agentplane/tasks/${taskId}/verification`);
++    const [supportedRecordName] = await readdir(verificationDir);
++    if (!supportedRecordName) throw new Error("Missing supported verification record.");
++    const supportedRecord = JSON.parse(
++      await readFile(path.join(verificationDir, supportedRecordName), "utf8"),
++    ) as Record<string, unknown>;
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${taskId}/verification/orphaned-after-transition.json`),
++      `${JSON.stringify({
++        schema_version: 1,
++        kind: "task_verification_record",
++        task_id: taskId,
++        recorded_at: "2026-01-01T00:00:00.000Z",
++        result: "ok",
++        verifier: "INTERRUPTED",
++        note: "The task transition did not persist.",
++      })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${taskId}/verification/incomplete-current-record.json`),
++      `${JSON.stringify({
++        ...supportedRecord,
++        details:
++          "Command: bunx vitest run evaluator-run.command.test.ts\nResult: pass\nScope: evaluator evidence",
++      })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${taskId}/verification/stale-implementation-record.json`),
++      `${JSON.stringify({ ...supportedRecord, implementation_sha: "stale-implementation" })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${taskId}/verification/stale-scope-record.json`),
++      `${JSON.stringify({ ...supportedRecord, scope_digest: "sha256:stale-scope" })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${taskId}/verification/copied-from-other-task.json`),
++      `${JSON.stringify({ ...supportedRecord, task_id: "202605240900-OTHER" })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${taskId}/verification/tampered-details-record.json`),
++      `${JSON.stringify({
++        ...supportedRecord,
++        details: String(supportedRecord.details).replace("1 test file", "2 test files"),
++      })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${taskId}/verification/unsupported-schema-record.json`),
++      `${JSON.stringify({ ...supportedRecord, schema_version: 2 })}\n`,
++      "utf8",
++    );
++
++    const { prepared } = await prepareTypedReview(root, taskId);
++    const verificationEvidence = prepared.work_order.evidence.filter(
++      (entry) => entry.kind === "verification_log",
++    );
++    expect(verificationEvidence).toHaveLength(1);
++    const [currentVerificationEvidence] = verificationEvidence;
++    if (!currentVerificationEvidence) throw new Error("Missing frozen verification evidence.");
++    const record = JSON.parse(
++      await readFile(path.join(root, currentVerificationEvidence.path), "utf8"),
++    ) as Record<string, unknown>;
++
++    expect(currentVerificationEvidence.path).toMatch(
++      new RegExp(`^\\.agentplane/tasks/${taskId}/verification/.+\\.json$`, "u"),
++    );
++    expect(currentVerificationEvidence.path).not.toContain("orphaned-after-transition.json");
++    expect(currentVerificationEvidence.path).not.toContain("incomplete-current-record.json");
++    expect(currentVerificationEvidence.path).not.toContain("stale-implementation-record.json");
++    expect(currentVerificationEvidence.path).not.toContain("stale-scope-record.json");
++    expect(currentVerificationEvidence.path).not.toContain("copied-from-other-task.json");
++    expect(currentVerificationEvidence.path).not.toContain("tampered-details-record.json");
++    expect(currentVerificationEvidence.path).not.toContain("unsupported-schema-record.json");
++    expect(record).toMatchObject({
++      kind: "task_verification_record",
++      task_id: taskId,
++      result: "ok",
++      verifier: "TESTER",
++    });
++    expect(typeof record.implementation_sha).toBe("string");
++    expect(record.scope_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
++    expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
++  });
++
+   it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {
+     const root = await mkGitRepoRoot();
+     await writeDefaultConfig(root);
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+index 8a50e75f5..6b11929ea 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+@@ -1,13 +1,107 @@
+-import { readdir } from "node:fs/promises";
++import { createHash } from "node:crypto";
++import { readdir, readFile } from "node:fs/promises";
+ import path from "node:path";
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ 
+-export async function verificationRecordPaths(taskRoot: string): Promise<string[]> {
++import type { TaskData } from "../../backends/task-backend.js";
++
++const CHECK_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
++
++function sha256(value: string): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
++  const verifySteps = task.sections?.["Verify Steps"];
++  return typeof verifySteps === "string" && verifySteps.trim() ? sha256(verifySteps.trim()) : null;
++}
++
++function hasConcreteCheckDetails(details: unknown): boolean {
++  if (typeof details !== "string" || !details.trim()) return false;
++  const checks = details.trim().split(/\n\s*\n/gu);
++  return checks.every((check) => {
++    const fields = new Map(
++      check.split("\n").map((line) => {
++        const [field, ...value] = line.split(":");
++        return [field?.trim(), value.join(":").trim()] as const;
++      }),
++    );
++    return (
++      CHECK_FIELDS.every((field) => fields.get(field)) &&
++      ["pass", "fail"].includes(fields.get("Result") ?? "")
++    );
++  });
++}
++
++function hasValidRecordDigest(record: Record<string, unknown>): boolean {
++  const { digest, ...payload } = record;
++  return (
++    typeof digest === "string" &&
++    /^sha256:[a-f0-9]{64}$/u.test(digest) &&
++    digest === sha256(JSON.stringify(canonicalizeJson(payload)))
++  );
++}
++
++function matchesCurrentVerification(
++  raw: unknown,
++  task: TaskData,
++  evaluatedSha: string | null,
++): boolean {
++  const verification = task.verification;
++  const scopeDigest = verifyStepsDigest(task);
++  if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification || !evaluatedSha) {
++    return false;
++  }
++  const record = raw as Record<string, unknown>;
++  return (
++    record.schema_version === 1 &&
++    record.kind === "task_verification_record" &&
++    record.task_id === task.id &&
++    record.recorded_at === verification.updated_at &&
++    record.result === verification.state &&
++    record.verifier === verification.updated_by &&
++    record.note === verification.note &&
++    record.implementation_sha === evaluatedSha &&
++    record.scope_digest === scopeDigest &&
++    hasValidRecordDigest(record) &&
++    hasConcreteCheckDetails(record.details)
++  );
++}
++
++async function isAcceptedVerificationRecord(
++  filePath: string,
++  task: TaskData,
++  evaluatedSha: string | null,
++): Promise<boolean> {
++  try {
++    return matchesCurrentVerification(
++      JSON.parse(await readFile(filePath, "utf8")),
++      task,
++      evaluatedSha,
++    );
++  } catch {
++    return false;
++  }
++}
++
++export async function verificationRecordPaths(
++  taskRoot: string,
++  task: TaskData,
++  evaluatedSha: string | null,
++): Promise<string[]> {
+   try {
+     const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
+-    return entries
++    const candidates = entries
+       .filter((entry) => entry.isFile() && entry.name.endsWith(".json"))
+       .map((entry) => path.join(taskRoot, "verification", entry.name))
+       .toSorted();
++    const accepted = await Promise.all(
++      candidates.map(async (filePath) => ({
++        filePath,
++        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha),
++      })),
++    );
++    return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
+   } catch (error) {
+     if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return [];
+     throw error;
+diff --git a/packages/agentplane/src/commands/shared/quality-review-target.test.ts b/packages/agentplane/src/commands/shared/quality-review-target.test.ts
+index 754f25a9a..a2647a2d6 100644
+--- a/packages/agentplane/src/commands/shared/quality-review-target.test.ts
++++ b/packages/agentplane/src/commands/shared/quality-review-target.test.ts
+@@ -135,6 +135,33 @@ describe("quality review target resolver", () => {
+     );
+   });
+ 
++  it("preserves a reviewed target across a durable verification record", async () => {
++    const root = await mkGitRepoRoot();
++    const taskId = "202607240736-VERIFICATION";
++    const reviewedSha = await commitPath(
++      root,
++      "src/reviewed.ts",
++      "export const reviewed = true;\n",
++      "feat: establish reviewed implementation",
++    );
++    await commitPath(
++      root,
++      `.agentplane/tasks/${taskId}/verification/command-results.json`,
++      '{"kind":"task_verification_record"}\n',
++      "test: record durable verification evidence",
++    );
++    await commitPath(
++      root,
++      `.agentplane/tasks/${taskId}/quality/run/quality-report.json`,
++      "{}\n",
++      "test: record managed review artifact",
++    );
++
++    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
++      reviewedSha,
++    );
++  });
++
+   it("selects a semantic commit created after the recorded review", async () => {
+     const root = await mkGitRepoRoot();
+     const taskId = "202607240736-SEMANTIC";
+diff --git a/packages/agentplane/src/commands/shared/quality-review-target.ts b/packages/agentplane/src/commands/shared/quality-review-target.ts
+index 0003eb1f7..d9ea2409c 100644
+--- a/packages/agentplane/src/commands/shared/quality-review-target.ts
++++ b/packages/agentplane/src/commands/shared/quality-review-target.ts
+@@ -13,7 +13,8 @@ function isManagedTaskArtifact(relativePath: string): boolean {
+     relativePath === "README.md" ||
+     relativePath.startsWith("quality/") ||
+     relativePath.startsWith("pr/") ||
+-    relativePath.startsWith("blueprint/")
++    relativePath.startsWith("blueprint/") ||
++    relativePath.startsWith("verification/")
+   );
+ }
+ 
+@@ -156,7 +157,10 @@ export async function resolveQualityReviewTargetSha(opts: {
+       });
+       const touchesDerivedArtifacts = taskRelativePaths.some(
+         (name) =>
+-          name.startsWith("quality/") || name.startsWith("pr/") || name.startsWith("blueprint/"),
++          name.startsWith("quality/") ||
++          name.startsWith("pr/") ||
++          name.startsWith("blueprint/") ||
++          name.startsWith("verification/"),
+       );
+       const touchesOnlyManagedArtifacts = taskRelativePaths.every((name) =>
+         isManagedTaskArtifact(name),
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index b5ad34bd1..a26d012d0 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -1,6 +1,9 @@
+-import { readFile } from "node:fs/promises";
++import { createHash } from "node:crypto";
++import { mkdir, readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
++import { canonicalizeJson } from "@agentplaneorg/core/tasks";
++
+ import { mapBackendError } from "../../cli/error-map.js";
+ import { backendNotSupportedMessage, infoMessage, successMessage } from "../../cli/output.js";
+ import { CliError } from "../../shared/errors.js";
+@@ -50,6 +53,25 @@ function verificationStateToQualityReviewState(state: string): "pass" | "rework"
+   return "rework";
+ }
+ 
++function sha256(value: string): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function verificationRecordName(at: string, digest: string): string {
++  const timestamp = at.replaceAll(/[^0-9]/gu, "");
++  return `${timestamp}-${digest.slice("sha256:".length, "sha256:".length + 16)}.json`;
++}
++
++function verificationCommand(opts: {
++  command: ExecuteVerifyRecordCommandOptions["command"];
++  taskId: string;
++  state: VerifyState;
++  by: string;
++}): string {
++  const stateFlag = opts.state === "ok" ? "--ok" : "--rework";
++  return `agentplane ${opts.command} ${opts.taskId} ${stateFlag} --by ${opts.by}`;
++}
++
+ async function appendBlueprintSnapshotReference(
+   details: string | null | undefined,
+   opts: {
+@@ -141,6 +163,7 @@ async function recordVerificationResult(opts: {
+   finding?: VerifyStructuredFindingInput | null;
+   collectIncidents?: boolean;
+   quiet: boolean;
++  command: ExecuteVerifyRecordCommandOptions["command"];
+ }): Promise<void> {
+   const ctx =
+     opts.ctx ??
+@@ -174,6 +197,42 @@ async function recordVerificationResult(opts: {
+         action: "record verification",
+         guidance: "fill it before running `agentplane verify ...`",
+       });
++      const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
++      const record = {
++        schema_version: 1,
++        kind: "task_verification_record",
++        task_id: opts.taskId,
++        recorded_at: at,
++        verification_command: verificationCommand({
++          command: opts.command,
++          taskId: opts.taskId,
++          state: opts.state,
++          by: opts.by,
++        }),
++        result: opts.state,
++        verifier: opts.by,
++        note: opts.note,
++        details: opts.details?.trim() ?? null,
++        implementation_sha: evaluatedSha,
++        scope: verificationScope,
++        scope_digest: sha256(verificationScope),
++      };
++      const digest = sha256(JSON.stringify(canonicalizeJson(record)));
++      const verificationDir = path.join(
++        resolved.gitRoot,
++        config.paths.workflow_dir,
++        opts.taskId,
++        "verification",
++      );
++      await mkdir(verificationDir, { recursive: true });
++      await writeJsonStableIfChanged(
++        path.join(verificationDir, verificationRecordName(at, digest)),
++        {
++          ...record,
++          digest,
++        },
++      );
++
+       const execution = executeTaskVerificationTransitionRequest({
+         task: current,
+         at,
+@@ -349,6 +408,7 @@ export async function executeVerifyRecordCommand(
+       finding: opts.finding,
+       collectIncidents: opts.collectIncidents,
+       quiet: opts.quiet,
++      command: opts.command,
+     });
+     return 0;
+   } catch (err) {
+diff --git a/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+new file mode 100644
+index 000000000..cc0774d15
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/verify-record.durability.unit.test.ts
+@@ -0,0 +1,79 @@
++import { readdir } from "node:fs/promises";
++import path from "node:path";
++import { beforeEach, describe, expect, it, vi } from "vitest";
++
++import * as taskBackend from "../../backends/task-backend.js";
++import { cmdTaskAdd } from "../workflow.js";
++import { loadCommandContext } from "../shared/task-backend.js";
++import { cmdVerifyParsed } from "./verify-record.js";
++import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
++
++const mocks = vi.hoisted(() => ({
++  writeJsonStableIfChanged: vi.fn(),
++}));
++
++vi.mock("../../shared/write-if-changed.js", async (importOriginal) => {
++  const actualUnknown: unknown = await importOriginal();
++  const actual =
++    actualUnknown && typeof actualUnknown === "object"
++      ? (actualUnknown as Record<string, unknown>)
++      : {};
++  return { ...actual, writeJsonStableIfChanged: mocks.writeJsonStableIfChanged };
++});
++
++async function makeRepo(): Promise<string> {
++  const root = await mkGitRepoRoot();
++  await writeDefaultConfig(root);
++  return root;
++}
++
++async function addTask(root: string, taskId: string): Promise<void> {
++  await cmdTaskAdd({
++    cwd: root,
++    taskIds: [taskId],
++    title: "Task",
++    description: "Desc",
++    status: "TODO",
++    priority: "med",
++    owner: "CODER",
++    tags: ["nodejs"],
++    dependsOn: [],
++    verify: [],
++    commentAuthor: null,
++    commentBody: null,
++  });
++}
++
++describe("task verification durability", () => {
++  beforeEach(() => {
++    mocks.writeJsonStableIfChanged.mockReset();
++  });
++
++  it("fails closed when durable verification record creation fails", async () => {
++    const root = await makeRepo();
++    const taskId = "202602050900-V1F4F";
++    await addTask(root, taskId);
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
++    mocks.writeJsonStableIfChanged.mockRejectedValueOnce(new Error("disk full"));
++
++    await expect(
++      cmdVerifyParsed({
++        ctx,
++        cwd: root,
++        rootOverride: undefined,
++        taskId,
++        state: "ok",
++        by: "REVIEWER",
++        note: "Looks good",
++        quiet: true,
++      }),
++    ).rejects.toThrow("disk full");
++
++    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
++    const task = await backend.getTask(taskId);
++    expect(task?.verification?.state).toBe("pending");
++    await expect(
++      readdir(path.join(root, ".agentplane", "tasks", taskId, "verification")),
++    ).resolves.toEqual([]);
++  });
++});
+diff --git a/packages/agentplane/src/commands/task/verify-record.unit.test.ts b/packages/agentplane/src/commands/task/verify-record.unit.test.ts
+index d93b7e82b..40ff6420d 100644
+--- a/packages/agentplane/src/commands/task/verify-record.unit.test.ts
++++ b/packages/agentplane/src/commands/task/verify-record.unit.test.ts
+@@ -12,6 +12,8 @@ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ const mocks = vi.hoisted(() => ({
+   readFile: vi.fn<(p: string, enc: string) => Promise<string>>(),
++  mkdir: vi.fn(),
++  writeJsonStableIfChanged: vi.fn(),
+   ensureReconciledBeforeMutation: vi.fn(),
+   loadCommandContext: vi.fn(),
+   loadTaskFromContext:
+@@ -30,9 +32,13 @@ vi.mock("node:fs/promises", async (importOriginal) => {
+     actualUnknown && typeof actualUnknown === "object"
+       ? (actualUnknown as Record<string, unknown>)
+       : {};
+-  return { ...actual, readFile: mocks.readFile };
++  return { ...actual, readFile: mocks.readFile, mkdir: mocks.mkdir };
+ });
+ 
++vi.mock("../../shared/write-if-changed.js", () => ({
++  writeJsonStableIfChanged: mocks.writeJsonStableIfChanged,
++}));
++
+ vi.mock("../shared/task-backend.js", () => ({
+   backendUsesLocalTaskStore: mocks.backendIsLocalFileBackend,
+   loadCommandContext: mocks.loadCommandContext,
+@@ -105,6 +111,8 @@ function makeWriteThroughBackend(opts: {
+ describe("task verify record (unit)", () => {
+   beforeEach(() => {
+     mocks.readFile.mockReset();
++    mocks.mkdir.mockReset().mockResolvedValue(undefined);
++    mocks.writeJsonStableIfChanged.mockReset().mockResolvedValue(true);
+     mocks.ensureReconciledBeforeMutation.mockReset();
+     mocks.loadCommandContext.mockReset();
+     mocks.loadTaskFromContext.mockReset();
+diff --git a/packages/agentplane/src/commands/workflow.verify-hooks.test.ts b/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+index 1da647b31..02ca5ca40 100644
+--- a/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
++++ b/packages/agentplane/src/commands/workflow.verify-hooks.test.ts
+@@ -1,5 +1,5 @@
+ import { execFile } from "node:child_process";
+-import { readFile, writeFile } from "node:fs/promises";
++import { readdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+ import { promisify } from "node:util";
+ import { afterEach, beforeEach, describe, expect, it } from "vitest";
+@@ -162,6 +162,85 @@ describe("commands/workflow", () => {
+     expect(readme).toContain("VERIFY — ok");
+     expect(readme).toContain("By: REVIEWER");
+     expect(readme).toContain("Note: Looks good");
++
++    const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
++    const verificationFiles = await readdir(verificationDir);
++    expect(verificationFiles).toHaveLength(1);
++    const record = JSON.parse(
++      await readFile(path.join(verificationDir, verificationFiles[0] ?? ""), "utf8"),
++    ) as Record<string, unknown>;
++    expect(record).toMatchObject({
++      kind: "task_verification_record",
++      task_id: taskId,
++      result: "ok",
++      verifier: "REVIEWER",
++      note: "Looks good",
++      verification_command: `agentplane verify ${taskId} --ok --by REVIEWER`,
++      implementation_sha: null,
++    });
++    expect(typeof record.scope).toBe("string");
++    expect(String(record.scope)).toContain("Review the requested outcome");
++    expect(record.scope_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
++    expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
++  });
++
++  it("keeps the final verification state aligned with a durable record during concurrent verifies", async () => {
++    const root = await makeRepo();
++    const taskId = "202602050900-V1F4E";
++    await addTask(root, taskId);
++    const [firstContext, secondContext] = await Promise.all([
++      loadCommandContext({ cwd: root, rootOverride: null }),
++      loadCommandContext({ cwd: root, rootOverride: null }),
++    ]);
++
++    const outcomes = await Promise.all([
++      cmdVerifyParsed({
++        ctx: firstContext,
++        cwd: root,
++        rootOverride: undefined,
++        taskId,
++        state: "ok",
++        by: "FIRST",
++        note: "First verification",
++        quiet: true,
++      }),
++      cmdVerifyParsed({
++        ctx: secondContext,
++        cwd: root,
++        rootOverride: undefined,
++        taskId,
++        state: "ok",
++        by: "SECOND",
++        note: "Second verification",
++        quiet: true,
++      }),
++    ]);
++    expect(outcomes).toEqual([0, 0]);
++
++    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
++    const task = await backend.getTask(taskId);
++    const verification = task?.verification;
++    if (!verification) throw new Error("Missing final verification state.");
++    const verificationDir = path.join(root, ".agentplane", "tasks", taskId, "verification");
++    const verificationFiles = await readdir(verificationDir);
++    const records = await Promise.all(
++      verificationFiles.map(async (file) => {
++        return JSON.parse(await readFile(path.join(verificationDir, file), "utf8")) as Record<
++          string,
++          unknown
++        >;
++      }),
++    );
++    const matchingRecords = records.filter(
++      (record) =>
++        record.recorded_at === verification.updated_at &&
++        record.verifier === verification.updated_by &&
++        record.note === verification.note &&
++        record.result === verification.state,
++    );
++
++    expect(records).toHaveLength(2);
++    expect(matchingRecords).toHaveLength(1);
+   });
+ 
+   it("verify supports --file details and rejects --details with --file", async () => {

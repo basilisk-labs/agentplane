@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen branch delta records the merge base and evaluated SHA, excludes recursive quality artifacts, preserves explicit no-work-unit behavior, fails closed when a branch_pr base cannot be resolved, and includes a current SHA- and scope-bound durable verification record with concurrency coverage.",
+      "broken_invariant": "None; the reviewed evidence satisfies the complete-evidence, fail-closed, verification-durability, and concurrency invariants.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-233537201-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:067faa7caaf3553f08f27b7614d799617c8b10053bf9fd8f5fa398093456a2d5",
+          "section": "Complete merge-base-to-evaluated-SHA implementation and regression-test delta"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-233537201-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:a399cfc7e2e1e0ed71aea186d2fcffc7f7e1973030bca692b1d387a2425c7438",
+          "section": "Current verification state and frozen verification-record discovery"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728233432108-3b8cd9caab7b44c2.json",
+          "sha256": "sha256:bfc665d37cb2592706063ab9544c645120dbdba73ead753f129ca69f937284e9",
+          "section": "SHA- and scope-bound verification commands and results"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:dbcba35e86fb77049e9a59364ae055f65dc02d329854ab238e892f186741181e",
+          "section": "Plan, Verify Steps, and recorded verification history"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -247,6 +247,13 @@ export async function recordVerificationOk(root: string, taskId: string): Promis
     "EVALUATOR",
     "--note",
     "Ok to integrate",
+    "--details",
+    [
+      "Command: test harness verification",
+      "Result: pass",
+      "Evidence: task fixture",
+      "Scope: task verification",
+    ].join("\n"),
     "--quiet",
     "--root",
     root,

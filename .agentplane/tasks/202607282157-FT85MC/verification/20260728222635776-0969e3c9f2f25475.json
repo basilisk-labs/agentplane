@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx prettier --check packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nScope: formatting of touched source and tests\n\nCommand: bunx eslint packages/agentplane/src/commands/task/verify-record-execute.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass\nScope: static analysis of touched source and tests\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/workflow.verify-hooks.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts\nResult: pass (49 tests)\nScope: full branch evidence, durable verification records, write-failure and concurrent verification behavior\n\nCommand: bun run typecheck\nResult: pass\nScope: repository TypeScript build\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nScope: policy routing\n\nCommand: agentplane doctor\nResult: pass with 3 pre-existing historical task-archive warnings\nScope: workflow contract and workspace health",
+  "digest": "sha256:0969e3c9f2f25475795b4304e6750769abad087c7d727a18964f493bdfce7105",
+  "implementation_sha": "994506204fdb80b681ca671603756be10947d06f",
+  "kind": "task_verification_record",
+  "note": "Independent verification passed after the fail-closed fix: a verification write failure cannot persist success, and concurrent verifies leave final task state matched to exactly one durable record.",
+  "recorded_at": "2026-07-28T22:26:35.776Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
+  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
+  "task_id": "202607282157-FT85MC",
+  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by TESTER",
+  "verifier": "TESTER"
+}

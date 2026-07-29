@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { execFileAsync } from "@agentplaneorg/core/process";
 import { z } from "zod";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -19,6 +18,11 @@ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.j
 import type { CommandContext } from "../shared/task-backend.js";
 
 import type { EvaluatorModule } from "../../evaluators/catalog.js";
+import {
+  renderActualDiff,
+  resolveEvaluatorDiffBase,
+  resolveEvaluatorDiffBaseRef,
+} from "./evaluator-diff-evidence.js";
 import { verificationRecordPaths } from "./evaluator-verification-records.js";
 import {
   EVALUATOR_OPINION_FILE,
@@ -30,6 +34,8 @@ import {
   timestampPathSegment,
 } from "./evaluator-quality-artifacts.js";
 import type { EvaluatorRunProvenance, EvaluatorRunVerdict } from "./evaluator.spec.js";
+
+export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
 
 const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
 const EVALUATOR_RESULT_FILE = "evaluator-result.json";
@@ -52,6 +58,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
       })
       .strict(),
     evaluated_sha: z.string().trim().min(1).nullable(),
+    diff_base_sha: z.string().trim().min(1).nullable().optional(),
     blueprint_digest: z.string().trim().min(1).nullable(),
     evaluator: z
       .object({
@@ -189,25 +196,6 @@ async function freezeFile(opts: {
   };
 }
 
-async function renderActualDiff(gitRoot: string, evaluatedSha: string | null): Promise<string> {
-  if (!evaluatedSha) return "No committed task work unit is available for semantic evaluation.\n";
-  try {
-    const { stdout } = await execFileAsync(
-      "git",
-      ["show", "--format=", "--find-renames", "--binary", evaluatedSha],
-      { cwd: gitRoot, maxBuffer: 1024 * 1024 },
-    );
-    return stdout || "No file diff was recorded for the evaluated commit.\n";
-  } catch (error) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: `Unable to freeze the actual diff for evaluator review: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    });
-  }
-}
-
 async function assertTaskReviewWorkspaceClean(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -233,6 +221,7 @@ function workOrderId(opts: {
   taskId: string;
   revision: number | null;
   evaluatedSha: string | null;
+  diffBaseSha: string | null;
   evidence: EvaluatorWorkOrder["evidence"];
 }): string {
   const digest = sha256(
@@ -240,6 +229,7 @@ function workOrderId(opts: {
       task_id: opts.taskId,
       revision: opts.revision,
       evaluated_sha: opts.evaluatedSha,
+      diff_base_sha: opts.diffBaseSha,
       evidence: opts.evidence.map((entry) => [entry.id, entry.sha256]),
     }),
   ).slice("sha256:".length, "sha256:".length + 24);
@@ -287,8 +277,20 @@ export async function prepareEvaluatorReview(opts: {
     taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
     previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
   });
+  const diffBaseSha = await resolveEvaluatorDiffBase({
+    gitRoot,
+    evaluatedSha,
+    baseRef: evaluatedSha
+      ? await resolveEvaluatorDiffBaseRef({ ctx: opts.ctx, taskId: opts.task.id })
+      : null,
+    allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
+  });
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
-  const recordPaths = await verificationRecordPaths(path.dirname(taskReadmePath));
+  const recordPaths = await verificationRecordPaths(
+    path.dirname(taskReadmePath),
+    opts.task,
+    evaluatedSha,
+  );
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>
       freezeFile({
@@ -313,7 +315,12 @@ export async function prepareEvaluatorReview(opts: {
   await mkdir(reviewDir, { recursive: true });
   await writeFile(
     path.join(reviewDir, EVALUATOR_DIFF_FILE),
-    await renderActualDiff(gitRoot, evaluatedSha),
+    await renderActualDiff(
+      gitRoot,
+      evaluatedSha,
+      diffBaseSha,
+      path.join(opts.ctx.config.paths.workflow_dir, opts.task.id),
+    ),
     "utf8",
   );
   await writeFile(
@@ -387,6 +394,7 @@ export async function prepareEvaluatorReview(opts: {
       taskId: opts.task.id,
       revision: opts.task.revision ?? null,
       evaluatedSha,
+      diffBaseSha,
       evidence,
     }),
     prepared_at: at,
@@ -397,6 +405,7 @@ export async function prepareEvaluatorReview(opts: {
       acceptance_criteria: acceptanceCriteria(opts.task),
     },
     evaluated_sha: evaluatedSha,
+    diff_base_sha: diffBaseSha,
     blueprint_digest: blueprint.digest.value,
     evaluator: {
       id: opts.evaluator.id,
@@ -586,14 +595,4 @@ export async function assertWorkOrderCurrent(opts: {
       });
     }
   }
-}
-
-export function qualityState(
-  verdict: EvaluatorRunVerdict,
-): "pass" | "rework" | "blocked" | "human_review" {
-  return verdict;
-}
-
-export function evaluatorSummary(result: EvaluatorSgrResult): string {
-  return `EVALUATOR returned ${result.verdict} with ${result.findings.length} typed finding(s).`;
 }

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen branch-wide patch, durable verification records, and focused verification evidence collectively cover the approved positive, negative, and concurrency-sensitive behavior.",
+      "broken_invariant": "None; the reviewed implementation satisfies the recovery-context invariants relevant to this task.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222657448-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:bfd65759b6966e329b72631fa588f270492e85ed5a97246b4b80cd80f44d5854"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-222657448-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:6fff41cb52271052fb707e49eb002f8996b7ff365e57ad20ec07781eb4457bf9"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json",
+          "sha256": "sha256:f9bd92fd7407d4a98ed9e3dbc3667c2cd84adf984d1b8fcffa23f8de9c9eb43a"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:bd11e3517cce347a3b3a37bb309f82ada2319864f6f085a594069dd5837cf468",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The repository's existing git base-resolution helpers preserve their documented semantics for symbolic, remote-tracking, and detached base references.",
+    "Machine-readable verification records attest the verifier's reported commands and results; they do not independently replay or cryptographically prove those commands."
+  ]
+}

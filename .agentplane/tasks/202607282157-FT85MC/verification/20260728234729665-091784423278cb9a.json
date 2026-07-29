@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest run affected evaluator, verification, batch ownership, and mutation parity suites\nResult: pass\nEvidence: 81 tests passed across 8 affected files\nScope: FT85MC static-lint rework\n\nCommand: bun run lint:core\nResult: pass\nEvidence: ESLint passed for packages, scripts, and Vitest configuration\nScope: FT85MC static-lint rework\n\nCommand: bun run format:check && bun run typecheck && node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: formatting, TypeScript build, and policy routing completed successfully\nScope: FT85MC static-lint rework\n\nCommand: agentplane doctor\nResult: pass\nEvidence: doctor exited 0; only 3 historical task-archive warnings remain\nScope: FT85MC static-lint rework",
+  "digest": "sha256:091784423278cb9a970b83836d1999449e1b6590ff8c57e86f5d795b5e211b8c",
+  "implementation_sha": "bd91cba5b9925a5f098a01b936810dac4dd2a083",
+  "kind": "task_verification_record",
+  "note": "Fixed the hosted static lint failure in the evaluator fixture.",
+  "recorded_at": "2026-07-28T23:47:29.665Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order.",
+  "scope_digest": "sha256:6799a97240ce9375d02df78c2da6147825fb74355e8ef7bc0a4b06f89aef08bb",
+  "task_id": "202607282157-FT85MC",
+  "verification_command": "agentplane verify 202607282157-FT85MC --ok --by CODER",
+  "verifier": "CODER"
+}

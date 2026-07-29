@@ -1,0 +1,30 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T22:45:03.307Z",
+    "updated_by": "TESTER",
+    "note": "Independent verification passed after the root-commit fix: branch_pr now fails closed without a base, while direct fallback remains explicit and hotspot contracts remain satisfied."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json",
+      "sha256": "sha256:1b6e9d8b88a14403de8fc9c2015a32fc5eac560521c75e89603baa93f8ade72a"
+    },
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json",
+      "sha256": "sha256:f9bd92fd7407d4a98ed9e3dbc3667c2cd84adf984d1b8fcffa23f8de9c9eb43a"
+    },
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728224043586-0205aa4bd9698f63.json",
+      "sha256": "sha256:b8756d06d9cce0f1cc9de72bf3cba676ca6583f274b48356532daaee55969d5e"
+    },
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728224503307-29683d476586f630.json",
+      "sha256": "sha256:4ba8e4b0ada01048fbb56d11e2b9c25f59973a816c3a361b8df540cf88e8f477"
+    }
+  ],
+  "runner_history": []
+}

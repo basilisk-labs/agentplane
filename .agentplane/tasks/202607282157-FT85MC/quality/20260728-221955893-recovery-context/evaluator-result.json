@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "Verification state is persisted before the durable verification record is written, so a filesystem failure can leave the task verified without the machine-readable evidence required by evaluator review.",
+      "broken_invariant": "The approved contract requires the supported verification path to create durable machine-readable verification evidence; verification must not become successful when creation of that evidence fails.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:71f9c2167eb8dc82ca28b0002e378b37e64aa411ed124928d162334da790ebdd",
+          "section": "packages/agentplane/src/commands/task/verify-record-execute.ts: recordVerificationResult"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:6dfab0fc8580881b636aaaf7533b8a77b2a5cdbefc08b30d8d5496f7edfec264",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A failure-path test that forces verification-record directory creation or JSON writing to fail and asserts that the task verification state is not persisted as ok without its durable record.",
+    "A concurrency test for simultaneous verification attempts confirming that task state and the selected current verification record remain consistent."
+  ],
+  "hidden_assumptions": [
+    "Filesystem creation and writing of the verification record are assumed not to fail after the task mutation succeeds.",
+    "Successful-path coverage is assumed to prove the durability invariant despite the task-state mutation and evidence write being separate non-atomic operations."
+  ],
+  "recovery_context": "Make verification-state persistence and durable-record creation fail closed as one consistency boundary, then add write-failure and concurrent-verification regression coverage before regenerating evaluator evidence."
+}

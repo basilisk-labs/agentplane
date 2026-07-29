@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607282157-FT85MC-09babb1000b71a34eaddee83",
+  "task_id": "202607282157-FT85MC",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Preserve the complete branch-diff and current-record matching changes, but strengthen durable verification records so each required check contains the exact executable command and concrete key-output evidence, then freeze that validated record in a new evaluator work order.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen verification record still does not provide the required concrete command evidence: its free-form details use abbreviated command descriptions and omit every required Evidence field.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728225543061-e033ad9caec75582.json",
+          "sha256": "sha256:77fb28ddf2b8f294de18a134e55d3b866d7a2294db198036ad8bfebe5ed4f4be",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:e6bd245ed3f2a0109b1245eb9ea838cf60a4a1405da9c26f8d34274669be4567",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-225604797-recovery-context/evaluator-result.json"
+}

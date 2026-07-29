@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The frozen evidence covers the complete merge-base-to-evaluated-SHA branch delta, excludes recursive quality artifacts, preserves explicit no-work-unit behavior, fails closed when a branch_pr base is unavailable, and includes a current SHA- and scope-bound durable verification record.",
+      "broken_invariant": "None; the approved recovery-context invariants are satisfied.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231907916-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:a3d45f1ebaf88ed5661012db5cf788cc9c29c9513fc2d41abba738c1246ecb3c"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-231907916-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:ccf1b35e2b35cc1fd42dcc37653e2c5f9959706020517814d1a46e6a77623013"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728231849252-41d1e4173553ffaa.json",
+          "sha256": "sha256:06fb1f306b8d728a5fa5a5cbb9fde5bf53cfd190f82d81a4ae6dc22e689eaba7"
+        },
+        {
+          "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+          "sha256": "sha256:422675436ee8b4229954327c8e4805913a62c60a19d8e028b822b89ef2f19454",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

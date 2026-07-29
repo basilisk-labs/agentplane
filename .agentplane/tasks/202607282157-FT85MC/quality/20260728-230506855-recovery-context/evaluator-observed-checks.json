@@ -1,0 +1,18 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T23:04:43.027Z",
+    "updated_by": "TESTER",
+    "note": "Rework verified with bounded full diff and concrete evaluator evidence."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728230443027-9b1ce9fa67c234df.json",
+      "sha256": "sha256:c0024d5bec1cdb69af45d1ff929dcaba39d927cd4c5eb8fb9e9363d1f55c400e"
+    }
+  ],
+  "runner_history": []
+}

@@ -1,0 +1,18 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-28T22:19:19.341Z",
+    "updated_by": "TESTER",
+    "note": "Independent focused verification passed: complete branch delta, binary and rename evidence, durable verification records, direct fallback, and missing-base failure remain covered."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json",
+      "sha256": "sha256:1b6e9d8b88a14403de8fc9c2015a32fc5eac560521c75e89603baa93f8ade72a"
+    }
+  ],
+  "runner_history": []
+}

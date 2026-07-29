@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T22:57:07.967Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "7fb5ea58395f4529c99df0a7ebba61bb8674e9cf",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "The frozen verification record still does not provide the required concrete command evidence: its free-form details use abbreviated command descriptions and omit every required Evidence field."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/verification/20260728225543061-e033ad9caec75582.json",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/tasks/202607282157-FT85MC/README.md"
+  ],
+  "missing_tests": [
+    "A regression test that rejects or excludes a verification record when any check lacks an exact command string, Result, Evidence, or Scope.",
+    "A final work-order test proving the frozen verification record contains independently assessable evidence for every required Verify Step, not only asserted pass summaries."
+  ],
+  "hidden_assumptions": [
+    "Unvalidated free-form text inside a JSON record is assumed to constitute machine-readable command evidence.",
+    "A claimed pass result without captured key output is assumed sufficient for independent evaluator assessment."
+  ],
+  "residual_risks": [
+    "Preserve the complete branch-diff and current-record matching changes, but strengthen durable verification records so each required check contains the exact executable command and concrete key-output evidence, then freeze that validated record in a new evaluator work order."
+  ]
+}

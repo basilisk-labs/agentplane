@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607282157-FT85MC-2c3dff392f11e5fb19768c25",
+  "prepared_at": "2026-07-28T22:45:07.238Z",
+  "task": {
+    "id": "202607282157-FT85MC",
+    "revision": 20,
+    "objective": "Freeze complete branch evidence for evaluator review\n\nRF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.",
+    "acceptance_criteria": [
+      "- In scope: RF-QUALITY: evaluator review must freeze the complete task branch diff against its merge base, rather than only git show of the latest implementation commit. Include durable, machine-readable verification record evidence so EVALUATOR can assess the entire approved change and required checks without relying on narrative summaries. Keep the change generic, fail closed when the base cannot be resolved, and preserve no-change behavior.\n- Out of scope: unrelated refactors not required for \"Freeze complete branch evidence for evaluator review\".",
+      "1. Reproduce the evaluator evidence gap using a multi-commit branch and identify the authoritative merge base for a branch_pr task. 2. Replace one-commit snapshotting with a bounded full branch patch from that merge base to the evaluated SHA, including binary/rename-safe content and a fail-closed error if base resolution is unavailable. 3. Freeze machine-readable verification records in the same work order and cover their discovery. 4. Add focused regression tests for complete multi-commit evidence, no-change handling, and base-resolution failure. 5. Run focused tests, formatting, typecheck, policy routing, and an independent evaluator review before PR integration.",
+      "1. Create a multi-commit fixture and prepare an evaluator work order. Expected: the frozen actual diff includes every change from the merge base through the evaluated SHA, and the work order records that base SHA.\n2. Prepare a no-work-unit review and a missing-base case. Expected: no-work-unit output remains explicit; unresolved base references fail closed with E_VALIDATION.\n3. Run focused evaluator tests, formatting, typecheck, policy routing, and doctor. Expected: all pass and their task verification records are frozen in the final evaluator work order."
+    ]
+  },
+  "evaluated_sha": "618d1f9de3e4b5d473dc005b553490fa3d78262b",
+  "diff_base_sha": "7f44e71fa8dbe12987744e4442ba0110dc150090",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607282157-FT85MC/README.md",
+      "sha256": "sha256:0f5fd4b15548c6710d3f77ff112c6574f357ce8a0fb8a6917139c4bace49c5fb",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224507238-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:4ec0f730104d690c45006beb9226e290fd2230b812f263351c3f37eda3620c1f",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224507238-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:e3f9eea9773d5f82319f4408a5ff8fb698ad3b9c31f0321516e4bb7bafba2565",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728221919341-bcf3aae8adcb185a.json",
+      "sha256": "sha256:1b6e9d8b88a14403de8fc9c2015a32fc5eac560521c75e89603baa93f8ade72a",
+      "required": true
+    },
+    {
+      "id": "verification-record-2",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728222635776-0969e3c9f2f25475.json",
+      "sha256": "sha256:f9bd92fd7407d4a98ed9e3dbc3667c2cd84adf984d1b8fcffa23f8de9c9eb43a",
+      "required": true
+    },
+    {
+      "id": "verification-record-3",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728224043586-0205aa4bd9698f63.json",
+      "sha256": "sha256:b8756d06d9cce0f1cc9de72bf3cba676ca6583f274b48356532daaee55969d5e",
+      "required": true
+    },
+    {
+      "id": "verification-record-4",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607282157-FT85MC/verification/20260728224503307-29683d476586f630.json",
+      "sha256": "sha256:4ba8e4b0ada01048fbb56d11e2b9c25f59973a816c3a361b8df540cf88e8f477",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607282157-FT85MC/quality/20260728-224507238-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:ac574b89319bc7c56c26b4f361ce41b569ef9f6500ba8258ed793f5400cc9634",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

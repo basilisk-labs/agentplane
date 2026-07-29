@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607282157-FT85MC",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-28T22:20:55.685Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "d70a8672397ee9b45a09ce68ae5f48ad3d1b543e",
+  "blueprint_digest": "a73d05fa92d5a843c8e92a74272171e8869d1073f4e8fbb1a4323324ddba0ad9",
+  "findings": [
+    "Verification state is persisted before the durable verification record is written, so a filesystem failure can leave the task verified without the machine-readable evidence required by evaluator review."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607282157-FT85MC/quality/20260728-221955893-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607282157-FT85MC/README.md"
+  ],
+  "missing_tests": [
+    "A failure-path test that forces verification-record directory creation or JSON writing to fail and asserts that the task verification state is not persisted as ok without its durable record.",
+    "A concurrency test for simultaneous verification attempts confirming that task state and the selected current verification record remain consistent."
+  ],
+  "hidden_assumptions": [
+    "Filesystem creation and writing of the verification record are assumed not to fail after the task mutation succeeds.",
+    "Successful-path coverage is assumed to prove the durability invariant despite the task-state mutation and evidence write being separate non-atomic operations."
+  ],
+  "residual_risks": [
+    "Make verification-state persistence and durable-record creation fail closed as one consistency boundary, then add write-failure and concurrent-verification regression coverage before regenerating evaluator evidence."
+  ]
+}
