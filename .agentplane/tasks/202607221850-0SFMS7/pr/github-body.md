@@ -16,7 +16,12 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 ## Verification
 
 - State: ok
-- Note: RF-10a final live golden path, frozen runtime evidence, and full repository gates passed on cb23e156a8c6.
+- Note:
+
+```text
+RF-10a closure target classification now preserves verified implementation evidence across lifecycle
+artifacts; focused and full regression gates passed on 57637d153.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -37,6 +42,8 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
  .../evaluator/evaluator-run.command.test.ts        |  43 ++
  .../evaluator/evaluator-runtime-evidence.test.ts   | 133 ++++
  .../evaluator/evaluator-verification-records.ts    |  80 +-
+ .../commands/shared/quality-review-target.test.ts  |  27 +
+ .../src/commands/shared/quality-review-target.ts   |  25 +-
  .../src/commands/shared/workflow-step-factory.ts   |  20 +-
  .../shared/workflow-step-projections.test.ts       |  16 +-
  .../commands/task/direct-task-finalization.test.ts | 238 ++++++
@@ -67,7 +74,7 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
  .../usecases/task-run-context.integration.test.ts  |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |   6 -
  scripts/baselines/clone-baseline.json              |  24 +-
- 40 files changed, 4569 insertions(+), 210 deletions(-)
+ 42 files changed, 4610 insertions(+), 221 deletions(-)
 ```
 
 </details>
