@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 29
+revision: 31
 origin:
   system: "manual"
 depends_on: []
@@ -30,29 +30,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T16:24:36.637Z"
+  updated_at: "2026-07-29T16:38:08.959Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "d96688db9606265c051cdeabb626925092a879ef"
+  evaluated_sha: "b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345"
   blueprint_digest: "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e"
   evidence_refs:
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607291449-FTHNAR/README.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/verification/20260729162318461-c49689c994e9100c.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/verification/20260729163644768-ae2bb1afb3f0cb5f.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-163708161-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen diff and verification record show that deterministic-evidence refresh is restricted to a current evaluator-supplied deterministic_evidence_gap block, returns control to EVALUATOR after refresh, and preserves publication blockers."
-commit: null
+    - "The frozen implementation and SHA-bound verification evidence show that recovery is limited to evaluator-supplied deterministic-evidence gaps, delegates only deterministic verification to TESTER, returns semantic ownership to EVALUATOR after refresh, rejects unrelated semantic blocks, handles artifact-only descendant commits, and preserves publication blockers."
+commit:
+  hash: "92e068187c1b8d6a65566d458df3db9c4c9d6e2c"
+  message: "✅ FTHNAR verify: record CI structural recovery"
 comments:
   -
     author: "CODER"
@@ -69,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Start: rework the deterministic-evidence refresh route so it compares the EVALUATOR SHA with the effective semantic target rather than a later artifact-only commit."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -187,8 +192,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets."
+  -
+    type: "status"
+    at: "2026-07-29T16:38:49.869Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T16:36:45.497Z"
+doc_updated_at: "2026-07-29T16:38:49.870Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -653,8 +665,8 @@ sections:
       Resolution: Route decision now supplies the shared semantic target; reducer coverage proves artifact-only commits keep the TESTER refresh handoff.
 extensions:
   implementation_commit:
-    hash: "d96688db9606265c051cdeabb626925092a879ef"
-    message: "🐛 FTHNAR route: preserve semantic review target"
+    hash: "b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345"
+    message: "♻️ FTHNAR route: restore CI hotspot budgets"
   workflow_route_baseline:
     start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
     version: 1
