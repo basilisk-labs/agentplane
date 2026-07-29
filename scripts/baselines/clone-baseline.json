@@ -25,10 +25,7 @@
     "min_lines": 8,
     "min_tokens": 80,
     "mode": "mild",
-    "formats": [
-      "typescript",
-      "javascript"
-    ],
+    "formats": ["typescript", "javascript"],
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
