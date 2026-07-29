@@ -15,13 +15,8 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: include the dependent constrained-refspec publication repair so the FTH PR can complete its
-own evaluator and publication lifecycle without manual upstream mutation.
-```
+- State: ok
+- Note: Combined FTH and constrained-refspec regression checks passed before primary PR publication.
 - Canonical workflow state lives in the task README.
 
 <details>
