@@ -142,6 +142,16 @@ async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
   });
   await execFileAsync(
     "git",
+    ["fetch", remotePath, `+refs/heads/${branch}:refs/remotes/origin/${branch}`],
+    { cwd: root, env: cleanGitEnv() },
+  );
+  await execFileAsync(
+    "git",
+    ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
+    { cwd: root, env: cleanGitEnv() },
+  );
+  await execFileAsync(
+    "git",
     ["commit", "--amend", "--allow-empty", "-m", "feat rebased task head"],
     {
       cwd: root,
@@ -272,6 +282,13 @@ describe("PR task branch publication", { timeout: TEST_TIMEOUT_MS }, () => {
     await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
       fixture.localHead,
     );
+    const execFileAsync = promisify(execFile);
+    const { stdout: trackingHead } = await execFileAsync(
+      "git",
+      ["rev-parse", `refs/remotes/origin/${fixture.branch}`],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    expect(trackingHead.trim()).toBe(fixture.localHead);
   });
 
   it("refuses rewrite publication when the task branch tracks the wrong upstream", async () => {
