@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen deterministic verification artifact contains no declared checks, verification records, runner history, or runtime evidence for the evaluated SHA.",
+      "broken_invariant": "A pass verdict requires frozen verification evidence covering the relevant positive, negative, and concurrency-sensitive paths; a TESTER summary note without frozen command-level evidence is insufficient.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-161805769-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:44242b50982ab57a7265da7da577500903ca85e09f809b3c8b8e9f9d74b0588f",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze command-level results for the focused workflow-step and route-decision suites, including the deterministic-evidence-gap recovery route and unrelated blocked-quality-review cases.",
+    "Freeze successful policy-routing and doctor results for the evaluated SHA."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification summary is assumed to represent checks executed against the evaluated semantic target, but the frozen evidence does not prove that binding."
+  ],
+  "recovery_context": "Refresh deterministic verification evidence for the evaluated semantic target, freezing command-level results for the focused positive, negative, and publication-blocking paths, then request a new independent EVALUATOR review.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

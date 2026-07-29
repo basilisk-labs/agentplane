@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T16:24:36.637Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "d96688db9606265c051cdeabb626925092a879ef",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "The frozen diff and verification record show that deterministic-evidence refresh is restricted to a current evaluator-supplied deterministic_evidence_gap block, returns control to EVALUATOR after refresh, and preserves publication blockers."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-162339466-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607291449-FTHNAR/verification/20260729162318461-c49689c994e9100c.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Verification-record command summaries are accepted as authoritative deterministic evidence because the frozen evaluator input does not include raw runner output.",
+    "ISO-8601 verification and review timestamps remain normalized and lexically comparable."
+  ],
+  "residual_risks": []
+}

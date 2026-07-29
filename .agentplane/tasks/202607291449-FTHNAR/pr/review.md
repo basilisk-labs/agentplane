@@ -6,14 +6,14 @@ Created: 2026-07-29T14:50:37.577Z
 
 - Task: `202607291449-FTHNAR`
 - Title: Permit evidence refresh after evaluator review gaps
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
 - Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers 6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet passed.
+- Note: Verified d96688db: fresh deterministic evidence covers all declared checks plus the independent blocked-quality-review regression.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
