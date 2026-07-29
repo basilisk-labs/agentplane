@@ -24,6 +24,7 @@ import {
   assertReplayEnvelope,
   buildReplayBaseline,
   buildReplayDriverEnvironment,
+  createReplayDriverContractEnvironment,
   createReplayDriverIdentity,
   createReplayHarnessManifest,
   fixtureRegistrySha256,
@@ -308,34 +309,20 @@ function captureWithDriver({
           "--evidence-output",
           evidenceOutputPath,
         ];
-        const contractEnvironment = {
-          AGENTPLANE_RF04_REPLAY_ANCHOR: anchor,
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
-            dependencyClaim.capture_executable_sha256,
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_PLATFORM: stableJson(
-            dependencyClaim.capture_platform,
-          ),
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_RECEIPT_SHA256:
-            dependencyClaim.capture_receipt_sha256,
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_PORTABLE_SHA256: dependencyClaim.portable_sha256,
-          AGENTPLANE_RF04_REPLAY_DRIVER_CONTRACT_VERSION: String(driverIdentity.contract_version),
-          AGENTPLANE_RF04_REPLAY_DRIVER_PATH: driverIdentity.path,
-          AGENTPLANE_RF04_REPLAY_DRIVER_SHA256: driverIdentity.sha256,
-          AGENTPLANE_RF04_REPLAY_EVIDENCE_OUTPUT: evidenceOutputPath,
-          AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH: path.posix.join(
-            evidenceLogicalRoot,
-            scenario.id,
-            fileName,
-          ),
-          AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: stableJson(expectedRoles(scenario)),
-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256: fixtureDigest,
-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN: "fixture_control_overlay_v1",
-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_PATH: registryOverlay,
-          AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessManifest.sha256,
-          AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
-          AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
-          AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: CODEX_REPLAY_CLI_VERSION,
-        };
+        const contractEnvironment = createReplayDriverContractEnvironment({
+          anchor,
+          codexCliVersion: CODEX_REPLAY_CLI_VERSION,
+          dependencyClaim,
+          driverIdentity,
+          evidenceOutputPath,
+          evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
+          expectedRolesJson: stableJson(expectedRoles(scenario)),
+          fixtureRegistryPath: registryOverlay,
+          fixtureRegistrySha256: fixtureDigest,
+          harnessSha256: harnessManifest.sha256,
+          outputPath,
+          runId,
+        });
         runChecked(
           process.execPath,
           driverArgs,

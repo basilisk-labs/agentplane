@@ -185,4 +185,30 @@ describeCritical("critical: RF-04 candidate measurement", () => {
       }),
     ).toThrow("runtime profile does not bind declared Codex CLI version");
   });
+
+  it("rejects a candidate measurement when its runtime profile differs from the baseline", async () => {
+    const fixture = await loadCandidateFixture();
+    const candidateVersion = "0.146.0-alpha.3.1";
+    const crossRuntime = clone(fixture.envelopes);
+    for (const record of crossRuntime) {
+      const envelope = record.value as Json;
+      (envelope.profile as Json).runtime_version = `0.6.24/${candidateVersion}`;
+      record.bytes = canonical(envelope);
+    }
+
+    const measurement = fixture.candidate.buildCandidateMeasurement({
+      candidateAnchor: CANDIDATE_SHA,
+      candidateCodexCliVersion: candidateVersion,
+      candidateDependencyClaim: fixture.dependency,
+      candidateDriverIdentity: fixture.driver,
+      candidateEnvelopeRecords: crossRuntime,
+      candidateEvidenceRecords: fixture.evidence,
+      candidateHarnessManifest: fixture.harness,
+      candidateRegistry: fixture.candidateRegistry,
+    }) as Json;
+
+    expect(measurement.verdict).toBe("fail");
+    expect(measurement.failure_ids as string[]).toEqual(["runtime.profile"]);
+    expect((measurement.runtime_comparison as Json).profile_match).toBe(false);
+  });
 });

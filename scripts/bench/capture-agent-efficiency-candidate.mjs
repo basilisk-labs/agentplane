@@ -28,6 +28,7 @@ import {
   assertReplayEnvelope,
   buildReplayBaseline,
   buildReplayDriverEnvironment,
+  createReplayDriverContractEnvironment,
   createReplayDriverIdentity,
   createReplayHarnessManifest,
   fixtureRegistrySha256,
@@ -516,6 +517,16 @@ function exactComparison(id, baseline, candidate) {
   };
 }
 
+function identityComparison(id, baseline, candidate) {
+  return {
+    baseline,
+    candidate,
+    id,
+    threshold: { kind: "exact", value: baseline },
+    verdict: stableJson(candidate) === stableJson(baseline) ? "pass" : "fail",
+  };
+}
+
 export function buildCandidateMeasurement({
   candidateAnchor,
   candidateCodexCliVersion,
@@ -595,6 +606,11 @@ export function buildCandidateMeasurement({
   });
   const baselineValues = summarizeActualValues(baselineGrouped, baselineRegistry);
   const candidateValues = summarizeActualValues(candidateGrouped, candidateRegistry);
+  const runtimeComparison = {
+    baseline: baselineRuntimeProfile.runtime_version,
+    candidate: candidateRuntimeProfile.runtime_version,
+    profile_match: stableJson(baselineRuntimeProfile) === stableJson(candidateRuntimeProfile),
+  };
   const comparisons = [
     ...Object.keys(candidateValues.provider_tokens).map((field) =>
       atMostComparison(
@@ -607,7 +623,7 @@ export function buildCandidateMeasurement({
       const baselineLatency = baselineValues.latency_ms[field];
       const candidateLatency = candidateValues.latency_ms[field];
       return [
-        exactComparison(
+        atLeastComparison(
           `latency.${field}.sample_count`,
           baselineLatency.sample_count,
           candidateLatency.sample_count,
@@ -626,16 +642,18 @@ export function buildCandidateMeasurement({
       candidateValues.outcomes.rework_required,
       0,
     ),
-    exactComparison(
+    atMostComparison(
       "outcomes.golden_mismatch_count",
       baselineValues.golden_mismatch_count,
       candidateValues.golden_mismatch_count,
+      0,
     ),
     exactComparison(
       "provider_episodes",
       baselineValues.provider_episodes,
       candidateValues.provider_episodes,
     ),
+    identityComparison("runtime.profile", baselineRuntimeProfile, candidateRuntimeProfile),
   ];
   const failures = comparisons.filter((comparison) => comparison.verdict !== "pass");
   return {
@@ -660,11 +678,7 @@ export function buildCandidateMeasurement({
     comparisons,
     failure_ids: failures.map((comparison) => comparison.id),
     kind: "agent_efficiency_candidate_measurement_v1",
-    runtime_comparison: {
-      baseline: baselineRuntimeProfile.runtime_version,
-      candidate: candidateRuntimeProfile.runtime_version,
-      profile_match: stableJson(baselineRuntimeProfile) === stableJson(candidateRuntimeProfile),
-    },
+    runtime_comparison: runtimeComparison,
     schema_version: 1,
     verdict: failures.length === 0 ? "pass" : "fail",
   };
@@ -745,34 +759,20 @@ function captureCandidate(options) {
         const outputPath = path.join(scenarioDirectory, fileName);
         const evidenceOutputPath = path.join(evidenceScenarioDirectory, fileName);
         const runId = `${scenario.id}/run-${String(runIndex).padStart(2, "0")}`;
-        const contractEnvironment = {
-          AGENTPLANE_RF04_REPLAY_ANCHOR: subject,
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
-            dependencyClaim.capture_executable_sha256,
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_PLATFORM: stableJson(
-            dependencyClaim.capture_platform,
-          ),
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_RECEIPT_SHA256:
-            dependencyClaim.capture_receipt_sha256,
-          AGENTPLANE_RF04_REPLAY_DEPENDENCY_PORTABLE_SHA256: dependencyClaim.portable_sha256,
-          AGENTPLANE_RF04_REPLAY_DRIVER_CONTRACT_VERSION: String(driverIdentity.contract_version),
-          AGENTPLANE_RF04_REPLAY_DRIVER_PATH: driverIdentity.path,
-          AGENTPLANE_RF04_REPLAY_DRIVER_SHA256: driverIdentity.sha256,
-          AGENTPLANE_RF04_REPLAY_EVIDENCE_OUTPUT: evidenceOutputPath,
-          AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH: path.posix.join(
-            evidenceLogicalRoot,
-            scenario.id,
-            fileName,
-          ),
-          AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: stableJson(expectedRoles(scenario)),
-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN: "fixture_control_overlay_v1",
-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_PATH: registryOverlay,
-          AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256: fixtureRegistrySha256(registry),
-          AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessManifest.sha256,
-          AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
-          AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
-          AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: codexCliVersion,
-        };
+        const contractEnvironment = createReplayDriverContractEnvironment({
+          anchor: subject,
+          codexCliVersion,
+          dependencyClaim,
+          driverIdentity,
+          evidenceOutputPath,
+          evidencePath: path.posix.join(evidenceLogicalRoot, scenario.id, fileName),
+          expectedRolesJson: stableJson(expectedRoles(scenario)),
+          fixtureRegistryPath: registryOverlay,
+          fixtureRegistrySha256: fixtureRegistrySha256(registry),
+          harnessSha256: harnessManifest.sha256,
+          outputPath,
+          runId,
+        });
         runChecked(
           process.execPath,
           [

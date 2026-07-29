@@ -843,6 +843,46 @@ export function buildReplayDriverEnvironment(sourceEnv, contractEnv) {
   return result;
 }
 
+export function createReplayDriverContractEnvironment({
+  anchor,
+  codexCliVersion,
+  dependencyClaim,
+  driverIdentity,
+  evidenceOutputPath,
+  evidencePath,
+  expectedRolesJson,
+  fixtureRegistryPath,
+  fixtureRegistrySha256,
+  harnessSha256,
+  outputPath,
+  runId,
+}) {
+  return {
+    AGENTPLANE_RF04_REPLAY_ANCHOR: anchor,
+    AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: codexCliVersion,
+    AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_EXECUTABLE_SHA256:
+      dependencyClaim.capture_executable_sha256,
+    AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_PLATFORM: stableJson(
+      dependencyClaim.capture_platform,
+    ),
+    AGENTPLANE_RF04_REPLAY_DEPENDENCY_CAPTURE_RECEIPT_SHA256:
+      dependencyClaim.capture_receipt_sha256,
+    AGENTPLANE_RF04_REPLAY_DEPENDENCY_PORTABLE_SHA256: dependencyClaim.portable_sha256,
+    AGENTPLANE_RF04_REPLAY_DRIVER_CONTRACT_VERSION: String(driverIdentity.contract_version),
+    AGENTPLANE_RF04_REPLAY_DRIVER_PATH: driverIdentity.path,
+    AGENTPLANE_RF04_REPLAY_DRIVER_SHA256: driverIdentity.sha256,
+    AGENTPLANE_RF04_REPLAY_EVIDENCE_OUTPUT: evidenceOutputPath,
+    AGENTPLANE_RF04_REPLAY_EVIDENCE_PATH: evidencePath,
+    AGENTPLANE_RF04_REPLAY_EXPECTED_ROLES: expectedRolesJson,
+    AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_ORIGIN: "fixture_control_overlay_v1",
+    AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_PATH: fixtureRegistryPath,
+    AGENTPLANE_RF04_REPLAY_FIXTURE_REGISTRY_SHA256: fixtureRegistrySha256,
+    AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessSha256,
+    AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
+    AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
+  };
+}
+
 export function assertReplayEnvelope(envelope, context) {
   assertSanitized(envelope);
   const value = object(envelope, "replay envelope");
