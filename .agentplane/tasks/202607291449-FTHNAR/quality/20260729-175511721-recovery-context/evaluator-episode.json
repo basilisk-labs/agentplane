@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607291449-FTHNAR-7035ce6e66a7ef378ce6696d",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/quality/20260729-175511721-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-29T17:55:12.273Z",
+  "ended_at": "2026-07-29T17:56:30.579Z",
+  "stdout_bytes": 216769,
+  "stderr_bytes": 7001,
+  "provider_usage": {
+    "input_tokens": 401151,
+    "output_tokens": 3314,
+    "total_tokens": 404465
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:bd2d8f58b115d2bcc07bea98d7781083970997e18e3bb403d595972f13e0dc1e"
+}

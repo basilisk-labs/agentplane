@@ -12,8 +12,8 @@ Created: 2026-07-29T14:50:37.577Z
 
 ## Verification
 
-- State: needs_rework
-- Note: GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not Prettier-formatted; source behavior and focused tests remain passing.
+- State: ok
+- Note: All six declared local check groups and CI formatting pass at implementation SHA 714faf44fb5a; refreshes deterministic evidence after formatting-only rework.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

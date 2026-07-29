@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T17:55:02.358Z",
+    "updated_by": "TESTER",
+    "note": "All six declared local check groups and CI formatting pass at implementation SHA 714faf44fb5a; refreshes deterministic evidence after formatting-only rework."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729175502358-c8cca09e27c2346a.json",
+      "sha256": "sha256:593c643224a49e885e1726706b7cf7881f823c178cd9ef6a289bb0901f084378"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}
