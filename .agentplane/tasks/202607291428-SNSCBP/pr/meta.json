@@ -8,10 +8,10 @@
   "pr_number": 4671,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4671",
   "pre_merge_closure": {
-    "basis_commit": "6c8a2220d5e5fcb2896a11b13aa57300a3038b43",
+    "basis_commit": "fedf8487448e70a188cf33478c5e82e5c823feb3",
     "branch": "task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator",
     "pr_number": 4671,
-    "recorded_at": "2026-07-29T18:25:13.941Z",
+    "recorded_at": "2026-07-29T19:03:12.477Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
