@@ -1,14 +1,14 @@
-Command: `bun run --cwd packages/agentplane test src/commands/shared/quality-review-target.test.ts`
+Command: `bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-runtime-evidence.test.ts src/commands/shared/quality-review-target.test.ts`
 Result: pass
-Evidence: 11 tests passed; a reviewed implementation remains the EVALUATOR target after task `evidence/` and `supervision/` artifacts are committed.
-Scope: targeted lifecycle-evidence regression coverage.
-
-Command: `bun -e <resolveQualityReviewTargetSha against this task history>`
-Result: pass
-Evidence: the actual closure sequence resolves `cb23e156a8c6ec8a9d851ed67d4410f4c515b502`, not the metadata-only close commit.
-Scope: actual task history and quality-target selection.
+Evidence: 13 tests passed, including the lifecycle-descendant verification and runtime-evidence regression.
+Scope: evaluator evidence freezing across lifecycle-only task commits.
 
 Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
 Result: pass
-Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.
-Scope: RF-10a closure quality-target classification only; source and independently reviewable metadata changes still produce a new target SHA.
+Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed on `49687443f2694625e85f1fc83a085475ea230dcc`.
+Scope: RF-10a evaluator evidence-selection repair.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290723-668C3K --sandbox danger-full-access --allow-danger-full-access --json`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/runner/tasks/202607290723-668C3K/runs/2026-07-29T07-23-56-222Z/execution-receipt.json | .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/supervisor/episodes/202607290723-668C3K/journal.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/declared-checks.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/verification/20260729072531877-b6924115be67f224.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/quality-report.json
+Scope: final direct golden path: EXECUTOR commit, CLI verification, read-only EVALUATOR pass, and CLI finish.
