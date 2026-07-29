@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:fa37f61b8a63005a2d03ae980a06a8d78a4728c82ae2dccc2b43b2b6c659c471",
+  "implementation_sha": "212a165227922b2e83afe5001babf620ec269951",
+  "kind": "task_verification_record",
+  "note": "Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent.",
+  "recorded_at": "2026-07-29T21:31:37.014Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.",
+  "scope_digest": "sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1",
+  "task_id": "202607292104-W03KZ0",
+  "verification_command": "agentplane verify 202607292104-W03KZ0 --rework --by TESTER",
+  "verifier": "TESTER"
+}
