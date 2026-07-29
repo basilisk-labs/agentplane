@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 23
+revision: 24
 origin:
   system: "manual"
 depends_on: []
@@ -28,29 +28,31 @@ verification:
   note: "Verified SHA-bound dependency lifecycle packet on 28b541f8."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T14:20:46.996Z"
+  updated_at: "2026-07-29T19:30:22.580Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "28b541f82687e465f36e5ecd50e98efdb806f85e"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "17e0f8f246d207483014ac16ec43af657296b9fb"
   blueprint_digest: "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391"
   evidence_refs:
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607291148-1F9GZD/README.md"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-192827361-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The frozen change implements the approved SHA-bound qualification contract and the final verification covers packet sealing, transitive dependency leaves, historical lifecycle state, negative cases, and repository-wide contract checks."
+    - "Для evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb отсутствуют замороженные записи выполнения обязательных проверок; имеющаяся в задаче верификация относится к более раннему SHA 28b541f8."
+  recovery_reason: "deterministic_evidence_gap"
 commit:
   hash: "28b541f82687e465f36e5ecd50e98efdb806f85e"
   message: "test(evaluator): pin dependency lifecycle to reviewed sha"
