@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review.
+- Note: Verified: fresh control-run evidence formally links terminal direct-supervisor journal persistence for EVALUATOR review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -38,7 +38,7 @@ Created: 2026-07-29T01:35:45.453Z
  .../commands/evaluator/evaluator-review-shared.ts  |  28 +
  .../commands/evaluator/evaluator-review-usecase.ts | 204 +++--
  .../evaluator/evaluator-run.command.test.ts        |  43 ++
- .../evaluator/evaluator-runtime-evidence.test.ts   | 254 +++++++
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 254 ++++++
  .../evaluator/evaluator-verification-records.ts    | 116 ++-
  .../commands/shared/quality-review-target.test.ts  |  27 +
  .../src/commands/shared/quality-review-target.ts   |  25 +-
@@ -61,10 +61,10 @@ Created: 2026-07-29T01:35:45.453Z
  .../direct-task-supervisor-observation.test.ts     |  48 ++
  .../task/direct-task-supervisor-observation.ts     |  69 ++
  .../commands/task/direct-task-supervisor-result.ts | 143 ++++
- .../commands/task/direct-task-supervisor.test.ts   | 838 +++++++++++++++++++++
- .../src/commands/task/direct-task-supervisor.ts    | 532 +++++++++++++
+ .../commands/task/direct-task-supervisor.test.ts   | 858 +++++++++++++++++++++
+ .../src/commands/task/direct-task-supervisor.ts    | 541 +++++++++++++
  .../commands/task/direct-task-verification.test.ts | 138 ++++
- .../src/commands/task/direct-task-verification.ts  | 168 +++++
+ .../src/commands/task/direct-task-verification.ts  | 168 ++++
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../src/runner/context/task-context.test.ts        |   1 -
  .../agentplane/src/runner/context/task-context.ts  |  11 +-
@@ -73,8 +73,10 @@ Created: 2026-07-29T01:35:45.453Z
  .../src/runner/usecases/task-run-bootstrap.ts      |  11 +-
  .../usecases/task-run-context.integration.test.ts  |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |   6 -
+ .../runner/supervisor-execution-episode.test.ts    |  17 +
+ .../src/runner/supervisor-execution-episode.ts     |   1 +
  scripts/baselines/clone-baseline.json              |  24 +-
- 45 files changed, 4980 insertions(+), 244 deletions(-)
+ 47 files changed, 5027 insertions(+), 244 deletions(-)
 ```
 
 </details>
