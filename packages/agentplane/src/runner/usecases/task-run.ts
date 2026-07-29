@@ -3,7 +3,6 @@ import { CliError } from "../../shared/errors.js";
 import { resolveRunnerAdapterCapabilityRegistry } from "../../runtime/capabilities/index.js";
 import { consumeExecutionProfileBudget } from "../../runtime/execution-profile/index.js";
 import { appendFrameworkExplainBehaviorInputs } from "../../runtime/explain/index.js";
-import { buildFrameworkProtocolSurface } from "../../runtime/protocol/index.js";
 import { makeReadOnlyExecutionContext } from "../../runtime/execution-context.js";
 import type { RunnerAdapter } from "../adapters/shared.js";
 import { createRunnerAdapter } from "../adapters/index.js";
@@ -144,9 +143,6 @@ export async function prepareTaskRunnerExecution(opts: {
     executionContext.frameworkExplain,
     collectTaskRunnerFrameworkExplainBehaviorInputs(base_prompts),
   );
-  const framework_protocol = buildFrameworkProtocolSurface({
-    explain: framework_explain,
-  });
   const adapter: RunnerAdapter = createRunnerAdapter(executionContext.config);
   const configured_adapter_id: RunnerExecutionContract["adapter_id"] = adapter.id;
   const run_id = opts.run_id ?? createRunnerRunId();
@@ -180,13 +176,11 @@ export async function prepareTaskRunnerExecution(opts: {
     target,
     base_prompts,
     framework_explain,
-    framework_protocol,
     repository: taskEnvelope.repository,
     task: taskEnvelope.task,
     recipe: opts.recipe,
     blueprint,
     work_order: preparedWorkOrder.work_order,
-    work_order_preparation: preparedWorkOrder.preparation,
     route_decision,
     execution: {
       adapter_id: configured_adapter_id,

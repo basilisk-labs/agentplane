@@ -4,7 +4,6 @@ import {
 } from "@agentplaneorg/core/schemas";
 
 import type { RunnerContextBundle, RunnerInvocation } from "../types.js";
-import { RUNNER_READ_ONLY_SANDBOX } from "../types.js";
 
 type EvaluatorSkepticismLevel = NonNullable<
   RunnerContextBundle["execution"]["evaluator_skepticism_level"]
@@ -89,9 +88,10 @@ export function renderTaskRunnerBootstrap(
     route?.workflowStep.kind === "cli_operation" ? route.workflowStep.operation : undefined;
   const routeMustNot = route?.executionPacket.mustNot ?? [];
   const sandboxPolicy = bundle.execution.sandbox_policy;
-  const supervisorOwnsSemanticResult =
-    bundle.execution.adapter_id === "codex" &&
-    sandboxPolicy?.requested === RUNNER_READ_ONLY_SANDBOX;
+  // Codex emits the typed result through its final structured response. The
+  // supervisor persists that response because runner artifacts live under
+  // `.git`, which is intentionally outside every Codex write sandbox.
+  const supervisorOwnsSemanticResult = bundle.execution.adapter_id === "codex";
   const writeScope = bundle.execution.write_scope;
   const sandboxDecision = bundle.execution.policy_decision?.fields.sandbox;
   return [
@@ -171,7 +171,7 @@ export function renderTaskRunnerBootstrap(
         ]
       : []),
     supervisorOwnsSemanticResult
-      ? "This is a read-only Codex run. Do not attempt to write result_path or any other file. Return the AgentSemanticResult v2 object as the final structured response; the supervisor writes and validates result_path outside the sandbox."
+      ? "This is a Codex run. Do not attempt to write result_path. Return the AgentSemanticResult v2 object as the final structured response; the supervisor writes and validates result_path outside the sandbox."
       : "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest to result_path before exiting.",
     "Select the example matching the semantic outcome, keep work_order_id unchanged, and edit only semantic fields:",
     ...renderRunnerResultManifestExampleLines(invocation?.work_order_id ?? bundle.execution.run_id),

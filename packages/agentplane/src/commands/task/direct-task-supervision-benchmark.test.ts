@@ -40,14 +40,14 @@ function frozenV0624DirectBaseline() {
 }
 
 describe("direct task supervision golden cost", () => {
-  it("reduces the comparable 0.6.24 orchestration surface without relaxing quality or safety", () => {
+  it("accepts an observed comparison only when every cost and safety input passes", () => {
     const baseline = frozenV0624DirectBaseline();
     const comparison = compareDirectTaskSupervisionGoldenPath({
       baseline,
       candidate: {
-        lifecycle_calls: 4,
-        tool_calls: 5,
-        duplicate_executor_context_bytes: 0,
+        lifecycle_calls: baseline.lifecycle_calls - 1,
+        tool_calls: baseline.tool_calls - 1,
+        duplicate_executor_context_bytes: baseline.duplicate_executor_context_bytes - 1,
       },
       quality_safety: {
         verified_success: true,

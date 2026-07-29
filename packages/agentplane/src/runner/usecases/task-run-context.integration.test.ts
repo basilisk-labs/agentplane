@@ -497,6 +497,9 @@ describe("context task runner integration", () => {
       source: "role_default",
       role: "CODER",
     });
+    expect(coder.bundle.framework_explain).toBeDefined();
+    expect(coder.bundle.framework_protocol).toBeUndefined();
+    expect(coder.bundle.work_order_preparation).toBeUndefined();
     expect(coder.bundle.execution.write_scope?.writable_roots).toEqual(["."]);
     expect(coder.bundle.execution.policy_decision?.fields.sandbox).toMatchObject({
       effective: "workspace-write",

@@ -83,7 +83,7 @@ describe("runner bootstrap result examples", () => {
     }
   });
 
-  it("routes read-only Codex semantic output through the supervisor", () => {
+  it("routes every Codex semantic output through the supervisor", () => {
     const bundle = makeRunnerContextBundle({ runId: "read-only-run" });
     bundle.execution.sandbox_policy = {
       requested: "read-only",
@@ -98,9 +98,16 @@ describe("runner bootstrap result examples", () => {
 
     const bootstrap = renderTaskRunnerBootstrap(bundle);
 
-    expect(bootstrap).toContain("Do not attempt to write result_path or any other file.");
+    expect(bootstrap).toContain("Do not attempt to write result_path.");
     expect(bootstrap).toContain("the supervisor writes and validates result_path");
     expect(bootstrap).not.toContain(
+      "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
+    );
+
+    bundle.execution.sandbox_policy.requested = "workspace-write";
+    const workspaceWriteBootstrap = renderTaskRunnerBootstrap(bundle);
+    expect(workspaceWriteBootstrap).toContain("Do not attempt to write result_path.");
+    expect(workspaceWriteBootstrap).not.toContain(
       "Execute-mode runs must write a valid AgentSemanticResult v2 JSON manifest",
     );
   });

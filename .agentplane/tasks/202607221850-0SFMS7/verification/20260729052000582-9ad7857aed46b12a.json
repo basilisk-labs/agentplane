@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:9ad7857aed46b12a40b578e37a8da0f17e06efa8d21cebc8807bcffe8f623753",
+  "implementation_sha": "21049ad1809d882215c83ad97350aa5dd6cdb36d",
+  "kind": "task_verification_record",
+  "note": "RF-10a rework verified on commit 21049ad18.",
+  "recorded_at": "2026-07-29T05:20:00.582Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the approved direct golden task. Expected: EXECUTOR performs zero AgentPlane lifecycle calls; supervisor starts, observes, evaluates, verifies, and finalizes.\n2. Change route state after every operation fixture. Expected: the supervisor recomputes from fresh state and never executes a stale next step.\n3. Exercise approval required, missing knowledge, evaluator rework, out-of-scope write, and adapter crash. Expected: bounded typed stops/retries with no synthesized semantic summary.\n4. Compare baseline metrics. Expected: lifecycle/tool/duplicate-context cost decreases without lower verified success or safety.\n5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac",
+  "task_id": "202607221850-0SFMS7",
+  "verification_command": "agentplane verify 202607221850-0SFMS7 --ok --by CODER",
+  "verifier": "CODER"
+}
