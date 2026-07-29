@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T16:12:20.031Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "7a711ed449cc171f74c34af2cb852aa77bc93c51",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "The frozen observed-checks artifact contains no declared checks, verification records, runner history, or runtime evidence for the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-161120242-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "Freeze command-level results for workflow-step, route-decision-next-action, evaluator SGR contracts, compatibility baseline, policy routing, doctor, formatting, and diff checks, all bound to evaluated SHA 7a711ed449cc171f74c34af2cb852aa77bc93c51."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification summary is assumed to represent successful execution against the evaluated SHA, but the frozen observed-checks artifact contains no records that establish this binding."
+  ],
+  "residual_risks": [
+    "Refresh only the declared deterministic verification evidence against evaluated SHA 7a711ed449cc171f74c34af2cb852aa77bc93c51, freeze the command-level results, and then return the unchanged implementation to EVALUATOR for a new semantic review."
+  ]
+}

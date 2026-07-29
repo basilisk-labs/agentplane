@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607291449-FTHNAR-abb6dc25bdc89e92a3df5450",
+  "prepared_at": "2026-07-29T16:11:20.242Z",
+  "task": {
+    "id": "202607291449-FTHNAR",
+    "revision": 20,
+    "objective": "Permit evidence refresh after evaluator review gaps\n\nRestore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.",
+    "acceptance_criteria": [
+      "- In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.\n- Out of scope: unrelated refactors not required for \"Permit evidence refresh after evaluator review gaps\".",
+      "1. Identify the blocked-quality-review route that prevents a task from refreshing deterministic evidence requested by EVALUATOR.\n2. Add a bounded recovery transition that permits only task verification; preserve EVALUATOR as the sole semantic verdict owner and require a fresh quality review before PR publication.\n3. Add regression coverage for the blocked-to-verification route and verify that unrelated quality-review blocks remain non-mutating.\n4. Run the focused tests, policy routing validation, and doctor; record exact results.\n5. Obtain an independent EVALUATOR verdict, publish the narrow PR, wait for hosted checks, then integrate before resuming the beta.1 gate task.",
+      "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors."
+    ]
+  },
+  "evaluated_sha": "7a711ed449cc171f74c34af2cb852aa77bc93c51",
+  "diff_base_sha": "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/README.md",
+      "sha256": "sha256:c7fa6b8aef86e8e0b25ea22c166f520ab50360b58c4438437f8c1fbe8946f8e3",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-161120242-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:07d8213afc2138458a80dc66119fa25dc7788f98a24f3d35bd4fc843274a2565",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-161120242-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:ef70a68bafc7808328f6b453f89f91bf20d1c2d9464d5b235624db69c7191e09",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-161120242-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:fd2d6f4a1afa66e0363ff4276c0a107402878622ad7f09d44e77f3b8d617d517",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The frozen observed-checks artifact contains no declared checks, verification records, runner history, or runtime evidence for the evaluated SHA.",
+      "broken_invariant": "Pass requires frozen deterministic evidence covering the declared positive, negative, and concurrency-sensitive verification paths; a verification status and summary note alone do not prove that the checks ran against the evaluated work unit.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-161120242-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:ef70a68bafc7808328f6b453f89f91bf20d1c2d9464d5b235624db69c7191e09",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze command-level results for workflow-step, route-decision-next-action, evaluator SGR contracts, compatibility baseline, policy routing, doctor, formatting, and diff checks, all bound to evaluated SHA 7a711ed449cc171f74c34af2cb852aa77bc93c51."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification summary is assumed to represent successful execution against the evaluated SHA, but the frozen observed-checks artifact contains no records that establish this binding."
+  ],
+  "recovery_context": "Refresh only the declared deterministic verification evidence against evaluated SHA 7a711ed449cc171f74c34af2cb852aa77bc93c51, freeze the command-level results, and then return the unchanged implementation to EVALUATOR for a new semantic review.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
