@@ -15,8 +15,13 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: ok
-- Note: Combined FTH and constrained-refspec regression checks passed before primary PR publication.
+- State: needs_rework
+- Note:
+
+```text
+Rework: correct the primary task plan after CLI rejected batch inclusion of the already-DONE R1
+task; retain the tested source repair in FTH and supersede the duplicate PR.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
