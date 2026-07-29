@@ -19,11 +19,8 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
 - Note:
 
 ```text
-Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation
-retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework
-creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43),
-workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle
-invariants.
+Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix,
+durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -37,8 +34,8 @@ invariants.
 ```text
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
- .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
- .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
+ .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
+ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
  .../src/commands/context/context-runner.ts         |  79 +++
  .../src/commands/context/context.spec.ts           |  45 ++
  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
@@ -50,7 +47,7 @@ invariants.
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
  .../check-compatibility-contract-baseline.mjs      |  67 +++
- 15 files changed, 1401 insertions(+), 67 deletions(-)
+ 15 files changed, 1629 insertions(+), 67 deletions(-)
 ```
 
 </details>

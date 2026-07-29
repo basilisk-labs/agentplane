@@ -81,11 +81,11 @@ export type ContextIngestRunJournal = {
   };
   source_set: ContextIngestSourceSet;
   supervision?: {
-    rework: Array<{
+    rework: {
       feedback_digest: string;
       requested_at: string;
       work_order_file: string;
-    }>;
+    }[];
   };
   task?: TaskCreationResult;
   updated_at: string;

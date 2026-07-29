@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-8HBF4J-b7e73ab76e96a82b743b8e5a",
+  "task_id": "202607221850-8HBF4J",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Expand the focused supervisor tests to cover every mechanical phase and bounded repeated semantic rework; run the declared workflow, lifecycle, critical, and type checks; then create fresh quality evidence for a clean, published head.",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "summary": "The focused supervisor suite tests one failed mechanical operation (wiki_lint), one resumed completed phase, and one rework round. It does not prove failure-and-retry behavior for each mechanical gate required by Verify Steps.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "summary": "The suite does not exercise repeated evaluator rework through the durable episode budget/cursor to show termination at episode, token, or no-progress limits.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "summary": "The branch is unpublished and has a dirty task README plus an untracked prior quality artifact; existing review records include rework and blocked reports, so no fresh, mergeable quality proof covers the current head.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json"
+}
