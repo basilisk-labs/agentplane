@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 53
 origin:
   system: "manual"
 depends_on: []
@@ -18,15 +18,15 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-29T17:12:14.700Z"
+  updated_at: "2026-07-29T17:25:29.043Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-29T17:13:28.722Z"
+  state: "needs_rework"
+  updated_at: "2026-07-29T17:21:54.179Z"
   updated_by: "TESTER"
-  note: "Corrected primary packaging retains the same semantic implementation and all combined checks pass."
-  attempts: 0
+  note: "Rework: integration queue on the base checkout cannot refresh a constrained-refspec task tracking ref; extend the existing source repair so protected integration validates the published head without manual fetch state."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -54,9 +54,7 @@ quality_review:
     - "The source repair is bounded to publication tracking and configured-upstream resolution; it does not mutate origin fetch configuration."
     - "The existing FTH semantic route binds evaluator freshness to the implementation SHA, which avoids artifact-only closure loops."
     - "The final primary plan accurately records #4673 as superseded rather than fabricating an invalid branch_pr batch."
-commit:
-  hash: "f446aa2cbc2573b64ebf9dd6674d5096d59d69be"
-  message: "📝 FTHNAR task: correct primary rework packaging"
+commit: null
 comments:
   -
     author: "CODER"
@@ -91,6 +89,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: extend the constrained-refspec tracking repair to protected integration preparation and prove the queue path from the base checkout."
 events:
   -
     type: "status"
@@ -265,8 +266,21 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T17:21:54.179Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: integration queue on the base checkout cannot refresh a constrained-refspec task tracking ref; extend the existing source repair so protected integration validates the published head without manual fetch state."
+  -
+    type: "status"
+    at: "2026-07-29T17:22:16.172Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: extend the constrained-refspec tracking repair to protected integration preparation and prove the queue path from the base checkout."
 doc_version: 3
-doc_updated_at: "2026-07-29T17:14:11.517Z"
+doc_updated_at: "2026-07-29T17:25:22.936Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -277,16 +291,8 @@ sections:
   Scope: |-
     - In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
     - Out of scope: unrelated refactors not required for "Permit evidence refresh after evaluator review gaps".
-  Plan: "1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Carry the already-tested constrained-refspec publication source repair on this primary FTH branch because it is required to publish FTH under the repository origin refspec. 3. Treat task 202607291650-R1N8C5 and PR #4673 as superseded duplicate traceability after FTH is published; do not create an invalid cross-worktree batch record. 4. Re-run FTH and constrained-refspec focused tests, typecheck, lint, structural policy checks, and live pr flow alignment. 5. Publish the single FTH PR, complete a fresh evaluator review, wait for hosted checks, then integrate it before downstream beta tasks."
-  Verify Steps: |-
-    1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct.
-    2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication creates the task tracking ref and AgentPlane resolves it.
-    3. Run bun run typecheck. Expected: TypeScript typecheck passes.
-    4. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope.
-    5. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors.
-    6. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned.
-    7. Wait for the hosted matrix to settle. Expected: no failing required check.
-    8. Close superseded PR #4673 without deleting its remote branch. Expected: the duplicate PR is closed only after #4672 carries the source repair.
+  Plan: "1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Extend the constrained-refspec repair with one reusable Git helper that refreshes a configured task tracking ref without changing remote.fetch. 3. Require protected integration preparation to use that helper before comparing the task branch head to upstream, so base checkout validation is independent of a broad fetch refspec. 4. Keep R1 and PR #4673 as superseded traceability; FTH #4672 remains the only merge target. 5. Re-run focused core, publication, and integration-preparation regression tests; typecheck, lint, structural policy checks; prove the real integration queue can enqueue #4672 from the constrained-refspec base checkout; then obtain a fresh evaluator review, hosted matrix, and integrate."
+  Verify Steps: "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. 7. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned. 8. From a clean base checkout, run agentplane integrate queue enqueue 202607291449-FTHNAR --branch task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g. Expected: the queue accepts the published head under the constrained refspec. 9. Wait for the hosted matrix to settle. Expected: no failing required check. 10. Keep superseded PR #4673 closed without deleting its remote branch. Expected: duplicate traceability remains preserved while #4672 is the only merge target."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-29T15:01:06.145Z — VERIFY — ok
@@ -844,6 +850,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T17:21:54.179Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: integration queue on the base checkout cannot refresh a constrained-refspec task tracking ref; extend the existing source repair so protected integration validates the published head without manual fetch state.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:14:11.517Z, excerpt_hash=sha256:4224e02e6626f82e3581ba675f45e8bb8d0d5e6704a3c49850d13c6eb39a6337
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -914,18 +950,11 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Plan
 
-1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Carry the already-tested constrained-refspec publication source repair on this primary FTH branch because it is required to publish FTH under the repository origin refspec. 3. Treat task 202607291650-R1N8C5 and PR #4673 as superseded duplicate traceability after FTH is published; do not create an invalid cross-worktree batch record. 4. Re-run FTH and constrained-refspec focused tests, typecheck, lint, structural policy checks, and live pr flow alignment. 5. Publish the single FTH PR, complete a fresh evaluator review, wait for hosted checks, then integrate it before downstream beta tasks.
+1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Extend the constrained-refspec repair with one reusable Git helper that refreshes a configured task tracking ref without changing remote.fetch. 3. Require protected integration preparation to use that helper before comparing the task branch head to upstream, so base checkout validation is independent of a broad fetch refspec. 4. Keep R1 and PR #4673 as superseded traceability; FTH #4672 remains the only merge target. 5. Re-run focused core, publication, and integration-preparation regression tests; typecheck, lint, structural policy checks; prove the real integration queue can enqueue #4672 from the constrained-refspec base checkout; then obtain a fresh evaluator review, hosted matrix, and integrate.
 
 ## Verify Steps
 
-1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct.
-2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication creates the task tracking ref and AgentPlane resolves it.
-3. Run bun run typecheck. Expected: TypeScript typecheck passes.
-4. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope.
-5. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors.
-6. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned.
-7. Wait for the hosted matrix to settle. Expected: no failing required check.
-8. Close superseded PR #4673 without deleting its remote branch. Expected: the duplicate PR is closed only after #4672 carries the source repair.
+1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. 7. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned. 8. From a clean base checkout, run agentplane integrate queue enqueue 202607291449-FTHNAR --branch task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g. Expected: the queue accepts the published head under the constrained refspec. 9. Wait for the hosted matrix to settle. Expected: no failing required check. 10. Keep superseded PR #4673 closed without deleting its remote branch. Expected: duplicate traceability remains preserved while #4672 is the only merge target.
 
 ## Verification
 
@@ -1465,6 +1494,36 @@ Command: bun run typecheck; bun run hotspots:check; node .agentplane/policy/chec
 Result: pass
 Evidence: typecheck, structural/policy gates, and doctor completed without errors; doctor retains only historical missing-commit warnings.
 Scope: combined primary FTH branch after packaging correction.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T17:21:54.179Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: integration queue on the base checkout cannot refresh a constrained-refspec task tracking ref; extend the existing source repair so protected integration validates the published head without manual fetch state.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:14:11.517Z, excerpt_hash=sha256:4224e02e6626f82e3581ba675f45e8bb8d0d5e6704a3c49850d13c6eb39a6337
+
+Details:
 
 BlueprintSnapshotRef:
 - state: current

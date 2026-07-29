@@ -111,6 +111,58 @@ export async function gitConfigGet(cwd: string, key: string): Promise<string | n
   }
 }
 
+type GitBranchTrackingTarget = {
+  remote: string;
+  remoteBranch: string;
+};
+
+async function gitBranchTrackingTarget(
+  cwd: string,
+  branch: string,
+): Promise<GitBranchTrackingTarget | null> {
+  const remote = await gitConfigGet(cwd, `branch.${branch}.remote`);
+  const mergeRef = await gitConfigGet(cwd, `branch.${branch}.merge`);
+  const remoteBranch = mergeRef?.replace(/^refs\/heads\//, "") ?? "";
+  if (!remote || !remoteBranch) return null;
+  return { remote, remoteBranch };
+}
+
+async function gitRemotePushTarget(cwd: string, remote: string): Promise<string> {
+  try {
+    const { stdout } = await execFileAsync("git", ["remote", "get-url", "--push", remote], {
+      cwd,
+      env: gitEnv(),
+    });
+    const target = String(stdout).trim();
+    return target || remote;
+  } catch {
+    return remote;
+  }
+}
+
+/**
+ * Refresh a branch's configured remote-tracking ref without widening remote.<name>.fetch.
+ * This keeps constrained-refspec checkouts able to validate a branch published through the
+ * configured push target.
+ */
+export async function gitRefreshBranchTrackingRef(cwd: string, branch: string): Promise<void> {
+  const target = await gitBranchTrackingTarget(cwd, branch);
+  if (!target || target.remote === ".") return;
+
+  const remoteTarget = await gitRemotePushTarget(cwd, target.remote);
+  await execFileAsync(
+    "git",
+    [
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      remoteTarget,
+      `refs/heads/${target.remoteBranch}:refs/remotes/${target.remote}/${target.remoteBranch}`,
+    ],
+    { cwd, env: gitEnv() },
+  );
+}
+
 export async function gitCurrentBranch(cwd: string): Promise<string> {
   try {
     const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
@@ -178,16 +230,18 @@ export async function gitBranchUpstream(cwd: string, branch: string): Promise<st
     }
   }
 
-  const remote = await gitConfigGet(cwd, `branch.${branch}.remote`);
-  const mergeRef = await gitConfigGet(cwd, `branch.${branch}.merge`);
-  const remoteBranch = mergeRef?.replace(/^refs\/heads\//, "") ?? "";
-  if (!remote || !remoteBranch) return null;
+  const target = await gitBranchTrackingTarget(cwd, branch);
+  if (!target) return null;
 
   const trackingRef =
-    remote === "." ? `refs/heads/${remoteBranch}` : `refs/remotes/${remote}/${remoteBranch}`;
+    target.remote === "."
+      ? `refs/heads/${target.remoteBranch}`
+      : `refs/remotes/${target.remote}/${target.remoteBranch}`;
   try {
     await gitRevParse(cwd, [trackingRef]);
-    return remote === "." ? remoteBranch : `${remote}/${remoteBranch}`;
+    return target.remote === "."
+      ? target.remoteBranch
+      : `${target.remote}/${target.remoteBranch}`;
   } catch {
     return null;
   }

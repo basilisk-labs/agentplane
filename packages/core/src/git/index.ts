@@ -15,6 +15,7 @@ export {
   gitCommit,
   gitCurrentBranch,
   gitEnv,
+  gitRefreshBranchTrackingRef,
   gitInitRepo,
   gitIsAncestor,
   gitListBranches,

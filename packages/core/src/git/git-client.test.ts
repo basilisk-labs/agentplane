@@ -5,7 +5,13 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { GitContext, gitBranchUpstream, gitConfigGet, gitMergeBase } from "./git-client.js";
+import {
+  GitContext,
+  gitBranchUpstream,
+  gitConfigGet,
+  gitMergeBase,
+  gitRefreshBranchTrackingRef,
+} from "./git-client.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -61,7 +67,7 @@ describe("git-client", () => {
     await expect(gitConfigGet(root, "remote.missing.url")).resolves.toBeNull();
   });
 
-  it("resolves a configured upstream when the fetch refspec omits its tracking branch", async () => {
+  it("refreshes a configured upstream when the fetch refspec omits its tracking branch", async () => {
     const root = await mkRepo();
     const remotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-client-origin-"));
     await execFileAsync("git", ["init", "--bare", remotePath], { cwd: root });
@@ -77,11 +83,9 @@ describe("git-client", () => {
     await execFileAsync("git", ["push", "-u", "origin", `HEAD:refs/heads/${branch}`], {
       cwd: root,
     });
-    await execFileAsync(
-      "git",
-      ["fetch", "origin", `refs/heads/${branch}:refs/remotes/origin/${branch}`],
-      { cwd: root },
-    );
+    await expect(gitBranchUpstream(root, branch)).resolves.toBeNull();
+
+    await gitRefreshBranchTrackingRef(root, branch);
 
     await expect(gitBranchUpstream(root, branch)).resolves.toBe(`origin/${branch}`);
   });
