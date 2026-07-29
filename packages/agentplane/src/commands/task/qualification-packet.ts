@@ -26,6 +26,10 @@ import {
   relativeToGitRoot,
 } from "./qualification-packet-artifacts.js";
 import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
+import {
+  loadQualificationTaskAtReviewedSha,
+  readPassingQualityReportAtReviewedSha,
+} from "./qualification-packet-pinned-task.js";
 
 const QUALIFICATION_PACKET_FILE = "qualification-packet.v1.json";
 const QUALIFICATION_PACKET_KIND = "task_qualification_packet";
@@ -168,56 +172,6 @@ function parseVerificationRecord(value: unknown, taskId: string): QualificationV
   return record;
 }
 
-async function readPassingQualityReport(opts: {
-  gitRoot: string;
-  workflowDir: string;
-  task: TaskData;
-  reviewedSha: string;
-}): Promise<{ path: string; sha256: `sha256:${string}` }> {
-  const evaluatedSha = opts.task.quality_review?.evaluated_sha;
-  if (!isSha(evaluatedSha)) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: `Qualification leaf ${opts.task.id} lacks a current evaluator reviewed SHA.`,
-    });
-  }
-  const taskPrefix = `${opts.workflowDir.replaceAll(/\/+$/gu, "")}/${opts.task.id}/quality/`;
-  const candidates = (opts.task.quality_review?.evidence_refs ?? [])
-    .filter(
-      (reference) => reference.startsWith(taskPrefix) && reference.endsWith("/quality-report.json"),
-    )
-    .toSorted();
-  for (const candidate of candidates) {
-    const filePath = path.resolve(opts.gitRoot, candidate);
-    const reportArtifact = await readArtifactAtReviewedSha({
-      gitRoot: opts.gitRoot,
-      reviewedSha: opts.reviewedSha,
-      filePath,
-      label: "Qualification quality report",
-    });
-    let reportValue: unknown;
-    try {
-      reportValue = JSON.parse(reportArtifact.raw);
-    } catch {
-      continue;
-    }
-    if (!isRecord(reportValue)) continue;
-    if (
-      reportValue.task_id === opts.task.id &&
-      reportValue.verdict === "pass" &&
-      reportValue.evaluated_sha === evaluatedSha
-    ) {
-      return { path: reportArtifact.path, sha256: sha256(reportArtifact.raw) };
-    }
-  }
-  throw new CliError({
-    code: "E_VALIDATION",
-    message:
-      `Qualification leaf ${opts.task.id} lacks a passing quality-report artifact ` +
-      "bound to its current evaluator reviewed SHA.",
-  });
-}
-
 async function buildDependencyClosure(opts: {
   ctx: CommandContext;
   task: TaskData;
@@ -225,27 +179,36 @@ async function buildDependencyClosure(opts: {
 }): Promise<QualificationPacket["dependency_closure"]> {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const workflowDir = opts.ctx.config.paths.workflow_dir;
+  const pinnedTask = async (taskId: string) => {
+    const pinned = await loadQualificationTaskAtReviewedSha({
+      gitRoot,
+      workflowDir,
+      reviewedSha: opts.reviewedSha,
+      taskId,
+    });
+    return pinned.task;
+  };
   const dependencies = await resolveQualificationDependencyLeaves({
-    backend: opts.ctx.taskBackend,
     taskId: opts.task.id,
-    dependsOn: opts.task.depends_on,
+    loadTask: pinnedTask,
   });
   const leaves = await Promise.all(
     dependencies.terminalLeaves.map(async (leaf) => {
       const taskId = leaf.id;
-      if (normalizeTaskStatus(leaf.status) !== "DONE") {
+      const leafAtReviewedSha = leaf;
+      if (normalizeTaskStatus(leafAtReviewedSha.status) !== "DONE") {
         throw new CliError({
           code: "E_VALIDATION",
           message: `Qualification dependency leaf ${taskId} is not DONE.`,
         });
       }
-      if (leaf.verification?.state !== "ok") {
+      if (leafAtReviewedSha.verification?.state !== "ok") {
         throw new CliError({
           code: "E_VALIDATION",
           message: `Qualification dependency leaf ${taskId} lacks passing verification state.`,
         });
       }
-      if (leaf.quality_review?.state !== "pass") {
+      if (leafAtReviewedSha.quality_review?.state !== "pass") {
         throw new CliError({
           code: "E_VALIDATION",
           message: `Qualification dependency leaf ${taskId} lacks evaluator pass state.`,
@@ -254,7 +217,7 @@ async function buildDependencyClosure(opts: {
       const taskRoot = path.join(gitRoot, workflowDir, taskId);
       const readmePath = path.join(taskRoot, "README.md");
       const metaPath = path.join(taskRoot, "pr", "meta.json");
-      const [readme, metaArtifact, qualityReport] = await Promise.all([
+      const [readme, metaArtifact] = await Promise.all([
         readArtifactAtReviewedSha({
           gitRoot,
           reviewedSha: opts.reviewedSha,
@@ -267,13 +230,14 @@ async function buildDependencyClosure(opts: {
           filePath: metaPath,
           label: `Qualification leaf ${taskId} PR metadata`,
         }),
-        readPassingQualityReport({
-          gitRoot,
-          workflowDir,
-          task: leaf,
-          reviewedSha: opts.reviewedSha,
-        }),
       ]);
+      const qualityReport = await readPassingQualityReportAtReviewedSha({
+        gitRoot,
+        workflowDir,
+        task: leafAtReviewedSha,
+        reviewedSha: opts.reviewedSha,
+        sha256,
+      });
       let metaValue: unknown;
       try {
         metaValue = JSON.parse(metaArtifact.raw);
@@ -302,12 +266,12 @@ async function buildDependencyClosure(opts: {
         status: "DONE" as const,
         verification: {
           state: "ok" as const,
-          updated_at: leaf.verification.updated_at ?? null,
-          updated_by: leaf.verification.updated_by ?? null,
+          updated_at: leafAtReviewedSha.verification.updated_at ?? null,
+          updated_by: leafAtReviewedSha.verification.updated_by ?? null,
         },
         evaluator: {
           state: "pass" as const,
-          evaluated_sha: leaf.quality_review.evaluated_sha ?? null,
+          evaluated_sha: leafAtReviewedSha.quality_review.evaluated_sha ?? null,
           quality_report: qualityReport,
         },
         hosted_close: {

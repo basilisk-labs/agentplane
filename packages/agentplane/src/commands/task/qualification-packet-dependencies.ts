@@ -1,4 +1,4 @@
-import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import type { TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 
 function sortedUnique(values: readonly string[]): string[] {
@@ -6,11 +6,17 @@ function sortedUnique(values: readonly string[]): string[] {
 }
 
 export async function resolveQualificationDependencyLeaves(opts: {
-  backend: Pick<TaskBackend, "getTask">;
   taskId: string;
-  dependsOn: readonly string[];
+  loadTask: (taskId: string) => Promise<TaskData | null>;
 }): Promise<{ rootDependencyIds: string[]; terminalLeaves: TaskData[] }> {
-  const rootDependencyIds = sortedUnique(opts.dependsOn);
+  const rootTask = await opts.loadTask(opts.taskId);
+  if (!rootTask) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: `Qualification task ${opts.taskId} is missing from the task backend.`,
+    });
+  }
+  const rootDependencyIds = sortedUnique(rootTask.depends_on);
   if (rootDependencyIds.length === 0) {
     throw new CliError({
       code: "E_VALIDATION",
@@ -29,7 +35,7 @@ export async function resolveQualificationDependencyLeaves(opts: {
       });
     }
     if (visited.has(taskId)) return;
-    const task = await opts.backend.getTask(taskId);
+    const task = await opts.loadTask(taskId);
     if (!task) {
       throw new CliError({
         code: "E_VALIDATION",

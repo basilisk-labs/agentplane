@@ -34,6 +34,7 @@ describe("evaluator qualification packet", () => {
 
   it("resolves terminal dependency leaves and rejects missing nodes or cycles", async () => {
     const tasks = new Map<string, TaskData>([
+      ["qualification", { id: "qualification", depends_on: ["aggregate"] } as TaskData],
       ["aggregate", { id: "aggregate", depends_on: ["leaf-a", "leaf-b"] } as TaskData],
       ["leaf-a", { id: "leaf-a", depends_on: [] } as TaskData],
       ["leaf-b", { id: "leaf-b", depends_on: [] } as TaskData],
@@ -41,27 +42,22 @@ describe("evaluator qualification packet", () => {
     const backend = { getTask: (taskId: string) => Promise.resolve(tasks.get(taskId) ?? null) };
     await expect(
       resolveQualificationDependencyLeaves({
-        backend,
         taskId: "qualification",
-        dependsOn: ["aggregate"],
+        loadTask: backend.getTask,
       }),
     ).resolves.toMatchObject({
       rootDependencyIds: ["aggregate"],
       terminalLeaves: [{ id: "leaf-a" }, { id: "leaf-b" }],
     });
+    tasks.set("missing-root", { id: "missing-root", depends_on: ["missing"] } as TaskData);
     await expect(
-      resolveQualificationDependencyLeaves({
-        backend,
-        taskId: "qualification",
-        dependsOn: ["missing"],
-      }),
+      resolveQualificationDependencyLeaves({ taskId: "missing-root", loadTask: backend.getTask }),
     ).rejects.toThrow("Qualification dependency task missing is missing");
     tasks.set("leaf-b", { id: "leaf-b", depends_on: ["aggregate"] } as TaskData);
     await expect(
       resolveQualificationDependencyLeaves({
-        backend,
         taskId: "qualification",
-        dependsOn: ["aggregate"],
+        loadTask: backend.getTask,
       }),
     ).rejects.toThrow("Qualification dependency cycle detected");
   });
@@ -309,6 +305,10 @@ describe("evaluator qualification packet", () => {
       ctx,
       taskId: aggregateId,
       build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId, incompleteLeafId] }) }),
+    });
+    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: add incomplete qualification leaf"], {
+      cwd: root,
     });
     await expect(
       cmdVerifyParsed({
