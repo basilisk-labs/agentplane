@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Для evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb отсутствуют замороженные записи выполнения обязательных проверок; доступная верификация привязана к более раннему SHA 28b541f82687e465f36e5ecd50e98efdb806f85e.",
+      "broken_invariant": "Вердикт pass требует детерминированных результатов обязательных проверок, привязанных к тому же SHA, который указан в work order как evaluated_sha.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-194041097-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b530be09ca4a427f2a2e0daa937eca528d66349805ba8ea86768fa6324ef3b3d",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:484f3e340c691430163c2098dee178af619a055bdfb8541bb00ccf54ce3adade",
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Замороженный успешный запуск bun run ci:contract для evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb.",
+    "Замороженный успешный запуск bun run test:fast -- packages/agentplane/src/commands/evaluator для evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что результаты проверок для SHA 28b541f82687e465f36e5ecd50e98efdb806f85e остаются применимыми к evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb, но замороженные доказательства этого не подтверждают."
+  ],
+  "recovery_context": "Повторить обязательные проверки на точном evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb и подготовить новый work order с замороженными SHA-привязанными записями результатов.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
