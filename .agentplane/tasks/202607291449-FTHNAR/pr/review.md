@@ -13,7 +13,7 @@ Created: 2026-07-29T14:50:37.577Z
 ## Verification
 
 - State: ok
-- Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
+- Note: Verification: workflow-step 24/24, route-decision 10/10, SGR contracts 26/26, critical compatibility baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility ratchet passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

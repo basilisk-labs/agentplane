@@ -16,7 +16,12 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 ## Verification
 
 - State: ok
-- Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
+- Note:
+
+```text
+Verification: workflow-step 24/24, route-decision 10/10, SGR contracts 26/26, critical compatibility
+baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility ratchet passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
