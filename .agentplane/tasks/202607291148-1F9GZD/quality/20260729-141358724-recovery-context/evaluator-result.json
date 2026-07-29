@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Финальная реализация не проверена на оцениваемом SHA: последняя зафиксированная проверка относится к 8a94a0a, после неё в 6b848381 добавлено существенное исправление привязки жизненного цикла зависимостей и изменены тесты.",
+      "broken_invariant": "Вердикт pass допустим только тогда, когда проверочные свидетельства покрывают фактически оцениваемую реализацию, включая отрицательные и чувствительные к дрейфу пути; здесь evaluated_sha равен 6b848381c9ae680185f34bbb5acbe0c1e1518772, а verification подтверждает только 8a94a0a4b8c1026be5b1a51b8bc0e6c095eaf381.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:e6a14ab5bc565742675185ccebaa05d8bcbba884cc0ab784a8cfa30aa2814813",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141358724-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:702df9ee0ac16fe694dcd0ebdebf2735a8da39ec0c9d5aa61c02b2b839c93f99",
+          "section": "verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141358724-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:ff68df46faea296b54d58549be1a5b6854ceb866b5907ab4d866abf9ca3fc9d6",
+          "section": "qualification-packet-pinned-task.ts and qualification-packet.ts"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Повторно выполнить сфокусированный набор evaluator-регрессий и bun run ci:contract на 6b848381c9ae680185f34bbb5acbe0c1e1518772 либо на новом SHA, содержащем только результаты этой проверки.",
+    "Добавить и зафиксировать регрессию, которая изменяет состояние зависимости после reviewed SHA и доказывает, что пакет использует только состояние README и quality-report на reviewed SHA."
+  ],
+  "hidden_assumptions": [
+    "Исправление привязки жизненного цикла, добавленное после 8a94a0a, считается корректным без выполнения объявленных проверок на содержащем его SHA.",
+    "Ранее пройденные проверки остаются достаточными после изменения логики чтения графа зависимостей, разбора task README и выбора quality-report."
+  ],
+  "recovery_context": "Следующему исполнителю нужно проверить финальную логику pinning на SHA 6b848381 или новом потомке, записать durable verification для этого же проверенного состояния и затем заново подготовить замороженный evaluator work order."
+}

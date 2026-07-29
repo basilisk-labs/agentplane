@@ -1,0 +1,3342 @@
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/README.md b/.agentplane/tasks/202607291148-1F9GZD/README.md
+new file mode 100644
+index 000000000..64660ff3b
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/README.md
+@@ -0,0 +1,411 @@
++---
++id: "202607291148-1F9GZD"
++title: "Formalize SHA-bound qualification packets for evaluator review"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 16
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "quality"
++  - "v0.7"
++verify:
++  - "bun run ci:contract"
++  - "bun run test:fast -- packages/agentplane/src/commands/evaluator"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-29T11:49:29.041Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "ok"
++  updated_at: "2026-07-29T13:46:59.182Z"
++  updated_by: "TESTER"
++  note: "Verified c15433: qualification evidence is bound to the reviewed SHA."
++  attempts: 0
++quality_review:
++  state: "rework"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-29T13:35:53.132Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned rework with 2 typed finding(s)."
++  evaluated_sha: "e6c7f4cca1d9e8f2b1b2b7651902109e1a4888f6"
++  blueprint_digest: "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391"
++  evidence_refs:
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-follow-up.json"
++    - ".agentplane/tasks/202607291148-1F9GZD/README.md"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The sealing commit may contain unverified implementation changes after the packet's verified implementation SHA."
++    - "Dependency lifecycle artifacts are not proven to be the artifacts present at or before the reviewed implementation SHA."
++commit:
++  hash: "6b1e2e72c9377b4a86286c524d853f2d17595002"
++  message: "fix(evaluator): seal qualification evidence"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implemented: SHA-bound qualification packets freeze accepted verification, dependency closure, and RF-04 replay evidence before evaluator review. Verified locally: 53 focused tests and full contract gates."
++  -
++    author: "CODER"
++    body: "Reworked: evaluator now targets a sealing commit that contains and hash-matches the qualification packet, durable verification record, RF-04 baselines, and per-leaf artifacts."
++events:
++  -
++    type: "status"
++    at: "2026-07-29T11:49:50.493Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-29T12:33:58.870Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implemented: SHA-bound qualification packets freeze accepted verification, dependency closure, and RF-04 replay evidence before evaluator review. Verified locally: 53 focused tests and full contract gates."
++  -
++    type: "verify"
++    at: "2026-07-29T12:34:27.639Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Focused evaluator regression coverage and the repository contract passed on d720aaa8."
++  -
++    type: "status"
++    at: "2026-07-29T12:44:13.986Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Reworked: evaluator now targets a sealing commit that contains and hash-matches the qualification packet, durable verification record, RF-04 baselines, and per-leaf artifacts."
++  -
++    type: "verify"
++    at: "2026-07-29T13:19:18.602Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Focused evaluator coverage and the repository contract passed on ac1339976."
++  -
++    type: "verify"
++    at: "2026-07-29T13:46:59.182Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified c15433: qualification evidence is bound to the reviewed SHA."
++doc_version: 3
++doc_updated_at: "2026-07-29T13:46:59.973Z"
++doc_updated_by: "CODER"
++description: "Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9."
++sections:
++  Summary: |-
++    Formalize SHA-bound qualification packets for evaluator review
++
++    Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.
++  Scope: |-
++    - In scope: Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.
++    - Out of scope: unrelated refactors not required for "Formalize SHA-bound qualification packets for evaluator review".
++  Plan: "1. Reproduce the beta.1 evaluator rework against a metadata-only qualification task and define the single reviewed-SHA contract. 2. Extend the CLI evidence builder to generate a deterministic qualification packet containing verified check records, per-leaf dependency closure and lifecycle evidence, and RF-04 baseline-versus-current metric values. 3. Freeze that packet into the evaluator work order and make metadata-only qualification reviews target the packet commit rather than a stale source-only SHA. 4. Add focused regression tests for packet contents, SHA binding, closure completeness, and metric comparison. 5. Run focused evaluator tests and ci:contract; keep the change limited to CLI evidence and review routing."
++  Verify Steps: "1. Add focused tests that prepare a metadata-only qualification task with structured verification details and assert that the frozen evaluator work order contains one SHA-bound qualification packet, accepted verification evidence, per-leaf dependency closure, and RF-04 baseline-versus-current metrics. 2. Add a regression that fails if a packet is bound to a stale reviewed SHA or has incomplete dependency lifecycle evidence. 3. Run bun run test:fast -- packages/agentplane/src/commands/evaluator and the new targeted test files. Expected: all pass. 4. Run bun run ci:contract. Expected: full repository contract passes. 5. Inspect the packet schema and evaluator prompt evidence list. Expected: an EVALUATOR can cite only frozen packet evidence and can evaluate a metadata-only qualification change at its actual reviewed SHA."
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-29T12:34:27.639Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Focused evaluator regression coverage and the repository contract passed on d720aaa8.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T12:33:58.870Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
++
++    Details:
++
++    Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++    Result: pass
++    Evidence: 53 tests passed across 5 files.
++    Scope: qualification-packet creation, frozen evaluator evidence, stale-SHA rejection, and verification record parsing.
++
++    Command: bun run ci:contract
++    Result: pass
++    Evidence: formatting, schemas, RF-04 baseline and replay 50/70/27/170, hotspot, guards, lint, clone, knip, and coverage gates passed.
++    Scope: repository contract for the committed implementation.
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
++    - old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++    - current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607291148-1F9GZD
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T13:19:18.602Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Focused evaluator coverage and the repository contract passed on ac1339976.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T12:44:13.986Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
++
++    Details:
++
++    Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++    Result: pass
++    Evidence: 55 tests passed across 5 files.
++    Scope: qualification packet capture, frozen evaluator evidence, stale-SHA rejection, and verification record parsing.
++
++    Command: bun run ci:contract
++    Result: pass
++    Evidence: formatting, schemas, RF-04 50/70/27/170 replay, lifecycle, guards, lint, architecture, clone, knip, and coverage gates passed.
++    Scope: repository contract for the committed implementation.
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
++    - old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++    - current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T13:46:59.182Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified c15433: qualification evidence is bound to the reviewed SHA.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T13:19:21.728Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
++
++    Details:
++
++    Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++    Result: pass (55 tests)
++    Evidence: c15433cc1f9595570ab3ab4dae6defea4caebd49; focused evaluator and verification regression suite
++    Scope: sealing lineage, exact dependency artifact blobs, RF-04 packet evidence
++
++    Command: bun run ci:contract
++    Result: pass
++    Evidence: RF-04 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; lint, architecture, clone, Knip, and coverage guards passed
++    Scope: repository contract for c15433cc1f9595570ab3ab4dae6defea4caebd49
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
++    - old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++    - current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: The evaluator work order freezes a packet bound to the durable verification record SHA and hashes each required leaf artifact.
++      Impact: The beta qualification evaluator can inspect deterministic, pre-existing evidence instead of inferring cross-task state from prose.
++      Resolution: Verification accepted; proceed to independent evaluator review.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Formalize SHA-bound qualification packets for evaluator review
++
++Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.
++
++## Scope
++
++- In scope: Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.
++- Out of scope: unrelated refactors not required for "Formalize SHA-bound qualification packets for evaluator review".
++
++## Plan
++
++1. Reproduce the beta.1 evaluator rework against a metadata-only qualification task and define the single reviewed-SHA contract. 2. Extend the CLI evidence builder to generate a deterministic qualification packet containing verified check records, per-leaf dependency closure and lifecycle evidence, and RF-04 baseline-versus-current metric values. 3. Freeze that packet into the evaluator work order and make metadata-only qualification reviews target the packet commit rather than a stale source-only SHA. 4. Add focused regression tests for packet contents, SHA binding, closure completeness, and metric comparison. 5. Run focused evaluator tests and ci:contract; keep the change limited to CLI evidence and review routing.
++
++## Verify Steps
++
++1. Add focused tests that prepare a metadata-only qualification task with structured verification details and assert that the frozen evaluator work order contains one SHA-bound qualification packet, accepted verification evidence, per-leaf dependency closure, and RF-04 baseline-versus-current metrics. 2. Add a regression that fails if a packet is bound to a stale reviewed SHA or has incomplete dependency lifecycle evidence. 3. Run bun run test:fast -- packages/agentplane/src/commands/evaluator and the new targeted test files. Expected: all pass. 4. Run bun run ci:contract. Expected: full repository contract passes. 5. Inspect the packet schema and evaluator prompt evidence list. Expected: an EVALUATOR can cite only frozen packet evidence and can evaluate a metadata-only qualification change at its actual reviewed SHA.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-29T12:34:27.639Z — VERIFY — ok
++
++By: TESTER
++
++Note: Focused evaluator regression coverage and the repository contract passed on d720aaa8.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T12:33:58.870Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
++
++Details:
++
++Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++Result: pass
++Evidence: 53 tests passed across 5 files.
++Scope: qualification-packet creation, frozen evaluator evidence, stale-SHA rejection, and verification record parsing.
++
++Command: bun run ci:contract
++Result: pass
++Evidence: formatting, schemas, RF-04 baseline and replay 50/70/27/170, hotspot, guards, lint, clone, knip, and coverage gates passed.
++Scope: repository contract for the committed implementation.
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
++- old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++- current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607291148-1F9GZD
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T13:19:18.602Z — VERIFY — ok
++
++By: TESTER
++
++Note: Focused evaluator coverage and the repository contract passed on ac1339976.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T12:44:13.986Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
++
++Details:
++
++Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++Result: pass
++Evidence: 55 tests passed across 5 files.
++Scope: qualification packet capture, frozen evaluator evidence, stale-SHA rejection, and verification record parsing.
++
++Command: bun run ci:contract
++Result: pass
++Evidence: formatting, schemas, RF-04 50/70/27/170 replay, lifecycle, guards, lint, architecture, clone, knip, and coverage gates passed.
++Scope: repository contract for the committed implementation.
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
++- old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++- current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T13:46:59.182Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified c15433: qualification evidence is bound to the reviewed SHA.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T13:19:21.728Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
++
++Details:
++
++Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
++Result: pass (55 tests)
++Evidence: c15433cc1f9595570ab3ab4dae6defea4caebd49; focused evaluator and verification regression suite
++Scope: sealing lineage, exact dependency artifact blobs, RF-04 packet evidence
++
++Command: bun run ci:contract
++Result: pass
++Evidence: RF-04 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; lint, architecture, clone, Knip, and coverage guards passed
++Scope: repository contract for c15433cc1f9595570ab3ab4dae6defea4caebd49
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
++- old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++- current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: The evaluator work order freezes a packet bound to the durable verification record SHA and hashes each required leaf artifact.
++  Impact: The beta qualification evaluator can inspect deterministic, pre-existing evidence instead of inferring cross-task state from prose.
++  Resolution: Verification accepted; proceed to independent evaluator review.
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..dc0a1da97
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+@@ -0,0 +1,594 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607291148-1F9GZD",
++    "title": "Formalize SHA-bound qualification packets for evaluator review",
++    "description": "Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.",
++    "tags": [
++      "code",
++      "quality",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "performance.benchmark",
++    "version": 1,
++    "title": "Performance benchmark",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "performance.benchmark",
++    "blueprintVersion": 1,
++    "title": "Performance benchmark",
++    "taskId": "202607291148-1F9GZD",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "specialized code domain resolved to performance.benchmark",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "final_output"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "benchmark.baseline",
++        "kind": "artifact",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Baseline measurement artifact."
++      },
++      {
++        "id": "benchmark.method",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Benchmark method, environment, and warm/cold mode."
++      },
++      {
++        "id": "benchmark.runs",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Run count and raw measurement results."
++      },
++      {
++        "id": "benchmark.threshold",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Accepted threshold or noise tolerance."
++      },
++      {
++        "id": "benchmark.comparison",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Before/after comparison result."
++      },
++      {
++        "id": "benchmark.verdict",
++        "kind": "final_output",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Faster, slower, unchanged, or noisy verdict."
++      },
++      {
++        "id": "benchmark.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "benchmark.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "benchmark baseline command",
++      "benchmark comparison command",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "final_output"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "benchmark.baseline",
++      "kind": "artifact",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Baseline measurement artifact."
++    },
++    {
++      "id": "benchmark.method",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Benchmark method, environment, and warm/cold mode."
++    },
++    {
++      "id": "benchmark.runs",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Run count and raw measurement results."
++    },
++    {
++      "id": "benchmark.threshold",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Accepted threshold or noise tolerance."
++    },
++    {
++      "id": "benchmark.comparison",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Before/after comparison result."
++    },
++    {
++      "id": "benchmark.verdict",
++      "kind": "final_output",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Faster, slower, unchanged, or noisy verdict."
++    },
++    {
++      "id": "benchmark.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "benchmark.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "benchmark baseline command",
++    "benchmark comparison command",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "specialized code domain resolved to performance.benchmark",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391"
++  }
++}
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/pr/diffstat.txt b/.agentplane/tasks/202607291148-1F9GZD/pr/diffstat.txt
+new file mode 100644
+index 000000000..489abe300
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/pr/diffstat.txt
+@@ -0,0 +1,14 @@
++ .../evaluator-qualification-packet.test.ts         | 471 ++++++++++++++++
++ .../evaluator/evaluator-qualification-review.ts    |  52 ++
++ .../evaluator/evaluator-review-artifacts.ts        |   3 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  47 +-
++ .../evaluator/evaluator-run.command.test.ts        |  72 +--
++ .../commands/evaluator/evaluator-test-helpers.ts   |  72 +++
++ .../evaluator/evaluator-verification-records.ts    |  17 +-
++ .../src/commands/shared/verification-details.ts    |  36 ++
++ .../task/qualification-packet-artifacts.ts         |  70 +++
++ .../src/commands/task/qualification-packet-json.ts |  43 ++
++ .../src/commands/task/qualification-packet-rf04.ts | 256 +++++++++
++ .../src/commands/task/qualification-packet.ts      | 594 +++++++++++++++++++++
++ .../src/commands/task/verify-record-execute.ts     |  33 +-
++ 13 files changed, 1661 insertions(+), 105 deletions(-)
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/pr/github-body.md b/.agentplane/tasks/202607291148-1F9GZD/pr/github-body.md
+new file mode 100644
+index 000000000..f725e510d
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/pr/github-body.md
+@@ -0,0 +1,46 @@
++Task: `202607291148-1F9GZD`
++Title: Formalize SHA-bound qualification packets for evaluator review
++Canonical task record: `.agentplane/tasks/202607291148-1F9GZD/README.md`
++
++## Summary
++
++Formalize SHA-bound qualification packets for evaluator review
++
++Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.
++
++## Scope
++
++- In scope: Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9.
++- Out of scope: unrelated refactors not required for "Formalize SHA-bound qualification packets for evaluator review".
++
++## Verification
++
++- State: ok
++- Note: Verified c15433: qualification evidence is bound to the reviewed SHA.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T11:50:58.033Z
++- Branch: task/202607291148-1F9GZD/formalize-sha-bound-qualification-packets-for-ev
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../evaluator-qualification-packet.test.ts         | 471 ++++++++++++++++
++ .../evaluator/evaluator-qualification-review.ts    |  52 ++
++ .../evaluator/evaluator-review-artifacts.ts        |   3 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  47 +-
++ .../evaluator/evaluator-run.command.test.ts        |  72 +--
++ .../commands/evaluator/evaluator-test-helpers.ts   |  72 +++
++ .../evaluator/evaluator-verification-records.ts    |  17 +-
++ .../src/commands/shared/verification-details.ts    |  36 ++
++ .../task/qualification-packet-artifacts.ts         |  70 +++
++ .../src/commands/task/qualification-packet-json.ts |  43 ++
++ .../src/commands/task/qualification-packet-rf04.ts | 256 +++++++++
++ .../src/commands/task/qualification-packet.ts      | 594 +++++++++++++++++++++
++ .../src/commands/task/verify-record-execute.ts     |  33 +-
++ 13 files changed, 1661 insertions(+), 105 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/pr/github-title.txt b/.agentplane/tasks/202607291148-1F9GZD/pr/github-title.txt
+new file mode 100644
+index 000000000..fb555e396
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 1F9GZD task: Formalize SHA-bound qualification packets for evaluator review [202607291148-1F9GZD]
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/pr/meta.json b/.agentplane/tasks/202607291148-1F9GZD/pr/meta.json
+new file mode 100644
+index 000000000..db22909fe
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/pr/meta.json
+@@ -0,0 +1,17 @@
++{
++  "base": "main",
++  "branch": "task/202607291148-1F9GZD/formalize-sha-bound-qualification-packets-for-ev",
++  "created_at": "2026-07-29T11:49:50.615Z",
++  "diffstat_sha256": "sha256:6e2798613b8bee5e1499b61dbb6c8b065873ae1bec6087ddad22eb39ec3c87dd",
++  "last_verified_at": "2026-07-29T13:46:59.182Z",
++  "last_verified_diffstat_sha256": "sha256:6e2798613b8bee5e1499b61dbb6c8b065873ae1bec6087ddad22eb39ec3c87dd",
++  "pr_number": 4670,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4670",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607291148-1F9GZD",
++  "updated_at": "2026-07-29T11:50:58.033Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/pr/review.md b/.agentplane/tasks/202607291148-1F9GZD/pr/review.md
+new file mode 100644
+index 000000000..703a5e48b
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/pr/review.md
+@@ -0,0 +1,49 @@
++# PR Review
++
++Created: 2026-07-29T11:49:50.615Z
++
++## Task
++
++- Task: `202607291148-1F9GZD`
++- Title: Formalize SHA-bound qualification packets for evaluator review
++- Status: DOING
++- Branch: `task/202607291148-1F9GZD/formalize-sha-bound-qualification-packets-for-ev`
++- Canonical task record: `.agentplane/tasks/202607291148-1F9GZD/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified c15433: qualification evidence is bound to the reviewed SHA.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T11:50:58.033Z
++- Branch: task/202607291148-1F9GZD/formalize-sha-bound-qualification-packets-for-ev
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../evaluator-qualification-packet.test.ts         | 471 ++++++++++++++++
++ .../evaluator/evaluator-qualification-review.ts    |  52 ++
++ .../evaluator/evaluator-review-artifacts.ts        |   3 +-
++ .../commands/evaluator/evaluator-review-usecase.ts |  47 +-
++ .../evaluator/evaluator-run.command.test.ts        |  72 +--
++ .../commands/evaluator/evaluator-test-helpers.ts   |  72 +++
++ .../evaluator/evaluator-verification-records.ts    |  17 +-
++ .../src/commands/shared/verification-details.ts    |  36 ++
++ .../task/qualification-packet-artifacts.ts         |  70 +++
++ .../src/commands/task/qualification-packet-json.ts |  43 ++
++ .../src/commands/task/qualification-packet-rf04.ts | 256 +++++++++
++ .../src/commands/task/qualification-packet.ts      | 594 +++++++++++++++++++++
++ .../src/commands/task/verify-record-execute.ts     |  33 +-
++ 13 files changed, 1661 insertions(+), 105 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/verification/20260729123427639-90a83a0dbfeb2851.json b/.agentplane/tasks/202607291148-1F9GZD/verification/20260729123427639-90a83a0dbfeb2851.json
+new file mode 100644
+index 000000000..af7e98fff
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/verification/20260729123427639-90a83a0dbfeb2851.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts\nResult: pass\nEvidence: 53 tests passed across 5 files.\nScope: qualification-packet creation, frozen evaluator evidence, stale-SHA rejection, and verification record parsing.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: formatting, schemas, RF-04 baseline and replay 50/70/27/170, hotspot, guards, lint, clone, knip, and coverage gates passed.\nScope: repository contract for the committed implementation.",
++  "digest": "sha256:90a83a0dbfeb285141b65cbe10c2bbb5097e1b59333268c0bb34082ab37c1438",
++  "implementation_sha": "d720aaa8aa69a9e71c59664150d16ecb111793a5",
++  "kind": "task_verification_record",
++  "note": "Focused evaluator regression coverage and the repository contract passed on d720aaa8.",
++  "recorded_at": "2026-07-29T12:34:27.639Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Add focused tests that prepare a metadata-only qualification task with structured verification details and assert that the frozen evaluator work order contains one SHA-bound qualification packet, accepted verification evidence, per-leaf dependency closure, and RF-04 baseline-versus-current metrics. 2. Add a regression that fails if a packet is bound to a stale reviewed SHA or has incomplete dependency lifecycle evidence. 3. Run bun run test:fast -- packages/agentplane/src/commands/evaluator and the new targeted test files. Expected: all pass. 4. Run bun run ci:contract. Expected: full repository contract passes. 5. Inspect the packet schema and evaluator prompt evidence list. Expected: an EVALUATOR can cite only frozen packet evidence and can evaluate a metadata-only qualification change at its actual reviewed SHA.",
++  "scope_digest": "sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582",
++  "task_id": "202607291148-1F9GZD",
++  "verification_command": "agentplane verify 202607291148-1F9GZD --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/verification/20260729131918602-6e1ff1d77f6d9b5b.json b/.agentplane/tasks/202607291148-1F9GZD/verification/20260729131918602-6e1ff1d77f6d9b5b.json
+new file mode 100644
+index 000000000..58549bd3b
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/verification/20260729131918602-6e1ff1d77f6d9b5b.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts\nResult: pass\nEvidence: 55 tests passed across 5 files.\nScope: qualification packet capture, frozen evaluator evidence, stale-SHA rejection, and verification record parsing.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: formatting, schemas, RF-04 50/70/27/170 replay, lifecycle, guards, lint, architecture, clone, knip, and coverage gates passed.\nScope: repository contract for the committed implementation.",
++  "digest": "sha256:6e1ff1d77f6d9b5b64b9f1617e48bd389e0ddf4624e59bc63239276300413cca",
++  "implementation_sha": "ac13399764ba7e454eb6398e529ffe036179883f",
++  "kind": "task_verification_record",
++  "note": "Focused evaluator coverage and the repository contract passed on ac1339976.",
++  "recorded_at": "2026-07-29T13:19:18.602Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Add focused tests that prepare a metadata-only qualification task with structured verification details and assert that the frozen evaluator work order contains one SHA-bound qualification packet, accepted verification evidence, per-leaf dependency closure, and RF-04 baseline-versus-current metrics. 2. Add a regression that fails if a packet is bound to a stale reviewed SHA or has incomplete dependency lifecycle evidence. 3. Run bun run test:fast -- packages/agentplane/src/commands/evaluator and the new targeted test files. Expected: all pass. 4. Run bun run ci:contract. Expected: full repository contract passes. 5. Inspect the packet schema and evaluator prompt evidence list. Expected: an EVALUATOR can cite only frozen packet evidence and can evaluate a metadata-only qualification change at its actual reviewed SHA.",
++  "scope_digest": "sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582",
++  "task_id": "202607291148-1F9GZD",
++  "verification_command": "agentplane verify 202607291148-1F9GZD --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607291148-1F9GZD/verification/20260729134659182-d5aa79ce5c454ab2.json b/.agentplane/tasks/202607291148-1F9GZD/verification/20260729134659182-d5aa79ce5c454ab2.json
+new file mode 100644
+index 000000000..d61797e07
+--- /dev/null
++++ b/.agentplane/tasks/202607291148-1F9GZD/verification/20260729134659182-d5aa79ce5c454ab2.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts\nResult: pass (55 tests)\nEvidence: c15433cc1f9595570ab3ab4dae6defea4caebd49; focused evaluator and verification regression suite\nScope: sealing lineage, exact dependency artifact blobs, RF-04 packet evidence\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: RF-04 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; lint, architecture, clone, Knip, and coverage guards passed\nScope: repository contract for c15433cc1f9595570ab3ab4dae6defea4caebd49",
++  "digest": "sha256:d5aa79ce5c454ab23b99e14425eeb0b3574fe5e8abf77abd80047cd3ad256341",
++  "implementation_sha": "c15433cc1f9595570ab3ab4dae6defea4caebd49",
++  "kind": "task_verification_record",
++  "note": "Verified c15433: qualification evidence is bound to the reviewed SHA.",
++  "recorded_at": "2026-07-29T13:46:59.182Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Add focused tests that prepare a metadata-only qualification task with structured verification details and assert that the frozen evaluator work order contains one SHA-bound qualification packet, accepted verification evidence, per-leaf dependency closure, and RF-04 baseline-versus-current metrics. 2. Add a regression that fails if a packet is bound to a stale reviewed SHA or has incomplete dependency lifecycle evidence. 3. Run bun run test:fast -- packages/agentplane/src/commands/evaluator and the new targeted test files. Expected: all pass. 4. Run bun run ci:contract. Expected: full repository contract passes. 5. Inspect the packet schema and evaluator prompt evidence list. Expected: an EVALUATOR can cite only frozen packet evidence and can evaluate a metadata-only qualification change at its actual reviewed SHA.",
++  "scope_digest": "sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582",
++  "task_id": "202607291148-1F9GZD",
++  "verification_command": "agentplane verify 202607291148-1F9GZD --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+new file mode 100644
+index 000000000..e36cec5fe
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+@@ -0,0 +1,545 @@
++import { mkdir, readFile, writeFile } from "node:fs/promises";
++import path from "node:path";
++
++import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
++import { describe, expect, it } from "vitest";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { loadCommandContext } from "../shared/task-backend.js";
++import { applyTaskMutation } from "../shared/task-mutation.js";
++import { setTaskFieldsIntent } from "../shared/task-store.js";
++import {
++  assertQualificationEvidenceLineage,
++  isQualificationTask,
++} from "../task/qualification-packet.js";
++import { resolveQualificationDependencyLeaves } from "../task/qualification-packet-dependencies.js";
++import { cmdVerifyParsed } from "../task/verify-record.js";
++
++import {
++  addTask,
++  commitPath,
++  execFileAsync,
++  prepareTypedReview,
++} from "./evaluator-test-helpers.js";
++
++describe("evaluator qualification packet", () => {
++  it("classifies the beta milestone taxonomy without promoting technical support tasks", () => {
++    expect(
++      isQualificationTask({
++        tags: ["milestone-0-7-0-beta-1", "quality", "release-gate", "v0.7"],
++      }),
++    ).toBe(true);
++    expect(isQualificationTask({ tags: ["code", "quality", "v0.7"] })).toBe(false);
++  });
++
++  it("resolves terminal dependency leaves and rejects missing nodes or cycles", async () => {
++    const tasks = new Map<string, TaskData>([
++      ["aggregate", { id: "aggregate", depends_on: ["leaf-a", "leaf-b"] } as TaskData],
++      ["leaf-a", { id: "leaf-a", depends_on: [] } as TaskData],
++      ["leaf-b", { id: "leaf-b", depends_on: [] } as TaskData],
++    ]);
++    const backend = { getTask: (taskId: string) => Promise.resolve(tasks.get(taskId) ?? null) };
++    await expect(
++      resolveQualificationDependencyLeaves({
++        backend,
++        taskId: "qualification",
++        dependsOn: ["aggregate"],
++      }),
++    ).resolves.toMatchObject({
++      rootDependencyIds: ["aggregate"],
++      terminalLeaves: [{ id: "leaf-a" }, { id: "leaf-b" }],
++    });
++    await expect(
++      resolveQualificationDependencyLeaves({
++        backend,
++        taskId: "qualification",
++        dependsOn: ["missing"],
++      }),
++    ).rejects.toThrow("Qualification dependency task missing is missing");
++    tasks.set("leaf-b", { id: "leaf-b", depends_on: ["aggregate"] } as TaskData);
++    await expect(
++      resolveQualificationDependencyLeaves({
++        backend,
++        taskId: "qualification",
++        dependsOn: ["aggregate"],
++      }),
++    ).rejects.toThrow("Qualification dependency cycle detected");
++  });
++
++  it("makes non-qualification explicit in frozen evaluator checks", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607291149-AB13";
++    await addTask(root, taskId);
++    await commitPath(
++      root,
++      "src/support.ts",
++      "export const support = true;\n",
++      "feat: support task",
++    );
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    await cmdVerifyParsed({
++      ctx,
++      cwd: root,
++      rootOverride: root,
++      taskId,
++      state: "ok",
++      by: "TESTER",
++      note: "Support-task checks passed.",
++      details:
++        "Command: bun run test:fast\nResult: pass\nEvidence: targeted suite\nScope: support task",
++      quiet: true,
++    });
++    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: seal support verification"], {
++      cwd: root,
++    });
++
++    const { prepared } = await prepareTypedReview(root, taskId);
++    const observedEvidence = prepared.work_order.evidence.find(
++      (entry) => entry.kind === "observed_checks",
++    );
++    expect(observedEvidence).toBeDefined();
++    const observed = JSON.parse(
++      await readFile(path.join(root, observedEvidence?.path ?? ""), "utf8"),
++    ) as Record<string, unknown>;
++    expect(observed.qualification_packet).toEqual({
++      state: "not_required",
++      reason: "not a milestone qualification task",
++    });
++  });
++
++  it("prepares a SHA-bound qualification packet before evaluator review", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    await mkdir(path.join(root, ".agentplane/policy"), { recursive: true });
++    await Promise.all(
++      ["dod.code.md", "dod.core.md", "security.must.md", "workflow.direct.md"].map(
++        async (name) => await writeFile(path.join(root, ".agentplane/policy", name), "# policy\n"),
++      ),
++    );
++    const taskId = "202607290900-AB12";
++    const aggregateId = "202607290901-AG01";
++    const leafId = "202607290901-CD34";
++    const incompleteLeafId = "202607290901-EF56";
++    const leafEvaluatedSha = await commitPath(
++      root,
++      "src/leaf-evaluation.ts",
++      "export const leafEvaluation = true;\n",
++      "test: leaf evaluator target",
++    );
++    await addTask(root, taskId);
++    await addTask(root, aggregateId);
++    await addTask(root, leafId);
++    await addTask(root, incompleteLeafId);
++    const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const qualityReportPath = `.agentplane/tasks/${leafId}/quality/pass/quality-report.json`;
++    await applyTaskMutation({
++      ctx,
++      taskId: leafId,
++      build: (current) => ({
++        intents: setTaskFieldsIntent({
++          status: "DONE",
++          verification: {
++            state: "ok",
++            updated_at: "2026-07-29T09:00:00.000Z",
++            updated_by: "TESTER",
++            note: "Leaf verification passed.",
++            attempts: 0,
++          },
++          quality_review: {
++            state: "pass",
++            provenance: "evaluator_supplied",
++            updated_at: "2026-07-29T09:01:00.000Z",
++            updated_by: "EVALUATOR",
++            note: "Leaf evaluator passed.",
++            evaluated_sha: leafEvaluatedSha,
++            blueprint_digest: null,
++            evidence_refs: [qualityReportPath],
++            findings: [],
++          },
++          tags: current.tags,
++        }),
++      }),
++    });
++    await applyTaskMutation({
++      ctx,
++      taskId,
++      build: () => ({
++        intents: setTaskFieldsIntent({
++          depends_on: [aggregateId],
++          tags: ["quality", "release-gate", "milestone-0-7-0-beta-1"],
++          verify: ["bun run ci:contract"],
++        }),
++      }),
++    });
++    await applyTaskMutation({
++      ctx,
++      taskId: aggregateId,
++      build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId] }) }),
++    });
++    await mkdir(path.join(root, path.dirname(qualityReportPath)), { recursive: true });
++    await writeFile(
++      path.join(root, qualityReportPath),
++      `${JSON.stringify(
++        { task_id: leafId, verdict: "pass", evaluated_sha: leafEvaluatedSha },
++        null,
++        2,
++      )}\n`,
++      "utf8",
++    );
++    await mkdir(path.join(root, `.agentplane/tasks/${leafId}/pr`), { recursive: true });
++    await writeFile(
++      path.join(root, `.agentplane/tasks/${leafId}/pr/meta.json`),
++      `${JSON.stringify(
++        {
++          task_id: leafId,
++          pr_number: 17,
++          verify: { status: "pass" },
++          pre_merge_closure: { state: "closed_before_merge" },
++        },
++        null,
++        2,
++      )}\n`,
++      "utf8",
++    );
++    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "chore: close qualification leaf"], {
++      cwd: root,
++    });
++    await mkdir(path.join(root, "scripts/baselines"), { recursive: true });
++    await writeFile(
++      path.join(root, "scripts/baselines/agent-efficiency-pre-v0.7-main.json"),
++      `${JSON.stringify(
++        {
++          scenario_count: 10,
++          comparison_policy: { structural_cost_max_growth_ratio: 0.1 },
++          structural_projection_sha256: "sha256:main",
++          structural_projection: { scenarios: [{ metrics: { measured: { value: 1 } } }] },
++        },
++        null,
++        2,
++      )}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, "scripts/baselines/agent-efficiency-pre-v0.7-replay.json"),
++      `${JSON.stringify(
++        {
++          coverage: { replay_runs: { actual: 50, required: 50 } },
++          structural_projection_sha256: "sha256:replay",
++          diagnostics_sha256: "sha256:diagnostics",
++          golden_outcome_comparison: {
++            verdict: "baseline",
++            golden_match_count: 350,
++            golden_mismatch_count: 0,
++            resolved_run_outcome_cells: 350,
++          },
++          structural_projection: {
++            scenarios: [
++              {
++                id: "direct",
++                resolved_outcomes: {
++                  verified_success: {
++                    golden_expected: true,
++                    true_count: 5,
++                    false_count: 0,
++                    golden_match_count: 5,
++                    golden_mismatch_count: 0,
++                  },
++                  rework_required: {
++                    golden_expected: false,
++                    true_count: 0,
++                    false_count: 5,
++                    golden_match_count: 5,
++                    golden_mismatch_count: 0,
++                  },
++                  scope_violation: {
++                    golden_expected: false,
++                    true_count: 0,
++                    false_count: 5,
++                    golden_match_count: 5,
++                    golden_mismatch_count: 0,
++                  },
++                },
++                token_usage_by_role: {
++                  CODER: {
++                    input_tokens: { count: 5, mean: 100 },
++                    output_tokens: { count: 5, mean: 10 },
++                    reasoning_tokens: { count: 5, mean: 20 },
++                  },
++                },
++              },
++            ],
++          },
++          diagnostics: {
++            scenarios: [
++              { id: "direct", latency_ms: { preparation_latency_ms: { count: 5, mean: 30 } } },
++            ],
++          },
++        },
++        null,
++        2,
++      )}\n`,
++      "utf8",
++    );
++    await mkdir(path.join(root, "scripts/bench"), { recursive: true });
++    await writeFile(
++      path.join(root, "scripts/bench/capture-agent-efficiency-replay.mjs"),
++      [
++        'import { readFileSync, writeFileSync } from "node:fs";',
++        'import path from "node:path";',
++        'const output = process.argv.at(process.argv.indexOf("--output") + 1);',
++        'if (!output) throw new Error("missing --output");',
++        'const baselinePath = path.join(process.cwd(), "scripts/baselines/agent-efficiency-pre-v0.7-replay.json");',
++        'const rebuild = { ...JSON.parse(readFileSync(baselinePath, "utf8")), capture: "current-run" };',
++        'writeFileSync(output, `${JSON.stringify(rebuild, null, 2)}\\n`, "utf8");',
++      ].join("\n"),
++      "utf8",
++    );
++    await execFileAsync(
++      "git",
++      ["add", "--", "scripts/baselines", "scripts/bench/capture-agent-efficiency-replay.mjs"],
++      { cwd: root },
++    );
++    await execFileAsync("git", ["commit", "-m", "test: prepare qualification baseline"], {
++      cwd: root,
++    });
++    await applyTaskMutation({
++      ctx,
++      taskId: aggregateId,
++      build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId, incompleteLeafId] }) }),
++    });
++    await expect(
++      cmdVerifyParsed({
++        ctx,
++        cwd: root,
++        rootOverride: root,
++        taskId,
++        state: "ok",
++        by: "TESTER",
++        note: "Qualification checks passed on the reviewed SHA.",
++        details:
++          "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
++        quiet: true,
++      }),
++    ).rejects.toThrow(`Qualification dependency leaf ${incompleteLeafId} is not DONE`);
++    await applyTaskMutation({
++      ctx,
++      taskId: aggregateId,
++      build: () => ({ intents: setTaskFieldsIntent({ depends_on: [leafId] }) }),
++    });
++    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: restore qualification leaves"], {
++      cwd: root,
++    });
++    await applyTaskMutation({
++      ctx,
++      taskId: leafId,
++      build: (current) => ({
++        intents: setTaskFieldsIntent({
++          quality_review: {
++            ...current.quality_review!,
++            evaluated_sha: "b".repeat(40),
++          },
++        }),
++      }),
++    });
++    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: stale leaf evaluator state"], { cwd: root });
++    await expect(
++      cmdVerifyParsed({
++        ctx,
++        cwd: root,
++        rootOverride: root,
++        taskId,
++        state: "ok",
++        by: "TESTER",
++        note: "Qualification checks passed on the reviewed SHA.",
++        details:
++          "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
++        quiet: true,
++      }),
++    ).rejects.toThrow("bound to its current evaluator reviewed SHA");
++    await applyTaskMutation({
++      ctx,
++      taskId: leafId,
++      build: (current) => ({
++        intents: setTaskFieldsIntent({
++          quality_review: {
++            ...current.quality_review!,
++            evaluated_sha: leafEvaluatedSha,
++          },
++        }),
++      }),
++    });
++    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: restore leaf evaluator state"], {
++      cwd: root,
++    });
++    const reviewedSha = await commitPath(
++      root,
++      "src/qualified.ts",
++      "export const qualified = true;\n",
++      "feat: reviewed qualification target",
++    );
++    const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
++    for (const artifactPath of [
++      leafReadmePath,
++      path.join(root, `.agentplane/tasks/${leafId}/pr/meta.json`),
++      path.join(root, qualityReportPath),
++    ]) {
++      const artifact = await readFile(artifactPath, "utf8");
++      await writeFile(artifactPath, `${artifact}\npost-review drift\n`, "utf8");
++      await expect(
++        cmdVerifyParsed({
++          ctx,
++          cwd: root,
++          rootOverride: root,
++          taskId,
++          state: "ok",
++          by: "TESTER",
++          note: "Qualification checks passed on the reviewed SHA.",
++          details:
++            "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
++          quiet: true,
++        }),
++      ).rejects.toThrow("must match the exact blob at the reviewed implementation SHA");
++      await writeFile(artifactPath, artifact, "utf8");
++    }
++    await cmdVerifyParsed({
++      ctx,
++      cwd: root,
++      rootOverride: root,
++      taskId,
++      state: "ok",
++      by: "TESTER",
++      note: "Qualification checks passed on the reviewed SHA.",
++      details:
++        "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
++      quiet: true,
++    });
++
++    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
++      "requires current HEAD to contain the exact qualification packet",
++    );
++    await execFileAsync(
++      "git",
++      [
++        "add",
++        "--",
++        ".agentplane",
++        "scripts/baselines",
++        "scripts/bench/capture-agent-efficiency-replay.mjs",
++      ],
++      { cwd: root },
++    );
++    await execFileAsync("git", ["commit", "-m", "chore: seal qualification evidence"], {
++      cwd: root,
++    });
++    const { stdout: evidenceCommitOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
++      cwd: root,
++    });
++    const evidenceCommit = evidenceCommitOutput.trim();
++
++    const { prepared } = await prepareTypedReview(root, taskId);
++    const packetEvidence = prepared.work_order.evidence.find(
++      (entry) => entry.kind === "qualification_packet",
++    );
++    expect(prepared.work_order.evaluated_sha).toBe(evidenceCommit);
++    expect(packetEvidence).toBeDefined();
++    const packetPath = path.join(root, packetEvidence?.path ?? "");
++    const packetRaw = await readFile(packetPath, "utf8");
++    const packet = JSON.parse(packetRaw) as Record<string, unknown>;
++    expect(packet).toMatchObject({
++      task_id: taskId,
++      implementation_sha: reviewedSha,
++      dependency_closure: {
++        root_dependency_ids: [aggregateId],
++        terminal_leaf_ids: [leafId],
++        leaves: [
++          {
++            task_id: leafId,
++            status: "DONE",
++            verification: { state: "ok" },
++            evaluator: { state: "pass" },
++            hosted_close: { pr_number: 17, pre_merge_closure: "closed_before_merge" },
++          },
++        ],
++      },
++      rf04: {
++        replay_comparison: {
++          status: "exact_frozen_rebuild",
++          baseline: { coverage: { replay_runs: { actual: 50, required: 50 } } },
++          current_rebuild: {
++            path: `.agentplane/tasks/${taskId}/evidence/rf04-current-rebuild.v1.json`,
++            coverage: { replay_runs: { actual: 50, required: 50 } },
++          },
++        },
++      },
++    });
++    const replayComparison = (packet.rf04 as { replay_comparison: Record<string, unknown> })
++      .replay_comparison;
++    expect(replayComparison.current_rebuild).toEqual(
++      expect.objectContaining({
++        path: `.agentplane/tasks/${taskId}/evidence/rf04-current-rebuild.v1.json`,
++      }),
++    );
++    expect((replayComparison.current_rebuild as { sha256: string }).sha256).not.toBe(
++      (replayComparison.baseline as { sha256: string }).sha256,
++    );
++    expect(packetEvidence?.path).toContain(
++      `/tasks/${taskId}/evidence/qualification-packet.v1.json`,
++    );
++    const { stdout: divergentCommitOutput } = await execFileAsync(
++      "git",
++      ["commit-tree", `${evidenceCommit}^{tree}`, "-m", "test: divergent qualification evidence"],
++      { cwd: root },
++    );
++    const divergentCommit = divergentCommitOutput.trim();
++    await expect(
++      assertQualificationEvidenceLineage({
++        gitRoot: root,
++        implementationSha: reviewedSha,
++        evidenceCommit: divergentCommit,
++        evidenceRoot: `.agentplane/tasks/${taskId}`,
++      }),
++    ).rejects.toThrow("must descend from the packet's verified implementation SHA");
++    await writeFile(
++      path.join(root, "src/unverified-after-review.ts"),
++      "export const unsafe = true;\n",
++      "utf8",
++    );
++    await execFileAsync("git", ["add", "--", "src/unverified-after-review.ts"], { cwd: root });
++    await execFileAsync("git", ["commit", "-m", "test: unverified implementation drift"], {
++      cwd: root,
++    });
++    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
++      "may contain only current-task evidence after the packet's verified implementation SHA",
++    );
++    await execFileAsync("git", ["reset", "--hard", evidenceCommit], { cwd: root });
++    await writeFile(
++      packetPath,
++      `${JSON.stringify({ ...packet, implementation_sha: "a".repeat(40) }, null, 2)}\n`,
++      "utf8",
++    );
++    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
++      "Qualification review requires a current SHA-bound qualification packet",
++    );
++    await writeFile(packetPath, packetRaw, "utf8");
++    await writeFile(
++      leafReadmePath,
++      `${await readFile(leafReadmePath, "utf8")}\n<!-- post-seal drift -->\n`,
++      "utf8",
++    );
++    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${leafId}/README.md`], {
++      cwd: root,
++    });
++    await execFileAsync("git", ["commit", "-m", "test: drift qualification leaf"], {
++      cwd: root,
++    });
++    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
++      "may contain only current-task evidence after the packet's verified implementation SHA",
++    );
++  });
++});
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts b/packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts
+new file mode 100644
+index 000000000..73da4cf1d
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-qualification-review.ts
+@@ -0,0 +1,52 @@
++import type { TaskData } from "../../backends/task-backend.js";
++import { CliError } from "../../shared/errors.js";
++import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
++import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import {
++  isQualificationTask,
++  readCurrentQualificationPacket,
++  resolveQualificationEvidenceCommit,
++  type CurrentQualificationPacket,
++} from "../task/qualification-packet.js";
++
++export type ResolvedEvaluatorReviewTarget = {
++  evaluatedSha: string | null;
++  qualificationPacket: CurrentQualificationPacket | null;
++};
++
++export async function resolveEvaluatorReviewTarget(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  reason: "preparation" | "staleness";
++}): Promise<ResolvedEvaluatorReviewTarget> {
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const workflowDir = opts.ctx.config.paths.workflow_dir;
++  const qualificationPacket = await readCurrentQualificationPacket({
++    gitRoot,
++    workflowDir,
++    task: opts.task,
++  });
++  if (isQualificationTask(opts.task) && !qualificationPacket) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        opts.reason === "preparation"
++          ? "Qualification review requires a current SHA-bound qualification packet created by task verification."
++          : "Evaluator work order is stale because the qualification packet is missing or invalid.",
++    });
++  }
++  const evaluatedSha = qualificationPacket
++    ? await resolveQualificationEvidenceCommit({ gitRoot, qualificationPacket })
++    : await resolveQualityReviewTargetSha({
++        gitRoot,
++        workflowDir,
++        taskId: opts.task.id,
++        taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
++        previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
++      });
++  return {
++    evaluatedSha,
++    qualificationPacket,
++  };
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts
+index 39610f86b..42e321896 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-artifacts.ts
+@@ -12,7 +12,8 @@ export type EvaluatorEvidenceKind =
+   | "blueprint"
+   | "policy_module"
+   | "knowledge_ref"
+-  | "runtime_evidence";
++  | "runtime_evidence"
++  | "qualification_packet";
+ 
+ export type FrozenEvaluatorEvidence = {
+   id: string;
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index 770629a09..7a2a8e8fe 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -13,7 +13,6 @@ import {
+   buildTaskBlueprintResolvedSnapshot,
+ } from "../blueprint/snapshot-artifact.js";
+ import { normalizeBranchPrBatchIncludedTaskIds } from "../pr/internal/sync-batch-ownership.js";
+-import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
+ import type { CommandContext } from "../shared/task-backend.js";
+ 
+ import type { EvaluatorModule } from "../../evaluators/catalog.js";
+@@ -30,6 +29,7 @@ import {
+   readVerifiedSupervisorJournalHistory,
+   writeEvaluatorArtifact,
+ } from "./evaluator-review-artifacts.js";
++import { resolveEvaluatorReviewTarget } from "./evaluator-qualification-review.js";
+ import {
+   verificationRecordPaths,
+   verificationRuntimeEvidencePaths,
+@@ -51,7 +51,6 @@ export {
+   uniqueStrings,
+   type HumanEvaluatorReviewInput,
+ } from "./evaluator-review-shared.js";
+-
+ export { renderActualDiff, resolveEvaluatorDiffBase } from "./evaluator-diff-evidence.js";
+ 
+ const EVALUATOR_WORK_ORDER_FILE = "evaluator-work-order.json";
+@@ -109,6 +108,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
+               "policy_module",
+               "knowledge_ref",
+               "runtime_evidence",
++              "qualification_packet",
+             ]),
+             path: z.string().trim().min(1),
+             sha256: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
+@@ -121,7 +121,6 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
+   .strict();
+ 
+ export type EvaluatorWorkOrder = z.infer<typeof EVALUATOR_WORK_ORDER_SCHEMA>;
+-
+ export type PreparedEvaluatorReview = {
+   work_order: EvaluatorWorkOrder;
+   work_order_path: string;
+@@ -227,12 +226,10 @@ export async function prepareEvaluatorReview(opts: {
+   const paths = reportPaths(reviewDir);
+   const taskRoot = path.join(gitRoot, opts.ctx.config.paths.workflow_dir, opts.task.id);
+   const taskReadmePath = path.join(taskRoot, "README.md");
+-  const evaluatedSha = await resolveQualityReviewTargetSha({
+-    gitRoot,
+-    workflowDir: opts.ctx.config.paths.workflow_dir,
+-    taskId: opts.task.id,
+-    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+-    previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
++  const { evaluatedSha, qualificationPacket } = await resolveEvaluatorReviewTarget({
++    ctx: opts.ctx,
++    task: opts.task,
++    reason: "preparation",
+   });
+   const diffBaseSha = await resolveEvaluatorDiffBase({
+     gitRoot,
+@@ -300,6 +297,14 @@ export async function prepareEvaluatorReview(opts: {
+       taskId: opts.task.id,
+       verifiedRuntimeEvidencePaths: runtimeEvidencePaths,
+     }),
++    qualification_packet: qualificationPacket
++      ? {
++          path: relative(gitRoot, qualificationPacket.path),
++          digest: qualificationPacket.packet.digest,
++          implementation_sha: qualificationPacket.packet.implementation_sha,
++          evidence_commit: evaluatedSha,
++        }
++      : { state: "not_required", reason: "not a milestone qualification task" },
+   };
+   await writeEvaluatorArtifact({
+     filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),
+@@ -343,6 +348,17 @@ export async function prepareEvaluatorReview(opts: {
+     }),
+     ...verificationRecords,
+     ...runtimeEvidence,
++    ...(qualificationPacket
++      ? [
++          await freezeEvaluatorFile({
++            gitRoot,
++            id: "qualification-packet",
++            kind: "qualification_packet",
++            filePath: qualificationPacket.path,
++            required: true,
++          }),
++        ]
++      : []),
+     await freezeEvaluatorFile({
+       gitRoot,
+       id: "blueprint",
+@@ -542,20 +558,17 @@ export async function assertWorkOrderCurrent(opts: {
+   task: TaskData;
+   workOrder: EvaluatorWorkOrder;
+ }): Promise<void> {
+-  const currentRevision = opts.task.revision ?? null;
+-  if (currentRevision !== opts.workOrder.task.revision) {
++  if ((opts.task.revision ?? null) !== opts.workOrder.task.revision) {
+     throw new CliError({
+       code: "E_VALIDATION",
+       message: "Evaluator work order is stale because the task revision changed after preparation.",
+     });
+   }
+   const gitRoot = opts.ctx.resolvedProject.gitRoot;
+-  const currentSha = await resolveQualityReviewTargetSha({
+-    gitRoot,
+-    workflowDir: opts.ctx.config.paths.workflow_dir,
+-    taskId: opts.task.id,
+-    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+-    previousEvaluatedSha: opts.task.quality_review?.evaluated_sha ?? null,
++  const { evaluatedSha: currentSha } = await resolveEvaluatorReviewTarget({
++    ctx: opts.ctx,
++    task: opts.task,
++    reason: "staleness",
+   });
+   if (currentSha !== opts.workOrder.evaluated_sha) {
+     throw new CliError({
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+index 4b096bd1f..74f0c8c2d 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts
+@@ -1,62 +1,29 @@
+-import { execFile } from "node:child_process";
+ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+ import path from "node:path";
+-import { promisify } from "node:util";
+ import { readTask } from "@agentplaneorg/core/tasks";
+ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+ import { describe, expect, it } from "vitest";
+ 
+ import { parseCommandArgv } from "../../cli/spec/parse.js";
+-import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
++import { loadCommandContext } from "../shared/task-backend.js";
+ import { applyTaskMutation } from "../shared/task-mutation.js";
+ import { setTaskFieldsIntent } from "../shared/task-store.js";
+ import { cmdVerifyParsed } from "../task/verify-record.js";
+-import { cmdTaskAdd } from "../workflow.js";
+-import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
+ 
+ import { runEvaluatorRun } from "./evaluator.command.js";
+ import {
+-  prepareEvaluatorReview,
+   renderActualDiff,
+   resolveEvaluatorDiffBase,
+   type PreparedEvaluatorReview,
+ } from "./evaluator-review-usecase.js";
+ import { applyEvaluatorSgrReview } from "./evaluator-review-apply.js";
+ import { evaluatorRunSpec } from "./evaluator.spec.js";
+-
+-const execFileAsync = promisify(execFile);
+-
+-async function addTask(root: string, taskId: string): Promise<void> {
+-  await cmdTaskAdd({
+-    cwd: root,
+-    taskIds: [taskId],
+-    title: "Task",
+-    description: "Desc",
+-    status: "TODO",
+-    priority: "med",
+-    owner: "CODER",
+-    tags: ["nodejs"],
+-    dependsOn: [],
+-    verify: [],
+-    commentAuthor: null,
+-    commentBody: null,
+-  });
+-}
+-
+-async function commitPath(
+-  root: string,
+-  relPath: string,
+-  content: string,
+-  message: string,
+-): Promise<string> {
+-  const target = path.join(root, relPath);
+-  await mkdir(path.dirname(target), { recursive: true });
+-  await writeFile(target, content, "utf8");
+-  await execFileAsync("git", ["add", "--", relPath], { cwd: root });
+-  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
+-  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+-  return stdout.trim();
+-}
++import {
++  addTask,
++  commitPath,
++  execFileAsync,
++  prepareTypedReview,
++} from "./evaluator-test-helpers.js";
+ 
+ async function readEvaluatedSha(
+   root: string,
+@@ -100,31 +67,6 @@ async function setPrimaryBatchOwnership(
+   });
+ }
+ 
+-async function prepareTypedReview(
+-  root: string,
+-  taskId: string,
+-): Promise<{
+-  command: Awaited<ReturnType<typeof loadCommandContext>>;
+-  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+-  prepared: PreparedEvaluatorReview;
+-}> {
+-  const command = await loadCommandContext({ cwd: root, rootOverride: root });
+-  const task = await loadTaskFromContext({ ctx: command, taskId });
+-  const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
+-  const evaluator = catalog.find((entry) => entry.id === "recovery-context");
+-  if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
+-  return {
+-    command,
+-    task,
+-    prepared: await prepareEvaluatorReview({
+-      ctx: command,
+-      task,
+-      evaluator,
+-      provenance: "evaluator_supplied",
+-    }),
+-  };
+-}
+-
+ function typedEvaluatorResult(
+   prepared: PreparedEvaluatorReview,
+   overrides: Record<string, unknown> = {},
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts b/packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts
+new file mode 100644
+index 000000000..428d488ba
+--- /dev/null
++++ b/packages/agentplane/src/commands/evaluator/evaluator-test-helpers.ts
+@@ -0,0 +1,72 @@
++import { execFile } from "node:child_process";
++import { mkdir, writeFile } from "node:fs/promises";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
++import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
++import { cmdTaskAdd } from "../workflow.js";
++
++import {
++  prepareEvaluatorReview,
++  type PreparedEvaluatorReview,
++} from "./evaluator-review-usecase.js";
++
++export const execFileAsync = promisify(execFile);
++
++export async function addTask(root: string, taskId: string): Promise<void> {
++  await cmdTaskAdd({
++    cwd: root,
++    taskIds: [taskId],
++    title: "Task",
++    description: "Desc",
++    status: "TODO",
++    priority: "med",
++    owner: "CODER",
++    tags: ["nodejs"],
++    dependsOn: [],
++    verify: [],
++    commentAuthor: null,
++    commentBody: null,
++  });
++}
++
++export async function commitPath(
++  root: string,
++  relPath: string,
++  content: string,
++  message: string,
++): Promise<string> {
++  const target = path.join(root, relPath);
++  await mkdir(path.dirname(target), { recursive: true });
++  await writeFile(target, content, "utf8");
++  await execFileAsync("git", ["add", "--", relPath], { cwd: root });
++  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
++  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
++  return stdout.trim();
++}
++
++export async function prepareTypedReview(
++  root: string,
++  taskId: string,
++): Promise<{
++  command: Awaited<ReturnType<typeof loadCommandContext>>;
++  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
++  prepared: PreparedEvaluatorReview;
++}> {
++  const command = await loadCommandContext({ cwd: root, rootOverride: root });
++  const task = await loadTaskFromContext({ ctx: command, taskId });
++  const catalog = await loadEvaluatorCatalog({ projectRoot: root, includeBuiltin: true });
++  const evaluator = catalog.find((entry) => entry.id === "recovery-context");
++  if (!evaluator) throw new Error("Missing recovery-context evaluator fixture.");
++  return {
++    command,
++    task,
++    prepared: await prepareEvaluatorReview({
++      ctx: command,
++      task,
++      evaluator,
++      provenance: "evaluator_supplied",
++    }),
++  };
++}
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+index d1224ea63..37042638b 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-verification-records.ts
+@@ -5,8 +5,8 @@ import { canonicalizeJson } from "@agentplaneorg/core/tasks";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
++import { parseVerificationCheckDetails } from "../shared/verification-details.js";
+ 
+-const CHECK_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
+ const RUNTIME_EVIDENCE_PREFIX = ".agentplane/cache/";
+ const MAX_RUNTIME_EVIDENCE_FILES = 16;
+ 
+@@ -26,20 +26,7 @@ function verifyStepsDigest(task: TaskData): `sha256:${string}` | null {
+ }
+ 
+ function hasConcreteCheckDetails(details: unknown): boolean {
+-  if (typeof details !== "string" || !details.trim()) return false;
+-  const checks = details.trim().split(/\n\s*\n/gu);
+-  return checks.every((check) => {
+-    const fields = new Map(
+-      check.split("\n").map((line) => {
+-        const [field, ...value] = line.split(":");
+-        return [field?.trim(), value.join(":").trim()] as const;
+-      }),
+-    );
+-    return (
+-      CHECK_FIELDS.every((field) => fields.get(field)) &&
+-      ["pass", "fail"].includes(fields.get("Result") ?? "")
+-    );
+-  });
++  return parseVerificationCheckDetails(details) !== null;
+ }
+ 
+ function detailsEvidencePaths(details: unknown): string[] {
+diff --git a/packages/agentplane/src/commands/shared/verification-details.ts b/packages/agentplane/src/commands/shared/verification-details.ts
+new file mode 100644
+index 000000000..e5c31cec1
+--- /dev/null
++++ b/packages/agentplane/src/commands/shared/verification-details.ts
+@@ -0,0 +1,36 @@
++export type VerificationCheckDetail = {
++  command: string;
++  result: "pass" | "fail";
++  evidence: string;
++  scope: string;
++};
++
++const REQUIRED_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
++
++/**
++ * Parses the durable, user-facing verification-details format once. Consumers
++ * must not infer a passing check from prose that lacks its command, outcome,
++ * evidence, or declared scope.
++ */
++export function parseVerificationCheckDetails(details: unknown): VerificationCheckDetail[] | null {
++  if (typeof details !== "string" || !details.trim()) return null;
++  const checks = details.trim().split(/\n\s*\n/gu);
++  const parsed = checks.map((check) => {
++    const fields = new Map(
++      check.split("\n").map((line) => {
++        const [field, ...value] = line.split(":");
++        return [field?.trim(), value.join(":").trim()] as const;
++      }),
++    );
++    if (REQUIRED_FIELDS.some((field) => !fields.get(field))) return null;
++    const result = fields.get("Result");
++    if (result !== "pass" && result !== "fail") return null;
++    return {
++      command: fields.get("Command") ?? "",
++      result,
++      evidence: fields.get("Evidence") ?? "",
++      scope: fields.get("Scope") ?? "",
++    } satisfies VerificationCheckDetail;
++  });
++  return parsed.every((check): check is VerificationCheckDetail => check !== null) ? parsed : null;
++}
+diff --git a/packages/agentplane/src/commands/task/qualification-packet-artifacts.ts b/packages/agentplane/src/commands/task/qualification-packet-artifacts.ts
+new file mode 100644
+index 000000000..cf4586ea2
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/qualification-packet-artifacts.ts
+@@ -0,0 +1,70 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++
++import { execFileAsync } from "@agentplaneorg/core/process";
++
++import { CliError } from "../../shared/errors.js";
++
++export function relativeToGitRoot(gitRoot: string, filePath: string): string {
++  return path.relative(gitRoot, filePath).replaceAll("\\", "/");
++}
++
++export function assertPathWithinGitRoot(gitRoot: string, filePath: string, label: string): void {
++  const rel = path.relative(gitRoot, filePath);
++  if (!rel || rel === ".." || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `${label} must stay inside the repository root.`,
++    });
++  }
++}
++
++export async function readFileAtGitCommit(opts: {
++  gitRoot: string;
++  commit: string;
++  filePath: string;
++  label: string;
++  missingMessage?: string;
++}): Promise<string> {
++  assertPathWithinGitRoot(opts.gitRoot, opts.filePath, opts.label);
++  const normalizedPath = relativeToGitRoot(opts.gitRoot, opts.filePath);
++  try {
++    const { stdout } = await execFileAsync("git", ["show", `${opts.commit}:${normalizedPath}`], {
++      cwd: opts.gitRoot,
++    });
++    return String(stdout);
++  } catch {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        opts.missingMessage ?? `${opts.label} is not present at the reviewed implementation SHA.`,
++    });
++  }
++}
++
++export async function readArtifactAtReviewedSha(opts: {
++  gitRoot: string;
++  reviewedSha: string;
++  filePath: string;
++  label: string;
++}): Promise<{ path: string; raw: string }> {
++  assertPathWithinGitRoot(opts.gitRoot, opts.filePath, opts.label);
++  const [current, reviewed] = await Promise.all([
++    readFile(opts.filePath, "utf8"),
++    readFileAtGitCommit({
++      gitRoot: opts.gitRoot,
++      commit: opts.reviewedSha,
++      filePath: opts.filePath,
++      label: opts.label,
++    }),
++  ]);
++  if (current !== reviewed) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        `${opts.label} must match the exact blob at the reviewed implementation SHA ` +
++        "before it can be included in a qualification packet.",
++    });
++  }
++  return { path: relativeToGitRoot(opts.gitRoot, opts.filePath), raw: reviewed };
++}
+diff --git a/packages/agentplane/src/commands/task/qualification-packet-dependencies.ts b/packages/agentplane/src/commands/task/qualification-packet-dependencies.ts
+new file mode 100644
+index 000000000..dde65a09e
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/qualification-packet-dependencies.ts
+@@ -0,0 +1,51 @@
++import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
++import { CliError } from "../../shared/errors.js";
++
++function sortedUnique(values: readonly string[]): string[] {
++  return [...new Set(values.map((value) => value.trim()).filter(Boolean))].toSorted();
++}
++
++export async function resolveQualificationDependencyLeaves(opts: {
++  backend: Pick<TaskBackend, "getTask">;
++  taskId: string;
++  dependsOn: readonly string[];
++}): Promise<{ rootDependencyIds: string[]; terminalLeaves: TaskData[] }> {
++  const rootDependencyIds = sortedUnique(opts.dependsOn);
++  if (rootDependencyIds.length === 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Qualification task ${opts.taskId} must declare at least one dependency leaf.`,
++    });
++  }
++  const terminalLeaves = new Map<string, TaskData>();
++  const visited = new Set<string>();
++  const stack = [opts.taskId];
++  const visit = async (taskId: string): Promise<void> => {
++    const cycleStart = stack.indexOf(taskId);
++    if (cycleStart !== -1) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Qualification dependency cycle detected: ${[...stack.slice(cycleStart), taskId].join(" -> ")}.`,
++      });
++    }
++    if (visited.has(taskId)) return;
++    const task = await opts.backend.getTask(taskId);
++    if (!task) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Qualification dependency task ${taskId} is missing from the task backend.`,
++      });
++    }
++    stack.push(taskId);
++    const dependsOn = sortedUnique(task.depends_on);
++    if (dependsOn.length === 0) terminalLeaves.set(taskId, task);
++    else for (const dependencyId of dependsOn) await visit(dependencyId);
++    stack.pop();
++    visited.add(taskId);
++  };
++  for (const dependencyId of rootDependencyIds) await visit(dependencyId);
++  return {
++    rootDependencyIds,
++    terminalLeaves: [...terminalLeaves.values()].toSorted((a, b) => a.id.localeCompare(b.id)),
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/qualification-packet-json.ts b/packages/agentplane/src/commands/task/qualification-packet-json.ts
+new file mode 100644
+index 000000000..76b2360e5
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/qualification-packet-json.ts
+@@ -0,0 +1,43 @@
++import { readFile } from "node:fs/promises";
++
++import { CliError } from "../../shared/errors.js";
++import { isRecord } from "../../shared/guards.js";
++
++export type JsonRecord = Record<string, unknown>;
++
++export function asString(value: unknown): string | null {
++  return typeof value === "string" && value.trim() ? value.trim() : null;
++}
++
++export function asNumber(value: unknown): number | null {
++  return typeof value === "number" && Number.isFinite(value) ? value : null;
++}
++
++export function recordValue(value: unknown): JsonRecord {
++  return isRecord(value) ? value : {};
++}
++
++export async function readJson(
++  pathname: string,
++  label: string,
++): Promise<{ raw: string; value: JsonRecord }> {
++  let raw: string;
++  try {
++    raw = await readFile(pathname, "utf8");
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `${label} is missing: ${pathname} (${error instanceof Error ? error.message : String(error)}).`,
++    });
++  }
++  try {
++    const value: unknown = JSON.parse(raw);
++    if (!isRecord(value)) throw new Error("expected a JSON object");
++    return { raw, value };
++  } catch (error) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `${label} is invalid JSON: ${pathname} (${error instanceof Error ? error.message : String(error)}).`,
++    });
++  }
++}
+diff --git a/packages/agentplane/src/commands/task/qualification-packet-rf04.ts b/packages/agentplane/src/commands/task/qualification-packet-rf04.ts
+new file mode 100644
+index 000000000..218813f16
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/qualification-packet-rf04.ts
+@@ -0,0 +1,256 @@
++import { createHash } from "node:crypto";
++import { mkdir } from "node:fs/promises";
++import path from "node:path";
++
++import { execFileAsync } from "@agentplaneorg/core/process";
++
++import { CliError } from "../../shared/errors.js";
++import { isRecord } from "../../shared/guards.js";
++import type { VerificationCheckDetail } from "../shared/verification-details.js";
++import {
++  asNumber,
++  asString,
++  readJson,
++  recordValue,
++  type JsonRecord,
++} from "./qualification-packet-json.js";
++
++export type QualificationRf04Comparison = {
++  main_baseline: {
++    path: string;
++    sha256: `sha256:${string}`;
++    scenario_count: number;
++    observed_scalar_cells: number;
++    structural_projection_sha256: string | null;
++    comparison_policy: JsonRecord;
++  };
++  replay_comparison: {
++    baseline: ReplayMetricSnapshot;
++    current_rebuild: ReplayMetricSnapshot;
++    status: "exact_frozen_rebuild";
++    verified_by_checks: string[];
++    live_provider_measurement: "not_run_by_packet_builder";
++  };
++};
++
++type ReplayMetricSnapshot = {
++  path: string;
++  sha256: `sha256:${string}`;
++  structural_projection_sha256: string | null;
++  diagnostics_sha256: string | null;
++  coverage: JsonRecord;
++  golden_outcomes: {
++    verdict: string | null;
++    match_count: number | null;
++    mismatch_count: number | null;
++    resolved_cells: number | null;
++    values: {
++      scenario_id: string;
++      outcome: string;
++      golden_expected: boolean | null;
++      true_count: number | null;
++      false_count: number | null;
++      golden_match_count: number | null;
++      golden_mismatch_count: number | null;
++    }[];
++  };
++  provider_tokens: {
++    scenario_id: string;
++    role: string;
++    input_tokens: JsonRecord | null;
++    output_tokens: JsonRecord | null;
++    reasoning_tokens: JsonRecord | null;
++  }[];
++  latency: { scenario_id: string; values: JsonRecord }[];
++};
++
++const RF04_CURRENT_REBUILD_FILE = "rf04-current-rebuild.v1.json";
++const RF04_CAPTURE_SCRIPT = "scripts/bench/capture-agent-efficiency-replay.mjs";
++
++function sha256(value: string | Buffer): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function relative(gitRoot: string, filePath: string): string {
++  return path.relative(gitRoot, filePath).replaceAll("\\\\", "/");
++}
++
++function countObservedScalarCells(value: JsonRecord): number {
++  const projection = recordValue(value.structural_projection);
++  const scenarios = Array.isArray(projection.scenarios) ? projection.scenarios : [];
++  let count = 0;
++  for (const scenario of scenarios) {
++    const metrics = recordValue(recordValue(scenario).metrics);
++    for (const metric of Object.values(metrics)) {
++      const cell = recordValue(metric);
++      if (cell.value !== null && cell.value !== undefined) count += 1;
++    }
++  }
++  return count;
++}
++
++function buildReplayMetricSnapshot(opts: {
++  path: string;
++  raw: string;
++  replay: JsonRecord;
++}): ReplayMetricSnapshot {
++  const projection = recordValue(opts.replay.structural_projection);
++  const scenarios = Array.isArray(projection.scenarios) ? projection.scenarios : [];
++  const outcomes: ReplayMetricSnapshot["golden_outcomes"]["values"] = [];
++  const providerTokens: ReplayMetricSnapshot["provider_tokens"] = [];
++  for (const scenarioValue of scenarios) {
++    const scenario = recordValue(scenarioValue);
++    const scenarioId = asString(scenario.id) ?? "unknown";
++    const resolvedOutcomes = recordValue(scenario.resolved_outcomes);
++    for (const outcome of Object.keys(resolvedOutcomes).toSorted()) {
++      const values = recordValue(resolvedOutcomes[outcome]);
++      outcomes.push({
++        scenario_id: scenarioId,
++        outcome,
++        golden_expected:
++          typeof values.golden_expected === "boolean" ? values.golden_expected : null,
++        true_count: asNumber(values.true_count),
++        false_count: asNumber(values.false_count),
++        golden_match_count: asNumber(values.golden_match_count),
++        golden_mismatch_count: asNumber(values.golden_mismatch_count),
++      });
++    }
++    const roles = recordValue(scenario.token_usage_by_role);
++    for (const role of Object.keys(roles).toSorted()) {
++      const metrics = recordValue(roles[role]);
++      providerTokens.push({
++        scenario_id: scenarioId,
++        role,
++        input_tokens: isRecord(metrics.input_tokens) ? metrics.input_tokens : null,
++        output_tokens: isRecord(metrics.output_tokens) ? metrics.output_tokens : null,
++        reasoning_tokens: isRecord(metrics.reasoning_tokens) ? metrics.reasoning_tokens : null,
++      });
++    }
++  }
++  const diagnostics = recordValue(opts.replay.diagnostics);
++  const latency = (Array.isArray(diagnostics.scenarios) ? diagnostics.scenarios : []).map(
++    (scenarioValue) => {
++      const scenario = recordValue(scenarioValue);
++      return {
++        scenario_id: asString(scenario.id) ?? "unknown",
++        values: recordValue(scenario.latency_ms),
++      };
++    },
++  );
++  const comparison = recordValue(opts.replay.golden_outcome_comparison);
++  return {
++    path: opts.path,
++    sha256: sha256(opts.raw),
++    structural_projection_sha256: asString(opts.replay.structural_projection_sha256),
++    diagnostics_sha256: asString(opts.replay.diagnostics_sha256),
++    coverage: recordValue(opts.replay.coverage),
++    golden_outcomes: {
++      verdict: asString(comparison.verdict),
++      match_count: asNumber(comparison.golden_match_count),
++      mismatch_count: asNumber(comparison.golden_mismatch_count),
++      resolved_cells: asNumber(comparison.resolved_run_outcome_cells),
++      values: outcomes,
++    },
++    provider_tokens: providerTokens,
++    latency,
++  };
++}
++
++function replayMeasurements(
++  snapshot: ReplayMetricSnapshot,
++): Omit<ReplayMetricSnapshot, "path" | "sha256"> {
++  const { path: _path, sha256: _sha256, ...measurements } = snapshot;
++  return measurements;
++}
++
++async function captureCurrentReplaySnapshot(opts: {
++  gitRoot: string;
++  taskId: string;
++  workflowDir: string;
++}): Promise<ReplayMetricSnapshot> {
++  const outputPath = path.join(
++    opts.gitRoot,
++    opts.workflowDir,
++    opts.taskId,
++    "evidence",
++    RF04_CURRENT_REBUILD_FILE,
++  );
++  await mkdir(path.dirname(outputPath), { recursive: true });
++  await execFileAsync(
++    process.execPath,
++    [path.join(opts.gitRoot, RF04_CAPTURE_SCRIPT), "--output", outputPath],
++    {
++      cwd: opts.gitRoot,
++    },
++  );
++  const current = await readJson(outputPath, "RF-04 current replay rebuild");
++  return buildReplayMetricSnapshot({
++    path: relative(opts.gitRoot, outputPath),
++    raw: current.raw,
++    replay: current.value,
++  });
++}
++
++export async function buildQualificationRf04Comparison(opts: {
++  gitRoot: string;
++  checks: readonly VerificationCheckDetail[];
++  taskId: string;
++  workflowDir: string;
++}): Promise<QualificationRf04Comparison> {
++  const mainPath = path.join(opts.gitRoot, "scripts/baselines/agent-efficiency-pre-v0.7-main.json");
++  const replayPath = path.join(
++    opts.gitRoot,
++    "scripts/baselines/agent-efficiency-pre-v0.7-replay.json",
++  );
++  const [main, replay] = await Promise.all([
++    readJson(mainPath, "RF-04 main baseline"),
++    readJson(replayPath, "RF-04 replay baseline"),
++  ]);
++  const replaySnapshot = buildReplayMetricSnapshot({
++    path: relative(opts.gitRoot, replayPath),
++    raw: replay.raw,
++    replay: replay.value,
++  });
++  const currentRebuild = await captureCurrentReplaySnapshot(opts);
++  if (
++    JSON.stringify(replayMeasurements(currentRebuild)) !==
++    JSON.stringify(replayMeasurements(replaySnapshot))
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Qualification packet requires the current RF-04 replay rebuild to match every frozen replay measurement.",
++    });
++  }
++  const verifiedByChecks = opts.checks
++    .filter(
++      (check) =>
++        check.result === "pass" &&
++        (check.command.includes("ci:contract") || check.command.includes("agent-efficiency")),
++    )
++    .map((check) => check.command);
++  if (verifiedByChecks.length === 0) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Qualification packet requires a passing ci:contract or agent-efficiency verification check before it can claim an exact RF-04 rebuild.",
++    });
++  }
++  return {
++    main_baseline: {
++      path: relative(opts.gitRoot, mainPath),
++      sha256: sha256(main.raw),
++      scenario_count: asNumber(main.value.scenario_count) ?? 0,
++      observed_scalar_cells: countObservedScalarCells(main.value),
++      structural_projection_sha256: asString(main.value.structural_projection_sha256),
++      comparison_policy: recordValue(main.value.comparison_policy),
++    },
++    replay_comparison: {
++      baseline: replaySnapshot,
++      current_rebuild: currentRebuild,
++      status: "exact_frozen_rebuild",
++      verified_by_checks: verifiedByChecks,
++      live_provider_measurement: "not_run_by_packet_builder",
++    },
++  };
++}
+diff --git a/packages/agentplane/src/commands/task/qualification-packet.ts b/packages/agentplane/src/commands/task/qualification-packet.ts
+new file mode 100644
+index 000000000..c40a53874
+--- /dev/null
++++ b/packages/agentplane/src/commands/task/qualification-packet.ts
+@@ -0,0 +1,592 @@
++import { createHash } from "node:crypto";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { canonicalizeJson, normalizeTaskStatus } from "@agentplaneorg/core/tasks";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import { CliError } from "../../shared/errors.js";
++import { isRecord } from "../../shared/guards.js";
++import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
++import type { CommandContext } from "../shared/task-backend.js";
++import {
++  parseVerificationCheckDetails,
++  type VerificationCheckDetail,
++} from "../shared/verification-details.js";
++import {
++  buildQualificationRf04Comparison,
++  type QualificationRf04Comparison,
++} from "./qualification-packet-rf04.js";
++import { asNumber, asString, readJson, recordValue } from "./qualification-packet-json.js";
++import {
++  assertPathWithinGitRoot,
++  readArtifactAtReviewedSha,
++  readFileAtGitCommit,
++  relativeToGitRoot,
++} from "./qualification-packet-artifacts.js";
++import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
++
++const QUALIFICATION_PACKET_FILE = "qualification-packet.v1.json";
++const QUALIFICATION_PACKET_KIND = "task_qualification_packet";
++const SHA256_PATTERN = /^sha256:[a-f0-9]{64}$/u;
++const SHA1_PATTERN = /^[a-f0-9]{40}$/u;
++
++type QualificationVerificationRecord = {
++  schema_version: number;
++  kind: string;
++  task_id: string;
++  recorded_at: string;
++  result: string;
++  verifier: string;
++  note: string;
++  details: string | null;
++  implementation_sha: string | null;
++  digest: string;
++};
++
++type QualificationPacket = {
++  schema_version: 1;
++  kind: typeof QUALIFICATION_PACKET_KIND;
++  task_id: string;
++  prepared_at: string;
++  implementation_sha: string;
++  verification: {
++    record_path: string;
++    record_sha256: `sha256:${string}`;
++    record_digest: `sha256:${string}`;
++    recorded_at: string;
++    result: "ok";
++    verifier: string;
++    note: string;
++    implementation_sha: string;
++    checks: VerificationCheckDetail[];
++  };
++  dependency_closure: {
++    root_dependency_ids: string[];
++    terminal_leaf_ids: string[];
++    leaves: {
++      task_id: string;
++      status: "DONE";
++      verification: {
++        state: "ok";
++        updated_at: string | null;
++        updated_by: string | null;
++      };
++      evaluator: {
++        state: "pass";
++        evaluated_sha: string | null;
++        quality_report: { path: string; sha256: `sha256:${string}` };
++      };
++      hosted_close: {
++        pr_number: number;
++        pre_merge_closure: "closed_before_merge";
++        task_artifact_commit: string;
++        ancestor_of_reviewed_sha: true;
++        pr_meta: { path: string; sha256: `sha256:${string}` };
++        task_document: { path: string; sha256: `sha256:${string}` };
++      };
++    }[];
++  };
++  rf04: QualificationRf04Comparison;
++  digest: `sha256:${string}`;
++};
++
++export type CurrentQualificationPacket = {
++  path: string;
++  file_sha256: `sha256:${string}`;
++  packet: QualificationPacket;
++};
++
++function sha256(value: string | Buffer): `sha256:${string}` {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function packetDigest(packet: Omit<QualificationPacket, "digest">): `sha256:${string}` {
++  return sha256(JSON.stringify(canonicalizeJson(packet)));
++}
++
++function isSha(value: unknown): value is string {
++  return typeof value === "string" && SHA1_PATTERN.test(value);
++}
++
++export function isQualificationTask(task: Pick<TaskData, "tags">): boolean {
++  const tags = new Set(task.tags.map((tag) => tag.trim()));
++  return (
++    tags.has("quality") &&
++    tags.has("release-gate") &&
++    [...tags].some((tag) => tag.startsWith("milestone-"))
++  );
++}
++
++function qualificationPacketPath(opts: {
++  gitRoot: string;
++  workflowDir: string;
++  taskId: string;
++}): string {
++  return path.join(
++    opts.gitRoot,
++    opts.workflowDir,
++    opts.taskId,
++    "evidence",
++    QUALIFICATION_PACKET_FILE,
++  );
++}
++
++function parseVerificationRecord(value: unknown, taskId: string): QualificationVerificationRecord {
++  if (!isRecord(value)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Qualification verification record is invalid.",
++    });
++  }
++  const record: QualificationVerificationRecord = {
++    schema_version: asNumber(value.schema_version) ?? 0,
++    kind: asString(value.kind) ?? "",
++    task_id: asString(value.task_id) ?? "",
++    recorded_at: asString(value.recorded_at) ?? "",
++    result: asString(value.result) ?? "",
++    verifier: asString(value.verifier) ?? "",
++    note: asString(value.note) ?? "",
++    details: typeof value.details === "string" ? value.details : null,
++    implementation_sha: asString(value.implementation_sha),
++    digest: asString(value.digest) ?? "",
++  };
++  if (
++    record.schema_version !== 1 ||
++    record.kind !== "task_verification_record" ||
++    record.task_id !== taskId ||
++    record.result !== "ok" ||
++    !isSha(record.implementation_sha) ||
++    !SHA256_PATTERN.test(record.digest)
++  ) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Qualification packet requires a current passing durable verification record for ${taskId}.`,
++    });
++  }
++  return record;
++}
++
++async function readPassingQualityReport(opts: {
++  gitRoot: string;
++  workflowDir: string;
++  task: TaskData;
++  reviewedSha: string;
++}): Promise<{ path: string; sha256: `sha256:${string}` }> {
++  const evaluatedSha = opts.task.quality_review?.evaluated_sha;
++  if (!isSha(evaluatedSha)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Qualification leaf ${opts.task.id} lacks a current evaluator reviewed SHA.`,
++    });
++  }
++  const taskPrefix = `${opts.workflowDir.replaceAll(/\/+$/gu, "")}/${opts.task.id}/quality/`;
++  const candidates = (opts.task.quality_review?.evidence_refs ?? [])
++    .filter(
++      (reference) => reference.startsWith(taskPrefix) && reference.endsWith("/quality-report.json"),
++    )
++    .toSorted();
++  for (const candidate of candidates) {
++    const filePath = path.resolve(opts.gitRoot, candidate);
++    const reportArtifact = await readArtifactAtReviewedSha({
++      gitRoot: opts.gitRoot,
++      reviewedSha: opts.reviewedSha,
++      filePath,
++      label: "Qualification quality report",
++    });
++    let reportValue: unknown;
++    try {
++      reportValue = JSON.parse(reportArtifact.raw);
++    } catch {
++      continue;
++    }
++    if (!isRecord(reportValue)) continue;
++    if (
++      reportValue.task_id === opts.task.id &&
++      reportValue.verdict === "pass" &&
++      reportValue.evaluated_sha === evaluatedSha
++    ) {
++      return { path: reportArtifact.path, sha256: sha256(reportArtifact.raw) };
++    }
++  }
++  throw new CliError({
++    code: "E_VALIDATION",
++    message:
++      `Qualification leaf ${opts.task.id} lacks a passing quality-report artifact ` +
++      "bound to its current evaluator reviewed SHA.",
++  });
++}
++
++async function buildDependencyClosure(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  reviewedSha: string;
++}): Promise<QualificationPacket["dependency_closure"]> {
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  const workflowDir = opts.ctx.config.paths.workflow_dir;
++  const dependencies = await resolveQualificationDependencyLeaves({
++    backend: opts.ctx.taskBackend,
++    taskId: opts.task.id,
++    dependsOn: opts.task.depends_on,
++  });
++  const leaves = await Promise.all(
++    dependencies.terminalLeaves.map(async (leaf) => {
++      const taskId = leaf.id;
++      if (normalizeTaskStatus(leaf.status) !== "DONE") {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: `Qualification dependency leaf ${taskId} is not DONE.`,
++        });
++      }
++      if (leaf.verification?.state !== "ok") {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: `Qualification dependency leaf ${taskId} lacks passing verification state.`,
++        });
++      }
++      if (leaf.quality_review?.state !== "pass") {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: `Qualification dependency leaf ${taskId} lacks evaluator pass state.`,
++        });
++      }
++      const taskRoot = path.join(gitRoot, workflowDir, taskId);
++      const readmePath = path.join(taskRoot, "README.md");
++      const metaPath = path.join(taskRoot, "pr", "meta.json");
++      const [readme, metaArtifact, qualityReport] = await Promise.all([
++        readArtifactAtReviewedSha({
++          gitRoot,
++          reviewedSha: opts.reviewedSha,
++          filePath: readmePath,
++          label: `Qualification leaf ${taskId} task document`,
++        }),
++        readArtifactAtReviewedSha({
++          gitRoot,
++          reviewedSha: opts.reviewedSha,
++          filePath: metaPath,
++          label: `Qualification leaf ${taskId} PR metadata`,
++        }),
++        readPassingQualityReport({
++          gitRoot,
++          workflowDir,
++          task: leaf,
++          reviewedSha: opts.reviewedSha,
++        }),
++      ]);
++      let metaValue: unknown;
++      try {
++        metaValue = JSON.parse(metaArtifact.raw);
++      } catch {
++        metaValue = null;
++      }
++      const meta = recordValue(metaValue);
++      const closure = recordValue(meta.pre_merge_closure);
++      const prNumber = asNumber(meta.pr_number);
++      if (
++        meta.verify === null ||
++        !isRecord(meta.verify) ||
++        meta.verify.status !== "pass" ||
++        closure.state !== "closed_before_merge" ||
++        prNumber === null ||
++        !Number.isInteger(prNumber) ||
++        prNumber < 1
++      ) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message: `Qualification dependency leaf ${taskId} lacks passing PR verification or a closed hosted-close marker.`,
++        });
++      }
++      return {
++        task_id: taskId,
++        status: "DONE" as const,
++        verification: {
++          state: "ok" as const,
++          updated_at: leaf.verification.updated_at ?? null,
++          updated_by: leaf.verification.updated_by ?? null,
++        },
++        evaluator: {
++          state: "pass" as const,
++          evaluated_sha: leaf.quality_review.evaluated_sha ?? null,
++          quality_report: qualityReport,
++        },
++        hosted_close: {
++          pr_number: prNumber,
++          pre_merge_closure: "closed_before_merge" as const,
++          task_artifact_commit: opts.reviewedSha,
++          ancestor_of_reviewed_sha: true as const,
++          pr_meta: { path: metaArtifact.path, sha256: sha256(metaArtifact.raw) },
++          task_document: { path: readme.path, sha256: sha256(readme.raw) },
++        },
++      };
++    }),
++  );
++  return {
++    root_dependency_ids: dependencies.rootDependencyIds,
++    terminal_leaf_ids: dependencies.terminalLeaves.map((leaf) => leaf.id),
++    leaves,
++  };
++}
++
++export async function writeQualificationPacket(opts: {
++  ctx: CommandContext;
++  task: TaskData;
++  recordPath: string;
++  recordedAt: string;
++}): Promise<string | null> {
++  if (!isQualificationTask(opts.task)) return null;
++  const gitRoot = opts.ctx.resolvedProject.gitRoot;
++  assertPathWithinGitRoot(gitRoot, opts.recordPath, "Qualification verification record");
++  const recordJson = await readJson(opts.recordPath, "Qualification verification record");
++  const record = parseVerificationRecord(recordJson.value, opts.task.id);
++  const checks = parseVerificationCheckDetails(record.details);
++  if (!checks) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Qualification packet requires structured verification details with Command, Result, Evidence, and Scope for every check.",
++    });
++  }
++  if (!isSha(record.implementation_sha)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: `Qualification verification record for ${opts.task.id} lacks a reviewed implementation SHA.`,
++    });
++  }
++  const implementationSha = record.implementation_sha;
++  const packetWithoutDigest: Omit<QualificationPacket, "digest"> = {
++    schema_version: 1,
++    kind: QUALIFICATION_PACKET_KIND,
++    task_id: opts.task.id,
++    prepared_at: opts.recordedAt,
++    implementation_sha: implementationSha,
++    verification: {
++      record_path: relativeToGitRoot(gitRoot, opts.recordPath),
++      record_sha256: sha256(recordJson.raw),
++      record_digest: record.digest as `sha256:${string}`,
++      recorded_at: record.recorded_at,
++      result: "ok",
++      verifier: record.verifier,
++      note: record.note,
++      implementation_sha: implementationSha,
++      checks,
++    },
++    dependency_closure: await buildDependencyClosure({
++      ctx: opts.ctx,
++      task: opts.task,
++      reviewedSha: implementationSha,
++    }),
++    rf04: await buildQualificationRf04Comparison({
++      gitRoot,
++      checks,
++      taskId: opts.task.id,
++      workflowDir: opts.ctx.config.paths.workflow_dir,
++    }),
++  };
++  const packet: QualificationPacket = {
++    ...packetWithoutDigest,
++    digest: packetDigest(packetWithoutDigest),
++  };
++  const packetPath = qualificationPacketPath({
++    gitRoot,
++    workflowDir: opts.ctx.config.paths.workflow_dir,
++    taskId: opts.task.id,
++  });
++  await writeJsonStableIfChanged(packetPath, packet);
++  return packetPath;
++}
++
++function parseQualificationPacket(value: unknown, task: TaskData): QualificationPacket | null {
++  if (!isRecord(value)) return null;
++  const { digest, ...payload } = value;
++  if (
++    value.schema_version !== 1 ||
++    value.kind !== QUALIFICATION_PACKET_KIND ||
++    value.task_id !== task.id ||
++    !isSha(value.implementation_sha) ||
++    typeof digest !== "string" ||
++    !SHA256_PATTERN.test(digest) ||
++    digest !== sha256(JSON.stringify(canonicalizeJson(payload)))
++  ) {
++    return null;
++  }
++  const verification = recordValue(value.verification);
++  if (
++    verification.result !== "ok" ||
++    verification.recorded_at !== task.verification?.updated_at ||
++    verification.verifier !== task.verification?.updated_by ||
++    verification.note !== task.verification?.note ||
++    verification.implementation_sha !== value.implementation_sha ||
++    !Array.isArray(verification.checks) ||
++    verification.checks.length === 0
++  ) {
++    return null;
++  }
++  return value as QualificationPacket;
++}
++
++export async function readCurrentQualificationPacket(opts: {
++  gitRoot: string;
++  workflowDir: string;
++  task: TaskData;
++}): Promise<CurrentQualificationPacket | null> {
++  if (!isQualificationTask(opts.task)) return null;
++  const filePath = qualificationPacketPath({
++    gitRoot: opts.gitRoot,
++    workflowDir: opts.workflowDir,
++    taskId: opts.task.id,
++  });
++  try {
++    const raw = await readFile(filePath, "utf8");
++    const parsed = parseQualificationPacket(JSON.parse(raw), opts.task);
++    return parsed ? { path: filePath, file_sha256: sha256(raw), packet: parsed } : null;
++  } catch {
++    return null;
++  }
++}
++
++type PinnedQualificationArtifact = {
++  label: string;
++  path: string;
++  sha256: `sha256:${string}`;
++};
++
++function qualificationPinnedArtifacts(
++  opts: CurrentQualificationPacket,
++  gitRoot: string,
++): PinnedQualificationArtifact[] {
++  const packet = opts.packet;
++  const artifacts: PinnedQualificationArtifact[] = [
++    {
++      label: "qualification packet",
++      path: relativeToGitRoot(gitRoot, opts.path),
++      sha256: opts.file_sha256,
++    },
++    {
++      label: "qualification verification record",
++      path: packet.verification.record_path,
++      sha256: packet.verification.record_sha256,
++    },
++    {
++      label: "RF-04 main baseline",
++      path: packet.rf04.main_baseline.path,
++      sha256: packet.rf04.main_baseline.sha256,
++    },
++    {
++      label: "RF-04 replay baseline",
++      path: packet.rf04.replay_comparison.baseline.path,
++      sha256: packet.rf04.replay_comparison.baseline.sha256,
++    },
++    {
++      label: "RF-04 current replay rebuild",
++      path: packet.rf04.replay_comparison.current_rebuild.path,
++      sha256: packet.rf04.replay_comparison.current_rebuild.sha256,
++    },
++  ];
++  for (const leaf of packet.dependency_closure.leaves) {
++    artifacts.push(
++      {
++        label: `qualification leaf ${leaf.task_id} task document`,
++        path: leaf.hosted_close.task_document.path,
++        sha256: leaf.hosted_close.task_document.sha256,
++      },
++      {
++        label: `qualification leaf ${leaf.task_id} PR metadata`,
++        path: leaf.hosted_close.pr_meta.path,
++        sha256: leaf.hosted_close.pr_meta.sha256,
++      },
++      {
++        label: `qualification leaf ${leaf.task_id} quality report`,
++        path: leaf.evaluator.quality_report.path,
++        sha256: leaf.evaluator.quality_report.sha256,
++      },
++    );
++  }
++  return artifacts;
++}
++
++export async function assertQualificationEvidenceLineage(opts: {
++  gitRoot: string;
++  implementationSha: string;
++  evidenceCommit: string;
++  evidenceRoot: string;
++}): Promise<void> {
++  try {
++    await execFileAsync(
++      "git",
++      ["merge-base", "--is-ancestor", opts.implementationSha, opts.evidenceCommit],
++      { cwd: opts.gitRoot },
++    );
++  } catch {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Qualification evidence commit must descend from the packet's verified implementation SHA.",
++    });
++  }
++  const { stdout } = await execFileAsync(
++    "git",
++    ["diff", "--name-only", opts.implementationSha, opts.evidenceCommit],
++    { cwd: opts.gitRoot },
++  );
++  const allowedPrefix = `${opts.evidenceRoot.replaceAll(/\\+$/gu, "")}/`;
++  const disallowedPath = String(stdout)
++    .split("\n")
++    .map((filePath) => filePath.trim())
++    .find((filePath) => filePath && !filePath.startsWith(allowedPrefix));
++  if (disallowedPath) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message:
++        "Qualification evidence commit may contain only current-task evidence after the packet's verified implementation SHA.",
++    });
++  }
++}
++
++export async function resolveQualificationEvidenceCommit(opts: {
++  gitRoot: string;
++  qualificationPacket: CurrentQualificationPacket;
++}): Promise<string> {
++  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: opts.gitRoot });
++  const commit = String(stdout).trim();
++  if (!isSha(commit)) {
++    throw new CliError({
++      code: "E_VALIDATION",
++      message: "Qualification review requires a resolvable current HEAD commit.",
++    });
++  }
++  await assertQualificationEvidenceLineage({
++    gitRoot: opts.gitRoot,
++    implementationSha: opts.qualificationPacket.packet.implementation_sha,
++    evidenceCommit: commit,
++    evidenceRoot: path.posix.dirname(
++      path.posix.dirname(opts.qualificationPacket.packet.verification.record_path),
++    ),
++  });
++  const seen = new Map<string, `sha256:${string}`>();
++  for (const artifact of qualificationPinnedArtifacts(opts.qualificationPacket, opts.gitRoot)) {
++    const previous = seen.get(artifact.path);
++    if (previous && previous !== artifact.sha256) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Qualification packet declares conflicting hashes for ${artifact.path}.`,
++      });
++    }
++    seen.set(artifact.path, artifact.sha256);
++    const contents = await readFileAtGitCommit({
++      gitRoot: opts.gitRoot,
++      commit,
++      filePath: path.resolve(opts.gitRoot, artifact.path),
++      label: artifact.label,
++      missingMessage:
++        "Qualification review requires current HEAD to contain the exact qualification packet, verification record, and dependency evidence. Commit task artifacts before evaluator review.",
++    });
++    if (sha256(contents) !== artifact.sha256) {
++      throw new CliError({
++        code: "E_VALIDATION",
++        message: `Qualification evidence at current HEAD does not match the sealed packet: ${artifact.label}.`,
++      });
++    }
++  }
++  return commit;
++}
+diff --git a/packages/agentplane/src/commands/task/verify-record-execute.ts b/packages/agentplane/src/commands/task/verify-record-execute.ts
+index a26d012d0..75d89f793 100644
+--- a/packages/agentplane/src/commands/task/verify-record-execute.ts
++++ b/packages/agentplane/src/commands/task/verify-record-execute.ts
+@@ -36,6 +36,8 @@ import {
+   nowIso,
+ } from "./shared.js";
+ import { resolveVerifyRecordInput } from "./verify-record-input.js";
++import { isQualificationTask, writeQualificationPacket } from "./qualification-packet.js";
++import { parseVerificationCheckDetails } from "../shared/verification-details.js";
+ import type {
+   ExecuteVerifyRecordCommandOptions,
+   VerifyState,
+@@ -198,6 +200,17 @@ async function recordVerificationResult(opts: {
+         guidance: "fill it before running `agentplane verify ...`",
+       });
+       const verificationScope = extractDocSection(doc, "Verify Steps")?.trim() ?? "";
++      if (
++        opts.state === "ok" &&
++        isQualificationTask(current) &&
++        parseVerificationCheckDetails(opts.details) === null
++      ) {
++        throw new CliError({
++          code: "E_VALIDATION",
++          message:
++            "Qualification verification requires structured --details with Command, Result, Evidence, and Scope for every check.",
++        });
++      }
+       const record = {
+         schema_version: 1,
+         kind: "task_verification_record",
+@@ -225,13 +238,19 @@ async function recordVerificationResult(opts: {
+         "verification",
+       );
+       await mkdir(verificationDir, { recursive: true });
+-      await writeJsonStableIfChanged(
+-        path.join(verificationDir, verificationRecordName(at, digest)),
+-        {
+-          ...record,
+-          digest,
+-        },
+-      );
++      const verificationPath = path.join(verificationDir, verificationRecordName(at, digest));
++      await writeJsonStableIfChanged(verificationPath, {
++        ...record,
++        digest,
++      });
++      if (opts.state === "ok" && isQualificationTask(current)) {
++        await writeQualificationPacket({
++          ctx,
++          task: current,
++          recordPath: verificationPath,
++          recordedAt: at,
++        });
++      }
+ 
+       const execution = executeTaskVerificationTransitionRequest({
+         task: current,

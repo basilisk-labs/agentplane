@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts\nResult: pass (56 tests)\nEvidence: 28b541f82687e465f36e5ecd50e98efdb806f85e; historical dependency lifecycle cannot be overridden by current DONE/ok state.\nScope: SHA-bound qualification packets, transitive terminal leaves, lifecycle and quality-report state at the reviewed implementation SHA.\n\nCommand: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; architecture, lint, clone, knip, and coverage checks pass.\nScope: repository contract.",
+  "digest": "sha256:dbd4323b6f0309e1dbebd3b9a316f372e5e57745b9b8afba45cc8e56dbbf19f5",
+  "implementation_sha": "28b541f82687e465f36e5ecd50e98efdb806f85e",
+  "kind": "task_verification_record",
+  "note": "Verified SHA-bound dependency lifecycle packet on 28b541f8.",
+  "recorded_at": "2026-07-29T14:19:04.724Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Add focused tests that prepare a metadata-only qualification task with structured verification details and assert that the frozen evaluator work order contains one SHA-bound qualification packet, accepted verification evidence, per-leaf dependency closure, and RF-04 baseline-versus-current metrics. 2. Add a regression that fails if a packet is bound to a stale reviewed SHA or has incomplete dependency lifecycle evidence. 3. Run bun run test:fast -- packages/agentplane/src/commands/evaluator and the new targeted test files. Expected: all pass. 4. Run bun run ci:contract. Expected: full repository contract passes. 5. Inspect the packet schema and evaluator prompt evidence list. Expected: an EVALUATOR can cite only frozen packet evidence and can evaluate a metadata-only qualification change at its actual reviewed SHA.",
+  "scope_digest": "sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582",
+  "task_id": "202607291148-1F9GZD",
+  "verification_command": "agentplane verify 202607291148-1F9GZD --ok --by TESTER",
+  "verifier": "TESTER"
+}

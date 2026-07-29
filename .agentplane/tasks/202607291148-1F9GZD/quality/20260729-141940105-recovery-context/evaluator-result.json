@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The frozen change implements the approved SHA-bound qualification contract and the final verification covers packet sealing, transitive dependency leaves, historical lifecycle state, negative cases, and repository-wide contract checks.",
+      "broken_invariant": "No invariant is broken; the implementation and verification evidence satisfy the task contract for deterministic qualification packets, reviewed-SHA binding, dependency closure, and RF-04 comparison.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:5a4a04515cc198703e07c8163ebe8499a126cd6e37ca428f0ea202c47d9bc985",
+          "section": "Verify Steps and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:1e0d7a08cd04fcb771265af9775fa14768446fb7ad801e2ae06fa3b60c960aa4",
+          "section": "qualification packet implementation and regression tests"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-141940105-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:a9fa11997493fe2b22d0049709bd5f8d88bbf747e7b3fad055725b57c0307c5f",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Qualification tasks are identified exclusively by the combined quality, release-gate, and milestone-* tags; this classification convention is treated as part of the existing workflow contract."
+  ]
+}
