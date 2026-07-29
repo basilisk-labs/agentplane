@@ -232,6 +232,20 @@ describe("evaluator qualification packet", () => {
       )}\n`,
       "utf8",
     );
+    await mkdir(path.join(root, "scripts/bench"), { recursive: true });
+    await writeFile(
+      path.join(root, "scripts/bench/capture-agent-efficiency-replay.mjs"),
+      [
+        'import { readFileSync, writeFileSync } from "node:fs";',
+        'import path from "node:path";',
+        'const output = process.argv.at(process.argv.indexOf("--output") + 1);',
+        'if (!output) throw new Error("missing --output");',
+        'const baselinePath = path.join(process.cwd(), "scripts/baselines/agent-efficiency-pre-v0.7-replay.json");',
+        'const rebuild = { ...JSON.parse(readFileSync(baselinePath, "utf8")), capture: "current-run" };',
+        'writeFileSync(output, `${JSON.stringify(rebuild, null, 2)}\\n`, "utf8");',
+      ].join("\n"),
+      "utf8",
+    );
     await cmdVerifyParsed({
       ctx,
       cwd: root,
@@ -248,9 +262,17 @@ describe("evaluator qualification packet", () => {
     await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
       "requires current HEAD to contain the exact qualification packet",
     );
-    await execFileAsync("git", ["add", "--", `.agentplane/tasks/${taskId}`, "scripts/baselines"], {
-      cwd: root,
-    });
+    await execFileAsync(
+      "git",
+      [
+        "add",
+        "--",
+        `.agentplane/tasks/${taskId}`,
+        "scripts/baselines",
+        "scripts/bench/capture-agent-efficiency-replay.mjs",
+      ],
+      { cwd: root },
+    );
     await execFileAsync("git", ["commit", "-m", "chore: seal qualification evidence"], {
       cwd: root,
     });
@@ -287,10 +309,23 @@ describe("evaluator qualification packet", () => {
         replay_comparison: {
           status: "exact_frozen_rebuild",
           baseline: { coverage: { replay_runs: { actual: 50, required: 50 } } },
-          current_rebuild: { coverage: { replay_runs: { actual: 50, required: 50 } } },
+          current_rebuild: {
+            path: `.agentplane/tasks/${taskId}/evidence/rf04-current-rebuild.v1.json`,
+            coverage: { replay_runs: { actual: 50, required: 50 } },
+          },
         },
       },
     });
+    const replayComparison = (packet.rf04 as { replay_comparison: Record<string, unknown> })
+      .replay_comparison;
+    expect(replayComparison.current_rebuild).toEqual(
+      expect.objectContaining({
+        path: `.agentplane/tasks/${taskId}/evidence/rf04-current-rebuild.v1.json`,
+      }),
+    );
+    expect((replayComparison.current_rebuild as { sha256: string }).sha256).not.toBe(
+      (replayComparison.baseline as { sha256: string }).sha256,
+    );
     expect(packetEvidence?.path).toContain(
       `/tasks/${taskId}/evidence/qualification-packet.v1.json`,
     );

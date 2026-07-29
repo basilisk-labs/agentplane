@@ -365,7 +365,12 @@ export async function writeQualificationPacket(opts: {
       task: opts.task,
       reviewedSha: implementationSha,
     }),
-    rf04: await buildQualificationRf04Comparison({ gitRoot, checks }),
+    rf04: await buildQualificationRf04Comparison({
+      gitRoot,
+      checks,
+      taskId: opts.task.id,
+      workflowDir: opts.ctx.config.paths.workflow_dir,
+    }),
   };
   const packet: QualificationPacket = {
     ...packetWithoutDigest,
@@ -460,6 +465,11 @@ function qualificationPinnedArtifacts(
       label: "RF-04 replay baseline",
       path: packet.rf04.replay_comparison.baseline.path,
       sha256: packet.rf04.replay_comparison.baseline.sha256,
+    },
+    {
+      label: "RF-04 current replay rebuild",
+      path: packet.rf04.replay_comparison.current_rebuild.path,
+      sha256: packet.rf04.replay_comparison.current_rebuild.sha256,
     },
   ];
   for (const leaf of packet.dependency_closure.leaves) {
