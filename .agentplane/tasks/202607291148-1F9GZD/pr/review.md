@@ -6,7 +6,7 @@ Created: 2026-07-29T11:49:50.615Z
 
 - Task: `202607291148-1F9GZD`
 - Title: Formalize SHA-bound qualification packets for evaluator review
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291148-1F9GZD/formalize-sha-bound-qualification-packets-for-ev`
 - Canonical task record: `.agentplane/tasks/202607291148-1F9GZD/README.md`
 
