@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-16e8bcc7ae7b3ba472659934",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Add an explicit ancestry check from packet.implementation_sha to the sealing HEAD, bind each dependency quality report to the leaf's current evaluated SHA and review metadata, and cover divergent-history and stale-report negative cases before rerunning focused evaluator tests and ci:contract.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The sealing commit is not proven to descend from the packet's verified implementation SHA. The resolver verifies only that pinned evidence exists at current HEAD, then evaluates that HEAD; an unrelated or diverged HEAD can therefore carry a packet for another verified commit and become the reviewed target.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-131946615-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:c69846ba7b7f2cb9005ce0b2c3649f2d2a0faff9877e6c0ab56f39aaf3e4ffd1",
+          "line": 2470,
+          "section": "resolveQualificationEvidenceCommit"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:09d2390d6777ea378fd39dda64c245580385c838505f1e970f2f24cc8214c0de",
+          "section": "Plan"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Dependency evaluator closure accepts any referenced quality-report.json whose payload says pass, without proving that the report is the artifact represented by the leaf's current quality_review state or that its evaluated SHA matches the recorded leaf evaluation. A stale passing report can therefore substantiate a newer or different evaluator state.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-131946615-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:c69846ba7b7f2cb9005ce0b2c3649f2d2a0faff9877e6c0ab56f39aaf3e4ffd1",
+          "line": 2150,
+          "section": "readPassingQualityReport and buildDependencyClosure"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:09d2390d6777ea378fd39dda64c245580385c838505f1e970f2f24cc8214c0de",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-131946615-recovery-context/evaluator-result.json"
+}

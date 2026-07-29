@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291148-1F9GZD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T13:35:53.132Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "e6c7f4cca1d9e8f2b1b2b7651902109e1a4888f6",
+  "blueprint_digest": "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391",
+  "findings": [
+    "The sealing commit may contain unverified implementation changes after the packet's verified implementation SHA.",
+    "Dependency lifecycle artifacts are not proven to be the artifacts present at or before the reviewed implementation SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607291148-1F9GZD/README.md"
+  ],
+  "missing_tests": [
+    "Reject a descendant sealing commit that adds or modifies implementation files after verification, even when every pinned qualification artifact still matches.",
+    "Reject a packet when a leaf README, PR metadata file, or quality report was created or modified after implementation_sha while an older unrelated task-directory commit remains reachable.",
+    "Prove each pinned leaf artifact's exact blob hash at a commit that is an ancestor of implementation_sha."
+  ],
+  "hidden_assumptions": [
+    "Any descendant of the verified implementation SHA is treated as safe evidence-only drift.",
+    "The latest commit touching a leaf task directory is assumed to contain the same leaf artifact bytes later hashed into the packet.",
+    "Current task-backend state and working-tree artifact contents are assumed to represent lifecycle closure that existed before the reviewed implementation SHA."
+  ],
+  "residual_risks": [
+    "Constrain the evaluated sealing commit so it cannot introduce unverified implementation changes after implementation_sha, and prove each pinned dependency artifact by reading its exact blob at an ancestor of implementation_sha rather than pairing current bytes with an unrelated earlier task-directory commit."
+  ]
+}

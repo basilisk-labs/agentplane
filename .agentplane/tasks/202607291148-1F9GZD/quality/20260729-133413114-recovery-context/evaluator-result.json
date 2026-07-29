@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The sealing commit may contain unverified implementation changes after the packet's verified implementation SHA.",
+      "broken_invariant": "Every recorded check must be bound to the single reviewed SHA. The implementation only proves that implementation_sha is an ancestor of current HEAD and that pinned evidence files match; any descendant commit with unrelated source changes is accepted as evaluated_sha even though verification remains bound to the ancestor.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b23a4ed361334324eba23ede408f6ab66bd8f0ef4d3f98ec429d6c6af7e40b8b",
+          "line": 2554,
+          "lines": "2554-2608",
+          "section": "assertQualificationEvidenceLineage and resolveQualificationEvidenceCommit"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:31734fefad2dca856e63a1b4d3fd23832a386a6c83b52b188cf7a3ee19d99d3c",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "Dependency lifecycle artifacts are not proven to be the artifacts present at or before the reviewed implementation SHA.",
+      "broken_invariant": "Per-leaf verification, evaluator, and hosted-close closure must precede and be bound to the reviewed SHA. latestTaskArtifactCommit merely finds some earlier commit touching the leaf task directory, while hashes are computed from current working-tree README, PR metadata, and quality report. Those pinned artifacts may have been created or changed after implementation_sha, yet the packet records ancestor_of_reviewed_sha as true.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b23a4ed361334324eba23ede408f6ab66bd8f0ef4d3f98ec429d6c6af7e40b8b",
+          "line": 2193,
+          "lines": "2193-2341",
+          "section": "latestTaskArtifactCommit and buildDependencyClosure"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:31734fefad2dca856e63a1b4d3fd23832a386a6c83b52b188cf7a3ee19d99d3c",
+          "section": "Scope and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Reject a descendant sealing commit that adds or modifies implementation files after verification, even when every pinned qualification artifact still matches.",
+    "Reject a packet when a leaf README, PR metadata file, or quality report was created or modified after implementation_sha while an older unrelated task-directory commit remains reachable.",
+    "Prove each pinned leaf artifact's exact blob hash at a commit that is an ancestor of implementation_sha."
+  ],
+  "hidden_assumptions": [
+    "Any descendant of the verified implementation SHA is treated as safe evidence-only drift.",
+    "The latest commit touching a leaf task directory is assumed to contain the same leaf artifact bytes later hashed into the packet.",
+    "Current task-backend state and working-tree artifact contents are assumed to represent lifecycle closure that existed before the reviewed implementation SHA."
+  ],
+  "recovery_context": "Constrain the evaluated sealing commit so it cannot introduce unverified implementation changes after implementation_sha, and prove each pinned dependency artifact by reading its exact blob at an ancestor of implementation_sha rather than pairing current bytes with an unrelated earlier task-directory commit."
+}

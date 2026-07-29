@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "The evaluator still targets the pre-packet implementation SHA, so the qualification packet and verification record are not part of the reviewed commit.",
+      "broken_invariant": "A metadata-only qualification review must evaluate the commit that contains the frozen qualification packet and all SHA-bound evidence. The implementation copies verification_record.implementation_sha into packet.reviewed_sha, writes the packet afterward, and then selects packet.reviewed_sha as evaluated_sha. Therefore the evaluated commit cannot contain the newly written packet. Dependency closure inputs are also read from the live worktree rather than from reviewed_sha, allowing post-SHA drift to be represented as SHA-bound evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:f292abf134d32a5752b9906c9ed42382e336cf73a658a6ba82432c0c384d8594",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:fcb7d26a0dae421b46406c93aed5e7d61ce2e1006fa450bcd271e178199b654a",
+          "line": 1106,
+          "lines": "1106-1115",
+          "section": "resolveEvaluatorReviewTarget"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:fcb7d26a0dae421b46406c93aed5e7d61ce2e1006fa450bcd271e178199b654a",
+          "line": 2105,
+          "lines": "2105-2139",
+          "section": "writeQualificationPacket"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:fcb7d26a0dae421b46406c93aed5e7d61ce2e1006fa450bcd271e178199b654a",
+          "line": 2031,
+          "lines": "2031-2036",
+          "section": "buildDependencyClosure"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Prepare a qualification packet, commit the packet and verification artifacts, and assert that work_order.evaluated_sha equals the commit containing those exact artifacts rather than the earlier implementation SHA.",
+    "Modify dependency README, PR metadata, or quality-report content after reviewed_sha and assert packet preparation rejects the drift or reads the content from the reviewed commit."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes a packet written after verification is nevertheless contained in verification_record.implementation_sha.",
+    "The implementation assumes live worktree dependency artifacts are identical to their versions at reviewed_sha; the ancestry check on some task-artifact commit does not prove that identity."
+  ],
+  "recovery_context": "Rework SHA resolution and evidence loading so the evaluator targets a commit that contains the qualification packet and verification record, and derive or verify every dependency artifact against that same commit before freezing the work order."
+}
