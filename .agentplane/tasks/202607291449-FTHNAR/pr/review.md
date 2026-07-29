@@ -6,7 +6,7 @@ Created: 2026-07-29T14:50:37.577Z
 
 - Task: `202607291449-FTHNAR`
 - Title: Permit evidence refresh after evaluator review gaps
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
 - Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
 
