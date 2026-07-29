@@ -19,6 +19,12 @@ type DirectTaskCheck = {
   stderr_tail: string;
 };
 
+type ParsedDirectTaskCheck = {
+  executable: string;
+  args: string[];
+  script: string | null;
+};
+
 export type DirectTaskVerificationResult = {
   status: "passed" | "failed" | "unsupported";
   artifact_path: string;
@@ -35,6 +41,33 @@ export function parseDirectTaskCheck(command: string): { script: string } | null
   if (tokens.length !== 3 || tokens[0] !== "bun" || tokens[1] !== "run") return null;
   const script = tokens[2] ?? "";
   return SAFE_BUN_SCRIPT.test(script) ? { script } : null;
+}
+
+function parseTrustedDirectTaskCheck(command: string): ParsedDirectTaskCheck | null {
+  const bun = parseDirectTaskCheck(command);
+  if (bun) return { executable: "bun", args: ["run", bun.script], script: bun.script };
+  if (command === "node .agentplane/policy/check-routing.mjs") {
+    return {
+      executable: "node",
+      args: [".agentplane/policy/check-routing.mjs"],
+      script: null,
+    };
+  }
+  if (command === "agentplane doctor") {
+    return { executable: "agentplane", args: ["doctor"], script: null };
+  }
+  return null;
+}
+
+function directTaskVerificationCommands(
+  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">,
+): string[] {
+  const commands = [...(task.verify ?? [])];
+  if (task.task_kind !== "docs" && task.mutation_scope !== "docs") return commands;
+  for (const required of ["node .agentplane/policy/check-routing.mjs", "agentplane doctor"]) {
+    if (!commands.includes(required)) commands.push(required);
+  }
+  return commands;
 }
 
 async function writeCheckArtifact(opts: {
@@ -63,18 +96,18 @@ async function writeCheckArtifact(opts: {
 
 /**
  * Executes only the intentionally narrow task-verify grammar. The CLI never
- * passes arbitrary task text to a shell: each command becomes `bun run <script>`
- * through the structured process boundary.
+ * passes arbitrary task text to a shell: each command is a safe `bun run`
+ * script or a fixed docs-policy check through the structured process boundary.
  */
 export async function runDirectTaskVerification(opts: {
   command: CommandContext;
-  task: Pick<TaskData, "verify">;
+  task: Pick<TaskData, "verify" | "task_kind" | "mutation_scope">;
   task_id: string;
   cwd: string;
 }): Promise<DirectTaskVerificationResult> {
   const checks: DirectTaskCheck[] = [];
-  for (const command of opts.task.verify ?? []) {
-    const parsed = parseDirectTaskCheck(command);
+  for (const command of directTaskVerificationCommands(opts.task)) {
+    const parsed = parseTrustedDirectTaskCheck(command);
     if (!parsed) {
       const result = {
         status: "unsupported" as const,
@@ -86,8 +119,8 @@ export async function runDirectTaskVerification(opts: {
     const started = Date.now();
     try {
       const executed = await runProcess({
-        command: "bun",
-        args: ["run", parsed.script],
+        command: parsed.executable,
+        args: parsed.args,
         cwd: opts.cwd,
         timeoutMs: CHECK_TIMEOUT_MS,
         maxBuffer: 1024 * 1024,

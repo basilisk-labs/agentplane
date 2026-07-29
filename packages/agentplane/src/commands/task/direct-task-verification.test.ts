@@ -74,6 +74,34 @@ describe("direct task verification", () => {
     });
   });
 
+  it("adds the fixed docs policy checks to a docs task without trusting agent claims", async () => {
+    const cwd = await root();
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "routing ok", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "doctor ok", stderr: "" });
+
+    const result = await runDirectTaskVerification({
+      command: command(cwd),
+      task: { verify: [], task_kind: "docs", mutation_scope: "docs" },
+      task_id: TASK_ID,
+      cwd,
+    });
+
+    expect(result).toMatchObject({ status: "passed" });
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        command: "node",
+        args: [".agentplane/policy/check-routing.mjs"],
+        cwd,
+      }),
+    );
+    expect(mocks.runProcess).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ command: "agentplane", args: ["doctor"], cwd }),
+    );
+  });
+
   it("stops at the first failed or unsupported check and still writes the evidence artifact", async () => {
     const cwd = await root();
     mocks.runProcess.mockResolvedValue({ exitCode: 7, stdout: "", stderr: "failed" });
