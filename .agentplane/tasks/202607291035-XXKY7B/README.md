@@ -4,7 +4,7 @@ title: "Prevent evaluator self-referential evidence in recovery-context review"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 origin:
   system: "manual"
 depends_on: []
@@ -27,11 +27,16 @@ verification:
   updated_by: null
   note: null
   attempts: 0
-commit: null
+commit:
+  hash: "95ea07baae4d70773c3d4797e94eaa39ebee9c3f"
+  message: "fix(evaluator): prohibit self-referential evidence"
 comments:
   -
     author: "CODER"
     body: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implementation: removed the self-referential evaluator evidence requirement and added prompt-level regression coverage. Validation: evaluator suite 41/41; ci:contract passed."
 events:
   -
     type: "status"
@@ -40,8 +45,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: continue branch_pr task in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-29T10:42:43.553Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implementation: removed the self-referential evaluator evidence requirement and added prompt-level regression coverage. Validation: evaluator suite 41/41; ci:contract passed."
 doc_version: 3
-doc_updated_at: "2026-07-29T10:37:41.312Z"
+doc_updated_at: "2026-07-29T10:42:43.553Z"
 doc_updated_by: "CODER"
 description: "Repair the recovery-context evaluator prompt contract so evaluator findings cite only frozen work-order evidence and cannot cite evaluator-generated work-order or report paths. Add a focused regression test and prove a replacement evaluator episode can be recorded for the blocked beta.1 qualification."
 sections:
