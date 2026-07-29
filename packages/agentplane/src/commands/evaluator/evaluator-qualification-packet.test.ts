@@ -162,13 +162,6 @@ describe("evaluator qualification packet", () => {
     await execFileAsync("git", ["commit", "-m", "chore: close qualification leaf"], {
       cwd: root,
     });
-    const reviewedSha = await commitPath(
-      root,
-      "src/qualified.ts",
-      "export const qualified = true;\n",
-      "feat: reviewed qualification target",
-    );
-
     await mkdir(path.join(root, "scripts/baselines"), { recursive: true });
     await writeFile(
       path.join(root, "scripts/baselines/agent-efficiency-pre-v0.7-main.json"),
@@ -259,6 +252,14 @@ describe("evaluator qualification packet", () => {
       ].join("\n"),
       "utf8",
     );
+    await execFileAsync(
+      "git",
+      ["add", "--", "scripts/baselines", "scripts/bench/capture-agent-efficiency-replay.mjs"],
+      { cwd: root },
+    );
+    await execFileAsync("git", ["commit", "-m", "test: prepare qualification baseline"], {
+      cwd: root,
+    });
     await applyTaskMutation({
       ctx,
       taskId: leafId,
@@ -271,6 +272,8 @@ describe("evaluator qualification packet", () => {
         }),
       }),
     });
+    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: stale leaf evaluator state"], { cwd: root });
     await expect(
       cmdVerifyParsed({
         ctx,
@@ -297,6 +300,40 @@ describe("evaluator qualification packet", () => {
         }),
       }),
     });
+    await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: restore leaf evaluator state"], {
+      cwd: root,
+    });
+    const reviewedSha = await commitPath(
+      root,
+      "src/qualified.ts",
+      "export const qualified = true;\n",
+      "feat: reviewed qualification target",
+    );
+    const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
+    for (const artifactPath of [
+      leafReadmePath,
+      path.join(root, `.agentplane/tasks/${leafId}/pr/meta.json`),
+      path.join(root, qualityReportPath),
+    ]) {
+      const artifact = await readFile(artifactPath, "utf8");
+      await writeFile(artifactPath, `${artifact}\npost-review drift\n`, "utf8");
+      await expect(
+        cmdVerifyParsed({
+          ctx,
+          cwd: root,
+          rootOverride: root,
+          taskId,
+          state: "ok",
+          by: "TESTER",
+          note: "Qualification checks passed on the reviewed SHA.",
+          details:
+            "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
+          quiet: true,
+        }),
+      ).rejects.toThrow("must match the exact blob at the reviewed implementation SHA");
+      await writeFile(artifactPath, artifact, "utf8");
+    }
     await cmdVerifyParsed({
       ctx,
       cwd: root,
@@ -311,7 +348,7 @@ describe("evaluator qualification packet", () => {
     });
 
     await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
-      "requires committed implementation evidence",
+      "requires current HEAD to contain the exact qualification packet",
     );
     await execFileAsync(
       "git",
@@ -338,9 +375,9 @@ describe("evaluator qualification packet", () => {
     );
     expect(prepared.work_order.evaluated_sha).toBe(evidenceCommit);
     expect(packetEvidence).toBeDefined();
-    const packet = JSON.parse(
-      await readFile(path.join(root, packetEvidence?.path ?? ""), "utf8"),
-    ) as Record<string, unknown>;
+    const packetPath = path.join(root, packetEvidence?.path ?? "");
+    const packetRaw = await readFile(packetPath, "utf8");
+    const packet = JSON.parse(packetRaw) as Record<string, unknown>;
     expect(packet).toMatchObject({
       task_id: taskId,
       implementation_sha: reviewedSha,
@@ -391,9 +428,31 @@ describe("evaluator qualification packet", () => {
         gitRoot: root,
         implementationSha: reviewedSha,
         evidenceCommit: divergentCommit,
+        evidenceRoot: `.agentplane/tasks/${taskId}`,
       }),
     ).rejects.toThrow("must descend from the packet's verified implementation SHA");
-    const leafReadmePath = path.join(root, `.agentplane/tasks/${leafId}/README.md`);
+    await writeFile(
+      path.join(root, "src/unverified-after-review.ts"),
+      "export const unsafe = true;\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["add", "--", "src/unverified-after-review.ts"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: unverified implementation drift"], {
+      cwd: root,
+    });
+    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
+      "may contain only current-task evidence after the packet's verified implementation SHA",
+    );
+    await execFileAsync("git", ["reset", "--hard", evidenceCommit], { cwd: root });
+    await writeFile(
+      packetPath,
+      `${JSON.stringify({ ...packet, implementation_sha: "a".repeat(40) }, null, 2)}\n`,
+      "utf8",
+    );
+    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
+      "Qualification review requires a current SHA-bound qualification packet",
+    );
+    await writeFile(packetPath, packetRaw, "utf8");
     await writeFile(
       leafReadmePath,
       `${await readFile(leafReadmePath, "utf8")}\n<!-- post-seal drift -->\n`,
@@ -406,15 +465,7 @@ describe("evaluator qualification packet", () => {
       cwd: root,
     });
     await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
-      "does not match the sealed packet",
-    );
-    await writeFile(
-      path.join(root, packetEvidence?.path ?? ""),
-      `${JSON.stringify({ ...packet, implementation_sha: "a".repeat(40) }, null, 2)}\n`,
-      "utf8",
-    );
-    await expect(prepareTypedReview(root, taskId)).rejects.toThrow(
-      "Qualification review requires a current SHA-bound qualification packet",
+      "may contain only current-task evidence after the packet's verified implementation SHA",
     );
   });
 });
