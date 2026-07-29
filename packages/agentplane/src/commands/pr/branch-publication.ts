@@ -119,6 +119,28 @@ async function gitSetBranchUpstream(opts: {
   );
 }
 
+async function gitRefreshBranchTrackingRef(opts: {
+  gitRoot: string;
+  branch: string;
+  remote: string;
+}): Promise<void> {
+  const remoteTarget = await gitResolveRemotePushTarget(opts.gitRoot, opts.remote);
+  await execFileAsync(
+    "git",
+    [
+      "fetch",
+      "--no-tags",
+      "--no-write-fetch-head",
+      remoteTarget,
+      `refs/heads/${opts.branch}:refs/remotes/${opts.remote}/${opts.branch}`,
+    ],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+    },
+  );
+}
+
 async function resolvePublicationHeads(opts: {
   gitRoot: string;
   branch: string;
@@ -280,5 +302,10 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
     });
     if (!publishedRebasedBranch) throw err;
   }
+  await gitRefreshBranchTrackingRef({
+    gitRoot: opts.gitRoot,
+    branch: opts.branch,
+    remote,
+  });
   return true;
 }

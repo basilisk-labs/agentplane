@@ -171,9 +171,26 @@ export async function gitBranchUpstream(cwd: string, branch: string): Promise<st
   );
   for (const line of String(stdout).split("\n")) {
     const [name, upstream = ""] = line.split("\0");
-    if (name === branch) return upstream.trim() || null;
+    if (name === branch) {
+      const resolvedUpstream = upstream.trim();
+      if (resolvedUpstream) return resolvedUpstream;
+      break;
+    }
   }
-  return null;
+
+  const remote = await gitConfigGet(cwd, `branch.${branch}.remote`);
+  const mergeRef = await gitConfigGet(cwd, `branch.${branch}.merge`);
+  const remoteBranch = mergeRef?.replace(/^refs\/heads\//, "") ?? "";
+  if (!remote || !remoteBranch) return null;
+
+  const trackingRef =
+    remote === "." ? `refs/heads/${remoteBranch}` : `refs/remotes/${remote}/${remoteBranch}`;
+  try {
+    await gitRevParse(cwd, [trackingRef]);
+    return remote === "." ? remoteBranch : `${remote}/${remoteBranch}`;
+  } catch {
+    return null;
+  }
 }
 
 export async function gitListBranches(cwd: string): Promise<string[]> {

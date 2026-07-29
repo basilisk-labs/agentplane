@@ -5,7 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { GitContext, gitConfigGet, gitMergeBase } from "./git-client.js";
+import { GitContext, gitBranchUpstream, gitConfigGet, gitMergeBase } from "./git-client.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -59,5 +59,30 @@ describe("git-client", () => {
 
     await expect(gitConfigGet(root, "remote.origin.url")).resolves.toBe("git@example.com:repo.git");
     await expect(gitConfigGet(root, "remote.missing.url")).resolves.toBeNull();
+  });
+
+  it("resolves a configured upstream when the fetch refspec omits its tracking branch", async () => {
+    const root = await mkRepo();
+    const remotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-client-origin-"));
+    await execFileAsync("git", ["init", "--bare", remotePath], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remotePath], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
+      { cwd: root },
+    );
+    const branch = "task/T-TRACK/constrained-refspec";
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "task head"], { cwd: root });
+    await execFileAsync("git", ["push", "-u", "origin", `HEAD:refs/heads/${branch}`], {
+      cwd: root,
+    });
+    await execFileAsync(
+      "git",
+      ["fetch", "origin", `refs/heads/${branch}:refs/remotes/origin/${branch}`],
+      { cwd: root },
+    );
+
+    await expect(gitBranchUpstream(root, branch)).resolves.toBe(`origin/${branch}`);
   });
 });

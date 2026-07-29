@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 31
+revision: 34
 origin:
   system: "manual"
 depends_on: []
@@ -17,16 +17,16 @@ tags:
   - "v0.7"
 verify: []
 plan_approval:
-  state: "approved"
-  updated_at: "2026-07-29T14:49:52.020Z"
-  updated_by: "USER"
-  note: "Standing approval granted by the user for the AgentPlane 0.7 refactor and recovery work."
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-29T16:36:44.768Z"
+  state: "needs_rework"
+  updated_at: "2026-07-29T17:06:00.534Z"
   updated_by: "TESTER"
-  note: "Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets."
-  attempts: 0
+  note: "Rework: include the dependent constrained-refspec publication repair so the FTH PR can complete its own evaluator and publication lifecycle without manual upstream mutation."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -52,9 +52,7 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The frozen implementation and SHA-bound verification evidence show that recovery is limited to evaluator-supplied deterministic-evidence gaps, delegates only deterministic verification to TESTER, returns semantic ownership to EVALUATOR after refresh, rejects unrelated semantic blocks, handles artifact-only descendant commits, and preserves publication blockers."
-commit:
-  hash: "92e068187c1b8d6a65566d458df3db9c4c9d6e2c"
-  message: "✅ FTHNAR verify: record CI structural recovery"
+commit: null
 comments:
   -
     author: "CODER"
@@ -199,8 +197,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T17:06:00.534Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: include the dependent constrained-refspec publication repair so the FTH PR can complete its own evaluator and publication lifecycle without manual upstream mutation."
 doc_version: 3
-doc_updated_at: "2026-07-29T16:38:49.870Z"
+doc_updated_at: "2026-07-29T17:06:30.406Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -211,17 +215,15 @@ sections:
   Scope: |-
     - In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
     - Out of scope: unrelated refactors not required for "Permit evidence refresh after evaluator review gaps".
-  Plan: |-
-    1. Identify the blocked-quality-review route that prevents a task from refreshing deterministic evidence requested by EVALUATOR.
-    2. Add a bounded recovery transition that permits only task verification; preserve EVALUATOR as the sole semantic verdict owner and require a fresh quality review before PR publication.
-    3. Add regression coverage for the blocked-to-verification route and verify that unrelated quality-review blocks remain non-mutating.
-    4. Run the focused tests, policy routing validation, and doctor; record exact results.
-    5. Obtain an independent EVALUATOR verdict, publish the narrow PR, wait for hosted checks, then integrate before resuming the beta.1 gate task.
+  Plan: "1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Include dependent task 202607291650-R1N8C5 on this primary FTH PR because its constrained-refspec publication repair is required to publish this branch, while this branch contains the freshness logic required for that repair to close. 3. Add the R1 source and regression coverage to this branch without changing origin fetch configuration. 4. Re-run FTH and R1 focused tests, typecheck, lint, structural policy checks, and live pr flow alignment. 5. Publish the combined FTH PR, complete a fresh evaluator review, wait for hosted checks, then integrate the single primary PR."
   Verify Steps: |-
-    1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.
-    2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.
-    3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.
-    4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.
+    1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct.
+    2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication creates the task tracking ref and AgentPlane resolves it.
+    3. Run bun run typecheck. Expected: TypeScript typecheck passes.
+    4. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope.
+    5. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors.
+    6. Publish the primary FTH PR with --include-task 202607291650-R1N8C5 and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned.
+    7. Wait for the hosted matrix to settle. Expected: no failing required check.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-29T15:01:06.145Z — VERIFY — ok
@@ -639,6 +641,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T17:06:00.534Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: include the dependent constrained-refspec publication repair so the FTH PR can complete its own evaluator and publication lifecycle without manual upstream mutation.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:38:49.870Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -663,6 +695,12 @@ sections:
     - Observation: The original evidence-refresh predicate compared against artifact HEAD instead of the resolver-selected semantic target.
       Impact: A valid deterministic evidence block could not reach TESTER after lifecycle artifacts were committed.
       Resolution: Route decision now supplies the shared semantic target; reducer coverage proves artifact-only commits keep the TESTER refresh handoff.
+
+    - Observation: The repaired FTH semantic route is required by the dependent publication fix, while the publication fix is required to publish FTH under this repository constrained origin refspec.
+      Impact: Separate PRs form a lifecycle bootstrap cycle even though both changes are bounded to the same branch_pr correctness surface.
+      Resolution: Carry R1N8C5 as an included task on FTH PR #4672 and add its tested source changes to the FTH rework branch.
+      Promotion: incident-candidate
+      Fixability: repo-fixable
 extensions:
   implementation_commit:
     hash: "b9e45a1d9de7a5d0a52570d8e2c28d4a55e79345"
@@ -685,18 +723,17 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Plan
 
-1. Identify the blocked-quality-review route that prevents a task from refreshing deterministic evidence requested by EVALUATOR.
-2. Add a bounded recovery transition that permits only task verification; preserve EVALUATOR as the sole semantic verdict owner and require a fresh quality review before PR publication.
-3. Add regression coverage for the blocked-to-verification route and verify that unrelated quality-review blocks remain non-mutating.
-4. Run the focused tests, policy routing validation, and doctor; record exact results.
-5. Obtain an independent EVALUATOR verdict, publish the narrow PR, wait for hosted checks, then integrate before resuming the beta.1 gate task.
+1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Include dependent task 202607291650-R1N8C5 on this primary FTH PR because its constrained-refspec publication repair is required to publish this branch, while this branch contains the freshness logic required for that repair to close. 3. Add the R1 source and regression coverage to this branch without changing origin fetch configuration. 4. Re-run FTH and R1 focused tests, typecheck, lint, structural policy checks, and live pr flow alignment. 5. Publish the combined FTH PR, complete a fresh evaluator review, wait for hosted checks, then integrate the single primary PR.
 
 ## Verify Steps
 
-1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.
-2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.
-3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.
-4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.
+1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct.
+2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication creates the task tracking ref and AgentPlane resolves it.
+3. Run bun run typecheck. Expected: TypeScript typecheck passes.
+4. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope.
+5. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors.
+6. Publish the primary FTH PR with --include-task 202607291650-R1N8C5 and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned.
+7. Wait for the hosted matrix to settle. Expected: no failing required check.
 
 ## Verification
 
@@ -1116,6 +1153,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T17:06:00.534Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: include the dependent constrained-refspec publication repair so the FTH PR can complete its own evaluator and publication lifecycle without manual upstream mutation.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:38:49.870Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1144,3 +1211,9 @@ DecisionContextRef:
 - Observation: The original evidence-refresh predicate compared against artifact HEAD instead of the resolver-selected semantic target.
   Impact: A valid deterministic evidence block could not reach TESTER after lifecycle artifacts were committed.
   Resolution: Route decision now supplies the shared semantic target; reducer coverage proves artifact-only commits keep the TESTER refresh handoff.
+
+- Observation: The repaired FTH semantic route is required by the dependent publication fix, while the publication fix is required to publish FTH under this repository constrained origin refspec.
+  Impact: Separate PRs form a lifecycle bootstrap cycle even though both changes are bounded to the same branch_pr correctness surface.
+  Resolution: Carry R1N8C5 as an included task on FTH PR #4672 and add its tested source changes to the FTH rework branch.
+  Promotion: incident-candidate
+  Fixability: repo-fixable
