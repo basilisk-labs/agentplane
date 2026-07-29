@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RF10-PASS-001",
+      "severity": "low",
+      "summary": "Реализация и замороженные доказательства покрывают прямой полный цикл, обновление маршрута после операций, типизированные остановки и отрицательные сценарии, ограничение области записи, терминальное состояние журнала и сравнение затрат с базовой линией 0.6.24; заявленные проверки прошли на оцениваемом SHA.",
+      "broken_invariant": "Нарушений утверждённого контракта и инвариантов восстановления не обнаружено.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:0fcd8fd931f21d104762246708a3d191e6eb99fbfd3eca4a41828e3a138c9755"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:6ff209fcaf638799f62df5c1f5b7a29bef687f83f97bc76f7989528698e074ae",
+          "section": "runtime_evidence, runner_history, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729090832473-002bb7db2f395aa1.json",
+          "sha256": "sha256:a4154e11e226d91378ba74efcae4314b180480d15974b66fd9ec0f478c1934be",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json",
+          "sha256": "sha256:0e624b2c42a3b455891b55778b00fa0dc9e16032ecfc84b8ce1d6e7e0e3c500d",
+          "section": "baseline, observed, comparison"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json",
+          "sha256": "sha256:0d2fffa7cef94e3be7c7d682a31939e28c4aa3127131f7ebd4407f62fbf43cea",
+          "section": "operations, stop"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json",
+          "sha256": "sha256:3ccd9f852be0fdbcdbce6e2794fc808b711dddb56b8d50527fc9aea817ec59c9"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T09:11:14.437Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "3532417852f2de3a06b7afeeef0311c94ff3c38a",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "Реализация и замороженные доказательства покрывают прямой полный цикл, обновление маршрута после операций, типизированные остановки и отрицательные сценарии, ограничение области записи, терминальное состояние журнала и сравнение затрат с базовой линией 0.6.24; заявленные проверки прошли на оцениваемом SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/verification/20260729090832473-002bb7db2f395aa1.json",
+    ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json",
+    ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json",
+    ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
