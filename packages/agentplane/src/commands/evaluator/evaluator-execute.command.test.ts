@@ -293,6 +293,72 @@ describe("evaluator execute supervisor episode", () => {
     expect(verificationEvidence?.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
+  it("applies a completed EVALUATOR result before preserving its terminal budget stop", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607280000-EE11";
+    await addTask(root, taskId);
+    await commitTarget(root);
+    const fakeBin = await installFakeCodex(root);
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    const decision = await buildTaskRouteDecision({
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      includeRemote: false,
+    });
+    const journalPath = await resolveSupervisorExecutionEpisodePath({
+      git_root: root,
+      task_id: taskId,
+    });
+    const store = createSupervisorEpisodeStore(journalPath);
+    await store.write(
+      createSupervisorExecutionEpisodeJournal({
+        task_id: taskId,
+        task_revision: task.frontmatter.revision ?? null,
+        state_fingerprint_digest: decision.workflowStep.preconditionFingerprint.digest,
+        budget: {
+          max_episodes: 50,
+          max_agent_runs: 50,
+          max_input_tokens: 100,
+          max_output_tokens: 1_000_000,
+          max_total_tokens: 4_000_000,
+          max_wall_time_ms: 4 * 60 * 60 * 1000,
+          max_changed_files: 2000,
+          max_diff_lines: null,
+          max_no_progress_episodes: 3,
+        },
+      }),
+    );
+
+    const execution = await runWithFakeCodex(root, taskId, fakeBin);
+
+    expect(execution.code, execution.stderr).toBe(0);
+    expect(JSON.parse(execution.stdout)).toMatchObject({
+      verdict: "pass",
+      supervisor_episode: {
+        status: "stopped",
+        cursor: { phase: "stopped" },
+        stop: { reason: "budget_exhausted", exhausted_dimensions: ["input_tokens"] },
+      },
+    });
+    const stored = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(stored.frontmatter.quality_review).toMatchObject({
+      state: "pass",
+      updated_by: "EVALUATOR",
+    });
+    const persisted = validateSupervisorExecutionEpisodeJournal(await store.read());
+    expect(persisted).toMatchObject({
+      status: "stopped",
+      cursor: { phase: "stopped" },
+      stop: { reason: "budget_exhausted" },
+      operations: [{ status: "completed" }],
+    });
+    expect(persisted.operations.at(-1)?.postcondition_fingerprint_digest).toMatch(
+      /^sha256:[a-f0-9]{64}$/u,
+    );
+  });
+
   it("resumes a completed evaluator outcome without launching Codex again", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

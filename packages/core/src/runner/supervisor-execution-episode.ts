@@ -659,10 +659,19 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
 }): SupervisorExecutionEpisodeJournal {
   const journal = validateSupervisorExecutionEpisodeJournal(opts.journal);
   const now = opts.now ?? new Date().toISOString();
-  if (journal.status !== "running" || journal.cursor.phase !== "completed") {
-    throw new Error("Supervisor episode state advance requires a completed running operation.");
-  }
   const last = journal.operations.at(-1);
+  const completedRunningOperation =
+    journal.status === "running" && journal.cursor.phase === "completed";
+  const completedBudgetStoppedOperation =
+    journal.status === "stopped" &&
+    journal.stop?.reason === "budget_exhausted" &&
+    journal.cursor.phase === "stopped" &&
+    journal.stop.operation_key === last?.operation_key;
+  if (!completedRunningOperation && !completedBudgetStoppedOperation) {
+    throw new Error(
+      "Supervisor episode state advance requires a completed running operation or budget-stopped completed operation.",
+    );
+  }
   if (!last || (last.status !== "completed" && last.status !== "failed")) {
     throw new Error("Supervisor episode state advance requires a completed latest operation.");
   }
@@ -676,8 +685,12 @@ export function advanceSupervisorExecutionEpisodeState(opts: {
   const next: Omit<SupervisorExecutionEpisodeJournal, "digest"> = {
     ...journal,
     state_fingerprint_digest: opts.state_fingerprint_digest,
-    cursor: { episode: journal.cursor.episode, phase: "ready", operation_key: null },
+    cursor: completedBudgetStoppedOperation
+      ? journal.cursor
+      : { episode: journal.cursor.episode, phase: "ready", operation_key: null },
     operations: [...journal.operations.slice(0, -1), operation],
+    status: completedBudgetStoppedOperation ? "stopped" : "running",
+    stop: completedBudgetStoppedOperation ? journal.stop : null,
     updated_at: now,
     previous_digest: journal.digest,
   };
