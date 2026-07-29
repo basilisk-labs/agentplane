@@ -19,6 +19,12 @@ import {
   type QualificationRf04Comparison,
 } from "./qualification-packet-rf04.js";
 import { asNumber, asString, readJson, recordValue } from "./qualification-packet-json.js";
+import {
+  assertPathWithinGitRoot,
+  readArtifactAtReviewedSha,
+  readFileAtGitCommit,
+  relativeToGitRoot,
+} from "./qualification-packet-artifacts.js";
 
 const QUALIFICATION_PACKET_FILE = "qualification-packet.v1.json";
 const QUALIFICATION_PACKET_KIND = "task_qualification_packet";
@@ -94,20 +100,6 @@ function sha256(value: string | Buffer): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
 }
 
-function relative(gitRoot: string, filePath: string): string {
-  return path.relative(gitRoot, filePath).replaceAll("\\", "/");
-}
-
-function assertPathWithinRoot(gitRoot: string, filePath: string, label: string): void {
-  const rel = path.relative(gitRoot, filePath);
-  if (!rel || rel === ".." || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel)) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: `${label} must stay inside the repository root.`,
-    });
-  }
-}
-
 function packetDigest(packet: Omit<QualificationPacket, "digest">): `sha256:${string}` {
   return sha256(JSON.stringify(canonicalizeJson(packet)));
 }
@@ -174,35 +166,11 @@ function parseVerificationRecord(value: unknown, taskId: string): QualificationV
   return record;
 }
 
-async function latestTaskArtifactCommit(opts: {
-  gitRoot: string;
-  reviewedSha: string;
-  taskRoot: string;
-  taskId: string;
-}): Promise<string> {
-  const taskPath = relative(opts.gitRoot, opts.taskRoot);
-  const { stdout } = await execFileAsync(
-    "git",
-    ["log", "--format=%H", opts.reviewedSha, "--", taskPath],
-    { cwd: opts.gitRoot },
-  );
-  const commit = String(stdout)
-    .split("\n")
-    .map((line) => line.trim())
-    .find((line) => SHA1_PATTERN.test(line));
-  if (!commit) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: `Qualification leaf ${opts.taskId} has no task artifact commit reachable from ${opts.reviewedSha}.`,
-    });
-  }
-  return commit;
-}
-
 async function readPassingQualityReport(opts: {
   gitRoot: string;
   workflowDir: string;
   task: TaskData;
+  reviewedSha: string;
 }): Promise<{ path: string; sha256: `sha256:${string}` }> {
   const evaluatedSha = opts.task.quality_review?.evaluated_sha;
   if (!isSha(evaluatedSha)) {
@@ -219,14 +187,25 @@ async function readPassingQualityReport(opts: {
     .toSorted();
   for (const candidate of candidates) {
     const filePath = path.resolve(opts.gitRoot, candidate);
-    assertPathWithinRoot(opts.gitRoot, filePath, "Qualification quality report");
-    const report = await readJson(filePath, "Qualification quality report");
+    const reportArtifact = await readArtifactAtReviewedSha({
+      gitRoot: opts.gitRoot,
+      reviewedSha: opts.reviewedSha,
+      filePath,
+      label: "Qualification quality report",
+    });
+    let reportValue: unknown;
+    try {
+      reportValue = JSON.parse(reportArtifact.raw);
+    } catch {
+      continue;
+    }
+    if (!isRecord(reportValue)) continue;
     if (
-      report.value.task_id === opts.task.id &&
-      report.value.verdict === "pass" &&
-      report.value.evaluated_sha === evaluatedSha
+      reportValue.task_id === opts.task.id &&
+      reportValue.verdict === "pass" &&
+      reportValue.evaluated_sha === evaluatedSha
     ) {
-      return { path: candidate, sha256: sha256(report.raw) };
+      return { path: reportArtifact.path, sha256: sha256(reportArtifact.raw) };
     }
   }
   throw new CliError({
@@ -281,18 +260,39 @@ async function buildDependencyClosure(opts: {
       const taskRoot = path.join(gitRoot, workflowDir, taskId);
       const readmePath = path.join(taskRoot, "README.md");
       const metaPath = path.join(taskRoot, "pr", "meta.json");
-      const [readme, meta, qualityReport, taskArtifactCommit] = await Promise.all([
-        readFile(readmePath, "utf8"),
-        readJson(metaPath, "Qualification PR metadata"),
-        readPassingQualityReport({ gitRoot, workflowDir, task: leaf }),
-        latestTaskArtifactCommit({ gitRoot, reviewedSha: opts.reviewedSha, taskRoot, taskId }),
+      const [readme, metaArtifact, qualityReport] = await Promise.all([
+        readArtifactAtReviewedSha({
+          gitRoot,
+          reviewedSha: opts.reviewedSha,
+          filePath: readmePath,
+          label: `Qualification leaf ${taskId} task document`,
+        }),
+        readArtifactAtReviewedSha({
+          gitRoot,
+          reviewedSha: opts.reviewedSha,
+          filePath: metaPath,
+          label: `Qualification leaf ${taskId} PR metadata`,
+        }),
+        readPassingQualityReport({
+          gitRoot,
+          workflowDir,
+          task: leaf,
+          reviewedSha: opts.reviewedSha,
+        }),
       ]);
-      const closure = recordValue(meta.value.pre_merge_closure);
-      const prNumber = asNumber(meta.value.pr_number);
+      let metaValue: unknown;
+      try {
+        metaValue = JSON.parse(metaArtifact.raw);
+      } catch {
+        metaValue = null;
+      }
+      const meta = recordValue(metaValue);
+      const closure = recordValue(meta.pre_merge_closure);
+      const prNumber = asNumber(meta.pr_number);
       if (
-        meta.value.verify === null ||
-        !isRecord(meta.value.verify) ||
-        meta.value.verify.status !== "pass" ||
+        meta.verify === null ||
+        !isRecord(meta.verify) ||
+        meta.verify.status !== "pass" ||
         closure.state !== "closed_before_merge" ||
         prNumber === null ||
         !Number.isInteger(prNumber) ||
@@ -319,10 +319,10 @@ async function buildDependencyClosure(opts: {
         hosted_close: {
           pr_number: prNumber,
           pre_merge_closure: "closed_before_merge" as const,
-          task_artifact_commit: taskArtifactCommit,
+          task_artifact_commit: opts.reviewedSha,
           ancestor_of_reviewed_sha: true as const,
-          pr_meta: { path: relative(gitRoot, metaPath), sha256: sha256(meta.raw) },
-          task_document: { path: relative(gitRoot, readmePath), sha256: sha256(readme) },
+          pr_meta: { path: metaArtifact.path, sha256: sha256(metaArtifact.raw) },
+          task_document: { path: readme.path, sha256: sha256(readme.raw) },
         },
       };
     }),
@@ -338,7 +338,7 @@ export async function writeQualificationPacket(opts: {
 }): Promise<string | null> {
   if (!isQualificationTask(opts.task)) return null;
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
-  assertPathWithinRoot(gitRoot, opts.recordPath, "Qualification verification record");
+  assertPathWithinGitRoot(gitRoot, opts.recordPath, "Qualification verification record");
   const recordJson = await readJson(opts.recordPath, "Qualification verification record");
   const record = parseVerificationRecord(recordJson.value, opts.task.id);
   const checks = parseVerificationCheckDetails(record.details);
@@ -363,7 +363,7 @@ export async function writeQualificationPacket(opts: {
     prepared_at: opts.recordedAt,
     implementation_sha: implementationSha,
     verification: {
-      record_path: relative(gitRoot, opts.recordPath),
+      record_path: relativeToGitRoot(gitRoot, opts.recordPath),
       record_sha256: sha256(recordJson.raw),
       record_digest: record.digest as `sha256:${string}`,
       recorded_at: record.recorded_at,
@@ -461,7 +461,7 @@ function qualificationPinnedArtifacts(
   const artifacts: PinnedQualificationArtifact[] = [
     {
       label: "qualification packet",
-      path: relative(gitRoot, opts.path),
+      path: relativeToGitRoot(gitRoot, opts.path),
       sha256: opts.file_sha256,
     },
     {
@@ -507,37 +507,11 @@ function qualificationPinnedArtifacts(
   return artifacts;
 }
 
-async function readFileAtCommit(opts: {
-  gitRoot: string;
-  commit: string;
-  artifact: PinnedQualificationArtifact;
-}): Promise<string> {
-  const absolutePath = path.resolve(opts.gitRoot, opts.artifact.path);
-  assertPathWithinRoot(opts.gitRoot, absolutePath, opts.artifact.label);
-  const normalizedPath = relative(opts.gitRoot, absolutePath);
-  try {
-    const { stdout } = await execFileAsync("git", ["show", `${opts.commit}:${normalizedPath}`], {
-      cwd: opts.gitRoot,
-    });
-    return String(stdout);
-  } catch {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message:
-        "Qualification review requires current HEAD to contain the exact qualification packet, verification record, and dependency evidence. Commit task artifacts before evaluator review.",
-    });
-  }
-}
-
-/**
- * The evaluator may only review a commit that contains every artifact named by
- * the packet. The packet retains the implementation SHA separately; this
- * sealing commit makes the immutable evidence itself reviewable.
- */
 export async function assertQualificationEvidenceLineage(opts: {
   gitRoot: string;
   implementationSha: string;
   evidenceCommit: string;
+  evidenceRoot: string;
 }): Promise<void> {
   try {
     await execFileAsync(
@@ -550,6 +524,23 @@ export async function assertQualificationEvidenceLineage(opts: {
       code: "E_VALIDATION",
       message:
         "Qualification evidence commit must descend from the packet's verified implementation SHA.",
+    });
+  }
+  const { stdout } = await execFileAsync(
+    "git",
+    ["diff", "--name-only", opts.implementationSha, opts.evidenceCommit],
+    { cwd: opts.gitRoot },
+  );
+  const allowedPrefix = `${opts.evidenceRoot.replaceAll(/\\+$/gu, "")}/`;
+  const disallowedPath = String(stdout)
+    .split("\n")
+    .map((filePath) => filePath.trim())
+    .find((filePath) => filePath && !filePath.startsWith(allowedPrefix));
+  if (disallowedPath) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Qualification evidence commit may contain only current-task evidence after the packet's verified implementation SHA.",
     });
   }
 }
@@ -570,6 +561,9 @@ export async function resolveQualificationEvidenceCommit(opts: {
     gitRoot: opts.gitRoot,
     implementationSha: opts.qualificationPacket.packet.implementation_sha,
     evidenceCommit: commit,
+    evidenceRoot: path.posix.dirname(
+      path.posix.dirname(opts.qualificationPacket.packet.verification.record_path),
+    ),
   });
   const seen = new Map<string, `sha256:${string}`>();
   for (const artifact of qualificationPinnedArtifacts(opts.qualificationPacket, opts.gitRoot)) {
@@ -581,10 +575,13 @@ export async function resolveQualificationEvidenceCommit(opts: {
       });
     }
     seen.set(artifact.path, artifact.sha256);
-    const contents = await readFileAtCommit({
+    const contents = await readFileAtGitCommit({
       gitRoot: opts.gitRoot,
       commit,
-      artifact,
+      filePath: path.resolve(opts.gitRoot, artifact.path),
+      label: artifact.label,
+      missingMessage:
+        "Qualification review requires current HEAD to contain the exact qualification packet, verification record, and dependency evidence. Commit task artifacts before evaluator review.",
     });
     if (sha256(contents) !== artifact.sha256) {
       throw new CliError({
