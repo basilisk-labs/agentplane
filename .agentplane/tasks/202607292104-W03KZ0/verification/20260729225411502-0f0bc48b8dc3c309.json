@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:0f0bc48b8dc3c309d0fc299f07ab8b772e8067f84008674e98168a8c65ea5f70",
+  "implementation_sha": "9fe7779d56af15a26be64bfc3d6e92e785555012",
+  "kind": "task_verification_record",
+  "note": "RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.",
+  "recorded_at": "2026-07-29T22:54:11.502Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison.",
+  "scope_digest": "sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1",
+  "task_id": "202607292104-W03KZ0",
+  "verification_command": "agentplane verify 202607292104-W03KZ0 --rework --by TESTER",
+  "verifier": "TESTER"
+}
