@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-1e028d68480d760bfbe085c1",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Constrain the evaluated sealing commit so it cannot introduce unverified implementation changes after implementation_sha, and prove each pinned dependency artifact by reading its exact blob at an ancestor of implementation_sha rather than pairing current bytes with an unrelated earlier task-directory commit.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The sealing commit may contain unverified implementation changes after the packet's verified implementation SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b23a4ed361334324eba23ede408f6ab66bd8f0ef4d3f98ec429d6c6af7e40b8b",
+          "line": 2554,
+          "lines": "2554-2608",
+          "section": "assertQualificationEvidenceLineage and resolveQualificationEvidenceCommit"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:31734fefad2dca856e63a1b4d3fd23832a386a6c83b52b188cf7a3ee19d99d3c",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Dependency lifecycle artifacts are not proven to be the artifacts present at or before the reviewed implementation SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b23a4ed361334324eba23ede408f6ab66bd8f0ef4d3f98ec429d6c6af7e40b8b",
+          "line": 2193,
+          "lines": "2193-2341",
+          "section": "latestTaskArtifactCommit and buildDependencyClosure"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:31734fefad2dca856e63a1b4d3fd23832a386a6c83b52b188cf7a3ee19d99d3c",
+          "section": "Scope and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-result.json"
+}

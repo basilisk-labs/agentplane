@@ -1,0 +1,14 @@
+ .../evaluator-qualification-packet.test.ts         | 471 ++++++++++++++++
+ .../evaluator/evaluator-qualification-review.ts    |  52 ++
+ .../evaluator/evaluator-review-artifacts.ts        |   3 +-
+ .../commands/evaluator/evaluator-review-usecase.ts |  47 +-
+ .../evaluator/evaluator-run.command.test.ts        |  72 +--
+ .../commands/evaluator/evaluator-test-helpers.ts   |  72 +++
+ .../evaluator/evaluator-verification-records.ts    |  17 +-
+ .../src/commands/shared/verification-details.ts    |  36 ++
+ .../task/qualification-packet-artifacts.ts         |  70 +++
+ .../src/commands/task/qualification-packet-json.ts |  43 ++
+ .../src/commands/task/qualification-packet-rf04.ts | 256 +++++++++
+ .../src/commands/task/qualification-packet.ts      | 594 +++++++++++++++++++++
+ .../src/commands/task/verify-record-execute.ts     |  33 +-
+ 13 files changed, 1661 insertions(+), 105 deletions(-)

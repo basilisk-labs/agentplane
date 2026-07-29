@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-cebfd71af17063266a5a1e4f",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework SHA resolution and evidence loading so the evaluator targets a commit that contains the qualification packet and verification record, and derive or verify every dependency artifact against that same commit before freezing the work order.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The evaluator still targets the pre-packet implementation SHA, so the qualification packet and verification record are not part of the reviewed commit.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:f292abf134d32a5752b9906c9ed42382e336cf73a658a6ba82432c0c384d8594",
+          "section": "Plan and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:fcb7d26a0dae421b46406c93aed5e7d61ce2e1006fa450bcd271e178199b654a",
+          "line": 1106,
+          "lines": "1106-1115",
+          "section": "resolveEvaluatorReviewTarget"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:fcb7d26a0dae421b46406c93aed5e7d61ce2e1006fa450bcd271e178199b654a",
+          "line": 2105,
+          "lines": "2105-2139",
+          "section": "writeQualificationPacket"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:fcb7d26a0dae421b46406c93aed5e7d61ce2e1006fa450bcd271e178199b654a",
+          "line": 2031,
+          "lines": "2031-2036",
+          "section": "buildDependencyClosure"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-result.json"
+}

@@ -2,8 +2,9 @@
   "base": "main",
   "branch": "task/202607291148-1F9GZD/formalize-sha-bound-qualification-packets-for-ev",
   "created_at": "2026-07-29T11:49:50.615Z",
-  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "last_verified_at": null,
+  "diffstat_sha256": "sha256:6e2798613b8bee5e1499b61dbb6c8b065873ae1bec6087ddad22eb39ec3c87dd",
+  "last_verified_at": "2026-07-29T13:46:59.182Z",
+  "last_verified_diffstat_sha256": "sha256:6e2798613b8bee5e1499b61dbb6c8b065873ae1bec6087ddad22eb39ec3c87dd",
   "pr_number": 4670,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4670",
   "schema_version": 1,
@@ -11,6 +12,6 @@
   "task_id": "202607291148-1F9GZD",
   "updated_at": "2026-07-29T11:50:58.033Z",
   "verify": {
-    "status": "skipped"
+    "status": "pass"
   }
 }

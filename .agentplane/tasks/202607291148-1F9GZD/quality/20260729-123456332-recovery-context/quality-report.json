@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291148-1F9GZD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T12:36:28.634Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "d720aaa8aa69a9e71c59664150d16ecb111793a5",
+  "blueprint_digest": "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391",
+  "findings": [
+    "The evaluator still targets the pre-packet implementation SHA, so the qualification packet and verification record are not part of the reviewed commit."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291148-1F9GZD/README.md",
+    ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-123456332-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Prepare a qualification packet, commit the packet and verification artifacts, and assert that work_order.evaluated_sha equals the commit containing those exact artifacts rather than the earlier implementation SHA.",
+    "Modify dependency README, PR metadata, or quality-report content after reviewed_sha and assert packet preparation rejects the drift or reads the content from the reviewed commit."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes a packet written after verification is nevertheless contained in verification_record.implementation_sha.",
+    "The implementation assumes live worktree dependency artifacts are identical to their versions at reviewed_sha; the ancestry check on some task-artifact commit does not prove that identity."
+  ],
+  "residual_risks": [
+    "Rework SHA resolution and evidence loading so the evaluator targets a commit that contains the qualification packet and verification record, and derive or verify every dependency artifact against that same commit before freezing the work order."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RF04-CURRENT-REBUILD-NOT-MEASURED",
+      "severity": "high",
+      "summary": "The packet labels a clone of the frozen replay baseline as the current RF-04 rebuild instead of loading or deriving current-run output. A passing check selected by command-name substring is the only connection to execution, so baseline-versus-current success, rework, safety, token, and latency values are not independently demonstrated.",
+      "broken_invariant": "The qualification packet must expose actual baseline-versus-current RF-04 values bound to the reviewed evidence, not represent the baseline itself as current measurement.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-130254763-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:51fc13c6ae6b6106743e6ef3f5924b19db498b9ac1fe35b7fadc5947260f1dbc",
+          "section": "qualification-packet-rf04.ts: buildQualificationRf04Comparison"
+        }
+      ]
+    },
+    {
+      "id": "REWORK-SHA-UNVERIFIED",
+      "severity": "high",
+      "summary": "Verification is recorded for d720aaa8, while the frozen evaluation targets 3ae6dcfa0680e40fe489e1f82566dfbea6328181 after additional rework. The frozen observed checks contain no durable verification records or runner evidence proving the required checks against the evaluated SHA.",
+      "broken_invariant": "Required verification must cover the implementation actually reviewed; passing checks on an earlier SHA do not qualify later rework.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:5de415b3afd63bb9e5dc0f11cdb148bc2904f524e43fc1c44a96931921a02fce",
+          "section": "Verification and subsequent Reworked event"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-130254763-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:e3d267cfdd9e3334f27deb52a5c4c24e4aab8c62900918ff9e2ee8bdf450f2d7",
+          "section": "verification_records and runner_history"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A test using intentionally different baseline and current RF-04 artifacts that proves current_rebuild is derived from current execution output rather than cloned from the baseline.",
+    "A verification run of the focused evaluator suite and ci:contract bound to evaluated SHA 3ae6dcfa0680e40fe489e1f82566dfbea6328181."
+  ],
+  "hidden_assumptions": [
+    "A passing check whose command contains ci:contract or agent-efficiency proves that the specific frozen replay baseline was rebuilt during that check.",
+    "Copying the replay baseline into current_rebuild is equivalent to recording current RF-04 measurements.",
+    "Changes between d720aaa8 and the evaluated SHA cannot affect behavior covered by the required checks."
+  ],
+  "recovery_context": "Replace the synthetic RF-04 current_rebuild clone with frozen output produced by the verified current run, bind that output and every required check to one reviewed SHA, then rerun focused tests and ci:contract on the final evaluated commit."
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-944287258809bcf471b5b272",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "The sealing commit changed the evaluator target, but the resulting frozen episode still has qualification_packet=null and no verification records. Repair the qualification-task routing or task classification so the actual milestone workflow emits and freezes the packet, then regenerate verification and evaluator evidence at the intended reviewed SHA.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen evaluator evidence contains no qualification packet or durable verification record; the observed checks explicitly report qualification_packet as null and verification_records as empty.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-124449820-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:39aad8abd0191a1eb063aacc412bc24be723abf74b301511de25ff6e62ce0761"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:60ba2a247caa52ec507c4bf163975544236c279f0425ef1d78b93b33de999c80",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "summary": "The recorded checks passed on d720aaa8, while the frozen review targets 6b1e2e72, but no packet in the evidence binds those checks to the reviewed sealing commit.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:60ba2a247caa52ec507c4bf163975544236c279f0425ef1d78b93b33de999c80",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-124449820-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:39aad8abd0191a1eb063aacc412bc24be723abf74b301511de25ff6e62ce0761",
+          "section": "verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-124449820-recovery-context/evaluator-result.json"
+}
