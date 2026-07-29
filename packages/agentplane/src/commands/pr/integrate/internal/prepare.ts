@@ -1,6 +1,10 @@
 import path from "node:path";
 import { readFile } from "node:fs/promises";
-import { findWorktreeForBranch, gitDiffNames } from "@agentplaneorg/core/git";
+import {
+  findWorktreeForBranch,
+  gitDiffNames,
+  gitRefreshBranchTrackingRef,
+} from "@agentplaneorg/core/git";
 import type { TaskData } from "../../../../backends/task-backend.js";
 
 import { fileExists } from "../../../../cli/fs-utils.js";
@@ -355,6 +359,7 @@ export async function prepareIntegrate(opts: {
     expectedSha: qualityReviewTargetSha ?? branchHeadSha,
     command: "integrate",
   });
+  await gitRefreshBranchTrackingRef(resolved.gitRoot, branch);
   const upstreamRef = await gitBranchUpstream(resolved.gitRoot, branch);
   const upstreamHeadSha = upstreamRef
     ? await gitRevParse(resolved.gitRoot, [upstreamRef]).catch(() => null)

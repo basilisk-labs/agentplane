@@ -1,5 +1,5 @@
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv } from "@agentplaneorg/core/git";
+import { gitEnv, gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
 
 import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import {
@@ -112,28 +112,6 @@ async function gitSetBranchUpstream(opts: {
   await execFileAsync(
     "git",
     ["config", `branch.${opts.branch}.merge`, `refs/heads/${opts.remoteBranch}`],
-    {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-    },
-  );
-}
-
-async function gitRefreshBranchTrackingRef(opts: {
-  gitRoot: string;
-  branch: string;
-  remote: string;
-}): Promise<void> {
-  const remoteTarget = await gitResolveRemotePushTarget(opts.gitRoot, opts.remote);
-  await execFileAsync(
-    "git",
-    [
-      "fetch",
-      "--no-tags",
-      "--no-write-fetch-head",
-      remoteTarget,
-      `refs/heads/${opts.branch}:refs/remotes/${opts.remote}/${opts.branch}`,
-    ],
     {
       cwd: opts.gitRoot,
       env: gitEnv(),
@@ -302,10 +280,6 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
     });
     if (!publishedRebasedBranch) throw err;
   }
-  await gitRefreshBranchTrackingRef({
-    gitRoot: opts.gitRoot,
-    branch: opts.branch,
-    remote,
-  });
+  await gitRefreshBranchTrackingRef(opts.gitRoot, opts.branch);
   return true;
 }
