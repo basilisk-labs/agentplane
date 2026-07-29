@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 40
+revision: 41
 origin:
   system: "manual"
 depends_on:
@@ -45,21 +45,21 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T09:11:14.437Z"
+  updated_at: "2026-07-29T09:33:29.694Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "3532417852f2de3a06b7afeeef0311c94ff3c38a"
+  evaluated_sha: "f7f5ff871ef5e65c06f541eab6c2892c322f0ff1"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/verification/20260729090832473-002bb7db2f395aa1.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/verification/20260729093134272-a1da4c207aaafa66.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json"
@@ -68,13 +68,13 @@ quality_review:
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-090932624-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-093220713-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Реализация и замороженные доказательства покрывают прямой полный цикл, обновление маршрута после операций, типизированные остановки и отрицательные сценарии, ограничение области записи, терминальное состояние журнала и сравнение затрат с базовой линией 0.6.24; заявленные проверки прошли на оцениваемом SHA."
+    - "Реализация и замороженные доказательства покрывают полный прямой цикл: EXECUTOR не выполняет lifecycle-вызовы, маршруты пересчитываются после операций, отрицательные и типизированные остановки проверены, область записи ограничена, журнал достигает терминального состояния, а затраты ниже базовой линии 0.6.24 без снижения подтверждённого успеха."
 commit:
   hash: "9e1d459cb604b25f517de4b7bb6f811b8e5f95de"
   message: "✅ 0SFMS7 task: record fresh evaluator pass"
@@ -199,7 +199,7 @@ events:
     state: "ok"
     note: "Verified: compact runner work-order contract and full unit suite are current for fresh quality review."
 doc_version: 3
-doc_updated_at: "2026-07-29T09:31:35.118Z"
+doc_updated_at: "2026-07-29T09:33:29.719Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:

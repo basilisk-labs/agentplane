@@ -1,0 +1,147 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T09:31:34.272Z",
+    "updated_by": "CODER",
+    "note": "Verified: compact runner work-order contract and full unit suite are current for fresh quality review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729093134272-a1da4c207aaafa66.json",
+      "sha256": "sha256:ca8f72f459aa0dc279a0cef1bd420a32fbb41e25474a87ef05b214c7034a7e12"
+    }
+  ],
+  "runner_history": [
+    {
+      "source": "verified_runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json",
+      "task_id": "202607290849-SKZF6Y",
+      "status": "stopped",
+      "cursor": {
+        "episode": 4,
+        "phase": "stopped",
+        "operation_key": null
+      },
+      "usage": {
+        "episodes": 4,
+        "agent_runs": 2,
+        "input_tokens": 393371,
+        "output_tokens": 3603,
+        "total_tokens": 396974,
+        "wall_time_ms": 109403,
+        "changed_files": 2,
+        "diff_lines": 0,
+        "no_progress_episodes": 0
+      },
+      "digest": "sha256:0697c5088cc71133888fb7828d50c490f75f7f60e8304146563bc637f12727cd"
+    }
+  ],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json",
+      "sha256": "sha256:a33e02d2fc9a861792ca44ad7d1616c412f9817c0ef98c53425d8d47c798e499"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json",
+      "sha256": "sha256:3ccd9f852be0fdbcdbce6e2794fc808b711dddb56b8d50527fc9aea817ec59c9"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json",
+      "sha256": "sha256:c9cecd2e026c06773bd7ce3ac13129f3873c209ffbe28265768ca0a4e327b729"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json",
+      "sha256": "sha256:0e624b2c42a3b455891b55778b00fa0dc9e16032ecfc84b8ce1d6e7e0e3c500d"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json",
+      "sha256": "sha256:5c4d8257c013f3c0e2a979955c76ad3b7e7afe9e0d9eae50eaf5829825812a3e"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json",
+      "sha256": "sha256:0a47651725f117c14a0b88bce1eb9e334358389208034864e560983a9a8d8cc0"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json",
+      "sha256": "sha256:61c9dd2eff9e903039c2020103d33c354e116c453dfc75106cfc884c9992fdc1"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json",
+      "sha256": "sha256:0d2fffa7cef94e3be7c7d682a31939e28c4aa3127131f7ebd4407f62fbf43cea"
+    }
+  ],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check dc97f71fb3d59611f4b2e7389c8f34d74d3cb8ab..e25fd5b8573b3623498ba094aba256952ac4816e",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB dc97f71fb3d59611f4b2e7389c8f34d74d3cb8ab..e25fd5b8573b3623498ba094aba256952ac4816e",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\tdocs/rf10-terminal-journal-control-proof.md"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": [
+          "?? .agentplane/tasks/202607290849-SKZF6Y/README.md",
+          "?? .agentplane/tasks/202607290849-SKZF6Y/blueprint/resolved-snapshot.json"
+        ]
+      }
+    ],
+    "execution_base_commit": "dc97f71fb3d59611f4b2e7389c8f34d74d3cb8ab",
+    "implementation_commit": "e25fd5b8573b3623498ba094aba256952ac4816e",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202607290849-SKZF6Y/README.md",
+        "?? .agentplane/tasks/202607290849-SKZF6Y/blueprint/resolved-snapshot.json"
+      ],
+      "classification": [
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202607290849-SKZF6Y/README.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202607290849-SKZF6Y/blueprint/resolved-snapshot.json"
+        }
+      ],
+      "final": [
+        "?? .agentplane/tasks/202607290849-SKZF6Y/README.md",
+        "?? .agentplane/tasks/202607290849-SKZF6Y/blueprint/resolved-snapshot.json"
+      ],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": [
+        "?? .agentplane/tasks/202607290849-SKZF6Y/README.md",
+        "?? .agentplane/tasks/202607290849-SKZF6Y/blueprint/resolved-snapshot.json"
+      ]
+    },
+    "schema_version": 1,
+    "task_id": "202607290849-SKZF6Y",
+    "source": "verified_runtime_evidence",
+    "source_path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json"
+  }
+}
