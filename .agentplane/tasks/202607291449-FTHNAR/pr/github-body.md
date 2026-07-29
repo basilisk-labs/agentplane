@@ -15,12 +15,12 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Verified d96688db: fresh deterministic evidence covers all declared checks plus the independent
-blocked-quality-review regression.
+Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module
+limit (619 lines).
 ```
 - Canonical workflow state lives in the task README.
 
@@ -33,26 +33,28 @@ blocked-quality-review regression.
 
 ```text
  .../src/backends/task-backend/shared/normalize.ts  |   5 +
- ...-cli.critical.agent-efficiency-baseline.test.ts |  18 ++-
- .../evaluator-episode.calibration.test.ts          | 162 +++++++++++++++++++++
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  18 +-
+ .../evaluator-episode.calibration.test.ts          | 162 +++++++++++++++
  .../src/commands/evaluator/evaluator-episode.ts    |   2 +
  .../evaluator/evaluator-quality-artifacts.ts       |   1 +
  .../commands/evaluator/evaluator-review-apply.ts   |   3 +
  .../commands/evaluator/evaluator-review-usecase.ts |   2 +
  .../src/commands/shared/route-decision.ts          |  15 ++
- .../src/commands/shared/workflow-step-branch.ts    |  21 +++
- .../src/commands/shared/workflow-step-factory.ts   |  26 ++++
- .../src/commands/shared/workflow-step.test.ts      | 143 ++++++++++++++++++
+ .../commands/shared/workflow-step-branch-state.ts  |   9 +
+ .../src/commands/shared/workflow-step-branch.ts    |  15 +-
+ .../src/commands/shared/workflow-step-factory.ts   |  26 +++
+ .../commands/shared/workflow-step-quality.test.ts  | 217 +++++++++++++++++++++
+ .../src/commands/shared/workflow-step-quality.ts   |  18 ++
  .../src/commands/shared/workflow-step.ts           |   5 +
- .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
+ .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 +
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 ++++
+ .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 +++
  packages/core/src/index.ts                         |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-store.ts              |   2 +
- .../baselines/v0.7-compatibility-candidate.json    |  19 +--
+ .../baselines/v0.7-compatibility-candidate.json    |  19 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- 20 files changed, 455 insertions(+), 19 deletions(-)
+ 22 files changed, 541 insertions(+), 28 deletions(-)
 ```
 
 </details>

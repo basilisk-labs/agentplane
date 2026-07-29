@@ -1,6 +1,8 @@
 import type { WorkflowRouteState, WorkflowStep } from "./workflow-step.js";
 import type { RouteBlocker } from "./route-oracle.js";
 import { conflictReworkRouteStep } from "./workflow-step-conflict-rework.js";
+import { preMergeCommit, primaryIncludeTaskIds } from "./workflow-step-branch-state.js";
+import { needsQualityEvidenceRefresh } from "./workflow-step-quality.js";
 import {
   approvalStep,
   branchImplementationStep,
@@ -20,28 +22,6 @@ import {
   worktreeResolutionStep,
 } from "./workflow-step-factory.js";
 
-function primaryIncludeTaskIds(state: WorkflowRouteState): readonly string[] {
-  if (state.batchOwnership.role !== "primary") return [];
-  return [...state.batchOwnership.includedTaskIds];
-}
-
-function needsQualityEvidenceRefresh(state: WorkflowRouteState): boolean {
-  const review = state.task.quality_review;
-  return (
-    String(state.task.status).toUpperCase() === "DOING" &&
-    state.task.verification?.state === "ok" &&
-    review?.state === "blocked" &&
-    review.provenance === "evaluator_supplied" &&
-    review.recovery_reason === "deterministic_evidence_gap" &&
-    review.evaluated_sha === state.qualityReviewTargetSha &&
-    typeof review.updated_at === "string" &&
-    typeof state.task.verification.updated_at === "string" &&
-    state.task.verification.updated_at <= review.updated_at &&
-    review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json")) &&
-    review.findings.length > 0
-  );
-}
-
 function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
   return terminalStep({
     state,
@@ -56,10 +36,6 @@ function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
     evidenceMissing: ["task_branch_head"],
     selectedBlocker: routeBlockerFor(state, "branch_head_missing"),
   });
-}
-
-function preMergeCommit(state: WorkflowRouteState): string | null {
-  return state.prFlow?.branch.headSha ?? null;
 }
 
 function primaryBatchVerificationStep(state: WorkflowRouteState): WorkflowStep | null {
