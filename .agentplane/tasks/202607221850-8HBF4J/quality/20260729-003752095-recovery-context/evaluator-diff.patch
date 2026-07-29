@@ -1,0 +1,3179 @@
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/README.md b/.agentplane/tasks/202607221850-8HBF4J/README.md
+index 252d47a51..d7ccfef92 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/README.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/README.md
+@@ -4,7 +4,7 @@ title: "Supervise context assimilation post-processing"
+ status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 13
++revision: 16
+ origin:
+   system: "manual"
+ depends_on:
+@@ -38,35 +38,37 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-07-28T14:49:18.130Z"
+-  updated_by: "TESTER"
+-  note: "Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43), workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle invariants."
++  updated_at: "2026-07-29T00:35:53.655Z"
++  updated_by: "CODER"
++  note: "Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage."
+   attempts: 0
+ quality_review:
+-  state: "blocked"
++  state: "rework"
+   provenance: "evaluator_supplied"
+-  updated_at: "2026-07-28T21:47:50.057Z"
++  updated_at: "2026-07-29T00:16:57.708Z"
+   updated_by: "EVALUATOR"
+-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+-  evaluated_sha: "20327772b02ab86f325009e4edcd4c313edc9d49"
++  note: "EVALUATOR returned rework with 3 typed finding(s)."
++  evaluated_sha: "0fe3ee082dd51ea48e335e7125da1febd090ff89"
+   blueprint_digest: "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde"
+   evidence_refs:
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-work-order.json"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/quality-report.json"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-prompt.md"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-opinion.md"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-result.json"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-follow-up.json"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-follow-up.json"
+     - ".agentplane/tasks/202607221850-8HBF4J/README.md"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-diff.patch"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-observed-checks.json"
+-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-blueprint.json"
+     - ".agentplane/policy/dod.code.md"
+     - ".agentplane/policy/dod.core.md"
+     - ".agentplane/policy/security.must.md"
+     - ".agentplane/policy/workflow.branch_pr.md"
+   findings:
+-    - "Замороженный actual_diff не содержит изменений реализации: в нём есть только обновление README задачи, поэтому невозможно проверить поведение на evaluated_sha 20327772b02ab86f325009e4edcd4c313edc9d49."
++    - "The focused supervisor suite tests one failed mechanical operation (wiki_lint), one resumed completed phase, and one rework round. It does not prove failure-and-retry behavior for each mechanical gate required by Verify Steps."
++    - "The suite does not exercise repeated evaluator rework through the durable episode budget/cursor to show termination at episode, token, or no-progress limits."
++    - "The branch is unpublished and has a dirty task README plus an untracked prior quality artifact; existing review records include rework and blocked reports, so no fresh, mergeable quality proof covers the current head."
+ commit:
+   hash: "47c01f6c33ca35c36d7b53d4d5a03d891384c1e3"
+   message: "Implement supervised context assimilation post-processing"
+@@ -98,8 +100,14 @@ events:
+     author: "TESTER"
+     state: "ok"
+     note: "Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43), workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle invariants."
++  -
++    type: "verify"
++    at: "2026-07-29T00:35:53.655Z"
++    author: "CODER"
++    state: "ok"
++    note: "Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage."
+ doc_version: 3
+-doc_updated_at: "2026-07-28T14:49:19.650Z"
++doc_updated_at: "2026-07-29T00:35:54.408Z"
+ doc_updated_by: "CODER"
+ description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
+ sections:
+@@ -149,6 +157,36 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    ### 2026-07-29T00:35:53.655Z — VERIFY — ok
++
++    By: CODER
++
++    Note: Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T14:49:19.650Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
++    - old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++    - current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
+@@ -158,6 +196,10 @@ sections:
+     - Observation: CLI owns mechanical assimilation post-processing under the shared supervisor journal.
+       Impact: CURATOR no longer receives lifecycle command lists or mechanical retry burden.
+       Resolution: Recorded passing local verification; hosted PR checks remain required.
++
++    - Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
++      Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
++      Resolution: Ready for a fresh EVALUATOR review on the current task branch.
+ extensions:
+   workflow_route_baseline:
+     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
+@@ -220,6 +262,36 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++### 2026-07-29T00:35:53.655Z — VERIFY — ok
++
++By: CODER
++
++Note: Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T14:49:19.650Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
++- old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++- current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -233,3 +305,7 @@ DecisionContextRef:
+ - Observation: CLI owns mechanical assimilation post-processing under the shared supervisor journal.
+   Impact: CURATOR no longer receives lifecycle command lists or mechanical retry burden.
+   Resolution: Recorded passing local verification; hosted PR checks remain required.
++
++- Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
++  Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
++  Resolution: Ready for a fresh EVALUATOR review on the current task branch.
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+index 08f787c15..172876e9e 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+@@ -1,7 +1,7 @@
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
+- .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++ .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
++ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
+@@ -13,4 +13,4 @@
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1401 insertions(+), 67 deletions(-)
++ 15 files changed, 1629 insertions(+), 67 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+index c4ea1e44b..cecb6b0ac 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+@@ -19,11 +19,8 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
+ - Note:
+ 
+ ```text
+-Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation
+-retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework
+-creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43),
+-workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle
+-invariants.
++Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix,
++durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
+ ```
+ - Canonical workflow state lives in the task README.
+ 
+@@ -37,8 +34,8 @@ invariants.
+ ```text
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
+- .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++ .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
++ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
+@@ -50,7 +47,7 @@ invariants.
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1401 insertions(+), 67 deletions(-)
++ 15 files changed, 1629 insertions(+), 67 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+index 3d034734a..b12810d1f 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+@@ -2,9 +2,9 @@
+   "base": "main",
+   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
+   "created_at": "2026-07-28T13:53:55.558Z",
+-  "diffstat_sha256": "sha256:0414676abf3679eb596f2dfc331f4e0ec99b3943dd7565fe3a51956d864721e5",
+-  "last_verified_at": "2026-07-28T14:49:18.130Z",
+-  "last_verified_diffstat_sha256": "sha256:c18af873f99bbbf6435bac91962c7cd35a4f4917c8ef2ae6af5ad7555f8e49a6",
++  "diffstat_sha256": "sha256:8b99d8862289694fd8061b1f3aaeb519bc2d497f7c7273066d47276559c43c17",
++  "last_verified_at": "2026-07-29T00:35:53.655Z",
++  "last_verified_diffstat_sha256": "sha256:0414676abf3679eb596f2dfc331f4e0ec99b3943dd7565fe3a51956d864721e5",
+   "pr_number": 4659,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4659",
+   "schema_version": 1,
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+index 0a058d8a2..5cca179dd 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+@@ -13,7 +13,7 @@ Created: 2026-07-28T13:53:55.558Z
+ ## Verification
+ 
+ - State: ok
+-- Note: Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43), workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle invariants.
++- Note: Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+@@ -31,8 +31,8 @@ Created: 2026-07-28T13:53:55.558Z
+ ```text
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
+- .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++ .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
++ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
+@@ -44,7 +44,7 @@ Created: 2026-07-28T13:53:55.558Z
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1401 insertions(+), 67 deletions(-)
++ 15 files changed, 1629 insertions(+), 67 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-blueprint.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-blueprint.json
+new file mode 100644
+index 000000000..e1fb22478
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-blueprint.json
+@@ -0,0 +1,585 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221850-8HBF4J",
++    "title": "Supervise context assimilation post-processing",
++    "description": "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations.",
++    "tags": [
++      "context",
++      "curator",
++      "milestone-beta1",
++      "refactor",
++      "rf-11",
++      "rf-25",
++      "supervisor",
++      "v0.7",
++      "wave-supervisor"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221850-8HBF4J",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde"
++  }
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch
+new file mode 100644
+index 000000000..4127c8c4e
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch
+@@ -0,0 +1,119 @@
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++index 157871182..08f787c15 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++@@ -2,15 +2,15 @@
++  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
++  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
++  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++- .../src/commands/context/context-runner.ts         |  74 +++
+++ .../src/commands/context/context-runner.ts         |  79 +++
++  .../src/commands/context/context.spec.ts           |  45 ++
++  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
++  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
++  packages/agentplane/src/context/ingest-task.ts     |  29 +-
++  .../runner/supervisor-execution-episode.test.ts    |  34 ++
++- .../src/runner/supervisor-execution-episode.ts     |  55 ++
+++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
++  packages/core/src/schemas/index.ts                 |   1 +
++  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++  .../check-compatibility-contract-baseline.mjs      |  67 +++
++- 15 files changed, 1398 insertions(+), 67 deletions(-)
+++ 15 files changed, 1401 insertions(+), 67 deletions(-)
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++index db685794e..c4ea1e44b 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++@@ -39,18 +39,18 @@ invariants.
++  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
++  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
++  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++- .../src/commands/context/context-runner.ts         |  74 +++
+++ .../src/commands/context/context-runner.ts         |  79 +++
++  .../src/commands/context/context.spec.ts           |  45 ++
++  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
++  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
++  packages/agentplane/src/context/ingest-task.ts     |  29 +-
++  .../runner/supervisor-execution-episode.test.ts    |  34 ++
++- .../src/runner/supervisor-execution-episode.ts     |  55 ++
+++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
++  packages/core/src/schemas/index.ts                 |   1 +
++  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++  .../check-compatibility-contract-baseline.mjs      |  67 +++
++- 15 files changed, 1398 insertions(+), 67 deletions(-)
+++ 15 files changed, 1401 insertions(+), 67 deletions(-)
++ ```
++ 
++ </details>
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++index ddb2a66a1..3d034734a 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++@@ -2,7 +2,7 @@
++   "base": "main",
++   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
++   "created_at": "2026-07-28T13:53:55.558Z",
++-  "diffstat_sha256": "sha256:c18af873f99bbbf6435bac91962c7cd35a4f4917c8ef2ae6af5ad7555f8e49a6",
+++  "diffstat_sha256": "sha256:0414676abf3679eb596f2dfc331f4e0ec99b3943dd7565fe3a51956d864721e5",
++   "last_verified_at": "2026-07-28T14:49:18.130Z",
++   "last_verified_diffstat_sha256": "sha256:c18af873f99bbbf6435bac91962c7cd35a4f4917c8ef2ae6af5ad7555f8e49a6",
++   "pr_number": 4659,
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++index 9558f771b..0a058d8a2 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++@@ -33,18 +33,18 @@ Created: 2026-07-28T13:53:55.558Z
++  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
++  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
++  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++- .../src/commands/context/context-runner.ts         |  74 +++
+++ .../src/commands/context/context-runner.ts         |  79 +++
++  .../src/commands/context/context.spec.ts           |  45 ++
++  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
++  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
++  packages/agentplane/src/context/ingest-task.ts     |  29 +-
++  .../runner/supervisor-execution-episode.test.ts    |  34 ++
++- .../src/runner/supervisor-execution-episode.ts     |  55 ++
+++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
++  packages/core/src/schemas/index.ts                 |   1 +
++  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++  .../check-compatibility-contract-baseline.mjs      |  67 +++
++- 15 files changed, 1398 insertions(+), 67 deletions(-)
+++ 15 files changed, 1401 insertions(+), 67 deletions(-)
++ ```
++ 
++ </details>
++diff --git a/packages/agentplane/src/commands/context/context-runner.ts b/packages/agentplane/src/commands/context/context-runner.ts
++index 2d493efd6..3d039a8ce 100644
++--- a/packages/agentplane/src/commands/context/context-runner.ts
+++++ b/packages/agentplane/src/commands/context/context-runner.ts
++@@ -236,7 +236,12 @@ export async function runContextSuperviseTask(
++     },
++     {
++       runEvaluator: async () =>
++-        await runEvaluatorExecute(_ctx, { taskId: p.taskId, evaluator: p.evaluator, json: p.json }),
+++        await runEvaluatorExecute(_ctx, {
+++          taskId: p.taskId,
+++          evaluator: p.evaluator,
+++          replacement: false,
+++          json: p.json,
+++        }),
++       createAcr: async () => {
++         const generated = await generateAcr({
++           ctx: command,
++diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
++index df40cdec8..e0f6dee12 100644
++--- a/packages/core/src/runner/supervisor-execution-episode.ts
+++++ b/packages/core/src/runner/supervisor-execution-episode.ts
++@@ -625,8 +625,6 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
++     budget: journal.budget,
++     usage: journal.usage,
++     next_kind: opts.next_kind,
++-    now,
++-    started_at: journal.started_at,
++   });
++   if (exhausted.length > 0) {
++     return stoppedJournal({
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-episode.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-episode.json
+new file mode 100644
+index 000000000..25d684f59
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-episode.json
+@@ -0,0 +1,40 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_episode_receipt",
++  "work_order_id": "evaluator-work-order-202607221850-8HBF4J-d0c877a39f42b7da4e73c724",
++  "provider": "codex",
++  "authority": {
++    "sandbox": "read-only",
++    "writable_roots": []
++  },
++  "argv": [
++    "codex",
++    "-a",
++    "never",
++    "exec",
++    "--ignore-user-config",
++    "--strict-config",
++    "--disable",
++    "hooks",
++    "--ephemeral",
++    "--json",
++    "-C",
++    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing",
++    "-s",
++    "read-only",
++    "--output-schema",
++    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.schema.json",
++    "-"
++  ],
++  "started_at": "2026-07-28T21:55:13.067Z",
++  "ended_at": "2026-07-28T21:56:03.096Z",
++  "stdout_bytes": 43673,
++  "stderr_bytes": 5323,
++  "provider_usage": {
++    "input_tokens": 120594,
++    "output_tokens": 2272,
++    "total_tokens": 122866
++  },
++  "workspace_state": "unchanged",
++  "result_sha256": "sha256:5d5a5f4ee0c9fe92189777c2865ed577ff421182da7317a35ad1ec2cc77a1cbe"
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-follow-up.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-follow-up.json
+new file mode 100644
+index 000000000..05932e7f2
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-follow-up.json
+@@ -0,0 +1,48 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_escalation",
++  "source_work_order_id": "evaluator-work-order-202607221850-8HBF4J-d0c877a39f42b7da4e73c724",
++  "task_id": "202607221850-8HBF4J",
++  "verdict": "blocked",
++  "next_owner": "USER",
++  "instruction": "Повторить оценку с замороженным полным PR patch от базового SHA задачи до evaluated_sha 0fe3ee082dd51ea48e335e7125da1febd090ff89 и с конкретными результатами обязательных команд и негативных/retry-сценариев; текущий evidence позволяет увидеть только последующий двухфайловый delta, но не проверить реализацию целиком.",
++  "findings": [
++    {
++      "id": "RC-001",
++      "summary": "Замороженный патч не содержит полного изменения, заявленного задачей: он показывает только две небольшие правки реализации и обновления PR-артефактов, тогда как diffstat ссылается на 15 изменённых файлов и основную реализацию, отсутствующую в evidence. Поэтому нельзя проверить положительные, отрицательные и конкурентно-чувствительные пути на evaluated_sha.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch",
++          "sha256": "sha256:68a4ba398474b68188e8741ed13b23f88fb2b29c9536e6942901644add83f5ba",
++          "line": 1,
++          "lines": "1-119",
++          "section": "actual_diff"
++        },
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
++          "sha256": "sha256:866243b7827de43b0248347ce5c83292700e96562acc2e67e1f6cb42da00af9c",
++          "section": "Plan and Verify Steps"
++        }
++      ]
++    },
++    {
++      "id": "RC-002",
++      "summary": "Наблюдаемые проверки содержат только итоговую текстовую заметку: verification_records и runner_history пусты, поэтому отсутствуют результаты отдельных обязательных команд и доказательства сценариев с отказом каждого механического этапа, повторным semantic rework и исчерпанием лимитов.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json",
++          "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
++          "line": 1,
++          "lines": "1-17",
++          "section": "verification_records and runner_history"
++        },
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
++          "sha256": "sha256:866243b7827de43b0248347ce5c83292700e96562acc2e67e1f6cb42da00af9c",
++          "section": "Verify Steps"
++        }
++      ]
++    }
++  ],
++  "source_result": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.json"
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json
+new file mode 100644
+index 000000000..0a3bfeb8f
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json
+@@ -0,0 +1,18 @@
++{
++  "task_status": "DOING",
++  "declared_checks": [
++    "bun run coverage:workflow-suite",
++    "bun run lifecycle:invariants",
++    "bun run test:critical",
++    "bun run typecheck"
++  ],
++  "verification": {
++    "state": "ok",
++    "attempts": 0,
++    "updated_at": "2026-07-28T14:49:18.130Z",
++    "updated_by": "TESTER",
++    "note": "Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43), workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle invariants."
++  },
++  "verification_records": [],
++  "runner_history": []
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-opinion.md b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-opinion.md
+new file mode 100644
+index 000000000..0829f8274
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-opinion.md
+@@ -0,0 +1,27 @@
++# Semantic quality review: blocked
++
++Provenance: evaluator_supplied
++
++EVALUATOR returned blocked with 2 typed finding(s).
++
++## Findings
++- Замороженный патч не содержит полного изменения, заявленного задачей: он показывает только две небольшие правки реализации и обновления PR-артефактов, тогда как diffstat ссылается на 15 изменённых файлов и основную реализацию, отсутствующую в evidence. Поэтому нельзя проверить положительные, отрицательные и конкурентно-чувствительные пути на evaluated_sha.
++- Наблюдаемые проверки содержат только итоговую текстовую заметку: verification_records и runner_history пусты, поэтому отсутствуют результаты отдельных обязательных команд и доказательства сценариев с отказом каждого механического этапа, повторным semantic rework и исчерпанием лимитов.
++
++## Evidence
++- .agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch
++- .agentplane/tasks/202607221850-8HBF4J/README.md
++- .agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json
++
++## Missing Tests
++- Замороженные результаты сценария отказа и возобновления для каждого механического этапа с доказательством отсутствия повторного CURATOR reasoning и duplicate apply.
++- Замороженные результаты повторного evaluator semantic rework до episode/token/no-progress limit с доказательством общего durable budget/cursor.
++- Отдельные результаты всех четырёх обязательных команд: coverage:workflow-suite, lifecycle:invariants, test:critical и typecheck.
++
++## Hidden Assumptions
++- Предполагается, что отсутствующие из evaluator-diff.patch 13 файлов реализации и тестов соответствуют evaluated_sha и утверждённому контракту.
++- Предполагается, что сводная заметка TESTER точно отражает выполнение всех обязательных команд и негативных сценариев, хотя машинно-проверяемые записи отсутствуют.
++- Предполагается, что две показанные последующие правки не изменили ранее проверенные свойства retry, budget и evaluator rework.
++
++## Residual Risks
++- Повторить оценку с замороженным полным PR patch от базового SHA задачи до evaluated_sha 0fe3ee082dd51ea48e335e7125da1febd090ff89 и с конкретными результатами обязательных команд и негативных/retry-сценариев; текущий evidence позволяет увидеть только последующий двухфайловый delta, но не проверить реализацию целиком.
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-prompt.md b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-prompt.md
+new file mode 100644
+index 000000000..9c6c94c84
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-prompt.md
+@@ -0,0 +1,82 @@
++# AgentPlane EVALUATOR episode
++
++AgentPlane prepared and froze the authoritative review input. Perform the semantic evaluation; do not reproduce CLI discovery or lifecycle work.
++This prompt does not execute an evaluator. A caller must run the evaluator in the work-order authority boundary and persist its returned typed result at the declared output path.
++Do not edit implementation, task lifecycle, policy, or evidence files. You may read the frozen evidence and run read-only checks only.
++
++- task_id: 202607221850-8HBF4J
++- task_readme: .agentplane/tasks/202607221850-8HBF4J/README.md
++- work_order: .agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-work-order.json
++- result_output: .agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.json
++- report_path: .agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/quality-report.json
++- provenance: evaluator_supplied
++
++## Required result
++
++Return exactly one `sgr.evaluator_result.v1` JSON object through the evaluator result channel. The caller, not the read-only evaluator, persists it at `result_output`. It must contain:
++- schema_version: 1
++- kind: evaluator_result
++- evaluator_id: the evaluator id from the work order
++- verdict: pass | rework | blocked | human_review
++- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs
++- missing_tests and hidden_assumptions: string arrays
++- recovery_context: required non-empty string for rework, blocked, or human_review; for human_review it must be the single decision question for the human owner
++
++Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.
++The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.
++
++## Evaluator module
++
++---
++id: recovery-context
++title: Recovery Context Invariant Review
++version: 1
++status: preview
++profile: EVALUATOR
++tags:
++  - recovery
++  - invariants
++  - concurrency
++---
++
++# Recovery Context Invariant Review
++
++Use this evaluator only when the primary implementation path already produced a concrete change or when recovery context is needed after an interruption.
++
++## Inputs
++
++- Task id, task README, approved plan, and Verify Steps.
++- Current diff or PR patch.
++- Relevant comments, review findings, incidents, and recovery/handoff context.
++- Known concurrent-agent activity and task-artifact drift classification, if present.
++
++## Review Procedure
++
++1. Reconstruct the intended contract from the task, not from the implementation summary.
++2. Compare the diff against explicit invariants, stop rules, negative cases, and user constraints.
++3. Check whether recovery context changes the interpretation of the task or exposes stale assumptions.
++4. Inspect concurrency-sensitive paths and classify whether observed drift belongs to active agent work, stale handoff, or unrelated workspace drift.
++5. Identify missing tests, missing docs, or verification that only proves the happy path.
++6. Do not execute fixes. Return review findings only.
++7. When recording the result, use `agentplane evaluator run <task-id> --provenance evaluator_supplied` so the task gets prompt,
++   `quality-report.json`, and opinion artifacts. A bare `verify --by EVALUATOR` note is legacy
++   evidence and is not sufficient for finish/integrate gates.
++
++## Output
++
++Return a concise structured review:
++
++- `verdict`: `pass`, `rework`, `blocked`, or `human_review`.
++- `findings`: ordered by severity, each with file/path evidence and the broken invariant.
++- `evidence_refs`: concrete files, checks, PRs, traces, or reports inspected; pass reviews must
++  include the generated `quality-report.json`.
++- `missing_tests`: concrete tests or checks that would have caught the issue.
++- `hidden_assumptions`: assumptions the implementation relies on but did not prove.
++- `residual_risks`: known risks after the review.
++- `recovery_context`: what the next agent should know only if normal context is insufficient.
++
++## Stop Rules
++
++- Use `blocked` when required task context, diff, or recovery context is missing.
++- Use `rework` when behavior diverges from the approved contract even if local checks pass.
++- Use `pass` only when the implementation and verification evidence cover positive, negative, and concurrency-sensitive paths relevant to the task.
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.json
+new file mode 100644
+index 000000000..f84ee7a93
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.json
+@@ -0,0 +1,59 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_result",
++  "evaluator_id": "recovery-context",
++  "verdict": "blocked",
++  "findings": [
++    {
++      "id": "RC-001",
++      "severity": "high",
++      "summary": "Замороженный патч не содержит полного изменения, заявленного задачей: он показывает только две небольшие правки реализации и обновления PR-артефактов, тогда как diffstat ссылается на 15 изменённых файлов и основную реализацию, отсутствующую в evidence. Поэтому нельзя проверить положительные, отрицательные и конкурентно-чувствительные пути на evaluated_sha.",
++      "broken_invariant": "Для семантической оценки необходим полный текущий diff или PR patch, позволяющий сопоставить всю реализацию с утверждённым контрактом задачи.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch",
++          "sha256": "sha256:68a4ba398474b68188e8741ed13b23f88fb2b29c9536e6942901644add83f5ba",
++          "line": 1,
++          "lines": "1-119",
++          "section": "actual_diff"
++        },
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
++          "sha256": "sha256:866243b7827de43b0248347ce5c83292700e96562acc2e67e1f6cb42da00af9c",
++          "section": "Plan and Verify Steps"
++        }
++      ]
++    },
++    {
++      "id": "RC-002",
++      "severity": "medium",
++      "summary": "Наблюдаемые проверки содержат только итоговую текстовую заметку: verification_records и runner_history пусты, поэтому отсутствуют результаты отдельных обязательных команд и доказательства сценариев с отказом каждого механического этапа, повторным semantic rework и исчерпанием лимитов.",
++      "broken_invariant": "Pass требует проверяемого покрытия положительных, отрицательных и конкурентно-чувствительных сценариев; обязательные Verify Steps должны иметь конкретные результаты выполнения или согласованные пропуски.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json",
++          "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
++          "line": 1,
++          "lines": "1-17",
++          "section": "verification_records and runner_history"
++        },
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
++          "sha256": "sha256:866243b7827de43b0248347ce5c83292700e96562acc2e67e1f6cb42da00af9c",
++          "section": "Verify Steps"
++        }
++      ]
++    }
++  ],
++  "missing_tests": [
++    "Замороженные результаты сценария отказа и возобновления для каждого механического этапа с доказательством отсутствия повторного CURATOR reasoning и duplicate apply.",
++    "Замороженные результаты повторного evaluator semantic rework до episode/token/no-progress limit с доказательством общего durable budget/cursor.",
++    "Отдельные результаты всех четырёх обязательных команд: coverage:workflow-suite, lifecycle:invariants, test:critical и typecheck."
++  ],
++  "hidden_assumptions": [
++    "Предполагается, что отсутствующие из evaluator-diff.patch 13 файлов реализации и тестов соответствуют evaluated_sha и утверждённому контракту.",
++    "Предполагается, что сводная заметка TESTER точно отражает выполнение всех обязательных команд и негативных сценариев, хотя машинно-проверяемые записи отсутствуют.",
++    "Предполагается, что две показанные последующие правки не изменили ранее проверенные свойства retry, budget и evaluator rework."
++  ],
++  "recovery_context": "Повторить оценку с замороженным полным PR patch от базового SHA задачи до evaluated_sha 0fe3ee082dd51ea48e335e7125da1febd090ff89 и с конкретными результатами обязательных команд и негативных/retry-сценариев; текущий evidence позволяет увидеть только последующий двухфайловый delta, но не проверить реализацию целиком."
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.schema.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.schema.json
+new file mode 100644
+index 000000000..66852c0ab
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-result.schema.json
+@@ -0,0 +1,149 @@
++{
++  "$schema": "http://json-schema.org/draft-07/schema#",
++  "title": "AgentPlane EvaluatorSgrResult",
++  "description": "Read-only EVALUATOR output. AgentPlane validates frozen evidence and owns all persistence.",
++  "type": "object",
++  "additionalProperties": false,
++  "properties": {
++    "schema_version": {
++      "type": "integer",
++      "enum": [
++        1
++      ]
++    },
++    "kind": {
++      "type": "string",
++      "enum": [
++        "evaluator_result"
++      ]
++    },
++    "evaluator_id": {
++      "type": "string",
++      "minLength": 1
++    },
++    "verdict": {
++      "type": "string",
++      "enum": [
++        "pass",
++        "rework",
++        "blocked",
++        "human_review"
++      ]
++    },
++    "findings": {
++      "type": "array",
++      "minItems": 1,
++      "items": {
++        "type": "object",
++        "additionalProperties": false,
++        "properties": {
++          "id": {
++            "type": "string",
++            "minLength": 1
++          },
++          "severity": {
++            "type": "string",
++            "enum": [
++              "low",
++              "medium",
++              "high"
++            ]
++          },
++          "summary": {
++            "type": "string",
++            "minLength": 1
++          },
++          "broken_invariant": {
++            "type": "string",
++            "minLength": 1
++          },
++          "evidence_refs": {
++            "type": "array",
++            "minItems": 1,
++            "items": {
++              "type": "object",
++              "additionalProperties": false,
++              "properties": {
++                "path": {
++                  "type": "string",
++                  "minLength": 1
++                },
++                "sha256": {
++                  "type": [
++                    "string",
++                    "null"
++                  ],
++                  "pattern": "^sha256:[a-f0-9]{64}$"
++                },
++                "line": {
++                  "type": [
++                    "integer",
++                    "null"
++                  ],
++                  "minimum": 1
++                },
++                "lines": {
++                  "type": [
++                    "string",
++                    "null"
++                  ],
++                  "minLength": 1
++                },
++                "section": {
++                  "type": [
++                    "string",
++                    "null"
++                  ],
++                  "minLength": 1
++                }
++              },
++              "required": [
++                "path",
++                "sha256",
++                "line",
++                "lines",
++                "section"
++              ]
++            }
++          }
++        },
++        "required": [
++          "id",
++          "severity",
++          "summary",
++          "broken_invariant",
++          "evidence_refs"
++        ]
++      }
++    },
++    "missing_tests": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      }
++    },
++    "hidden_assumptions": {
++      "type": "array",
++      "items": {
++        "type": "string"
++      }
++    },
++    "recovery_context": {
++      "type": [
++        "string",
++        "null"
++      ],
++      "minLength": 1
++    }
++  },
++  "required": [
++    "schema_version",
++    "kind",
++    "evaluator_id",
++    "verdict",
++    "findings",
++    "missing_tests",
++    "hidden_assumptions",
++    "recovery_context"
++  ]
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-work-order.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-work-order.json
+new file mode 100644
+index 000000000..d844b7103
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-work-order.json
+@@ -0,0 +1,97 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_work_order",
++  "work_order_id": "evaluator-work-order-202607221850-8HBF4J-d0c877a39f42b7da4e73c724",
++  "prepared_at": "2026-07-28T21:55:12.813Z",
++  "task": {
++    "id": "202607221850-8HBF4J",
++    "revision": 13,
++    "objective": "Supervise context assimilation post-processing\n\nRF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations.",
++    "acceptance_criteria": [
++      "bun run coverage:workflow-suite",
++      "bun run lifecycle:invariants",
++      "bun run test:critical",
++      "bun run typecheck",
++      "- In scope: typed in-process context use-case results, supervisor operation registry for every mechanical assimilation phase, separate CURATOR rework work orders, retry from failed operation, and removal of lifecycle command lists from CURATOR prompts.\n- Out of scope: changing the CURATOR's semantic identity, synthesis, or ambiguity decisions.",
++      "1. Convert context apply/reindex/wiki/graph/coverage/check/evaluate/ACR/finalize commands into typed idempotent operations.\n2. Execute them through the common supervisor and ingestion journal.\n3. Reduce CURATOR input/output to semantic responsibilities and the typed result contract.\n4. Return mechanical failures as operation failures and semantic failures as a new CURATOR work order.\n5. Add complete, crash/retry, validation-failure, evaluator-rework, and stale-result scenarios.",
++      "1. Inspect the generated CURATOR work order. Expected: no list of mechanical completion commands; semantic responsibilities, evidence, output schema, budget reference, and stop rules remain. 2. Run a successful assimilation fixture. Expected: every mechanical phase is CLI-observed, journaled, bounded by 202607242236-1BFWEY, and finalized without CURATOR lifecycle calls. 3. Fail each mechanical gate in turn and restart after each durable phase. Expected: retry resumes that operation without new reasoning, duplicate apply, replayed CURATOR work, or lost budget usage. 4. Return evaluator semantic rework repeatedly. Expected: each separate CURATOR work order receives only bounded feedback, shares the durable episode budget/cursor, and terminates at the episode/token/no-progress limit. 5. Run focused context/supervisor tests, workflow coverage, lifecycle invariants, guards, and typecheck."
++    ]
++  },
++  "evaluated_sha": "0fe3ee082dd51ea48e335e7125da1febd090ff89",
++  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
++  "evaluator": {
++    "id": "recovery-context",
++    "profile": "EVALUATOR",
++    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
++  },
++  "authority": {
++    "sandbox": "read-only",
++    "writable_roots": [],
++    "allowed_tool_classes": [
++      "repository_read",
++      "git_read",
++      "run_checks",
++      "report_result"
++    ],
++    "external_side_effects": []
++  },
++  "result_contract": "sgr.evaluator_result.v1",
++  "evidence": [
++    {
++      "id": "task-document",
++      "kind": "task_document",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
++      "sha256": "sha256:866243b7827de43b0248347ce5c83292700e96562acc2e67e1f6cb42da00af9c",
++      "required": true
++    },
++    {
++      "id": "actual-diff",
++      "kind": "actual_diff",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch",
++      "sha256": "sha256:68a4ba398474b68188e8741ed13b23f88fb2b29c9536e6942901644add83f5ba",
++      "required": true
++    },
++    {
++      "id": "observed-checks",
++      "kind": "observed_checks",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json",
++      "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
++      "required": true
++    },
++    {
++      "id": "blueprint",
++      "kind": "blueprint",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-blueprint.json",
++      "sha256": "sha256:006d3064792e033426274f112a7b12ba19857328ef73185160502fb07b57aad9",
++      "required": true
++    },
++    {
++      "id": "policy-1",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.code.md",
++      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
++      "required": true
++    },
++    {
++      "id": "policy-2",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.core.md",
++      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
++      "required": true
++    },
++    {
++      "id": "policy-3",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/security.must.md",
++      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
++      "required": true
++    },
++    {
++      "id": "policy-4",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/workflow.branch_pr.md",
++      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
++      "required": true
++    }
++  ]
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/quality-report.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/quality-report.json
+new file mode 100644
+index 000000000..6e0baa87f
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/quality-report.json
+@@ -0,0 +1,34 @@
++{
++  "schema_version": 1,
++  "task_id": "202607221850-8HBF4J",
++  "evaluator_id": "recovery-context",
++  "evaluator_profile": "EVALUATOR",
++  "generated_at": "2026-07-28T21:56:03.352Z",
++  "provenance": "evaluator_supplied",
++  "verdict": "blocked",
++  "summary": "EVALUATOR returned blocked with 2 typed finding(s).",
++  "evaluated_sha": "0fe3ee082dd51ea48e335e7125da1febd090ff89",
++  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
++  "findings": [
++    "Замороженный патч не содержит полного изменения, заявленного задачей: он показывает только две небольшие правки реализации и обновления PR-артефактов, тогда как diffstat ссылается на 15 изменённых файлов и основную реализацию, отсутствующую в evidence. Поэтому нельзя проверить положительные, отрицательные и конкурентно-чувствительные пути на evaluated_sha.",
++    "Наблюдаемые проверки содержат только итоговую текстовую заметку: verification_records и runner_history пусты, поэтому отсутствуют результаты отдельных обязательных команд и доказательства сценариев с отказом каждого механического этапа, повторным semantic rework и исчерпанием лимитов."
++  ],
++  "evidence_refs": [
++    ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch",
++    ".agentplane/tasks/202607221850-8HBF4J/README.md",
++    ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json"
++  ],
++  "missing_tests": [
++    "Замороженные результаты сценария отказа и возобновления для каждого механического этапа с доказательством отсутствия повторного CURATOR reasoning и duplicate apply.",
++    "Замороженные результаты повторного evaluator semantic rework до episode/token/no-progress limit с доказательством общего durable budget/cursor.",
++    "Отдельные результаты всех четырёх обязательных команд: coverage:workflow-suite, lifecycle:invariants, test:critical и typecheck."
++  ],
++  "hidden_assumptions": [
++    "Предполагается, что отсутствующие из evaluator-diff.patch 13 файлов реализации и тестов соответствуют evaluated_sha и утверждённому контракту.",
++    "Предполагается, что сводная заметка TESTER точно отражает выполнение всех обязательных команд и негативных сценариев, хотя машинно-проверяемые записи отсутствуют.",
++    "Предполагается, что две показанные последующие правки не изменили ранее проверенные свойства retry, budget и evaluator rework."
++  ],
++  "residual_risks": [
++    "Повторить оценку с замороженным полным PR patch от базового SHA задачи до evaluated_sha 0fe3ee082dd51ea48e335e7125da1febd090ff89 и с конкретными результатами обязательных команд и негативных/retry-сценариев; текущий evidence позволяет увидеть только последующий двухфайловый delta, но не проверить реализацию целиком."
++  ]
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-blueprint.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-blueprint.json
+new file mode 100644
+index 000000000..e1fb22478
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-blueprint.json
+@@ -0,0 +1,585 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221850-8HBF4J",
++    "title": "Supervise context assimilation post-processing",
++    "description": "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations.",
++    "tags": [
++      "context",
++      "curator",
++      "milestone-beta1",
++      "refactor",
++      "rf-11",
++      "rf-25",
++      "supervisor",
++      "v0.7",
++      "wave-supervisor"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221850-8HBF4J",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde"
++  }
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch
+new file mode 100644
+index 000000000..4127c8c4e
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch
+@@ -0,0 +1,119 @@
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++index 157871182..08f787c15 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++@@ -2,15 +2,15 @@
++  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
++  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
++  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++- .../src/commands/context/context-runner.ts         |  74 +++
+++ .../src/commands/context/context-runner.ts         |  79 +++
++  .../src/commands/context/context.spec.ts           |  45 ++
++  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
++  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
++  packages/agentplane/src/context/ingest-task.ts     |  29 +-
++  .../runner/supervisor-execution-episode.test.ts    |  34 ++
++- .../src/runner/supervisor-execution-episode.ts     |  55 ++
+++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
++  packages/core/src/schemas/index.ts                 |   1 +
++  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++  .../check-compatibility-contract-baseline.mjs      |  67 +++
++- 15 files changed, 1398 insertions(+), 67 deletions(-)
+++ 15 files changed, 1401 insertions(+), 67 deletions(-)
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++index db685794e..c4ea1e44b 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++@@ -39,18 +39,18 @@ invariants.
++  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
++  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
++  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++- .../src/commands/context/context-runner.ts         |  74 +++
+++ .../src/commands/context/context-runner.ts         |  79 +++
++  .../src/commands/context/context.spec.ts           |  45 ++
++  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
++  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
++  packages/agentplane/src/context/ingest-task.ts     |  29 +-
++  .../runner/supervisor-execution-episode.test.ts    |  34 ++
++- .../src/runner/supervisor-execution-episode.ts     |  55 ++
+++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
++  packages/core/src/schemas/index.ts                 |   1 +
++  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++  .../check-compatibility-contract-baseline.mjs      |  67 +++
++- 15 files changed, 1398 insertions(+), 67 deletions(-)
+++ 15 files changed, 1401 insertions(+), 67 deletions(-)
++ ```
++ 
++ </details>
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++index ddb2a66a1..3d034734a 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++@@ -2,7 +2,7 @@
++   "base": "main",
++   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
++   "created_at": "2026-07-28T13:53:55.558Z",
++-  "diffstat_sha256": "sha256:c18af873f99bbbf6435bac91962c7cd35a4f4917c8ef2ae6af5ad7555f8e49a6",
+++  "diffstat_sha256": "sha256:0414676abf3679eb596f2dfc331f4e0ec99b3943dd7565fe3a51956d864721e5",
++   "last_verified_at": "2026-07-28T14:49:18.130Z",
++   "last_verified_diffstat_sha256": "sha256:c18af873f99bbbf6435bac91962c7cd35a4f4917c8ef2ae6af5ad7555f8e49a6",
++   "pr_number": 4659,
++diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++index 9558f771b..0a058d8a2 100644
++--- a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++@@ -33,18 +33,18 @@ Created: 2026-07-28T13:53:55.558Z
++  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
++  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
++  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
++- .../src/commands/context/context-runner.ts         |  74 +++
+++ .../src/commands/context/context-runner.ts         |  79 +++
++  .../src/commands/context/context.spec.ts           |  45 ++
++  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
++  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
++  packages/agentplane/src/context/ingest-task.ts     |  29 +-
++  .../runner/supervisor-execution-episode.test.ts    |  34 ++
++- .../src/runner/supervisor-execution-episode.ts     |  55 ++
+++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
++  packages/core/src/schemas/index.ts                 |   1 +
++  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++  .../check-compatibility-contract-baseline.mjs      |  67 +++
++- 15 files changed, 1398 insertions(+), 67 deletions(-)
+++ 15 files changed, 1401 insertions(+), 67 deletions(-)
++ ```
++ 
++ </details>
++diff --git a/packages/agentplane/src/commands/context/context-runner.ts b/packages/agentplane/src/commands/context/context-runner.ts
++index 2d493efd6..3d039a8ce 100644
++--- a/packages/agentplane/src/commands/context/context-runner.ts
+++++ b/packages/agentplane/src/commands/context/context-runner.ts
++@@ -236,7 +236,12 @@ export async function runContextSuperviseTask(
++     },
++     {
++       runEvaluator: async () =>
++-        await runEvaluatorExecute(_ctx, { taskId: p.taskId, evaluator: p.evaluator, json: p.json }),
+++        await runEvaluatorExecute(_ctx, {
+++          taskId: p.taskId,
+++          evaluator: p.evaluator,
+++          replacement: false,
+++          json: p.json,
+++        }),
++       createAcr: async () => {
++         const generated = await generateAcr({
++           ctx: command,
++diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
++index df40cdec8..e0f6dee12 100644
++--- a/packages/core/src/runner/supervisor-execution-episode.ts
+++++ b/packages/core/src/runner/supervisor-execution-episode.ts
++@@ -625,8 +625,6 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
++     budget: journal.budget,
++     usage: journal.usage,
++     next_kind: opts.next_kind,
++-    now,
++-    started_at: journal.started_at,
++   });
++   if (exhausted.length > 0) {
++     return stoppedJournal({
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-follow-up.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-follow-up.json
+new file mode 100644
+index 000000000..b2b88b889
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-follow-up.json
+@@ -0,0 +1,39 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_rework_work_order",
++  "source_work_order_id": "evaluator-work-order-202607221850-8HBF4J-b7e73ab76e96a82b743b8e5a",
++  "task_id": "202607221850-8HBF4J",
++  "verdict": "rework",
++  "next_owner": "CODER",
++  "instruction": "Expand the focused supervisor tests to cover every mechanical phase and bounded repeated semantic rework; run the declared workflow, lifecycle, critical, and type checks; then create fresh quality evidence for a clean, published head.",
++  "findings": [
++    {
++      "id": "compatibility-finding-1",
++      "summary": "The focused supervisor suite tests one failed mechanical operation (wiki_lint), one resumed completed phase, and one rework round. It does not prove failure-and-retry behavior for each mechanical gate required by Verify Steps.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++        }
++      ]
++    },
++    {
++      "id": "compatibility-finding-2",
++      "summary": "The suite does not exercise repeated evaluator rework through the durable episode budget/cursor to show termination at episode, token, or no-progress limits.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++        }
++      ]
++    },
++    {
++      "id": "compatibility-finding-3",
++      "summary": "The branch is unpublished and has a dirty task README plus an untracked prior quality artifact; existing review records include rework and blocked reports, so no fresh, mergeable quality proof covers the current head.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++        }
++      ]
++    }
++  ],
++  "source_result": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json"
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-observed-checks.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-observed-checks.json
+new file mode 100644
+index 000000000..0a3bfeb8f
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-observed-checks.json
+@@ -0,0 +1,18 @@
++{
++  "task_status": "DOING",
++  "declared_checks": [
++    "bun run coverage:workflow-suite",
++    "bun run lifecycle:invariants",
++    "bun run test:critical",
++    "bun run typecheck"
++  ],
++  "verification": {
++    "state": "ok",
++    "attempts": 0,
++    "updated_at": "2026-07-28T14:49:18.130Z",
++    "updated_by": "TESTER",
++    "note": "Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43), workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle invariants."
++  },
++  "verification_records": [],
++  "runner_history": []
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-opinion.md b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-opinion.md
+new file mode 100644
+index 000000000..20018460f
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-opinion.md
+@@ -0,0 +1,23 @@
++# Semantic quality review: rework
++
++Provenance: evaluator_supplied
++
++EVALUATOR returned rework with 3 typed finding(s).
++
++## Findings
++- The focused supervisor suite tests one failed mechanical operation (wiki_lint), one resumed completed phase, and one rework round. It does not prove failure-and-retry behavior for each mechanical gate required by Verify Steps.
++- The suite does not exercise repeated evaluator rework through the durable episode budget/cursor to show termination at episode, token, or no-progress limits.
++- The branch is unpublished and has a dirty task README plus an untracked prior quality artifact; existing review records include rework and blocked reports, so no fresh, mergeable quality proof covers the current head.
++
++## Evidence
++- .agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch
++
++## Missing Tests
++- Failure-and-retry coverage for every CLI-owned assimilation operation.
++- Repeated semantic rework with shared durable cursor and each budget/no-progress stop condition.
++
++## Hidden Assumptions
++- A single wiki_lint failure is representative of all mechanical operations.
++
++## Residual Risks
++- Expand the focused supervisor tests to cover every mechanical phase and bounded repeated semantic rework; run the declared workflow, lifecycle, critical, and type checks; then create fresh quality evidence for a clean, published head.
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-prompt.md b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-prompt.md
+new file mode 100644
+index 000000000..23f7f3a22
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-prompt.md
+@@ -0,0 +1,82 @@
++# AgentPlane EVALUATOR episode
++
++AgentPlane prepared and froze the authoritative review input. Perform the semantic evaluation; do not reproduce CLI discovery or lifecycle work.
++This prompt does not execute an evaluator. A caller must run the evaluator in the work-order authority boundary and persist its returned typed result at the declared output path.
++Do not edit implementation, task lifecycle, policy, or evidence files. You may read the frozen evidence and run read-only checks only.
++
++- task_id: 202607221850-8HBF4J
++- task_readme: .agentplane/tasks/202607221850-8HBF4J/README.md
++- work_order: .agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-work-order.json
++- result_output: .agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json
++- report_path: .agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/quality-report.json
++- provenance: evaluator_supplied
++
++## Required result
++
++Return exactly one `sgr.evaluator_result.v1` JSON object through the evaluator result channel. The caller, not the read-only evaluator, persists it at `result_output`. It must contain:
++- schema_version: 1
++- kind: evaluator_result
++- evaluator_id: the evaluator id from the work order
++- verdict: pass | rework | blocked | human_review
++- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs
++- missing_tests and hidden_assumptions: string arrays
++- recovery_context: required non-empty string for rework, blocked, or human_review; for human_review it must be the single decision question for the human owner
++
++Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.
++The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.
++
++## Evaluator module
++
++---
++id: recovery-context
++title: Recovery Context Invariant Review
++version: 1
++status: preview
++profile: EVALUATOR
++tags:
++  - recovery
++  - invariants
++  - concurrency
++---
++
++# Recovery Context Invariant Review
++
++Use this evaluator only when the primary implementation path already produced a concrete change or when recovery context is needed after an interruption.
++
++## Inputs
++
++- Task id, task README, approved plan, and Verify Steps.
++- Current diff or PR patch.
++- Relevant comments, review findings, incidents, and recovery/handoff context.
++- Known concurrent-agent activity and task-artifact drift classification, if present.
++
++## Review Procedure
++
++1. Reconstruct the intended contract from the task, not from the implementation summary.
++2. Compare the diff against explicit invariants, stop rules, negative cases, and user constraints.
++3. Check whether recovery context changes the interpretation of the task or exposes stale assumptions.
++4. Inspect concurrency-sensitive paths and classify whether observed drift belongs to active agent work, stale handoff, or unrelated workspace drift.
++5. Identify missing tests, missing docs, or verification that only proves the happy path.
++6. Do not execute fixes. Return review findings only.
++7. When recording the result, use `agentplane evaluator run <task-id> --provenance evaluator_supplied` so the task gets prompt,
++   `quality-report.json`, and opinion artifacts. A bare `verify --by EVALUATOR` note is legacy
++   evidence and is not sufficient for finish/integrate gates.
++
++## Output
++
++Return a concise structured review:
++
++- `verdict`: `pass`, `rework`, `blocked`, or `human_review`.
++- `findings`: ordered by severity, each with file/path evidence and the broken invariant.
++- `evidence_refs`: concrete files, checks, PRs, traces, or reports inspected; pass reviews must
++  include the generated `quality-report.json`.
++- `missing_tests`: concrete tests or checks that would have caught the issue.
++- `hidden_assumptions`: assumptions the implementation relies on but did not prove.
++- `residual_risks`: known risks after the review.
++- `recovery_context`: what the next agent should know only if normal context is insufficient.
++
++## Stop Rules
++
++- Use `blocked` when required task context, diff, or recovery context is missing.
++- Use `rework` when behavior diverges from the approved contract even if local checks pass.
++- Use `pass` only when the implementation and verification evidence cover positive, negative, and concurrency-sensitive paths relevant to the task.
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json
+new file mode 100644
+index 000000000..2c7d13905
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json
+@@ -0,0 +1,49 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_result",
++  "evaluator_id": "recovery-context",
++  "verdict": "rework",
++  "findings": [
++    {
++      "id": "compatibility-finding-1",
++      "severity": "medium",
++      "summary": "The focused supervisor suite tests one failed mechanical operation (wiki_lint), one resumed completed phase, and one rework round. It does not prove failure-and-retry behavior for each mechanical gate required by Verify Steps.",
++      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++        }
++      ]
++    },
++    {
++      "id": "compatibility-finding-2",
++      "severity": "medium",
++      "summary": "The suite does not exercise repeated evaluator rework through the durable episode budget/cursor to show termination at episode, token, or no-progress limits.",
++      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++        }
++      ]
++    },
++    {
++      "id": "compatibility-finding-3",
++      "severity": "medium",
++      "summary": "The branch is unpublished and has a dirty task README plus an untracked prior quality artifact; existing review records include rework and blocked reports, so no fresh, mergeable quality proof covers the current head.",
++      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
++      "evidence_refs": [
++        {
++          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++        }
++      ]
++    }
++  ],
++  "missing_tests": [
++    "Failure-and-retry coverage for every CLI-owned assimilation operation.",
++    "Repeated semantic rework with shared durable cursor and each budget/no-progress stop condition."
++  ],
++  "hidden_assumptions": [
++    "A single wiki_lint failure is representative of all mechanical operations."
++  ],
++  "recovery_context": "Expand the focused supervisor tests to cover every mechanical phase and bounded repeated semantic rework; run the declared workflow, lifecycle, critical, and type checks; then create fresh quality evidence for a clean, published head."
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-work-order.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-work-order.json
+new file mode 100644
+index 000000000..83535d8f3
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-work-order.json
+@@ -0,0 +1,97 @@
++{
++  "schema_version": 1,
++  "kind": "evaluator_work_order",
++  "work_order_id": "evaluator-work-order-202607221850-8HBF4J-b7e73ab76e96a82b743b8e5a",
++  "prepared_at": "2026-07-29T00:16:57.630Z",
++  "task": {
++    "id": "202607221850-8HBF4J",
++    "revision": 14,
++    "objective": "Supervise context assimilation post-processing\n\nRF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations.",
++    "acceptance_criteria": [
++      "bun run coverage:workflow-suite",
++      "bun run lifecycle:invariants",
++      "bun run test:critical",
++      "bun run typecheck",
++      "- In scope: typed in-process context use-case results, supervisor operation registry for every mechanical assimilation phase, separate CURATOR rework work orders, retry from failed operation, and removal of lifecycle command lists from CURATOR prompts.\n- Out of scope: changing the CURATOR's semantic identity, synthesis, or ambiguity decisions.",
++      "1. Convert context apply/reindex/wiki/graph/coverage/check/evaluate/ACR/finalize commands into typed idempotent operations.\n2. Execute them through the common supervisor and ingestion journal.\n3. Reduce CURATOR input/output to semantic responsibilities and the typed result contract.\n4. Return mechanical failures as operation failures and semantic failures as a new CURATOR work order.\n5. Add complete, crash/retry, validation-failure, evaluator-rework, and stale-result scenarios.",
++      "1. Inspect the generated CURATOR work order. Expected: no list of mechanical completion commands; semantic responsibilities, evidence, output schema, budget reference, and stop rules remain. 2. Run a successful assimilation fixture. Expected: every mechanical phase is CLI-observed, journaled, bounded by 202607242236-1BFWEY, and finalized without CURATOR lifecycle calls. 3. Fail each mechanical gate in turn and restart after each durable phase. Expected: retry resumes that operation without new reasoning, duplicate apply, replayed CURATOR work, or lost budget usage. 4. Return evaluator semantic rework repeatedly. Expected: each separate CURATOR work order receives only bounded feedback, shares the durable episode budget/cursor, and terminates at the episode/token/no-progress limit. 5. Run focused context/supervisor tests, workflow coverage, lifecycle invariants, guards, and typecheck."
++    ]
++  },
++  "evaluated_sha": "0fe3ee082dd51ea48e335e7125da1febd090ff89",
++  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
++  "evaluator": {
++    "id": "recovery-context",
++    "profile": "EVALUATOR",
++    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
++  },
++  "authority": {
++    "sandbox": "read-only",
++    "writable_roots": [],
++    "allowed_tool_classes": [
++      "repository_read",
++      "git_read",
++      "run_checks",
++      "report_result"
++    ],
++    "external_side_effects": []
++  },
++  "result_contract": "sgr.evaluator_result.v1",
++  "evidence": [
++    {
++      "id": "task-document",
++      "kind": "task_document",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
++      "sha256": "sha256:71e402de9db3d28ad7a94aade7dc1563c5d5e0c883c40251a1f6ebba2999b933",
++      "required": true
++    },
++    {
++      "id": "actual-diff",
++      "kind": "actual_diff",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch",
++      "sha256": "sha256:68a4ba398474b68188e8741ed13b23f88fb2b29c9536e6942901644add83f5ba",
++      "required": true
++    },
++    {
++      "id": "observed-checks",
++      "kind": "observed_checks",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-observed-checks.json",
++      "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
++      "required": true
++    },
++    {
++      "id": "blueprint",
++      "kind": "blueprint",
++      "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-blueprint.json",
++      "sha256": "sha256:006d3064792e033426274f112a7b12ba19857328ef73185160502fb07b57aad9",
++      "required": true
++    },
++    {
++      "id": "policy-1",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.code.md",
++      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
++      "required": true
++    },
++    {
++      "id": "policy-2",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/dod.core.md",
++      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
++      "required": true
++    },
++    {
++      "id": "policy-3",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/security.must.md",
++      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
++      "required": true
++    },
++    {
++      "id": "policy-4",
++      "kind": "policy_module",
++      "path": ".agentplane/policy/workflow.branch_pr.md",
++      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
++      "required": true
++    }
++  ]
++}
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/quality-report.json b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/quality-report.json
+new file mode 100644
+index 000000000..85f7ef3c6
+--- /dev/null
++++ b/.agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/quality-report.json
+@@ -0,0 +1,30 @@
++{
++  "schema_version": 1,
++  "task_id": "202607221850-8HBF4J",
++  "evaluator_id": "recovery-context",
++  "evaluator_profile": "EVALUATOR",
++  "generated_at": "2026-07-29T00:16:57.708Z",
++  "provenance": "evaluator_supplied",
++  "verdict": "rework",
++  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
++  "evaluated_sha": "0fe3ee082dd51ea48e335e7125da1febd090ff89",
++  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
++  "findings": [
++    "The focused supervisor suite tests one failed mechanical operation (wiki_lint), one resumed completed phase, and one rework round. It does not prove failure-and-retry behavior for each mechanical gate required by Verify Steps.",
++    "The suite does not exercise repeated evaluator rework through the durable episode budget/cursor to show termination at episode, token, or no-progress limits.",
++    "The branch is unpublished and has a dirty task README plus an untracked prior quality artifact; existing review records include rework and blocked reports, so no fresh, mergeable quality proof covers the current head."
++  ],
++  "evidence_refs": [
++    ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
++  ],
++  "missing_tests": [
++    "Failure-and-retry coverage for every CLI-owned assimilation operation.",
++    "Repeated semantic rework with shared durable cursor and each budget/no-progress stop condition."
++  ],
++  "hidden_assumptions": [
++    "A single wiki_lint failure is representative of all mechanical operations."
++  ],
++  "residual_risks": [
++    "Expand the focused supervisor tests to cover every mechanical phase and bounded repeated semantic rework; run the declared workflow, lifecycle, critical, and type checks; then create fresh quality evidence for a clean, published head."
++  ]
++}
+diff --git a/packages/agentplane/src/commands/context/assimilation-supervisor.ts b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+index 5448b3e7e..bd5b044bd 100644
+--- a/packages/agentplane/src/commands/context/assimilation-supervisor.ts
++++ b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+@@ -219,11 +219,14 @@ async function writeReworkWorkOrder(opts: {
+ }
+ 
+ function stoppedError(journal: SupervisorExecutionEpisodeJournal): CliError {
++  const exhaustedDimensions = journal.stop?.exhausted_dimensions;
++  const exhausted =
++    exhaustedDimensions && exhaustedDimensions.length > 0 ? exhaustedDimensions.join(",") : "none";
+   return new CliError({
+     code: "E_RUNTIME",
+     message:
+       `Context assimilation supervisor stopped: ${journal.stop?.reason ?? "unknown"}` +
+-      ` (${journal.stop?.exhausted_dimensions.join(",") || "none"}).`,
++      ` (${exhausted}).`,
+   });
+ }
+ 
+@@ -291,7 +294,7 @@ export async function runContextAssimilationSupervisor(
+     if (journal.cursor.phase === "intent_recorded") {
+       const pending = journal.operations.at(-1);
+       if (alreadyComplete && pending?.effect_ref !== definition.id) return journal;
+-      if (!pending || pending.effect_ref !== definition.id || pending.operation_key === null) {
++      if (pending?.effect_ref !== definition.id || pending.operation_key === null) {
+         throw new CliError({
+           code: "E_RUNTIME",
+           message: "Context assimilation supervisor has an unrelated effect in doubt.",
+@@ -360,7 +363,9 @@ export async function runContextAssimilationSupervisor(
+ 
+   const invoke = (id: ContextAssimilationOperationId, fallback: () => Promise<unknown>) =>
+     dependencies.operations?.[id] ?? fallback;
+-  const smokeQuery = input.smokeQuery?.trim() || semantic.smoke_query;
++  const suppliedSmokeQuery = input.smokeQuery?.trim();
++  const smokeQuery =
++    suppliedSmokeQuery === "" ? semantic.smoke_query : (suppliedSmokeQuery ?? semantic.smoke_query);
+   let latest: SupervisorExecutionEpisodeJournal | null = null;
+   const run = async (
+     id: ContextAssimilationOperationId,
+@@ -500,9 +505,9 @@ export async function runContextAssimilationSupervisor(
+         },
+       }),
+   );
+-  await run("evaluator_request", "cli_operation", "evaluator_requested", async () => ({
+-    requested: true,
+-  }));
++  await run("evaluator_request", "cli_operation", "evaluator_requested", () =>
++    Promise.resolve({ requested: true }),
++  );
+ 
+   const afterRequest = await findContextIngestRunForTask(root, input.taskId);
+   if (afterRequest === null)
+@@ -549,17 +554,17 @@ export async function runContextAssimilationSupervisor(
+       },
+     };
+     latest = await operation(reworkDefinition);
++    const episodeState = await getEpisodeState();
++    const opened = await openSupervisorExecutionEpisode({
++      git_root: root,
++      task_id: input.taskId,
++      task_revision: episodeState.task_revision,
++      state_fingerprint_digest: episodeState.fingerprint,
++      recover_intent: false,
++    });
+     return {
+       episode: latest,
+-      episode_path: (
+-        await openSupervisorExecutionEpisode({
+-          git_root: root,
+-          task_id: input.taskId,
+-          task_revision: (await getEpisodeState()).task_revision,
+-          state_fingerprint_digest: (await getEpisodeState()).fingerprint,
+-          recover_intent: false,
+-        })
+-      ).journal_path,
++      episode_path: opened.journal_path,
+       phase: "semantic_rework_requested",
+       rework_work_order: reworkWorkOrder,
+       status: "awaiting_semantic_rework",
+@@ -580,20 +585,20 @@ export async function runContextAssimilationSupervisor(
+     if (!dependencies.checkAcr) return { skipped: "acr_dependency_unavailable" };
+     return await dependencies.checkAcr();
+   });
+-  await run("finalize", "cli_operation", "finalized", async () => ({ finalized: true }));
++  await run("finalize", "cli_operation", "finalized", () => Promise.resolve({ finalized: true }));
+   if (latest === null)
+     throw new Error("Context assimilation supervisor completed without a journal.");
++  const episodeState = await getEpisodeState();
++  const opened = await openSupervisorExecutionEpisode({
++    git_root: root,
++    task_id: input.taskId,
++    task_revision: episodeState.task_revision,
++    state_fingerprint_digest: episodeState.fingerprint,
++    recover_intent: false,
++  });
+   return {
+     episode: latest,
+-    episode_path: (
+-      await openSupervisorExecutionEpisode({
+-        git_root: root,
+-        task_id: input.taskId,
+-        task_revision: (await getEpisodeState()).task_revision,
+-        state_fingerprint_digest: (await getEpisodeState()).fingerprint,
+-        recover_intent: false,
+-      })
+-    ).journal_path,
++    episode_path: opened.journal_path,
+     phase: "finalized",
+     rework_work_order: null,
+     status: "finalized",
+diff --git a/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts b/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+index fd093ef34..df2a4ca49 100644
+--- a/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
++++ b/packages/agentplane/src/commands/context/assimilation-supervisor.unit.test.ts
+@@ -5,7 +5,12 @@ import path from "node:path";
+ import { promisify } from "node:util";
+ 
+ import { afterEach, describe, expect, it, vi } from "vitest";
+-import { startSupervisorExecutionEpisode } from "@agentplaneorg/core/schemas";
++import {
++  advanceSupervisorExecutionEpisodeState,
++  completeSupervisorExecutionEpisode,
++  startSupervisorExecutionEpisode,
++  type SupervisorExecutionBudget,
++} from "@agentplaneorg/core/schemas";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import type { CommandCtx } from "../../cli/spec/spec.js";
+@@ -20,6 +25,9 @@ import {
+ 
+ const execFile = promisify(execFileCallback);
+ const FINGERPRINT = `sha256:${"a".repeat(64)}`;
++const MECHANICAL_OPERATION_IDS = CONTEXT_ASSIMILATION_OPERATION_IDS.filter(
++  (id) => id !== "semantic_result" && id !== "semantic_rework",
++);
+ let roots: string[] = [];
+ 
+ afterEach(async () => {
+@@ -135,10 +143,9 @@ function overriddenOperations(calls: string[], fail?: ContextAssimilationOperati
+   return Object.fromEntries(
+     CONTEXT_ASSIMILATION_OPERATION_IDS.filter((id) => id !== "semantic_result").map((id) => [
+       id,
+-      async () => {
++      () => {
+         calls.push(id);
+-        if (id === fail) throw new Error(`${id}-failed`);
+-        return { id };
++        return id === fail ? Promise.reject(new Error(`${id}-failed`)) : Promise.resolve({ id });
+       },
+     ]),
+   ) as Partial<Record<ContextAssimilationOperationId, () => Promise<unknown>>>;
+@@ -153,6 +160,91 @@ function input(root: string) {
+   };
+ }
+ 
++function fixedEpisodeState() {
++  return Promise.resolve({ fingerprint: FINGERPRINT, task_revision: 1 });
++}
++
++function episodeBudget(
++  overrides: Partial<SupervisorExecutionBudget> = {},
++): SupervisorExecutionBudget {
++  const maxEpisodes = overrides.max_episodes ?? 50;
++  return {
++    max_episodes: maxEpisodes,
++    max_agent_runs: overrides.max_agent_runs ?? Math.min(50, maxEpisodes),
++    max_input_tokens: 3_000_000,
++    max_output_tokens: 1_000_000,
++    max_total_tokens: 4_000_000,
++    max_wall_time_ms: 4 * 60 * 60 * 1000,
++    max_changed_files: 2000,
++    max_diff_lines: null,
++    max_no_progress_episodes: 3,
++    ...overrides,
++  };
++}
++
++async function changeSemanticResult(root: string, label: string): Promise<void> {
++  const file = path.join(root, "context/result.json");
++  const result = JSON.parse(await readFile(file, "utf8")) as {
++    reasoning: { label: string; summary: string }[];
++  };
++  result.reasoning[0] = { label: "semantic", summary: `A CURATOR result: ${label}.` };
++  await writeFile(file, `${JSON.stringify(result, null, 2)}\n`);
++}
++
++async function seedExhaustedBudget(
++  root: string,
++  opts: {
++    budget: SupervisorExecutionBudget;
++    firstUsage?: { total_tokens?: number };
++    repeatedProgress?: boolean;
++  },
++): Promise<void> {
++  const opened = await openSupervisorExecutionEpisode({
++    git_root: root,
++    task_id: "202607281900-SUPERV",
++    task_revision: 1,
++    state_fingerprint_digest: FINGERPRINT,
++    budget: opts.budget,
++    recover_intent: false,
++  });
++  const complete = (
++    journal: Parameters<typeof startSupervisorExecutionEpisode>[0]["journal"],
++    id: string,
++  ) => {
++    const started = startSupervisorExecutionEpisode({
++      journal,
++      role: "CURATOR",
++      kind: "agent_episode",
++      operation_identity: { semantic_result: id },
++      precondition_fingerprint_digest: FINGERPRINT,
++      authority_ref: "context-assimilation:semantic_result",
++      authority_digest: FINGERPRINT,
++      effect_ref: "semantic_result",
++    });
++    if (started.status !== "started") throw new Error("expected a seeded agent episode");
++    return completeSupervisorExecutionEpisode({
++      journal: started.journal,
++      operation_key: started.operation_key,
++      result: { id },
++      usage: opts.firstUsage ?? {},
++      progress: { semantic: "unchanged" },
++    });
++  };
++
++  let journal = complete(opened.journal, "first");
++  if (!opts.repeatedProgress) {
++    await opened.store.write(journal);
++    return;
++  }
++  journal = advanceSupervisorExecutionEpisodeState({
++    journal,
++    state_fingerprint_digest: FINGERPRINT,
++    route_observation: { seeded: "first" },
++  });
++  journal = complete(journal, "second");
++  await opened.store.write(journal);
++}
++
+ describe("context assimilation supervisor", () => {
+   it("rejects an invalid semantic result before any CLI-owned operation starts", async () => {
+     const root = await fixtureRoot();
+@@ -162,9 +254,9 @@ describe("context assimilation supervisor", () => {
+     await expect(
+       runContextAssimilationSupervisor(input(root), {
+         operations: overriddenOperations(calls),
+-        getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
+-        loadTask: async () => task(),
+-        runEvaluator: async () => undefined,
++        getEpisodeState: fixedEpisodeState,
++        loadTask: () => Promise.resolve(task()),
++        runEvaluator: () => Promise.resolve(),
+       }),
+     ).rejects.toThrow(/context extraction SGR result/u);
+ 
+@@ -180,10 +272,11 @@ describe("context assimilation supervisor", () => {
+     await expect(
+       runContextAssimilationSupervisor(input(root), {
+         operations: firstOperations,
+-        getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
+-        loadTask: async () => currentTask,
+-        runEvaluator: async () => {
++        getEpisodeState: fixedEpisodeState,
++        loadTask: () => Promise.resolve(currentTask),
++        runEvaluator: () => {
+           currentTask = task("pass");
++          return Promise.resolve();
+         },
+       }),
+     ).rejects.toThrow("wiki_lint-failed");
+@@ -191,10 +284,11 @@ describe("context assimilation supervisor", () => {
+     const secondOperations = overriddenOperations(calls);
+     const result = await runContextAssimilationSupervisor(input(root), {
+       operations: secondOperations,
+-      getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
+-      loadTask: async () => currentTask,
+-      runEvaluator: async () => {
++      getEpisodeState: fixedEpisodeState,
++      loadTask: () => Promise.resolve(currentTask),
++      runEvaluator: () => {
+         currentTask = task("pass");
++        return Promise.resolve();
+       },
+     });
+ 
+@@ -204,6 +298,44 @@ describe("context assimilation supervisor", () => {
+     expect(calls.filter((id) => id === "evaluator_request")).toHaveLength(1);
+   });
+ 
++  it.each(MECHANICAL_OPERATION_IDS)(
++    "retries %s without replaying any completed mechanical operation",
++    async (failedOperation) => {
++      const root = await fixtureRoot();
++      const calls: string[] = [];
++      let currentTask = task();
++
++      await expect(
++        runContextAssimilationSupervisor(input(root), {
++          operations: overriddenOperations(calls, failedOperation),
++          getEpisodeState: fixedEpisodeState,
++          loadTask: () => Promise.resolve(currentTask),
++          runEvaluator: () => {
++            currentTask = task("pass");
++            return Promise.resolve();
++          },
++        }),
++      ).rejects.toThrow(`${failedOperation}-failed`);
++
++      const result = await runContextAssimilationSupervisor(input(root), {
++        operations: overriddenOperations(calls),
++        getEpisodeState: fixedEpisodeState,
++        loadTask: () => Promise.resolve(currentTask),
++        runEvaluator: () => {
++          currentTask = task("pass");
++          return Promise.resolve();
++        },
++      });
++
++      expect(result.status).toBe("finalized");
++      for (const operation of MECHANICAL_OPERATION_IDS) {
++        expect(calls.filter((id) => id === operation)).toHaveLength(
++          operation === failedOperation ? 2 : 1,
++        );
++      }
++    },
++  );
++
+   it("confirms a durable completed phase after a crash without replaying that operation", async () => {
+     const root = await fixtureRoot();
+     const journalPath = path.join(root, ".agentplane/context/ingest-runs/run-supervisor.json");
+@@ -235,10 +367,11 @@ describe("context assimilation supervisor", () => {
+     let currentTask = task();
+     const result = await runContextAssimilationSupervisor(input(root), {
+       operations: overriddenOperations(calls),
+-      getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
+-      loadTask: async () => currentTask,
+-      runEvaluator: async () => {
++      getEpisodeState: fixedEpisodeState,
++      loadTask: () => Promise.resolve(currentTask),
++      runEvaluator: () => {
+         currentTask = task("pass");
++        return Promise.resolve();
+       },
+     });
+ 
+@@ -257,10 +390,11 @@ describe("context assimilation supervisor", () => {
+     let currentTask = task();
+     const result = await runContextAssimilationSupervisor(input(root), {
+       operations: overriddenOperations(calls),
+-      getEpisodeState: async () => ({ fingerprint: FINGERPRINT, task_revision: 1 }),
+-      loadTask: async () => currentTask,
+-      runEvaluator: async () => {
++      getEpisodeState: fixedEpisodeState,
++      loadTask: () => Promise.resolve(currentTask),
++      runEvaluator: () => {
+         currentTask = task("rework");
++        return Promise.resolve();
+       },
+     });
+ 
+@@ -276,4 +410,93 @@ describe("context assimilation supervisor", () => {
+     expect(calls).not.toContain("acr_generate");
+     expect(calls).not.toContain("finalize");
+   });
++
++  it("shares one durable cursor across rework work orders and stops before a fourth cycle", async () => {
++    const root = await fixtureRoot();
++    await openSupervisorExecutionEpisode({
++      git_root: root,
++      task_id: "202607281900-SUPERV",
++      task_revision: 1,
++      state_fingerprint_digest: FINGERPRINT,
++      budget: episodeBudget({ max_episodes: 29 }),
++      recover_intent: false,
++    });
++    const calls: string[] = [];
++    let currentTask = task("rework");
++    let evaluatorCalls = 0;
++    const dependencies = {
++      operations: overriddenOperations(calls),
++      getEpisodeState: fixedEpisodeState,
++      loadTask: () => Promise.resolve(currentTask),
++      runEvaluator: () => {
++        evaluatorCalls += 1;
++        currentTask = task("rework");
++        return Promise.resolve();
++      },
++    };
++
++    await changeSemanticResult(root, "first correction");
++    const first = await runContextAssimilationSupervisor(input(root), dependencies);
++    await changeSemanticResult(root, "second correction");
++    const second = await runContextAssimilationSupervisor(input(root), dependencies);
++    await changeSemanticResult(root, "third correction");
++
++    await expect(runContextAssimilationSupervisor(input(root), dependencies)).rejects.toThrow(
++      /budget_exhausted \(episodes\)/u,
++    );
++    expect(first).toMatchObject({
++      status: "awaiting_semantic_rework",
++      rework_work_order: ".agentplane/tasks/202607281900-SUPERV/context-rework/001.json",
++    });
++    expect(second).toMatchObject({
++      status: "awaiting_semantic_rework",
++      rework_work_order: ".agentplane/tasks/202607281900-SUPERV/context-rework/002.json",
++    });
++    expect(evaluatorCalls).toBe(2);
++    expect(calls.filter((id) => id === "apply")).toHaveLength(2);
++
++    const final = await openSupervisorExecutionEpisode({
++      git_root: root,
++      task_id: "202607281900-SUPERV",
++      task_revision: 1,
++      state_fingerprint_digest: FINGERPRINT,
++      recover_intent: false,
++    });
++    expect(final.journal).toMatchObject({
++      usage: { episodes: 29, agent_runs: 3 },
++      status: "stopped",
++      stop: { reason: "budget_exhausted", exhausted_dimensions: ["episodes"] },
++    });
++  });
++
++  it.each([
++    ["token", episodeBudget({ max_total_tokens: 1 }), { total_tokens: 1 }],
++    ["no-progress", episodeBudget({ max_no_progress_episodes: 1 }), undefined],
++  ] as const)(
++    "refuses a new CURATOR cycle when the shared %s budget is exhausted",
++    async (_label, budget, firstUsage) => {
++      const root = await fixtureRoot();
++      await seedExhaustedBudget(root, {
++        budget,
++        firstUsage,
++        repeatedProgress: firstUsage === undefined,
++      });
++      const calls: string[] = [];
++      let evaluatorCalls = 0;
++
++      await expect(
++        runContextAssimilationSupervisor(input(root), {
++          operations: overriddenOperations(calls),
++          getEpisodeState: fixedEpisodeState,
++          loadTask: () => Promise.resolve(task()),
++          runEvaluator: () => {
++            evaluatorCalls += 1;
++            return Promise.resolve();
++          },
++        }),
++      ).rejects.toThrow(/budget_exhausted/u);
++      expect(calls).toEqual([]);
++      expect(evaluatorCalls).toBe(0);
++    },
++  );
+ });
+diff --git a/packages/agentplane/src/context/ingest-run-journal.ts b/packages/agentplane/src/context/ingest-run-journal.ts
+index 79827a57d..87b63f465 100644
+--- a/packages/agentplane/src/context/ingest-run-journal.ts
++++ b/packages/agentplane/src/context/ingest-run-journal.ts
+@@ -81,11 +81,11 @@ export type ContextIngestRunJournal = {
+   };
+   source_set: ContextIngestSourceSet;
+   supervision?: {
+-    rework: Array<{
++    rework: {
+       feedback_digest: string;
+       requested_at: string;
+       work_order_file: string;
+-    }>;
++    }[];
+   };
+   task?: TaskCreationResult;
+   updated_at: string;
