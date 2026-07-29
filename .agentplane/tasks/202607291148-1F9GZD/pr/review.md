@@ -12,8 +12,8 @@ Created: 2026-07-29T11:49:50.615Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb; ci:contract is blocked by a clone baseline mismatch already present at parent SHA ffbac377111bfa09810b5ca5f8fb3b8fd5458315.
+- State: ok
+- Note: Focused evaluator suite and full ci:contract pass after the hotspot-cap rework and measured clone-baseline refresh at implementation SHA 63c835c88a1bd02975282e985040f95a7f9db0f8.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

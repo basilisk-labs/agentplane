@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-29T19:42:24.292Z"
+  state: "ok"
+  updated_at: "2026-07-29T19:55:09.782Z"
   updated_by: "TESTER"
-  note: "Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb; ci:contract is blocked by a clone baseline mismatch already present at parent SHA ffbac377111bfa09810b5ca5f8fb3b8fd5458315."
-  attempts: 1
+  note: "Focused evaluator suite and full ci:contract pass after the hotspot-cap rework and measured clone-baseline refresh at implementation SHA 63c835c88a1bd02975282e985040f95a7f9db0f8."
+  attempts: 0
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
@@ -132,8 +132,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb; ci:contract is blocked by a clone baseline mismatch already present at parent SHA ffbac377111bfa09810b5ca5f8fb3b8fd5458315."
+  -
+    type: "verify"
+    at: "2026-07-29T19:55:09.782Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Focused evaluator suite and full ci:contract pass after the hotspot-cap rework and measured clone-baseline refresh at implementation SHA 63c835c88a1bd02975282e985040f95a7f9db0f8."
 doc_version: 3
-doc_updated_at: "2026-07-29T19:42:30.217Z"
+doc_updated_at: "2026-07-29T19:55:12.109Z"
 doc_updated_by: "CODER"
 description: "Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9."
 sections:
@@ -358,6 +364,46 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:21:30.102Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+    - old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+    - current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T19:55:09.782Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Focused evaluator suite and full ci:contract pass after the hotspot-cap rework and measured clone-baseline refresh at implementation SHA 63c835c88a1bd02975282e985040f95a7f9db0f8.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T19:42:30.217Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
+
+    Details:
+
+    Command: bun run test:fast -- packages/agentplane/src/commands/evaluator
+    Result: pass
+    Evidence: 6 test files and 50 tests passed.
+    Scope: evaluator qualification-packet review paths.
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: full repository contract, including formatting, clone baseline, lint, architecture, Knip, and coverage, completed successfully.
+    Scope: repository contract and architecture guards.
 
     BlueprintSnapshotRef:
     - state: current
@@ -628,6 +674,46 @@ Attempts: 1
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:21:30.102Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+- old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+- current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T19:55:09.782Z — VERIFY — ok
+
+By: TESTER
+
+Note: Focused evaluator suite and full ci:contract pass after the hotspot-cap rework and measured clone-baseline refresh at implementation SHA 63c835c88a1bd02975282e985040f95a7f9db0f8.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T19:42:30.217Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
+
+Details:
+
+Command: bun run test:fast -- packages/agentplane/src/commands/evaluator
+Result: pass
+Evidence: 6 test files and 50 tests passed.
+Scope: evaluator qualification-packet review paths.
+
+Command: bun run ci:contract
+Result: pass
+Evidence: full repository contract, including formatting, clone baseline, lint, architecture, Knip, and coverage, completed successfully.
+Scope: repository contract and architecture guards.
 
 BlueprintSnapshotRef:
 - state: current
