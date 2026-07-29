@@ -30,7 +30,8 @@ Generate and freeze a deterministic qualification packet for metadata-only miles
  .../evaluator-qualification-packet.test.ts         | 581 +++++++++++++++++++++
  .../evaluator/evaluator-qualification-review.ts    |  52 ++
  .../evaluator/evaluator-review-artifacts.ts        |   3 +-
- .../commands/evaluator/evaluator-review-usecase.ts |  47 +-
+ .../commands/evaluator/evaluator-review-shared.ts  |  20 +
+ .../commands/evaluator/evaluator-review-usecase.ts |  76 +--
  .../evaluator/evaluator-run.command.test.ts        |  72 +--
  .../commands/evaluator/evaluator-test-helpers.ts   |  72 +++
  .../evaluator/evaluator-verification-records.ts    |  17 +-
@@ -42,7 +43,7 @@ Generate and freeze a deterministic qualification packet for metadata-only miles
  .../src/commands/task/qualification-packet-rf04.ts | 256 +++++++++
  .../src/commands/task/qualification-packet.ts      | 556 ++++++++++++++++++++
  .../src/commands/task/verify-record-execute.ts     |  33 +-
- 15 files changed, 1881 insertions(+), 105 deletions(-)
+ 16 files changed, 1909 insertions(+), 126 deletions(-)
 ```
 
 </details>
