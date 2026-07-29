@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on: []
@@ -55,8 +55,8 @@ quality_review:
   findings:
     - "Verification covers the required dependency-present, dependency-blocked, policy, and doctor checks, but preserves summarized outcomes rather than raw command output or runner history."
 commit:
-  hash: "6c8a2220d5e5fcb2896a11b13aa57300a3038b43"
-  message: "chore(task): seal beta gate review evidence"
+  hash: "fedf8487448e70a188cf33478c5e82e5c823feb3"
+  message: "📝 SNSCBP task: record refreshed evaluator pass"
 comments:
   -
     author: "CODER"
@@ -70,6 +70,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -123,8 +126,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Dependency-present, dependency-blocked, policy, and doctor evidence passes after provider branch update at implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1."
+  -
+    type: "status"
+    at: "2026-07-29T19:03:12.394Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T18:47:30.685Z"
+doc_updated_at: "2026-07-29T19:03:12.395Z"
 doc_updated_by: "CODER"
 description: "Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence."
 sections:
@@ -335,6 +345,9 @@ sections:
     - Re-run required checks to confirm rollback safety.
   Findings: ""
 extensions:
+  implementation_commit:
+    hash: "65e6b7c925b1ef6f504cabd5c154ee400d509815"
+    message: "Merge branch 'main' into task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator"
   workflow_route_baseline:
     start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
     version: 1
