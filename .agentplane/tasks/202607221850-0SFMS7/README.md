@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 34
+revision: 35
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T08:26:11.369Z"
+  updated_at: "2026-07-29T08:31:32.539Z"
   updated_by: "CODER"
-  note: "Verified: direct golden-metrics evidence, focused suites, and the full contract are recorded for evaluator review."
+  note: "Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -156,8 +156,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: direct golden-metrics evidence, focused suites, and the full contract are recorded for evaluator review."
+  -
+    type: "verify"
+    at: "2026-07-29T08:31:32.539Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review."
 doc_version: 3
-doc_updated_at: "2026-07-29T08:28:16.831Z"
+doc_updated_at: "2026-07-29T08:31:33.231Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -511,6 +517,51 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T07:56:26.430Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T08:31:32.539Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T08:28:16.831Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    Command: `bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-runtime-evidence.test.ts src/commands/shared/quality-review-target.test.ts src/commands/task/direct-task-supervision-benchmark.test.ts src/commands/task/direct-task-supervision-golden-metrics.test.ts src/commands/task/direct-task-supervisor.test.ts`
+    Result: pass
+    Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+    Scope: evaluator evidence freezing and direct golden-metrics persistence.
+
+    Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
+    Result: pass
+    Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+    Scope: RF-10a direct supervision and evaluator evidence-selection repair on `e872b663f`.
+
+    Command: `node packages/agentplane/bin/agentplane.js task run 202607290822-33E0ZM --allow-danger-full-access`
+    Result: pass
+    Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/runner/tasks/202607290822-33E0ZM/runs/2026-07-29T08-22-19-063Z/execution-receipt.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/declared-checks.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/verification/20260729082318886-44a79e7f18a6a0ec.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/quality-report.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+    Scope: authorized direct golden path: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, and observed comparison against the frozen baseline.
 
     BlueprintSnapshotRef:
     - state: current
@@ -909,6 +960,51 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T07:56:26.430Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T08:31:32.539Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T08:28:16.831Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+Command: `bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-runtime-evidence.test.ts src/commands/shared/quality-review-target.test.ts src/commands/task/direct-task-supervision-benchmark.test.ts src/commands/task/direct-task-supervision-golden-metrics.test.ts src/commands/task/direct-task-supervisor.test.ts`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+Scope: evaluator evidence freezing and direct golden-metrics persistence.
+
+Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+Scope: RF-10a direct supervision and evaluator evidence-selection repair on `e872b663f`.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290822-33E0ZM --allow-danger-full-access`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/runner/tasks/202607290822-33E0ZM/runs/2026-07-29T08-22-19-063Z/execution-receipt.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/declared-checks.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/verification/20260729082318886-44a79e7f18a6a0ec.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/quality-report.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+Scope: authorized direct golden path: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, and observed comparison against the frozen baseline.
 
 BlueprintSnapshotRef:
 - state: current
