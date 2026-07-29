@@ -347,7 +347,6 @@ describe("assembleRunnerTaskContext", () => {
       Verification: [
         "<!-- BEGIN VERIFICATION RESULTS -->",
         "Formal lifecycle record ".repeat(400),
-        "<!-- END VERIFICATION RESULTS -->",
       ].join("\n"),
     };
     await ctx.taskBackend.writeTask({

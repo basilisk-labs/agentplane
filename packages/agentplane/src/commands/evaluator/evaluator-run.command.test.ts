@@ -891,6 +891,88 @@ describe("evaluator run command", () => {
     expect(record.digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
   });
 
+  it("freezes verified local runtime evidence without widening EVALUATOR file access", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV17";
+    const liveTaskId = "202605240901-LIVE01";
+    await addTask(root, taskId);
+    await commitPath(root, "src/evaluated.ts", "export const evaluated = true;\n", "feat: target");
+    const implementationEvidence = `.agentplane/cache/live-proof/.agentplane/tasks/${liveTaskId}/supervision/implementation-evidence.json`;
+    const supervisorJournal = `.agentplane/cache/live-proof/.git/agentplane/supervisor/episodes/${liveTaskId}/journal.json`;
+    await mkdir(path.dirname(path.join(root, implementationEvidence)), { recursive: true });
+    await writeFile(
+      path.join(root, implementationEvidence),
+      `${JSON.stringify({
+        schema_version: 1,
+        kind: "direct_task_implementation_evidence",
+        task_id: liveTaskId,
+        implementation_commit: "live-proof-commit",
+      })}\n`,
+      "utf8",
+    );
+    await mkdir(path.dirname(path.join(root, supervisorJournal)), { recursive: true });
+    await writeFile(
+      path.join(root, supervisorJournal),
+      `${JSON.stringify({
+        task_id: liveTaskId,
+        status: "running",
+        cursor: { phase: "ready", operation_key: null },
+        usage: { episodes: 2, agent_runs: 2 },
+        digest: `sha256:${"a".repeat(64)}`,
+      })}\n`,
+      "utf8",
+    );
+    const command = await loadCommandContext({ cwd: root, rootOverride: root });
+    await cmdVerifyParsed({
+      ctx: command,
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      state: "ok",
+      by: "TESTER",
+      note: "Finalized direct golden path passed.",
+      details: [
+        `Command: node packages/agentplane/bin/agentplane.js task run ${liveTaskId} --json`,
+        "Result: pass",
+        `Evidence: ${implementationEvidence} | ${supervisorJournal}`,
+        "Scope: finalized direct golden path with CLI-owned verification and evaluation.",
+      ].join("\n"),
+      quiet: true,
+    });
+
+    const { prepared } = await prepareTypedReview(root, taskId);
+    const runtimeEvidence = prepared.work_order.evidence
+      .filter((entry) => entry.kind === "runtime_evidence")
+      .map((entry) => entry.path);
+    expect(runtimeEvidence).toEqual([implementationEvidence, supervisorJournal].toSorted());
+    const observedEvidence = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "observed_checks",
+    );
+    if (!observedEvidence) throw new Error("Missing observed checks evidence.");
+    const observed = JSON.parse(
+      await readFile(path.join(root, observedEvidence.path), "utf8"),
+    ) as Record<string, unknown>;
+    expect(observed.runtime_evidence).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: implementationEvidence }),
+        expect.objectContaining({ path: supervisorJournal }),
+      ]),
+    );
+    expect(observed.direct_supervision).toMatchObject({
+      task_id: liveTaskId,
+      source: "verified_runtime_evidence",
+      source_path: implementationEvidence,
+    });
+    expect(observed.runner_history).toEqual([
+      expect.objectContaining({
+        task_id: liveTaskId,
+        source: "verified_runtime_evidence",
+        path: supervisorJournal,
+      }),
+    ]);
+  });
+
   it("rejects stale evaluator work orders after the evaluated SHA advances", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

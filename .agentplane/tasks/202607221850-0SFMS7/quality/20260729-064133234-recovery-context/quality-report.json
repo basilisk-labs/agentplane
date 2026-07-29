@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T06:43:16.789Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "40ea12e7fe716282262ab1917bb739a3ea06f4a0",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "Замороженный пакет не подтверждает заявленный успешный прямой golden-path запуск на оцениваемом SHA: observed-checks содержит пустые verification_records и runner_history, а direct_supervision равен null. README перечисляет внешние артефакты из cache, но они не включены в замороженный evidence-набор и их целостность не подтверждена work order.",
+    "Патч повышает допустимый clone baseline после ранее зафиксированного падения ci:contract, но замороженные доказательства не показывают повторного одобрения этого изменения критерия приемки. Успешный прогон после ослабления порога не доказывает отсутствие материального drift.",
+    "Патч содержит типы human_input_required и wait_required, но замороженный diff не показывает тестов этих остановок, evaluator blocked/human_review и ограниченных retry-сценариев. Проверены approval, missing knowledge, rework, scope violation и adapter crash, поэтому отрицательное покрытие заявленного Scope неполно."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/policy/dod.code.md",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-diff.patch",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Интеграционные сценарии direct supervisor для route kind=human_input и route kind=wait с доказательством, что EXECUTOR не запускается и возвращается корректный typed stop.",
+    "Сценарии EVALUATOR verdict=blocked и verdict=human_review, включая сохранение recovery_context и отсутствие verify/finish после остановки.",
+    "Сценарий ограниченного retry после безопасно завершённой операции и сценарий запрета retry при неизвестном исходе.",
+    "Замороженная проверка, связывающая наблюдаемый live golden-path trace и результаты всех обязательных команд непосредственно с evaluated_sha."
+  ],
+  "hidden_assumptions": [
+    "Текстовое утверждение TESTER в README считается эквивалентным замороженным и хешированным runtime-артефактам, хотя referenced cache-файлы отсутствуют в work_order.evidence.",
+    "Повышение clone baseline не меняет критерий приемки и поэтому не требует повторного одобрения.",
+    "Обобщённое отображение route kind в stop code достаточно доказывает waits, human input и retry semantics без отдельных тестов."
+  ],
+  "residual_risks": [
+    "Следующий исполнитель должен сформировать новый замороженный evidence-набор с direct_supervision, runner_history и verification_records для SHA 40ea12e7fe716282262ab1917bb739a3ea06f4a0, включить хешированные live golden-path и check-артефакты, получить явное повторное одобрение изменения clone baseline либо исключить его из патча, затем добавить отрицательные тесты wait/human/retry и blocked/human_review перед повторной оценкой."
+  ]
+}

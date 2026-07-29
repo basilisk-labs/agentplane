@@ -89,7 +89,7 @@ function decision(opts: {
   operation?: { id: "task.start" | "runner.follow"; params: Record<string, unknown> };
   status?: string;
   verification?: string | null;
-  kind?: "approval" | "terminal";
+  kind?: "approval" | "human_input" | "wait" | "terminal";
 }) {
   const kind = opts.kind ?? (opts.operation ? "cli_operation" : "terminal");
   return {
@@ -111,7 +111,11 @@ function decision(opts: {
         ? { kind: "cli_operation", operation: opts.operation }
         : kind === "approval"
           ? { kind: "approval", request: { type: "plan_approval", taskId: TASK_ID } }
-          : { kind: "terminal", outcome: { type: "input_required", taskId: TASK_ID } }),
+          : kind === "human_input"
+            ? { kind: "human_input", request: { type: "operator_input", taskId: TASK_ID } }
+            : kind === "wait"
+              ? { kind: "wait", wait: { type: "dependency", taskId: TASK_ID } }
+              : { kind: "terminal", outcome: { type: "input_required", taskId: TASK_ID } }),
     },
   } as never;
 }
@@ -155,77 +159,109 @@ describe("direct task supervisor", () => {
     });
   });
 
-  it("keeps evaluator rework as a typed stop after one started EXECUTOR episode", async () => {
-    const start = decision({
-      id: "task.start",
-      code: "start_direct",
-      operation: {
+  it.each([
+    ["rework", "evaluator_rework"],
+    ["blocked", "evaluator_blocked"],
+    ["human_review", "evaluator_human_review"],
+  ] as const)(
+    "keeps evaluator %s as a typed stop after one started EXECUTOR episode",
+    async (verdict, stopCode) => {
+      const start = decision({
         id: "task.start",
-        params: { taskId: TASK_ID, author: "CODER", body: "Start: direct." },
-      },
-    });
-    const runner = decision({
-      id: "runner.follow",
-      code: "continue_direct",
-      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
-    });
-    const rework = decision({
-      id: "agent.implementation_rework",
-      code: "implementation_rework_required",
-    });
-    const lifecycle = {
-      phase: "executed",
-      invocation: { run_id: "run-executor" },
-      result: {
-        status: "success",
-        execution_receipt: {
-          path: ".agentplane/tasks/run-executor/execution-receipt.json",
-          sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-          verification_state: "observed_success",
-          observed_by: "agentplane",
-        },
-        semantic_result: {
-          provenance: "agent_reported",
-          value: { kind: "agent_semantic_result", status: "completed" },
-        },
-      },
-    } as never;
-
-    mocks.buildDecision.mockResolvedValueOnce(start).mockResolvedValueOnce(rework);
-    mocks.supervise
-      .mockResolvedValueOnce({
-        journal,
-        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
-        execution: {
-          executable: true,
-          result: { status: "succeeded" },
-          refreshed_decision: runner,
-        },
-      })
-      .mockResolvedValueOnce({
-        journal,
-        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
-        execution: {
-          executable: true,
-          result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
-          refreshed_decision: runner,
+        code: "start_direct",
+        operation: {
+          id: "task.start",
+          params: { taskId: TASK_ID, author: "CODER", body: "Start: direct." },
         },
       });
-    mocks.loadCatalog.mockResolvedValue([{ id: "recovery-context" }]);
-    mocks.loadTask.mockResolvedValue({ id: TASK_ID, quality_review: null });
-    mocks.executeEvaluator.mockResolvedValue({
-      result: { evaluator_id: "recovery-context", verdict: "rework" },
-      result_path: "/repo/.agentplane/tasks/evaluator-result.json",
-      report_path: "/repo/.agentplane/tasks/evaluator-report.json",
-      work_order_path: "/repo/.agentplane/tasks/evaluator-work-order.json",
-      journal,
-      store: { path: "/repo/.git/agentplane/supervisor/episodes/journal.json", write: vi.fn() },
-    });
-    mocks.applyEvaluator.mockResolvedValue({
-      result_path: ".agentplane/tasks/evaluator-result.json",
-      report_path: ".agentplane/tasks/evaluator-report.json",
-    });
-    mocks.advance.mockReturnValue(journal);
+      const runner = decision({
+        id: "runner.follow",
+        code: "continue_direct",
+        operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
+      });
+      const rework = decision({
+        id: "agent.implementation_rework",
+        code: "implementation_rework_required",
+      });
+      const lifecycle = {
+        phase: "executed",
+        invocation: { run_id: "run-executor" },
+        result: {
+          status: "success",
+          execution_receipt: {
+            path: ".agentplane/tasks/run-executor/execution-receipt.json",
+            sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            verification_state: "observed_success",
+            observed_by: "agentplane",
+          },
+          semantic_result: {
+            provenance: "agent_reported",
+            value: { kind: "agent_semantic_result", status: "completed" },
+          },
+        },
+      } as never;
+
+      mocks.buildDecision.mockResolvedValueOnce(start).mockResolvedValueOnce(rework);
+      mocks.supervise
+        .mockResolvedValueOnce({
+          journal,
+          journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+          execution: {
+            executable: true,
+            result: { status: "succeeded" },
+            refreshed_decision: runner,
+          },
+        })
+        .mockResolvedValueOnce({
+          journal,
+          journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+          execution: {
+            executable: true,
+            result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
+            refreshed_decision: runner,
+          },
+        });
+      mocks.loadCatalog.mockResolvedValue([{ id: "recovery-context" }]);
+      mocks.loadTask.mockResolvedValue({ id: TASK_ID, quality_review: null });
+      mocks.executeEvaluator.mockResolvedValue({
+        result: { evaluator_id: "recovery-context", verdict },
+        result_path: "/repo/.agentplane/tasks/evaluator-result.json",
+        report_path: "/repo/.agentplane/tasks/evaluator-report.json",
+        work_order_path: "/repo/.agentplane/tasks/evaluator-work-order.json",
+        journal,
+        store: { path: "/repo/.git/agentplane/supervisor/episodes/journal.json", write: vi.fn() },
+      });
+      mocks.applyEvaluator.mockResolvedValue({
+        result_path: ".agentplane/tasks/evaluator-result.json",
+        report_path: ".agentplane/tasks/evaluator-report.json",
+      });
+      mocks.advance.mockReturnValue(journal);
+
+      const result = await superviseDirectTaskRun({
+        ctx: { cwd: "/repo", rootOverride: null } as never,
+        command: { resolvedProject: { gitRoot: "/repo" } } as never,
+        task_id: TASK_ID,
+        include_remote: false,
+      });
+
+      expect(mocks.supervise).toHaveBeenCalledTimes(2);
+      expect(mocks.executeEvaluator).toHaveBeenCalledTimes(1);
+      expect(result).toMatchObject({
+        status: "stopped",
+        executor: { run_id: "run-executor", semantic_status: "completed" },
+        evaluator: { evaluator_id: "recovery-context", verdict },
+        stop: { code: stopCode },
+      });
+      expect(mocks.finalizeDirect).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each([
+    ["human_input", "human_input_required"],
+    ["wait", "wait_required"],
+  ] as const)("stops at a %s route before starting an EXECUTOR", async (kind, stopCode) => {
+    const route = decision({ id: `${kind}.required`, code: stopCode, kind });
+    mocks.buildDecision.mockResolvedValue(route);
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
@@ -234,14 +270,10 @@ describe("direct task supervisor", () => {
       include_remote: false,
     });
 
-    expect(mocks.supervise).toHaveBeenCalledTimes(2);
-    expect(mocks.executeEvaluator).toHaveBeenCalledTimes(1);
-    expect(result).toMatchObject({
-      status: "stopped",
-      executor: { run_id: "run-executor", semantic_status: "completed" },
-      evaluator: { evaluator_id: "recovery-context", verdict: "rework" },
-      stop: { code: "evaluator_rework" },
-    });
+    expect(result).toMatchObject({ status: "stopped", stop: { code: stopCode } });
+    expect(mocks.supervise).not.toHaveBeenCalled();
+    expect(mocks.executeEvaluator).not.toHaveBeenCalled();
+    expect(mocks.finalizeDirect).not.toHaveBeenCalled();
   });
 
   it("stops for a bounded knowledge request without starting an EVALUATOR", async () => {
