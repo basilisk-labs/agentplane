@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T07:56:26.410Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "49687443f2694625e85f1fc83a085475ea230dcc",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "The frozen golden-path evidence does not record the supervisor result metrics or an observed comparison with the 0.6.24 baseline; it records only journal usage, while the diff adds a comparator exercised with synthetic candidate values."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-075438197-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-075438197-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/verification/20260729075409705-4838965f5fbc0cc5.json"
+  ],
+  "missing_tests": [
+    "Run the real direct golden path, capture its returned supervisor metrics, and assert lifecycle_calls, tool_calls, and duplicate_executor_context_bytes against the frozen 0.6.24 baseline together with verified success, zero EXECUTOR lifecycle-event delta, and committed-scope enforcement."
+  ],
+  "hidden_assumptions": [
+    "The synthetic unit-test candidate values are assumed to represent the live golden run even though the frozen runtime evidence does not contain those observed metrics or the comparison result."
+  ],
+  "residual_risks": [
+    "Preserve the successful lifecycle-descendant evidence repair, but add frozen evidence from the actual golden run containing the typed supervisor metrics and the resulting 0.6.24 baseline comparison; then rerun evaluation on that evidence."
+  ]
+}
