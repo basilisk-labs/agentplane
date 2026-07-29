@@ -6,14 +6,14 @@ Created: 2026-07-29T14:50:37.577Z
 
 - Task: `202607291449-FTHNAR`
 - Title: Permit evidence refresh after evaluator review gaps
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
 - Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
 
 ## Verification
 
-- State: ok
-- Note: All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block.
+- State: needs_rework
+- Note: GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not Prettier-formatted; source behavior and focused tests remain passing.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -51,14 +51,14 @@ Created: 2026-07-29T14:50:37.577Z
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
  .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 +++
  packages/core/src/git/git-client.test.ts           |  84 +++++++-
- packages/core/src/git/git-client.ts                |  75 ++++++-
+ packages/core/src/git/git-client.ts                |  73 ++++++-
  packages/core/src/git/index.ts                     |   1 +
  packages/core/src/index.ts                         |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-store.ts              |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  19 +-
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- 29 files changed, 811 insertions(+), 33 deletions(-)
+ 29 files changed, 809 insertions(+), 33 deletions(-)
 ```
 
 </details>

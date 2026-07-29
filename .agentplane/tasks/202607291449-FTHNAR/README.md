@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 72
+revision: 73
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved rework scope: force-refresh only the local constrained tracking ref and prove stale rewrite recovery."
 verification:
-  state: "ok"
-  updated_at: "2026-07-29T17:45:49.340Z"
+  state: "needs_rework"
+  updated_at: "2026-07-29T17:52:59.169Z"
   updated_by: "TESTER"
-  note: "All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block."
-  attempts: 0
+  note: "GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not Prettier-formatted; source behavior and focused tests remain passing."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -52,9 +52,7 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The implementation satisfies the bounded evidence-refresh and constrained-refspec recovery contract, including forced local tracking-ref refresh after legitimate branch rewrites."
-commit:
-  hash: "c53f3054d8773019dcedd1d9f53a31d5c35ec089"
-  message: "📝 FTHNAR task: freeze evaluator-approved verification evidence"
+commit: null
 comments:
   -
     author: "CODER"
@@ -339,8 +337,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T17:52:59.169Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not Prettier-formatted; source behavior and focused tests remain passing."
 doc_version: 3
-doc_updated_at: "2026-07-29T17:49:18.931Z"
+doc_updated_at: "2026-07-29T17:52:59.995Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -1141,6 +1145,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T17:52:59.169Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not Prettier-formatted; source behavior and focused tests remain passing.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:49:18.931Z, excerpt_hash=sha256:88f02061b31ed1c3ee8b43e0652ee69c22b85e71988cd7d87b6db35963997992
+
+    Details:
+
+    Command: GitHub Actions Core CI verify-contract format:check
+    Result: rework
+    Evidence: Run 30477148477 job 90661687851 reports only packages/core/src/git/git-client.ts formatting; no test or behavioral failure.
+    Scope: mechanical formatting repair restricted to the changed Git helper.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -2024,6 +2063,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T17:52:59.169Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: GitHub Core CI format:check failed only because packages/core/src/git/git-client.ts is not Prettier-formatted; source behavior and focused tests remain passing.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:49:18.931Z, excerpt_hash=sha256:88f02061b31ed1c3ee8b43e0652ee69c22b85e71988cd7d87b6db35963997992
+
+Details:
+
+Command: GitHub Actions Core CI verify-contract format:check
+Result: rework
+Evidence: Run 30477148477 job 90661687851 reports only packages/core/src/git/git-client.ts formatting; no test or behavioral failure.
+Scope: mechanical formatting repair restricted to the changed Git helper.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
