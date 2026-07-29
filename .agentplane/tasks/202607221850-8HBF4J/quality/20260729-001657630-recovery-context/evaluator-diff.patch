@@ -1,0 +1,119 @@
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+index 157871182..08f787c15 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+@@ -2,15 +2,15 @@
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
+  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
+- .../src/commands/context/context-runner.ts         |  74 +++
++ .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
+  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
+  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
+  packages/agentplane/src/context/ingest-task.ts     |  29 +-
+  .../runner/supervisor-execution-episode.test.ts    |  34 ++
+- .../src/runner/supervisor-execution-episode.ts     |  55 ++
++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1398 insertions(+), 67 deletions(-)
++ 15 files changed, 1401 insertions(+), 67 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+index db685794e..c4ea1e44b 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+@@ -39,18 +39,18 @@ invariants.
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
+  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
+- .../src/commands/context/context-runner.ts         |  74 +++
++ .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
+  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
+  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
+  packages/agentplane/src/context/ingest-task.ts     |  29 +-
+  .../runner/supervisor-execution-episode.test.ts    |  34 ++
+- .../src/runner/supervisor-execution-episode.ts     |  55 ++
++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1398 insertions(+), 67 deletions(-)
++ 15 files changed, 1401 insertions(+), 67 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+index ddb2a66a1..3d034734a 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+@@ -2,7 +2,7 @@
+   "base": "main",
+   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
+   "created_at": "2026-07-28T13:53:55.558Z",
+-  "diffstat_sha256": "sha256:c18af873f99bbbf6435bac91962c7cd35a4f4917c8ef2ae6af5ad7555f8e49a6",
++  "diffstat_sha256": "sha256:0414676abf3679eb596f2dfc331f4e0ec99b3943dd7565fe3a51956d864721e5",
+   "last_verified_at": "2026-07-28T14:49:18.130Z",
+   "last_verified_diffstat_sha256": "sha256:c18af873f99bbbf6435bac91962c7cd35a4f4917c8ef2ae6af5ad7555f8e49a6",
+   "pr_number": 4659,
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+index 9558f771b..0a058d8a2 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+@@ -33,18 +33,18 @@ Created: 2026-07-28T13:53:55.558Z
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+  .../commands/context/assimilation-supervisor.ts    | 601 +++++++++++++++++++++
+  .../context/assimilation-supervisor.unit.test.ts   | 279 ++++++++++
+- .../src/commands/context/context-runner.ts         |  74 +++
++ .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+  .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
+  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
+  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
+  packages/agentplane/src/context/ingest-task.ts     |  29 +-
+  .../runner/supervisor-execution-episode.test.ts    |  34 ++
+- .../src/runner/supervisor-execution-episode.ts     |  55 ++
++ .../src/runner/supervisor-execution-episode.ts     |  53 ++
+  packages/core/src/schemas/index.ts                 |   1 +
+  .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 15 files changed, 1398 insertions(+), 67 deletions(-)
++ 15 files changed, 1401 insertions(+), 67 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/context/context-runner.ts b/packages/agentplane/src/commands/context/context-runner.ts
+index 2d493efd6..3d039a8ce 100644
+--- a/packages/agentplane/src/commands/context/context-runner.ts
++++ b/packages/agentplane/src/commands/context/context-runner.ts
+@@ -236,7 +236,12 @@ export async function runContextSuperviseTask(
+     },
+     {
+       runEvaluator: async () =>
+-        await runEvaluatorExecute(_ctx, { taskId: p.taskId, evaluator: p.evaluator, json: p.json }),
++        await runEvaluatorExecute(_ctx, {
++          taskId: p.taskId,
++          evaluator: p.evaluator,
++          replacement: false,
++          json: p.json,
++        }),
+       createAcr: async () => {
+         const generated = await generateAcr({
+           ctx: command,
+diff --git a/packages/core/src/runner/supervisor-execution-episode.ts b/packages/core/src/runner/supervisor-execution-episode.ts
+index df40cdec8..e0f6dee12 100644
+--- a/packages/core/src/runner/supervisor-execution-episode.ts
++++ b/packages/core/src/runner/supervisor-execution-episode.ts
+@@ -625,8 +625,6 @@ export function retryFailedSupervisorExecutionEpisode(opts: {
+     budget: journal.budget,
+     usage: journal.usage,
+     next_kind: opts.next_kind,
+-    now,
+-    started_at: journal.started_at,
+   });
+   if (exhausted.length > 0) {
+     return stoppedJournal({

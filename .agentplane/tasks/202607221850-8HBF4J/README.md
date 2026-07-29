@@ -4,7 +4,7 @@ title: "Supervise context assimilation post-processing"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 13
+revision: 16
 origin:
   system: "manual"
 depends_on:
@@ -38,35 +38,37 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-28T14:49:18.130Z"
-  updated_by: "TESTER"
-  note: "Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43), workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle invariants."
+  updated_at: "2026-07-29T00:35:53.655Z"
+  updated_by: "CODER"
+  note: "Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage."
   attempts: 0
 quality_review:
-  state: "blocked"
+  state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-28T21:47:50.057Z"
+  updated_at: "2026-07-29T00:16:57.708Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned blocked with 1 typed finding(s)."
-  evaluated_sha: "20327772b02ab86f325009e4edcd4c313edc9d49"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "0fe3ee082dd51ea48e335e7125da1febd090ff89"
   blueprint_digest: "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221850-8HBF4J/README.md"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-214702065-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-001657630-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Замороженный actual_diff не содержит изменений реализации: в нём есть только обновление README задачи, поэтому невозможно проверить поведение на evaluated_sha 20327772b02ab86f325009e4edcd4c313edc9d49."
+    - "The focused supervisor suite tests one failed mechanical operation (wiki_lint), one resumed completed phase, and one rework round. It does not prove failure-and-retry behavior for each mechanical gate required by Verify Steps."
+    - "The suite does not exercise repeated evaluator rework through the durable episode budget/cursor to show termination at episode, token, or no-progress limits."
+    - "The branch is unpublished and has a dirty task README plus an untracked prior quality artifact; existing review records include rework and blocked reports, so no fresh, mergeable quality proof covers the current head."
 commit:
   hash: "47c01f6c33ca35c36d7b53d4d5a03d891384c1e3"
   message: "Implement supervised context assimilation post-processing"
@@ -98,8 +100,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified supervisor implementation: invalid semantic SGR blocks mechanics; failed CLI operation retries without replaying CURATOR; durable completed phase resumes without replay; evaluator rework creates bounded CURATOR work order. Checks passed: typecheck, focused core/context tests (43), workflow coverage (52), compatibility contract, format and lint, critical CLI suite, lifecycle invariants."
+  -
+    type: "verify"
+    at: "2026-07-29T00:35:53.655Z"
+    author: "CODER"
+    state: "ok"
+    note: "Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage."
 doc_version: 3
-doc_updated_at: "2026-07-28T14:49:19.650Z"
+doc_updated_at: "2026-07-29T00:35:54.408Z"
 doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -149,6 +157,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T00:35:53.655Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T14:49:19.650Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+    - old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+    - current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -158,6 +196,10 @@ sections:
     - Observation: CLI owns mechanical assimilation post-processing under the shared supervisor journal.
       Impact: CURATOR no longer receives lifecycle command lists or mechanical retry burden.
       Resolution: Recorded passing local verification; hosted PR checks remain required.
+
+    - Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
+      Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
+      Resolution: Ready for a fresh EVALUATOR review on the current task branch.
 extensions:
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
@@ -220,6 +262,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T00:35:53.655Z — VERIFY — ok
+
+By: CODER
+
+Note: Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-28T14:49:19.650Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+- old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+- current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -233,3 +305,7 @@ DecisionContextRef:
 - Observation: CLI owns mechanical assimilation post-processing under the shared supervisor journal.
   Impact: CURATOR no longer receives lifecycle command lists or mechanical retry burden.
   Resolution: Recorded passing local verification; hosted PR checks remain required.
+
+- Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
+  Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
+  Resolution: Ready for a fresh EVALUATOR review on the current task branch.

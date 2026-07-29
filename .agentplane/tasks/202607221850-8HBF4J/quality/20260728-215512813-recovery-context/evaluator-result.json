@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Замороженный патч не содержит полного изменения, заявленного задачей: он показывает только две небольшие правки реализации и обновления PR-артефактов, тогда как diffstat ссылается на 15 изменённых файлов и основную реализацию, отсутствующую в evidence. Поэтому нельзя проверить положительные, отрицательные и конкурентно-чувствительные пути на evaluated_sha.",
+      "broken_invariant": "Для семантической оценки необходим полный текущий diff или PR patch, позволяющий сопоставить всю реализацию с утверждённым контрактом задачи.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:68a4ba398474b68188e8741ed13b23f88fb2b29c9536e6942901644add83f5ba",
+          "line": 1,
+          "lines": "1-119",
+          "section": "actual_diff"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
+          "sha256": "sha256:866243b7827de43b0248347ce5c83292700e96562acc2e67e1f6cb42da00af9c",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "Наблюдаемые проверки содержат только итоговую текстовую заметку: verification_records и runner_history пусты, поэтому отсутствуют результаты отдельных обязательных команд и доказательства сценариев с отказом каждого механического этапа, повторным semantic rework и исчерпанием лимитов.",
+      "broken_invariant": "Pass требует проверяемого покрытия положительных, отрицательных и конкурентно-чувствительных сценариев; обязательные Verify Steps должны иметь конкретные результаты выполнения или согласованные пропуски.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260728-215512813-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:4fbc34e27f4ed6e36a9e5440720b495cf062d22fc8df6da998ec9100394b2c3f",
+          "line": 1,
+          "lines": "1-17",
+          "section": "verification_records and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/README.md",
+          "sha256": "sha256:866243b7827de43b0248347ce5c83292700e96562acc2e67e1f6cb42da00af9c",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Замороженные результаты сценария отказа и возобновления для каждого механического этапа с доказательством отсутствия повторного CURATOR reasoning и duplicate apply.",
+    "Замороженные результаты повторного evaluator semantic rework до episode/token/no-progress limit с доказательством общего durable budget/cursor.",
+    "Отдельные результаты всех четырёх обязательных команд: coverage:workflow-suite, lifecycle:invariants, test:critical и typecheck."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что отсутствующие из evaluator-diff.patch 13 файлов реализации и тестов соответствуют evaluated_sha и утверждённому контракту.",
+    "Предполагается, что сводная заметка TESTER точно отражает выполнение всех обязательных команд и негативных сценариев, хотя машинно-проверяемые записи отсутствуют.",
+    "Предполагается, что две показанные последующие правки не изменили ранее проверенные свойства retry, budget и evaluator rework."
+  ],
+  "recovery_context": "Повторить оценку с замороженным полным PR patch от базового SHA задачи до evaluated_sha 0fe3ee082dd51ea48e335e7125da1febd090ff89 и с конкретными результатами обязательных команд и негативных/retry-сценариев; текущий evidence позволяет увидеть только последующий двухфайловый delta, но не проверить реализацию целиком."
+}

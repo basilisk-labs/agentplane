@@ -219,11 +219,14 @@ async function writeReworkWorkOrder(opts: {
 }
 
 function stoppedError(journal: SupervisorExecutionEpisodeJournal): CliError {
+  const exhaustedDimensions = journal.stop?.exhausted_dimensions;
+  const exhausted =
+    exhaustedDimensions && exhaustedDimensions.length > 0 ? exhaustedDimensions.join(",") : "none";
   return new CliError({
     code: "E_RUNTIME",
     message:
       `Context assimilation supervisor stopped: ${journal.stop?.reason ?? "unknown"}` +
-      ` (${journal.stop?.exhausted_dimensions.join(",") || "none"}).`,
+      ` (${exhausted}).`,
   });
 }
 
@@ -291,7 +294,7 @@ export async function runContextAssimilationSupervisor(
     if (journal.cursor.phase === "intent_recorded") {
       const pending = journal.operations.at(-1);
       if (alreadyComplete && pending?.effect_ref !== definition.id) return journal;
-      if (!pending || pending.effect_ref !== definition.id || pending.operation_key === null) {
+      if (pending?.effect_ref !== definition.id || pending.operation_key === null) {
         throw new CliError({
           code: "E_RUNTIME",
           message: "Context assimilation supervisor has an unrelated effect in doubt.",
@@ -360,7 +363,9 @@ export async function runContextAssimilationSupervisor(
 
   const invoke = (id: ContextAssimilationOperationId, fallback: () => Promise<unknown>) =>
     dependencies.operations?.[id] ?? fallback;
-  const smokeQuery = input.smokeQuery?.trim() || semantic.smoke_query;
+  const suppliedSmokeQuery = input.smokeQuery?.trim();
+  const smokeQuery =
+    suppliedSmokeQuery === "" ? semantic.smoke_query : (suppliedSmokeQuery ?? semantic.smoke_query);
   let latest: SupervisorExecutionEpisodeJournal | null = null;
   const run = async (
     id: ContextAssimilationOperationId,
@@ -500,9 +505,9 @@ export async function runContextAssimilationSupervisor(
         },
       }),
   );
-  await run("evaluator_request", "cli_operation", "evaluator_requested", async () => ({
-    requested: true,
-  }));
+  await run("evaluator_request", "cli_operation", "evaluator_requested", () =>
+    Promise.resolve({ requested: true }),
+  );
 
   const afterRequest = await findContextIngestRunForTask(root, input.taskId);
   if (afterRequest === null)
@@ -549,17 +554,17 @@ export async function runContextAssimilationSupervisor(
       },
     };
     latest = await operation(reworkDefinition);
+    const episodeState = await getEpisodeState();
+    const opened = await openSupervisorExecutionEpisode({
+      git_root: root,
+      task_id: input.taskId,
+      task_revision: episodeState.task_revision,
+      state_fingerprint_digest: episodeState.fingerprint,
+      recover_intent: false,
+    });
     return {
       episode: latest,
-      episode_path: (
-        await openSupervisorExecutionEpisode({
-          git_root: root,
-          task_id: input.taskId,
-          task_revision: (await getEpisodeState()).task_revision,
-          state_fingerprint_digest: (await getEpisodeState()).fingerprint,
-          recover_intent: false,
-        })
-      ).journal_path,
+      episode_path: opened.journal_path,
       phase: "semantic_rework_requested",
       rework_work_order: reworkWorkOrder,
       status: "awaiting_semantic_rework",
@@ -580,20 +585,20 @@ export async function runContextAssimilationSupervisor(
     if (!dependencies.checkAcr) return { skipped: "acr_dependency_unavailable" };
     return await dependencies.checkAcr();
   });
-  await run("finalize", "cli_operation", "finalized", async () => ({ finalized: true }));
+  await run("finalize", "cli_operation", "finalized", () => Promise.resolve({ finalized: true }));
   if (latest === null)
     throw new Error("Context assimilation supervisor completed without a journal.");
+  const episodeState = await getEpisodeState();
+  const opened = await openSupervisorExecutionEpisode({
+    git_root: root,
+    task_id: input.taskId,
+    task_revision: episodeState.task_revision,
+    state_fingerprint_digest: episodeState.fingerprint,
+    recover_intent: false,
+  });
   return {
     episode: latest,
-    episode_path: (
-      await openSupervisorExecutionEpisode({
-        git_root: root,
-        task_id: input.taskId,
-        task_revision: (await getEpisodeState()).task_revision,
-        state_fingerprint_digest: (await getEpisodeState()).fingerprint,
-        recover_intent: false,
-      })
-    ).journal_path,
+    episode_path: opened.journal_path,
     phase: "finalized",
     rework_work_order: null,
     status: "finalized",
