@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291148-1F9GZD-572f1d565f4462645b7e4758",
+  "task_id": "202607291148-1F9GZD",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Replace direct depends_on labeling with deterministic transitive dependency traversal, define cycle and missing-node handling, validate closure for terminal leaves, and add nested-graph positive and negative regressions before rerunning the focused evaluator suite and ci:contract.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Dependency closure treats every direct dependency as a leaf and never traverses nested dependencies, so the packet can omit unfinished or unqualified terminal leaves behind an aggregate dependency.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b2fa85c565f3163427bb7ea4e4c621aab6fda93ae79de8cc1d68e8dde338fc86",
+          "section": "buildDependencyClosure derives declaredLeafIds directly from opts.task.depends_on and validates only those tasks"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:42ef20b090c4581a6a500ae03929a6fbd19214d6a6e999a4bc53bec1b8f93440",
+          "section": "Plan and Verify Steps require per-leaf dependency closure and closure-completeness regression coverage"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-result.json"
+}
