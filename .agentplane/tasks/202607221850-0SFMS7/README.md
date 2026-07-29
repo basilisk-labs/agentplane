@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 43
+revision: 44
 origin:
   system: "manual"
 depends_on:
@@ -38,7 +38,7 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T09:53:01.612Z"
+  updated_at: "2026-07-29T09:56:23.537Z"
   updated_by: "CODER"
   note: "Verified: concurrent runner directory creation rework is current for fresh quality review."
   attempts: 0
@@ -214,8 +214,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: concurrent runner directory creation rework is current for fresh quality review."
+  -
+    type: "verify"
+    at: "2026-07-29T09:56:23.537Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: concurrent runner directory creation rework is current for fresh quality review."
 doc_version: 3
-doc_updated_at: "2026-07-29T09:53:02.391Z"
+doc_updated_at: "2026-07-29T09:56:24.297Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -794,6 +800,61 @@ sections:
     Result: pass (493 files, 3440 tests)
     Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
     Scope: full unit suite after the concurrency fix.
+
+    Command: `bun run framework:dev:bootstrap && bun run ci:contract`
+    Result: pass
+    Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
+    Scope: rebuilt repo-local runtime and full repository contract validation after the hosted `verify-unit` rework.
+
+    Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+    Result: pass
+    Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+    Scope: independent direct control evidence remains terminal (`stopped` / `completed`) and retains the observed RF-10 cost reduction (3/4/15383 versus frozen 7/7/20562 baseline).
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T09:56:23.537Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: concurrent runner directory creation rework is current for fresh quality review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T09:53:02.391Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    Command: `bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts`
+    Result: pass
+    Evidence: packages/agentplane/src/runner/effect-operation.test.ts | packages/agentplane/src/runner/run-directory-boundary.ts
+    Scope: 10 focused tests passed; concurrent creation of a shared runner operation directory accepts the expected `EEXIST` race, while independent supervisor processes still elect exactly one adapter-spawn winner.
+
+    Command: `for effect_race_iteration in {1..80}; do CI=1 bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts -t "elects one adapter spawn across independent supervisor processes" >/dev/null 2>&1 || exit 1; done`
+    Result: pass
+    Evidence: focused process-race test under CI mode
+    Scope: 80/80 repeated independent worker races completed with one winner and one loser; no transient directory-creation failure was observed.
+
+    Command: `bun run test:fast`
+    Result: pass
+    Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
+    Scope: full unit suite after the concurrency fix (493 files, 3440 tests).
 
     Command: `bun run framework:dev:bootstrap && bun run ci:contract`
     Result: pass
@@ -1430,6 +1491,61 @@ Command: `bun run test:fast`
 Result: pass (493 files, 3440 tests)
 Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
 Scope: full unit suite after the concurrency fix.
+
+Command: `bun run framework:dev:bootstrap && bun run ci:contract`
+Result: pass
+Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
+Scope: rebuilt repo-local runtime and full repository contract validation after the hosted `verify-unit` rework.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+Scope: independent direct control evidence remains terminal (`stopped` / `completed`) and retains the observed RF-10 cost reduction (3/4/15383 versus frozen 7/7/20562 baseline).
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T09:56:23.537Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: concurrent runner directory creation rework is current for fresh quality review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T09:53:02.391Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+Command: `bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts`
+Result: pass
+Evidence: packages/agentplane/src/runner/effect-operation.test.ts | packages/agentplane/src/runner/run-directory-boundary.ts
+Scope: 10 focused tests passed; concurrent creation of a shared runner operation directory accepts the expected `EEXIST` race, while independent supervisor processes still elect exactly one adapter-spawn winner.
+
+Command: `for effect_race_iteration in {1..80}; do CI=1 bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts -t "elects one adapter spawn across independent supervisor processes" >/dev/null 2>&1 || exit 1; done`
+Result: pass
+Evidence: focused process-race test under CI mode
+Scope: 80/80 repeated independent worker races completed with one winner and one loser; no transient directory-creation failure was observed.
+
+Command: `bun run test:fast`
+Result: pass
+Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
+Scope: full unit suite after the concurrency fix (493 files, 3440 tests).
 
 Command: `bun run framework:dev:bootstrap && bun run ci:contract`
 Result: pass

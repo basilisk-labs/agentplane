@@ -1,17 +1,17 @@
 Command: `bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts`
-Result: pass (10 tests)
+Result: pass
 Evidence: packages/agentplane/src/runner/effect-operation.test.ts | packages/agentplane/src/runner/run-directory-boundary.ts
-Scope: concurrent creation of a shared runner operation directory accepts the expected `EEXIST` race, while independent supervisor processes still elect exactly one adapter-spawn winner.
+Scope: 10 focused tests passed; concurrent creation of a shared runner operation directory accepts the expected `EEXIST` race, while independent supervisor processes still elect exactly one adapter-spawn winner.
 
 Command: `for effect_race_iteration in {1..80}; do CI=1 bun run --cwd packages/agentplane test src/runner/effect-operation.test.ts -t "elects one adapter spawn across independent supervisor processes" >/dev/null 2>&1 || exit 1; done`
-Result: pass (80/80)
+Result: pass
 Evidence: focused process-race test under CI mode
-Scope: repeated independent worker races complete with one winner and one loser; no transient directory-creation failure was observed.
+Scope: 80/80 repeated independent worker races completed with one winner and one loser; no transient directory-creation failure was observed.
 
 Command: `bun run test:fast`
-Result: pass (493 files, 3440 tests)
+Result: pass
 Evidence: terminal output recorded for implementation commit `9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3`
-Scope: full unit suite after the concurrency fix.
+Scope: full unit suite after the concurrency fix (493 files, 3440 tests).
 
 Command: `bun run framework:dev:bootstrap && bun run ci:contract`
 Result: pass
