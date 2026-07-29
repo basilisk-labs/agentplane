@@ -293,6 +293,33 @@ describe("SupervisorExecutionEpisodeJournal", () => {
     expect(next.status).toBe("started");
   });
 
+  it("records a postcondition after a completed operation exhausts the budget", () => {
+    const first = start({ journal: journal({ max_input_tokens: 10 }) });
+    if (first.status !== "started") throw new Error("expected started episode");
+    const exhausted = completeSupervisorExecutionEpisode({
+      journal: first.journal,
+      operation_key: first.operation_key,
+      result: { status: "ok" },
+      usage: { input_tokens: 10 },
+      now: "2026-07-28T00:00:01.000Z",
+    });
+
+    const advanced = advanceSupervisorExecutionEpisodeState({
+      journal: exhausted,
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      route_observation: { phase: "applied" },
+      now: "2026-07-28T00:00:02.000Z",
+    });
+
+    expect(advanced).toMatchObject({
+      status: "stopped",
+      cursor: { phase: "stopped", operation_key: first.operation_key },
+      stop: { reason: "budget_exhausted", operation_key: first.operation_key },
+      state_fingerprint_digest: NEXT_FINGERPRINT,
+      operations: [{ status: "completed", postcondition_fingerprint_digest: NEXT_FINGERPRINT }],
+    });
+  });
+
   it("stops recovery on a changed StateFingerprint before a new operation", () => {
     const recovered = recoverSupervisorExecutionEpisodeJournal({
       journal: journal(),

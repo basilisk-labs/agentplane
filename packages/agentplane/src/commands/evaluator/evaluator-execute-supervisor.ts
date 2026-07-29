@@ -205,6 +205,26 @@ function completePersistedEvaluatorEpisode(opts: {
   return journal;
 }
 
+function hasCompletedEvaluatorOutcomeForApplication(
+  journal: SupervisorExecutionEpisodeJournal,
+): boolean {
+  const last = journal.operations.at(-1);
+  if (
+    last?.role !== "EVALUATOR" ||
+    last.kind !== "evaluator_episode" ||
+    last.status !== "completed"
+  ) {
+    return false;
+  }
+  if (journal.status === "running" && journal.cursor.phase === "completed") return true;
+  return (
+    journal.status === "stopped" &&
+    journal.stop?.reason === "budget_exhausted" &&
+    journal.cursor.phase === "stopped" &&
+    journal.stop.operation_key === last.operation_key
+  );
+}
+
 export async function executeEvaluatorSupervisorEpisode(opts: {
   ctx: CommandCtx;
   command: CommandContext;
@@ -322,7 +342,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
         receipt: outcome.receipt,
       });
       await opened.store.write(journal);
-    } else if (journal.status === "running" && journal.cursor.phase === "completed") {
+    } else if (hasCompletedEvaluatorOutcomeForApplication(journal)) {
       outcome = await readCompletedEvaluatorOutcome({
         git_root: opts.command.resolvedProject.gitRoot,
         journal,
@@ -426,7 +446,7 @@ export async function executeEvaluatorSupervisorEpisode(opts: {
       await opened.store.write(journal);
     }
 
-    if (journal.status !== "running" || journal.cursor.phase !== "completed") {
+    if (!hasCompletedEvaluatorOutcomeForApplication(journal)) {
       throw new CliError({
         code: "E_RUNTIME",
         message:
