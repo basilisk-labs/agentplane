@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T06:31:18.877Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "e4dd4a5fe7c9689e94e561875db3a7a2967a043a",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "Для оцениваемого SHA отсутствуют замороженные результаты обязательных проверок и наблюдаемого прямого запуска: verification_records и runner_history пусты, direct_supervision равен null, хотя задача помечена как проверенная.",
+    "Сравнение с версией 0.6.24 не измеряет фактический golden-path запуск кандидата: показатели кандидата в тесте конструируются как baseline минус один.",
+    "Патч повышает clone baseline после зафиксированного сбоя ci:contract, но замороженные доказательства не содержат успешного ci:contract на оцениваемом SHA или одобренного изменения критерия приемки."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-diff.patch",
+    ".agentplane/policy/dod.core.md"
+  ],
+  "missing_tests": [
+    "Наблюдаемый end-to-end прямой запуск на оцениваемом SHA с сохраненными execution receipt, runner history, direct supervision evidence и нулевым числом lifecycle-вызовов EXECUTOR.",
+    "Измерение фактических lifecycle calls, tool calls и duplicate executor context bytes кандидата с сопоставлением с замороженным baseline 0.6.24.",
+    "Успешный bun run ci:contract на оцениваемом SHA после изменения clone baseline либо проверка, доказывающая отдельно одобренный характер изменения порога."
+  ],
+  "hidden_assumptions": [
+    "Изолированный golden-path запуск, описанный в README, репрезентативен для оцениваемого SHA, хотя его наблюдаемые артефакты не включены в frozen evidence.",
+    "Синтетическое уменьшение каждого показателя baseline на единицу подтверждает реальное снижение стоимости оркестрации.",
+    "Рост clone baseline допустим без отдельного одобрения, поскольку дублирование считается внешним к RF-10a."
+  ],
+  "residual_risks": [
+    "Следующий исполнитель должен получить и заморозить доказательства реального прямого golden-path запуска именно на SHA e4dd4a5fe7c9689e94e561875db3a7a2967a043a, включая историю runner, direct supervision, результаты всех четырех обязательных проверок и фактически измеренные показатели относительно 0.6.24; изменение clone baseline необходимо либо обосновать и повторно одобрить как материальный дрейф, либо убрать."
+  ]
+}
