@@ -4,6 +4,7 @@ import { CliError } from "../../shared/errors.js";
 import type { TaskRunnerLifecycleResult } from "../../runner/usecases/task-run-lifecycle-result.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { DirectTaskCloseoutStopCode } from "./direct-task-supervisor-closeout.js";
+import type { DirectTaskSupervisionGoldenMetricsEvidence } from "./direct-task-supervision-golden-metrics.js";
 import {
   directTaskSupervisorMetrics,
   type DirectTaskSupervisorMetrics,
@@ -71,6 +72,7 @@ export type DirectTaskSupervisorResult = {
   } | null;
   journal: JournalProjection | null;
   metrics: DirectTaskSupervisorMetrics;
+  golden_metrics: DirectTaskSupervisionGoldenMetricsEvidence | null;
 };
 
 export function journalProjection(
@@ -127,6 +129,7 @@ export function stoppedResult(opts: {
     evaluator: opts.evaluator ?? null,
     journal: opts.journal ?? null,
     metrics: opts.metrics ?? directTaskSupervisorMetrics(),
+    golden_metrics: null,
   };
 }
 

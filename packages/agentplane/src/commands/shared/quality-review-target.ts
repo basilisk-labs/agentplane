@@ -164,7 +164,7 @@ export async function resolveQualityReviewTargetSha(opts: {
         const relativePath = taskRelativePath(name);
         return relativePath === null ? [] : [relativePath];
       });
-      const touchesDerivedArtifacts = taskRelativePaths.some(isDerivedTaskArtifact);
+      const touchesDerivedArtifacts = taskRelativePaths.some((name) => isDerivedTaskArtifact(name));
       const touchesOnlyManagedArtifacts = taskRelativePaths.every((name) =>
         isManagedTaskArtifact(name),
       );

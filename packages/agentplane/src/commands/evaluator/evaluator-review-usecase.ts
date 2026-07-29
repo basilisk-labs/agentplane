@@ -42,12 +42,7 @@ import {
   safePathSegment,
   timestampPathSegment,
 } from "./evaluator-quality-artifacts.js";
-import {
-  isWithinRoot,
-  relative,
-  uniqueStrings,
-  type HumanEvaluatorReviewInput,
-} from "./evaluator-review-shared.js";
+import { isWithinRoot, relative, uniqueStrings } from "./evaluator-review-shared.js";
 import type { EvaluatorRunProvenance } from "./evaluator.spec.js";
 
 export {

@@ -28,7 +28,6 @@ export type RunnerTaskContextEnvelope = {
 
 const TRUNCATED_MARKER = "\n\n[TRUNCATED]";
 const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
-const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 
 export const RUNNER_TASK_CONTEXT_BUDGETS = {
   section_max_bytes: 3072,
