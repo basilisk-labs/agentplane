@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -39,9 +39,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T00:35:53.655Z"
+  updated_at: "2026-07-29T00:43:36.841Z"
   updated_by: "CODER"
-  note: "Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage."
+  note: "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
   attempts: 0
 quality_review:
   state: "pass"
@@ -116,8 +116,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T00:43:36.841Z"
+    author: "CODER"
+    state: "ok"
+    note: "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
 doc_version: 3
-doc_updated_at: "2026-07-29T00:39:04.811Z"
+doc_updated_at: "2026-07-29T00:43:37.664Z"
 doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -197,6 +203,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T00:43:36.841Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:39:04.811Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+    - old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+    - current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -210,6 +246,10 @@ sections:
     - Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
       Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
       Resolution: Ready for a fresh EVALUATOR review on the current task branch.
+
+    - Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
+      Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
+      Resolution: Ready to republish the task branch for a fresh hosted check.
 extensions:
   implementation_commit:
     hash: "e6dfdcad95e425b7c5db3699d0733c61decb704c"
@@ -305,6 +345,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T00:43:36.841Z — VERIFY — ok
+
+By: CODER
+
+Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:39:04.811Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+- old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+- current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -322,3 +392,7 @@ DecisionContextRef:
 - Observation: Focused supervisor tests (22), workflow coverage (52), lifecycle invariants, TypeScript build, critical CLI suite (11 chunks), lint, and formatting passed.
   Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
   Resolution: Ready for a fresh EVALUATOR review on the current task branch.
+
+- Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
+  Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
+  Resolution: Ready to republish the task branch for a fresh hosted check.
