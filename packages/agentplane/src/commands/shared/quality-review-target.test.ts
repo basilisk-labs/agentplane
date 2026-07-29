@@ -162,6 +162,33 @@ describe("quality review target resolver", () => {
     );
   });
 
+  it("preserves a reviewed target across lifecycle evidence and direct supervision artifacts", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202607240736-DIRECT-EVIDENCE";
+    const reviewedSha = await commitPath(
+      root,
+      "src/reviewed.ts",
+      "export const reviewed = true;\n",
+      "feat: establish reviewed implementation",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/evidence/runtime-receipt.json`,
+      '{"kind":"agentplane_evidence_bundle"}\n',
+      "test: record task lifecycle evidence",
+    );
+    await commitPath(
+      root,
+      `.agentplane/tasks/${taskId}/supervision/declared-checks.json`,
+      '{"kind":"direct_task_declared_checks","status":"pass"}\n',
+      "test: record direct supervision checks",
+    );
+
+    await expect(resolveTarget({ root, taskId, previousEvaluatedSha: reviewedSha })).resolves.toBe(
+      reviewedSha,
+    );
+  });
+
   it("selects a semantic commit created after the recorded review", async () => {
     const root = await mkGitRepoRoot();
     const taskId = "202607240736-SEMANTIC";

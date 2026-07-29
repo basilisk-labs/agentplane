@@ -3,6 +3,14 @@ import { canonicalizeJson, parseTaskReadme } from "@agentplaneorg/core/tasks";
 import { isRecord } from "../../shared/guards.js";
 
 const SIDE_EFFECT_AUTHORITY_EXTENSION_KEY = "agentplane.side_effect_authority";
+const MANAGED_TASK_ARTIFACT_DIRECTORIES = [
+  "quality/",
+  "pr/",
+  "blueprint/",
+  "verification/",
+  "evidence/",
+  "supervision/",
+] as const;
 
 function normalizeWorkflowDir(value: string): string {
   return value.replaceAll("\\", "/").replaceAll(/\/+$/g, "");
@@ -11,11 +19,12 @@ function normalizeWorkflowDir(value: string): string {
 function isManagedTaskArtifact(relativePath: string): boolean {
   return (
     relativePath === "README.md" ||
-    relativePath.startsWith("quality/") ||
-    relativePath.startsWith("pr/") ||
-    relativePath.startsWith("blueprint/") ||
-    relativePath.startsWith("verification/")
+    MANAGED_TASK_ARTIFACT_DIRECTORIES.some((directory) => relativePath.startsWith(directory))
   );
+}
+
+function isDerivedTaskArtifact(relativePath: string): boolean {
+  return MANAGED_TASK_ARTIFACT_DIRECTORIES.some((directory) => relativePath.startsWith(directory));
 }
 
 /**
@@ -155,13 +164,7 @@ export async function resolveQualityReviewTargetSha(opts: {
         const relativePath = taskRelativePath(name);
         return relativePath === null ? [] : [relativePath];
       });
-      const touchesDerivedArtifacts = taskRelativePaths.some(
-        (name) =>
-          name.startsWith("quality/") ||
-          name.startsWith("pr/") ||
-          name.startsWith("blueprint/") ||
-          name.startsWith("verification/"),
-      );
+      const touchesDerivedArtifacts = taskRelativePaths.some(isDerivedTaskArtifact);
       const touchesOnlyManagedArtifacts = taskRelativePaths.every((name) =>
         isManagedTaskArtifact(name),
       );
