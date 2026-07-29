@@ -25,27 +25,44 @@
     "min_lines": 8,
     "min_tokens": 80,
     "mode": "mild",
-    "formats": ["typescript", "javascript"],
+    "formats": [
+      "typescript",
+      "javascript"
+    ],
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
-    "sources": 1241,
-    "lines": 221972,
-    "tokens": 1271330,
+    "sources": 1253,
+    "lines": 223799,
+    "tokens": 1281608,
     "clones": 90,
-    "duplicatedLines": 1430,
-    "duplicatedTokens": 9973,
-    "percentage": 0.6442253977979204,
-    "percentageTokens": 0.7844540756530562
+    "duplicatedLines": 1431,
+    "duplicatedTokens": 9976,
+    "percentage": 0.6394130447410399,
+    "percentageTokens": 0.7783971385946404
   },
   "top_duplicates": [
+    {
+      "lines": 39,
+      "tokens": 103,
+      "firstFile": {
+        "path": "packages/core/src/index.ts",
+        "start": 365,
+        "end": 403
+      },
+      "secondFile": {
+        "path": "packages/core/src/tasks/index.ts",
+        "start": 92,
+        "end": 130
+      }
+    },
     {
       "lines": 38,
       "tokens": 299,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 258,
-        "end": 295
+        "start": 263,
+        "end": 300
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
@@ -54,26 +71,12 @@
       }
     },
     {
-      "lines": 38,
-      "tokens": 100,
-      "firstFile": {
-        "path": "packages/core/src/index.ts",
-        "start": 365,
-        "end": 402
-      },
-      "secondFile": {
-        "path": "packages/core/src/tasks/index.ts",
-        "start": 92,
-        "end": 129
-      }
-    },
-    {
       "lines": 32,
       "tokens": 245,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 178,
-        "end": 209
+        "start": 183,
+        "end": 214
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
@@ -394,8 +397,8 @@
       "tokens": 143,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 148,
-        "end": 166
+        "start": 153,
+        "end": 171
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
@@ -590,8 +593,8 @@
       "tokens": 98,
       "firstFile": {
         "path": "packages/agentplane/src/backends/task-backend/shared/normalize.ts",
-        "start": 215,
-        "end": 231
+        "start": 220,
+        "end": 236
       },
       "secondFile": {
         "path": "packages/core/src/tasks/tasks-export.ts",
