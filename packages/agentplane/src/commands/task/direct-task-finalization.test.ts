@@ -198,6 +198,7 @@ describe("direct task finalization", () => {
       repository_status: {
         unchanged_from_execution_baseline: string[];
         introduced_after_execution_baseline: string[];
+        classification: Array<{ line: string; classification: string }>;
       };
     };
     expect(mocks.writeJson.mock.calls[0]?.[0]).toBe(
@@ -208,6 +209,12 @@ describe("direct task finalization", () => {
       repository_status: {
         unchanged_from_execution_baseline: ["?? benchmark-preexisting.md"],
         introduced_after_execution_baseline: [],
+        classification: [
+          {
+            line: "?? benchmark-preexisting.md",
+            classification: "preexisting_before_execution",
+          },
+        ],
       },
     });
   });

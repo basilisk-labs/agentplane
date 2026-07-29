@@ -253,6 +253,17 @@ export async function recordDirectImplementationEvidence(opts: {
   }
   const baseline = new Set(opts.execution_baseline_status.lines);
   const final = new Set(finalStatus.lines);
+  const classification = [
+    ...finalStatus.lines.map((line) => ({
+      line,
+      classification: baseline.has(line)
+        ? "preexisting_before_execution"
+        : "introduced_during_execution",
+    })),
+    ...opts.execution_baseline_status.lines
+      .filter((line) => !final.has(line))
+      .map((line) => ({ line, classification: "removed_during_execution" })),
+  ];
   const relative = path.join(
     opts.command.config.paths.workflow_dir,
     opts.task_id,
@@ -301,6 +312,7 @@ export async function recordDirectImplementationEvidence(opts: {
       removed_after_execution_baseline: opts.execution_baseline_status.lines.filter(
         (line) => !final.has(line),
       ),
+      classification,
     },
   });
   return { artifact_path: relative, implementation_commit: opts.implementation_commit };
