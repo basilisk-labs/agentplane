@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-8HBF4J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T00:55:40.653Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "22cc0f2d658b61b574cbc79d342d31f1ed37b2e4",
+  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
+  "findings": [
+    "The supervisor remains the sole coordinator of mechanical phases; the new rework module only constructs and persists the bounded CURATOR semantic work order.",
+    "Diagnostics now depend on explicit read-only journal exports, and all production and test consumers import the diagnostics module directly.",
+    "Both prior hotspot files are below the hard 600-line limit, and focused plus full verification passed without an allowlist exception."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-005540524-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

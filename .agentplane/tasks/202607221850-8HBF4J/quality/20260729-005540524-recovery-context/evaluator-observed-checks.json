@@ -1,0 +1,18 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run typecheck"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T00:55:01.862Z",
+    "updated_by": "CODER",
+    "note": "Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard."
+  },
+  "verification_records": [],
+  "runner_history": []
+}

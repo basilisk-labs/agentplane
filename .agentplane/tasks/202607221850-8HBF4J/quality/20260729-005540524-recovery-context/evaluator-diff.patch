@@ -1,0 +1,871 @@
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/README.md b/.agentplane/tasks/202607221850-8HBF4J/README.md
+index efa1c57fe..53b487aa9 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/README.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/README.md
+@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
+ status: "DONE"
+ priority: "high"
+ owner: "CODER"
+-revision: 21
++revision: 22
+ origin:
+   system: "manual"
+ depends_on:
+@@ -39,9 +39,9 @@ plan_approval:
+   note: null
+ verification:
+   state: "ok"
+-  updated_at: "2026-07-29T00:43:36.841Z"
++  updated_at: "2026-07-29T00:55:01.862Z"
+   updated_by: "CODER"
+-  note: "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
++  note: "Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard."
+   attempts: 0
+ quality_review:
+   state: "pass"
+@@ -131,8 +131,14 @@ events:
+     from: "DONE"
+     to: "DONE"
+     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++  -
++    type: "verify"
++    at: "2026-07-29T00:55:01.862Z"
++    author: "CODER"
++    state: "ok"
++    note: "Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard."
+ doc_version: 3
+-doc_updated_at: "2026-07-29T00:45:16.217Z"
++doc_updated_at: "2026-07-29T00:55:02.742Z"
+ doc_updated_by: "CODER"
+ description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
+ sections:
+@@ -242,6 +248,36 @@ sections:
+     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+     - risks: none
+ 
++    ### 2026-07-29T00:55:01.862Z — VERIFY — ok
++
++    By: CODER
++
++    Note: Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:45:16.217Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
++    - old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++    - current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
+@@ -259,6 +295,10 @@ sections:
+     - Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
+       Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
+       Resolution: Ready to republish the task branch for a fresh hosted check.
++
++    - Observation: Focused context tests (41), hotspots check, workflow coverage (52), lifecycle invariants, typecheck, docs CLI check, critical CLI suite, lint, format, and diff check passed.
++      Impact: The hosted verify-contract failure is resolved structurally without an oversized-file exception.
++      Resolution: Ready for a fresh EVALUATOR review and pre-merge closure refresh.
+ extensions:
+   implementation_commit:
+     hash: "963e293db08884671bc4c262fef7d79aaaf46084"
+@@ -384,6 +424,36 @@ DecisionContextRef:
+ - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+ - risks: none
+ 
++### 2026-07-29T00:55:01.862Z — VERIFY — ok
++
++By: CODER
++
++Note: Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:45:16.217Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
++- old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++- current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -405,3 +475,7 @@ DecisionContextRef:
+ - Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
+   Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
+   Resolution: Ready to republish the task branch for a fresh hosted check.
++
++- Observation: Focused context tests (41), hotspots check, workflow coverage (52), lifecycle invariants, typecheck, docs CLI check, critical CLI suite, lint, format, and diff check passed.
++  Impact: The hosted verify-contract failure is resolved structurally without an oversized-file exception.
++  Resolution: Ready for a fresh EVALUATOR review and pre-merge closure refresh.
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+index 052691ad5..2e984752a 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/diffstat.txt
+@@ -1,17 +1,22 @@
+  docs/user/cli-reference.generated.mdx              |  20 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
+- .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
++ .../src/commands/context/assimilation-rework.ts    |  73 +++
++ .../commands/context/assimilation-supervisor.ts    | 541 +++++++++++++++++++++
++ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++++
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+- .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++ .../commands/context/extraction-apply.unit.test.ts |   2 +-
++ packages/agentplane/src/context/doctor.ts          |   2 +-
++ .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
++ .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
++ .../src/context/ingest-task-pack.test.ts           |   2 +-
+  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
+  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
+  packages/agentplane/src/context/ingest-task.ts     |  29 +-
+  .../runner/supervisor-execution-episode.test.ts    |  34 ++
+  .../src/runner/supervisor-execution-episode.ts     |  53 ++
+  packages/core/src/schemas/index.ts                 |   1 +
+- .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++ .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 16 files changed, 1649 insertions(+), 67 deletions(-)
++ 21 files changed, 1791 insertions(+), 197 deletions(-)
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+index f660f9bc6..100ab5dc3 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/github-body.md
+@@ -16,7 +16,12 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
+ ## Verification
+ 
+ - State: ok
+-- Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
++- Note:
++
++```text
++Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have
++dedicated modules, keeping both prior hotspot files below the 600-line guard.
++```
+ - Canonical workflow state lives in the task README.
+ 
+ <details>
+@@ -30,20 +35,25 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
+  docs/user/cli-reference.generated.mdx              |  20 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
+- .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
++ .../src/commands/context/assimilation-rework.ts    |  73 +++
++ .../commands/context/assimilation-supervisor.ts    | 541 +++++++++++++++++++++
++ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++++
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+- .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++ .../commands/context/extraction-apply.unit.test.ts |   2 +-
++ packages/agentplane/src/context/doctor.ts          |   2 +-
++ .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
++ .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
++ .../src/context/ingest-task-pack.test.ts           |   2 +-
+  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
+  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
+  packages/agentplane/src/context/ingest-task.ts     |  29 +-
+  .../runner/supervisor-execution-episode.test.ts    |  34 ++
+  .../src/runner/supervisor-execution-episode.ts     |  53 ++
+  packages/core/src/schemas/index.ts                 |   1 +
+- .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++ .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 16 files changed, 1649 insertions(+), 67 deletions(-)
++ 21 files changed, 1791 insertions(+), 197 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+index 34e2eb414..86607e3f4 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/meta.json
+@@ -2,9 +2,9 @@
+   "base": "main",
+   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
+   "created_at": "2026-07-28T13:53:55.558Z",
+-  "diffstat_sha256": "sha256:351f0e17f7a64e4a45ecb2f41b316e8852e9d2481db4ce4c84692dfd44e570d6",
+-  "last_verified_at": "2026-07-29T00:43:36.841Z",
+-  "last_verified_diffstat_sha256": "sha256:8b99d8862289694fd8061b1f3aaeb519bc2d497f7c7273066d47276559c43c17",
++  "diffstat_sha256": "sha256:7cb18063a3ebc38340e635d8041478b5cdf7b190c1c12627aad3bacf6b5fffcb",
++  "last_verified_at": "2026-07-29T00:55:01.862Z",
++  "last_verified_diffstat_sha256": "sha256:351f0e17f7a64e4a45ecb2f41b316e8852e9d2481db4ce4c84692dfd44e570d6",
+   "pr_number": 4659,
+   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4659",
+   "pre_merge_closure": {
+diff --git a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+index c5c92c072..d2f875dff 100644
+--- a/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
++++ b/.agentplane/tasks/202607221850-8HBF4J/pr/review.md
+@@ -13,7 +13,7 @@ Created: 2026-07-28T13:53:55.558Z
+ ## Verification
+ 
+ - State: ok
+-- Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
++- Note: Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard.
+ - Canonical workflow state lives in the task README.
+ 
+ ## Handoff Notes
+@@ -32,20 +32,25 @@ Created: 2026-07-28T13:53:55.558Z
+  docs/user/cli-reference.generated.mdx              |  20 +
+  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
+  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
+- .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
+- .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
++ .../src/commands/context/assimilation-rework.ts    |  73 +++
++ .../commands/context/assimilation-supervisor.ts    | 541 +++++++++++++++++++++
++ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++++
+  .../src/commands/context/context-runner.ts         |  79 +++
+  .../src/commands/context/context.spec.ts           |  45 ++
+- .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
++ .../commands/context/extraction-apply.unit.test.ts |   2 +-
++ packages/agentplane/src/context/doctor.ts          |   2 +-
++ .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
++ .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
++ .../src/context/ingest-task-pack.test.ts           |   2 +-
+  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
+  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
+  packages/agentplane/src/context/ingest-task.ts     |  29 +-
+  .../runner/supervisor-execution-episode.test.ts    |  34 ++
+  .../src/runner/supervisor-execution-episode.ts     |  53 ++
+  packages/core/src/schemas/index.ts                 |   1 +
+- .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
++ .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
+  .../check-compatibility-contract-baseline.mjs      |  67 +++
+- 16 files changed, 1649 insertions(+), 67 deletions(-)
++ 21 files changed, 1791 insertions(+), 197 deletions(-)
+ ```
+ 
+ </details>
+diff --git a/packages/agentplane/src/commands/context/assimilation-rework.ts b/packages/agentplane/src/commands/context/assimilation-rework.ts
+new file mode 100644
+index 000000000..cff52e00d
+--- /dev/null
++++ b/packages/agentplane/src/commands/context/assimilation-rework.ts
+@@ -0,0 +1,73 @@
++import { mkdir } from "node:fs/promises";
++import path from "node:path";
++
++import { atomicWriteFile } from "@agentplaneorg/core/fs";
++import { digestSupervisorEpisodeValue } from "@agentplaneorg/core/schemas";
++
++import type { TaskData } from "../../backends/task-backend.js";
++import type { ContextIngestRunJournal } from "../../context/ingest-run-journal.js";
++import { CliError } from "../../shared/errors.js";
++
++function boundedText(value: string | null | undefined, max = 1000): string | null {
++  if (!value) return null;
++  const compact = value.replaceAll(/\s+/gu, " ").trim();
++  return compact.length <= max ? compact : `${compact.slice(0, Math.max(0, max - 1))}…`;
++}
++
++export async function writeContextSemanticReworkWorkOrder(opts: {
++  root: string;
++  run: ContextIngestRunJournal;
++  semanticFingerprint: string;
++  task: TaskData;
++}): Promise<{ feedback_digest: string; work_order_file: string }> {
++  const review = opts.task.quality_review;
++  if (review?.state !== "rework") {
++    throw new CliError({
++      code: "E_RUNTIME",
++      message: "Context semantic rework requires an evaluator quality_review=rework result.",
++    });
++  }
++  const cursor = (opts.run.supervision?.rework.length ?? 0) + 1;
++  const feedback = {
++    verdict: review.state,
++    note: boundedText(review.note),
++    findings: review.findings.slice(0, 12).map((finding) => boundedText(finding, 500) ?? ""),
++    evidence_refs: review.evidence_refs.slice(0, 16),
++  };
++  const workOrderFile = `.agentplane/tasks/${opts.task.id}/context-rework/${String(cursor).padStart(3, "0")}.json`;
++  const workOrder = {
++    schema_version: 1,
++    kind: "context_semantic_rework",
++    task_id: opts.task.id,
++    run_id: opts.run.run_id,
++    cursor,
++    replaces_semantic_fingerprint: opts.semanticFingerprint,
++    input: {
++      context_pack: `.agentplane/tasks/${opts.task.id}/context-pack.md`,
++      extraction_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
++      canonical_catalog: `.agentplane/tasks/${opts.task.id}/canonical-entity-catalog.json`,
++    },
++    semantic_feedback: feedback,
++    required_output: {
++      kind: "context_extraction",
++      schema_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
++      instruction:
++        "Return one corrected, schema-valid semantic SGR result. Do not run lifecycle, indexing, validation, evaluator, ACR, or finalization commands.",
++    },
++    stop_rules: [
++      "Do not resolve ambiguity by lexical similarity or identifiers alone.",
++      "Preserve unresolved or conflicting identity decisions explicitly.",
++      "Stop and return the SGR result when the semantic correction is complete; CLI owns all mechanical processing.",
++    ],
++  };
++  await mkdir(path.dirname(path.join(opts.root, workOrderFile)), { recursive: true });
++  await atomicWriteFile(
++    path.join(opts.root, workOrderFile),
++    `${JSON.stringify(workOrder, null, 2)}\n`,
++    "utf8",
++  );
++  return {
++    feedback_digest: digestSupervisorEpisodeValue(feedback),
++    work_order_file: workOrderFile,
++  };
++}
+diff --git a/packages/agentplane/src/commands/context/assimilation-supervisor.ts b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+index bd5b044bd..b7cd9ed15 100644
+--- a/packages/agentplane/src/commands/context/assimilation-supervisor.ts
++++ b/packages/agentplane/src/commands/context/assimilation-supervisor.ts
+@@ -1,16 +1,14 @@
+-import { mkdir, readFile } from "node:fs/promises";
++import { readFile } from "node:fs/promises";
+ import path from "node:path";
+ 
+ import {
+   advanceSupervisorExecutionEpisodeState,
+   completeSupervisorExecutionEpisode,
+-  digestSupervisorEpisodeValue,
+   retryFailedSupervisorExecutionEpisode,
+   startSupervisorExecutionEpisode,
+   type SupervisorEpisodeOperationKind,
+   type SupervisorExecutionEpisodeJournal,
+ } from "@agentplaneorg/core/schemas";
+-import { atomicWriteFile } from "@agentplaneorg/core/fs";
+ 
+ import type { TaskData } from "../../backends/task-backend.js";
+ import type { CommandCtx } from "../../cli/spec/spec.js";
+@@ -32,6 +30,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
+ import { cmdContextDoctor } from "./doctor.js";
+ import { cmdContextExtractionApply } from "./extraction.js";
+ import { cmdContextGraphValidate } from "./graph.js";
++import { writeContextSemanticReworkWorkOrder } from "./assimilation-rework.js";
+ import { cmdContextReindex } from "./reindex.js";
+ import { cmdContextSearch } from "./search.js";
+ import { cmdContextVerifyTask } from "./verify-task.js";
+@@ -103,12 +102,6 @@ function operationRole(kind: SupervisorEpisodeOperationKind): "CURATOR" | "EXECU
+   return kind === "agent_episode" ? "CURATOR" : "EXECUTOR";
+ }
+ 
+-function boundedText(value: string | null | undefined, max = 1000): string | null {
+-  if (!value) return null;
+-  const compact = value.replaceAll(/\s+/gu, " ").trim();
+-  return compact.length <= max ? compact : `${compact.slice(0, Math.max(0, max - 1))}…`;
+-}
+-
+ function smokeQueryFromSemantic(raw: unknown): string {
+   const semantic = validateContextExtractionSgrResult(raw);
+   for (const item of semantic.extracted_items) {
+@@ -160,64 +153,6 @@ async function defaultEpisodeState(input: SupervisorInput): Promise<EpisodeState
+   };
+ }
+ 
+-async function writeReworkWorkOrder(opts: {
+-  root: string;
+-  run: ContextIngestRunJournal;
+-  semanticFingerprint: string;
+-  task: TaskData;
+-}): Promise<{ feedback_digest: string; work_order_file: string }> {
+-  const review = opts.task.quality_review;
+-  if (review?.state !== "rework") {
+-    throw new CliError({
+-      code: "E_RUNTIME",
+-      message: "Context semantic rework requires an evaluator quality_review=rework result.",
+-    });
+-  }
+-  const cursor = (opts.run.supervision?.rework.length ?? 0) + 1;
+-  const feedback = {
+-    verdict: review.state,
+-    note: boundedText(review.note),
+-    findings: review.findings.slice(0, 12).map((finding) => boundedText(finding, 500) ?? ""),
+-    evidence_refs: review.evidence_refs.slice(0, 16),
+-  };
+-  const workOrder = {
+-    schema_version: 1,
+-    kind: "context_semantic_rework",
+-    task_id: opts.task.id,
+-    run_id: opts.run.run_id,
+-    cursor,
+-    replaces_semantic_fingerprint: opts.semanticFingerprint,
+-    input: {
+-      context_pack: `.agentplane/tasks/${opts.task.id}/context-pack.md`,
+-      extraction_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
+-      canonical_catalog: `.agentplane/tasks/${opts.task.id}/canonical-entity-catalog.json`,
+-    },
+-    semantic_feedback: feedback,
+-    required_output: {
+-      kind: "context_extraction",
+-      schema_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
+-      instruction:
+-        "Return one corrected, schema-valid semantic SGR result. Do not run lifecycle, indexing, validation, evaluator, ACR, or finalization commands.",
+-    },
+-    stop_rules: [
+-      "Do not resolve ambiguity by lexical similarity or identifiers alone.",
+-      "Preserve unresolved or conflicting identity decisions explicitly.",
+-      "Stop and return the SGR result when the semantic correction is complete; CLI owns all mechanical processing.",
+-    ],
+-  };
+-  const workOrderFile = `.agentplane/tasks/${opts.task.id}/context-rework/${String(cursor).padStart(3, "0")}.json`;
+-  await mkdir(path.dirname(path.join(opts.root, workOrderFile)), { recursive: true });
+-  await atomicWriteFile(
+-    path.join(opts.root, workOrderFile),
+-    `${JSON.stringify(workOrder, null, 2)}\n`,
+-    "utf8",
+-  );
+-  return {
+-    feedback_digest: digestSupervisorEpisodeValue(feedback),
+-    work_order_file: workOrderFile,
+-  };
+-}
+-
+ function stoppedError(journal: SupervisorExecutionEpisodeJournal): CliError {
+   const exhaustedDimensions = journal.stop?.exhausted_dimensions;
+   const exhausted =
+@@ -542,7 +477,7 @@ export async function runContextAssimilationSupervisor(
+         const current = await findContextIngestRunForTask(root, input.taskId);
+         if (current === null)
+           throw new Error("Context ingest journal disappeared while writing rework order.");
+-        const created = await writeReworkWorkOrder({
++        const created = await writeContextSemanticReworkWorkOrder({
+           root,
+           run: current,
+           semanticFingerprint: semantic.fingerprint,
+diff --git a/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts b/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
+index 267c4b87c..a931ef591 100644
+--- a/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
++++ b/packages/agentplane/src/commands/context/extraction-apply.unit.test.ts
+@@ -4,7 +4,7 @@ import path from "node:path";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import type { CommandContext } from "../shared/task-backend.js";
+-import { inspectContextIngestRuns } from "../../context/ingest-run-journal.js";
++import { inspectContextIngestRuns } from "../../context/ingest-run-diagnostics.js";
+ import { cmdContextExtractionApply } from "./extraction.js";
+ import { cmdContextGraphValidate } from "./graph.js";
+ import { cmdContextIngest } from "./ingest.js";
+diff --git a/packages/agentplane/src/context/doctor.ts b/packages/agentplane/src/context/doctor.ts
+index 53c15e3c0..1e3e8db8d 100644
+--- a/packages/agentplane/src/context/doctor.ts
++++ b/packages/agentplane/src/context/doctor.ts
+@@ -13,7 +13,7 @@ import { readHarvestReport } from "./harvest-tasks-artifacts.js";
+ import { readContextProjection } from "./reindex.js";
+ import { checkSqliteProjection } from "./sqlite.js";
+ import { validateContextCrossSurfaceIntegrity } from "./integrity.js";
+-import { inspectContextIngestRuns } from "./ingest-run-journal.js";
++import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
+ 
+ export async function cmdContextDoctor(opts: {
+   cwd: string;
+diff --git a/packages/agentplane/src/context/ingest-run-diagnostics.ts b/packages/agentplane/src/context/ingest-run-diagnostics.ts
+new file mode 100644
+index 000000000..3d5ad6b42
+--- /dev/null
++++ b/packages/agentplane/src/context/ingest-run-diagnostics.ts
+@@ -0,0 +1,155 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++
++import { readManifest } from "./ingest-manifest.js";
++import {
++  contextIngestManifestFingerprint,
++  isResumableContextIngestPhase,
++  readContextIngestRuns,
++  type ContextIngestRunJournal,
++} from "./ingest-run-journal.js";
++
++export type ContextIngestRunDiagnostic = {
++  level: "issue" | "warning";
++  message: string;
++};
++
++const CLI_POST_PROCESSING_PHASES = new Set([
++  "artifacts_applied",
++  "wiki_report_started",
++  "wiki_indexed",
++  "wiki_reported",
++  "wiki_linted",
++  "reindexed",
++  "graph_validated",
++  "task_verified",
++  "doctor_checked",
++  "smoke_checked",
++  "validated",
++  "evaluator_requested",
++  "evaluated",
++  "acr_generated",
++  "acr_checked",
++]);
++
++function retryCommand(run: ContextIngestRunJournal): string {
++  if (run.request.mode === "all") return "agentplane context ingest --all";
++  if (run.request.mode === "changed") return "agentplane context ingest --changed";
++  return `agentplane context ingest ${run.request.sources.map((source) => JSON.stringify(source)).join(" ")}`;
++}
++
++async function fileExists(candidate: string): Promise<boolean> {
++  try {
++    await readFile(candidate);
++    return true;
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return false;
++    throw error;
++  }
++}
++
++export async function inspectContextIngestRuns(
++  root: string,
++): Promise<ContextIngestRunDiagnostic[]> {
++  const [entries, manifest] = await Promise.all([readContextIngestRuns(root), readManifest(root)]);
++  const diagnostics: ContextIngestRunDiagnostic[] = [];
++  for (const run of entries) {
++    if (run.phase === "finalized") continue;
++    const retry = retryCommand(run);
++    const taskId = run.task?.task_id;
++    if (
++      run.phase !== "planned" &&
++      isResumableContextIngestPhase(run.phase) &&
++      contextIngestManifestFingerprint(manifest) !== run.source_set.manifest_fingerprint
++    ) {
++      diagnostics.push({
++        level: "issue",
++        message:
++          `context ingest run ${run.run_id} has manifest/run divergence; inspect the locked source set ` +
++          `before repairing and resuming with ${retry}.`,
++      });
++      continue;
++    }
++    if (run.phase === "pack_written" && taskId !== undefined) {
++      diagnostics.push({
++        level: "warning",
++        message: `context ingest run ${run.run_id} prepared CURATOR task ${taskId}; await semantic work.`,
++      });
++      continue;
++    }
++    if (run.phase === "semantic_result_received" && taskId !== undefined) {
++      const extraction = run.semantic?.extraction_file ?? "the original extraction SGR file";
++      diagnostics.push({
++        level: "warning",
++        message:
++          `context ingest run ${run.run_id} received semantic output for ${taskId}; ` +
++          `resume CLI-owned post-processing with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
++      });
++      continue;
++    }
++    if (run.phase === "semantic_rework_requested" && taskId !== undefined) {
++      const workOrder =
++        run.supervision?.rework.at(-1)?.work_order_file ?? "the recorded rework work order";
++      diagnostics.push({
++        level: "warning",
++        message:
++          `context ingest run ${run.run_id} awaits a new CURATOR semantic result for ${taskId}; ` +
++          `use ${workOrder} and do not replay completed CLI operations.`,
++      });
++      continue;
++    }
++    if (taskId !== undefined && CLI_POST_PROCESSING_PHASES.has(run.phase)) {
++      const extraction = run.semantic?.extraction_file ?? "<sgr-json>";
++      diagnostics.push({
++        level: "warning",
++        message:
++          `context ingest run ${run.run_id} is incomplete at ${run.phase}; ` +
++          `resume with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
++      });
++      continue;
++    }
++    if (run.phase === "task_creating") {
++      diagnostics.push({
++        level: "issue",
++        message:
++          `context ingest run ${run.run_id} has unknown task creation outcome; inspect the task backend ` +
++          `before retrying (${retry}).`,
++      });
++      continue;
++    }
++    if (run.phase === "task_created" && run.task !== undefined) {
++      const receiptPath = path.join(
++        root,
++        ".agentplane/tasks",
++        run.task.task_id,
++        "task-creation.json",
++      );
++      if (!(await fileExists(receiptPath))) {
++        diagnostics.push({
++          level: "issue",
++          message:
++            `context ingest run ${run.run_id} has task/receipt divergence for ${run.task.task_id}; ` +
++            `resume with ${retry}.`,
++        });
++        continue;
++      }
++    }
++    if (run.phase === "pack_writing" && run.task !== undefined) {
++      const packPath = path.join(root, ".agentplane/tasks", run.task.task_id, "context-pack.md");
++      if (!(await fileExists(packPath))) {
++        diagnostics.push({
++          level: "issue",
++          message:
++            `context ingest run ${run.run_id} has task/pack divergence for ${run.task.task_id}; ` +
++            `resume with ${retry}.`,
++        });
++        continue;
++      }
++    }
++    diagnostics.push({
++      level: "warning",
++      message: `context ingest run ${run.run_id} is incomplete at ${run.phase}; resume with ${retry}.`,
++    });
++  }
++  return diagnostics;
++}
+diff --git a/packages/agentplane/src/context/ingest-run-journal.ts b/packages/agentplane/src/context/ingest-run-journal.ts
+index 87b63f465..53a54d757 100644
+--- a/packages/agentplane/src/context/ingest-run-journal.ts
++++ b/packages/agentplane/src/context/ingest-run-journal.ts
+@@ -5,12 +5,7 @@ import path from "node:path";
+ import type { TaskCreationResult } from "../commands/task/new.js";
+ import { CliError } from "../shared/errors.js";
+ 
+-import {
+-  readManifest,
+-  type ContextIngestParsed,
+-  type ManifestEntry,
+-  type ManifestLock,
+-} from "./ingest-manifest.js";
++import type { ContextIngestParsed, ManifestEntry, ManifestLock } from "./ingest-manifest.js";
+ 
+ const JOURNAL_DIRECTORY = ".agentplane/context/ingest-runs";
+ const ACTIVE_DIRECTORY = `${JOURNAL_DIRECTORY}/active`;
+@@ -99,11 +94,6 @@ type ContextIngestRunLease = {
+   version: 1;
+ };
+ 
+-export type ContextIngestRunDiagnostic = {
+-  level: "issue" | "warning";
+-  message: string;
+-};
+-
+ function contextIngestRequestFingerprint(
+   parsed: Pick<ContextIngestParsed, "mode" | "sources">,
+ ): string {
+@@ -338,141 +328,10 @@ export async function releaseContextIngestRunLease(
+   });
+ }
+ 
+-function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
++export function isResumableContextIngestPhase(phase: ContextIngestRunPhase): boolean {
+   return (PREPARATION_PHASES as readonly string[]).includes(phase);
+ }
+ 
+-function contextIngestRunRetryCommand(run: ContextIngestRunJournal): string {
+-  if (run.request.mode === "all") return "agentplane context ingest --all";
+-  if (run.request.mode === "changed") return "agentplane context ingest --changed";
+-  return `agentplane context ingest ${run.request.sources.map((source) => JSON.stringify(source)).join(" ")}`;
+-}
+-
+-export async function inspectContextIngestRuns(
+-  root: string,
+-): Promise<ContextIngestRunDiagnostic[]> {
+-  const entries = await readContextIngestRuns(root);
+-  const manifest = await readManifest(root);
+-  const diagnostics: ContextIngestRunDiagnostic[] = [];
+-  for (const run of entries) {
+-    if (run.phase === "finalized") continue;
+-    const retry = contextIngestRunRetryCommand(run);
+-    const taskId = run.task?.task_id;
+-    if (
+-      run.phase !== "planned" &&
+-      isResumableContextIngestPhase(run.phase) &&
+-      contextIngestManifestFingerprint(manifest) !== run.source_set.manifest_fingerprint
+-    ) {
+-      diagnostics.push({
+-        level: "issue",
+-        message:
+-          `context ingest run ${run.run_id} has manifest/run divergence; inspect the locked source set ` +
+-          `before repairing and resuming with ${retry}.`,
+-      });
+-      continue;
+-    }
+-    if (run.phase === "pack_written" && taskId !== undefined) {
+-      diagnostics.push({
+-        level: "warning",
+-        message: `context ingest run ${run.run_id} prepared CURATOR task ${taskId}; await semantic work.`,
+-      });
+-      continue;
+-    }
+-    if (run.phase === "semantic_result_received" && taskId !== undefined) {
+-      const extraction = run.semantic?.extraction_file ?? "the original extraction SGR file";
+-      diagnostics.push({
+-        level: "warning",
+-        message:
+-          `context ingest run ${run.run_id} received semantic output for ${taskId}; ` +
+-          `resume CLI-owned post-processing with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
+-      });
+-      continue;
+-    }
+-    if (run.phase === "semantic_rework_requested" && taskId !== undefined) {
+-      const workOrder =
+-        run.supervision?.rework.at(-1)?.work_order_file ?? "the recorded rework work order";
+-      diagnostics.push({
+-        level: "warning",
+-        message:
+-          `context ingest run ${run.run_id} awaits a new CURATOR semantic result for ${taskId}; ` +
+-          `use ${workOrder} and do not replay completed CLI operations.`,
+-      });
+-      continue;
+-    }
+-    if (
+-      (run.phase === "artifacts_applied" ||
+-        run.phase === "wiki_report_started" ||
+-        run.phase === "wiki_indexed" ||
+-        run.phase === "wiki_reported" ||
+-        run.phase === "wiki_linted" ||
+-        run.phase === "reindexed" ||
+-        run.phase === "graph_validated" ||
+-        run.phase === "task_verified" ||
+-        run.phase === "doctor_checked" ||
+-        run.phase === "smoke_checked" ||
+-        run.phase === "validated" ||
+-        run.phase === "evaluator_requested" ||
+-        run.phase === "evaluated" ||
+-        run.phase === "acr_generated" ||
+-        run.phase === "acr_checked") &&
+-      taskId !== undefined
+-    ) {
+-      const extraction = run.semantic?.extraction_file ?? "<sgr-json>";
+-      diagnostics.push({
+-        level: "warning",
+-        message:
+-          `context ingest run ${run.run_id} is incomplete at ${run.phase}; ` +
+-          `resume with agentplane context supervise-task ${taskId} --extraction ${JSON.stringify(extraction)}.`,
+-      });
+-      continue;
+-    }
+-    if (!isResumableContextIngestPhase(run.phase)) continue;
+-    if (run.phase === "task_creating") {
+-      diagnostics.push({
+-        level: "issue",
+-        message:
+-          `context ingest run ${run.run_id} has unknown task creation outcome; inspect the task backend ` +
+-          `before retrying (${retry}).`,
+-      });
+-      continue;
+-    }
+-    if (run.phase === "task_created" && run.task !== undefined) {
+-      const receiptPath = path.join(
+-        root,
+-        ".agentplane/tasks",
+-        run.task.task_id,
+-        "task-creation.json",
+-      );
+-      if (!(await fileExists(receiptPath))) {
+-        diagnostics.push({
+-          level: "issue",
+-          message:
+-            `context ingest run ${run.run_id} has task/receipt divergence for ${run.task.task_id}; ` +
+-            `resume with ${retry}.`,
+-        });
+-        continue;
+-      }
+-    }
+-    if (run.phase === "pack_writing" && run.task !== undefined) {
+-      const packPath = path.join(root, ".agentplane/tasks", run.task.task_id, "context-pack.md");
+-      if (!(await fileExists(packPath))) {
+-        diagnostics.push({
+-          level: "issue",
+-          message:
+-            `context ingest run ${run.run_id} has task/pack divergence for ${run.task.task_id}; ` +
+-            `resume with ${retry}.`,
+-        });
+-        continue;
+-      }
+-    }
+-    diagnostics.push({
+-      level: "warning",
+-      message: `context ingest run ${run.run_id} is incomplete at ${run.phase}; resume with ${retry}.`,
+-    });
+-  }
+-  return diagnostics;
+-}
+-
+ export function assertContextIngestRunSourceSet(
+   run: ContextIngestRunJournal,
+   currentEntries: ManifestEntry[],
+@@ -520,7 +379,7 @@ async function readContextIngestRun(
+   }
+ }
+ 
+-async function readContextIngestRuns(root: string): Promise<ContextIngestRunJournal[]> {
++export async function readContextIngestRuns(root: string): Promise<ContextIngestRunJournal[]> {
+   const directory = path.join(root, JOURNAL_DIRECTORY);
+   let entries: string[] = [];
+   try {
+@@ -616,16 +475,6 @@ function fingerprint(value: unknown): string {
+   return `sha256:${createHash("sha256").update(JSON.stringify(value)).digest("hex")}`;
+ }
+ 
+-async function fileExists(candidate: string): Promise<boolean> {
+-  try {
+-    await readFile(candidate);
+-    return true;
+-  } catch (error) {
+-    if (isMissingError(error)) return false;
+-    throw error;
+-  }
+-}
+-
+ function isAlreadyExistsError(error: unknown): boolean {
+   return isNodeError(error, "EEXIST");
+ }
+diff --git a/packages/agentplane/src/context/ingest-task-pack.test.ts b/packages/agentplane/src/context/ingest-task-pack.test.ts
+index 9bd4308cc..39e7cd74e 100644
+--- a/packages/agentplane/src/context/ingest-task-pack.test.ts
++++ b/packages/agentplane/src/context/ingest-task-pack.test.ts
+@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ import type { CommandContext } from "../commands/shared/task-backend.js";
+ import type { TaskNewParsed } from "../commands/task/new.js";
+ import { cmdContextIngest } from "./ingest.js";
+-import { inspectContextIngestRuns } from "./ingest-run-journal.js";
++import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
+ 
+ let tempRoots: string[] = [];
+ 
