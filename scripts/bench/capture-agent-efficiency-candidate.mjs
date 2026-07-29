@@ -34,6 +34,8 @@ import {
   fixtureRegistrySha256,
   readReplayEvidenceRecords,
   readReplayEnvelopeRecords,
+  replayDependencyClaimFromEnvelopeRecords,
+  runtimeBridgePaths,
 } from "../lib/agent-efficiency-replay.mjs";
 import {
   assertGitCommitAvailable,
@@ -98,6 +100,8 @@ function helpText() {
     `  --runs <count>   Runs per scenario. Minimum/default: ${MINIMUM_REPLAY_RUNS}.`,
     "  --driver <path>   Reviewed local RF-04 provider driver.",
     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
+    "  --runtime-bridge <version>  Materialize or validate a no-provider comparison against the",
+    "                              historical runtime bridge for this exact Codex CLI version.",
     "  --replace         Replace one complete previous candidate capture generation.",
     "  --check           Rebuild and validate an existing capture without provider calls.",
     "  --help            Show this help text.",
@@ -110,7 +114,7 @@ function helpText() {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["subject", "runs", "driver", "root", "codex-version"],
+    valueFlags: ["subject", "runs", "driver", "root", "codex-version", "runtime-bridge"],
     booleanFlags: ["check", "help", "replace"],
     aliases: { h: "help" },
   });
@@ -125,6 +129,7 @@ function parseArgs(argv) {
     outputRoot: flags.root ? path.resolve(flags.root) : null,
     replace: flags.replace === true,
     runs: Number.parseInt(flags.runs ?? String(MINIMUM_REPLAY_RUNS), 10),
+    runtimeBridgeVersion: flags["runtime-bridge"] ?? null,
     subject: flags.subject ?? "",
   };
 }
@@ -527,6 +532,83 @@ function identityComparison(id, baseline, candidate) {
   };
 }
 
+function comparisonBaselineSource(runtimeBridgeVersion = null) {
+  if (runtimeBridgeVersion === null) {
+    return {
+      baselinePath: DEFAULT_BASELINE_PATH,
+      evidenceDirectory: DEFAULT_BASELINE_EVIDENCE,
+      envelopeDirectory: DEFAULT_BASELINE_ENVELOPES,
+      kind: "frozen_replay",
+      registryPath: DEFAULT_BASELINE_REGISTRY_PATH,
+    };
+  }
+  const paths = runtimeBridgePaths(repoRoot, runtimeBridgeVersion);
+  return {
+    baselinePath: paths.baselinePath,
+    evidenceDirectory: paths.evidenceDirectory,
+    envelopeDirectory: paths.envelopeDirectory,
+    kind: "runtime_bridge",
+    registryPath: DEFAULT_BASELINE_REGISTRY_PATH,
+  };
+}
+
+function readComparisonBaseline({ baselineSource, runs }) {
+  const baselineRegistry = readFixtureRegistry(baselineSource.registryPath, {
+    historicalBaseline: true,
+  });
+  const baselineEnvelopeRecords = readReplayEnvelopeRecords(
+    repoRoot,
+    baselineSource.envelopeDirectory,
+  );
+  const baselineEvidenceRecords = readReplayEvidenceRecords(
+    repoRoot,
+    baselineSource.evidenceDirectory,
+  );
+  const frozenBaseline = JSON.parse(readFileSync(baselineSource.baselinePath, "utf8"));
+  const baselineDriverIdentity = frozenBaseline?.anchor?.driver;
+  const baselineHarnessManifest = frozenBaseline?.anchor?.harness;
+  const baselineDependencyClaim = baselineHarnessManifest?.dependency_claim;
+  if (
+    frozenBaseline?.anchor?.subject_sha !== REPLAY_ANCHOR_COMMIT ||
+    !baselineDriverIdentity ||
+    !baselineHarnessManifest ||
+    !baselineDependencyClaim
+  ) {
+    throw new Error(`${baselineSource.kind} RF-04 baseline anchor metadata is incomplete`);
+  }
+  const baseline = buildReplayBaseline({
+    driverIdentity: baselineDriverIdentity,
+    envelopeRecords: baselineEnvelopeRecords,
+    evidenceRecords: baselineEvidenceRecords,
+    harnessManifest: baselineHarnessManifest,
+    registry: baselineRegistry,
+    runs,
+  });
+  assertFrozenReplayBaseline(frozenBaseline, baseline, `${baselineSource.kind} RF-04 baseline`);
+  const baselineRuntimeProfile = fixedRuntimeProfile(
+    baselineEnvelopeRecords,
+    frozenBaseline.capture_profile.runtime_version.split("/").at(-1),
+    `${baselineSource.kind} RF-04 baseline`,
+  );
+  const baselineGrouped = assertRecords({
+    anchor: REPLAY_ANCHOR_COMMIT,
+    dependencyClaim: baselineDependencyClaim,
+    driverIdentity: baselineDriverIdentity,
+    envelopeRecords: baselineEnvelopeRecords,
+    evidenceRecords: baselineEvidenceRecords,
+    harnessManifest: baselineHarnessManifest,
+    registry: baselineRegistry,
+    runs,
+  });
+  return {
+    baseline,
+    baselineGrouped,
+    baselineRegistry,
+    baselineRuntimeProfile,
+    replayBaselineSha256: sha256(readFileSync(baselineSource.baselinePath)),
+  };
+}
+
 export function buildCandidateMeasurement({
   candidateAnchor,
   candidateCodexCliVersion,
@@ -536,6 +618,7 @@ export function buildCandidateMeasurement({
   candidateEvidenceRecords,
   candidateHarnessManifest,
   candidateRegistry,
+  baselineSource = comparisonBaselineSource(),
   runs = MINIMUM_REPLAY_RUNS,
 }) {
   const subject = assertCandidateSubject(candidateAnchor);
@@ -563,47 +646,13 @@ export function buildCandidateMeasurement({
     "candidate RF-04 capture",
   );
 
-  const baselineRegistry = readFixtureRegistry(DEFAULT_BASELINE_REGISTRY_PATH, {
-    historicalBaseline: true,
-  });
-  const baselineEnvelopeRecords = readReplayEnvelopeRecords(repoRoot, DEFAULT_BASELINE_ENVELOPES);
-  const baselineEvidenceRecords = readReplayEvidenceRecords(repoRoot, DEFAULT_BASELINE_EVIDENCE);
-  const frozenBaseline = JSON.parse(readFileSync(DEFAULT_BASELINE_PATH, "utf8"));
-  const baselineDriverIdentity = frozenBaseline?.anchor?.driver;
-  const baselineHarnessManifest = frozenBaseline?.anchor?.harness;
-  const baselineDependencyClaim = baselineHarnessManifest?.dependency_claim;
-  if (
-    frozenBaseline?.anchor?.subject_sha !== REPLAY_ANCHOR_COMMIT ||
-    !baselineDriverIdentity ||
-    !baselineHarnessManifest ||
-    !baselineDependencyClaim
-  ) {
-    throw new Error("frozen RF-04 baseline anchor metadata is incomplete or has changed");
-  }
-  const baseline = buildReplayBaseline({
-    driverIdentity: baselineDriverIdentity,
-    envelopeRecords: baselineEnvelopeRecords,
-    evidenceRecords: baselineEvidenceRecords,
-    harnessManifest: baselineHarnessManifest,
-    registry: baselineRegistry,
-    runs,
-  });
-  assertFrozenReplayBaseline(frozenBaseline, baseline, "frozen RF-04 replay baseline");
-  const baselineRuntimeProfile = fixedRuntimeProfile(
-    baselineEnvelopeRecords,
-    frozenBaseline.capture_profile.runtime_version.split("/").at(-1),
-    "frozen RF-04 baseline",
-  );
-  const baselineGrouped = assertRecords({
-    anchor: REPLAY_ANCHOR_COMMIT,
-    dependencyClaim: baselineDependencyClaim,
-    driverIdentity: baselineDriverIdentity,
-    envelopeRecords: baselineEnvelopeRecords,
-    evidenceRecords: baselineEvidenceRecords,
-    harnessManifest: baselineHarnessManifest,
-    registry: baselineRegistry,
-    runs,
-  });
+  const {
+    baseline,
+    baselineGrouped,
+    baselineRegistry,
+    baselineRuntimeProfile,
+    replayBaselineSha256,
+  } = readComparisonBaseline({ baselineSource, runs });
   const baselineValues = summarizeActualValues(baselineGrouped, baselineRegistry);
   const candidateValues = summarizeActualValues(candidateGrouped, candidateRegistry);
   const runtimeComparison = {
@@ -659,8 +708,9 @@ export function buildCandidateMeasurement({
   return {
     baseline: {
       actual_values: baselineValues,
-      replay_baseline_sha256: sha256(readFileSync(DEFAULT_BASELINE_PATH)),
+      replay_baseline_sha256: replayBaselineSha256,
       runtime_profile: baselineRuntimeProfile,
+      source: baselineSource.kind,
       subject_sha: REPLAY_ANCHOR_COMMIT,
     },
     candidate: {
@@ -881,26 +931,119 @@ function captureCandidate(options) {
   }
 }
 
-function rebuildCandidateMeasurement({ codexCliVersion, driverPath, paths, runs, subject }) {
+function recordedCandidateInputs({ candidateEnvelopeRecords, driverPath }) {
+  const firstEnvelope = candidateEnvelopeRecords[0]?.value;
+  const driverIdentity = firstEnvelope?.anchor?.driver;
+  const harnessManifest = firstEnvelope?.anchor?.harness;
+  if (!driverIdentity || !harnessManifest) {
+    throw new Error("candidate raw evidence is missing its reviewed driver or harness identity");
+  }
+  const currentDriverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
+  if (stableJson(currentDriverIdentity) !== stableJson(driverIdentity)) {
+    throw new Error("runtime bridge requires the exact reviewed candidate driver bytes");
+  }
+  return {
+    dependencyClaim: replayDependencyClaimFromEnvelopeRecords(candidateEnvelopeRecords),
+    driverIdentity,
+    harnessManifest,
+  };
+}
+
+function rebuildCandidateMeasurement({
+  baselineSource = comparisonBaselineSource(),
+  codexCliVersion,
+  driverPath,
+  paths,
+  runs,
+  subject,
+  useRecordedCandidateInputs = false,
+}) {
   const registry = readCandidateRegistry(subject, paths.registryPath);
   const candidateEnvelopeRecords = readReplayEnvelopeRecords(repoRoot, paths.envelopeDirectory);
   const candidateEvidenceRecords = readReplayEvidenceRecords(repoRoot, paths.evidenceDirectory);
-  const driverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
-  const dependencyClaim = replayDependencyClaimFromManifest(
-    createReplayDependencyManifest(repoRoot),
-  );
-  const harnessManifest = createCandidateHarnessManifest(driverIdentity, dependencyClaim);
+  const inputs = useRecordedCandidateInputs
+    ? recordedCandidateInputs({ candidateEnvelopeRecords, driverPath })
+    : (() => {
+        const driverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
+        const dependencyClaim = replayDependencyClaimFromManifest(
+          createReplayDependencyManifest(repoRoot),
+        );
+        return {
+          dependencyClaim,
+          driverIdentity,
+          harnessManifest: createCandidateHarnessManifest(driverIdentity, dependencyClaim),
+        };
+      })();
   return buildCandidateMeasurement({
+    baselineSource,
     candidateAnchor: subject,
     candidateCodexCliVersion: codexCliVersion,
-    candidateDependencyClaim: dependencyClaim,
-    candidateDriverIdentity: driverIdentity,
+    candidateDependencyClaim: inputs.dependencyClaim,
+    candidateDriverIdentity: inputs.driverIdentity,
     candidateEnvelopeRecords,
     candidateEvidenceRecords,
-    candidateHarnessManifest: harnessManifest,
+    candidateHarnessManifest: inputs.harnessManifest,
     candidateRegistry: registry,
     runs,
   });
+}
+
+function runtimeBridgeMeasurementPath(paths, runtimeBridgeVersion) {
+  runtimeBridgePaths(repoRoot, runtimeBridgeVersion);
+  return path.join(paths.root, `measurement.runtime-bridge-codex-${runtimeBridgeVersion}.json`);
+}
+
+export function materializeRuntimeBridgeMeasurement(options) {
+  const subject = assertCandidateSubject(options.subject);
+  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+  const runs = assertRuns(options.runs);
+  if (options.runtimeBridgeVersion === null) {
+    throw new Error("runtime bridge version is required for runtime bridge materialization");
+  }
+  if (codexCliVersion !== options.runtimeBridgeVersion) {
+    throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
+  }
+  const paths = resolveCandidatePaths(subject, options.outputRoot);
+  assertCandidatePaths(paths);
+  const measurementPath = runtimeBridgeMeasurementPath(paths, codexCliVersion);
+  assertRepoPathNoSymlinkEscape(repoRoot, measurementPath, "runtime bridge measurement", {
+    kind: "file",
+  });
+  const measurement = rebuildCandidateMeasurement({
+    baselineSource: comparisonBaselineSource(codexCliVersion),
+    codexCliVersion,
+    driverPath: options.driverPath,
+    paths,
+    runs,
+    subject,
+    useRecordedCandidateInputs: true,
+  });
+  const bytes = canonicalBytes(measurement);
+  if (targetExists(measurementPath) && readFileSync(measurementPath, "utf8") !== bytes) {
+    throw new Error("runtime bridge measurement already exists with different immutable bytes");
+  }
+  if (!targetExists(measurementPath)) {
+    writeFileSync(measurementPath, bytes, { encoding: "utf8", mode: 0o600 });
+  }
+  return measurement;
+}
+
+export function checkRuntimeBridgeMeasurement(options) {
+  const subject = assertCandidateSubject(options.subject);
+  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
+  if (options.runtimeBridgeVersion === null || codexCliVersion !== options.runtimeBridgeVersion) {
+    throw new Error("candidate and runtime bridge Codex CLI versions must match exactly");
+  }
+  const paths = resolveCandidatePaths(subject, options.outputRoot);
+  const measurementPath = runtimeBridgeMeasurementPath(paths, codexCliVersion);
+  if (!targetExists(measurementPath)) {
+    throw new Error("runtime bridge measurement is absent; materialize it after bridge capture");
+  }
+  const rebuilt = materializeRuntimeBridgeMeasurement(options);
+  if (readFileSync(measurementPath, "utf8") !== canonicalBytes(rebuilt)) {
+    throw new Error("runtime bridge measurement is not the deterministic rebuild of raw evidence");
+  }
+  return rebuilt;
 }
 
 export function checkCandidateCapture(options) {
@@ -933,9 +1076,17 @@ const main = defineCheck({
       stdout.write(`${helpText()}\n`);
       return;
     }
-    const measurement = options.check ? checkCandidateCapture(options) : captureCandidate(options);
+    const runtimeBridge = options.runtimeBridgeVersion !== null;
+    const measurement = runtimeBridge
+      ? options.check
+        ? checkRuntimeBridgeMeasurement(options)
+        : materializeRuntimeBridgeMeasurement(options)
+      : options.check
+        ? checkCandidateCapture(options)
+        : captureCandidate(options);
     stdout.write(
-      `RF-04 candidate measurement ${options.check ? "validated" : "captured"} ` +
+      `RF-04 candidate ${runtimeBridge ? "runtime bridge measurement" : "measurement"} ` +
+        `${options.check ? "validated" : runtimeBridge ? "materialized" : "captured"} ` +
         `(subject=${measurement.candidate.subject_sha}; runs=${measurement.candidate.coverage.replay_runs}; ` +
         `episodes=${measurement.candidate.actual_values.provider_episodes}; verdict=${measurement.verdict})\n`,
     );

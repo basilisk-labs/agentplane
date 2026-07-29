@@ -34,21 +34,22 @@ runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- package.json                                       |   2 +
- ...cli.critical.agent-efficiency-candidate.test.ts | 214 +++++
- ...critical.agent-efficiency-replay-driver.test.ts |  12 +
- ...tical.agent-efficiency-replay-hardening.test.ts |   1 +
- ...un-cli.critical.agent-efficiency-replay.test.ts |   6 +-
- scripts/README.md                                  |  32 +-
- .../bench/capture-agent-efficiency-candidate.mjs   | 950 +++++++++++++++++++++
- scripts/bench/capture-agent-efficiency-replay.mjs  |  43 +-
- .../agent-efficiency-anchor-supervisor.mjs         |   5 +-
- .../internal/agent-efficiency-codex-runtime.mjs    |  16 +-
- .../bench/run-agent-efficiency-codex-replay.mjs    |   8 +-
- scripts/checks/check-agent-efficiency-replay.mjs   |  30 +-
- scripts/lib/agent-efficiency-replay-safety.mjs     |   1 +
- scripts/lib/agent-efficiency-replay.mjs            |  40 +
- 14 files changed, 1302 insertions(+), 58 deletions(-)
+ package.json                                       |    2 +
+ ...cli.critical.agent-efficiency-candidate.test.ts |  214 ++++
+ ...critical.agent-efficiency-replay-driver.test.ts |   12 +
+ ...tical.agent-efficiency-replay-hardening.test.ts |   27 +
+ ...un-cli.critical.agent-efficiency-replay.test.ts |    6 +-
+ scripts/README.md                                  |   32 +-
+ .../bench/capture-agent-efficiency-candidate.mjs   | 1101 ++++++++++++++++++++
+ scripts/bench/capture-agent-efficiency-replay.mjs  |   65 +-
+ .../capture-agent-efficiency-runtime-bridge.mjs    |  163 +++
+ .../agent-efficiency-anchor-supervisor.mjs         |    5 +-
+ .../internal/agent-efficiency-codex-runtime.mjs    |   16 +-
+ .../bench/run-agent-efficiency-codex-replay.mjs    |    8 +-
+ scripts/checks/check-agent-efficiency-replay.mjs   |   30 +-
+ scripts/lib/agent-efficiency-replay-safety.mjs     |   20 +-
+ scripts/lib/agent-efficiency-replay.mjs            |   58 ++
+ 15 files changed, 1698 insertions(+), 61 deletions(-)
 ```
 
 </details>
