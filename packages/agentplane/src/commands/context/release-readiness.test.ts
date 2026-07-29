@@ -745,30 +745,16 @@ describe("context release readiness guards", () => {
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_module_ref).toBe(
       "framework/template/generated.artifact/context_assimilation/v2",
     );
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("context.maximum_assimilation");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("agentplane context reindex --include-raw");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("frontmatter");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Reconcile semantically: compare each source term");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("keep local detail under stable headings");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("Link first meaningful mentions");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("agentplane context wiki index context/wiki");
-    expect(
-      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content,
-    ).toContain("reuse `canonical_entity_id`");
+    const prompt =
+      createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
+    expect(prompt).toContain("context.maximum_assimilation");
+    expect(prompt).toContain("Reconcile semantically: compare each source term");
+    expect(prompt).toContain("reuse `canonical_entity_id`");
+    expect(prompt).toContain("Return only that semantic result");
+    expect(prompt).toContain("CLI supervision materializes the formal layer");
+    expect(prompt).toContain("Do not replay or operate lifecycle steps");
+    expect(prompt).not.toContain("agentplane context reindex --include-raw");
+    expect(prompt).not.toContain("agentplane context wiki index context/wiki");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.wiki).toMatchObject({
       layout_strategy: "adaptive",
       frontmatter_required: true,
@@ -864,8 +850,9 @@ describe("context release readiness guards", () => {
     const prompt =
       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
     expect(prompt).toContain("source-shaped topology decision");
-    expect(prompt).toContain("[[canonical-page|Label]]");
-    expect(prompt).toContain("agentplane evaluator run");
+    expect(prompt).toContain("CURATOR owns this judgment");
+    expect(prompt).toContain("CLI-owned mechanical operations");
+    expect(prompt).not.toContain("agentplane evaluator run");
     expect(createdArgs.parsed?.extensions?.["agentplane.context"]?.mode).toBe(
       "maximum_assimilation",
     );
@@ -912,12 +899,12 @@ describe("context release readiness guards", () => {
       "canonical-snapshot.json",
       "extraction-contract.json",
       "source-shaped topology decision",
-      "[[canonical-page|Label]]",
-      "numeric notes",
-      "practical retrieval through wiki/derived entrypoints",
+      "CURATOR owns this judgment",
+      "Page decisions must support stable identity",
+      "CLI supervision materializes the formal layer",
       "SGR v2 `context_extraction` JSON file",
       "Every significant span needs a coverage row",
-      "raw files disappear",
+      "Raw sources remain source-of-truth",
     ]) {
       expect(maximumPrompt).toContain(expected);
     }

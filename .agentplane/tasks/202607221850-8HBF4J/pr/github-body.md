@@ -41,6 +41,7 @@ tests pass and the isolated runner cancellation test passes.
  .../src/commands/context/context-runner.ts         |  79 +++
  .../src/commands/context/context.spec.ts           |  45 ++
  .../commands/context/extraction-apply.unit.test.ts |   2 +-
+ .../src/commands/context/release-readiness.test.ts |  47 +-
  packages/agentplane/src/context/doctor.ts          |   2 +-
  .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
  .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
@@ -53,7 +54,7 @@ tests pass and the isolated runner cancellation test passes.
  packages/core/src/schemas/index.ts                 |   1 +
  .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
  .../check-compatibility-contract-baseline.mjs      |  67 +++
- 21 files changed, 1791 insertions(+), 197 deletions(-)
+ 22 files changed, 1808 insertions(+), 227 deletions(-)
 ```
 
 </details>
