@@ -23,10 +23,10 @@ import {
   AGENT_EFFICIENCY_REPLAY_SCHEMA_VERSION,
 } from "../../lib/agent-efficiency-replay.mjs";
 import {
-  CODEX_REPLAY_CLI_VERSION,
   CODEX_REPLAY_MODEL,
   CODEX_REPLAY_REASONING_EFFORT,
   fail,
+  resolveCodexReplayCliVersion,
   runSanitizedCommand,
 } from "./agent-efficiency-codex-runtime.mjs";
 import {
@@ -401,6 +401,7 @@ export function buildReplayOutput({
   scenarioId,
   supervisorReceipt,
   anchor,
+  runtimeCliVersion = resolveCodexReplayCliVersion(),
 }) {
   const metricPayload = Object.fromEntries(
     Object.entries(counters.metrics).filter(([, value]) => value !== null),
@@ -540,7 +541,7 @@ export function buildReplayOutput({
       provider_id: "openai-chatgpt",
       reasoning_effort: CODEX_REPLAY_REASONING_EFFORT,
       runtime_id: "agentplane-anchor-cli-preparation/codex-cli-execution",
-      runtime_version: `0.6.24/${CODEX_REPLAY_CLI_VERSION}`,
+      runtime_version: `0.6.24/${runtimeCliVersion}`,
       sandbox_mode: "workspace-write-network-disabled",
     },
     run_id: runId,

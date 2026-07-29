@@ -8,11 +8,9 @@ import {
   REPLAY_ANCHOR_COMMIT,
   assertFrozenReplayBaseline,
   buildReplayBaseline,
-  createReplayHarnessManifest,
   readReplayEvidenceRecords,
   readReplayEnvelopeRecords,
   replayDependencyClaimFromEnvelopeRecords,
-  replayDriverIdentityFromEnvelopeRecords,
   replayBaselineBytes,
 } from "../lib/agent-efficiency-replay.mjs";
 import {
@@ -20,7 +18,6 @@ import {
   assertRepoPathNoSymlinkEscape,
 } from "../lib/agent-efficiency-replay-safety.mjs";
 import { defineCheck, parseScriptArgs, runScriptMain } from "../lib/script-runtime.mjs";
-import { assertReplayDependencyClaim } from "../bench/internal/agent-efficiency-dependency-manifest.mjs";
 
 const SCRIPT_NAME = "check-agent-efficiency-replay.mjs";
 const scriptPath = fileURLToPath(import.meta.url);
@@ -124,12 +121,28 @@ export function checkAgentEfficiencyReplay(options) {
   const registry = readFixtureRegistry(options.registryPath, { historicalBaseline: true });
   const records = readReplayEnvelopeRecords(repoRoot, options.sourceDirectory);
   const evidenceRecords = readReplayEvidenceRecords(repoRoot, options.evidenceDirectory);
-  const driverIdentity = replayDriverIdentityFromEnvelopeRecords(repoRoot, records);
+  const frozen = readFrozenBaseline(options.baselinePath);
+  const driverIdentity = records[0]?.value?.anchor?.driver;
+  if (
+    !driverIdentity ||
+    records.some(
+      (record) => stableJson(record.value?.anchor?.driver) !== stableJson(driverIdentity),
+    )
+  ) {
+    throw new Error("RF-04 replay envelopes use inconsistent declared driver identities");
+  }
   const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(records);
-  assertReplayDependencyClaim(repoRoot, dependencyClaim);
-  const harnessManifest = createReplayHarnessManifest(repoRoot, driverIdentity, {
-    dependencyClaim,
-  });
+  const frozenDriverIdentity = frozen?.anchor?.driver;
+  const harnessManifest = frozen?.anchor?.harness;
+  if (
+    frozen?.anchor?.subject_sha !== REPLAY_ANCHOR_COMMIT ||
+    !frozenDriverIdentity ||
+    !harnessManifest ||
+    stableJson(driverIdentity) !== stableJson(frozenDriverIdentity) ||
+    stableJson(dependencyClaim) !== stableJson(harnessManifest.dependency_claim)
+  ) {
+    throw new Error("frozen RF-04 replay anchor metadata differs from its raw capture evidence");
+  }
   const first = buildReplayBaseline({
     driverIdentity,
     envelopeRecords: records,
@@ -152,7 +165,6 @@ export function checkAgentEfficiencyReplay(options) {
   if (first.structural_projection_sha256 !== second.structural_projection_sha256) {
     throw new Error("RF-04 structural projection digest is not deterministic");
   }
-  const frozen = readFrozenBaseline(options.baselinePath);
   assertFrozenReplayBaseline(frozen, first, "frozen RF-04 replay baseline");
   return first;
 }

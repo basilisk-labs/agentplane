@@ -32,6 +32,7 @@ type DriverModule = {
   anchorTaskOwner(role: string): string;
   CODEX_REPLAY_BINARY: string;
   CODEX_REPLAY_CLI_VERSION: string;
+  CODEX_REPLAY_CLI_VERSION_ENV: string;
   CODEX_REPLAY_MODEL: string;
   CODEX_REPLAY_REASONING_EFFORT: string;
   CODEX_REPLAY_TURN_TIMEOUT_MS: number;
@@ -83,6 +84,7 @@ type DriverModule = {
     time_to_first_scoped_mutation_ms: number | null;
     time_to_verified_result_ms: number;
   };
+  resolveCodexReplayCliVersion(source: Record<string, string>): string;
 };
 
 type CaptureModule = {
@@ -125,6 +127,16 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
       "/Applications/ChatGPT.app/Contents/Resources/codex",
     );
     expect(replayDriver.CODEX_REPLAY_CLI_VERSION).toBe("0.145.0-alpha.18");
+    expect(
+      replayDriver.resolveCodexReplayCliVersion({
+        [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "0.146.0-alpha.3.1",
+      }),
+    ).toBe("0.146.0-alpha.3.1");
+    expect(() =>
+      replayDriver.resolveCodexReplayCliVersion({
+        [replayDriver.CODEX_REPLAY_CLI_VERSION_ENV]: "not-a-version",
+      }),
+    ).toThrow("CODEX_VERSION_CONTRACT");
     expect(replayDriver.CODEX_REPLAY_MODEL).toBe("gpt-5.6-terra");
     expect(replayDriver.CODEX_REPLAY_REASONING_EFFORT).toBe("low");
     expect(replayDriver.ANCHOR_CONTEXT_TELEMETRY).toEqual({

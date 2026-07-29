@@ -54,6 +54,10 @@ import {
   initializeAnchorCheckout,
   installFixtureRegistryOverlay,
 } from "./internal/agent-efficiency-capture-runtime.mjs";
+import {
+  CODEX_REPLAY_CLI_VERSION_ENV,
+  resolveCodexReplayCliVersion,
+} from "./internal/agent-efficiency-codex-runtime.mjs";
 
 const SCRIPT_NAME = "capture-agent-efficiency-candidate.mjs";
 const scriptPath = fileURLToPath(import.meta.url);
@@ -89,6 +93,7 @@ function helpText() {
     "",
     "Options:",
     "  --subject <sha>   Required full reviewed candidate commit SHA.",
+    "  --codex-version <version>  Required exact Codex CLI version for every candidate episode.",
     `  --runs <count>   Runs per scenario. Minimum/default: ${MINIMUM_REPLAY_RUNS}.`,
     "  --driver <path>   Reviewed local RF-04 provider driver.",
     "  --root <path>     Candidate evidence root under .agentplane/cache/rf04-candidate/.",
@@ -104,7 +109,7 @@ function helpText() {
 
 function parseArgs(argv) {
   const { flags, positionals } = parseScriptArgs(argv, {
-    valueFlags: ["subject", "runs", "driver", "root"],
+    valueFlags: ["subject", "runs", "driver", "root", "codex-version"],
     booleanFlags: ["check", "help", "replace"],
     aliases: { h: "help" },
   });
@@ -113,6 +118,7 @@ function parseArgs(argv) {
   }
   return {
     check: flags.check === true,
+    codexCliVersion: flags["codex-version"] ?? "",
     driverPath: path.resolve(flags.driver ?? DEFAULT_DRIVER_PATH),
     help: flags.help === true,
     outputRoot: flags.root ? path.resolve(flags.root) : null,
@@ -139,6 +145,13 @@ function assertRuns(runs) {
     throw new Error(`--runs must be an integer >= ${MINIMUM_REPLAY_RUNS}`);
   }
   return runs;
+}
+
+function assertCandidateCodexCliVersion(value) {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error("--codex-version must declare the exact reviewed Codex CLI version");
+  }
+  return resolveCodexReplayCliVersion({ [CODEX_REPLAY_CLI_VERSION_ENV]: value });
 }
 
 function isInside(root, candidate) {
@@ -274,8 +287,15 @@ export function createCandidateHarnessManifest(driverIdentity, dependencyClaim) 
   return { ...payload, sha256: sha256(canonicalBytes(payload)) };
 }
 
-function candidateInputFingerprint({ dependencyClaim, driverIdentity, harnessManifest, registry }) {
+function candidateInputFingerprint({
+  codexCliVersion,
+  dependencyClaim,
+  driverIdentity,
+  harnessManifest,
+  registry,
+}) {
   return {
+    codex_cli_version: codexCliVersion,
     dependency_claim: dependencyClaim,
     driver: driverIdentity,
     fixture_registry_sha256: fixtureRegistrySha256(registry),
@@ -290,6 +310,7 @@ function assertCandidateInputsUnchanged(expected, registryPath, driverPath) {
   const dependencyClaim = replayDependencyClaimFromManifest(dependencyManifest);
   const harnessManifest = createCandidateHarnessManifest(driverIdentity, dependencyClaim);
   const actual = candidateInputFingerprint({
+    codexCliVersion: expected.codexCliVersion,
     dependencyClaim,
     driverIdentity,
     harnessManifest,
@@ -298,6 +319,22 @@ function assertCandidateInputsUnchanged(expected, registryPath, driverPath) {
   if (stableJson(actual) !== stableJson(expected.fingerprint)) {
     throw new Error("candidate RF-04 capture inputs changed during capture");
   }
+}
+
+function fixedRuntimeProfile(envelopeRecords, codexCliVersion, label) {
+  const profiles = envelopeRecords.map((record) => record.value?.profile);
+  const distinct = [...new Set(profiles.map((profile) => stableJson(profile)))];
+  if (distinct.length !== 1 || profiles.length === 0) {
+    throw new Error(`${label} must use one fixed provider runtime profile`);
+  }
+  const profile = profiles[0];
+  if (
+    typeof profile?.runtime_version !== "string" ||
+    !profile.runtime_version.endsWith(`/${codexCliVersion}`)
+  ) {
+    throw new Error(`${label} runtime profile does not bind declared Codex CLI version`);
+  }
+  return profile;
 }
 
 function canonicalRecord(value, label) {
@@ -481,6 +518,7 @@ function exactComparison(id, baseline, candidate) {
 
 export function buildCandidateMeasurement({
   candidateAnchor,
+  candidateCodexCliVersion,
   candidateDependencyClaim,
   candidateDriverIdentity,
   candidateEnvelopeRecords,
@@ -490,6 +528,9 @@ export function buildCandidateMeasurement({
   runs = MINIMUM_REPLAY_RUNS,
 }) {
   const subject = assertCandidateSubject(candidateAnchor);
+  const codexCliVersion = resolveCodexReplayCliVersion({
+    [CODEX_REPLAY_CLI_VERSION_ENV]: candidateCodexCliVersion,
+  });
   assertRuns(runs);
   assertFixtureRegistry(candidateRegistry);
   if (candidateRegistry.provenance.efficiency_anchor_commit !== subject) {
@@ -505,6 +546,11 @@ export function buildCandidateMeasurement({
     registry: candidateRegistry,
     runs,
   });
+  const candidateRuntimeProfile = fixedRuntimeProfile(
+    candidateEnvelopeRecords,
+    codexCliVersion,
+    "candidate RF-04 capture",
+  );
 
   const baselineRegistry = readFixtureRegistry(DEFAULT_BASELINE_REGISTRY_PATH, {
     historicalBaseline: true,
@@ -532,6 +578,11 @@ export function buildCandidateMeasurement({
     runs,
   });
   assertFrozenReplayBaseline(frozenBaseline, baseline, "frozen RF-04 replay baseline");
+  const baselineRuntimeProfile = fixedRuntimeProfile(
+    baselineEnvelopeRecords,
+    frozenBaseline.capture_profile.runtime_version.split("/").at(-1),
+    "frozen RF-04 baseline",
+  );
   const baselineGrouped = assertRecords({
     anchor: REPLAY_ANCHOR_COMMIT,
     dependencyClaim: baselineDependencyClaim,
@@ -591,6 +642,7 @@ export function buildCandidateMeasurement({
     baseline: {
       actual_values: baselineValues,
       replay_baseline_sha256: sha256(readFileSync(DEFAULT_BASELINE_PATH)),
+      runtime_profile: baselineRuntimeProfile,
       subject_sha: REPLAY_ANCHOR_COMMIT,
     },
     candidate: {
@@ -602,11 +654,17 @@ export function buildCandidateMeasurement({
       driver: candidateDriverIdentity,
       fixture_registry_sha256: fixtureRegistrySha256(candidateRegistry),
       harness_sha256: candidateHarnessManifest.sha256,
+      runtime_profile: candidateRuntimeProfile,
       subject_sha: subject,
     },
     comparisons,
     failure_ids: failures.map((comparison) => comparison.id),
     kind: "agent_efficiency_candidate_measurement_v1",
+    runtime_comparison: {
+      baseline: baselineRuntimeProfile.runtime_version,
+      candidate: candidateRuntimeProfile.runtime_version,
+      profile_match: stableJson(baselineRuntimeProfile) === stableJson(candidateRuntimeProfile),
+    },
     schema_version: 1,
     verdict: failures.length === 0 ? "pass" : "fail",
   };
@@ -614,10 +672,10 @@ export function buildCandidateMeasurement({
 
 function captureCandidate(options) {
   const subject = assertCandidateSubject(options.subject);
+  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
   const runs = assertRuns(options.runs);
   assertGitCommitAvailable(repoRoot, subject);
   const paths = resolveCandidatePaths(subject, options.outputRoot);
-  assertCandidatePaths(paths);
   const publicationTargets = [
     paths.envelopeDirectory,
     paths.evidenceDirectory,
@@ -643,11 +701,13 @@ function captureCandidate(options) {
   const harnessManifest = createCandidateHarnessManifest(driverIdentity, dependencyClaim);
   const expectedInputs = {
     fingerprint: candidateInputFingerprint({
+      codexCliVersion,
       dependencyClaim,
       driverIdentity,
       harnessManifest,
       registry,
     }),
+    codexCliVersion,
     subject,
   };
   const cacheRoot = path.join(repoRoot, ".agentplane", "cache");
@@ -711,6 +771,7 @@ function captureCandidate(options) {
           AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessManifest.sha256,
           AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
           AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
+          AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: codexCliVersion,
         };
         runChecked(
           process.execPath,
@@ -759,6 +820,7 @@ function captureCandidate(options) {
     });
     const measurement = buildCandidateMeasurement({
       candidateAnchor: subject,
+      candidateCodexCliVersion: codexCliVersion,
       candidateDependencyClaim: dependencyClaim,
       candidateDriverIdentity: driverIdentity,
       candidateEnvelopeRecords: envelopes,
@@ -783,6 +845,7 @@ function captureCandidate(options) {
         validateInstalled() {
           assertCandidateInputsUnchanged(expectedInputs, paths.registryPath, options.driverPath);
           const installed = rebuildCandidateMeasurement({
+            codexCliVersion,
             driverPath: options.driverPath,
             paths,
             runs,
@@ -818,7 +881,7 @@ function captureCandidate(options) {
   }
 }
 
-function rebuildCandidateMeasurement({ driverPath, paths, runs, subject }) {
+function rebuildCandidateMeasurement({ codexCliVersion, driverPath, paths, runs, subject }) {
   const registry = readCandidateRegistry(subject, paths.registryPath);
   const candidateEnvelopeRecords = readReplayEnvelopeRecords(repoRoot, paths.envelopeDirectory);
   const candidateEvidenceRecords = readReplayEvidenceRecords(repoRoot, paths.evidenceDirectory);
@@ -829,6 +892,7 @@ function rebuildCandidateMeasurement({ driverPath, paths, runs, subject }) {
   const harnessManifest = createCandidateHarnessManifest(driverIdentity, dependencyClaim);
   return buildCandidateMeasurement({
     candidateAnchor: subject,
+    candidateCodexCliVersion: codexCliVersion,
     candidateDependencyClaim: dependencyClaim,
     candidateDriverIdentity: driverIdentity,
     candidateEnvelopeRecords,
@@ -841,6 +905,7 @@ function rebuildCandidateMeasurement({ driverPath, paths, runs, subject }) {
 
 export function checkCandidateCapture(options) {
   const subject = assertCandidateSubject(options.subject);
+  const codexCliVersion = assertCandidateCodexCliVersion(options.codexCliVersion);
   const runs = assertRuns(options.runs);
   const paths = resolveCandidatePaths(subject, options.outputRoot);
   assertCandidatePaths(paths);
@@ -848,6 +913,7 @@ export function checkCandidateCapture(options) {
     throw new Error("candidate measurement is absent; run the candidate capture first");
   }
   const rebuilt = rebuildCandidateMeasurement({
+    codexCliVersion,
     driverPath: options.driverPath,
     paths,
     runs,
