@@ -6,14 +6,14 @@ Created: 2026-07-29T14:28:55.639Z
 
 - Task: `202607291428-SNSCBP`
 - Title: Gate beta.1 qualification on SHA-bound evaluator evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator`
 - Canonical task record: `.agentplane/tasks/202607291428-SNSCBP/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified beta.1 route blocks on the missing SHA-bound evaluator evidence task.
+- Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

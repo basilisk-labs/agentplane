@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The SHA-bound verification record identifies the exact commands and outcomes but preserves summarized evidence rather than raw command output or runner history.",
+      "broken_invariant": "Verification evidence should remain independently auditable enough to distinguish executed checks from recorded assertions.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/verification/20260729181647199-63f5276082638cce.json",
+          "sha256": "sha256:83da089a9ca86ad2ab824017ae499ffb804a564de351dcca40cd717588a4a872",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:87a9f37d024d335df4ca089224f1574a6d556c42148241926a960d31c4de346a",
+          "section": "runner_history"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The task dependency resolver will continue treating a dependency absent from or incomplete on the integration branch as blocking; the frozen negative-path check confirms current behavior but not compatibility with future resolver changes."
+  ]
+}

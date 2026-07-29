@@ -1,0 +1,15 @@
+{
+  "details": "Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9\nResult: pass\nEvidence: depends_on lists 202607291148-1F9GZD in the beta.1 qualification task at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.\nScope: positive dependency-present proof.\n\nCommand: node packages/agentplane/bin/agentplane.js task active\nResult: pass\nEvidence: 202607221908-MR9EA9 remains TODO with deps=missing:202607291148-1F9GZD, so beta.1 qualification cannot advance while the evidence task is incomplete or absent from main.\nScope: negative dependency-blocked proof.\n\nCommand: node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: policy routing passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.\nScope: policy and workflow integrity.",
+  "digest": "sha256:63f5276082638cceb306dadb9bb2179bb4d9f77297709bf32881aa52a3ca888c",
+  "implementation_sha": "6c8a2220d5e5fcb2896a11b13aa57300a3038b43",
+  "kind": "task_verification_record",
+  "note": "Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.",
+  "recorded_at": "2026-07-29T18:16:47.199Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9. Expected: depends_on includes 202607291148-1F9GZD in the task branch. 2. Run node packages/agentplane/bin/agentplane.js task active. Expected: beta.1 qualification remains blocked while 202607291148-1F9GZD is incomplete or absent from main. 3. Run node .agentplane/policy/check-routing.mjs and node packages/agentplane/bin/agentplane.js doctor. Expected: policy routing and workflow doctor pass. 4. Record command-level verification evidence bound to the committed dependency change SHA, then require a fresh EVALUATOR review. PR publication, integration queue, hosted checks, and merge are subsequent CLI-owned gates.",
+  "scope_digest": "sha256:67971c6d3d364d920acecf7bc427e378cdc073c0392c98dc293a620408099675",
+  "task_id": "202607291428-SNSCBP",
+  "verification_command": "agentplane verify 202607291428-SNSCBP --ok --by TESTER",
+  "verifier": "TESTER"
+}

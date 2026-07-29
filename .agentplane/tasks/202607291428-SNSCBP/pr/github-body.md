@@ -16,7 +16,7 @@ Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualif
 ## Verification
 
 - State: ok
-- Note: Verified beta.1 route blocks on the missing SHA-bound evaluator evidence task.
+- Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.
 - Canonical workflow state lives in the task README.
 
 <details>

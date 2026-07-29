@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607291428-SNSCBP-26c4dd63e29aaa75df773c85",
+  "task_id": "202607291428-SNSCBP",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the frozen observed-checks evidence with command outputs, exit statuses, and evaluated-SHA binding for the dependency-present, dependency-blocked, routing-policy, and doctor checks, then repeat semantic evaluation without changing scope.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen checks artifact contains no command-level verification records, runner history, or runtime evidence, so the claimed dependency-present, dependency-blocked, routing-policy, and doctor results cannot be independently verified or bound to the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-181447307-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:33ed51d7222ec5dd82e9446b96ccdaaed181fce21b8206b286d2638653d37ab5",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/README.md",
+          "sha256": "sha256:4ff98110bda4706f13137db7ef05c77e7a7d4e7259123a29037c35ff4bd1623d",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-181447307-recovery-context/evaluator-result.json"
+}
