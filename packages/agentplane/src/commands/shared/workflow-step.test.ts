@@ -832,6 +832,44 @@ describe("typed WorkflowStep reducer", () => {
     expect(step.compatibility.command).toBeNull();
   });
 
+  it("refreshes deterministic evidence after a current EVALUATOR block without changing implementation", () => {
+    const step = reduceRouteState(
+      routeState({
+        task: {
+          ...task,
+          verification: { state: "ok" },
+          quality_review: {
+            state: "blocked",
+            provenance: "evaluator_supplied",
+            updated_at: "2026-07-29T14:40:56.727Z",
+            updated_by: "EVALUATOR",
+            note: "Frozen verification evidence is missing.",
+            evaluated_sha: resume.head_sha,
+            blueprint_digest: "fixture-blueprint",
+            evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
+            findings: ["Frozen deterministic verification evidence is missing."],
+          },
+        },
+        prFlow: prFlow("OPEN"),
+        blockers: [
+          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
+        ],
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      phase: "quality_evidence_refresh_needed",
+      episode: { purpose: "verification", role: "TESTER" },
+      selectedBlocker: { code: "quality_review_stale" },
+      execution: {
+        semanticMutationAllowed: false,
+        evidenceMissing: ["fresh_verification_record", "fresh_evaluator_quality_review"],
+      },
+    });
+    expect(step.compatibility.command).toBeNull();
+  });
+
   it("derives deterministic fingerprints, idempotency keys, and compatibility projections", () => {
     const first = reduceRouteState(routeStateWithAuthority());
     const repeated = reduceRouteState(routeStateWithAuthority());

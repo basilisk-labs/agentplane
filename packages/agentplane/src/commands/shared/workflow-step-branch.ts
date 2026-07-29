@@ -8,6 +8,7 @@ import {
   commonExecution,
   implementationReworkStep,
   includedBatchStep,
+  qualityEvidenceRefreshStep,
   qualityReviewStep,
   routeBlockerFor,
   routeBlockerSnapshot,
@@ -22,6 +23,20 @@ import {
 function primaryIncludeTaskIds(state: WorkflowRouteState): readonly string[] {
   if (state.batchOwnership.role !== "primary") return [];
   return [...state.batchOwnership.includedTaskIds];
+}
+
+function needsQualityEvidenceRefresh(state: WorkflowRouteState): boolean {
+  const review = state.task.quality_review;
+  const reviewedHead = state.prFlow?.branch.headSha ?? state.resume.head_sha;
+  return (
+    String(state.task.status).toUpperCase() === "DOING" &&
+    state.task.verification?.state === "ok" &&
+    review?.state === "blocked" &&
+    review.provenance === "evaluator_supplied" &&
+    review.evaluated_sha === reviewedHead &&
+    review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json")) &&
+    review.findings.length > 0
+  );
 }
 
 function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
@@ -521,6 +536,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
   }
   if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
     return verificationStep(state);
+  }
+  if (needsQualityEvidenceRefresh(state)) {
+    return qualityEvidenceRefreshStep(state);
   }
   if (
     state.blockers.some(
