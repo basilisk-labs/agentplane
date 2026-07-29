@@ -13,6 +13,7 @@ import {
   resolveRunnerEffectOperationPaths,
   startRunnerEffectOperation,
 } from "./effect-operation.js";
+import { ensureStableRunnerArtifactDirectoryChain } from "./run-directory-boundary.js";
 import type {
   RunnerContextBundle,
   RunnerInvocation,
@@ -117,6 +118,29 @@ async function waitForBarrier(root: string, expected: number): Promise<void> {
 }
 
 describe("runner effect operation journal", () => {
+  it("accepts independent creation of one shared operation directory chain", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-effect-directory-race-"));
+    tempRoots.push(root);
+    const operationDirectory = path.join(
+      root,
+      "agentplane",
+      "runner",
+      "tasks",
+      "202607270705-EFFECT",
+      "effect-operations",
+      "shared-operation",
+    );
+
+    await Promise.all(
+      Array.from(
+        { length: 3 },
+        async () => await ensureStableRunnerArtifactDirectoryChain(root, operationDirectory),
+      ),
+    );
+
+    expect(await readdir(path.dirname(operationDirectory))).toContain("shared-operation");
+  });
+
   it("elects one concurrent start winner and refuses every later spawn", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-effect-race-"));
     tempRoots.push(root);
@@ -200,8 +224,15 @@ describe("runner effect operation journal", () => {
       (output) =>
         JSON.parse(output.trim()) as { status: string; operation_key?: string; reason?: string },
     );
-    expect(outcomes.filter((outcome) => outcome.status === "winner")).toHaveLength(1);
-    expect(outcomes.filter((outcome) => outcome.status === "loser")).toHaveLength(1);
+    const outcomeSummary = JSON.stringify(outcomes);
+    expect(
+      outcomes.filter((outcome) => outcome.status === "winner"),
+      outcomeSummary,
+    ).toHaveLength(1);
+    expect(
+      outcomes.filter((outcome) => outcome.status === "loser"),
+      outcomeSummary,
+    ).toHaveLength(1);
     const spawnLog = await readFile(path.join(barrier, "adapter-spawns.jsonl"), "utf8");
     const spawns = spawnLog
       .trim()
