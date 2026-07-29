@@ -1,0 +1,147 @@
+{
+  "task_status": "DONE",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T08:31:32.539Z",
+    "updated_by": "CODER",
+    "note": "Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729083132539-2830e4bbe106c1ed.json",
+      "sha256": "sha256:15c00e4d89af9968d45117bcd78f0efa1c0fc9e98d622746010e5c93ae812146"
+    }
+  ],
+  "runner_history": [
+    {
+      "source": "verified_runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json",
+      "task_id": "202607290822-33E0ZM",
+      "status": "running",
+      "cursor": {
+        "episode": 4,
+        "phase": "ready",
+        "operation_key": null
+      },
+      "usage": {
+        "episodes": 4,
+        "agent_runs": 2,
+        "input_tokens": 395279,
+        "output_tokens": 4156,
+        "total_tokens": 399435,
+        "wall_time_ms": 112178,
+        "changed_files": 1,
+        "diff_lines": 0,
+        "no_progress_episodes": 0
+      },
+      "digest": "sha256:e3eb98cb3079115d65bd5d6467fd67f818b8a81d3206617620297a31107ef433"
+    }
+  ],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/evaluator-result.json",
+      "sha256": "sha256:849413a327810c21fde855a9020f95615c9de450025ea6190b754ee13d241754"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/quality-report.json",
+      "sha256": "sha256:fd5db3c45346da5752aa4cf5d3f31c915a99502526830ffe8fc1ef5c01ea054f"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/declared-checks.json",
+      "sha256": "sha256:1ae239976de1a6fa2708c4c075f74fe0f4c71d239780e555cbd73e6804e18e92"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json",
+      "sha256": "sha256:fe79ff3b3b85762a33ed73a43eb088815beabdbf8b4a8a645d17737b2faaae7e"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json",
+      "sha256": "sha256:e269c5106710cacef3c01cfaca3195b544e96019ec43668714e6157c4867c840"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/verification/20260729082318886-44a79e7f18a6a0ec.json",
+      "sha256": "sha256:a09e590fac81b4870ace78428c3eafc8f9fdcd07441d796d5516fb01b551b8df"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/runner/tasks/202607290822-33E0ZM/runs/2026-07-29T08-22-19-063Z/execution-receipt.json",
+      "sha256": "sha256:1a600ac463ddd769741c206ce07c9df55e4466adb2aeb3412a0af2443d2e0adf"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json",
+      "sha256": "sha256:2030ad844d8e63dd952761af7b2ec5574dcef484e97114db39bc41f9f586492e"
+    }
+  ],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check 61331df98c8b3b6ea8ace0735f51099fd579eb3b..24629b5b2a89758a7047fe21e59d9b835b316574",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB 61331df98c8b3b6ea8ace0735f51099fd579eb3b..24629b5b2a89758a7047fe21e59d9b835b316574",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\tdocs/rf10-authorized-golden-metrics-live-proof.md"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": [
+          "?? .agentplane/tasks/202607290822-33E0ZM/README.md",
+          "?? .agentplane/tasks/202607290822-33E0ZM/blueprint/resolved-snapshot.json"
+        ]
+      }
+    ],
+    "execution_base_commit": "61331df98c8b3b6ea8ace0735f51099fd579eb3b",
+    "implementation_commit": "24629b5b2a89758a7047fe21e59d9b835b316574",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202607290822-33E0ZM/README.md",
+        "?? .agentplane/tasks/202607290822-33E0ZM/blueprint/resolved-snapshot.json"
+      ],
+      "classification": [
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202607290822-33E0ZM/README.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202607290822-33E0ZM/blueprint/resolved-snapshot.json"
+        }
+      ],
+      "final": [
+        "?? .agentplane/tasks/202607290822-33E0ZM/README.md",
+        "?? .agentplane/tasks/202607290822-33E0ZM/blueprint/resolved-snapshot.json"
+      ],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": [
+        "?? .agentplane/tasks/202607290822-33E0ZM/README.md",
+        "?? .agentplane/tasks/202607290822-33E0ZM/blueprint/resolved-snapshot.json"
+      ]
+    },
+    "schema_version": 1,
+    "task_id": "202607290822-33E0ZM",
+    "source": "verified_runtime_evidence",
+    "source_path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json"
+  }
+}
