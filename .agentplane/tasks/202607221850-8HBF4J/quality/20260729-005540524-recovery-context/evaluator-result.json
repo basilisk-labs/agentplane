@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The supervisor remains the sole coordinator of mechanical phases; the new rework module only constructs and persists the bounded CURATOR semantic work order.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-005540524-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Diagnostics now depend on explicit read-only journal exports, and all production and test consumers import the diagnostics module directly.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-005540524-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-3",
+      "severity": "medium",
+      "summary": "Both prior hotspot files are below the hard 600-line limit, and focused plus full verification passed without an allowlist exception.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-005540524-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
