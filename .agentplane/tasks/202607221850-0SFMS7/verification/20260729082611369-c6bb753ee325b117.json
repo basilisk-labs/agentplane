@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:c6bb753ee325b117bf77e2c50a258d2c7b34ccca694a4c91861ff981f6e3d863",
+  "implementation_sha": "e872b663f1ab7c96c3660f9de15169ae12b901f5",
+  "kind": "task_verification_record",
+  "note": "Verified: direct golden-metrics evidence, focused suites, and the full contract are recorded for evaluator review.",
+  "recorded_at": "2026-07-29T08:26:11.369Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the approved direct golden task. Expected: EXECUTOR performs zero AgentPlane lifecycle calls; supervisor starts, observes, evaluates, verifies, and finalizes.\n2. Change route state after every operation fixture. Expected: the supervisor recomputes from fresh state and never executes a stale next step.\n3. Exercise approval required, missing knowledge, evaluator rework, out-of-scope write, and adapter crash. Expected: bounded typed stops/retries with no synthesized semantic summary.\n4. Compare baseline metrics. Expected: lifecycle/tool/duplicate-context cost decreases without lower verified success or safety.\n5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac",
+  "task_id": "202607221850-0SFMS7",
+  "verification_command": "agentplane verify 202607221850-0SFMS7 --ok --by CODER",
+  "verifier": "CODER"
+}

@@ -1,14 +1,14 @@
-Command: `bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-runtime-evidence.test.ts src/commands/shared/quality-review-target.test.ts`
+Command: `bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-runtime-evidence.test.ts src/commands/shared/quality-review-target.test.ts src/commands/task/direct-task-supervision-benchmark.test.ts src/commands/task/direct-task-supervision-golden-metrics.test.ts src/commands/task/direct-task-supervisor.test.ts`
 Result: pass
-Evidence: 13 tests passed, including the lifecycle-descendant verification and runtime-evidence regression.
-Scope: evaluator evidence freezing across lifecycle-only task commits.
+Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+Scope: evaluator evidence freezing and direct golden-metrics persistence.
 
 Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
 Result: pass
-Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed on `49687443f2694625e85f1fc83a085475ea230dcc`.
-Scope: RF-10a evaluator evidence-selection repair.
+Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+Scope: RF-10a direct supervision and evaluator evidence-selection repair on `e872b663f`.
 
-Command: `node packages/agentplane/bin/agentplane.js task run 202607290723-668C3K --sandbox danger-full-access --allow-danger-full-access --json`
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290822-33E0ZM --allow-danger-full-access`
 Result: pass
-Evidence: .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/runner/tasks/202607290723-668C3K/runs/2026-07-29T07-23-56-222Z/execution-receipt.json | .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/supervisor/episodes/202607290723-668C3K/journal.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/declared-checks.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/verification/20260729072531877-b6924115be67f224.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/quality-report.json
-Scope: final direct golden path: EXECUTOR commit, CLI verification, read-only EVALUATOR pass, and CLI finish.
+Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/runner/tasks/202607290822-33E0ZM/runs/2026-07-29T08-22-19-063Z/execution-receipt.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/declared-checks.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/verification/20260729082318886-44a79e7f18a6a0ec.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/quality-report.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
+Scope: authorized direct golden path: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, and observed comparison against the frozen baseline.
