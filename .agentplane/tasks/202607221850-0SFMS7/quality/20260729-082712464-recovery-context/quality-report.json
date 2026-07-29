@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T08:28:16.805Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "e872b663f1ab7c96c3660f9de15169ae12b901f5",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "Замороженные доказательства по-прежнему не подтверждают требуемое сравнение метрик финального golden path с базовой линией 0.6.24. observed-checks содержит пустые runtime_evidence, runner_history и verification_records, а direct_supervision равен null; добавленный итоговый артефакт фиксирует токены, длительность и число эпизодов, но не lifecycle_calls, tool_calls, duplicate-context и результат сравнения с базовой линией."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-082712464-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-082712464-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md"
+  ],
+  "missing_tests": [
+    "Запустить финальный direct golden path и проверить, что его замороженный артефакт содержит наблюдаемые lifecycle_calls, tool_calls и duplicate_executor_context_bytes, базовую линию 0.6.24, результат сравнения по каждому измерению, verified success и нулевую дельту lifecycle-событий EXECUTOR."
+  ],
+  "hidden_assumptions": [
+    "Числа сравнения, записанные текстом в README, относятся к тому же финальному запуску, хотя frozen observed-checks не обнаруживает его runtime evidence, а итоговый JSON-артефакт не содержит этих чисел или базовой линии.",
+    "Тесты компаратора с синтетическими candidate-значениями считаются эквивалентом наблюдаемого сравнения метрик реального golden path."
+  ],
+  "residual_risks": [
+    "Следующему исполнителю нужно пересоздать финальный golden-path evidence из фактического supervisor result/journal так, чтобы замороженный набор явно содержал три cost-метрики, базовую линию 0.6.24, результаты сравнений, verified success и executor_lifecycle_event_delta=0; затем повторно сформировать observed-checks и evaluator work order."
+  ]
+}
