@@ -27,7 +27,10 @@ Repair the recovery-context evaluator prompt contract so evaluator findings cite
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/evaluators/recovery-context.md                       | 5 +++--
+ packages/agentplane/assets/evaluators/recovery-context.md        | 5 +++--
+ .../src/commands/evaluator/evaluator-episode.calibration.test.ts | 9 +++++++++
+ 3 files changed, 15 insertions(+), 4 deletions(-)
 ```
 
 </details>

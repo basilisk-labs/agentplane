@@ -1,0 +1,4 @@
+ .agentplane/evaluators/recovery-context.md                       | 5 +++--
+ packages/agentplane/assets/evaluators/recovery-context.md        | 5 +++--
+ .../src/commands/evaluator/evaluator-episode.calibration.test.ts | 9 +++++++++
+ 3 files changed, 15 insertions(+), 4 deletions(-)
