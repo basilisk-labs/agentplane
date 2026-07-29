@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "severity": "low",
+      "summary": "The implementation satisfies the approved direct-supervision contract, including the finalized live path, fresh-route enforcement, typed negative stops, scope control, bounded retries, evaluator handling, and reduced orchestration cost.",
+      "broken_invariant": "None; the reviewed implementation and frozen verification evidence satisfy the relevant recovery, concurrency, lifecycle-ownership, safety, and verification invariants.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-072828555-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b031690b7290945e0ecb2fe0e05a8a542f59193885bd492acd15010d46db311e"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-072828555-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:1869f3e063a60bec28a77819e9d476974aeb80c28478820580ff9524e356dc6f",
+          "section": "direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729072758505-c4a1bf6fa09612be.json",
+          "sha256": "sha256:4d46360b62669ea8ec2486006ca26fc1c80214935fcd8cff90f23f69e911593f"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/supervisor/episodes/202607290723-668C3K/journal.json",
+          "sha256": "sha256:51aabdfff1fb38fd505ab948cf494cd6f4792b843e297ba0e9f0166f081ebce5"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/runner/tasks/202607290723-668C3K/runs/2026-07-29T07-23-56-222Z/execution-receipt.json",
+          "sha256": "sha256:2f5d029315de8a04c49e5107db5e3555ebbf7e11b4438b1d77eb3d5762c77631"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

@@ -1,0 +1,143 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T07:27:58.505Z",
+    "updated_by": "TESTER",
+    "note": "RF-10a final live golden path, frozen runtime evidence, and full repository gates passed on cb23e156a8c6."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729072758505-c4a1bf6fa09612be.json",
+      "sha256": "sha256:4d46360b62669ea8ec2486006ca26fc1c80214935fcd8cff90f23f69e911593f"
+    }
+  ],
+  "runner_history": [
+    {
+      "source": "verified_runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/supervisor/episodes/202607290723-668C3K/journal.json",
+      "task_id": "202607290723-668C3K",
+      "status": "running",
+      "cursor": {
+        "episode": 4,
+        "phase": "ready",
+        "operation_key": null
+      },
+      "usage": {
+        "episodes": 4,
+        "agent_runs": 2,
+        "input_tokens": 458876,
+        "output_tokens": 5062,
+        "total_tokens": 463938,
+        "wall_time_ms": 153339,
+        "changed_files": 1,
+        "diff_lines": 0,
+        "no_progress_episodes": 0
+      },
+      "digest": "sha256:f3e5701d755bf01e6d9effdadbd0b45c45959ec59cb972229fd1117c0c018911"
+    }
+  ],
+  "runtime_evidence": [
+    {
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/evaluator-result.json",
+      "sha256": "sha256:8f622d6527bae919362d146b4024eb6b53dab8afdfaa5ca62b1ab3e2c1b8eb3e"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/quality-report.json",
+      "sha256": "sha256:694690431924e4140c3e201c83513b89835ce309732b234f2c96376b0d25e6df"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/declared-checks.json",
+      "sha256": "sha256:2365a132631081e683458d5043f37c5b31185a8cf695b16f6082d0b990ceb96b"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/implementation-evidence.json",
+      "sha256": "sha256:db543c6ae2e0a31a9766055345a5a7367f7c2701278a33b3f4207385608181f5"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/verification/20260729072531877-b6924115be67f224.json",
+      "sha256": "sha256:4f070e9c514fc31e905f4e680e231a06b9c35c2ebcc4921f26f45dbb43380860"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/runner/tasks/202607290723-668C3K/runs/2026-07-29T07-23-56-222Z/execution-receipt.json",
+      "sha256": "sha256:2f5d029315de8a04c49e5107db5e3555ebbf7e11b4438b1d77eb3d5762c77631"
+    },
+    {
+      "path": ".agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/supervisor/episodes/202607290723-668C3K/journal.json",
+      "sha256": "sha256:51aabdfff1fb38fd505ab948cf494cd6f4792b843e297ba0e9f0166f081ebce5"
+    }
+  ],
+  "direct_supervision": {
+    "checks": [
+      {
+        "command": "git diff --check dc97f71fb3d59611f4b2e7389c8f34d74d3cb8ab..2f279a2f4ec32160529519ab4564ba8012d45fd9",
+        "id": "committed-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --cached --check",
+        "id": "staged-diff-check",
+        "result": "pass",
+        "stdout": []
+      },
+      {
+        "command": "git diff --name-status --diff-filter=ACDMRTUXB dc97f71fb3d59611f4b2e7389c8f34d74d3cb8ab..2f279a2f4ec32160529519ab4564ba8012d45fd9",
+        "id": "commit-paths",
+        "result": "pass",
+        "stdout": [
+          "A\tdocs/rf10-final-live-proof.md"
+        ]
+      },
+      {
+        "command": "git status --short --untracked-files=all",
+        "id": "final-repository-status",
+        "result": "pass",
+        "stdout": [
+          "?? .agentplane/tasks/202607290723-668C3K/README.md",
+          "?? .agentplane/tasks/202607290723-668C3K/blueprint/resolved-snapshot.json"
+        ]
+      }
+    ],
+    "execution_base_commit": "dc97f71fb3d59611f4b2e7389c8f34d74d3cb8ab",
+    "implementation_commit": "2f279a2f4ec32160529519ab4564ba8012d45fd9",
+    "kind": "direct_task_implementation_evidence",
+    "repository_status": {
+      "baseline": [
+        "?? .agentplane/tasks/202607290723-668C3K/README.md",
+        "?? .agentplane/tasks/202607290723-668C3K/blueprint/resolved-snapshot.json"
+      ],
+      "classification": [
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202607290723-668C3K/README.md"
+        },
+        {
+          "classification": "preexisting_before_execution",
+          "line": "?? .agentplane/tasks/202607290723-668C3K/blueprint/resolved-snapshot.json"
+        }
+      ],
+      "final": [
+        "?? .agentplane/tasks/202607290723-668C3K/README.md",
+        "?? .agentplane/tasks/202607290723-668C3K/blueprint/resolved-snapshot.json"
+      ],
+      "introduced_after_execution_baseline": [],
+      "removed_after_execution_baseline": [],
+      "unchanged_from_execution_baseline": [
+        "?? .agentplane/tasks/202607290723-668C3K/README.md",
+        "?? .agentplane/tasks/202607290723-668C3K/blueprint/resolved-snapshot.json"
+      ]
+    },
+    "schema_version": 1,
+    "task_id": "202607290723-668C3K",
+    "source": "verified_runtime_evidence",
+    "source_path": ".agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/implementation-evidence.json"
+  }
+}
