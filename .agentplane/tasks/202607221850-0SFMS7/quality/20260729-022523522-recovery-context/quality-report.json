@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T02:26:30.649Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "8bfdaa6b53fddac810941a5956908782893af5e9",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "The supervisor reports the task as finalized without executing the task finish lifecycle operation.",
+    "A passing evaluator verdict is converted into formal verification without evidence that the declared checks ran.",
+    "The frozen evidence does not demonstrate the required golden-path metrics comparison or concurrency-sensitive stale-route behavior."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "An end-to-end direct golden-path test proving that a passing evaluator is followed by declared checks, recorded verification, the real task finish lifecycle transition, and a terminal route.",
+    "A failure-path test proving that any failed or absent declared check prevents verification and finalization.",
+    "A concurrency/stale-state test that mutates route state between each formal post-operation and proves no stale verify or finish operation executes.",
+    "A baseline-metrics check comparing lifecycle calls, tool calls, duplicate context, verified success, and safety against version 0.6.24.",
+    "An out-of-scope write test for the new supervisor path, as explicitly required by the task Verify Steps."
+  ],
+  "hidden_assumptions": [
+    "An independent evaluator pass is assumed to substitute for execution of the task's declared verification commands.",
+    "Writing a durable journal entry named finalize is assumed to be equivalent to completing the task lifecycle.",
+    "Two pre-operation iterations are assumed sufficient for every valid direct route without evidence covering route variation or retries.",
+    "Fresh route recomputation is assumed to prevent concurrency races even though no frozen check demonstrates drift between post-operations."
+  ],
+  "residual_risks": [
+    "Replace the no-op finalize journal action with the actual CLI-owned finish transition, gate verification on recorded results for every declared check or approved skips, and add end-to-end evidence for stale-route concurrency, required negative cases, and the 0.6.24 metrics comparison before requesting reevaluation."
+  ]
+}

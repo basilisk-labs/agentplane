@@ -12,7 +12,7 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 export async function recordDirectTaskFormalOperation(opts: {
   git_root: string;
   task_id: string;
-  id: "task_verify" | "finalize";
+  id: "task_verify" | "task_finish";
   run: () => Promise<Record<string, unknown>> | Record<string, unknown>;
   decision: () => Promise<TaskRouteDecision>;
 }): Promise<{

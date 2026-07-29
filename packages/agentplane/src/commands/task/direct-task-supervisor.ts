@@ -21,8 +21,12 @@ import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { cmdTaskStartReady } from "./start-ready.js";
-import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
-import { cmdVerifyParsed } from "./verify-record.js";
+import {
+  closeDirectTask,
+  type DirectTaskCloseoutStopCode,
+} from "./direct-task-supervisor-closeout.js";
+import { readDirectTaskHead } from "./direct-task-finalization.js";
+import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
 
 const DIRECT_TASK_SUPERVISION_SCHEMA = "agentplane.direct_task_supervision.v1" as const;
 const DEFAULT_EVALUATOR_ID = "recovery-context";
@@ -45,7 +49,9 @@ type DirectTaskSupervisorStopCode =
   | "evaluator_rework"
   | "evaluator_human_review"
   | "evaluator_blocked"
-  | "evaluator_adapter_crash";
+  | "evaluator_adapter_crash"
+  | "executor_lifecycle_mutation"
+  | DirectTaskCloseoutStopCode;
 
 export type DirectTaskSupervisorStop = {
   code: DirectTaskSupervisorStopCode;
@@ -61,6 +67,12 @@ type JournalProjection = {
   usage: SupervisorExecutionEpisodeJournal["usage"];
   stop: SupervisorExecutionEpisodeJournal["stop"];
   digest: SupervisorExecutionEpisodeJournal["digest"];
+};
+
+type DirectTaskSupervisorMetrics = {
+  provider_episodes: number;
+  executor_lifecycle_event_delta: number | null;
+  declared_checks: number;
 };
 
 export type DirectTaskSupervisorResult = {
@@ -87,6 +99,7 @@ export type DirectTaskSupervisorResult = {
     receipt_path: string;
   } | null;
   journal: JournalProjection | null;
+  metrics: DirectTaskSupervisorMetrics;
 };
 
 export type DirectTaskSupervisorOptions = {
@@ -147,6 +160,7 @@ function stoppedResult(opts: {
   journal?: JournalProjection | null;
   executor?: DirectTaskSupervisorResult["executor"];
   evaluator?: DirectTaskSupervisorResult["evaluator"];
+  metrics?: DirectTaskSupervisorMetrics;
 }): DirectTaskSupervisorResult {
   return {
     schema: DIRECT_TASK_SUPERVISION_SCHEMA,
@@ -159,6 +173,11 @@ function stoppedResult(opts: {
     executor: opts.executor ?? null,
     evaluator: opts.evaluator ?? null,
     journal: opts.journal ?? null,
+    metrics: opts.metrics ?? {
+      provider_episodes: 0,
+      executor_lifecycle_event_delta: null,
+      declared_checks: 0,
+    },
   };
 }
 
@@ -171,50 +190,10 @@ function assertedDirect(decision: TaskRouteDecision): void {
   }
 }
 
-function observedExecutor(
-  lifecycle: TaskRunnerLifecycleResult,
-):
-  | { executor: DirectTaskSupervisorResult["executor"] }
-  | { stop: DirectTaskSupervisorStopCode; reason: string } {
-  if (lifecycle.phase !== "executed" || lifecycle.result?.status !== "success") {
-    return { stop: "runner_failed", reason: "The EXECUTOR runner did not complete successfully." };
-  }
-  const receipt = lifecycle.result.execution_receipt;
-  if (receipt?.verification_state !== "observed_success") {
-    return {
-      stop: "runner_receipt_unobserved",
-      reason: "The EXECUTOR result has no supervisor-observed success receipt.",
-    };
-  }
-  const semantic = lifecycle.result.semantic_result?.value;
-  if (semantic?.kind !== "agent_semantic_result") {
-    return {
-      stop: "executor_result_missing",
-      reason: "The EXECUTOR result has no current typed semantic result.",
-    };
-  }
-  if (semantic.status === "needs_context") {
-    return {
-      stop: "missing_knowledge",
-      reason: "The EXECUTOR requested bounded additional context.",
-    };
-  }
-  if (semantic.status === "blocked") {
-    return { stop: "executor_blocked", reason: "The EXECUTOR returned a typed blocked result." };
-  }
-  if (semantic.status === "failed") {
-    return {
-      stop: "executor_semantic_failed",
-      reason: "The EXECUTOR returned a typed semantic failure.",
-    };
-  }
-  return {
-    executor: {
-      run_id: lifecycle.invocation.run_id,
-      receipt,
-      semantic_status: "completed",
-    },
-  };
+function taskEventCount(
+  task: Pick<Awaited<ReturnType<typeof loadTaskFromContext>>, "events">,
+): number {
+  return task.events?.length ?? 0;
 }
 
 async function executeDirectOperation(opts: {
@@ -294,6 +273,9 @@ export async function superviseDirectTaskRun(
   let current = await decision();
   assertedDirect(current);
   let journal: JournalProjection | null = null;
+  let providerEpisodes = 0;
+  let executorLifecycleEventDelta: number | null = null;
+  let declaredChecks = 0;
 
   for (let operations = 0; operations < 2; operations += 1) {
     const step = current.workflowStep;
@@ -315,6 +297,12 @@ export async function superviseDirectTaskRun(
         },
       });
     }
+    const executionBaseCommit =
+      operation.id === "runner.follow" ? await readDirectTaskHead(input.ctx.cwd) : null;
+    const executorEventsBefore =
+      operation.id === "runner.follow"
+        ? taskEventCount(await loadTaskFromContext({ ctx: input.command, taskId: input.task_id }))
+        : null;
     let persisted: Awaited<ReturnType<typeof supervisePersistedWorkflowEpisode>>;
     try {
       persisted = await supervisePersistedWorkflowEpisode({
@@ -389,7 +377,7 @@ export async function superviseDirectTaskRun(
         },
       });
     }
-    const observed = observedExecutor(lifecycle);
+    const observed = observeDirectExecutor(lifecycle);
     if ("stop" in observed) {
       return stoppedResult({
         decision: current,
@@ -397,6 +385,30 @@ export async function superviseDirectTaskRun(
         stop: {
           code: observed.stop,
           reason: observed.reason,
+          route_step_id: current.workflowStep.id,
+          operation_id: operation.id,
+        },
+      });
+    }
+
+    providerEpisodes += 1;
+    const task = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
+    executorLifecycleEventDelta =
+      taskEventCount(task) - (executorEventsBefore ?? taskEventCount(task));
+    if (executorLifecycleEventDelta !== 0) {
+      return stoppedResult({
+        decision: current,
+        journal,
+        executor: observed.executor,
+        metrics: {
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+        },
+        stop: {
+          code: "executor_lifecycle_mutation",
+          reason:
+            "The EXECUTOR changed persisted task lifecycle events; direct lifecycle ownership belongs to the CLI.",
           route_step_id: current.workflowStep.id,
           operation_id: operation.id,
         },
@@ -414,7 +426,6 @@ export async function superviseDirectTaskRun(
         message: `Direct task supervision requires evaluator ${DEFAULT_EVALUATOR_ID}.`,
       });
     }
-    const task = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
     let evaluatorExecution: Awaited<ReturnType<typeof executeEvaluatorSupervisorEpisode>>;
     try {
       evaluatorExecution = await executeEvaluatorSupervisorEpisode({
@@ -476,6 +487,7 @@ export async function superviseDirectTaskRun(
         path.join(path.dirname(evaluatorExecution.result_path), "evaluator-episode.json"),
       ),
     } as const;
+    providerEpisodes += 1;
     if (evaluatorExecution.result.verdict !== "pass") {
       const code: DirectTaskSupervisorStopCode =
         evaluatorExecution.result.verdict === "rework"
@@ -488,6 +500,11 @@ export async function superviseDirectTaskRun(
         journal,
         executor: observed.executor,
         evaluator: evaluatorResult,
+        metrics: {
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+        },
         stop: {
           code,
           reason: `EVALUATOR returned ${evaluatorExecution.result.verdict}.`,
@@ -497,56 +514,48 @@ export async function superviseDirectTaskRun(
       });
     }
 
-    const verified = await recordDirectTaskFormalOperation({
-      git_root: input.command.resolvedProject.gitRoot,
+    const closeout = await closeDirectTask({
+      ctx: input.ctx,
+      command: input.command,
       task_id: input.task_id,
-      id: "task_verify",
+      task,
+      evaluator: evaluatorResult,
       decision,
-      run: async () => {
-        await cmdVerifyParsed({
-          ctx: input.command,
-          cwd: input.ctx.cwd,
-          rootOverride: input.ctx.rootOverride,
-          taskId: input.task_id,
-          state: "ok",
-          by: "SUPERVISOR",
-          note: "Verified: independent EVALUATOR pass is recorded in the task quality artifacts.",
-          details: [
-            "EvaluatorEvidence:",
-            `- evaluator: ${evaluatorResult.evaluator_id}`,
-            `- result: ${evaluatorResult.result_path}`,
-            `- report: ${evaluatorResult.report_path}`,
-            `- receipt: ${evaluatorResult.receipt_path}`,
-          ].join("\n"),
-          localOnly: false,
-          repoFixable: false,
-          incidentTags: [],
-          incidentMatch: [],
-          quiet: true,
-        });
-        return { verification: "ok", evaluator_result: evaluatorResult.result_path };
-      },
+      execution_base_commit: executionBaseCommit,
+      journal: { journal: evaluatorJournal, journal_path: evaluatorExecution.store.path },
     });
-    journal = journalProjection(verified.journal, verified.journal_path);
-    const finalized = await recordDirectTaskFormalOperation({
-      git_root: input.command.resolvedProject.gitRoot,
-      task_id: input.task_id,
-      id: "finalize",
-      decision,
-      run: () => ({ finalized: true }),
-    });
-    journal = journalProjection(finalized.journal, finalized.journal_path);
+    declaredChecks = closeout.declared_checks;
+    journal = journalProjection(closeout.journal, closeout.journal_path);
+    if (closeout.status === "stopped") {
+      return stoppedResult({
+        decision: closeout.decision,
+        journal,
+        executor: observed.executor,
+        evaluator: evaluatorResult,
+        metrics: {
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+        },
+        stop: closeout.stop,
+      });
+    }
     return {
       schema: DIRECT_TASK_SUPERVISION_SCHEMA,
       task_id: input.task_id,
       workflow_mode: "direct",
       status: "finalized",
       phase: "finalized",
-      route: { step_id: finalized.decision.workflowStep.id, code: routeCode(finalized.decision) },
+      route: { step_id: closeout.decision.workflowStep.id, code: routeCode(closeout.decision) },
       stop: null,
       executor: observed.executor,
       evaluator: evaluatorResult,
       journal,
+      metrics: {
+        provider_episodes: providerEpisodes,
+        executor_lifecycle_event_delta: executorLifecycleEventDelta,
+        declared_checks: declaredChecks,
+      },
     };
   }
   return stoppedResult({

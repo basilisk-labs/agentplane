@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The supervisor reports the task as finalized without executing the task finish lifecycle operation.",
+      "broken_invariant": "The approved contract requires safe post-operations through actual finalization, but the finalize operation only records a journal result and returns status \"finalized\" without invoking the task finish command or proving a terminal route.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b8d39974a8f6e952341972db9559256c783389e1d87ed8771b746ff594889401",
+          "section": "direct-task-supervisor.ts finalize operation"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b4d32d6e06013ae6d1dfcf25d14485e52873b95e2887926d2d46b5db0c9c71e3",
+          "section": "Plan and Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "A passing evaluator verdict is converted into formal verification without evidence that the declared checks ran.",
+      "broken_invariant": "All declared Verify Steps must execute or have approved, risk-documented skips before verification is recorded as ok; the implementation records verification solely from evaluator artifacts, while frozen observed checks contain no verification records or runner history.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b8d39974a8f6e952341972db9559256c783389e1d87ed8771b746ff594889401",
+          "section": "direct-task-supervisor.ts task_verify operation"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b61147ba0daf81f84257e8dd1ca03640421e8a585023c877046ed72959352295",
+          "section": "verification_records and runner_history"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Minimum checks and Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "medium",
+      "summary": "The frozen evidence does not demonstrate the required golden-path metrics comparison or concurrency-sensitive stale-route behavior.",
+      "broken_invariant": "Pass requires coverage of positive, negative, and concurrency-sensitive paths relevant to the task, including route recomputation after every operation and comparison with the 0.6.24 baseline; the supplied checks evidence is empty and the patch contains no demonstrated baseline measurement result.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b4d32d6e06013ae6d1dfcf25d14485e52873b95e2887926d2d46b5db0c9c71e3",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b61147ba0daf81f84257e8dd1ca03640421e8a585023c877046ed72959352295",
+          "section": "declared_checks, verification_records, and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-022523522-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b8d39974a8f6e952341972db9559256c783389e1d87ed8771b746ff594889401",
+          "section": "added direct supervision tests"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An end-to-end direct golden-path test proving that a passing evaluator is followed by declared checks, recorded verification, the real task finish lifecycle transition, and a terminal route.",
+    "A failure-path test proving that any failed or absent declared check prevents verification and finalization.",
+    "A concurrency/stale-state test that mutates route state between each formal post-operation and proves no stale verify or finish operation executes.",
+    "A baseline-metrics check comparing lifecycle calls, tool calls, duplicate context, verified success, and safety against version 0.6.24.",
+    "An out-of-scope write test for the new supervisor path, as explicitly required by the task Verify Steps."
+  ],
+  "hidden_assumptions": [
+    "An independent evaluator pass is assumed to substitute for execution of the task's declared verification commands.",
+    "Writing a durable journal entry named finalize is assumed to be equivalent to completing the task lifecycle.",
+    "Two pre-operation iterations are assumed sufficient for every valid direct route without evidence covering route variation or retries.",
+    "Fresh route recomputation is assumed to prevent concurrency races even though no frozen check demonstrates drift between post-operations."
+  ],
+  "recovery_context": "Replace the no-op finalize journal action with the actual CLI-owned finish transition, gate verification on recorded results for every declared check or approved skips, and add end-to-end evidence for stale-route concurrency, required negative cases, and the 0.6.24 metrics comparison before requesting reevaluation."
+}
