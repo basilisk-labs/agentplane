@@ -13,7 +13,7 @@ Created: 2026-07-29T14:50:37.577Z
 ## Verification
 
 - State: ok
-- Note: Freeze command-level evidence for the constrained-refspec integration repair at semantic SHA c02ee8dc.
+- Note: Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

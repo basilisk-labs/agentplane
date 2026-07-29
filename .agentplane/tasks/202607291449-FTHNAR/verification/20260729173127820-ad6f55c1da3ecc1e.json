@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:ad6f55c1da3ecc1e9d231490a3358788ca9e70b2f2275e73c5e525da2a0a5078",
+  "implementation_sha": "83a3d68ac4ce17b4f121753be9fea0adac066a56",
+  "kind": "task_verification_record",
+  "note": "Rework: separate semantic EVALUATOR evidence from post-review CLI-owned provider gates; the prior contract incorrectly required publication, queue, and hosted CI before the evaluator could permit publication.",
+  "recorded_at": "2026-07-29T17:31:27.820Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. 7. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned. 8. From a clean base checkout, run agentplane integrate queue enqueue 202607291449-FTHNAR --branch task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g. Expected: the queue accepts the published head under the constrained refspec. 9. Wait for the hosted matrix to settle. Expected: no failing required check. 10. Keep superseded PR #4673 closed without deleting its remote branch. Expected: duplicate traceability remains preserved while #4672 is the only merge target.",
+  "scope_digest": "sha256:e1c9d5e8f8cbd66f1db536d9d156da5e024488148b63b5d102c0bb2ff216d5fb",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --rework --by TESTER",
+  "verifier": "TESTER"
+}
