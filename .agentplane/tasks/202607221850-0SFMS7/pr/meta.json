@@ -2,9 +2,9 @@
   "base": "main",
   "branch": "task/202607221850-0SFMS7/supervise-direct-task-execution-end-to-end",
   "created_at": "2026-07-29T01:35:45.453Z",
-  "diffstat_sha256": "sha256:15e1d3c98052a5e903bc9fbd0b6aa00c14819326ff9ef6fe36a0d5fc7fa2f4a2",
-  "last_verified_at": "2026-07-29T08:54:23.860Z",
-  "last_verified_diffstat_sha256": "sha256:15e1d3c98052a5e903bc9fbd0b6aa00c14819326ff9ef6fe36a0d5fc7fa2f4a2",
+  "diffstat_sha256": "sha256:c7de02b3b344b2fa1740e882355d6c5482eeb0f377a48070357b4e48b5a8a1e9",
+  "last_verified_at": "2026-07-29T09:08:32.473Z",
+  "last_verified_diffstat_sha256": "sha256:c7de02b3b344b2fa1740e882355d6c5482eeb0f377a48070357b4e48b5a8a1e9",
   "pr_number": 4667,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4667",
   "pre_merge_closure": {
