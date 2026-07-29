@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -26,9 +26,9 @@ plan_approval:
   note: "Approved evidence-only rework: precise dependency, negative-route, policy, and doctor checks."
 verification:
   state: "ok"
-  updated_at: "2026-07-29T18:16:47.199Z"
+  updated_at: "2026-07-29T18:47:29.882Z"
   updated_by: "TESTER"
-  note: "Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220."
+  note: "Dependency-present, dependency-blocked, policy, and doctor evidence passes after provider branch update at implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1."
   attempts: 0
 quality_review:
   state: "blocked"
@@ -118,8 +118,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T18:47:29.882Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Dependency-present, dependency-blocked, policy, and doctor evidence passes after provider branch update at implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1."
 doc_version: 3
-doc_updated_at: "2026-07-29T18:25:13.882Z"
+doc_updated_at: "2026-07-29T18:47:30.685Z"
 doc_updated_by: "CODER"
 description: "Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence."
 sections:
@@ -254,6 +260,56 @@ sections:
     Result: pass
     Evidence: policy routing passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.
     Scope: policy and workflow integrity.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
+    - old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
+    - current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T18:47:29.882Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes after provider branch update at implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T18:25:13.882Z, excerpt_hash=sha256:67971c6d3d364d920acecf7bc427e378cdc073c0392c98dc293a620408099675
+
+    Details:
+
+    Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
+    Result: pass
+    Evidence: depends_on includes 202607291148-1F9GZD at the reviewed branch head.
+    Scope: beta.1 dependency-present requirement.
+
+    Command: node packages/agentplane/bin/agentplane.js task active
+    Result: pass
+    Evidence: 202607221908-MR9EA9 reports deps=missing:202607291148-1F9GZD while the evidence task is incomplete on main.
+    Scope: beta.1 dependency-blocked requirement.
+
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK.
+    Scope: task policy contract.
+
+    Command: node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: workflow doctor reported no errors; only the established historical missing-commit warnings remain.
+    Scope: workflow health.
 
     BlueprintSnapshotRef:
     - state: current
@@ -427,6 +483,56 @@ Command: node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin
 Result: pass
 Evidence: policy routing passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.
 Scope: policy and workflow integrity.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291428-SNSCBP-gate-beta-1-qualification-on-sha-bound-evaluator/.agentplane/tasks/202607291428-SNSCBP/blueprint/resolved-snapshot.json
+- old_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
+- current_digest: a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291428-SNSCBP
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T18:47:29.882Z — VERIFY — ok
+
+By: TESTER
+
+Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes after provider branch update at implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T18:25:13.882Z, excerpt_hash=sha256:67971c6d3d364d920acecf7bc427e378cdc073c0392c98dc293a620408099675
+
+Details:
+
+Command: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9
+Result: pass
+Evidence: depends_on includes 202607291148-1F9GZD at the reviewed branch head.
+Scope: beta.1 dependency-present requirement.
+
+Command: node packages/agentplane/bin/agentplane.js task active
+Result: pass
+Evidence: 202607221908-MR9EA9 reports deps=missing:202607291148-1F9GZD while the evidence task is incomplete on main.
+Scope: beta.1 dependency-blocked requirement.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: task policy contract.
+
+Command: node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: workflow doctor reported no errors; only the established historical missing-commit warnings remain.
+Scope: workflow health.
 
 BlueprintSnapshotRef:
 - state: current
