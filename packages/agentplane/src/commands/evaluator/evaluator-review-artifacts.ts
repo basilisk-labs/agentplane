@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { isRecord } from "../../shared/guards.js";
+
 export type EvaluatorEvidenceKind =
   | "task_document"
   | "actual_diff"
@@ -72,10 +74,6 @@ export async function writeEvaluatorArtifact(opts: {
 }): Promise<void> {
   await mkdir(path.dirname(opts.filePath), { recursive: true });
   await writeFile(opts.filePath, opts.contents, "utf8");
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
 async function readJsonRecord(filePath: string): Promise<Record<string, unknown> | null> {
