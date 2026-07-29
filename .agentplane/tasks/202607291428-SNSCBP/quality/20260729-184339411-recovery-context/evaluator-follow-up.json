@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607291428-SNSCBP-d294b9a567c47e41f1bc9289",
+  "task_id": "202607291428-SNSCBP",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Re-run and freeze the four declared deterministic checks against evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815, then request a fresh evaluator review without changing semantic scope.",
+  "findings": [
+    {
+      "id": "deterministic-evidence-gap",
+      "summary": "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence for evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815; the task document only summarizes checks performed at earlier SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:e270209a13e49193bb2661e8d52e92ed8f0c16f1a971653435c229ac6b89c7bf",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/README.md",
+          "sha256": "sha256:752442f405290af60366be94953068fc0256774890d6edb455385d29528c42a1",
+          "section": "Verify Steps and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8380346b6864524e413eabef8a304b4244f5fddd8456bc426459ab6422299836",
+          "section": "beta.1 dependency change"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-result.json"
+}

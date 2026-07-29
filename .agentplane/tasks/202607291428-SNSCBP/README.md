@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -31,29 +31,30 @@ verification:
   note: "Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220."
   attempts: 0
 quality_review:
-  state: "pass"
+  state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T18:23:31.523Z"
+  updated_at: "2026-07-29T18:44:47.777Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "6c8a2220d5e5fcb2896a11b13aa57300a3038b43"
+  note: "EVALUATOR returned blocked with 1 typed finding(s)."
+  evaluated_sha: "65e6b7c925b1ef6f504cabd5c154ee400d509815"
   blueprint_digest: "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d"
   evidence_refs:
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607291428-SNSCBP/README.md"
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607291428-SNSCBP/verification/20260729181647199-63f5276082638cce.json"
-    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/dod.docs.md"
     - ".agentplane/policy/security.must.md"
   findings:
-    - "The SHA-bound verification record identifies the exact commands and outcomes but preserves summarized evidence rather than raw command output or runner history."
+    - "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence for evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815; the task document only summarizes checks performed at earlier SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43."
+  recovery_reason: "deterministic_evidence_gap"
 commit:
   hash: "6c8a2220d5e5fcb2896a11b13aa57300a3038b43"
   message: "chore(task): seal beta gate review evidence"

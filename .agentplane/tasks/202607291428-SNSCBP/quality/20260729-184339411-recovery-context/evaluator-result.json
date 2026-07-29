@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "deterministic-evidence-gap",
+      "severity": "high",
+      "summary": "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence for evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815; the task document only summarizes checks performed at earlier SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43.",
+      "broken_invariant": "The approved contract requires deterministic dependency-present, dependency-blocked, policy, and doctor evidence bound to the implementation SHA, followed by a fresh evaluator review; pass requires verification evidence covering the frozen evaluated change.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:e270209a13e49193bb2661e8d52e92ed8f0c16f1a971653435c229ac6b89c7bf",
+          "section": "verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/README.md",
+          "sha256": "sha256:752442f405290af60366be94953068fc0256774890d6edb455385d29528c42a1",
+          "section": "Verify Steps and Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:8380346b6864524e413eabef8a304b4244f5fddd8456bc426459ab6422299836",
+          "section": "beta.1 dependency change"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Freeze successful command-level results for task show 202607221908-MR9EA9, task active, policy routing, and doctor, all explicitly bound to evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815."
+  ],
+  "hidden_assumptions": [
+    "The dependency and route behavior verified at SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43 is assumed to remain valid after the merge producing evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815.",
+    "Summarized verification text in the task README is assumed to substitute for frozen deterministic check records."
+  ],
+  "recovery_context": "Re-run and freeze the four declared deterministic checks against evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815, then request a fresh evaluator review without changing semantic scope.",
+  "recovery_reason": "deterministic_evidence_gap"
+}
