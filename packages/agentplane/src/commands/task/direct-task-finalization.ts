@@ -1,8 +1,10 @@
+import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import { runProcess } from "@agentplaneorg/core/process";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
+import { writeJsonStableIfChanged } from "../../shared/write-if-changed.js";
 import { cmdFinish } from "./finish-command.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -10,6 +12,16 @@ export type DirectImplementationCommit =
   | { status: "ready"; commit: string }
   | { status: "scope_violation"; reason: string; paths: string[] }
   | { status: "missing"; reason: string };
+
+export type DirectRepositoryStatus = {
+  command: "git status --short --untracked-files=all";
+  lines: string[];
+};
+
+export type DirectImplementationEvidence = {
+  artifact_path: string;
+  implementation_commit: string;
+};
 
 export async function readDirectTaskHead(cwd: string): Promise<string | null> {
   const result = await runProcess({
@@ -22,14 +34,32 @@ export async function readDirectTaskHead(cwd: string): Promise<string | null> {
   return commit || null;
 }
 
-function statusPaths(output: string): string[] {
-  return output
+function outputLines(stdout: string): string[] {
+  return stdout
     .split("\n")
-    .filter(Boolean)
-    .flatMap((line) => {
-      const candidate = line.slice(3).trim();
-      return candidate.includes(" -> ") ? candidate.split(" -> ") : [candidate];
-    });
+    .map((line) => line.trimEnd())
+    .filter(Boolean);
+}
+
+async function runGit(opts: { cwd: string; args: string[] }) {
+  return await runProcess({
+    command: "git",
+    args: opts.args,
+    cwd: opts.cwd,
+    reject: false,
+  });
+}
+
+/** Captures the complete working-tree audit used to classify concurrent artifacts. */
+export async function readDirectRepositoryStatus(
+  cwd: string,
+): Promise<DirectRepositoryStatus | null> {
+  const result = await runGit({ cwd, args: ["status", "--short", "--untracked-files=all"] });
+  if (result.exitCode !== 0) return null;
+  return {
+    command: "git status --short --untracked-files=all",
+    lines: outputLines(result.stdout),
+  };
 }
 
 function pathAllowed(pathValue: string, allowedPaths: readonly string[]): boolean {
@@ -37,6 +67,20 @@ function pathAllowed(pathValue: string, allowedPaths: readonly string[]): boolea
     (allowedPath) =>
       allowedPath === "." || pathValue === allowedPath || pathValue.startsWith(`${allowedPath}/`),
   );
+}
+
+function normalizedObservedPaths(paths: readonly string[]): string[] {
+  return [
+    ...new Set(
+      paths.flatMap((entry) => {
+        const value = entry.trim().replaceAll("\\", "/");
+        if (!value || path.posix.isAbsolute(value) || value === ".." || value.startsWith("../")) {
+          return [];
+        }
+        return [value];
+      }),
+    ),
+  ].toSorted();
 }
 
 function normalizedAuthorityPaths(opts: {
@@ -82,6 +126,7 @@ export async function resolveDirectImplementationCommit(opts: {
   task_id: string;
   execution_base_commit: string | null;
   allowed_paths: readonly string[];
+  observed_changed_paths: readonly string[] | null;
 }): Promise<DirectImplementationCommit> {
   if (!opts.execution_base_commit) {
     return {
@@ -89,26 +134,18 @@ export async function resolveDirectImplementationCommit(opts: {
       reason: "The direct supervisor could not observe the pre-execution commit.",
     };
   }
-  const status = await runProcess({
-    command: "git",
-    args: ["status", "--porcelain=v1", "--untracked-files=all"],
-    cwd: opts.cwd,
-    reject: false,
-  });
-  if (status.exitCode !== 0) {
+  if (opts.observed_changed_paths === null) {
     return {
       status: "missing",
-      reason: "The direct supervisor could not inspect the checkout state.",
+      reason: "The direct supervisor did not retain a supervisor-observed EXECUTOR file delta.",
     };
   }
   const taskArtifactPrefix = `${opts.command.config.paths.workflow_dir}/${opts.task_id}/`;
-  const outsideTaskArtifacts = statusPaths(status.stdout).filter(
-    (entry) => !entry.startsWith(taskArtifactPrefix),
-  );
-  if (outsideTaskArtifacts.length > 0) {
+  const observedPaths = normalizedObservedPaths(opts.observed_changed_paths);
+  if (observedPaths.length === 0) {
     return {
       status: "missing",
-      reason: `The EXECUTOR left uncommitted non-task paths: ${outsideTaskArtifacts.join(", ")}.`,
+      reason: "The EXECUTOR produced no supervisor-observed file changes for direct finalization.",
     };
   }
   const commit = await readDirectTaskHead(opts.cwd);
@@ -130,6 +167,21 @@ export async function resolveDirectImplementationCommit(opts: {
       reason: "The direct EXECUTOR work order did not declare an approved writable scope.",
     };
   }
+  const observedNonTaskPaths = observedPaths.filter(
+    (entry) => !entry.startsWith(taskArtifactPrefix),
+  );
+  const observedScopeViolations = observedNonTaskPaths.filter(
+    (entry) => !pathAllowed(entry, approvedPaths),
+  );
+  if (observedScopeViolations.length > 0) {
+    return {
+      status: "scope_violation",
+      paths: observedScopeViolations,
+      reason:
+        "The supervisor-observed EXECUTOR delta escaped its approved scope: " +
+        `${observedScopeViolations.join(", ")}.`,
+    };
+  }
   const changed = await committedPaths({
     cwd: opts.cwd,
     base: opts.execution_base_commit,
@@ -141,6 +193,27 @@ export async function resolveDirectImplementationCommit(opts: {
       reason: "The direct supervisor could not inspect the committed implementation paths.",
     };
   }
+  const observed = new Set(observedPaths);
+  const committedOutsideObservation = changed.filter((entry) => !observed.has(entry));
+  if (committedOutsideObservation.length > 0) {
+    return {
+      status: "scope_violation",
+      paths: committedOutsideObservation,
+      reason:
+        "The EXECUTOR committed paths absent from the supervisor-observed delta: " +
+        `${committedOutsideObservation.join(", ")}.`,
+    };
+  }
+  const committed = new Set(changed);
+  const uncommittedObservedPaths = observedNonTaskPaths.filter((entry) => !committed.has(entry));
+  if (uncommittedObservedPaths.length > 0) {
+    return {
+      status: "missing",
+      reason:
+        "The EXECUTOR left supervisor-observed paths uncommitted: " +
+        `${uncommittedObservedPaths.join(", ")}.`,
+    };
+  }
   const scopeViolations = changed.filter((entry) => !pathAllowed(entry, approvedPaths));
   if (scopeViolations.length > 0) {
     return {
@@ -150,6 +223,100 @@ export async function resolveDirectImplementationCommit(opts: {
     };
   }
   return { status: "ready", commit };
+}
+
+/**
+ * Freezes the CLI-owned Git proof before EVALUATOR review. This separates
+ * process evidence from an EXECUTOR's semantic report and preserves the
+ * complete status audit needed to classify concurrent untracked artifacts.
+ */
+export async function recordDirectImplementationEvidence(opts: {
+  command: CommandContext;
+  cwd: string;
+  task_id: string;
+  execution_base_commit: string;
+  implementation_commit: string;
+  execution_baseline_status: DirectRepositoryStatus | null;
+}): Promise<DirectImplementationEvidence | null> {
+  if (!opts.execution_baseline_status) return null;
+  const [commitDiffCheck, stagedDiffCheck, commitPaths, finalStatus] = await Promise.all([
+    runGit({
+      cwd: opts.cwd,
+      args: ["diff", "--check", `${opts.execution_base_commit}..${opts.implementation_commit}`],
+    }),
+    runGit({ cwd: opts.cwd, args: ["diff", "--cached", "--check"] }),
+    runGit({
+      cwd: opts.cwd,
+      args: [
+        "diff",
+        "--name-status",
+        "--diff-filter=ACDMRTUXB",
+        `${opts.execution_base_commit}..${opts.implementation_commit}`,
+      ],
+    }),
+    readDirectRepositoryStatus(opts.cwd),
+  ]);
+  if (
+    commitDiffCheck.exitCode !== 0 ||
+    stagedDiffCheck.exitCode !== 0 ||
+    commitPaths.exitCode !== 0 ||
+    !finalStatus
+  ) {
+    return null;
+  }
+  const baseline = new Set(opts.execution_baseline_status.lines);
+  const final = new Set(finalStatus.lines);
+  const relative = path.join(
+    opts.command.config.paths.workflow_dir,
+    opts.task_id,
+    "supervision",
+    "implementation-evidence.json",
+  );
+  const absolute = path.join(opts.command.resolvedProject.gitRoot, relative);
+  await mkdir(path.dirname(absolute), { recursive: true });
+  await writeJsonStableIfChanged(absolute, {
+    schema_version: 1,
+    kind: "direct_task_implementation_evidence",
+    task_id: opts.task_id,
+    execution_base_commit: opts.execution_base_commit,
+    implementation_commit: opts.implementation_commit,
+    checks: [
+      {
+        id: "committed-diff-check",
+        command: `git diff --check ${opts.execution_base_commit}..${opts.implementation_commit}`,
+        result: "pass",
+        stdout: outputLines(commitDiffCheck.stdout),
+      },
+      {
+        id: "staged-diff-check",
+        command: "git diff --cached --check",
+        result: "pass",
+        stdout: outputLines(stagedDiffCheck.stdout),
+      },
+      {
+        id: "commit-paths",
+        command: `git diff --name-status --diff-filter=ACDMRTUXB ${opts.execution_base_commit}..${opts.implementation_commit}`,
+        result: "pass",
+        stdout: outputLines(commitPaths.stdout),
+      },
+      {
+        id: "final-repository-status",
+        command: finalStatus.command,
+        result: "pass",
+        stdout: finalStatus.lines,
+      },
+    ],
+    repository_status: {
+      baseline: opts.execution_baseline_status.lines,
+      final: finalStatus.lines,
+      unchanged_from_execution_baseline: finalStatus.lines.filter((line) => baseline.has(line)),
+      introduced_after_execution_baseline: finalStatus.lines.filter((line) => !baseline.has(line)),
+      removed_after_execution_baseline: opts.execution_baseline_status.lines.filter(
+        (line) => !final.has(line),
+      ),
+    },
+  });
+  return { artifact_path: relative, implementation_commit: opts.implementation_commit };
 }
 
 export async function finishDirectTask(opts: {

@@ -1,108 +1,41 @@
-import {
-  advanceSupervisorExecutionEpisodeState,
-  type SupervisorExecutionEpisodeJournal,
-} from "@agentplaneorg/core/schemas";
-import path from "node:path";
+import { advanceSupervisorExecutionEpisodeState } from "@agentplaneorg/core/schemas";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
-import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
 import { CliError } from "../../shared/errors.js";
 import { executeTaskRunnerExecution } from "../../runner/usecases/task-run.js";
 import {
   projectExecutedTaskRunnerLifecycleResult,
   taskRunnerLifecycleExitCode,
-  type TaskRunnerLifecycleResult,
 } from "../../runner/usecases/task-run-lifecycle-result.js";
-import { applyEvaluatorSgrReview } from "../evaluator/evaluator-review-apply.js";
-import { executeEvaluatorSupervisorEpisode } from "../evaluator/evaluator-execute-supervisor.js";
 import { buildTaskRouteDecision } from "../shared/route-decision.js";
 import { supervisePersistedWorkflowEpisode } from "../shared/supervisor-execution-episode.js";
-import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { WorkflowSupervisorOperationResult } from "../shared/workflow-supervisor.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { cmdTaskStartReady } from "./start-ready.js";
-import {
-  closeDirectTask,
-  type DirectTaskCloseoutStopCode,
-} from "./direct-task-supervisor-closeout.js";
-import { readDirectTaskHead } from "./direct-task-finalization.js";
+import { finalizeDirectTask, verifyDirectTask } from "./direct-task-supervisor-closeout.js";
+import { readDirectRepositoryStatus, readDirectTaskHead } from "./direct-task-finalization.js";
+import { runAndApplyDirectTaskEvaluator } from "./direct-task-supervisor-evaluator.js";
+import { prepareDirectImplementationEvidence } from "./direct-task-supervisor-implementation.js";
 import { observeDirectExecutor } from "./direct-task-supervisor-observation.js";
-import { DIRECT_TASK_SUPERVISION_GOLDEN_COST } from "./direct-task-supervision-benchmark.js";
+import {
+  assertedDirect,
+  DIRECT_TASK_SUPERVISION_SCHEMA,
+  journalProjection,
+  routeCode,
+  routeStop,
+  stoppedResult,
+  type DirectTaskSupervisorResult,
+  type DirectTaskSupervisorStopCode,
+  type JournalProjection,
+} from "./direct-task-supervisor-result.js";
+import {
+  directTaskSupervisorMetrics,
+  measureDuplicateExecutorContextBytes,
+} from "./direct-task-supervision-measurement.js";
 
-const DIRECT_TASK_SUPERVISION_SCHEMA = "agentplane.direct_task_supervision.v1" as const;
+export type { DirectTaskSupervisorResult } from "./direct-task-supervisor-result.js";
+
 const DEFAULT_EVALUATOR_ID = "recovery-context";
-
-type DirectTaskSupervisorStopCode =
-  | "approval_required"
-  | "human_input_required"
-  | "wait_required"
-  | "terminal_route"
-  | "unsupported_route_operation"
-  | "route_refresh_failed"
-  | "supervisor_stopped"
-  | "executor_adapter_crash"
-  | "runner_failed"
-  | "runner_receipt_unobserved"
-  | "executor_result_missing"
-  | "executor_blocked"
-  | "missing_knowledge"
-  | "executor_semantic_failed"
-  | "evaluator_rework"
-  | "evaluator_human_review"
-  | "evaluator_blocked"
-  | "evaluator_adapter_crash"
-  | "executor_lifecycle_mutation"
-  | DirectTaskCloseoutStopCode;
-
-type DirectTaskSupervisorStop = {
-  code: DirectTaskSupervisorStopCode;
-  reason: string;
-  route_step_id: string;
-  operation_id: string | null;
-};
-
-type JournalProjection = {
-  path: string;
-  status: SupervisorExecutionEpisodeJournal["status"];
-  cursor: SupervisorExecutionEpisodeJournal["cursor"];
-  usage: SupervisorExecutionEpisodeJournal["usage"];
-  stop: SupervisorExecutionEpisodeJournal["stop"];
-  digest: SupervisorExecutionEpisodeJournal["digest"];
-};
-
-type DirectTaskSupervisorMetrics = {
-  provider_episodes: number;
-  executor_lifecycle_event_delta: number | null;
-  declared_checks: number;
-  golden_cost: typeof DIRECT_TASK_SUPERVISION_GOLDEN_COST;
-};
-
-export type DirectTaskSupervisorResult = {
-  schema: typeof DIRECT_TASK_SUPERVISION_SCHEMA;
-  task_id: string;
-  workflow_mode: "direct";
-  status: "finalized" | "stopped";
-  phase: string;
-  route: {
-    step_id: string;
-    code: string;
-  };
-  stop: DirectTaskSupervisorStop | null;
-  executor: {
-    run_id: string;
-    receipt: NonNullable<NonNullable<TaskRunnerLifecycleResult["result"]>["execution_receipt"]>;
-    semantic_status: "completed";
-  } | null;
-  evaluator: {
-    evaluator_id: string;
-    verdict: "pass" | "rework" | "blocked" | "human_review";
-    result_path: string;
-    report_path: string;
-    receipt_path: string;
-  } | null;
-  journal: JournalProjection | null;
-  metrics: DirectTaskSupervisorMetrics;
-};
 
 export type DirectTaskSupervisorOptions = {
   ctx: CommandCtx;
@@ -117,96 +50,16 @@ export type DirectTaskSupervisorOptions = {
   } | null;
 };
 
-function journalProjection(
-  journal: SupervisorExecutionEpisodeJournal,
-  pathValue: string,
-): JournalProjection {
-  return {
-    path: pathValue,
-    status: journal.status,
-    cursor: journal.cursor,
-    usage: journal.usage,
-    stop: journal.stop,
-    digest: journal.digest,
-  };
-}
-
-function routeCode(decision: TaskRouteDecision): string {
-  return decision.workflowStep.compatibility.code;
-}
-
-function routeStop(decision: TaskRouteDecision): DirectTaskSupervisorStop {
-  const step = decision.workflowStep;
-  const operationId = step.kind === "cli_operation" ? step.operation.id : null;
-  const code: DirectTaskSupervisorStopCode =
-    step.kind === "approval"
-      ? "approval_required"
-      : step.kind === "human_input"
-        ? "human_input_required"
-        : step.kind === "wait"
-          ? "wait_required"
-          : step.kind === "terminal"
-            ? "terminal_route"
-            : "unsupported_route_operation";
-  return {
-    code,
-    reason: step.summary,
-    route_step_id: step.id,
-    operation_id: operationId,
-  };
-}
-
-function stoppedResult(opts: {
-  decision: TaskRouteDecision;
-  stop: DirectTaskSupervisorStop;
-  journal?: JournalProjection | null;
-  executor?: DirectTaskSupervisorResult["executor"];
-  evaluator?: DirectTaskSupervisorResult["evaluator"];
-  metrics?: DirectTaskSupervisorMetrics;
-}): DirectTaskSupervisorResult {
-  return {
-    schema: DIRECT_TASK_SUPERVISION_SCHEMA,
-    task_id: opts.decision.task.id,
-    workflow_mode: "direct",
-    status: "stopped",
-    phase: opts.decision.workflowStep.phase,
-    route: { step_id: opts.decision.workflowStep.id, code: routeCode(opts.decision) },
-    stop: opts.stop,
-    executor: opts.executor ?? null,
-    evaluator: opts.evaluator ?? null,
-    journal: opts.journal ?? null,
-    metrics: opts.metrics ?? directTaskSupervisorMetrics(),
-  };
-}
-
-function directTaskSupervisorMetrics(
-  opts: {
-    provider_episodes?: number;
-    executor_lifecycle_event_delta?: number | null;
-    declared_checks?: number;
-  } = {},
-): DirectTaskSupervisorMetrics {
-  return {
-    provider_episodes: opts.provider_episodes ?? 0,
-    executor_lifecycle_event_delta: opts.executor_lifecycle_event_delta ?? null,
-    declared_checks: opts.declared_checks ?? 0,
-    golden_cost: DIRECT_TASK_SUPERVISION_GOLDEN_COST,
-  };
-}
-
-function assertedDirect(decision: TaskRouteDecision): void {
-  if (decision.workflowMode !== "direct") {
-    throw new CliError({
-      code: "E_USAGE",
-      message: "Direct task supervision is available only when workflow.mode=direct.",
-    });
-  }
-}
-
 function taskEventCount(
   task: Pick<Awaited<ReturnType<typeof loadTaskFromContext>>, "events">,
 ): number {
   return task.events?.length ?? 0;
+}
+
+function evaluatorAdapterFailureClass(error: unknown): string {
+  if (error instanceof CliError) return error.code;
+  if (error instanceof Error) return error.name;
+  return "unknown_error";
 }
 
 async function executeDirectOperation(opts: {
@@ -289,6 +142,9 @@ export async function superviseDirectTaskRun(
   let providerEpisodes = 0;
   let executorLifecycleEventDelta: number | null = null;
   let declaredChecks = 0;
+  let lifecycleCalls = 0;
+  let toolCalls = 0;
+  let duplicateExecutorContextBytes: number | null = null;
 
   for (let operations = 0; operations < 2; operations += 1) {
     const step = current.workflowStep;
@@ -312,6 +168,8 @@ export async function superviseDirectTaskRun(
     }
     const executionBaseCommit =
       operation.id === "runner.follow" ? await readDirectTaskHead(input.ctx.cwd) : null;
+    const executionBaselineStatus =
+      operation.id === "runner.follow" ? await readDirectRepositoryStatus(input.ctx.cwd) : null;
     const executorEventsBefore =
       operation.id === "runner.follow"
         ? taskEventCount(await loadTaskFromContext({ ctx: input.command, taskId: input.task_id }))
@@ -360,6 +218,8 @@ export async function superviseDirectTaskRun(
       });
     }
     current = execution.refreshed_decision;
+    lifecycleCalls += 1;
+    toolCalls += 1;
     if (persisted.journal.status === "stopped") {
       return stoppedResult({
         decision: current,
@@ -390,11 +250,26 @@ export async function superviseDirectTaskRun(
         },
       });
     }
-    const observed = observeDirectExecutor(lifecycle);
+    providerEpisodes += 1;
+    duplicateExecutorContextBytes =
+      typeof lifecycle.invocation.bundle_path === "string"
+        ? await measureDuplicateExecutorContextBytes(lifecycle.invocation.bundle_path)
+        : null;
+    const observed = observeDirectExecutor(lifecycle, {
+      allow_unverified_receipt: input.danger_authority?.danger_full_access_authorized === true,
+    });
     if ("stop" in observed) {
       return stoppedResult({
         decision: current,
         journal,
+        metrics: directTaskSupervisorMetrics({
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
+        }),
         stop: {
           code: observed.stop,
           reason: observed.reason,
@@ -404,7 +279,6 @@ export async function superviseDirectTaskRun(
       });
     }
 
-    providerEpisodes += 1;
     const task = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
     executorLifecycleEventDelta =
       taskEventCount(task) - (executorEventsBefore ?? taskEventCount(task));
@@ -417,6 +291,9 @@ export async function superviseDirectTaskRun(
           provider_episodes: providerEpisodes,
           executor_lifecycle_event_delta: executorLifecycleEventDelta,
           declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
         }),
         stop: {
           code: "executor_lifecycle_mutation",
@@ -428,60 +305,114 @@ export async function superviseDirectTaskRun(
       });
     }
 
-    const evaluators = await loadEvaluatorCatalog({
-      projectRoot: input.command.resolvedProject.gitRoot,
-      includeBuiltin: true,
+    const implementation = await prepareDirectImplementationEvidence({
+      command: input.command,
+      cwd: input.ctx.cwd,
+      task_id: input.task_id,
+      execution_base_commit: executionBaseCommit,
+      execution_baseline_status: executionBaselineStatus,
+      allowed_paths: lifecycle.lifecycle?.work_order_authority?.writable_roots ?? [],
+      observed_changed_paths:
+        lifecycle.result?.evidence?.provenance === "supervisor_observed"
+          ? (lifecycle.result.evidence.changed_paths ?? [])
+          : null,
     });
-    const evaluator = evaluators.find((entry) => entry.id === DEFAULT_EVALUATOR_ID);
-    if (!evaluator) {
-      throw new CliError({
-        code: "E_RUNTIME",
-        message: `Direct task supervision requires evaluator ${DEFAULT_EVALUATOR_ID}.`,
-      });
-    }
-    let evaluatorExecution: Awaited<ReturnType<typeof executeEvaluatorSupervisorEpisode>>;
-    try {
-      evaluatorExecution = await executeEvaluatorSupervisorEpisode({
-        ctx: input.ctx,
-        command: input.command,
-        task,
-        evaluator,
-        task_id: input.task_id,
-        replacement: false,
-      });
-    } catch {
+    if (implementation.status !== "ready") {
       return stoppedResult({
         decision: current,
         journal,
         executor: observed.executor,
+        metrics: directTaskSupervisorMetrics({
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
+        }),
+        stop: {
+          code:
+            implementation.status === "scope_violation"
+              ? "implementation_scope_violation"
+              : "implementation_commit_missing",
+          reason: implementation.reason,
+          route_step_id: current.workflowStep.id,
+          operation_id: null,
+        },
+      });
+    }
+    const verification = await verifyDirectTask({
+      ctx: input.ctx,
+      command: input.command,
+      task_id: input.task_id,
+      task,
+      implementation_evidence: implementation.evidence,
+      decision,
+      on_lifecycle_operation: () => {
+        lifecycleCalls += 1;
+        toolCalls += 1;
+      },
+      journal: { journal: persisted.journal, journal_path: persisted.journal_path },
+    });
+    declaredChecks = verification.declared_checks;
+    journal = journalProjection(verification.journal, verification.journal_path);
+    if (verification.status === "stopped") {
+      return stoppedResult({
+        decision: verification.decision,
+        journal,
+        executor: observed.executor,
+        metrics: directTaskSupervisorMetrics({
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
+        }),
+        stop: verification.stop,
+      });
+    }
+    current = verification.decision;
+    // Formal verification mutates the task record. Prepare the read-only
+    // evaluator from that exact revision so its work order cannot become stale
+    // before the provider is invoked.
+    const evaluatorTask = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
+
+    let evaluatorEpisode: Awaited<ReturnType<typeof runAndApplyDirectTaskEvaluator>>;
+    try {
+      toolCalls += 1;
+      evaluatorEpisode = await runAndApplyDirectTaskEvaluator({
+        ctx: input.ctx,
+        command: input.command,
+        task: evaluatorTask,
+        task_id: input.task_id,
+        evaluator_id: DEFAULT_EVALUATOR_ID,
+      });
+    } catch (error) {
+      return stoppedResult({
+        decision: current,
+        journal,
+        executor: observed.executor,
+        metrics: directTaskSupervisorMetrics({
+          provider_episodes: providerEpisodes,
+          executor_lifecycle_event_delta: executorLifecycleEventDelta,
+          declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
+        }),
         stop: {
           code: "evaluator_adapter_crash",
-          reason: "The read-only EVALUATOR adapter crashed before a typed verdict was applied.",
+          reason:
+            "The read-only EVALUATOR adapter stopped before a typed verdict was applied " +
+            `(${evaluatorAdapterFailureClass(error)}).`,
           route_step_id: current.workflowStep.id,
           operation_id: "runner.follow",
         },
       });
     }
-    const currentTask = await loadTaskFromContext({ ctx: input.command, taskId: input.task_id });
-    const resultRef = path.relative(
-      input.command.resolvedProject.gitRoot,
-      evaluatorExecution.result_path,
-    );
-    const alreadyApplied = currentTask.quality_review?.evidence_refs?.includes(resultRef) ?? false;
-    const applied = alreadyApplied
-      ? {
-          report_path: path.relative(
-            input.command.resolvedProject.gitRoot,
-            evaluatorExecution.report_path,
-          ),
-          result_path: resultRef,
-        }
-      : await applyEvaluatorSgrReview({
-          ctx: input.command,
-          task: currentTask,
-          workOrderPath: evaluatorExecution.work_order_path,
-          result: evaluatorExecution.result,
-        });
+    const evaluatorExecution = evaluatorEpisode.execution;
+    const evaluatorResult = evaluatorEpisode.result;
     current = await decision();
     let evaluatorJournal = advanceSupervisorExecutionEpisodeState({
       journal: evaluatorExecution.journal,
@@ -490,22 +421,12 @@ export async function superviseDirectTaskRun(
     });
     await evaluatorExecution.store.write(evaluatorJournal);
     journal = journalProjection(evaluatorJournal, evaluatorExecution.store.path);
-    const evaluatorResult = {
-      evaluator_id: evaluatorExecution.result.evaluator_id,
-      verdict: evaluatorExecution.result.verdict,
-      result_path: applied.result_path,
-      report_path: applied.report_path,
-      receipt_path: path.relative(
-        input.command.resolvedProject.gitRoot,
-        path.join(path.dirname(evaluatorExecution.result_path), "evaluator-episode.json"),
-      ),
-    } as const;
     providerEpisodes += 1;
-    if (evaluatorExecution.result.verdict !== "pass") {
+    if (evaluatorResult.verdict !== "pass") {
       const code: DirectTaskSupervisorStopCode =
-        evaluatorExecution.result.verdict === "rework"
+        evaluatorResult.verdict === "rework"
           ? "evaluator_rework"
-          : evaluatorExecution.result.verdict === "human_review"
+          : evaluatorResult.verdict === "human_review"
             ? "evaluator_human_review"
             : "evaluator_blocked";
       return stoppedResult({
@@ -517,28 +438,37 @@ export async function superviseDirectTaskRun(
           provider_episodes: providerEpisodes,
           executor_lifecycle_event_delta: executorLifecycleEventDelta,
           declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
         }),
         stop: {
           code,
-          reason: `EVALUATOR returned ${evaluatorExecution.result.verdict}.`,
+          reason: `EVALUATOR returned ${evaluatorResult.verdict}.`,
           route_step_id: current.workflowStep.id,
           operation_id: "runner.follow",
         },
       });
     }
 
-    const closeout = await closeDirectTask({
+    const closeout = await finalizeDirectTask({
       ctx: input.ctx,
       command: input.command,
       task_id: input.task_id,
-      task,
-      evaluator: evaluatorResult,
       decision,
       execution_base_commit: executionBaseCommit,
       allowed_paths: lifecycle.lifecycle?.work_order_authority?.writable_roots ?? [],
+      observed_changed_paths:
+        lifecycle.result?.evidence?.provenance === "supervisor_observed"
+          ? (lifecycle.result.evidence.changed_paths ?? [])
+          : null,
+      on_lifecycle_operation: () => {
+        lifecycleCalls += 1;
+        toolCalls += 1;
+      },
       journal: { journal: evaluatorJournal, journal_path: evaluatorExecution.store.path },
+      declared_checks: declaredChecks,
     });
-    declaredChecks = closeout.declared_checks;
     journal = journalProjection(closeout.journal, closeout.journal_path);
     if (closeout.status === "stopped") {
       return stoppedResult({
@@ -550,6 +480,9 @@ export async function superviseDirectTaskRun(
           provider_episodes: providerEpisodes,
           executor_lifecycle_event_delta: executorLifecycleEventDelta,
           declared_checks: declaredChecks,
+          lifecycle_calls: lifecycleCalls,
+          tool_calls: toolCalls,
+          duplicate_executor_context_bytes: duplicateExecutorContextBytes,
         }),
         stop: closeout.stop,
       });
@@ -569,6 +502,9 @@ export async function superviseDirectTaskRun(
         provider_episodes: providerEpisodes,
         executor_lifecycle_event_delta: executorLifecycleEventDelta,
         declared_checks: declaredChecks,
+        lifecycle_calls: lifecycleCalls,
+        tool_calls: toolCalls,
+        duplicate_executor_context_bytes: duplicateExecutorContextBytes,
       }),
     };
   }

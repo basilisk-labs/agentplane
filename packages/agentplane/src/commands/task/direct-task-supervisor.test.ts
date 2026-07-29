@@ -11,12 +11,16 @@ const mocks = vi.hoisted(() => ({
   loadTask: vi.fn(),
   open: vi.fn(),
   finish: vi.fn(),
+  finalizeDirect: vi.fn(),
   readHead: vi.fn(),
+  readStatus: vi.fn(),
+  recordEvidence: vi.fn(),
   resolveCommit: vi.fn(),
   runChecks: vi.fn(),
   start: vi.fn(),
   supervise: vi.fn(),
   verify: vi.fn(),
+  verifyDirect: vi.fn(),
 }));
 
 vi.mock("@agentplaneorg/core/schemas", async (importOriginal) => ({
@@ -40,8 +44,14 @@ vi.mock("../shared/supervisor-execution-episode.js", () => ({
 vi.mock("../shared/task-backend.js", () => ({ loadTaskFromContext: mocks.loadTask }));
 vi.mock("./direct-task-finalization.js", () => ({
   finishDirectTask: mocks.finish,
+  readDirectRepositoryStatus: mocks.readStatus,
   readDirectTaskHead: mocks.readHead,
+  recordDirectImplementationEvidence: mocks.recordEvidence,
   resolveDirectImplementationCommit: mocks.resolveCommit,
+}));
+vi.mock("./direct-task-supervisor-closeout.js", () => ({
+  finalizeDirectTask: mocks.finalizeDirect,
+  verifyDirectTask: mocks.verifyDirect,
 }));
 vi.mock("./direct-task-verification.js", () => ({
   runDirectTaskVerification: mocks.runChecks,
@@ -109,6 +119,40 @@ function decision(opts: {
 describe("direct task supervisor", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.readStatus.mockResolvedValue({
+      command: "git status --short --untracked-files=all",
+      lines: [],
+    });
+    mocks.recordEvidence.mockResolvedValue({
+      artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
+      implementation_commit: "def456",
+    });
+    mocks.resolveCommit.mockResolvedValue({ status: "ready", commit: "def456" });
+    const completion = decision({
+      id: "task.complete.input",
+      code: "complete_direct",
+      verification: "ok",
+    });
+    mocks.verifyDirect.mockImplementation((opts: { on_lifecycle_operation?: () => void }) => {
+      opts.on_lifecycle_operation?.();
+      return {
+        status: "verified",
+        journal,
+        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+        decision: completion,
+        declared_checks: 1,
+      };
+    });
+    mocks.finalizeDirect.mockImplementation((opts: { on_lifecycle_operation?: () => void }) => {
+      opts.on_lifecycle_operation?.();
+      return {
+        status: "finalized",
+        journal,
+        journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+        decision: decision({ id: "task.done", code: "done", status: "DONE", verification: "ok" }),
+        declared_checks: 1,
+      };
+    });
   });
 
   it("keeps evaluator rework as a typed stop after one started EXECUTOR episode", async () => {
@@ -269,7 +313,69 @@ describe("direct task supervisor", () => {
     });
   });
 
-  it("runs declared checks, records their evidence, and executes the real finish operation", async () => {
+  it("classifies an EVALUATOR adapter failure without exposing its message", async () => {
+    const runner = decision({
+      id: "runner.follow",
+      code: "continue_direct",
+      operation: { id: "runner.follow", params: { mode: "run", taskId: TASK_ID } },
+    });
+    const lifecycle = {
+      phase: "executed",
+      invocation: { run_id: "run-evaluator-crash" },
+      result: {
+        status: "success",
+        execution_receipt: {
+          path: ".agentplane/tasks/run-evaluator-crash/execution-receipt.json",
+          sha256: "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          verification_state: "observed_success",
+          observed_by: "agentplane",
+        },
+        semantic_result: {
+          provenance: "agent_reported",
+          value: { kind: "agent_semantic_result", status: "completed" },
+        },
+      },
+    } as never;
+    mocks.buildDecision.mockResolvedValue(runner);
+    mocks.supervise.mockResolvedValue({
+      journal,
+      journal_path: "/repo/.git/agentplane/supervisor/episodes/journal.json",
+      execution: {
+        executable: true,
+        result: { operation_result: { kind: "runner_lifecycle", value: lifecycle } },
+        refreshed_decision: runner,
+      },
+    });
+    mocks.loadTask.mockResolvedValue({ id: TASK_ID, events: [] });
+    mocks.loadCatalog.mockResolvedValue([{ id: "recovery-context" }]);
+    mocks.executeEvaluator.mockRejectedValue(
+      new Error("provider response contains private detail"),
+    );
+
+    const result = await superviseDirectTaskRun({
+      ctx: { cwd: "/repo", rootOverride: null } as never,
+      command: { resolvedProject: { gitRoot: "/repo" } } as never,
+      task_id: TASK_ID,
+      include_remote: false,
+    });
+
+    expect(result).toMatchObject({
+      status: "stopped",
+      stop: {
+        code: "evaluator_adapter_crash",
+        reason:
+          "The read-only EVALUATOR adapter stopped before a typed verdict was applied (Error).",
+      },
+      metrics: {
+        provider_episodes: 1,
+        executor_lifecycle_event_delta: 0,
+        orchestration: { lifecycle_calls: 2, tool_calls: 3 },
+      },
+    });
+    expect(result.stop?.reason).not.toContain("private detail");
+  });
+
+  it("verifies before evaluation and finalizes only after an EVALUATOR pass", async () => {
     const runner = decision({
       id: "runner.follow",
       code: "continue_direct",
@@ -323,12 +429,19 @@ describe("direct task supervisor", () => {
       },
     });
     mocks.loadCatalog.mockResolvedValue([{ id: "recovery-context" }]);
-    mocks.loadTask.mockResolvedValue({
+    const executorTask = {
       id: TASK_ID,
       quality_review: null,
       verify: ["bun run test:critical"],
       events: [],
-    });
+      revision: 5,
+    };
+    const verifiedTask = { ...executorTask, revision: 6 };
+    mocks.loadTask
+      .mockResolvedValueOnce(executorTask)
+      .mockResolvedValueOnce(verifiedTask)
+      .mockResolvedValueOnce(verifiedTask)
+      .mockResolvedValueOnce(verifiedTask);
     mocks.executeEvaluator.mockResolvedValue({
       result: { evaluator_id: "recovery-context", verdict: "pass" },
       result_path: "/repo/.agentplane/tasks/evaluator-result.json",
@@ -368,34 +481,30 @@ describe("direct task supervisor", () => {
       evaluator: { evaluator_id: "recovery-context", verdict: "pass" },
       stop: null,
     });
-    expect(mocks.verify).toHaveBeenCalledWith(
-      expect.objectContaining({
-        by: "SUPERVISOR",
-        state: "ok",
-      }),
+    expect(mocks.verifyDirect.mock.calls[0]?.[0]).toMatchObject({
+      task: { verify: ["bun run test:critical"] },
+    });
+    expect(mocks.executeEvaluator).toHaveBeenCalledWith(
+      expect.objectContaining({ task: verifiedTask }),
     );
-    const [verifyPayload] = mocks.verify.mock.calls[0] as unknown as [{ details: string }];
-    expect(verifyPayload.details).toContain(".agentplane/tasks/evaluator-result.json");
-    expect(verifyPayload.details).toContain("declared-checks.json");
-    expect(mocks.runChecks).toHaveBeenCalledTimes(1);
-    expect(mocks.resolveCommit).toHaveBeenCalledWith(
+    expect(mocks.resolveCommit.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.executeEvaluator.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY,
+    );
+    expect(mocks.finalizeDirect).toHaveBeenCalledWith(
       expect.objectContaining({
         execution_base_commit: "abc123",
         allowed_paths: ["packages/agentplane/src/commands/task"],
+        declared_checks: 1,
       }),
     );
-    expect(mocks.finish).toHaveBeenCalledWith(
-      expect.objectContaining({ implementation_commit: "def456" }),
-    );
-    expect(mocks.open).toHaveBeenCalledTimes(2);
     expect(result.metrics).toEqual({
       provider_episodes: 2,
       executor_lifecycle_event_delta: 0,
       declared_checks: 1,
-      golden_cost: {
-        lifecycle_calls: 4,
-        tool_calls: 5,
-        duplicate_executor_context_bytes: 0,
+      orchestration: {
+        lifecycle_calls: 3,
+        tool_calls: 4,
+        duplicate_executor_context_bytes: null,
       },
     });
   });
@@ -463,6 +572,19 @@ describe("direct task supervisor", () => {
       checks: [{ command: "bun run bad" }],
       reason: "Declared check failed: bun run bad",
     });
+    mocks.verifyDirect.mockResolvedValue({
+      status: "stopped",
+      journal,
+      journal_path: store.path,
+      decision: runner,
+      declared_checks: 1,
+      stop: {
+        code: "verification_check_failed",
+        reason: "Declared check failed: bun run bad",
+        route_step_id: "runner.follow",
+        operation_id: "runner.follow",
+      },
+    });
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
@@ -475,11 +597,11 @@ describe("direct task supervisor", () => {
       status: "stopped",
       stop: { code: "verification_check_failed" },
     });
-    expect(mocks.verify).not.toHaveBeenCalled();
-    expect(mocks.finish).not.toHaveBeenCalled();
+    expect(mocks.executeEvaluator).not.toHaveBeenCalled();
+    expect(mocks.finalizeDirect).not.toHaveBeenCalled();
   });
 
-  it("does not verify or finish from a route changed after evaluator completion", async () => {
+  it("does not finish from a route changed after evaluator completion", async () => {
     const runner = decision({
       id: "runner.follow",
       code: "continue_direct",
@@ -539,6 +661,19 @@ describe("direct task supervisor", () => {
       report_path: ".agentplane/tasks/evaluator-report.json",
     });
     mocks.advance.mockReturnValue(journal);
+    mocks.finalizeDirect.mockResolvedValue({
+      status: "stopped",
+      journal,
+      journal_path: store.path,
+      decision: approval,
+      declared_checks: 1,
+      stop: {
+        code: "stale_route",
+        reason: "The route changed after the EVALUATOR result.",
+        route_step_id: "approval.required",
+        operation_id: null,
+      },
+    });
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
@@ -548,12 +683,11 @@ describe("direct task supervisor", () => {
     });
 
     expect(result).toMatchObject({ status: "stopped", stop: { code: "stale_route" } });
-    expect(mocks.runChecks).not.toHaveBeenCalled();
-    expect(mocks.verify).not.toHaveBeenCalled();
-    expect(mocks.finish).not.toHaveBeenCalled();
+    expect(mocks.verifyDirect).toHaveBeenCalledTimes(1);
+    expect(mocks.finalizeDirect).toHaveBeenCalledTimes(1);
   });
 
-  it("does not finish from a route changed after formal verification", async () => {
+  it("does not start EVALUATOR when verification changes the route", async () => {
     const runner = decision({
       id: "runner.follow",
       code: "continue_direct",
@@ -625,6 +759,19 @@ describe("direct task supervisor", () => {
       reason: null,
     });
     mocks.verify.mockResolvedValue(0);
+    mocks.verifyDirect.mockResolvedValue({
+      status: "stopped",
+      journal,
+      journal_path: store.path,
+      decision: approval,
+      declared_checks: 0,
+      stop: {
+        code: "stale_route",
+        reason: "The route changed after verification.",
+        route_step_id: "approval.required",
+        operation_id: null,
+      },
+    });
 
     const result = await superviseDirectTaskRun({
       ctx: { cwd: "/repo", rootOverride: null } as never,
@@ -634,8 +781,7 @@ describe("direct task supervisor", () => {
     });
 
     expect(result).toMatchObject({ status: "stopped", stop: { code: "stale_route" } });
-    expect(mocks.verify).toHaveBeenCalledTimes(1);
-    expect(mocks.resolveCommit).not.toHaveBeenCalled();
-    expect(mocks.finish).not.toHaveBeenCalled();
+    expect(mocks.executeEvaluator).not.toHaveBeenCalled();
+    expect(mocks.finalizeDirect).not.toHaveBeenCalled();
   });
 });

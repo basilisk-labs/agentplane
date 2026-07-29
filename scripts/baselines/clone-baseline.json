@@ -29,14 +29,14 @@
     "compare_contract": "current metrics must not exceed baseline clones, duplicatedLines, or duplicatedTokens"
   },
   "metrics": {
-    "sources": 1202,
-    "lines": 209865,
-    "tokens": 1206414,
-    "clones": 89,
-    "duplicatedLines": 1418,
-    "duplicatedTokens": 9862,
-    "percentage": 0.6756724561027327,
-    "percentageTokens": 0.8174639883157855
+    "sources": 1241,
+    "lines": 221972,
+    "tokens": 1271330,
+    "clones": 90,
+    "duplicatedLines": 1430,
+    "duplicatedTokens": 9973,
+    "percentage": 0.6442253977979204,
+    "percentageTokens": 0.7844540756530562
   },
   "top_duplicates": [
     {
@@ -58,8 +58,8 @@
       "tokens": 100,
       "firstFile": {
         "path": "packages/core/src/index.ts",
-        "start": 314,
-        "end": 351
+        "start": 365,
+        "end": 402
       },
       "secondFile": {
         "path": "packages/core/src/tasks/index.ts",
@@ -161,8 +161,8 @@
       },
       "secondFile": {
         "path": "packages/testkit/src/cli-harness.ts",
-        "start": 612,
-        "end": 630
+        "start": 619,
+        "end": 637
       }
     },
     {

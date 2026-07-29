@@ -1,0 +1,23 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical"
+  ],
+  "verification": {
+    "state": "needs_rework",
+    "attempts": 2,
+    "updated_at": "2026-07-29T03:24:42.824Z",
+    "updated_by": "TESTER",
+    "note": "Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing clone baseline drift."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729032442824-deedb5d6a025de27.json",
+      "sha256": "sha256:8f44ad367d6060f2ffac102e47ea38ecf55564fadfd15c82ee0dd7a536e1ea04"
+    }
+  ],
+  "runner_history": []
+}

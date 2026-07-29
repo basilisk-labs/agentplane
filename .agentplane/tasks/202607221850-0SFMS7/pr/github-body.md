@@ -19,8 +19,8 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 - Note:
 
 ```text
-Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification
-lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage.
+Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing
+clone baseline drift.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: needs_rework
-- Note: Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage.
+- Note: Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing clone baseline drift.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

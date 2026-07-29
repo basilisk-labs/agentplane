@@ -1,18 +1,12 @@
 /**
- * Comparable CLI-orchestration surface for RF-10a. `tool_calls` means durable
- * CLI/provider operation calls, not provider-internal tool calls: those were
- * not recorded by the frozen 0.6.24 anchor and therefore cannot be compared.
- * `duplicate_executor_context_bytes` counts only context copied by the CLI
- * into a second role prompt. The evaluator receives frozen evidence paths,
- * never an executor bundle, so the golden path injects zero such bytes.
+ * `tool_calls` counts durable CLI/provider operations. Provider-internal tool
+ * calls were not recorded by the frozen 0.6.24 anchor and stay uncomparable.
  */
-export const DIRECT_TASK_SUPERVISION_GOLDEN_COST = Object.freeze({
-  lifecycle_calls: 4,
-  tool_calls: 5,
-  duplicate_executor_context_bytes: 0,
-});
-
-export type DirectTaskSupervisionGoldenCost = typeof DIRECT_TASK_SUPERVISION_GOLDEN_COST;
+export type DirectTaskSupervisionGoldenCost = {
+  lifecycle_calls: number;
+  tool_calls: number;
+  duplicate_executor_context_bytes: number | null;
+};
 
 export type DirectTaskSupervisionBaseline = {
   lifecycle_calls: number;
@@ -28,7 +22,7 @@ export type DirectTaskSupervisionQualitySafety = {
 
 export function compareDirectTaskSupervisionGoldenPath(opts: {
   baseline: DirectTaskSupervisionBaseline;
-  candidate?: DirectTaskSupervisionGoldenCost;
+  candidate: DirectTaskSupervisionGoldenCost;
   quality_safety: DirectTaskSupervisionQualitySafety;
 }): {
   lifecycle_calls_reduced: boolean;
@@ -39,10 +33,11 @@ export function compareDirectTaskSupervisionGoldenPath(opts: {
   committed_scope_enforced: boolean;
   passed: boolean;
 } {
-  const candidate = opts.candidate ?? DIRECT_TASK_SUPERVISION_GOLDEN_COST;
+  const candidate = opts.candidate;
   const lifecycle_calls_reduced = candidate.lifecycle_calls < opts.baseline.lifecycle_calls;
   const tool_calls_reduced = candidate.tool_calls < opts.baseline.tool_calls;
   const duplicate_executor_context_reduced =
+    candidate.duplicate_executor_context_bytes !== null &&
     candidate.duplicate_executor_context_bytes < opts.baseline.duplicate_executor_context_bytes;
   const verified_success_preserved = opts.quality_safety.verified_success;
   const lifecycle_ownership_preserved = opts.quality_safety.executor_lifecycle_event_delta === 0;

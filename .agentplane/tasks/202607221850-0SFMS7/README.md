@@ -4,7 +4,7 @@ title: "Supervise direct task execution end to end"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 14
 origin:
   system: "manual"
 depends_on:
@@ -37,37 +37,37 @@ plan_approval:
   note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-07-29T02:26:54.848Z"
+  updated_at: "2026-07-29T03:24:42.824Z"
   updated_by: "TESTER"
-  note: "Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage."
-  attempts: 1
+  note: "Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing clone baseline drift."
+  attempts: 2
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T03:01:44.808Z"
+  updated_at: "2026-07-29T03:25:58.790Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "da88b1ed4305b3a70bf39633cf3739fb5e4f4609"
+  note: "EVALUATOR returned rework with 2 typed finding(s)."
+  evaluated_sha: "36caae4b79c208c4341235f38c1330eb7f0e6dd0"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/verification/20260729032442824-deedb5d6a025de27.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Committed out-of-scope EXECUTOR changes are accepted as the implementation commit. The finalization guard rejects only dirty non-task paths, then accepts any changed HEAD without inspecting the committed path set against the approved scope."
-    - "The required comparison with the 0.6.24 baseline is still absent. The implementation reports provider episode count, lifecycle-event delta, and declared-check count, but supplies no lifecycle-call, tool-call, or duplicate-context baseline values and no pass/fail comparison."
-    - "The frozen check evidence contains no runner history or verification records for the evaluated SHA, so none of the four declared checks is demonstrated to have run on this revision."
+    - "The mandatory contract check fails on the evaluated SHA, and the recorded verification state remains needs_rework."
+    - "The claimed 0.6.24 cost improvement is calculated from hard-coded candidate values rather than measurements from an executed direct golden-path episode; the implementation also derives baseline tool calls from an expected lifecycle trace and explicitly states that provider-internal tool calls were not recorded."
 commit: null
 comments:
   -
@@ -97,8 +97,14 @@ events:
     author: "TESTER"
     state: "needs_rework"
     note: "Independent EVALUATOR returned rework: RC-001 finalization is journal-only, RC-002 verification lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route coverage."
+  -
+    type: "verify"
+    at: "2026-07-29T03:24:42.824Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing clone baseline drift."
 doc_version: 3
-doc_updated_at: "2026-07-29T02:26:55.481Z"
+doc_updated_at: "2026-07-29T03:24:43.555Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -147,6 +153,61 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607221850-0SFMS7
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T03:24:42.824Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing clone baseline drift.
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T02:26:55.481Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-finalization.test.ts packages/agentplane/src/commands/task/direct-task-supervision-benchmark.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts
+    Result: pass
+    Evidence: 5 files, 19 tests passed.
+    Scope: RF-10a finalization, scope enforcement, golden-cost, closeout, and declared-check paths.
+
+    Command: bun run coverage:workflow-suite
+    Result: pass
+    Evidence: 14 files, 52 tests passed; workflow harness contract OK.
+    Scope: direct workflow coverage.
+
+    Command: bun run lifecycle:invariants
+    Result: pass
+    Evidence: 8 lifecycle invariants passed.
+    Scope: lifecycle ownership and task transition invariants.
+
+    Command: bun run test:critical
+    Result: pass
+    Evidence: critical-cli completed all 11 chunks on the implementation SHA.
+    Scope: critical CLI and agent-efficiency guard routes.
+
+    Command: bun run ci:contract
+    Result: fail
+    Evidence: all preceding contract gates passed; clone baseline stopped at sources=1236, clones=90, duplicatedLines=1430, duplicatedTokens=9973 versus baseline 1202/89/1418/9862.
+    Scope: repository-wide contract; failure is an existing baseline drift outside RF-10a source paths.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -222,6 +283,61 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607221850-0SFMS7
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T03:24:42.824Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing clone baseline drift.
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T02:26:55.481Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-finalization.test.ts packages/agentplane/src/commands/task/direct-task-supervision-benchmark.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts
+Result: pass
+Evidence: 5 files, 19 tests passed.
+Scope: RF-10a finalization, scope enforcement, golden-cost, closeout, and declared-check paths.
+
+Command: bun run coverage:workflow-suite
+Result: pass
+Evidence: 14 files, 52 tests passed; workflow harness contract OK.
+Scope: direct workflow coverage.
+
+Command: bun run lifecycle:invariants
+Result: pass
+Evidence: 8 lifecycle invariants passed.
+Scope: lifecycle ownership and task transition invariants.
+
+Command: bun run test:critical
+Result: pass
+Evidence: critical-cli completed all 11 chunks on the implementation SHA.
+Scope: critical CLI and agent-efficiency guard routes.
+
+Command: bun run ci:contract
+Result: fail
+Evidence: all preceding contract gates passed; clone baseline stopped at sources=1236, clones=90, duplicatedLines=1430, duplicatedTokens=9973 versus baseline 1202/89/1418/9862.
+Scope: repository-wide contract; failure is an existing baseline drift outside RF-10a source paths.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-5b4dc1c8b8ac9460b3bdf281",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework the evidence and implementation so the evaluated SHA has either a passing mandatory contract check or an approved skip, then replace the hard-coded golden-cost claim with measurements from an executed direct episode covering lifecycle calls, tool calls, duplicate context, verified success, lifecycle ownership, and committed-scope enforcement.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The mandatory contract check fails on the evaluated SHA, and the recorded verification state remains needs_rework.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729032442824-deedb5d6a025de27.json",
+          "sha256": "sha256:8f44ad367d6060f2ffac102e47ea38ecf55564fadfd15c82ee0dd7a536e1ea04",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d691f02692a2bda4eaab4265a00930992d89db97ac8739abd007817e568ce6fd",
+          "section": "verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The claimed 0.6.24 cost improvement is calculated from hard-coded candidate values rather than measurements from an executed direct golden-path episode; the implementation also derives baseline tool calls from an expected lifecycle trace and explicitly states that provider-internal tool calls were not recorded.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:100336598a6c1205c7efd9bc58e87b63c7298a2b718cac11d14c40986329eeba",
+          "section": "packages/agentplane/src/commands/task/direct-task-supervision-benchmark.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:7eec9781c2bfa1f4fea96636b762c4a1ef9d00990563c0640ebafa961314fb5c",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-result.json"
+}
