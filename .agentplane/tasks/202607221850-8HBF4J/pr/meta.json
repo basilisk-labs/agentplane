@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
   "created_at": "2026-07-28T13:53:55.558Z",
-  "diffstat_sha256": "sha256:7cb18063a3ebc38340e635d8041478b5cdf7b190c1c12627aad3bacf6b5fffcb",
+  "diffstat_sha256": "sha256:c4547940a5c3cba317862cbb57e5933fede9d715ea5fa8ea0b1f4766a550ae5c",
   "last_verified_at": "2026-07-29T01:13:52.720Z",
   "last_verified_diffstat_sha256": "sha256:7cb18063a3ebc38340e635d8041478b5cdf7b190c1c12627aad3bacf6b5fffcb",
   "pr_number": 4659,
