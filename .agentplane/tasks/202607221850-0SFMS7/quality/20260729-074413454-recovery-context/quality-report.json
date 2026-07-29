@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-0SFMS7",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T07:45:15.689Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "57637d15372425b7afb0e08d8225b19ced89f244",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "findings": [
+    "The frozen review packet reports successful verification but contains no verification records, runner history, runtime evidence, or direct-supervision evidence for the evaluated SHA."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074413454-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607221850-0SFMS7/README.md",
+    ".agentplane/policy/dod.code.md"
+  ],
+  "missing_tests": [
+    "An end-to-end evaluator-packet regression test that closes a branch_pr task, selects the evaluated closure SHA, and asserts that verification_records and runtime_evidence remain populated.",
+    "A frozen-packet assertion that direct_supervision contains evidence for zero EXECUTOR lifecycle calls, fresh route recomputation, typed approval/wait/human stops, evaluator rework, out-of-scope writes, and adapter crashes.",
+    "A golden-path evidence test that preserves baseline comparison metrics in evaluator-observed-checks.json after pre-merge closure."
+  ],
+  "hidden_assumptions": [
+    "A verification state of ok and narrative README entries are assumed to substitute for machine-readable check and runtime evidence.",
+    "Closure-target classification is assumed to retain task evidence, but the authoritative observed-checks artifact shows all corresponding collections empty.",
+    "The evaluated SHA is assumed to cover the required live golden path and concurrency-sensitive behavior without frozen evidence tying those executions to that SHA."
+  ],
+  "residual_risks": [
+    "Regenerate the evaluator packet after fixing closure-target evidence selection so the frozen observed checks retain concrete verification records, runtime/direct-supervision evidence, failure-path coverage, and baseline metrics for evaluated SHA 57637d15372425b7afb0e08d8225b19ced89f244; then rerun this semantic review."
+  ]
+}

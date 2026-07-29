@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-877202f82677d0955f3c5477",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Regenerate the evaluator packet after fixing closure-target evidence selection so the frozen observed checks retain concrete verification records, runtime/direct-supervision evidence, failure-path coverage, and baseline metrics for evaluated SHA 57637d15372425b7afb0e08d8225b19ced89f244; then rerun this semantic review.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen review packet reports successful verification but contains no verification records, runner history, runtime evidence, or direct-supervision evidence for the evaluated SHA.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074413454-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:8f8ce290c57132a6e5a9e0c27eb9e4cbd57782f6b8416fbe78b01fb8a5beb3d0"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:725d22da0b2377bd1c3ec96a6a3141ced15d585fe079e9e4287ad4340dfad1c0",
+          "section": "Verify Steps"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-074413454-recovery-context/evaluator-result.json"
+}
