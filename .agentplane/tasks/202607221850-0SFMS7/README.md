@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 35
+revision: 36
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T08:31:32.539Z"
+  updated_at: "2026-07-29T08:54:23.860Z"
   updated_by: "CODER"
-  note: "Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review."
+  note: "Verified: fresh control-run evidence formally links terminal direct-supervisor journal persistence for EVALUATOR review."
   attempts: 0
 quality_review:
   state: "rework"
@@ -162,8 +162,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: direct golden-metrics runtime evidence is formally linked for fresh evaluator review."
+  -
+    type: "verify"
+    at: "2026-07-29T08:54:23.860Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: fresh control-run evidence formally links terminal direct-supervisor journal persistence for EVALUATOR review."
 doc_version: 3
-doc_updated_at: "2026-07-29T08:31:33.231Z"
+doc_updated_at: "2026-07-29T08:54:24.534Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -562,6 +568,51 @@ sections:
     Result: pass
     Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/runner/tasks/202607290822-33E0ZM/runs/2026-07-29T08-22-19-063Z/execution-receipt.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/declared-checks.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/verification/20260729082318886-44a79e7f18a6a0ec.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/quality-report.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
     Scope: authorized direct golden path: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, and observed comparison against the frozen baseline.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T08:54:23.860Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Verified: fresh control-run evidence formally links terminal direct-supervisor journal persistence for EVALUATOR review.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T08:31:33.231Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    Command: `bun run --cwd packages/core test src/runner/supervisor-execution-episode.test.ts && bun run --cwd packages/agentplane test src/commands/task/direct-task-supervisor.test.ts`
+    Result: pass
+    Evidence: packages/core/src/runner/supervisor-execution-episode.test.ts | packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+    Scope: successful direct-task completion stops the persisted supervisor journal with reason `completed`, clears the operation key, and leaves no next operation.
+
+    Command: `bun run ci:contract`
+    Result: pass
+    Evidence: terminal output recorded for implementation commit `a85db5d206d9e6718f7b159b84f23c01423db239`
+    Scope: full contract validation after the terminal-journal persistence repair.
+
+    Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+    Result: pass
+    Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+    Scope: fresh standalone direct control task: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, persisted terminal journal (`stopped` / `completed`), and observed RF-10 metrics (3/4/15383 versus frozen 7/7/20562 baseline).
 
     BlueprintSnapshotRef:
     - state: current
@@ -1005,6 +1056,51 @@ Command: `node packages/agentplane/bin/agentplane.js task run 202607290822-33E0Z
 Result: pass
 Evidence: .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/runner/tasks/202607290822-33E0ZM/runs/2026-07-29T08-22-19-063Z/execution-receipt.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/declared-checks.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/verification/20260729082318886-44a79e7f18a6a0ec.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/quality-report.json | .agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json
 Scope: authorized direct golden path: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, and observed comparison against the frozen baseline.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T08:54:23.860Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: fresh control-run evidence formally links terminal direct-supervisor journal persistence for EVALUATOR review.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T08:31:33.231Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+Command: `bun run --cwd packages/core test src/runner/supervisor-execution-episode.test.ts && bun run --cwd packages/agentplane test src/commands/task/direct-task-supervisor.test.ts`
+Result: pass
+Evidence: packages/core/src/runner/supervisor-execution-episode.test.ts | packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+Scope: successful direct-task completion stops the persisted supervisor journal with reason `completed`, clears the operation key, and leaves no next operation.
+
+Command: `bun run ci:contract`
+Result: pass
+Evidence: terminal output recorded for implementation commit `a85db5d206d9e6718f7b159b84f23c01423db239`
+Scope: full contract validation after the terminal-journal persistence repair.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+Scope: fresh standalone direct control task: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, persisted terminal journal (`stopped` / `completed`), and observed RF-10 metrics (3/4/15383 versus frozen 7/7/20562 baseline).
 
 BlueprintSnapshotRef:
 - state: current

@@ -1,0 +1,14 @@
+Command: `bun run --cwd packages/core test src/runner/supervisor-execution-episode.test.ts && bun run --cwd packages/agentplane test src/commands/task/direct-task-supervisor.test.ts`
+Result: pass
+Evidence: packages/core/src/runner/supervisor-execution-episode.test.ts | packages/agentplane/src/commands/task/direct-task-supervisor.test.ts
+Scope: successful direct-task completion stops the persisted supervisor journal with reason `completed`, clears the operation key, and leaves no next operation.
+
+Command: `bun run ci:contract`
+Result: pass
+Evidence: terminal output recorded for implementation commit `a85db5d206d9e6718f7b159b84f23c01423db239`
+Scope: full contract validation after the terminal-journal persistence repair.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+Scope: fresh standalone direct control task: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, persisted terminal journal (`stopped` / `completed`), and observed RF-10 metrics (3/4/15383 versus frozen 7/7/20562 baseline).
