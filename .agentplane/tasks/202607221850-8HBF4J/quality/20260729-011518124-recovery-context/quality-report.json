@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-8HBF4J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T01:15:18.271Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "d3cfaad4e57b31324a9091d45c64989938018874",
+  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
+  "findings": [
+    "Removed stale assertions requiring reindex, wiki-index, and evaluator commands in the CURATOR prompt; added positive assertions for semantic-only output and explicit negative assertions for CLI operations."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-011518124-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
