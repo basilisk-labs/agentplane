@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221850-0SFMS7-7d7471c51cc927f120ac9100",
+  "prepared_at": "2026-07-29T08:32:53.124Z",
+  "task": {
+    "id": "202607221850-0SFMS7",
+    "revision": 35,
+    "objective": "Supervise direct task execution end to end\n\nRF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run coverage:workflow-suite",
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "- In scope: direct workflow lifecycle automation, state refresh after each operation, zero EXECUTOR lifecycle calls, start/check/evaluate/finalize operations, retries, approvals, waits, human input, and golden scenario metrics.\n- Out of scope: branch_pr provider/PR/merge integration.",
+      "1. Map the direct lifecycle onto typed supervisor operations and episode boundaries.\n2. Prepare a role-specific EXECUTOR work order and launch through typed runner results.\n3. Observe process/Git/check/artifact evidence and run the EVALUATOR episode.\n4. Apply safe post-operations until terminal or an approval/wait/human step.\n5. Compare golden-path quality and orchestration cost to the 0.6.24 baseline.",
+      "1. Run the approved direct golden task. Expected: EXECUTOR performs zero AgentPlane lifecycle calls; supervisor starts, observes, evaluates, verifies, and finalizes.\n2. Change route state after every operation fixture. Expected: the supervisor recomputes from fresh state and never executes a stale next step.\n3. Exercise approval required, missing knowledge, evaluator rework, out-of-scope write, and adapter crash. Expected: bounded typed stops/retries with no synthesized semantic summary.\n4. Compare baseline metrics. Expected: lifecycle/tool/duplicate-context cost decreases without lower verified success or safety.\n5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests."
+    ]
+  },
+  "evaluated_sha": "e872b663f1ab7c96c3660f9de15169ae12b901f5",
+  "diff_base_sha": "950e9cd2f222c12d16e930bdb8a3e39237659651",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+      "sha256": "sha256:ce904b0269d11b1a5e6fe4cc84b044a5f739b65a0be1415c6042ddebbe4ed487",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-083253124-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:93534b98b6c18c554b9fcd5eb88bc2eeeebead6965f4b0d96eca16b052d39a1c",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-083253124-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:b86409976899d1b14e91bc9251c630bd42e0e725cba0f6d0c53ea98fd7a13296",
+      "required": true
+    },
+    {
+      "id": "verification-record-1",
+      "kind": "verification_log",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729083132539-2830e4bbe106c1ed.json",
+      "sha256": "sha256:15c00e4d89af9968d45117bcd78f0efa1c0fc9e98d622746010e5c93ae812146",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-1",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/evaluator-result.json",
+      "sha256": "sha256:849413a327810c21fde855a9020f95615c9de450025ea6190b754ee13d241754",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-2",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/quality/20260729-082319250-recovery-context/quality-report.json",
+      "sha256": "sha256:fd5db3c45346da5752aa4cf5d3f31c915a99502526830ffe8fc1ef5c01ea054f",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-3",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/declared-checks.json",
+      "sha256": "sha256:1ae239976de1a6fa2708c4c075f74fe0f4c71d239780e555cbd73e6804e18e92",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-4",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/golden-metrics.json",
+      "sha256": "sha256:fe79ff3b3b85762a33ed73a43eb088815beabdbf8b4a8a645d17737b2faaae7e",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-5",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/supervision/implementation-evidence.json",
+      "sha256": "sha256:e269c5106710cacef3c01cfaca3195b544e96019ec43668714e6157c4867c840",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-6",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.agentplane/tasks/202607290822-33E0ZM/verification/20260729082318886-44a79e7f18a6a0ec.json",
+      "sha256": "sha256:a09e590fac81b4870ace78428c3eafc8f9fdcd07441d796d5516fb01b551b8df",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-7",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/runner/tasks/202607290822-33E0ZM/runs/2026-07-29T08-22-19-063Z/execution-receipt.json",
+      "sha256": "sha256:1a600ac463ddd769741c206ce07c9df55e4466adb2aeb3412a0af2443d2e0adf",
+      "required": true
+    },
+    {
+      "id": "runtime-evidence-8",
+      "kind": "runtime_evidence",
+      "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json",
+      "sha256": "sha256:2030ad844d8e63dd952761af7b2ec5574dcef484e97114db39bc41f9f586492e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-083253124-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:54154a3779ecae46ed5a9fb007da46d2114798064d7816fd727c2beecea2faec",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

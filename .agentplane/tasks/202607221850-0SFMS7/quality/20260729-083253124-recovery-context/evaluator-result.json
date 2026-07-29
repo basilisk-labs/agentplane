@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Замороженный live golden path завершил task.finish, но журнал супервизора остался в нетерминальном состоянии: status=\"running\", cursor.phase=\"ready\", stop=null. Поэтому доказательство не подтверждает полное терминальное завершение супервизии.",
+      "broken_invariant": "После успешных verify, EVALUATOR pass и task.finish супервизор должен сохранить терминальное состояние; pass допустим только при покрытии полного golden path, включая финализацию.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/cache/rf10-live-metrics-authorized.G4kN7r/.git/agentplane/supervisor/episodes/202607290822-33E0ZM/journal.json",
+          "sha256": "sha256:2030ad844d8e63dd952761af7b2ec5574dcef484e97114db39bc41f9f586492e",
+          "section": "status, cursor, stop and operation sequence 4"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-083253124-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:b86409976899d1b14e91bc9251c630bd42e0e725cba0f6d0c53ea98fd7a13296",
+          "section": "runner_history[0]"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:ce904b0269d11b1a5e6fe4cc84b044a5f739b65a0be1415c6042ddebbe4ed487",
+          "section": "Verify Steps 1"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Интеграционный live golden-path тест должен перечитать сохраненный journal после task.finish и проверить терминальные status/phase/cursor и отсутствие следующей исполнимой операции."
+  ],
+  "hidden_assumptions": [
+    "Реализация предполагает, что успешный task.finish и возвращенный status=\"finalized\" достаточны, даже если авторитетный сохраненный журнал остается status=\"running\"."
+  ],
+  "recovery_context": "После успешного task.finish завершать и сохранять supervisor journal в терминальном состоянии, затем повторить live golden path и заморозить обновленный journal как доказательство."
+}
