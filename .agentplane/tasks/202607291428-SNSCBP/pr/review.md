@@ -13,7 +13,7 @@ Created: 2026-07-29T14:28:55.639Z
 ## Verification
 
 - State: ok
-- Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes at implementation SHA 6c8a2220.
+- Note: Dependency-present, dependency-blocked, policy, and doctor evidence passes after provider branch update at implementation SHA c4828d746754389d2be48bca9ccba274ff3a88d1.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
