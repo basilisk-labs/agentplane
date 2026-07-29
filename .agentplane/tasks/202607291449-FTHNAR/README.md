@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "USER"
   note: "Standing approval granted by the user for the AgentPlane 0.7 refactor and recovery work."
 verification:
-  state: "ok"
-  updated_at: "2026-07-29T16:23:18.461Z"
+  state: "needs_rework"
+  updated_at: "2026-07-29T16:30:20.448Z"
   updated_by: "TESTER"
-  note: "Verified d96688db: fresh deterministic evidence covers all declared checks plus the independent blocked-quality-review regression."
-  attempts: 0
+  note: "Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines)."
+  attempts: 1
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -52,9 +52,7 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The frozen diff and verification record show that deterministic-evidence refresh is restricted to a current evaluator-supplied deterministic_evidence_gap block, returns control to EVALUATOR after refresh, and preserves publication blockers."
-commit:
-  hash: "5faf3e2bac90d7730a254aaaccdb7c1d0794c6f7"
-  message: "✅ FTHNAR verify: preserve semantic review target"
+commit: null
 comments:
   -
     author: "CODER"
@@ -177,8 +175,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T16:30:20.448Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines)."
 doc_version: 3
-doc_updated_at: "2026-07-29T16:25:50.924Z"
+doc_updated_at: "2026-07-29T16:30:21.382Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -496,6 +500,41 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T16:30:20.448Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines).
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:25:50.924Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+    Details:
+
+    Command: GitHub Actions Core CI / verify-contract (run 30470755976, job 90640167676)
+    Result: fail
+    Evidence: hotspot-report reports packages/agentplane/src/commands/shared/workflow-step-branch.ts at 619 lines; threshold is 600.
+    Scope: structural extraction only; preserve FTHNAR recovery-route behavior and its existing tests.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -858,6 +897,41 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T16:30:20.448Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Hosted verify-contract failed: workflow-step-branch.ts exceeds the enforced 600-line runtime-module limit (619 lines).
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T16:25:50.924Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
+
+Details:
+
+Command: GitHub Actions Core CI / verify-contract (run 30470755976, job 90640167676)
+Result: fail
+Evidence: hotspot-report reports packages/agentplane/src/commands/shared/workflow-step-branch.ts at 619 lines; threshold is 600.
+Scope: structural extraction only; preserve FTHNAR recovery-route behavior and its existing tests.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false
