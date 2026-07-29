@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-eae2b6c96dc933b821f81c3d",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Preserve the successful lifecycle-descendant evidence repair, but add frozen evidence from the actual golden run containing the typed supervisor metrics and the resulting 0.6.24 baseline comparison; then rerun evaluation on that evidence.",
+  "findings": [
+    {
+      "id": "RCI-001",
+      "summary": "The frozen golden-path evidence does not record the supervisor result metrics or an observed comparison with the 0.6.24 baseline; it records only journal usage, while the diff adds a comparator exercised with synthetic candidate values.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-075438197-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:d60ad8f1f1a13db300415b400d3b2ac6bdb750399e02652648d5347dceff538e",
+          "section": "direct-task-supervision-benchmark.test.ts and direct-task-supervision-benchmark.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-075438197-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:705429f09dea43577501db5864c00733264cb0aff2a6d6855d186e4f5f7f71a2",
+          "section": "runner_history and runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729075409705-4838965f5fbc0cc5.json",
+          "sha256": "sha256:508255faacfdb3644e0251c9b8bf66c9b7418d155675282781e14b9b36bb64c3",
+          "section": "details"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-075438197-recovery-context/evaluator-result.json"
+}
