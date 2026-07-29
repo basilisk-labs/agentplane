@@ -19,8 +19,8 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
 - Note:
 
 ```text
-Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have
-dedicated modules, keeping both prior hotspot files below the 600-line guard.
+Updated release-readiness expectations to enforce CURATOR semantic-only prompts; focused contract
+tests pass and the isolated runner cancellation test passes.
 ```
 - Canonical workflow state lives in the task README.
 
