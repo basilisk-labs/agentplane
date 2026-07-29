@@ -215,6 +215,15 @@ describe("evaluator episode calibration", () => {
     expect(captured?.prompt).toContain(
       "AgentPlane prepared and froze the authoritative review input",
     );
+    expect(captured?.prompt).toContain(
+      "cite only exact entries from the frozen `work_order.evidence` list",
+    );
+    expect(captured?.prompt).toContain(
+      "Do not cite\n  `evaluator-work-order.json`, `evaluator-result.json`, `quality-report.json`",
+    );
+    expect(captured?.prompt).not.toContain(
+      "pass reviews must include the generated `quality-report.json`",
+    );
     const outputSchema = JSON.parse(await readFile(captured!.output_schema_path, "utf8")) as {
       required: string[];
       properties: {
