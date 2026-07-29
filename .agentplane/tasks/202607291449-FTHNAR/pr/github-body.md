@@ -15,14 +15,8 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Verification
 
-- State: needs_rework
-- Note:
-
-```text
-Rework: integration queue on the base checkout cannot refresh a constrained-refspec task tracking
-ref; extend the existing source repair so protected integration validates the published head without
-manual fetch state.
-```
+- State: ok
+- Note: Freeze command-level evidence for the constrained-refspec integration repair at semantic SHA c02ee8dc.
 - Canonical workflow state lives in the task README.
 
 <details>

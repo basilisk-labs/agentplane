@@ -12,8 +12,8 @@ Created: 2026-07-29T14:50:37.577Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: integration queue on the base checkout cannot refresh a constrained-refspec task tracking ref; extend the existing source repair so protected integration validates the published head without manual fetch state.
+- State: ok
+- Note: Freeze command-level evidence for the constrained-refspec integration repair at semantic SHA c02ee8dc.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
