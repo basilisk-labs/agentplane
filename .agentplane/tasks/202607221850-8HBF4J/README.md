@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -69,8 +69,8 @@ quality_review:
     - "docs/user/cli-reference.generated.mdx was regenerated from the repository-built CLI and the freshness check passed."
     - "Policy routing, doctor, and the whitespace check passed; the generated reference remains within the task's documented CLI boundary."
 commit:
-  hash: "fa94a0c028876cad78a8e7a1d03d982ce15c3eaf"
-  message: "🧩 8HBF4J context: record rework evaluation"
+  hash: "ef713615f1423c81871c8a7bf3c2e2de55ec1241"
+  message: "🧩 8HBF4J context: record docs evaluation"
 comments:
   -
     author: "CODER"
@@ -81,6 +81,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -121,8 +124,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
+  -
+    type: "status"
+    at: "2026-07-29T00:45:16.216Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T00:43:37.664Z"
+doc_updated_at: "2026-07-29T00:45:16.217Z"
 doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -251,8 +261,8 @@ sections:
       Resolution: Ready to republish the task branch for a fresh hosted check.
 extensions:
   implementation_commit:
-    hash: "e6dfdcad95e425b7c5db3699d0733c61decb704c"
-    message: "🐛 8HBF4J code: cover bounded context rework"
+    hash: "963e293db08884671bc4c262fef7d79aaaf46084"
+    message: "🧩 8HBF4J context: refresh CLI reference"
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
     version: 1
