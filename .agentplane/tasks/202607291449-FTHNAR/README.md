@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 68
+revision: 71
 origin:
   system: "manual"
 depends_on: []
@@ -23,36 +23,35 @@ plan_approval:
   note: "Approved rework scope: force-refresh only the local constrained tracking ref and prove stale rewrite recovery."
 verification:
   state: "ok"
-  updated_at: "2026-07-29T17:32:42.102Z"
+  updated_at: "2026-07-29T17:45:49.340Z"
   updated_by: "TESTER"
-  note: "Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc."
+  note: "All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T17:34:54.247Z"
+  updated_at: "2026-07-29T17:47:58.642Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "c02ee8dc3475241f03ece468902f5e54da3f68c4"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "50928b4871574d57669a7e0937b8578c1cafe626"
   blueprint_digest: "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e"
   evidence_refs:
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607291449-FTHNAR/README.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/verification/20260729173242102-51d4d8c73cd1183e.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/verification/20260729174549340-65042f999292c3be.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The tracking-ref helper fetches without a forced refspec, so it can reject a legitimate rewritten task head when the constrained checkout already has a stale tracking ref. This breaks rebased-branch publication and protected integration recovery."
+    - "The implementation satisfies the bounded evidence-refresh and constrained-refspec recovery contract, including forced local tracking-ref refresh after legitimate branch rewrites."
 commit: null
 comments:
   -
@@ -322,8 +321,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Start: force-refresh stale constrained tracking refs after legitimate task branch rewrites."
+  -
+    type: "verify"
+    at: "2026-07-29T17:45:49.340Z"
+    author: "TESTER"
+    state: "ok"
+    note: "All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block."
 doc_version: 3
-doc_updated_at: "2026-07-29T17:41:28.483Z"
+doc_updated_at: "2026-07-29T17:45:50.028Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -1064,6 +1069,66 @@ sections:
     - can_execute_now: false
     - safe_command: none
     - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T17:45:49.340Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:41:28.483Z, excerpt_hash=sha256:88f02061b31ed1c3ee8b43e0652ee69c22b85e71988cd7d87b6db35963997992
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: 31 passing tests, 0 failures, 142 expectations; executed at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+    Scope: evaluator evidence-refresh and stale-quality routing.
+
+    Command: bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts
+    Result: pass
+    Evidence: 16 passing tests, 0 failures, 47 expectations; includes stale constrained tracking-ref refresh and rebased force-with-lease publication at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+    Scope: configured upstream recovery without remote.fetch mutation.
+
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: 24 passing tests, 0 failures; executed at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+    Scope: protected integration preparation tracking-ref refresh.
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: TypeScript build completed successfully at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+    Scope: repository type safety.
+
+    Command: bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts
+    Result: pass
+    Evidence: focused lint completed with 0 errors at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+    Scope: changed source and regression-test paths.
+
+    Command: bun run hotspots:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: hotspot thresholds, policy routing, and doctor passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+    Scope: structural, policy, and workspace integrity.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
     - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
     - freshness: route=computed_local remote=remote_skipped
     - repeat_allowed: false
@@ -1887,6 +1952,66 @@ DecisionContextRef:
 - can_execute_now: false
 - safe_command: none
 - diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T17:45:49.340Z — VERIFY — ok
+
+By: TESTER
+
+Note: All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:41:28.483Z, excerpt_hash=sha256:88f02061b31ed1c3ee8b43e0652ee69c22b85e71988cd7d87b6db35963997992
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: 31 passing tests, 0 failures, 142 expectations; executed at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+Scope: evaluator evidence-refresh and stale-quality routing.
+
+Command: bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts
+Result: pass
+Evidence: 16 passing tests, 0 failures, 47 expectations; includes stale constrained tracking-ref refresh and rebased force-with-lease publication at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+Scope: configured upstream recovery without remote.fetch mutation.
+
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: 24 passing tests, 0 failures; executed at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+Scope: protected integration preparation tracking-ref refresh.
+
+Command: bun run typecheck
+Result: pass
+Evidence: TypeScript build completed successfully at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+Scope: repository type safety.
+
+Command: bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts
+Result: pass
+Evidence: focused lint completed with 0 errors at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+Scope: changed source and regression-test paths.
+
+Command: bun run hotspots:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: hotspot thresholds, policy routing, and doctor passed; doctor reports 0 errors and only two historical archive warnings at implementation SHA 50928b4871574d57669a7e0937b8578c1cafe626.
+Scope: structural, policy, and workspace integrity.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
 - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
 - freshness: route=computed_local remote=remote_skipped
 - repeat_allowed: false

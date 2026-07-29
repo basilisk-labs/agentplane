@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "The implementation satisfies the bounded evidence-refresh and constrained-refspec recovery contract, including forced local tracking-ref refresh after legitimate branch rewrites.",
+      "broken_invariant": "None; the reviewed implementation preserves semantic review ownership, stale-quality safeguards, remote.fetch configuration, remote branch safety, and protected integration head validation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174635736-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:495559fa67833a6e2b89d40cbda42101bbb95e8409c5a7bebd51a7636204f044",
+          "section": "gitRefreshBranchTrackingRef, publication, integration preparation, and recovery routing changes"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729174549340-65042f999292c3be.json",
+          "sha256": "sha256:b025659463a2768a125dc5c65fe1de8334f92ee907a9eaae3189d5be13875def",
+          "section": "Six passing semantic verification groups at evaluated SHA 50928b4871574d57669a7e0937b8578c1cafe626"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/README.md",
+          "sha256": "sha256:443444992925f6e5629d4cfc9afc73a89a375522a5e96ab8201bbb4516b253df",
+          "section": "Approved recovery scope, acceptance criteria, and Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The configured push target is readable by git fetch when it differs from the remote fetch URL."
+  ]
+}

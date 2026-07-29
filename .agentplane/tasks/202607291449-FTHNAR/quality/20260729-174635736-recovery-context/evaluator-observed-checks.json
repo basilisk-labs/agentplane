@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T17:45:49.340Z",
+    "updated_by": "TESTER",
+    "note": "All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729174549340-65042f999292c3be.json",
+      "sha256": "sha256:b025659463a2768a125dc5c65fe1de8334f92ee907a9eaae3189d5be13875def"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}
