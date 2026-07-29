@@ -1,1 +1,1 @@
-🚧 SNSCBP task: Gate beta.1 qualification on SHA-bound evaluator evidence [202607291428-SNSCBP]
+✅ SNSCBP task: Gate beta.1 qualification on SHA-bound evaluator evidence [202607291428-SNSCBP]

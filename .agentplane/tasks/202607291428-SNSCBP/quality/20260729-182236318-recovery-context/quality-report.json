@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291428-SNSCBP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T18:23:31.523Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "6c8a2220d5e5fcb2896a11b13aa57300a3038b43",
+  "blueprint_digest": "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d",
+  "findings": [
+    "The SHA-bound verification record identifies the exact commands and outcomes but preserves summarized evidence rather than raw command output or runner history."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291428-SNSCBP/verification/20260729181647199-63f5276082638cce.json",
+    ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-182236318-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The task dependency resolver will continue treating a dependency absent from or incomplete on the integration branch as blocking; the frozen negative-path check confirms current behavior but not compatibility with future resolver changes."
+  ],
+  "residual_risks": []
+}
