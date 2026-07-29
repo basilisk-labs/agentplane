@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T07:39:55.780Z"
+  updated_at: "2026-07-29T07:43:47.594Z"
   updated_by: "TESTER"
-  note: "RF-10a closure target classification now preserves verified implementation evidence across lifecycle artifacts; focused and full regression gates passed on 57637d153."
+  note: "RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence."
   attempts: 0
 quality_review:
   state: "rework"
@@ -138,8 +138,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "RF-10a closure target classification now preserves verified implementation evidence across lifecycle artifacts; focused and full regression gates passed on 57637d153."
+  -
+    type: "verify"
+    at: "2026-07-29T07:43:47.594Z"
+    author: "TESTER"
+    state: "ok"
+    note: "RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence."
 doc_version: 3
-doc_updated_at: "2026-07-29T07:42:01.052Z"
+doc_updated_at: "2026-07-29T07:43:48.284Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -373,6 +379,51 @@ sections:
     Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.
 
     Scope: quality-review freshness classification only; a source or independently reviewable task metadata change still produces a new target SHA.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T07:43:47.594Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T07:42:01.052Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    Command: `bun run --cwd packages/agentplane test src/commands/shared/quality-review-target.test.ts`
+    Result: pass
+    Evidence: 11 tests passed; a reviewed implementation remains the EVALUATOR target after task `evidence/` and `supervision/` artifacts are committed.
+    Scope: targeted lifecycle-evidence regression coverage.
+
+    Command: `bun -e <resolveQualityReviewTargetSha against this task history>`
+    Result: pass
+    Evidence: the actual closure sequence resolves `cb23e156a8c6ec8a9d851ed67d4410f4c515b502`, not the metadata-only close commit.
+    Scope: actual task history and quality-target selection.
+
+    Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
+    Result: pass
+    Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.
+    Scope: RF-10a closure quality-target classification only; source and independently reviewable metadata changes still produce a new target SHA.
 
     BlueprintSnapshotRef:
     - state: current
@@ -651,6 +702,51 @@ Result: pass
 Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.
 
 Scope: quality-review freshness classification only; a source or independently reviewable task metadata change still produces a new target SHA.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T07:43:47.594Z — VERIFY — ok
+
+By: TESTER
+
+Note: RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T07:42:01.052Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+Command: `bun run --cwd packages/agentplane test src/commands/shared/quality-review-target.test.ts`
+Result: pass
+Evidence: 11 tests passed; a reviewed implementation remains the EVALUATOR target after task `evidence/` and `supervision/` artifacts are committed.
+Scope: targeted lifecycle-evidence regression coverage.
+
+Command: `bun -e <resolveQualityReviewTargetSha against this task history>`
+Result: pass
+Evidence: the actual closure sequence resolves `cb23e156a8c6ec8a9d851ed67d4410f4c515b502`, not the metadata-only close commit.
+Scope: actual task history and quality-target selection.
+
+Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
+Result: pass
+Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.
+Scope: RF-10a closure quality-target classification only; source and independently reviewable metadata changes still produce a new target SHA.
 
 BlueprintSnapshotRef:
 - state: current

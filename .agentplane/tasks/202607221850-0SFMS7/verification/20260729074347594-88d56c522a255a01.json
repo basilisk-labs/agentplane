@@ -1,0 +1,15 @@
+{
+  "details": "Command: `bun run --cwd packages/agentplane test src/commands/shared/quality-review-target.test.ts`\nResult: pass\nEvidence: 11 tests passed; a reviewed implementation remains the EVALUATOR target after task `evidence/` and `supervision/` artifacts are committed.\nScope: targeted lifecycle-evidence regression coverage.\n\nCommand: `bun -e <resolveQualityReviewTargetSha against this task history>`\nResult: pass\nEvidence: the actual closure sequence resolves `cb23e156a8c6ec8a9d851ed67d4410f4c515b502`, not the metadata-only close commit.\nScope: actual task history and quality-target selection.\n\nCommand: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`\nResult: pass\nEvidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.\nScope: RF-10a closure quality-target classification only; source and independently reviewable metadata changes still produce a new target SHA.",
+  "digest": "sha256:88d56c522a255a011e21b204c013944325f1595459df45ae4391b1a00bf21cc3",
+  "implementation_sha": "a65b262ad79dfee57ad0056573205d80e9d187f7",
+  "kind": "task_verification_record",
+  "note": "RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence.",
+  "recorded_at": "2026-07-29T07:43:47.594Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run the approved direct golden task. Expected: EXECUTOR performs zero AgentPlane lifecycle calls; supervisor starts, observes, evaluates, verifies, and finalizes.\n2. Change route state after every operation fixture. Expected: the supervisor recomputes from fresh state and never executes a stale next step.\n3. Exercise approval required, missing knowledge, evaluator rework, out-of-scope write, and adapter crash. Expected: bounded typed stops/retries with no synthesized semantic summary.\n4. Compare baseline metrics. Expected: lifecycle/tool/duplicate-context cost decreases without lower verified success or safety.\n5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac",
+  "task_id": "202607221850-0SFMS7",
+  "verification_command": "agentplane verify 202607221850-0SFMS7 --ok --by TESTER",
+  "verifier": "TESTER"
+}
