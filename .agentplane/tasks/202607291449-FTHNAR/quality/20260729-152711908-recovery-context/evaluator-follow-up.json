@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607291449-FTHNAR-3b2452d44907936d0bd675bf",
+  "task_id": "202607291449-FTHNAR",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Refresh and freeze the declared deterministic verification evidence for evaluated SHA e9ef6239774c4e2cff481d200a369c22225b38a1, then obtain a new EVALUATOR review without changing implementation or semantic-review ownership.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The frozen evidence reports verification as successful but contains no deterministic verification records, runner history, or runtime evidence supporting that claim.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-152711908-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:9b8b5fede138caafcefe1a4c2bf31aa0a97504519569e360bf9485779487b358",
+          "section": "verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-152711908-recovery-context/evaluator-result.json"
+}

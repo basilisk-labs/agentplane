@@ -13,7 +13,7 @@ Created: 2026-07-29T14:50:37.577Z
 ## Verification
 
 - State: ok
-- Note: Verified bounded evidence-refresh routing and protected quality-review handoff.
+- Note: Verified e9ef623: four declared checks passed with frozen command-level results.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -30,21 +30,21 @@ Created: 2026-07-29T14:50:37.577Z
 
 ```text
  .../src/backends/task-backend/shared/normalize.ts  |   5 +
- .../evaluator-episode.calibration.test.ts          |   7 ++
+ .../evaluator-episode.calibration.test.ts          | 161 +++++++++++++++++++++
  .../src/commands/evaluator/evaluator-episode.ts    |   2 +
  .../evaluator/evaluator-quality-artifacts.ts       |   1 +
  .../commands/evaluator/evaluator-review-apply.ts   |   3 +
  .../commands/evaluator/evaluator-review-usecase.ts |   2 +
- .../src/commands/shared/workflow-step-branch.ts    |  22 +++++
- .../src/commands/shared/workflow-step-factory.ts   |  26 ++++++
- .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++++++++++
+ .../src/commands/shared/workflow-step-branch.ts    |  22 +++
+ .../src/commands/shared/workflow-step-factory.ts   |  26 ++++
+ .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++
  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  29 ++++++
+ .../agentplane/src/runtime/sgr/contracts.test.ts   |  29 ++++
  packages/core/src/index.ts                         |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-store.ts              |   2 +
- 15 files changed, 216 insertions(+)
+ 15 files changed, 370 insertions(+)
 ```
 
 </details>

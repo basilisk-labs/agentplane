@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:836401b94e63fb227dad8017508dc8859c4a8f96a1f1ed3ace093076b1c40276",
+  "implementation_sha": "e9ef6239774c4e2cff481d200a369c22225b38a1",
+  "kind": "task_verification_record",
+  "note": "Verified 9a4fc724: workflow route tests (24), route-decision tests (10), policy routing, and doctor passed.",
+  "recorded_at": "2026-07-29T15:26:17.194Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
+  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
+  "verifier": "TESTER"
+}
