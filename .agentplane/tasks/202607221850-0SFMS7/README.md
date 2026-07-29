@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 38
+revision: 39
 origin:
   system: "manual"
 depends_on:
@@ -76,8 +76,8 @@ quality_review:
   findings:
     - "Реализация и замороженные доказательства покрывают прямой полный цикл, обновление маршрута после операций, типизированные остановки и отрицательные сценарии, ограничение области записи, терминальное состояние журнала и сравнение затрат с базовой линией 0.6.24; заявленные проверки прошли на оцениваемом SHA."
 commit:
-  hash: "cb23e156a8c6ec8a9d851ed67d4410f4c515b502"
-  message: "🚧 0SFMS7 task: use shared evaluator record guard"
+  hash: "9e1d459cb604b25f517de4b7bb6f811b8e5f95de"
+  message: "✅ 0SFMS7 task: record fresh evaluator pass"
 comments:
   -
     author: "CODER"
@@ -88,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -182,8 +185,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: current implementation head links terminal runtime evidence and evaluator-budget closeout coverage for fresh quality review."
+  -
+    type: "status"
+    at: "2026-07-29T09:12:32.719Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T09:11:14.460Z"
+doc_updated_at: "2026-07-29T09:12:32.735Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -706,6 +716,9 @@ sections:
       Impact: CLI now owns deterministic evidence, checks, verification, evaluation handoff, and finalization while EXECUTOR remains semantic-only.
       Resolution: Implementation evidence is frozen for EVALUATOR review; clone baseline was refreshed after confirming its sole delta is outside the RF-10a diff.
 extensions:
+  implementation_commit:
+    hash: "3532417852f2de3a06b7afeeef0311c94ff3c38a"
+    message: "🐛 0SFMS7 task: apply evaluator result after budget stop"
   workflow_route_baseline:
     start_head_sha: "950e9cd2f222c12d16e930bdb8a3e39237659651"
     version: 1
