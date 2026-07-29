@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T16:36:44.768Z",
+    "updated_by": "TESTER",
+    "note": "Verified b9e45a1: structural CI repair preserves quality-evidence routing and restores both hotspot budgets."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729163644768-ae2bb1afb3f0cb5f.json",
+      "sha256": "sha256:5f7799a3f9b22e000206fb2a27e85138668f32770b7b3871658da14e9c21825a"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}
