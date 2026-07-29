@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607291449-FTHNAR-4da53d2b305568014fbb5eeb",
+  "task_id": "202607291449-FTHNAR",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Refresh deterministic verification evidence for evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4, including every declared local check, the clean-base constrained-refspec queue proof, hosted required checks, and PR #4672/#4673 state; then obtain a fresh EVALUATOR review before publication.",
+  "findings": [
+    {
+      "id": "finding.missing-frozen-deterministic-evidence",
+      "summary": "The frozen review packet contains no deterministic check results for the evaluated SHA; the verification state and note do not prove the declared checks passed.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:368772a92441a2e556864cfc92b01df783aca11409fca2ba3dfd5a63f50d4e40",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/README.md",
+          "sha256": "sha256:71582c11416adc02051bf54857077e15a607a2c895e80d9ce5d0e4ef003c6cd0",
+          "section": "Verify Steps and latest verification event"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-result.json"
+}

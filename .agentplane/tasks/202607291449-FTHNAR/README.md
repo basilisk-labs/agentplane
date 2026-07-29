@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 56
+revision: 63
 origin:
   system: "manual"
 depends_on: []
@@ -18,40 +18,40 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-07-29T17:25:29.043Z"
+  updated_at: "2026-07-29T17:31:52.020Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T17:29:18.397Z"
+  updated_at: "2026-07-29T17:32:42.102Z"
   updated_by: "TESTER"
-  note: "Freeze command-level evidence for the constrained-refspec integration repair at semantic SHA c02ee8dc."
+  note: "Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc."
   attempts: 0
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T17:28:31.670Z"
+  updated_at: "2026-07-29T17:30:29.775Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned blocked with 1 typed finding(s)."
   evaluated_sha: "c02ee8dc3475241f03ece468902f5e54da3f68c4"
   blueprint_digest: "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e"
   evidence_refs:
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607291449-FTHNAR/README.md"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Frozen observed checks contain no declared checks, verification records, runner history, or runtime evidence; the verification note alone does not provide deterministic command-level evidence for the evaluated SHA."
+    - "The frozen review packet contains no deterministic check results for the evaluated SHA; the verification state and note do not prove the declared checks passed."
   recovery_reason: "deterministic_evidence_gap"
 commit: null
 comments:
@@ -91,6 +91,9 @@ comments:
   -
     author: "CODER"
     body: "Start: extend the constrained-refspec tracking repair to protected integration preparation and prove the queue path from the base checkout."
+  -
+    author: "CODER"
+    body: "Start: freeze semantic local evidence for EVALUATOR before entering the CLI-owned provider lane."
 events:
   -
     type: "status"
@@ -290,8 +293,27 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Freeze command-level evidence for the constrained-refspec integration repair at semantic SHA c02ee8dc."
+  -
+    type: "verify"
+    at: "2026-07-29T17:31:27.820Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Rework: separate semantic EVALUATOR evidence from post-review CLI-owned provider gates; the prior contract incorrectly required publication, queue, and hosted CI before the evaluator could permit publication."
+  -
+    type: "status"
+    at: "2026-07-29T17:31:57.059Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Start: freeze semantic local evidence for EVALUATOR before entering the CLI-owned provider lane."
+  -
+    type: "verify"
+    at: "2026-07-29T17:32:42.102Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc."
 doc_version: 3
-doc_updated_at: "2026-07-29T17:29:19.119Z"
+doc_updated_at: "2026-07-29T17:32:42.869Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -302,8 +324,8 @@ sections:
   Scope: |-
     - In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
     - Out of scope: unrelated refactors not required for "Permit evidence refresh after evaluator review gaps".
-  Plan: "1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Extend the constrained-refspec repair with one reusable Git helper that refreshes a configured task tracking ref without changing remote.fetch. 3. Require protected integration preparation to use that helper before comparing the task branch head to upstream, so base checkout validation is independent of a broad fetch refspec. 4. Keep R1 and PR #4673 as superseded traceability; FTH #4672 remains the only merge target. 5. Re-run focused core, publication, and integration-preparation regression tests; typecheck, lint, structural policy checks; prove the real integration queue can enqueue #4672 from the constrained-refspec base checkout; then obtain a fresh evaluator review, hosted matrix, and integrate."
-  Verify Steps: "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. 7. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned. 8. From a clean base checkout, run agentplane integrate queue enqueue 202607291449-FTHNAR --branch task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g. Expected: the queue accepts the published head under the constrained refspec. 9. Wait for the hosted matrix to settle. Expected: no failing required check. 10. Keep superseded PR #4673 closed without deleting its remote branch. Expected: duplicate traceability remains preserved while #4672 is the only merge target."
+  Plan: "1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Extend the constrained-refspec repair with one reusable Git helper that refreshes a configured task tracking ref without changing remote.fetch. 3. Require protected integration preparation to use that helper before comparing the task branch head to upstream, so base checkout validation is independent of a broad fetch refspec. 4. Keep R1 and PR #4673 as superseded traceability; FTH #4672 remains the only merge target. 5. Before publication, freeze only the local semantic evidence: focused unit tests, typecheck, lint, structural checks, and doctor; EVALUATOR reviews this committed evidence and the implementation SHA. 6. Only after an EVALUATOR pass, let CLI own the formal provider lane: publish #4672, prove queue enqueue from the constrained-refspec base checkout, wait for stable hosted checks, integrate, and preserve the closed #4673 traceability."
+  Verify Steps: "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. These six checks are the committed semantic evidence required before EVALUATOR can permit publication. PR publication, integration-queue proof, hosted checks, and merge are subsequent CLI-owned lifecycle gates and are not preconditions for EVALUATOR review."
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
     ### 2026-07-29T15:01:06.145Z — VERIFY — ok
@@ -953,6 +975,91 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T17:31:27.820Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Rework: separate semantic EVALUATOR evidence from post-review CLI-owned provider gates; the prior contract incorrectly required publication, queue, and hosted CI before the evaluator could permit publication.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:29:19.119Z, excerpt_hash=sha256:e1c9d5e8f8cbd66f1db536d9d156da5e024488148b63b5d102c0bb2ff216d5fb
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T17:32:42.102Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:31:57.059Z, excerpt_hash=sha256:ec6756aab319362f937cc1bb3c574ee50df8f750f2b30c433707a501f1646cd9
+
+    Details:
+
+    Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+    Result: pass
+    Evidence: 31 pass; 0 fail; 142 expectations
+    Scope: evaluator freshness and branch_pr route safety
+
+    Command: bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts
+    Result: pass
+    Evidence: 15 pass; 0 fail; constrained-refspec remote fixture covered
+    Scope: publication and reusable tracking-ref refresh
+
+    Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: 24 pass; 0 fail
+    Scope: protected integration refreshes tracking ref before upstream comparison
+
+    Command: bun run typecheck
+    Result: pass
+    Evidence: exited 0
+    Scope: TypeScript contracts
+
+    Command: focused eslint; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor
+    Result: pass
+    Evidence: lint exited 0; hotspot thresholds passed; policy routing OK; doctor errors=0
+    Scope: changed source and workflow integrity
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -1009,6 +1116,10 @@ sections:
     - Observation: The first evaluator episode blocked because its frozen snapshot predates the detailed verification record; no semantic defect was found.
       Impact: A fresh review needs committed command-level evidence, not an implementation change.
       Resolution: Commit this evidence packet, then start a new bounded evaluator episode against semantic SHA c02ee8dc.
+
+    - Observation: Current detailed record separates semantic test evidence from later provider lifecycle gates.
+      Impact: EVALUATOR can now review a complete, SHA-bound local evidence packet without circular PR prerequisites.
+      Resolution: Commit the record, obtain fresh EVALUATOR review, then enter the CLI-owned provider lane.
 extensions:
   implementation_commit:
     hash: "13d29967da9d6f5de77780ac92b3180916968b72"
@@ -1031,11 +1142,11 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 
 ## Plan
 
-1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Extend the constrained-refspec repair with one reusable Git helper that refreshes a configured task tracking ref without changing remote.fetch. 3. Require protected integration preparation to use that helper before comparing the task branch head to upstream, so base checkout validation is independent of a broad fetch refspec. 4. Keep R1 and PR #4673 as superseded traceability; FTH #4672 remains the only merge target. 5. Re-run focused core, publication, and integration-preparation regression tests; typecheck, lint, structural policy checks; prove the real integration queue can enqueue #4672 from the constrained-refspec base checkout; then obtain a fresh evaluator review, hosted matrix, and integrate.
+1. Preserve the approved evaluator evidence-refresh route and its stale-quality safeguards. 2. Extend the constrained-refspec repair with one reusable Git helper that refreshes a configured task tracking ref without changing remote.fetch. 3. Require protected integration preparation to use that helper before comparing the task branch head to upstream, so base checkout validation is independent of a broad fetch refspec. 4. Keep R1 and PR #4673 as superseded traceability; FTH #4672 remains the only merge target. 5. Before publication, freeze only the local semantic evidence: focused unit tests, typecheck, lint, structural checks, and doctor; EVALUATOR reviews this committed evidence and the implementation SHA. 6. Only after an EVALUATOR pass, let CLI own the formal provider lane: publish #4672, prove queue enqueue from the constrained-refspec base checkout, wait for stable hosted checks, integrate, and preserve the closed #4673 traceability.
 
 ## Verify Steps
 
-1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. 7. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned. 8. From a clean base checkout, run agentplane integrate queue enqueue 202607291449-FTHNAR --branch task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g. Expected: the queue accepts the published head under the constrained refspec. 9. Wait for the hosted matrix to settle. Expected: no failing required check. 10. Keep superseded PR #4673 closed without deleting its remote branch. Expected: duplicate traceability remains preserved while #4672 is the only merge target.
+1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct. 2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication and the reusable tracking-ref refresh resolve the configured upstream without changing remote.fetch. 3. Run node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000. Expected: integration preparation refreshes the configured tracking ref before comparing the published branch head. 4. Run bun run typecheck. Expected: TypeScript typecheck passes. 5. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/core/src/git/index.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.ts packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope. 6. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors. These six checks are the committed semantic evidence required before EVALUATOR can permit publication. PR publication, integration-queue proof, hosted checks, and merge are subsequent CLI-owned lifecycle gates and are not preconditions for EVALUATOR review.
 
 ## Verification
 
@@ -1687,6 +1798,91 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T17:31:27.820Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Rework: separate semantic EVALUATOR evidence from post-review CLI-owned provider gates; the prior contract incorrectly required publication, queue, and hosted CI before the evaluator could permit publication.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:29:19.119Z, excerpt_hash=sha256:e1c9d5e8f8cbd66f1db536d9d156da5e024488148b63b5d102c0bb2ff216d5fb
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T17:32:42.102Z — VERIFY — ok
+
+By: TESTER
+
+Note: Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T17:31:57.059Z, excerpt_hash=sha256:ec6756aab319362f937cc1bb3c574ee50df8f750f2b30c433707a501f1646cd9
+
+Details:
+
+Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
+Result: pass
+Evidence: 31 pass; 0 fail; 142 expectations
+Scope: evaluator freshness and branch_pr route safety
+
+Command: bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts
+Result: pass
+Evidence: 15 pass; 0 fail; constrained-refspec remote fixture covered
+Scope: publication and reusable tracking-ref refresh
+
+Command: node node_modules/vitest/vitest.mjs --config vitest.workspace.ts run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts --project agentplane --pool=forks --maxWorkers 1 --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: 24 pass; 0 fail
+Scope: protected integration refreshes tracking ref before upstream comparison
+
+Command: bun run typecheck
+Result: pass
+Evidence: exited 0
+Scope: TypeScript contracts
+
+Command: focused eslint; bun run hotspots:check; node .agentplane/policy/check-routing.mjs; node packages/agentplane/bin/agentplane.js doctor
+Result: pass
+Evidence: lint exited 0; hotspot thresholds passed; policy routing OK; doctor errors=0
+Scope: changed source and workflow integrity
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -1747,3 +1943,7 @@ DecisionContextRef:
 - Observation: The first evaluator episode blocked because its frozen snapshot predates the detailed verification record; no semantic defect was found.
   Impact: A fresh review needs committed command-level evidence, not an implementation change.
   Resolution: Commit this evidence packet, then start a new bounded evaluator episode against semantic SHA c02ee8dc.
+
+- Observation: Current detailed record separates semantic test evidence from later provider lifecycle gates.
+  Impact: EVALUATOR can now review a complete, SHA-bound local evidence packet without circular PR prerequisites.
+  Resolution: Commit the record, obtain fresh EVALUATOR review, then enter the CLI-owned provider lane.

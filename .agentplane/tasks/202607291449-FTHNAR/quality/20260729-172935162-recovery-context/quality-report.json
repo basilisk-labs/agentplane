@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T17:30:29.775Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "c02ee8dc3475241f03ece468902f5e54da3f68c4",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "The frozen review packet contains no deterministic check results for the evaluated SHA; the verification state and note do not prove the declared checks passed."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172935162-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607291449-FTHNAR/README.md"
+  ],
+  "missing_tests": [
+    "Freeze command-level results for the focused workflow routing tests, constrained-refspec Git/publication tests, integration-preparation tests, typecheck, focused lint, hotspot check, policy routing check, and doctor at evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4.",
+    "Freeze evidence that the real integration queue accepts PR #4672 from a clean constrained-refspec base checkout.",
+    "Freeze hosted required-check results and proof that PR #4673 remains closed while PR #4672 is the sole merge target."
+  ],
+  "hidden_assumptions": [
+    "The latest TESTER verification note is assumed to summarize successful command execution despite the frozen observed-checks artifact containing no command results.",
+    "Earlier verification records are assumed to remain applicable to evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4 without SHA-bound frozen evidence.",
+    "The constrained-refspec queue behavior is assumed to match unit-test behavior without frozen real-queue evidence."
+  ],
+  "residual_risks": [
+    "Refresh deterministic verification evidence for evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4, including every declared local check, the clean-base constrained-refspec queue proof, hosted required checks, and PR #4672/#4673 state; then obtain a fresh EVALUATOR review before publication."
+  ]
+}

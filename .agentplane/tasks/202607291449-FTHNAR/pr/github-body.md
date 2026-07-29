@@ -16,7 +16,7 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 ## Verification
 
 - State: ok
-- Note: Freeze command-level evidence for the constrained-refspec integration repair at semantic SHA c02ee8dc.
+- Note: Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc.
 - Canonical workflow state lives in the task README.
 
 <details>
