@@ -19,9 +19,8 @@ Restore a bounded recovery route when an evaluator blocks a task only because fr
 - Note:
 
 ```text
-Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers
-6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet
-passed.
+Verified d96688db: fresh deterministic evidence covers all declared checks plus the independent
+blocked-quality-review regression.
 ```
 - Canonical workflow state lives in the task README.
 
