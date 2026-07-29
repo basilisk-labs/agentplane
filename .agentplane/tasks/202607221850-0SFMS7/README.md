@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 46
+revision: 47
 origin:
   system: "manual"
 depends_on:
@@ -43,35 +43,34 @@ verification:
   note: "Verified: runner directory race rework covers all declared checks for fresh quality review."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T09:59:16.528Z"
+  updated_at: "2026-07-29T10:03:10.768Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
   evaluated_sha: "9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/verification/20260729095623537-88ebeb3cb3be93c9.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/verification/20260729100055381-8624723a62f9383c.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json"
     - ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-095712139-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The current verification record for evaluated SHA 9722a740 does not record execution of three mandatory declared checks: coverage:workflow-suite, lifecycle:invariants, and test:critical. No approved skips are recorded."
+    - "Замороженные доказательства подтверждают устранение гонки создания каталога runner и сохранение полного прямого цикла: конкурентный тест стабильно выбирает одного победителя, все обязательные проверки проходят, а контрольный запуск завершается терминальным состоянием completed."
 commit:
   hash: "c227a05894c847b262ac193d72db1dc41f8a8b35"
   message: "✅ 0SFMS7 task: record compact work-order quality pass"
@@ -224,7 +223,7 @@ events:
     state: "ok"
     note: "Verified: runner directory race rework covers all declared checks for fresh quality review."
 doc_version: 3
-doc_updated_at: "2026-07-29T10:00:56.232Z"
+doc_updated_at: "2026-07-29T10:03:10.794Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:

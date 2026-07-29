@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "low",
+      "summary": "Замороженные доказательства подтверждают устранение гонки создания каталога runner и сохранение полного прямого цикла: конкурентный тест стабильно выбирает одного победителя, все обязательные проверки проходят, а контрольный запуск завершается терминальным состоянием completed.",
+      "broken_invariant": "Нарушений утверждённого контракта не обнаружено: конкурентное создание общего каталога корректно обрабатывает EEXIST, обязательные проверки зафиксированы, а supervisor сохраняет терминальный результат без stale-route исполнения.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-100155802-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:a812cf2e0c1add462bc11b49c434cae984413a15837d5e46eb63789febc9ba3c",
+          "section": "packages/agentplane/src/runner/run-directory-boundary.ts and effect-operation.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729100055381-8624723a62f9383c.json",
+          "sha256": "sha256:5a28c4e5642743e2e392fe548b18ae8531623a58ba7aab9939f3b0794231d677",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json",
+          "sha256": "sha256:0d2fffa7cef94e3be7c7d682a31939e28c4aa3127131f7ebd4407f62fbf43cea",
+          "section": "status and stop"
+        },
+        {
+          "path": ".agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json",
+          "sha256": "sha256:0e624b2c42a3b455891b55778b00fa0dc9e16032ecfc84b8ce1d6e7e0e3c500d",
+          "section": "comparison"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Контрольный golden-path запуск предшествует точечной правке обработки EEXIST; отсутствие регрессии для этой правки подтверждается повторённым 80 раз межпроцессным тестом и полным набором обязательных проверок, а не новым live-запуском."
+  ]
+}
