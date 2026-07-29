@@ -799,6 +799,7 @@ describeCritical("critical: RF-04 replay hardening boundaries", () => {
       AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harness.sha256,
       AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
       AGENTPLANE_RF04_REPLAY_RUN_ID: "adapter_failure/run-01",
+      AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: "0.145.0-alpha.18",
     };
     const previousDirectory = process.cwd();
     let observedFixtureRoot = "";

@@ -42,6 +42,7 @@ export const REPLAY_CONTRACT_ENV_KEYS = Object.freeze([
   "AGENTPLANE_RF04_REPLAY_HARNESS_SHA256",
   "AGENTPLANE_RF04_REPLAY_OUTPUT",
   "AGENTPLANE_RF04_REPLAY_RUN_ID",
+  "AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION",
 ]);
 
 export function replayDriverDiagnosticCode(stderrBytes) {

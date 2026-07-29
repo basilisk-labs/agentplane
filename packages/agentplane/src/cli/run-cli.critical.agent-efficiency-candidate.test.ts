@@ -88,6 +88,7 @@ async function loadCandidateFixture() {
   for (const envelope of envelopes) {
     const value = envelope.value as Json;
     const anchor = value.anchor as Json;
+    anchor.driver = clone(driver);
     anchor.subject_sha = CANDIDATE_SHA;
     anchor.fixture_registry_sha256 = baseline.fixtureRegistrySha256(candidateRegistry);
     anchor.harness_sha256 = harness.sha256;
@@ -116,6 +117,10 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     expect((measurement.candidate as Json).subject_sha).toBe(CANDIDATE_SHA);
     expect(((measurement.candidate as Json).actual_values as Json).provider_episodes).toBe(55);
     expect(((measurement.candidate as Json).coverage as Json).replay_runs).toBe(50);
+    expect(((measurement.candidate as Json).runtime_profile as Json).runtime_version).toBe(
+      "0.6.24/0.145.0-alpha.18",
+    );
+    expect((measurement.runtime_comparison as Json).profile_match).toBe(true);
     expect(
       (measurement.comparisons as Json[]).some(
         (entry) => entry.id === "provider_tokens.total_tokens",
@@ -163,5 +168,21 @@ describeCritical("critical: RF-04 candidate measurement", () => {
     expect(measurement.failure_ids as string[]).toContain(
       "latency.time_to_first_scoped_mutation_ms.sample_count",
     );
+  });
+
+  it("binds an explicitly declared candidate Codex version to every envelope profile", async () => {
+    const fixture = await loadCandidateFixture();
+    expect(() =>
+      fixture.candidate.buildCandidateMeasurement({
+        candidateAnchor: CANDIDATE_SHA,
+        candidateCodexCliVersion: "0.146.0-alpha.3.1",
+        candidateDependencyClaim: fixture.dependency,
+        candidateDriverIdentity: fixture.driver,
+        candidateEnvelopeRecords: fixture.envelopes,
+        candidateEvidenceRecords: fixture.evidence,
+        candidateHarnessManifest: fixture.harness,
+        candidateRegistry: fixture.candidateRegistry,
+      }),
+    ).toThrow("runtime profile does not bind declared Codex CLI version");
   });
 });

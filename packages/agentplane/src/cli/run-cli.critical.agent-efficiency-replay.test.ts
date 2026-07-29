@@ -306,7 +306,11 @@ function testContractEnvironment(): Record<string, string> {
       "HARNESS_SHA256",
       "OUTPUT",
       "RUN_ID",
-    ].map((suffix) => [`AGENTPLANE_RF04_REPLAY_${suffix}`, `fixture-${suffix}`]),
+      "CODEX_CLI_VERSION",
+    ].map((suffix) => [
+      `AGENTPLANE_RF04_REPLAY_${suffix}`,
+      suffix === "CODEX_CLI_VERSION" ? "0.145.0-alpha.18" : `fixture-${suffix}`,
+    ]),
   );
 }
 

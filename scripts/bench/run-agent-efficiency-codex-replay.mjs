@@ -23,10 +23,10 @@ import {
 } from "./internal/agent-efficiency-anchor-supervisor.mjs";
 import { buildAnchorRuntime } from "./internal/agent-efficiency-anchor-runtime.mjs";
 import {
-  CODEX_REPLAY_CLI_VERSION,
   ReplayDriverError,
   assertCodexBinary,
   fail,
+  resolveCodexReplayCliVersion,
   runCodexEpisode,
 } from "./internal/agent-efficiency-codex-runtime.mjs";
 import {
@@ -46,6 +46,7 @@ export { buildAnchorProcessEnvironment } from "./internal/agent-efficiency-ancho
 export {
   CODEX_REPLAY_BINARY,
   CODEX_REPLAY_CLI_VERSION,
+  CODEX_REPLAY_CLI_VERSION_ENV,
   CODEX_REPLAY_MODEL,
   CODEX_REPLAY_REASONING_EFFORT,
   CODEX_REPLAY_TURN_TIMEOUT_MS,
@@ -53,6 +54,7 @@ export {
   buildCodexReplayEnvironment,
   createCodexJsonlCollector,
   finalizeCodexJsonlCollector,
+  resolveCodexReplayCliVersion,
 } from "./internal/agent-efficiency-codex-runtime.mjs";
 
 const PROVIDER_FIELDS = ["input_tokens", "output_tokens", "reasoning_output_tokens"];
@@ -239,6 +241,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
   const assertRuntime = dependencies.assertCodexBinary ?? assertCodexBinary;
   const executeEpisode = dependencies.runCodexEpisode ?? runCodexEpisode;
   assertRuntime();
+  const runtimeCliVersion = resolveCodexReplayCliVersion();
   const harnessStartedAt = performance.now();
   const anchorRuntime = buildAnchorRuntime(subjectRoot, anchor, dependencyClaim);
   const cliPath = anchorRuntime.cliPath;
@@ -496,7 +499,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
     host_fingerprint: sha256(
       canonicalBytes({
         arch: process.arch,
-        codex_cli_version: CODEX_REPLAY_CLI_VERSION,
+        codex_cli_version: runtimeCliVersion,
         node: process.versions.node,
         platform: process.platform,
       }),
@@ -573,6 +576,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
     runIndex: options.runIndex,
     scenarioId: options.scenarioId,
     supervisorReceipt,
+    runtimeCliVersion,
   });
   writeCanonicalAtomic(options.evidenceOutputPath, evidenceBundle);
   writeCanonicalAtomic(options.outputPath, envelope);

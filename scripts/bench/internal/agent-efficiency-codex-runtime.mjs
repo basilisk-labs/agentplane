@@ -4,6 +4,7 @@ import path from "node:path";
 
 export const CODEX_REPLAY_BINARY = "/Applications/ChatGPT.app/Contents/Resources/codex";
 export const CODEX_REPLAY_CLI_VERSION = "0.145.0-alpha.18";
+export const CODEX_REPLAY_CLI_VERSION_ENV = "AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION";
 export const CODEX_REPLAY_MODEL = "gpt-5.6-terra";
 export const CODEX_REPLAY_REASONING_EFFORT = "low";
 export const CODEX_REPLAY_TURN_TIMEOUT_MS = 240_000;
@@ -14,6 +15,7 @@ const MAX_JSONL_TOTAL_BYTES = 16 * 1024 * 1024;
 const MAX_STDERR_BYTES = 1024 * 1024;
 const SUPERVISOR_COMMAND_TIMEOUT_MS = 120_000;
 const PROVIDER_FIELDS = ["input_tokens", "output_tokens", "reasoning_output_tokens"];
+const CODEX_CLI_VERSION_PATTERN = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/u;
 
 export class ReplayDriverError extends Error {
   constructor(code) {
@@ -66,7 +68,15 @@ export function runSanitizedCommand(command, args, options = {}) {
   return result.stdout;
 }
 
-export function assertCodexBinary() {
+export function resolveCodexReplayCliVersion(source = process.env) {
+  const version = source[CODEX_REPLAY_CLI_VERSION_ENV] ?? CODEX_REPLAY_CLI_VERSION;
+  if (typeof version !== "string" || !CODEX_CLI_VERSION_PATTERN.test(version)) {
+    fail("CODEX_VERSION_CONTRACT");
+  }
+  return version;
+}
+
+export function assertCodexBinary(source = process.env) {
   const stats = lstatSync(CODEX_REPLAY_BINARY, { throwIfNoEntry: false });
   if (!stats?.isFile() || stats.isSymbolicLink()) fail("CODEX_BINARY");
   if (path.resolve(realpathSync(CODEX_REPLAY_BINARY)) !== path.resolve(CODEX_REPLAY_BINARY)) {
@@ -75,7 +85,9 @@ export function assertCodexBinary() {
   const version = runSanitizedCommand(CODEX_REPLAY_BINARY, ["--version"], {
     code: "CODEX_VERSION_COMMAND",
   }).trim();
-  if (version !== `codex-cli ${CODEX_REPLAY_CLI_VERSION}`) fail("CODEX_VERSION_MISMATCH");
+  const expected = resolveCodexReplayCliVersion(source);
+  if (version !== `codex-cli ${expected}`) fail("CODEX_VERSION_MISMATCH");
+  return expected;
 }
 
 export function createCodexJsonlCollector() {

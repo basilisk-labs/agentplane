@@ -51,6 +51,7 @@ import {
   initializeAnchorCheckout,
   installFixtureRegistryOverlay,
 } from "./internal/agent-efficiency-capture-runtime.mjs";
+import { CODEX_REPLAY_CLI_VERSION } from "./internal/agent-efficiency-codex-runtime.mjs";
 
 export { buildReplayGitEnvironment } from "../lib/agent-efficiency-replay-safety.mjs";
 export { replayAnchorCloneArgs } from "./internal/agent-efficiency-capture-runtime.mjs";
@@ -333,6 +334,7 @@ function captureWithDriver({
           AGENTPLANE_RF04_REPLAY_HARNESS_SHA256: harnessManifest.sha256,
           AGENTPLANE_RF04_REPLAY_OUTPUT: outputPath,
           AGENTPLANE_RF04_REPLAY_RUN_ID: runId,
+          AGENTPLANE_RF04_REPLAY_CODEX_CLI_VERSION: CODEX_REPLAY_CLI_VERSION,
         };
         runChecked(
           process.execPath,
