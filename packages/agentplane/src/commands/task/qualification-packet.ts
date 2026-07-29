@@ -38,12 +38,12 @@ type QualificationVerificationRecord = {
   digest: string;
 };
 
-export type QualificationPacket = {
+type QualificationPacket = {
   schema_version: 1;
   kind: typeof QUALIFICATION_PACKET_KIND;
   task_id: string;
   prepared_at: string;
-  reviewed_sha: string;
+  implementation_sha: string;
   verification: {
     record_path: string;
     record_sha256: `sha256:${string}`;
@@ -82,6 +82,12 @@ export type QualificationPacket = {
   };
   rf04: QualificationRf04Comparison;
   digest: `sha256:${string}`;
+};
+
+export type CurrentQualificationPacket = {
+  path: string;
+  file_sha256: `sha256:${string}`;
+  packet: QualificationPacket;
 };
 
 function sha256(value: string | Buffer): `sha256:${string}` {
@@ -336,13 +342,13 @@ export async function writeQualificationPacket(opts: {
       message: `Qualification verification record for ${opts.task.id} lacks a reviewed implementation SHA.`,
     });
   }
-  const reviewedSha = record.implementation_sha;
+  const implementationSha = record.implementation_sha;
   const packetWithoutDigest: Omit<QualificationPacket, "digest"> = {
     schema_version: 1,
     kind: QUALIFICATION_PACKET_KIND,
     task_id: opts.task.id,
     prepared_at: opts.recordedAt,
-    reviewed_sha: reviewedSha,
+    implementation_sha: implementationSha,
     verification: {
       record_path: relative(gitRoot, opts.recordPath),
       record_sha256: sha256(recordJson.raw),
@@ -351,13 +357,13 @@ export async function writeQualificationPacket(opts: {
       result: "ok",
       verifier: record.verifier,
       note: record.note,
-      implementation_sha: reviewedSha,
+      implementation_sha: implementationSha,
       checks,
     },
     dependency_closure: await buildDependencyClosure({
       ctx: opts.ctx,
       task: opts.task,
-      reviewedSha,
+      reviewedSha: implementationSha,
     }),
     rf04: await buildQualificationRf04Comparison({ gitRoot, checks }),
   };
@@ -381,7 +387,7 @@ function parseQualificationPacket(value: unknown, task: TaskData): Qualification
     value.schema_version !== 1 ||
     value.kind !== QUALIFICATION_PACKET_KIND ||
     value.task_id !== task.id ||
-    !isSha(value.reviewed_sha) ||
+    !isSha(value.implementation_sha) ||
     typeof digest !== "string" ||
     !SHA256_PATTERN.test(digest) ||
     digest !== sha256(JSON.stringify(canonicalizeJson(payload)))
@@ -394,7 +400,7 @@ function parseQualificationPacket(value: unknown, task: TaskData): Qualification
     verification.recorded_at !== task.verification?.updated_at ||
     verification.verifier !== task.verification?.updated_by ||
     verification.note !== task.verification?.note ||
-    verification.implementation_sha !== value.reviewed_sha ||
+    verification.implementation_sha !== value.implementation_sha ||
     !Array.isArray(verification.checks) ||
     verification.checks.length === 0
   ) {
@@ -407,7 +413,7 @@ export async function readCurrentQualificationPacket(opts: {
   gitRoot: string;
   workflowDir: string;
   task: TaskData;
-}): Promise<{ path: string; packet: QualificationPacket } | null> {
+}): Promise<CurrentQualificationPacket | null> {
   if (!isQualificationTask(opts.task)) return null;
   const filePath = qualificationPacketPath({
     gitRoot: opts.gitRoot,
@@ -417,8 +423,127 @@ export async function readCurrentQualificationPacket(opts: {
   try {
     const raw = await readFile(filePath, "utf8");
     const parsed = parseQualificationPacket(JSON.parse(raw), opts.task);
-    return parsed ? { path: filePath, packet: parsed } : null;
+    return parsed ? { path: filePath, file_sha256: sha256(raw), packet: parsed } : null;
   } catch {
     return null;
   }
+}
+
+type PinnedQualificationArtifact = {
+  label: string;
+  path: string;
+  sha256: `sha256:${string}`;
+};
+
+function qualificationPinnedArtifacts(
+  opts: CurrentQualificationPacket,
+  gitRoot: string,
+): PinnedQualificationArtifact[] {
+  const packet = opts.packet;
+  const artifacts: PinnedQualificationArtifact[] = [
+    {
+      label: "qualification packet",
+      path: relative(gitRoot, opts.path),
+      sha256: opts.file_sha256,
+    },
+    {
+      label: "qualification verification record",
+      path: packet.verification.record_path,
+      sha256: packet.verification.record_sha256,
+    },
+    {
+      label: "RF-04 main baseline",
+      path: packet.rf04.main_baseline.path,
+      sha256: packet.rf04.main_baseline.sha256,
+    },
+    {
+      label: "RF-04 replay baseline",
+      path: packet.rf04.replay_comparison.baseline.path,
+      sha256: packet.rf04.replay_comparison.baseline.sha256,
+    },
+  ];
+  for (const leaf of packet.dependency_closure.leaves) {
+    artifacts.push(
+      {
+        label: `qualification leaf ${leaf.task_id} task document`,
+        path: leaf.hosted_close.task_document.path,
+        sha256: leaf.hosted_close.task_document.sha256,
+      },
+      {
+        label: `qualification leaf ${leaf.task_id} PR metadata`,
+        path: leaf.hosted_close.pr_meta.path,
+        sha256: leaf.hosted_close.pr_meta.sha256,
+      },
+      {
+        label: `qualification leaf ${leaf.task_id} quality report`,
+        path: leaf.evaluator.quality_report.path,
+        sha256: leaf.evaluator.quality_report.sha256,
+      },
+    );
+  }
+  return artifacts;
+}
+
+async function readFileAtCommit(opts: {
+  gitRoot: string;
+  commit: string;
+  artifact: PinnedQualificationArtifact;
+}): Promise<string> {
+  const absolutePath = path.resolve(opts.gitRoot, opts.artifact.path);
+  assertPathWithinRoot(opts.gitRoot, absolutePath, opts.artifact.label);
+  const normalizedPath = relative(opts.gitRoot, absolutePath);
+  try {
+    const { stdout } = await execFileAsync("git", ["show", `${opts.commit}:${normalizedPath}`], {
+      cwd: opts.gitRoot,
+    });
+    return String(stdout);
+  } catch {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Qualification review requires current HEAD to contain the exact qualification packet, verification record, and dependency evidence. Commit task artifacts before evaluator review.",
+    });
+  }
+}
+
+/**
+ * The evaluator may only review a commit that contains every artifact named by
+ * the packet. The packet retains the implementation SHA separately; this
+ * sealing commit makes the immutable evidence itself reviewable.
+ */
+export async function resolveQualificationEvidenceCommit(opts: {
+  gitRoot: string;
+  qualificationPacket: CurrentQualificationPacket;
+}): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: opts.gitRoot });
+  const commit = String(stdout).trim();
+  if (!isSha(commit)) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message: "Qualification review requires a resolvable current HEAD commit.",
+    });
+  }
+  const seen = new Map<string, `sha256:${string}`>();
+  for (const artifact of qualificationPinnedArtifacts(opts.qualificationPacket, opts.gitRoot)) {
+    const previous = seen.get(artifact.path);
+    if (previous && previous !== artifact.sha256) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Qualification packet declares conflicting hashes for ${artifact.path}.`,
+      });
+    }
+    seen.set(artifact.path, artifact.sha256);
+    const contents = await readFileAtCommit({
+      gitRoot: opts.gitRoot,
+      commit,
+      artifact,
+    });
+    if (sha256(contents) !== artifact.sha256) {
+      throw new CliError({
+        code: "E_VALIDATION",
+        message: `Qualification evidence at current HEAD does not match the sealed packet: ${artifact.label}.`,
+      });
+    }
+  }
+  return commit;
 }
