@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:66c8219bc60de667ed44bb3a5bd79509d7e0d437a44de4f1e0f4a04cc879a36a",
+  "implementation_sha": "d96688db9606265c051cdeabb626925092a879ef",
+  "kind": "task_verification_record",
+  "note": "Verification: semantic-target routing 25/25, evaluator calibration 11/11, quality-review blockers 6/6, route decision 10/10, policy routing, doctor, formatting, diff check, and compatibility ratchet passed.",
+  "recorded_at": "2026-07-29T16:17:48.714Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
+  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
+  "verifier": "TESTER"
+}
