@@ -6,14 +6,14 @@ Created: 2026-07-29T14:50:37.577Z
 
 - Task: `202607291449-FTHNAR`
 - Title: Permit evidence refresh after evaluator review gaps
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
 - Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: include the dependent constrained-refspec publication repair so the FTH PR can complete its own evaluator and publication lifecycle without manual upstream mutation.
+- State: ok
+- Note: Combined FTH and constrained-refspec regression checks passed before primary PR publication.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T17:09:33.602Z",
+    "updated_by": "TESTER",
+    "note": "Combined FTH and constrained-refspec regression checks passed before primary PR publication."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729170933602-8e378ff840124c4c.json",
+      "sha256": "sha256:c23d29edbf690c289704ad54ffb8d00b4ed6f07701d9addd9a1e1549f6bf88ca"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}
