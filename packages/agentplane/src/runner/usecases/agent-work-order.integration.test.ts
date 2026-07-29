@@ -39,7 +39,7 @@ type WorkOrderView = {
     };
     verification_intent: unknown;
   };
-  work_order_preparation: {
+  work_order_preparation?: {
     remote_policy: unknown;
     route: unknown;
     source_manifest: unknown;
@@ -54,6 +54,8 @@ type WorkOrderView = {
     };
   };
 };
+
+type WorkOrderPreparationView = NonNullable<WorkOrderView["work_order_preparation"]>;
 
 async function captureRunnerWorkOrder(opts: {
   taskId: string;
@@ -141,11 +143,13 @@ function canonicalWorkOrderSignature(view: WorkOrderView): object {
   return {
     work_order_id: view.work_order.work_order_id,
     state_fingerprint: view.work_order.state_fingerprint,
-    remote_policy: view.work_order_preparation.remote_policy,
-    route: view.work_order_preparation.route,
-    source_manifest: view.work_order_preparation.source_manifest,
     verification_intent: view.work_order.verification_intent,
   };
+}
+
+function canonicalPreparationSignature(view: WorkOrderView): WorkOrderPreparationView {
+  if (!view.work_order_preparation) throw new Error("expected work-order preparation projection");
+  return view.work_order_preparation;
 }
 
 function expectSnakeCaseOnly(value: unknown): void {
@@ -245,17 +249,21 @@ describe("AgentWorkOrder v2 surface integration", () => {
       });
 
       const expected = canonicalWorkOrderSignature(brief);
+      const expectedPreparation = canonicalPreparationSignature(brief);
       expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
       expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
       expect(canonicalWorkOrderSignature(runnerView)).toEqual(expected);
+      expect(canonicalPreparationSignature(nextAction)).toEqual(expectedPreparation);
+      expect(canonicalPreparationSignature(hermes)).toEqual(expectedPreparation);
+      expect(runnerView.work_order_preparation).toBeUndefined();
       if (workflowMode === "branch_pr") {
         expect(runnerView.execution).toMatchObject({
           sandbox_policy: { requested: "read-only", source: "route_authority" },
           write_scope: { writable_roots: [] },
         });
       }
-      for (const view of [brief, nextAction, hermes, runnerView]) {
-        expect(view.work_order_preparation.remote_policy).toMatchObject({
+      for (const view of [brief, nextAction, hermes]) {
+        expect(canonicalPreparationSignature(view).remote_policy).toMatchObject({
           mode: "local",
           requested: false,
         });
@@ -264,10 +272,11 @@ describe("AgentWorkOrder v2 surface integration", () => {
       // V1 remains an explicit outer compatibility view; the embedded V2 surface has one casing.
       expect(brief.contract).toBeTruthy();
       expect(nextAction.workflowStep).toBeTruthy();
-      for (const view of [brief, nextAction, hermes, runnerView]) {
+      for (const view of [brief, nextAction, hermes]) {
         expectSnakeCaseOnly(view.work_order);
         expectSnakeCaseOnly(view.work_order_preparation);
       }
+      expectSnakeCaseOnly(runnerView.work_order);
     }
   });
 
@@ -349,11 +358,15 @@ describe("AgentWorkOrder v2 surface integration", () => {
     const runner = await captureRunnerWorkOrder({ taskId, root: worktree, remote: true });
 
     const expected = canonicalWorkOrderSignature(brief);
+    const expectedPreparation = canonicalPreparationSignature(brief);
     expect(canonicalWorkOrderSignature(nextAction)).toEqual(expected);
     expect(canonicalWorkOrderSignature(hermes)).toEqual(expected);
     expect(canonicalWorkOrderSignature(runner)).toEqual(expected);
-    for (const view of [brief, nextAction, hermes, runner]) {
-      expect(view.work_order_preparation.remote_policy).toMatchObject({
+    expect(canonicalPreparationSignature(nextAction)).toEqual(expectedPreparation);
+    expect(canonicalPreparationSignature(hermes)).toEqual(expectedPreparation);
+    expect(runner.work_order_preparation).toBeUndefined();
+    for (const view of [brief, nextAction, hermes]) {
+      expect(canonicalPreparationSignature(view).remote_policy).toMatchObject({
         mode: "remote",
         requested: true,
       });
