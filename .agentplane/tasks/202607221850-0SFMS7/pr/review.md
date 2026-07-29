@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: RF-10a rework verified on commit 21049ad18.
+- Note: RF-10a direct supervision is verified with a finalized live golden path, active-binary docs checks, bounded EVALUATOR process-tree coverage, observed efficiency metrics, and full repository gates.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -31,13 +31,15 @@ Created: 2026-07-29T01:35:45.453Z
 ```text
  .../run-cli.core.direct-task-supervision.test.ts   |  68 ++
  ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
+ .../evaluator/evaluator-episode.stdin.test.ts      |  37 +-
+ .../src/commands/evaluator/evaluator-episode.ts    |  26 +-
  .../evaluator/evaluator-review-artifacts.ts        | 100 +++
  .../commands/evaluator/evaluator-review-usecase.ts | 113 ++-
  .../evaluator/evaluator-run.command.test.ts        |  43 ++
  .../src/commands/shared/workflow-step-factory.ts   |  20 +-
  .../shared/workflow-step-projections.test.ts       |  16 +-
- .../commands/task/direct-task-finalization.test.ts | 210 ++++++
- .../src/commands/task/direct-task-finalization.ts  | 353 +++++++++
+ .../commands/task/direct-task-finalization.test.ts | 221 ++++++
+ .../src/commands/task/direct-task-finalization.ts  | 352 +++++++++
  .../task/direct-task-supervision-benchmark.test.ts |  94 +++
  .../task/direct-task-supervision-benchmark.ts      |  60 ++
  .../direct-task-supervision-measurement.test.ts    |  36 +
@@ -53,12 +55,16 @@ Created: 2026-07-29T01:35:45.453Z
  .../commands/task/direct-task-supervisor-result.ts | 140 ++++
  .../commands/task/direct-task-supervisor.test.ts   | 787 +++++++++++++++++++++
  .../src/commands/task/direct-task-supervisor.ts    | 522 ++++++++++++++
- .../commands/task/direct-task-verification.test.ts | 104 +++
- .../src/commands/task/direct-task-verification.ts  | 131 ++++
+ .../commands/task/direct-task-verification.test.ts | 138 ++++
+ .../src/commands/task/direct-task-verification.ts  | 168 +++++
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
+ .../task-run-bootstrap.result-examples.test.ts     |  14 +-
+ .../src/runner/usecases/task-run-bootstrap.ts      |  11 +-
+ .../usecases/task-run-context.integration.test.ts  |   3 +
+ .../agentplane/src/runner/usecases/task-run.ts     |   6 -
  scripts/baselines/clone-baseline.json              |  24 +-
- 29 files changed, 3952 insertions(+), 155 deletions(-)
+ 35 files changed, 4111 insertions(+), 174 deletions(-)
 ```
 
 </details>
