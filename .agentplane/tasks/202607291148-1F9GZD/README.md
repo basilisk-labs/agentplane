@@ -2,10 +2,10 @@
 id: "202607291148-1F9GZD"
 title: "Formalize SHA-bound qualification packets for evaluator review"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 28
+revision: 29
 origin:
   system: "manual"
 depends_on: []
@@ -52,7 +52,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The frozen diff and SHA-bound verification record cover qualification-packet construction, stale-SHA rejection, transitive dependency closure, RF-04 comparison, and evaluator routing at the evaluated implementation SHA."
-commit: null
+commit:
+  hash: "51d0f286c5ca471f6e5eb3e155912a568ac5c841"
+  message: "📝 1F9GZD task: record passing evaluator review"
 comments:
   -
     author: "CODER"
@@ -63,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Reworked: evaluator now targets a sealing commit that contains and hash-matches the qualification packet, durable verification record, RF-04 baselines, and per-leaf artifacts."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
@@ -137,8 +142,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused evaluator suite and full ci:contract pass after the hotspot-cap rework and measured clone-baseline refresh at implementation SHA 63c835c88a1bd02975282e985040f95a7f9db0f8."
+  -
+    type: "status"
+    at: "2026-07-29T19:57:57.193Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T19:55:12.109Z"
+doc_updated_at: "2026-07-29T19:57:57.194Z"
 doc_updated_by: "CODER"
 description: "Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9."
 sections:
@@ -436,6 +448,9 @@ sections:
       Impact: No SHA-bound passing ci:contract record can be frozen, so the evaluator correctly blocks qualification.
       Resolution: Recover the clone baseline in a dedicated integration task, then rerun ci:contract and freeze verification for the implementation SHA.
 extensions:
+  implementation_commit:
+    hash: "63c835c88a1bd02975282e985040f95a7f9db0f8"
+    message: "🧪 1F9GZD task: format clone guard baseline"
   workflow_route_baseline:
     start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
     version: 1
