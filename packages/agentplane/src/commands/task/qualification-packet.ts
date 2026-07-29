@@ -25,6 +25,7 @@ import {
   readFileAtGitCommit,
   relativeToGitRoot,
 } from "./qualification-packet-artifacts.js";
+import { resolveQualificationDependencyLeaves } from "./qualification-packet-dependencies.js";
 
 const QUALIFICATION_PACKET_FILE = "qualification-packet.v1.json";
 const QUALIFICATION_PACKET_KIND = "task_qualification_packet";
@@ -62,7 +63,8 @@ type QualificationPacket = {
     checks: VerificationCheckDetail[];
   };
   dependency_closure: {
-    declared_leaf_ids: string[];
+    root_dependency_ids: string[];
+    terminal_leaf_ids: string[];
     leaves: {
       task_id: string;
       status: "DONE";
@@ -223,22 +225,14 @@ async function buildDependencyClosure(opts: {
 }): Promise<QualificationPacket["dependency_closure"]> {
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const workflowDir = opts.ctx.config.paths.workflow_dir;
-  const declaredLeafIds = [...new Set(opts.task.depends_on)].toSorted();
-  if (declaredLeafIds.length === 0) {
-    throw new CliError({
-      code: "E_VALIDATION",
-      message: `Qualification task ${opts.task.id} must declare at least one dependency leaf.`,
-    });
-  }
+  const dependencies = await resolveQualificationDependencyLeaves({
+    backend: opts.ctx.taskBackend,
+    taskId: opts.task.id,
+    dependsOn: opts.task.depends_on,
+  });
   const leaves = await Promise.all(
-    declaredLeafIds.map(async (taskId) => {
-      const leaf = await opts.ctx.taskBackend.getTask(taskId);
-      if (!leaf) {
-        throw new CliError({
-          code: "E_VALIDATION",
-          message: `Qualification dependency leaf ${taskId} is missing from the task backend.`,
-        });
-      }
+    dependencies.terminalLeaves.map(async (leaf) => {
+      const taskId = leaf.id;
       if (normalizeTaskStatus(leaf.status) !== "DONE") {
         throw new CliError({
           code: "E_VALIDATION",
@@ -327,7 +321,11 @@ async function buildDependencyClosure(opts: {
       };
     }),
   );
-  return { declared_leaf_ids: declaredLeafIds, leaves };
+  return {
+    root_dependency_ids: dependencies.rootDependencyIds,
+    terminal_leaf_ids: dependencies.terminalLeaves.map((leaf) => leaf.id),
+    leaves,
+  };
 }
 
 export async function writeQualificationPacket(opts: {
