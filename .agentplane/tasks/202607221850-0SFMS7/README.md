@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 41
+revision: 42
 origin:
   system: "manual"
 depends_on:
@@ -76,8 +76,8 @@ quality_review:
   findings:
     - "Реализация и замороженные доказательства покрывают полный прямой цикл: EXECUTOR не выполняет lifecycle-вызовы, маршруты пересчитываются после операций, отрицательные и типизированные остановки проверены, область записи ограничена, журнал достигает терминального состояния, а затраты ниже базовой линии 0.6.24 без снижения подтверждённого успеха."
 commit:
-  hash: "9e1d459cb604b25f517de4b7bb6f811b8e5f95de"
-  message: "✅ 0SFMS7 task: record fresh evaluator pass"
+  hash: "c227a05894c847b262ac193d72db1dc41f8a8b35"
+  message: "✅ 0SFMS7 task: record compact work-order quality pass"
 comments:
   -
     author: "CODER"
@@ -88,6 +88,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -198,8 +201,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: compact runner work-order contract and full unit suite are current for fresh quality review."
+  -
+    type: "status"
+    at: "2026-07-29T09:34:54.735Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T09:33:29.719Z"
+doc_updated_at: "2026-07-29T09:34:54.751Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -768,8 +778,8 @@ sections:
       Resolution: Implementation evidence is frozen for EVALUATOR review; clone baseline was refreshed after confirming its sole delta is outside the RF-10a diff.
 extensions:
   implementation_commit:
-    hash: "3532417852f2de3a06b7afeeef0311c94ff3c38a"
-    message: "🐛 0SFMS7 task: apply evaluator result after budget stop"
+    hash: "f7f5ff871ef5e65c06f541eab6c2892c322f0ff1"
+    message: "🐛 0SFMS7 task: keep runner work order compact"
   workflow_route_baseline:
     start_head_sha: "950e9cd2f222c12d16e930bdb8a3e39237659651"
     version: 1
