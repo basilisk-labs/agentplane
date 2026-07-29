@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607221850-0SFMS7-cd4f4b1d1b7d4c9697d749e8",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/quality/20260729-030035577-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-29T03:00:35.871Z",
+  "ended_at": "2026-07-29T03:01:44.288Z",
+  "stdout_bytes": 152119,
+  "stderr_bytes": 7216,
+  "provider_usage": {
+    "input_tokens": 201643,
+    "output_tokens": 3763,
+    "total_tokens": 205406
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:8c3bb9cdf1021fde84e8f31c4c899bfc28ae247f5f50fdd3f403fa730cdb2d77"
+}

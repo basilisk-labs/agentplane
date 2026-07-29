@@ -36,18 +36,21 @@ lacks declared-check evidence, RC-003 lacks golden-path metrics and stale-route 
  ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
  .../src/commands/shared/workflow-step-factory.ts   |  20 +-
  .../shared/workflow-step-projections.test.ts       |  16 +-
- .../commands/task/direct-task-finalization.test.ts |  97 ++++
- .../src/commands/task/direct-task-finalization.ts  | 108 ++++
- .../task/direct-task-supervisor-closeout.ts        | 329 +++++++++++
+ .../commands/task/direct-task-finalization.test.ts | 154 +++++
+ .../src/commands/task/direct-task-finalization.ts  | 186 ++++++
+ .../task/direct-task-supervision-benchmark.test.ts |  97 ++++
+ .../task/direct-task-supervision-benchmark.ts      |  65 +++
+ .../task/direct-task-supervisor-closeout.test.ts   | 100 ++++
+ .../task/direct-task-supervisor-closeout.ts        | 335 +++++++++++
  .../direct-task-supervisor-formal-operation.ts     | 101 ++++
- .../task/direct-task-supervisor-observation.ts     |  64 +++
- .../commands/task/direct-task-supervisor.test.ts   | 630 +++++++++++++++++++++
- .../src/commands/task/direct-task-supervisor.ts    | 572 +++++++++++++++++++
+ .../task/direct-task-supervisor-observation.ts     |  64 ++
+ .../commands/task/direct-task-supervisor.test.ts   | 641 +++++++++++++++++++++
+ .../src/commands/task/direct-task-supervisor.ts    | 586 +++++++++++++++++++
  .../commands/task/direct-task-verification.test.ts | 104 ++++
  .../src/commands/task/direct-task-verification.ts  | 131 +++++
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
- 15 files changed, 2285 insertions(+), 75 deletions(-)
+ 18 files changed, 2713 insertions(+), 75 deletions(-)
 ```
 
 </details>

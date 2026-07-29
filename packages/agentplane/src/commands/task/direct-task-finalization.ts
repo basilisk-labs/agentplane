@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { runProcess } from "@agentplaneorg/core/process";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
@@ -6,6 +8,7 @@ import type { CommandContext } from "../shared/task-backend.js";
 
 export type DirectImplementationCommit =
   | { status: "ready"; commit: string }
+  | { status: "scope_violation"; reason: string; paths: string[] }
   | { status: "missing"; reason: string };
 
 export async function readDirectTaskHead(cwd: string): Promise<string | null> {
@@ -29,11 +32,56 @@ function statusPaths(output: string): string[] {
     });
 }
 
+function pathAllowed(pathValue: string, allowedPaths: readonly string[]): boolean {
+  return allowedPaths.some(
+    (allowedPath) =>
+      allowedPath === "." || pathValue === allowedPath || pathValue.startsWith(`${allowedPath}/`),
+  );
+}
+
+function normalizedAuthorityPaths(opts: {
+  cwd: string;
+  allowed_paths: readonly string[];
+}): string[] {
+  return [
+    ...new Set(
+      opts.allowed_paths.flatMap((raw) => {
+        const value = raw.trim();
+        if (!value) return [];
+        const relative = path
+          .relative(opts.cwd, path.resolve(opts.cwd, value))
+          .replaceAll("\\", "/");
+        if (relative.startsWith("../") || path.posix.isAbsolute(relative)) return [];
+        return [relative === "" ? "." : relative.replace(/\/$/u, "")];
+      }),
+    ),
+  ].toSorted();
+}
+
+async function committedPaths(opts: {
+  cwd: string;
+  base: string;
+  commit: string;
+}): Promise<string[] | null> {
+  const result = await runProcess({
+    command: "git",
+    args: ["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${opts.base}..${opts.commit}`],
+    cwd: opts.cwd,
+    reject: false,
+  });
+  if (result.exitCode !== 0) return null;
+  return result.stdout
+    .split("\n")
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+}
+
 export async function resolveDirectImplementationCommit(opts: {
   command: CommandContext;
   cwd: string;
   task_id: string;
   execution_base_commit: string | null;
+  allowed_paths: readonly string[];
 }): Promise<DirectImplementationCommit> {
   if (!opts.execution_base_commit) {
     return {
@@ -53,9 +101,9 @@ export async function resolveDirectImplementationCommit(opts: {
       reason: "The direct supervisor could not inspect the checkout state.",
     };
   }
-  const taskPrefix = `${opts.command.config.paths.workflow_dir}/${opts.task_id}/`;
+  const taskArtifactPrefix = `${opts.command.config.paths.workflow_dir}/${opts.task_id}/`;
   const outsideTaskArtifacts = statusPaths(status.stdout).filter(
-    (entry) => !entry.startsWith(taskPrefix),
+    (entry) => !entry.startsWith(taskArtifactPrefix),
   );
   if (outsideTaskArtifacts.length > 0) {
     return {
@@ -69,6 +117,36 @@ export async function resolveDirectImplementationCommit(opts: {
       status: "missing",
       reason:
         "The EXECUTOR did not leave a distinct committed implementation for direct finalization.",
+    };
+  }
+  const approvedPaths = normalizedAuthorityPaths({
+    cwd: opts.cwd,
+    allowed_paths: opts.allowed_paths,
+  });
+  if (approvedPaths.length === 0) {
+    return {
+      status: "scope_violation",
+      paths: [],
+      reason: "The direct EXECUTOR work order did not declare an approved writable scope.",
+    };
+  }
+  const changed = await committedPaths({
+    cwd: opts.cwd,
+    base: opts.execution_base_commit,
+    commit,
+  });
+  if (!changed) {
+    return {
+      status: "missing",
+      reason: "The direct supervisor could not inspect the committed implementation paths.",
+    };
+  }
+  const scopeViolations = changed.filter((entry) => !pathAllowed(entry, approvedPaths));
+  if (scopeViolations.length > 0) {
+    return {
+      status: "scope_violation",
+      paths: scopeViolations,
+      reason: `The EXECUTOR committed paths outside its approved scope: ${scopeViolations.join(", ")}.`,
     };
   }
   return { status: "ready", commit };

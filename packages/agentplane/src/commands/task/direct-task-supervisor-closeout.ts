@@ -14,6 +14,7 @@ export type DirectTaskCloseoutStopCode =
   | "verification_check_unsupported"
   | "verification_check_failed"
   | "stale_route"
+  | "implementation_scope_violation"
   | "implementation_commit_missing"
   | "finish_failed";
 
@@ -94,6 +95,7 @@ export async function closeDirectTask(opts: {
   evaluator: DirectTaskCloseoutEvaluatorEvidence;
   decision: () => Promise<TaskRouteDecision>;
   execution_base_commit: string | null;
+  allowed_paths: readonly string[];
   journal: JournalRef;
 }): Promise<DirectTaskCloseoutOutcome> {
   const current = await opts.decision();
@@ -234,6 +236,7 @@ export async function closeDirectTask(opts: {
       cwd: opts.ctx.cwd,
       task_id: opts.task_id,
       execution_base_commit: opts.execution_base_commit,
+      allowed_paths: opts.allowed_paths,
     });
   } catch {
     return {
@@ -258,7 +261,10 @@ export async function closeDirectTask(opts: {
       decision: verified.decision,
       declared_checks: declaredChecks,
       stop: {
-        code: "implementation_commit_missing",
+        code:
+          implementation.status === "scope_violation"
+            ? "implementation_scope_violation"
+            : "implementation_commit_missing",
         reason: implementation.reason,
         route_step_id: verified.decision.workflowStep.id,
         operation_id: null,

@@ -284,6 +284,9 @@ describe("direct task supervisor", () => {
     const lifecycle = {
       phase: "executed",
       invocation: { run_id: "run-pass" },
+      lifecycle: {
+        work_order_authority: { writable_roots: ["packages/agentplane/src/commands/task"] },
+      },
       result: {
         status: "success",
         execution_receipt: {
@@ -376,7 +379,10 @@ describe("direct task supervisor", () => {
     expect(verifyPayload.details).toContain("declared-checks.json");
     expect(mocks.runChecks).toHaveBeenCalledTimes(1);
     expect(mocks.resolveCommit).toHaveBeenCalledWith(
-      expect.objectContaining({ execution_base_commit: "abc123" }),
+      expect.objectContaining({
+        execution_base_commit: "abc123",
+        allowed_paths: ["packages/agentplane/src/commands/task"],
+      }),
     );
     expect(mocks.finish).toHaveBeenCalledWith(
       expect.objectContaining({ implementation_commit: "def456" }),
@@ -386,6 +392,11 @@ describe("direct task supervisor", () => {
       provider_episodes: 2,
       executor_lifecycle_event_delta: 0,
       declared_checks: 1,
+      golden_cost: {
+        lifecycle_calls: 4,
+        tool_calls: 5,
+        duplicate_executor_context_bytes: 0,
+      },
     });
   });
 
