@@ -18,12 +18,12 @@ const REPLAY_URL = pathToFileURL(
 type Json = Record<string, unknown>;
 
 function clone<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T;
+  return structuredClone(value);
 }
 
 function canonical(value: unknown): string {
   const stabilize = (entry: unknown): unknown => {
-    if (Array.isArray(entry)) return entry.map(stabilize);
+    if (Array.isArray(entry)) return entry.map((child) => stabilize(child));
     if (entry === null || typeof entry !== "object") return entry;
     return Object.fromEntries(
       Object.entries(entry as Json)
