@@ -230,12 +230,8 @@ export async function prepareEvaluatorReview(opts: {
     timestampPathSegment,
   });
   const paths = reportPaths(reviewDir);
-  const taskReadmePath = path.join(
-    gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.task.id,
-    "README.md",
-  );
+  const taskRoot = path.join(gitRoot, opts.ctx.config.paths.workflow_dir, opts.task.id);
+  const taskReadmePath = path.join(taskRoot, "README.md");
   const evaluatedSha = await resolveQualityReviewTargetSha({
     gitRoot,
     workflowDir: opts.ctx.config.paths.workflow_dir,
@@ -252,11 +248,11 @@ export async function prepareEvaluatorReview(opts: {
     allowSingleCommitFallback: opts.ctx.config.workflow_mode !== "branch_pr",
   });
   const blueprint = await buildTaskBlueprintResolvedSnapshot({ ctx: opts.ctx, task: opts.task });
-  const recordPaths = await verificationRecordPaths(
-    path.dirname(taskReadmePath),
-    opts.task,
-    evaluatedSha,
-  );
+  const recordPaths = await verificationRecordPaths(taskRoot, opts.task, evaluatedSha, {
+    gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
+    taskIds: [opts.task.id, ...normalizeBranchPrBatchIncludedTaskIds(opts.task, opts.task.id)],
+  });
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>
       freezeEvaluatorFile({
