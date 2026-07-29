@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -39,9 +39,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T00:43:36.841Z"
+  updated_at: "2026-07-29T00:55:01.862Z"
   updated_by: "CODER"
-  note: "Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog."
+  note: "Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard."
   attempts: 0
 quality_review:
   state: "pass"
@@ -131,8 +131,14 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T00:55:01.862Z"
+    author: "CODER"
+    state: "ok"
+    note: "Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard."
 doc_version: 3
-doc_updated_at: "2026-07-29T00:45:16.217Z"
+doc_updated_at: "2026-07-29T00:55:02.742Z"
 doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -242,6 +248,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T00:55:01.862Z — VERIFY — ok
+
+    By: CODER
+
+    Note: Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:45:16.217Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+    - old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+    - current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the migrated vertical slice while preserving the typed contracts consumed by later tasks.
@@ -259,6 +295,10 @@ sections:
     - Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
       Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
       Resolution: Ready to republish the task branch for a fresh hosted check.
+
+    - Observation: Focused context tests (41), hotspots check, workflow coverage (52), lifecycle invariants, typecheck, docs CLI check, critical CLI suite, lint, format, and diff check passed.
+      Impact: The hosted verify-contract failure is resolved structurally without an oversized-file exception.
+      Resolution: Ready for a fresh EVALUATOR review and pre-merge closure refresh.
 extensions:
   implementation_commit:
     hash: "963e293db08884671bc4c262fef7d79aaaf46084"
@@ -384,6 +424,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T00:55:01.862Z — VERIFY — ok
+
+By: CODER
+
+Note: Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have dedicated modules, keeping both prior hotspot files below the 600-line guard.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T00:45:16.217Z, excerpt_hash=sha256:b4ab7c795de943481157c1d37d45d6e2458d26e60bef5d48f3c2e6da619fc813
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-8HBF4J-supervise-context-assimilation-post-processing/.agentplane/tasks/202607221850-8HBF4J/blueprint/resolved-snapshot.json
+- old_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+- current_digest: ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-8HBF4J
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -405,3 +475,7 @@ DecisionContextRef:
 - Observation: bun run docs:cli:check, policy routing, doctor, and git diff --check passed.
   Impact: The generated reference now matches the shipped CLI surface, removing the hosted contract failure.
   Resolution: Ready to republish the task branch for a fresh hosted check.
+
+- Observation: Focused context tests (41), hotspots check, workflow coverage (52), lifecycle invariants, typecheck, docs CLI check, critical CLI suite, lint, format, and diff check passed.
+  Impact: The hosted verify-contract failure is resolved structurally without an oversized-file exception.
+  Resolution: Ready for a fresh EVALUATOR review and pre-merge closure refresh.

@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CommandContext } from "../commands/shared/task-backend.js";
 import type { TaskNewParsed } from "../commands/task/new.js";
 import { cmdContextIngest } from "./ingest.js";
-import { inspectContextIngestRuns } from "./ingest-run-journal.js";
+import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
 
 let tempRoots: string[] = [];
 

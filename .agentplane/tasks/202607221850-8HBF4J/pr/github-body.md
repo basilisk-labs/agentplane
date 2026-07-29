@@ -16,7 +16,12 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
 ## Verification
 
 - State: ok
-- Note: Hosted verify-contract rework resolved: regenerated the CLI reference for the current command catalog.
+- Note:
+
+```text
+Hosted hotspots rework verified: semantic rework construction and ingest diagnostics now have
+dedicated modules, keeping both prior hotspot files below the 600-line guard.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -30,20 +35,25 @@ RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/app
  docs/user/cli-reference.generated.mdx              |  20 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../src/cli/run-cli/command-catalog/project.ts     |   2 +
- .../commands/context/assimilation-supervisor.ts    | 606 +++++++++++++++++++++
- .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++
+ .../src/commands/context/assimilation-rework.ts    |  73 +++
+ .../commands/context/assimilation-supervisor.ts    | 541 +++++++++++++++++++++
+ .../context/assimilation-supervisor.unit.test.ts   | 502 +++++++++++++++++++
  .../src/commands/context/context-runner.ts         |  79 +++
  .../src/commands/context/context.spec.ts           |  45 ++
- .../agentplane/src/context/ingest-run-journal.ts   | 111 +++-
+ .../commands/context/extraction-apply.unit.test.ts |   2 +-
+ packages/agentplane/src/context/doctor.ts          |   2 +-
+ .../src/context/ingest-run-diagnostics.ts          | 155 ++++++
+ .../agentplane/src/context/ingest-run-journal.ts   | 214 +++-----
+ .../src/context/ingest-task-pack.test.ts           |   2 +-
  .../agentplane/src/context/ingest-task-prompt.ts   |  30 +-
  .../agentplane/src/context/ingest-task.test.ts     |  19 +-
  packages/agentplane/src/context/ingest-task.ts     |  29 +-
  .../runner/supervisor-execution-episode.test.ts    |  34 ++
  .../src/runner/supervisor-execution-episode.ts     |  53 ++
  packages/core/src/schemas/index.ts                 |   1 +
- .../baselines/v0.7-compatibility-candidate.json    | 111 +++-
+ .../baselines/v0.7-compatibility-candidate.json    | 111 ++++-
  .../check-compatibility-contract-baseline.mjs      |  67 +++
- 16 files changed, 1649 insertions(+), 67 deletions(-)
+ 21 files changed, 1791 insertions(+), 197 deletions(-)
 ```
 
 </details>

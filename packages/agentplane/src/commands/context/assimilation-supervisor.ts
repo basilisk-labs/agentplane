@@ -1,16 +1,14 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
-  digestSupervisorEpisodeValue,
   retryFailedSupervisorExecutionEpisode,
   startSupervisorExecutionEpisode,
   type SupervisorEpisodeOperationKind,
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
-import { atomicWriteFile } from "@agentplaneorg/core/fs";
 
 import type { TaskData } from "../../backends/task-backend.js";
 import type { CommandCtx } from "../../cli/spec/spec.js";
@@ -32,6 +30,7 @@ import { loadTaskFromContext, type CommandContext } from "../shared/task-backend
 import { cmdContextDoctor } from "./doctor.js";
 import { cmdContextExtractionApply } from "./extraction.js";
 import { cmdContextGraphValidate } from "./graph.js";
+import { writeContextSemanticReworkWorkOrder } from "./assimilation-rework.js";
 import { cmdContextReindex } from "./reindex.js";
 import { cmdContextSearch } from "./search.js";
 import { cmdContextVerifyTask } from "./verify-task.js";
@@ -103,12 +102,6 @@ function operationRole(kind: SupervisorEpisodeOperationKind): "CURATOR" | "EXECU
   return kind === "agent_episode" ? "CURATOR" : "EXECUTOR";
 }
 
-function boundedText(value: string | null | undefined, max = 1000): string | null {
-  if (!value) return null;
-  const compact = value.replaceAll(/\s+/gu, " ").trim();
-  return compact.length <= max ? compact : `${compact.slice(0, Math.max(0, max - 1))}…`;
-}
-
 function smokeQueryFromSemantic(raw: unknown): string {
   const semantic = validateContextExtractionSgrResult(raw);
   for (const item of semantic.extracted_items) {
@@ -157,64 +150,6 @@ async function defaultEpisodeState(input: SupervisorInput): Promise<EpisodeState
   return {
     fingerprint: decision.workflowStep.preconditionFingerprint.digest,
     task_revision: task.revision ?? null,
-  };
-}
-
-async function writeReworkWorkOrder(opts: {
-  root: string;
-  run: ContextIngestRunJournal;
-  semanticFingerprint: string;
-  task: TaskData;
-}): Promise<{ feedback_digest: string; work_order_file: string }> {
-  const review = opts.task.quality_review;
-  if (review?.state !== "rework") {
-    throw new CliError({
-      code: "E_RUNTIME",
-      message: "Context semantic rework requires an evaluator quality_review=rework result.",
-    });
-  }
-  const cursor = (opts.run.supervision?.rework.length ?? 0) + 1;
-  const feedback = {
-    verdict: review.state,
-    note: boundedText(review.note),
-    findings: review.findings.slice(0, 12).map((finding) => boundedText(finding, 500) ?? ""),
-    evidence_refs: review.evidence_refs.slice(0, 16),
-  };
-  const workOrder = {
-    schema_version: 1,
-    kind: "context_semantic_rework",
-    task_id: opts.task.id,
-    run_id: opts.run.run_id,
-    cursor,
-    replaces_semantic_fingerprint: opts.semanticFingerprint,
-    input: {
-      context_pack: `.agentplane/tasks/${opts.task.id}/context-pack.md`,
-      extraction_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
-      canonical_catalog: `.agentplane/tasks/${opts.task.id}/canonical-entity-catalog.json`,
-    },
-    semantic_feedback: feedback,
-    required_output: {
-      kind: "context_extraction",
-      schema_contract: `.agentplane/tasks/${opts.task.id}/extraction-contract.json`,
-      instruction:
-        "Return one corrected, schema-valid semantic SGR result. Do not run lifecycle, indexing, validation, evaluator, ACR, or finalization commands.",
-    },
-    stop_rules: [
-      "Do not resolve ambiguity by lexical similarity or identifiers alone.",
-      "Preserve unresolved or conflicting identity decisions explicitly.",
-      "Stop and return the SGR result when the semantic correction is complete; CLI owns all mechanical processing.",
-    ],
-  };
-  const workOrderFile = `.agentplane/tasks/${opts.task.id}/context-rework/${String(cursor).padStart(3, "0")}.json`;
-  await mkdir(path.dirname(path.join(opts.root, workOrderFile)), { recursive: true });
-  await atomicWriteFile(
-    path.join(opts.root, workOrderFile),
-    `${JSON.stringify(workOrder, null, 2)}\n`,
-    "utf8",
-  );
-  return {
-    feedback_digest: digestSupervisorEpisodeValue(feedback),
-    work_order_file: workOrderFile,
   };
 }
 
@@ -542,7 +477,7 @@ export async function runContextAssimilationSupervisor(
         const current = await findContextIngestRunForTask(root, input.taskId);
         if (current === null)
           throw new Error("Context ingest journal disappeared while writing rework order.");
-        const created = await writeReworkWorkOrder({
+        const created = await writeContextSemanticReworkWorkOrder({
           root,
           run: current,
           semanticFingerprint: semantic.fingerprint,
