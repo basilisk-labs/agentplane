@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence.
+- Note: RF-10a lifecycle-descendant verification records now preserve the reviewed implementation target and final golden runtime evidence; focused and full regression gates passed on 49687443f.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -35,10 +35,10 @@ Created: 2026-07-29T01:35:45.453Z
  .../src/commands/evaluator/evaluator-episode.ts    |  26 +-
  .../evaluator/evaluator-review-artifacts.ts        | 153 ++++
  .../commands/evaluator/evaluator-review-shared.ts  |  28 +
- .../commands/evaluator/evaluator-review-usecase.ts | 191 +++--
+ .../commands/evaluator/evaluator-review-usecase.ts | 209 +++---
  .../evaluator/evaluator-run.command.test.ts        |  43 ++
- .../evaluator/evaluator-runtime-evidence.test.ts   | 133 ++++
- .../evaluator/evaluator-verification-records.ts    |  80 +-
+ .../evaluator/evaluator-runtime-evidence.test.ts   | 243 ++++++
+ .../evaluator/evaluator-verification-records.ts    | 115 ++-
  .../commands/shared/quality-review-target.test.ts  |  27 +
  .../src/commands/shared/quality-review-target.ts   |  25 +-
  .../src/commands/shared/workflow-step-factory.ts   |  20 +-
@@ -71,7 +71,7 @@ Created: 2026-07-29T01:35:45.453Z
  .../usecases/task-run-context.integration.test.ts  |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |   6 -
  scripts/baselines/clone-baseline.json              |  24 +-
- 42 files changed, 4610 insertions(+), 221 deletions(-)
+ 42 files changed, 4757 insertions(+), 237 deletions(-)
 ```
 
 </details>

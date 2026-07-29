@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 30
+revision: 31
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T07:43:47.594Z"
+  updated_at: "2026-07-29T07:54:09.705Z"
   updated_by: "TESTER"
-  note: "RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence."
+  note: "RF-10a lifecycle-descendant verification records now preserve the reviewed implementation target and final golden runtime evidence; focused and full regression gates passed on 49687443f."
   attempts: 0
 quality_review:
   state: "rework"
@@ -144,8 +144,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence."
+  -
+    type: "verify"
+    at: "2026-07-29T07:54:09.705Z"
+    author: "TESTER"
+    state: "ok"
+    note: "RF-10a lifecycle-descendant verification records now preserve the reviewed implementation target and final golden runtime evidence; focused and full regression gates passed on 49687443f."
 doc_version: 3
-doc_updated_at: "2026-07-29T07:45:15.719Z"
+doc_updated_at: "2026-07-29T07:54:10.539Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -424,6 +430,51 @@ sections:
     Result: pass
     Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.
     Scope: RF-10a closure quality-target classification only; source and independently reviewable metadata changes still produce a new target SHA.
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+    - old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T07:54:09.705Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: RF-10a lifecycle-descendant verification records now preserve the reviewed implementation target and final golden runtime evidence; focused and full regression gates passed on 49687443f.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T07:45:15.719Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+    Details:
+
+    Command: `bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-runtime-evidence.test.ts src/commands/shared/quality-review-target.test.ts`
+    Result: pass
+    Evidence: 13 tests passed, including the lifecycle-descendant verification and runtime-evidence regression.
+    Scope: evaluator evidence freezing across lifecycle-only task commits.
+
+    Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
+    Result: pass
+    Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed on `49687443f2694625e85f1fc83a085475ea230dcc`.
+    Scope: RF-10a evaluator evidence-selection repair.
+
+    Command: `node packages/agentplane/bin/agentplane.js task run 202607290723-668C3K --sandbox danger-full-access --allow-danger-full-access --json`
+    Result: pass
+    Evidence: .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/runner/tasks/202607290723-668C3K/runs/2026-07-29T07-23-56-222Z/execution-receipt.json | .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/supervisor/episodes/202607290723-668C3K/journal.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/declared-checks.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/verification/20260729072531877-b6924115be67f224.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/quality-report.json
+    Scope: final direct golden path: EXECUTOR commit, CLI verification, read-only EVALUATOR pass, and CLI finish.
 
     BlueprintSnapshotRef:
     - state: current
@@ -747,6 +798,51 @@ Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run life
 Result: pass
 Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed after the fix.
 Scope: RF-10a closure quality-target classification only; source and independently reviewable metadata changes still produce a new target SHA.
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/worktrees/202607221850-0SFMS7-supervise-direct-task-execution-end-to-end/.agentplane/tasks/202607221850-0SFMS7/blueprint/resolved-snapshot.json
+- old_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- current_digest: ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221850-0SFMS7
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T07:54:09.705Z — VERIFY — ok
+
+By: TESTER
+
+Note: RF-10a lifecycle-descendant verification records now preserve the reviewed implementation target and final golden runtime evidence; focused and full regression gates passed on 49687443f.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T07:45:15.719Z, excerpt_hash=sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac
+
+Details:
+
+Command: `bun run --cwd packages/agentplane test src/commands/evaluator/evaluator-runtime-evidence.test.ts src/commands/shared/quality-review-target.test.ts`
+Result: pass
+Evidence: 13 tests passed, including the lifecycle-descendant verification and runtime-evidence regression.
+Scope: evaluator evidence freezing across lifecycle-only task commits.
+
+Command: `bun run ci:contract && bun run coverage:workflow-suite && bun run lifecycle:invariants && bun run test:critical`
+Result: pass
+Evidence: contract, workflow coverage, lifecycle invariants, and critical regression suites completed on `49687443f2694625e85f1fc83a085475ea230dcc`.
+Scope: RF-10a evaluator evidence-selection repair.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290723-668C3K --sandbox danger-full-access --allow-danger-full-access --json`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/runner/tasks/202607290723-668C3K/runs/2026-07-29T07-23-56-222Z/execution-receipt.json | .agentplane/cache/rf10-live-final.tmHhwD/.git/agentplane/supervisor/episodes/202607290723-668C3K/journal.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/supervision/declared-checks.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/verification/20260729072531877-b6924115be67f224.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-final.tmHhwD/.agentplane/tasks/202607290723-668C3K/quality/20260729-072532232-recovery-context/quality-report.json
+Scope: final direct golden path: EXECUTOR commit, CLI verification, read-only EVALUATOR pass, and CLI finish.
 
 BlueprintSnapshotRef:
 - state: current
