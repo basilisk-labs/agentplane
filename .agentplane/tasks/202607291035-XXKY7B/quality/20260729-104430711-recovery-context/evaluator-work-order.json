@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607291035-XXKY7B-7d08f5592c14739e329145d5",
+  "prepared_at": "2026-07-29T10:44:30.711Z",
+  "task": {
+    "id": "202607291035-XXKY7B",
+    "revision": 7,
+    "objective": "Prevent evaluator self-referential evidence in recovery-context review\n\nRepair the recovery-context evaluator prompt contract so evaluator findings cite only frozen work-order evidence and cannot cite evaluator-generated work-order or report paths. Add a focused regression test and prove a replacement evaluator episode can be recorded for the blocked beta.1 qualification.",
+    "acceptance_criteria": [
+      "bun run test:fast -- packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+      "bun run ci:contract",
+      "- In scope: Repair the recovery-context evaluator prompt contract so evaluator findings cite only frozen work-order evidence and cannot cite evaluator-generated work-order or report paths. Add a focused regression test and prove a replacement evaluator episode can be recorded for the blocked beta.1 qualification.\n- Out of scope: unrelated refactors not required for \"Prevent evaluator self-referential evidence in recovery-context review\".",
+      "1. Reproduce the invalid recovery-context evaluator result and identify the conflicting prompt instruction. 2. Amend only the evaluator guidance needed to require findings to cite frozen work-order evidence and prohibit self-generated work-order or report paths. 3. Add a focused regression test that freezes this contract at prompt construction or provider-result validation. 4. Run the evaluator-focused suite and the full contract gate. 5. Hand the merged fix back to beta.1 for one replacement semantic review; do not synthesize the beta verdict or publish a release from this follow-up.",
+      "PLANNER fallback scaffold for \"Prevent evaluator self-referential evidence in recovery-context review\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Prevent evaluator self-referential evidence in recovery-context review\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "95ea07baae4d70773c3d4797e94eaa39ebee9c3f",
+  "diff_base_sha": "b90a9e6df9ae35a1a518e1ffa73903d6e5784d35",
+  "blueprint_digest": "435770db05798b9dff128e1b32632452d244afbed820e54ee89464480ced8a3e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607291035-XXKY7B/README.md",
+      "sha256": "sha256:cdbc49f45016ae73748372a4730109392a4f56680df2455ac60ee88de7adc368",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:4546e9c698441988fcf663f59f9c41c580766c1dc54f25fde9146ae0c10e8a97",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:a082f070b9dc86d286d390298bf17dbf1f5446fc4ac045ad90c837f43db275ec",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:96b875e5472f58effb64739293dc775bf5f53e985feffd60a7ce3acaa6a2f593",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

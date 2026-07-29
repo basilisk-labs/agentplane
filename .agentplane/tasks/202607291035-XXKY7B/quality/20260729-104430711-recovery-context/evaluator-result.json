@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "low",
+      "summary": "The implementation removes the self-referential evidence requirement from both recovery-context evaluator copies and adds focused prompt-contract regression coverage.",
+      "broken_invariant": "No invariant is broken; frozen evidence shows the implementation matches the approved contract and relevant checks passed.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:4546e9c698441988fcf663f59f9c41c580766c1dc54f25fde9146ae0c10e8a97"
+        },
+        {
+          "path": ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:a082f070b9dc86d286d390298bf17dbf1f5446fc4ac045ad90c837f43db275ec"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}
