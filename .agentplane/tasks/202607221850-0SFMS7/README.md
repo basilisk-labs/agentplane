@@ -4,7 +4,7 @@ title: "Supervise direct task execution end to end"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 21
+revision: 22
 origin:
   system: "manual"
 depends_on:
@@ -44,30 +44,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T06:39:46.370Z"
+  updated_at: "2026-07-29T06:43:16.789Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 3 typed finding(s)."
   evaluated_sha: "40ea12e7fe716282262ab1917bb739a3ea06f4a0"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Для оцениваемого SHA нет замороженного доказательства успешного прямого golden-path запуска и обязательных проверок: verification_records и runner_history пусты, direct_supervision равен null, а последняя запись verification=ok не содержит результатов проверок."
-    - "Сравнение с baseline 0.6.24 не измеряет фактический кандидат: успешный тест конструирует candidate как baseline минус один, поэтому он доказывает только работу функции сравнения, но не снижение стоимости реального golden-path запуска."
-    - "Патч обновляет clone baseline после зафиксированного падения ci:contract, но замороженные доказательства не показывают успешный ci:contract на оцениваемом SHA и не содержат отдельного обоснования допустимости нового baseline."
+    - "Замороженный пакет не подтверждает заявленный успешный прямой golden-path запуск на оцениваемом SHA: observed-checks содержит пустые verification_records и runner_history, а direct_supervision равен null. README перечисляет внешние артефакты из cache, но они не включены в замороженный evidence-набор и их целостность не подтверждена work order."
+    - "Патч повышает допустимый clone baseline после ранее зафиксированного падения ci:contract, но замороженные доказательства не показывают повторного одобрения этого изменения критерия приемки. Успешный прогон после ослабления порога не доказывает отсутствие материального drift."
+    - "Патч содержит типы human_input_required и wait_required, но замороженный diff не показывает тестов этих остановок, evaluator blocked/human_review и ограниченных retry-сценариев. Проверены approval, missing knowledge, rework, scope violation и adapter crash, поэтому отрицательное покрытие заявленного Scope неполно."
 commit: null
 comments:
   -
@@ -116,7 +116,7 @@ events:
     state: "ok"
     note: "RF-10a direct supervision is verified with a finalized live golden path, active-binary docs checks, bounded EVALUATOR process-tree coverage, observed efficiency metrics, and full repository gates."
 doc_version: 3
-doc_updated_at: "2026-07-29T06:41:10.606Z"
+doc_updated_at: "2026-07-29T06:43:16.812Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:

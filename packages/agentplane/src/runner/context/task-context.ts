@@ -114,11 +114,11 @@ function sectionKey(section: string): string {
 }
 
 function isCliManagedVerificationSection(text: string | undefined): boolean {
-  return (
-    typeof text === "string" &&
-    text.includes(VERIFICATION_RESULTS_BEGIN) &&
-    text.includes(VERIFICATION_RESULTS_END)
-  );
+  // The structured task backend stores the opening marker in `sections`; the
+  // Markdown renderer appends the closing marker. Treat the stored opening
+  // marker as authoritative so accumulated CLI history never becomes required
+  // semantic input for a runner episode.
+  return typeof text === "string" && text.includes(VERIFICATION_RESULTS_BEGIN);
 }
 
 function semanticRequiredSections(opts: {

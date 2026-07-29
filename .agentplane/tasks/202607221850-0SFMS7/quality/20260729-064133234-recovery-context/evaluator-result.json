@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Замороженный пакет не подтверждает заявленный успешный прямой golden-path запуск на оцениваемом SHA: observed-checks содержит пустые verification_records и runner_history, а direct_supervision равен null. README перечисляет внешние артефакты из cache, но они не включены в замороженный evidence-набор и их целостность не подтверждена work order.",
+      "broken_invariant": "Pass допустим только при замороженном покрытии положительного, отрицательного и concurrency-sensitive поведения; результаты Verify Steps должны быть исполнены и записаны как проверяемые доказательства.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:ecc98b6e2c6f39a37950b504b9af35b1211657e6e44c9b0647e31bdb3a6a54de",
+          "section": "verification_records, runner_history, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:30a4288ddeca1cfc6bf2c9f230dbd232f8cf0c88e1a0d9a9b85efe8029239397",
+          "line": 469,
+          "lines": "469-522",
+          "section": "Verification: Direct golden path and full repository gates"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "Патч повышает допустимый clone baseline после ранее зафиксированного падения ci:contract, но замороженные доказательства не показывают повторного одобрения этого изменения критерия приемки. Успешный прогон после ослабления порога не доказывает отсутствие материального drift.",
+      "broken_invariant": "Изменение обязательного критерия проверки является material drift и требует явного повторного одобрения; задача не может считаться завершённой только за счёт обновления baseline, на котором ранее упала обязательная проверка.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b5e4d21f6d92045993a2ae0623b635b5de794553d3656d03ed46dfbb4dd8a314",
+          "line": 6088,
+          "lines": "6088-6111",
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:30a4288ddeca1cfc6bf2c9f230dbd232f8cf0c88e1a0d9a9b85efe8029239397",
+          "line": 382,
+          "lines": "382-385",
+          "section": "Earlier ci:contract failure"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "medium",
+      "summary": "Патч содержит типы human_input_required и wait_required, но замороженный diff не показывает тестов этих остановок, evaluator blocked/human_review и ограниченных retry-сценариев. Проверены approval, missing knowledge, rework, scope violation и adapter crash, поэтому отрицательное покрытие заявленного Scope неполно.",
+      "broken_invariant": "Pass требует покрытия релевантных отрицательных путей; Scope явно включает retries, approvals, waits и human input.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:30a4288ddeca1cfc6bf2c9f230dbd232f8cf0c88e1a0d9a9b85efe8029239397",
+          "line": 297,
+          "lines": "297-315",
+          "section": "Scope and Verify Steps"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-064133234-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b5e4d21f6d92045993a2ae0623b635b5de794553d3656d03ed46dfbb4dd8a314",
+          "line": 4012,
+          "lines": "4012-4100",
+          "section": "Typed stop mapping and tests"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Интеграционные сценарии direct supervisor для route kind=human_input и route kind=wait с доказательством, что EXECUTOR не запускается и возвращается корректный typed stop.",
+    "Сценарии EVALUATOR verdict=blocked и verdict=human_review, включая сохранение recovery_context и отсутствие verify/finish после остановки.",
+    "Сценарий ограниченного retry после безопасно завершённой операции и сценарий запрета retry при неизвестном исходе.",
+    "Замороженная проверка, связывающая наблюдаемый live golden-path trace и результаты всех обязательных команд непосредственно с evaluated_sha."
+  ],
+  "hidden_assumptions": [
+    "Текстовое утверждение TESTER в README считается эквивалентным замороженным и хешированным runtime-артефактам, хотя referenced cache-файлы отсутствуют в work_order.evidence.",
+    "Повышение clone baseline не меняет критерий приемки и поэтому не требует повторного одобрения.",
+    "Обобщённое отображение route kind в stop code достаточно доказывает waits, human input и retry semantics без отдельных тестов."
+  ],
+  "recovery_context": "Следующий исполнитель должен сформировать новый замороженный evidence-набор с direct_supervision, runner_history и verification_records для SHA 40ea12e7fe716282262ab1917bb739a3ea06f4a0, включить хешированные live golden-path и check-артефакты, получить явное повторное одобрение изменения clone baseline либо исключить его из патча, затем добавить отрицательные тесты wait/human/retry и blocked/human_review перед повторной оценкой."
+}

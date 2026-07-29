@@ -27,9 +27,13 @@ import {
   freezeEvaluatorFile,
   readEvaluatorFileDigest,
   readDirectSupervisionEvidence,
+  readVerifiedSupervisorJournalHistory,
   writeEvaluatorArtifact,
 } from "./evaluator-review-artifacts.js";
-import { verificationRecordPaths } from "./evaluator-verification-records.js";
+import {
+  verificationRecordPaths,
+  verificationRuntimeEvidencePaths,
+} from "./evaluator-verification-records.js";
 import {
   EVALUATOR_OPINION_FILE,
   EVALUATOR_PROMPT_FILE,
@@ -97,6 +101,7 @@ const EVALUATOR_WORK_ORDER_SCHEMA = z
               "blueprint",
               "policy_module",
               "knowledge_ref",
+              "runtime_evidence",
             ]),
             path: z.string().trim().min(1),
             sha256: z.string().regex(/^sha256:[a-f0-9]{64}$/u),
@@ -276,6 +281,25 @@ export async function prepareEvaluatorReview(opts: {
       }),
     ),
   );
+  const runtimeEvidencePaths = await verificationRuntimeEvidencePaths({
+    gitRoot,
+    verificationRecordPaths: recordPaths,
+  });
+  const runtimeEvidence = await Promise.all(
+    runtimeEvidencePaths.map((filePath, index) =>
+      freezeEvaluatorFile({
+        gitRoot,
+        id: `runtime-evidence-${String(index + 1)}`,
+        kind: "runtime_evidence",
+        filePath,
+        required: true,
+      }),
+    ),
+  );
+  const linkedRunnerHistory = await readVerifiedSupervisorJournalHistory({
+    gitRoot,
+    verifiedRuntimeEvidencePaths: runtimeEvidencePaths,
+  });
   const observedChecks = {
     task_status: opts.task.status,
     declared_checks: opts.task.verify ?? [],
@@ -284,11 +308,19 @@ export async function prepareEvaluatorReview(opts: {
       path: evidencePath,
       sha256,
     })),
-    runner_history: opts.task.runner?.history ?? [],
+    runner_history:
+      opts.task.runner?.history && opts.task.runner.history.length > 0
+        ? opts.task.runner.history
+        : linkedRunnerHistory,
+    runtime_evidence: runtimeEvidence.map(({ path: evidencePath, sha256 }) => ({
+      path: evidencePath,
+      sha256,
+    })),
     direct_supervision: await readDirectSupervisionEvidence({
       gitRoot,
       workflowDir: opts.ctx.config.paths.workflow_dir,
       taskId: opts.task.id,
+      verifiedRuntimeEvidencePaths: runtimeEvidencePaths,
     }),
   };
   await writeEvaluatorArtifact({
@@ -332,6 +364,7 @@ export async function prepareEvaluatorReview(opts: {
       required: true,
     }),
     ...verificationRecords,
+    ...runtimeEvidence,
     await freezeEvaluatorFile({
       gitRoot,
       id: "blueprint",
