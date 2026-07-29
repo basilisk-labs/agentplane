@@ -30,7 +30,7 @@ describe("direct task finalization", () => {
     vi.resetAllMocks();
   });
 
-  it("uses the supervisor-observed executor delta instead of rejecting pre-existing dirty paths", async () => {
+  it("uses the execution-base commit delta instead of rejecting pre-existing dirty paths", async () => {
     mocks.runProcess
       .mockResolvedValueOnce({
         exitCode: 0,
@@ -56,17 +56,25 @@ describe("direct task finalization", () => {
     expect(mocks.runProcess).toHaveBeenCalledTimes(2);
   });
 
-  it("fails closed when no supervisor-observed executor delta is retained", async () => {
-    const result = await resolveDirectImplementationCommit({
-      command,
-      cwd: "/repo",
-      task_id: TASK_ID,
-      execution_base_commit: "abc123",
-      allowed_paths: ["packages/agentplane/src"],
-      observed_changed_paths: null,
-    });
-    expect(result).toMatchObject({ status: "missing" });
-    expect(mocks.runProcess).not.toHaveBeenCalled();
+  it("accepts a committed executor delta after the post-process snapshot is clean", async () => {
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "def456\n", stderr: "" })
+      .mockResolvedValueOnce({
+        exitCode: 0,
+        stdout: "packages/agentplane/src/index.ts\n",
+        stderr: "",
+      });
+
+    await expect(
+      resolveDirectImplementationCommit({
+        command,
+        cwd: "/repo",
+        task_id: TASK_ID,
+        execution_base_commit: "abc123",
+        allowed_paths: ["packages/agentplane/src"],
+        observed_changed_paths: null,
+      }),
+    ).resolves.toEqual({ status: "ready", commit: "def456" });
   });
 
   it("does not accept an unchanged HEAD as an implementation", async () => {
@@ -99,11 +107,7 @@ describe("direct task finalization", () => {
         allowed_paths: ["packages/agentplane/src"],
         observed_changed_paths: ["README.md"],
       }),
-    ).resolves.toEqual({
-      status: "scope_violation",
-      paths: ["README.md"],
-      reason: "The supervisor-observed EXECUTOR delta escaped its approved scope: README.md.",
-    });
+    ).resolves.toMatchObject({ status: "scope_violation", paths: ["README.md"] });
   });
 
   it("does not let an EXECUTOR commit task artifacts outside its work-order scope", async () => {

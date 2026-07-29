@@ -134,20 +134,6 @@ export async function resolveDirectImplementationCommit(opts: {
       reason: "The direct supervisor could not observe the pre-execution commit.",
     };
   }
-  if (opts.observed_changed_paths === null) {
-    return {
-      status: "missing",
-      reason: "The direct supervisor did not retain a supervisor-observed EXECUTOR file delta.",
-    };
-  }
-  const taskArtifactPrefix = `${opts.command.config.paths.workflow_dir}/${opts.task_id}/`;
-  const observedPaths = normalizedObservedPaths(opts.observed_changed_paths);
-  if (observedPaths.length === 0) {
-    return {
-      status: "missing",
-      reason: "The EXECUTOR produced no supervisor-observed file changes for direct finalization.",
-    };
-  }
   const commit = await readDirectTaskHead(opts.cwd);
   if (!commit || commit === opts.execution_base_commit) {
     return {
@@ -167,6 +153,37 @@ export async function resolveDirectImplementationCommit(opts: {
       reason: "The direct EXECUTOR work order did not declare an approved writable scope.",
     };
   }
+  const changed = await committedPaths({
+    cwd: opts.cwd,
+    base: opts.execution_base_commit,
+    commit,
+  });
+  if (!changed) {
+    return {
+      status: "missing",
+      reason: "The direct supervisor could not inspect the committed implementation paths.",
+    };
+  }
+  if (changed.length === 0) {
+    return {
+      status: "missing",
+      reason: "The EXECUTOR commit contains no implementation paths after the execution baseline.",
+    };
+  }
+  const scopeViolations = changed.filter((entry) => !pathAllowed(entry, approvedPaths));
+  if (scopeViolations.length > 0) {
+    return {
+      status: "scope_violation",
+      paths: scopeViolations,
+      reason: `The EXECUTOR committed paths outside its approved scope: ${scopeViolations.join(", ")}.`,
+    };
+  }
+  // A runner may commit before the supervisor captures its post-process
+  // filesystem snapshot. Treat that snapshot only as an additional check for
+  // uncommitted writes; the execution-base Git range is the authoritative,
+  // immutable implementation scope.
+  const observedPaths = normalizedObservedPaths(opts.observed_changed_paths ?? []);
+  const taskArtifactPrefix = `${opts.command.config.paths.workflow_dir}/${opts.task_id}/`;
   const observedNonTaskPaths = observedPaths.filter(
     (entry) => !entry.startsWith(taskArtifactPrefix),
   );
@@ -182,28 +199,6 @@ export async function resolveDirectImplementationCommit(opts: {
         `${observedScopeViolations.join(", ")}.`,
     };
   }
-  const changed = await committedPaths({
-    cwd: opts.cwd,
-    base: opts.execution_base_commit,
-    commit,
-  });
-  if (!changed) {
-    return {
-      status: "missing",
-      reason: "The direct supervisor could not inspect the committed implementation paths.",
-    };
-  }
-  const observed = new Set(observedPaths);
-  const committedOutsideObservation = changed.filter((entry) => !observed.has(entry));
-  if (committedOutsideObservation.length > 0) {
-    return {
-      status: "scope_violation",
-      paths: committedOutsideObservation,
-      reason:
-        "The EXECUTOR committed paths absent from the supervisor-observed delta: " +
-        `${committedOutsideObservation.join(", ")}.`,
-    };
-  }
   const committed = new Set(changed);
   const uncommittedObservedPaths = observedNonTaskPaths.filter((entry) => !committed.has(entry));
   if (uncommittedObservedPaths.length > 0) {
@@ -212,14 +207,6 @@ export async function resolveDirectImplementationCommit(opts: {
       reason:
         "The EXECUTOR left supervisor-observed paths uncommitted: " +
         `${uncommittedObservedPaths.join(", ")}.`,
-    };
-  }
-  const scopeViolations = changed.filter((entry) => !pathAllowed(entry, approvedPaths));
-  if (scopeViolations.length > 0) {
-    return {
-      status: "scope_violation",
-      paths: scopeViolations,
-      reason: `The EXECUTOR committed paths outside its approved scope: ${scopeViolations.join(", ")}.`,
     };
   }
   return { status: "ready", commit };

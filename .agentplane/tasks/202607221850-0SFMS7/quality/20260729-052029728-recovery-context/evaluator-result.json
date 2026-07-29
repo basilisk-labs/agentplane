@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The evaluated revision has no frozen verification records or runner history for any declared mandatory check, while the task was marked verified by CODER with no command evidence.",
+      "broken_invariant": "DoD requires every Verify Step to be executed and recorded with command, result, evidence, and scope; pass requires positive, negative, and concurrency-sensitive verification evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+          "section": "verification_records and runner_history"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:f4084d124580f2c7d50b64ac1a9211f24da94fd65a1f18f6a4d8e45d1dd22d44",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.code.md",
+          "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+          "section": "Verification evidence contract"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "The required 0.6.24 cost comparison remains synthetic: candidate lifecycle, tool-call, duplicate-context, and safety values are hard-coded in a unit test instead of being derived from an executed direct golden-path episode; baseline tool calls are inferred from an expected trace rather than observed measurements.",
+      "broken_invariant": "The approved contract requires an executed golden scenario whose measured lifecycle, tool, duplicate-context, verified-success, and safety metrics demonstrate improvement over the 0.6.24 baseline.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:6af072f1518d0089fa2af70b5e9f2a3d4fc1275bee71bd61cb4c899925ac1b94",
+          "line": 2330,
+          "lines": "2330-2355",
+          "section": "direct-task-supervision-benchmark.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:f4084d124580f2c7d50b64ac1a9211f24da94fd65a1f18f6a4d8e45d1dd22d44",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "medium",
+      "summary": "The patch updates the repository clone baseline to the current duplication totals after the mandatory contract check had failed, without frozen evidence showing that the increase was approved or that the evaluated SHA subsequently passed the contract check.",
+      "broken_invariant": "A mandatory verification failure cannot be converted into success by relaxing its baseline without explicit approval and recorded rerun evidence; material verification-contract drift requires re-approval.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-052029728-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:6af072f1518d0089fa2af70b5e9f2a3d4fc1275bee71bd61cb4c899925ac1b94",
+          "line": 5612,
+          "lines": "5612-5637",
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:f4084d124580f2c7d50b64ac1a9211f24da94fd65a1f18f6a4d8e45d1dd22d44",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Execute the complete direct golden-path scenario through the real supervision boundary and assert observed lifecycle calls, durable tool operations, duplicate executor-context bytes, verified success, lifecycle ownership, and committed-scope enforcement against the frozen 0.6.24 baseline.",
+    "Record and freeze successful results for bun run ci:contract, bun run coverage:workflow-suite, bun run lifecycle:invariants, and bun run test:critical on evaluated SHA 21049ad1809d882215c83ad97350aa5dd6cdb36d.",
+    "Run a route-mutation scenario after each mutating supervisor operation and prove that no stale operation is executed, including verification-to-evaluator and evaluator-to-finish boundaries.",
+    "Verify approval-required, missing-knowledge, evaluator-rework, out-of-scope-write, and adapter-crash cases through the integrated CLI path rather than only mocked unit boundaries."
+  ],
+  "hidden_assumptions": [
+    "A CODER-authored verification state with no frozen verification record is treated as equivalent to executed, independently reviewable checks.",
+    "Hard-coded candidate metrics and expected lifecycle traces are treated as measurements of a real supervised episode.",
+    "Raising the clone baseline is assumed to be an acceptable fix for the failed mandatory contract check without explicit scope approval or a frozen successful rerun.",
+    "Mocked route decisions are assumed to cover concurrency-sensitive state drift at the actual persistence and CLI boundaries."
+  ],
+  "recovery_context": "Rework must preserve the implemented supervision changes while replacing synthetic claims with a frozen end-to-end direct episode, restoring evidence-backed verification for every declared check on the evaluated SHA, and either reverting the clone-baseline relaxation or documenting explicit approval plus a successful contract rerun. Re-evaluation should use observed artifacts that prove stale-route handling and all required typed negative stops across real CLI boundaries."
+}
