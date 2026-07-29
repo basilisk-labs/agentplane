@@ -1,4 +1,7 @@
-import { advanceSupervisorExecutionEpisodeState } from "@agentplaneorg/core/schemas";
+import {
+  advanceSupervisorExecutionEpisodeState,
+  stopSupervisorExecutionEpisode,
+} from "@agentplaneorg/core/schemas";
 
 import type { CommandCtx } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
@@ -488,6 +491,12 @@ export async function superviseDirectTaskRun(
         stop: closeout.stop,
       });
     }
+    const terminalJournal = stopSupervisorExecutionEpisode({
+      journal: closeout.journal,
+      reason: "completed",
+    });
+    await evaluatorExecution.store.write(terminalJournal);
+    journal = journalProjection(terminalJournal, closeout.journal_path);
     const metrics = directTaskSupervisorMetrics({
       provider_episodes: providerEpisodes,
       executor_lifecycle_event_delta: executorLifecycleEventDelta,
