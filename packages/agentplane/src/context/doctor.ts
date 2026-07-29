@@ -13,7 +13,7 @@ import { readHarvestReport } from "./harvest-tasks-artifacts.js";
 import { readContextProjection } from "./reindex.js";
 import { checkSqliteProjection } from "./sqlite.js";
 import { validateContextCrossSurfaceIntegrity } from "./integrity.js";
-import { inspectContextIngestRuns } from "./ingest-run-journal.js";
+import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
 
 export async function cmdContextDoctor(opts: {
   cwd: string;

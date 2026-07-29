@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { CommandContext } from "../shared/task-backend.js";
-import { inspectContextIngestRuns } from "../../context/ingest-run-journal.js";
+import { inspectContextIngestRuns } from "../../context/ingest-run-diagnostics.js";
 import { cmdContextExtractionApply } from "./extraction.js";
 import { cmdContextGraphValidate } from "./graph.js";
 import { cmdContextIngest } from "./ingest.js";
