@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: Verified: fresh control-run evidence formally links terminal direct-supervisor journal persistence for EVALUATOR review.
+- Note: Verified: current implementation head links terminal runtime evidence and evaluator-budget closeout coverage for fresh quality review.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -33,6 +33,8 @@ Created: 2026-07-29T01:35:45.453Z
  ...cli.core.route-decision.direct-closeout.test.ts |  32 +-
  .../evaluator/evaluator-episode.stdin.test.ts      |  37 +-
  .../src/commands/evaluator/evaluator-episode.ts    |  26 +-
+ .../evaluator/evaluator-execute-supervisor.ts      |  24 +-
+ .../evaluator/evaluator-execute.command.test.ts    |  66 ++
  .../evaluator/evaluator-quality-artifacts.ts       |   6 -
  .../evaluator/evaluator-review-artifacts.ts        | 153 ++++
  .../commands/evaluator/evaluator-review-shared.ts  |  28 +
@@ -73,10 +75,10 @@ Created: 2026-07-29T01:35:45.453Z
  .../src/runner/usecases/task-run-bootstrap.ts      |  11 +-
  .../usecases/task-run-context.integration.test.ts  |   3 +
  .../agentplane/src/runner/usecases/task-run.ts     |   6 -
- .../runner/supervisor-execution-episode.test.ts    |  17 +
- .../src/runner/supervisor-execution-episode.ts     |   1 +
+ .../runner/supervisor-execution-episode.test.ts    |  44 ++
+ .../src/runner/supervisor-execution-episode.ts     |  22 +-
  scripts/baselines/clone-baseline.json              |  24 +-
- 47 files changed, 5027 insertions(+), 244 deletions(-)
+ 49 files changed, 5159 insertions(+), 250 deletions(-)
 ```
 
 </details>
