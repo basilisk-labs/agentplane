@@ -107,6 +107,7 @@ export {
   type TaskOrigin,
   type TaskPriority,
   type QualityReviewProvenance,
+  type QualityReviewRecoveryReason,
   type QualityReviewResult,
   type QualityReviewState,
   type TaskRecord,

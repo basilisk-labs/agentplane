@@ -111,6 +111,9 @@ async function persistReview(opts: {
           blueprint_digest: opts.report.blueprint_digest,
           evidence_refs: evidenceRefs,
           findings: opts.report.findings,
+          ...(opts.resultPayload?.recovery_reason
+            ? { recovery_reason: opts.resultPayload.recovery_reason }
+            : {}),
         },
         ...(humanInput ? { extensions: humanInput } : {}),
       }),

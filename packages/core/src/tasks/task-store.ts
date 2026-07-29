@@ -46,6 +46,7 @@ export type VerificationResult = {
 
 export type QualityReviewState = "pending" | "pass" | "rework" | "blocked" | "human_review";
 export type QualityReviewProvenance = "human_supplied" | "evaluator_supplied";
+export type QualityReviewRecoveryReason = "deterministic_evidence_gap";
 export type QualityReviewResult = {
   state: QualityReviewState;
   provenance?: QualityReviewProvenance;
@@ -56,6 +57,7 @@ export type QualityReviewResult = {
   blueprint_digest: string | null;
   evidence_refs: string[];
   findings: string[];
+  recovery_reason?: QualityReviewRecoveryReason;
 };
 
 export type TaskEventType = "status" | "comment" | "verify";
