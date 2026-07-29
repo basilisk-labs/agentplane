@@ -8,10 +8,10 @@
   "pr_number": 4667,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4667",
   "pre_merge_closure": {
-    "basis_commit": "c227a05894c847b262ac193d72db1dc41f8a8b35",
+    "basis_commit": "4619ae14958103625cd4547460e9d319242fcbad",
     "branch": "task/202607221850-0SFMS7/supervise-direct-task-execution-end-to-end",
     "pr_number": 4667,
-    "recorded_at": "2026-07-29T09:34:54.789Z",
+    "recorded_at": "2026-07-29T10:05:24.498Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

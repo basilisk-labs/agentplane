@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 47
+revision: 48
 origin:
   system: "manual"
 depends_on:
@@ -72,8 +72,8 @@ quality_review:
   findings:
     - "Замороженные доказательства подтверждают устранение гонки создания каталога runner и сохранение полного прямого цикла: конкурентный тест стабильно выбирает одного победителя, все обязательные проверки проходят, а контрольный запуск завершается терминальным состоянием completed."
 commit:
-  hash: "c227a05894c847b262ac193d72db1dc41f8a8b35"
-  message: "✅ 0SFMS7 task: record compact work-order quality pass"
+  hash: "4619ae14958103625cd4547460e9d319242fcbad"
+  message: "✅ 0SFMS7 task: record complete runner race quality pass"
 comments:
   -
     author: "CODER"
@@ -84,6 +84,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -222,8 +225,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: runner directory race rework covers all declared checks for fresh quality review."
+  -
+    type: "status"
+    at: "2026-07-29T10:05:24.435Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T10:03:10.794Z"
+doc_updated_at: "2026-07-29T10:05:24.452Z"
 doc_updated_by: "CODER"
 description: "RF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops."
 sections:
@@ -972,8 +982,8 @@ sections:
       Resolution: Implementation evidence is frozen for EVALUATOR review; clone baseline was refreshed after confirming its sole delta is outside the RF-10a diff.
 extensions:
   implementation_commit:
-    hash: "f7f5ff871ef5e65c06f541eab6c2892c322f0ff1"
-    message: "🐛 0SFMS7 task: keep runner work order compact"
+    hash: "9722a7406a71dd89082dbe8fb3d7ffbeff1aeeb3"
+    message: "🐛 0SFMS7 task: tolerate concurrent runner directory creation"
   workflow_route_baseline:
     start_head_sha: "950e9cd2f222c12d16e930bdb8a3e39237659651"
     version: 1
