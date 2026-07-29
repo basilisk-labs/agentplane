@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291449-FTHNAR",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T15:02:56.646Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 2 typed finding(s).",
+  "evaluated_sha": "425cc4268bb9ce250abf7ed0d19d1017cae0954b",
+  "blueprint_digest": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e",
+  "findings": [
+    "The recovery predicate does not establish that the evaluator block was caused only by missing deterministic verification evidence. Any current evaluator-supplied blocked review with a finding and quality-report reference is delegated to TESTER, including unrelated semantic or scope blocks.",
+    "The predicate contains no verification-versus-review freshness comparison. After TESTER records refreshed evidence without changing the reviewed SHA, the same blocked review can still satisfy the predicate and select another evidence-refresh episode instead of returning control to EVALUATOR."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-150152622-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "A blocked evaluator review for a semantic implementation defect, with the same SHA, findings, and quality-report evidence reference, must remain non-mutating and must not delegate to TESTER.",
+    "After TESTER records verification newer than the blocked evaluator review for the same implementation SHA, route recomputation must delegate to EVALUATOR rather than emit another quality-evidence-refresh episode.",
+    "A blocked review lacking an explicit machine-readable deterministic-evidence-gap classification must not enter the refresh route."
+  ],
+  "hidden_assumptions": [
+    "A quality-report evidence reference and a non-empty findings array uniquely identify a missing deterministic verification-evidence block.",
+    "Recording verification automatically changes or invalidates the blocked quality-review state sufficiently to prevent the recovery predicate from matching again.",
+    "Free-form evaluator findings can safely drive a privileged workflow transition without an explicit typed recovery reason."
+  ],
+  "residual_risks": [
+    "Narrow eligibility to an explicit deterministic-evidence-gap signal and add a freshness/consumption condition so one TESTER verification record terminates recovery and routes the unchanged work unit back to EVALUATOR; retain unrelated blocked reviews as non-mutating."
+  ]
+}

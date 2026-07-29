@@ -70,6 +70,7 @@ export function renderEvaluatorPrompt(opts: {
     "- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs",
     "- missing_tests and hidden_assumptions: string arrays",
     "- recovery_context: required non-empty string for rework, blocked, or human_review; for human_review it must be the single decision question for the human owner",
+    "- recovery_reason: null unless blocked solely because current deterministic verification evidence is absent; use deterministic_evidence_gap only for that case",
     "",
     "Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.",
     "The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.",

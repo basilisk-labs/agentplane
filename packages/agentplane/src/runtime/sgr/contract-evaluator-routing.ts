@@ -48,6 +48,15 @@ export function validateEvaluatorSgrResult(
     throw invalid(`${field}.findings`, "non-empty array for every evaluator verdict");
   }
   const recoveryContext = optionalString(result.recovery_context, `${field}.recovery_context`);
+  const recoveryReason =
+    result.recovery_reason === undefined
+      ? undefined
+      : requireEnum(result.recovery_reason, `${field}.recovery_reason`, [
+          "deterministic_evidence_gap",
+        ]);
+  if (recoveryReason && verdict !== "blocked") {
+    throw invalid(`${field}.recovery_reason`, '"deterministic_evidence_gap" only for blocked');
+  }
   return {
     schema_version: SGR_CONTRACT_SCHEMA_VERSION,
     kind: "evaluator_result",
@@ -60,6 +69,7 @@ export function validateEvaluatorSgrResult(
       `${field}.hidden_assumptions`,
     ),
     recovery_context: recoveryContext,
+    ...(recoveryReason ? { recovery_reason: recoveryReason } : {}),
   };
 }
 

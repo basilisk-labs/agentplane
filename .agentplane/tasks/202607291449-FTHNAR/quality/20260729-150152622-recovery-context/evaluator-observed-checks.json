@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T15:01:06.145Z",
+    "updated_by": "TESTER",
+    "note": "Verified bounded evidence-refresh routing and protected quality-review handoff."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729150106145-8b2f0cc0ece7db0c.json",
+      "sha256": "sha256:349789736d18c0b6c654bb48032c47e3ed90ed1a0a1e8ccf8a01b83109dc06fd"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}

@@ -228,6 +228,7 @@ describe("evaluator episode calibration", () => {
       required: string[];
       properties: {
         recovery_context: { type: string[] };
+        recovery_reason: { type: string[]; enum: (string | null)[] };
         findings: {
           minItems: number;
           items: {
@@ -252,6 +253,12 @@ describe("evaluator episode calibration", () => {
     expect(outputSchema.properties.findings.minItems).toBe(1);
     expect(outputSchema.required).toContain("recovery_context");
     expect(outputSchema.properties.recovery_context.type).toEqual(["string", "null"]);
+    expect(outputSchema.required).toContain("recovery_reason");
+    expect(outputSchema.properties.recovery_reason.type).toEqual(["string", "null"]);
+    expect(outputSchema.properties.recovery_reason.enum).toEqual([
+      "deterministic_evidence_gap",
+      null,
+    ]);
     expect(evidenceSchema.required).toEqual(["path", "sha256", "line", "lines", "section"]);
     expect(evidenceSchema.properties.sha256.type).toEqual(["string", "null"]);
     expect(evidenceSchema.properties.line.type).toEqual(["integer", "null"]);

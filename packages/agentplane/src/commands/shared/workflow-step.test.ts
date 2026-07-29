@@ -837,7 +837,7 @@ describe("typed WorkflowStep reducer", () => {
       routeState({
         task: {
           ...task,
-          verification: { state: "ok" },
+          verification: { state: "ok", updated_at: "2026-07-29T14:40:00.000Z" },
           quality_review: {
             state: "blocked",
             provenance: "evaluator_supplied",
@@ -848,6 +848,7 @@ describe("typed WorkflowStep reducer", () => {
             blueprint_digest: "fixture-blueprint",
             evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
             findings: ["Frozen deterministic verification evidence is missing."],
+            recovery_reason: "deterministic_evidence_gap",
           },
         },
         prFlow: prFlow("OPEN"),
@@ -868,6 +869,71 @@ describe("typed WorkflowStep reducer", () => {
       },
     });
     expect(step.compatibility.command).toBeNull();
+  });
+
+  it("does not refresh an unclassified semantic EVALUATOR block even when its evidence is current", () => {
+    const step = reduceRouteState(
+      routeState({
+        task: {
+          ...task,
+          verification: { state: "ok", updated_at: "2026-07-29T14:40:00.000Z" },
+          quality_review: {
+            state: "blocked",
+            provenance: "evaluator_supplied",
+            updated_at: "2026-07-29T14:40:56.727Z",
+            updated_by: "EVALUATOR",
+            note: "The implementation violates the task invariant.",
+            evaluated_sha: resume.head_sha,
+            blueprint_digest: "fixture-blueprint",
+            evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
+            findings: ["The implementation violates the task invariant."],
+          },
+        },
+        prFlow: prFlow("OPEN"),
+        blockers: [
+          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
+        ],
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      phase: "quality_review_needed",
+      episode: { purpose: "quality_review", role: "EVALUATOR" },
+    });
+  });
+
+  it("returns a deterministic evidence block to EVALUATOR after TESTER refreshes verification", () => {
+    const step = reduceRouteState(
+      routeState({
+        task: {
+          ...task,
+          verification: { state: "ok", updated_at: "2026-07-29T14:41:00.000Z" },
+          quality_review: {
+            state: "blocked",
+            provenance: "evaluator_supplied",
+            updated_at: "2026-07-29T14:40:56.727Z",
+            updated_by: "EVALUATOR",
+            note: "Frozen verification evidence is missing.",
+            evaluated_sha: resume.head_sha,
+            blueprint_digest: "fixture-blueprint",
+            evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
+            findings: ["Frozen deterministic verification evidence is missing."],
+            recovery_reason: "deterministic_evidence_gap",
+          },
+        },
+        prFlow: prFlow("OPEN"),
+        blockers: [
+          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
+        ],
+      }),
+    );
+
+    expect(step).toMatchObject({
+      kind: "agent_episode",
+      phase: "quality_review_needed",
+      episode: { purpose: "quality_review", role: "EVALUATOR" },
+    });
   });
 
   it("derives deterministic fingerprints, idempotency keys, and compatibility projections", () => {
