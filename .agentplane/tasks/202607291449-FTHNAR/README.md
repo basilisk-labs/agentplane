@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 71
+revision: 72
 origin:
   system: "manual"
 depends_on: []
@@ -52,7 +52,9 @@ quality_review:
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "The implementation satisfies the bounded evidence-refresh and constrained-refspec recovery contract, including forced local tracking-ref refresh after legitimate branch rewrites."
-commit: null
+commit:
+  hash: "c53f3054d8773019dcedd1d9f53a31d5c35ec089"
+  message: "📝 FTHNAR task: freeze evaluator-approved verification evidence"
 comments:
   -
     author: "CODER"
@@ -96,6 +98,9 @@ comments:
   -
     author: "CODER"
     body: "Start: force-refresh stale constrained tracking refs after legitimate task branch rewrites."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -327,8 +332,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "All six declared local check groups pass at implementation SHA 50928b487; refreshes only deterministic evidence after evaluator block."
+  -
+    type: "status"
+    at: "2026-07-29T17:49:18.930Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T17:45:50.028Z"
+doc_updated_at: "2026-07-29T17:49:18.931Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:
@@ -1197,8 +1209,8 @@ sections:
       Resolution: Commit the record, obtain fresh EVALUATOR review, then enter the CLI-owned provider lane.
 extensions:
   implementation_commit:
-    hash: "13d29967da9d6f5de77780ac92b3180916968b72"
-    message: "♻️ FTHNAR pr: restore constrained-refspec head tracking"
+    hash: "50928b4871574d57669a7e0937b8578c1cafe626"
+    message: "♻️ FTHNAR integration: force refresh constrained tracking refs"
   workflow_route_baseline:
     start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
     version: 1
