@@ -39,6 +39,8 @@
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../src/runner/context/task-context.test.ts        |   1 -
  .../agentplane/src/runner/context/task-context.ts  |  11 +-
+ .../agentplane/src/runner/effect-operation.test.ts |  35 +-
+ .../src/runner/run-directory-boundary.ts           |   6 +-
  .../usecases/agent-work-order.integration.test.ts  |  31 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
  .../task-run-bootstrap.result-examples.test.ts     |  14 +-
@@ -48,4 +50,4 @@
  .../runner/supervisor-execution-episode.test.ts    |  44 ++
  .../src/runner/supervisor-execution-episode.ts     |  22 +-
  scripts/baselines/clone-baseline.json              |  24 +-
- 50 files changed, 5181 insertions(+), 259 deletions(-)
+ 52 files changed, 5219 insertions(+), 262 deletions(-)
