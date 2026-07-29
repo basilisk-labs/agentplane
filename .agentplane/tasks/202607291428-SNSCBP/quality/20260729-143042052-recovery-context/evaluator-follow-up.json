@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607291428-SNSCBP-420a31ed3231d089ab357df7",
+  "task_id": "202607291428-SNSCBP",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Regenerate the evaluator work order after a committed task work unit exists, with non-null evaluated_sha and diff_base_sha, a frozen diff containing the dependency change, and SHA-bound observed outputs for the positive, negative, and required docs/policy checks.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "The frozen input contains no committed task work unit: the actual-diff artifact explicitly states that no committed work unit is available, while evaluated_sha and diff_base_sha are unset. The requested dependency change therefore cannot be semantically evaluated.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-143042052-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:991a2e65beadd74b29a5cf13a6eea0786446c22272bc321aa9d255396c54e352",
+          "line": 1
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "The task document reports successful verification, but the frozen observed-checks artifact contains no verification records, runner history, or runtime evidence. The claimed checks and dependency-graph result cannot be independently tied to the frozen review input.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-143042052-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:4e713ee8163f2c21b64879742497d6353b0b9595087e7e6853e54d9573e24c8e",
+          "line": 1
+        },
+        {
+          "path": ".agentplane/tasks/202607291428-SNSCBP/README.md",
+          "sha256": "sha256:9078d52054f121044ffa769795f5968038cbf7f4f65c0964a3e2e06d2e0e8f29",
+          "line": 1,
+          "section": "Verification"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-143042052-recovery-context/evaluator-result.json"
+}

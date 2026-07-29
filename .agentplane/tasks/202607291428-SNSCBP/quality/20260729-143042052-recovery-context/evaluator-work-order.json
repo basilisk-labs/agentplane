@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607291428-SNSCBP-420a31ed3231d089ab357df7",
+  "prepared_at": "2026-07-29T14:30:42.052Z",
+  "task": {
+    "id": "202607291428-SNSCBP",
+    "revision": 6,
+    "objective": "Gate beta.1 qualification on SHA-bound evaluator evidence\n\nAdd the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.",
+    "acceptance_criteria": [
+      "agentplane doctor",
+      "node .agentplane/policy/check-routing.mjs",
+      "- In scope: Add the completed SHA-bound evaluator evidence task as an explicit beta.1 qualification dependency so the milestone cannot advance without merged evidence.\n- Out of scope: unrelated refactors not required for \"Gate beta.1 qualification on SHA-bound evaluator evidence\".",
+      "1. Add 202607291148-1F9GZD to the beta.1 qualification task dependency graph. 2. Verify the persisted task document and route show the gate cannot advance without that task. 3. Run docs/policy checks and record verification. 4. Complete a focused evaluator review and merge this metadata-only PR before the evaluator-evidence implementation PR.",
+      "PLANNER fallback scaffold for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": null,
+  "diff_base_sha": null,
+  "blueprint_digest": "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/README.md",
+      "sha256": "sha256:9078d52054f121044ffa769795f5968038cbf7f4f65c0964a3e2e06d2e0e8f29",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-143042052-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:991a2e65beadd74b29a5cf13a6eea0786446c22272bc321aa9d255396c54e352",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-143042052-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:4e713ee8163f2c21b64879742497d6353b0b9595087e7e6853e54d9573e24c8e",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-143042052-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:d646ae948914f18bd2aecd5388bda51048e8827e9fa49c69906ba1344e89372f",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.docs.md",
+      "sha256": "sha256:55afae4f1fb8b1e0eecd24677989672cf4939586129992eabd4be802d635c504",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "details": "Command: node packages/agentplane/bin/agentplane.js task active\nResult: pass\nEvidence: 202607221908-MR9EA9 reports deps=missing:202607291148-1F9GZD, so beta.1 cannot advance before this task is present and completed on main.\nScope: negative dependency-closure proof.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: metadata-only task routing.\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: 0 errors; only two historical DONE-task commit warnings outside this task.\nScope: repository workflow health.\n\nCommand: node packages/agentplane/bin/agentplane.js task show 202607221908-MR9EA9\nResult: pass\nEvidence: committed depends_on includes 202607291148-1F9GZD at 11ee94a6a.\nScope: positive dependency-graph proof.",
+  "digest": "sha256:af7dd2db4aea00fcc91bfe9ce9ad1e00656934b9985c7dca5d0ee438113133ec",
+  "implementation_sha": "11ee94a6a1b57df493e333d6f23ede0bc75086c9",
+  "kind": "task_verification_record",
+  "note": "Verified beta.1 route blocks on the missing SHA-bound evaluator evidence task.",
+  "recorded_at": "2026-07-29T14:32:42.822Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Gate beta.1 qualification on SHA-bound evaluator evidence\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:e165be8d473658499cc960ddc80021b819d5c2129e665a00e14ca5c2a8a0d63f",
+  "task_id": "202607291428-SNSCBP",
+  "verification_command": "agentplane verify 202607291428-SNSCBP --ok --by TESTER",
+  "verifier": "TESTER"
+}
