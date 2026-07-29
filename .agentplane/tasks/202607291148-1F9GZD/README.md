@@ -4,7 +4,7 @@ title: "Formalize SHA-bound qualification packets for evaluator review"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 16
+revision: 18
 origin:
   system: "manual"
 depends_on: []
@@ -22,36 +22,35 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-29T13:46:59.182Z"
+  updated_at: "2026-07-29T13:57:35.756Z"
   updated_by: "TESTER"
-  note: "Verified c15433: qualification evidence is bound to the reviewed SHA."
+  note: "Verified 8a94a0a: qualification evidence traverses terminal dependency leaves."
   attempts: 0
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T13:35:53.132Z"
+  updated_at: "2026-07-29T13:49:28.868Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 2 typed finding(s)."
-  evaluated_sha: "e6c7f4cca1d9e8f2b1b2b7651902109e1a4888f6"
+  note: "EVALUATOR returned rework with 1 typed finding(s)."
+  evaluated_sha: "c15433cc1f9595570ab3ab4dae6defea4caebd49"
   blueprint_digest: "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391"
   evidence_refs:
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607291148-1F9GZD/README.md"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-133413114-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The sealing commit may contain unverified implementation changes after the packet's verified implementation SHA."
-    - "Dependency lifecycle artifacts are not proven to be the artifacts present at or before the reviewed implementation SHA."
+    - "Dependency closure treats every direct dependency as a leaf and never traverses nested dependencies, so the packet can omit unfinished or unqualified terminal leaves behind an aggregate dependency."
 commit:
   hash: "6b1e2e72c9377b4a86286c524d853f2d17595002"
   message: "fix(evaluator): seal qualification evidence"
@@ -105,8 +104,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified c15433: qualification evidence is bound to the reviewed SHA."
+  -
+    type: "verify"
+    at: "2026-07-29T13:57:35.756Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified 8a94a0a: qualification evidence traverses terminal dependency leaves."
 doc_version: 3
-doc_updated_at: "2026-07-29T13:46:59.973Z"
+doc_updated_at: "2026-07-29T13:57:36.535Z"
 doc_updated_by: "CODER"
 description: "Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9."
 sections:
@@ -221,6 +226,46 @@ sections:
     Result: pass
     Evidence: RF-04 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; lint, architecture, clone, Knip, and coverage guards passed
     Scope: repository contract for c15433cc1f9595570ab3ab4dae6defea4caebd49
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+    - old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+    - current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-29T13:57:35.756Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified 8a94a0a: qualification evidence traverses terminal dependency leaves.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T13:46:59.973Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
+
+    Details:
+
+    Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+    Result: pass (56 tests)
+    Evidence: 8a94a0a4b8c1026be5b1a51b8bc0e6c095eaf381; nested terminal leaf, missing-node, and cycle regressions
+    Scope: SHA-bound qualification packet, transitive dependency closure, RF-04 packet evidence
+
+    Command: bun run ci:contract
+    Result: pass
+    Evidence: RF-04 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; lint, architecture, clone, Knip, and coverage guards passed
+    Scope: repository contract for 8a94a0a4b8c1026be5b1a51b8bc0e6c095eaf381
 
     BlueprintSnapshotRef:
     - state: current
@@ -377,6 +422,46 @@ Command: bun run ci:contract
 Result: pass
 Evidence: RF-04 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; lint, architecture, clone, Knip, and coverage guards passed
 Scope: repository contract for c15433cc1f9595570ab3ab4dae6defea4caebd49
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+- old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+- current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-29T13:57:35.756Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified 8a94a0a: qualification evidence traverses terminal dependency leaves.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T13:46:59.973Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
+
+Details:
+
+Command: bun run test:fast -- packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-runtime-evidence.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-qualification-packet.test.ts
+Result: pass (56 tests)
+Evidence: 8a94a0a4b8c1026be5b1a51b8bc0e6c095eaf381; nested terminal leaf, missing-node, and cycle regressions
+Scope: SHA-bound qualification packet, transitive dependency closure, RF-04 packet evidence
+
+Command: bun run ci:contract
+Result: pass
+Evidence: RF-04 50 runs, 70/70 outcomes, 27/27 provider token cells, 170/170 scalar cells; lint, architecture, clone, Knip, and coverage guards passed
+Scope: repository contract for 8a94a0a4b8c1026be5b1a51b8bc0e6c095eaf381
 
 BlueprintSnapshotRef:
 - state: current

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291148-1F9GZD",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T13:49:28.868Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "c15433cc1f9595570ab3ab4dae6defea4caebd49",
+  "blueprint_digest": "1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391",
+  "findings": [
+    "Dependency closure treats every direct dependency as a leaf and never traverses nested dependencies, so the packet can omit unfinished or unqualified terminal leaves behind an aggregate dependency."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607291148-1F9GZD/README.md"
+  ],
+  "missing_tests": [
+    "A nested dependency graph where the qualification task depends on an aggregate task whose terminal leaf lacks verification, evaluator pass, or hosted-close evidence; packet creation must fail or include and validate that terminal leaf.",
+    "A nested dependency graph with complete terminal leaves; the packet must enumerate the deterministic transitive leaf set rather than only direct dependencies."
+  ],
+  "hidden_assumptions": [
+    "Every direct dependency of a milestone qualification task is necessarily a terminal dependency leaf.",
+    "Qualification task graphs never contain aggregate or intermediate dependency tasks."
+  ],
+  "residual_risks": [
+    "Replace direct depends_on labeling with deterministic transitive dependency traversal, define cycle and missing-node handling, validate closure for terminal leaves, and add nested-graph positive and negative regressions before rerunning the focused evaluator suite and ci:contract."
+  ]
+}

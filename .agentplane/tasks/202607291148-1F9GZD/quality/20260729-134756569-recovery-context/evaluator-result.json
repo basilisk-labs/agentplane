@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Dependency closure treats every direct dependency as a leaf and never traverses nested dependencies, so the packet can omit unfinished or unqualified terminal leaves behind an aggregate dependency.",
+      "broken_invariant": "The qualification packet must prove verification, evaluator pass, and hosted-close closure for every dependency leaf, not merely each directly declared dependency.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/quality/20260729-134756569-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b2fa85c565f3163427bb7ea4e4c621aab6fda93ae79de8cc1d68e8dde338fc86",
+          "section": "buildDependencyClosure derives declaredLeafIds directly from opts.task.depends_on and validates only those tasks"
+        },
+        {
+          "path": ".agentplane/tasks/202607291148-1F9GZD/README.md",
+          "sha256": "sha256:42ef20b090c4581a6a500ae03929a6fbd19214d6a6e999a4bc53bec1b8f93440",
+          "section": "Plan and Verify Steps require per-leaf dependency closure and closure-completeness regression coverage"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "A nested dependency graph where the qualification task depends on an aggregate task whose terminal leaf lacks verification, evaluator pass, or hosted-close evidence; packet creation must fail or include and validate that terminal leaf.",
+    "A nested dependency graph with complete terminal leaves; the packet must enumerate the deterministic transitive leaf set rather than only direct dependencies."
+  ],
+  "hidden_assumptions": [
+    "Every direct dependency of a milestone qualification task is necessarily a terminal dependency leaf.",
+    "Qualification task graphs never contain aggregate or intermediate dependency tasks."
+  ],
+  "recovery_context": "Replace direct depends_on labeling with deterministic transitive dependency traversal, define cycle and missing-node handling, validate closure for terminal leaves, and add nested-graph positive and negative regressions before rerunning the focused evaluator suite and ci:contract."
+}

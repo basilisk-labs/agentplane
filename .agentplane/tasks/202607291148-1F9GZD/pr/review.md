@@ -13,7 +13,7 @@ Created: 2026-07-29T11:49:50.615Z
 ## Verification
 
 - State: ok
-- Note: Verified c15433: qualification evidence is bound to the reviewed SHA.
+- Note: Verified 8a94a0a: qualification evidence traverses terminal dependency leaves.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -29,7 +29,7 @@ Created: 2026-07-29T11:49:50.615Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../evaluator-qualification-packet.test.ts         | 471 ++++++++++++++++
+ .../evaluator-qualification-packet.test.ts         | 545 +++++++++++++++++++
  .../evaluator/evaluator-qualification-review.ts    |  52 ++
  .../evaluator/evaluator-review-artifacts.ts        |   3 +-
  .../commands/evaluator/evaluator-review-usecase.ts |  47 +-
@@ -38,11 +38,12 @@ Created: 2026-07-29T11:49:50.615Z
  .../evaluator/evaluator-verification-records.ts    |  17 +-
  .../src/commands/shared/verification-details.ts    |  36 ++
  .../task/qualification-packet-artifacts.ts         |  70 +++
+ .../task/qualification-packet-dependencies.ts      |  51 ++
  .../src/commands/task/qualification-packet-json.ts |  43 ++
  .../src/commands/task/qualification-packet-rf04.ts | 256 +++++++++
- .../src/commands/task/qualification-packet.ts      | 594 +++++++++++++++++++++
+ .../src/commands/task/qualification-packet.ts      | 592 +++++++++++++++++++++
  .../src/commands/task/verify-record-execute.ts     |  33 +-
- 13 files changed, 1661 insertions(+), 105 deletions(-)
+ 14 files changed, 1784 insertions(+), 105 deletions(-)
 ```
 
 </details>
