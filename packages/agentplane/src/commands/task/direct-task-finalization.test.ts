@@ -1,12 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ cmdFinish: vi.fn(), runProcess: vi.fn() }));
+const mocks = vi.hoisted(() => ({
+  cmdFinish: vi.fn(),
+  mkdir: vi.fn(),
+  runProcess: vi.fn(),
+  writeJson: vi.fn(),
+}));
 
 vi.mock("@agentplaneorg/core/process", () => ({ runProcess: mocks.runProcess }));
+vi.mock("node:fs/promises", () => ({ mkdir: mocks.mkdir }));
+vi.mock("../../shared/write-if-changed.js", () => ({ writeJsonStableIfChanged: mocks.writeJson }));
 vi.mock("./finish-command.js", () => ({ cmdFinish: mocks.cmdFinish }));
 
 import {
   finishDirectTask,
+  recordDirectImplementationEvidence,
   readDirectTaskHead,
   resolveDirectImplementationCommit,
 } from "./direct-task-finalization.js";
@@ -22,35 +30,19 @@ describe("direct task finalization", () => {
     vi.resetAllMocks();
   });
 
-  it("requires a new committed implementation and permits only active-task artifacts to remain dirty", async () => {
+  it("uses the supervisor-observed executor delta instead of rejecting pre-existing dirty paths", async () => {
     mocks.runProcess
       .mockResolvedValueOnce({
         exitCode: 0,
-        stdout: " M packages/agentplane/src/index.ts\n",
+        stdout: "def456\n",
         stderr: "",
       })
-      .mockResolvedValueOnce({
-        exitCode: 0,
-        stdout: "?? .agentplane/tasks/202607290000-RF10A1/supervision/checks.json\n",
-        stderr: "",
-      })
-      .mockResolvedValueOnce({ exitCode: 0, stdout: "def456\n", stderr: "" })
       .mockResolvedValueOnce({
         exitCode: 0,
         stdout: "packages/agentplane/src/index.ts\n",
         stderr: "",
       });
 
-    const outsideTaskPaths = await resolveDirectImplementationCommit({
-      command,
-      cwd: "/repo",
-      task_id: TASK_ID,
-      execution_base_commit: "abc123",
-      allowed_paths: ["packages/agentplane/src"],
-    });
-    expect(outsideTaskPaths.status).toBe("missing");
-    if (outsideTaskPaths.status === "missing")
-      expect(outsideTaskPaths.reason).toContain("non-task");
     await expect(
       resolveDirectImplementationCommit({
         command,
@@ -58,14 +50,27 @@ describe("direct task finalization", () => {
         task_id: TASK_ID,
         execution_base_commit: "abc123",
         allowed_paths: ["packages/agentplane/src"],
+        observed_changed_paths: ["packages/agentplane/src/index.ts"],
       }),
     ).resolves.toEqual({ status: "ready", commit: "def456" });
+    expect(mocks.runProcess).toHaveBeenCalledTimes(2);
+  });
+
+  it("fails closed when no supervisor-observed executor delta is retained", async () => {
+    const result = await resolveDirectImplementationCommit({
+      command,
+      cwd: "/repo",
+      task_id: TASK_ID,
+      execution_base_commit: "abc123",
+      allowed_paths: ["packages/agentplane/src"],
+      observed_changed_paths: null,
+    });
+    expect(result).toMatchObject({ status: "missing" });
+    expect(mocks.runProcess).not.toHaveBeenCalled();
   });
 
   it("does not accept an unchanged HEAD as an implementation", async () => {
-    mocks.runProcess
-      .mockResolvedValueOnce({ exitCode: 0, stdout: "", stderr: "" })
-      .mockResolvedValueOnce({ exitCode: 0, stdout: "abc123\n", stderr: "" });
+    mocks.runProcess.mockResolvedValueOnce({ exitCode: 0, stdout: "abc123\n", stderr: "" });
 
     const unchangedHead = await resolveDirectImplementationCommit({
       command,
@@ -73,6 +78,7 @@ describe("direct task finalization", () => {
       task_id: TASK_ID,
       execution_base_commit: "abc123",
       allowed_paths: ["packages/agentplane/src"],
+      observed_changed_paths: ["packages/agentplane/src/index.ts"],
     });
     expect(unchangedHead.status).toBe("missing");
     if (unchangedHead.status === "missing")
@@ -81,7 +87,6 @@ describe("direct task finalization", () => {
 
   it("stops finalization when the committed implementation escapes the work-order scope", async () => {
     mocks.runProcess
-      .mockResolvedValueOnce({ exitCode: 0, stdout: "", stderr: "" })
       .mockResolvedValueOnce({ exitCode: 0, stdout: "def456\n", stderr: "" })
       .mockResolvedValueOnce({ exitCode: 0, stdout: "README.md\n", stderr: "" });
 
@@ -92,17 +97,17 @@ describe("direct task finalization", () => {
         task_id: TASK_ID,
         execution_base_commit: "abc123",
         allowed_paths: ["packages/agentplane/src"],
+        observed_changed_paths: ["README.md"],
       }),
     ).resolves.toEqual({
       status: "scope_violation",
       paths: ["README.md"],
-      reason: "The EXECUTOR committed paths outside its approved scope: README.md.",
+      reason: "The supervisor-observed EXECUTOR delta escaped its approved scope: README.md.",
     });
   });
 
   it("does not let an EXECUTOR commit task artifacts outside its work-order scope", async () => {
     mocks.runProcess
-      .mockResolvedValueOnce({ exitCode: 0, stdout: "", stderr: "" })
       .mockResolvedValueOnce({ exitCode: 0, stdout: "def456\n", stderr: "" })
       .mockResolvedValueOnce({
         exitCode: 0,
@@ -117,6 +122,7 @@ describe("direct task finalization", () => {
         task_id: TASK_ID,
         execution_base_commit: "abc123",
         allowed_paths: ["packages/agentplane/src"],
+        observed_changed_paths: [`.agentplane/tasks/${TASK_ID}/README.md`],
       }),
     ).resolves.toMatchObject({
       status: "scope_violation",
@@ -150,5 +156,55 @@ describe("direct task finalization", () => {
     expect(mocks.runProcess).toHaveBeenCalledWith(
       expect.objectContaining({ command: "git", args: ["rev-parse", "HEAD"], cwd: "/repo" }),
     );
+  });
+
+  it("freezes independent Git checks and the complete repository-status audit for EVALUATOR", async () => {
+    mocks.runProcess
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "", stderr: "" })
+      .mockResolvedValueOnce({ exitCode: 0, stdout: "", stderr: "" })
+      .mockResolvedValueOnce({
+        exitCode: 0,
+        stdout: "A\tpackages/agentplane/src/index.ts\n",
+        stderr: "",
+      })
+      .mockResolvedValueOnce({
+        exitCode: 0,
+        stdout: "?? benchmark-preexisting.md\n",
+        stderr: "",
+      });
+
+    await expect(
+      recordDirectImplementationEvidence({
+        command,
+        cwd: "/repo",
+        task_id: TASK_ID,
+        execution_base_commit: "abc123",
+        implementation_commit: "def456",
+        execution_baseline_status: {
+          command: "git status --short --untracked-files=all",
+          lines: ["?? benchmark-preexisting.md"],
+        },
+      }),
+    ).resolves.toEqual({
+      artifact_path: `.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
+      implementation_commit: "def456",
+    });
+    const evidence = mocks.writeJson.mock.calls[0]?.[1] as {
+      implementation_commit: string;
+      repository_status: {
+        unchanged_from_execution_baseline: string[];
+        introduced_after_execution_baseline: string[];
+      };
+    };
+    expect(mocks.writeJson.mock.calls[0]?.[0]).toBe(
+      `/repo/.agentplane/tasks/${TASK_ID}/supervision/implementation-evidence.json`,
+    );
+    expect(evidence).toMatchObject({
+      implementation_commit: "def456",
+      repository_status: {
+        unchanged_from_execution_baseline: ["?? benchmark-preexisting.md"],
+        introduced_after_execution_baseline: [],
+      },
+    });
   });
 });

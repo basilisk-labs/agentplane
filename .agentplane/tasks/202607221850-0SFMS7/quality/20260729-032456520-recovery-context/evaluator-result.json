@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The mandatory contract check fails on the evaluated SHA, and the recorded verification state remains needs_rework.",
+      "broken_invariant": "All declared verification checks must pass, or an approved skip must be recorded, before the implementation can satisfy the task acceptance contract.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/verification/20260729032442824-deedb5d6a025de27.json",
+          "sha256": "sha256:8f44ad367d6060f2ffac102e47ea38ecf55564fadfd15c82ee0dd7a536e1ea04",
+          "section": "details"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d691f02692a2bda4eaab4265a00930992d89db97ac8739abd007817e568ce6fd",
+          "section": "verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "medium",
+      "summary": "The claimed 0.6.24 cost improvement is calculated from hard-coded candidate values rather than measurements from an executed direct golden-path episode; the implementation also derives baseline tool calls from an expected lifecycle trace and explicitly states that provider-internal tool calls were not recorded.",
+      "broken_invariant": "The approved plan requires a measured comparison of lifecycle, tool, and duplicate-context cost against the 0.6.24 baseline without reducing verified success or safety.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-032456520-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:100336598a6c1205c7efd9bc58e87b63c7298a2b718cac11d14c40986329eeba",
+          "section": "packages/agentplane/src/commands/task/direct-task-supervision-benchmark.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:7eec9781c2bfa1f4fea96636b762c4a1ef9d00990563c0640ebafa961314fb5c",
+          "section": "Verify Steps"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "An end-to-end direct golden-path run that captures actual lifecycle-call, tool-call, and duplicate-context metrics and compares them with the frozen 0.6.24 baseline.",
+    "A successful run of bun run ci:contract on the evaluated SHA, or a formally approved skip containing the required reason, risk, and approver evidence."
+  ],
+  "hidden_assumptions": [
+    "The repository-wide clone-baseline failure is pre-existing and unrelated to RF-10a, but the frozen evidence does not include an approved waiver or comparative proof establishing that exception.",
+    "Hard-coded orchestration-cost constants accurately represent a real supervised episode even though no runner history or measured episode trace is frozen."
+  ],
+  "recovery_context": "Rework the evidence and implementation so the evaluated SHA has either a passing mandatory contract check or an approved skip, then replace the hard-coded golden-cost claim with measurements from an executed direct episode covering lifecycle calls, tool calls, duplicate context, verified success, lifecycle ownership, and committed-scope enforcement."
+}

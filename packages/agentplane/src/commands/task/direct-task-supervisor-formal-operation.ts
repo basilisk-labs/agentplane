@@ -1,6 +1,7 @@
 import {
   advanceSupervisorExecutionEpisodeState,
   completeSupervisorExecutionEpisode,
+  reopenCompletedSupervisorExecutionEpisodeAfterStaleState,
   startSupervisorExecutionEpisode,
   type SupervisorExecutionEpisodeJournal,
 } from "@agentplaneorg/core/schemas";
@@ -50,16 +51,30 @@ export async function recordDirectTaskFormalOperation(opts: {
         "Direct task supervisor has an unresolved operation intent; resolve it before continuing.",
     });
   }
-  const started = startSupervisorExecutionEpisode({
-    journal,
-    role: "EXECUTOR",
-    kind: "cli_operation",
-    operation_identity: { direct_task_operation: opts.id },
-    precondition_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
-    authority_ref: `direct-task-supervisor:${opts.id}`,
-    authority_digest: before.workflowStep.preconditionFingerprint.digest,
-    effect_ref: opts.id,
-  });
+  const start = () =>
+    startSupervisorExecutionEpisode({
+      journal,
+      role: "EXECUTOR",
+      kind: "cli_operation",
+      operation_identity: { direct_task_operation: opts.id },
+      precondition_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+      authority_ref: `direct-task-supervisor:${opts.id}`,
+      authority_digest: before.workflowStep.preconditionFingerprint.digest,
+      effect_ref: opts.id,
+    });
+  let started = start();
+  // A completed runner episode is allowed to advance to the route observed
+  // after its own durable outcome. This is distinct from retrying an unknown
+  // effect: the helper only reopens a stale journal with a completed latest
+  // operation, while interrupted or failed intents remain terminal.
+  if (started.status === "stopped" && started.stop.reason === "stale_state") {
+    journal = reopenCompletedSupervisorExecutionEpisodeAfterStaleState({
+      journal: started.journal,
+      state_fingerprint_digest: before.workflowStep.preconditionFingerprint.digest,
+    });
+    await opened.store.write(journal);
+    started = start();
+  }
   if (started.status !== "started") {
     await opened.store.write(started.journal);
     throw new CliError({

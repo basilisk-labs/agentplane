@@ -21,15 +21,20 @@ export type DirectExecutorObservation =
 
 export function observeDirectExecutor(
   lifecycle: TaskRunnerLifecycleResult,
+  opts: { allow_unverified_receipt?: boolean } = {},
 ): DirectExecutorObservation {
   if (lifecycle.phase !== "executed" || lifecycle.result?.status !== "success") {
     return { stop: "runner_failed", reason: "The EXECUTOR runner did not complete successfully." };
   }
   const receipt = lifecycle.result.execution_receipt;
-  if (receipt?.verification_state !== "observed_success") {
+  const acceptableReceipt =
+    receipt?.verification_state === "observed_success" ||
+    (opts.allow_unverified_receipt === true && receipt?.verification_state === "unverified");
+  if (!acceptableReceipt) {
     return {
       stop: "runner_receipt_unobserved",
-      reason: "The EXECUTOR result has no supervisor-observed success receipt.",
+      reason:
+        "The EXECUTOR result has no supervisor-observed receipt accepted for the current authority.",
     };
   }
   const semantic = lifecycle.result.semantic_result?.value;

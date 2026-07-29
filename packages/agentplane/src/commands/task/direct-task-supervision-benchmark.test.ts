@@ -2,10 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import {
-  compareDirectTaskSupervisionGoldenPath,
-  DIRECT_TASK_SUPERVISION_GOLDEN_COST,
-} from "./direct-task-supervision-benchmark.js";
+import { compareDirectTaskSupervisionGoldenPath } from "./direct-task-supervision-benchmark.js";
 
 function frozenV0624DirectBaseline() {
   const baseline = JSON.parse(
@@ -15,13 +12,13 @@ function frozenV0624DirectBaseline() {
     ),
   ) as {
     diagnostics: {
-      scenarios: Array<{
+      scenarios: {
         id: string;
         metrics: {
           lifecycle_calls: { median: number };
           duplicate_input_bytes: { median: number };
         };
-      }>;
+      }[];
     };
   };
   const fixtures = JSON.parse(
@@ -30,7 +27,7 @@ function frozenV0624DirectBaseline() {
       "utf8",
     ),
   ) as {
-    scenarios: Array<{ id: string; expected_lifecycle_trace: string[] }>;
+    scenarios: { id: string; expected_lifecycle_trace: string[] }[];
   };
   const measured = baseline.diagnostics.scenarios.find((entry) => entry.id === "direct");
   const control = fixtures.scenarios.find((entry) => entry.id === "direct");
@@ -47,6 +44,11 @@ describe("direct task supervision golden cost", () => {
     const baseline = frozenV0624DirectBaseline();
     const comparison = compareDirectTaskSupervisionGoldenPath({
       baseline,
+      candidate: {
+        lifecycle_calls: 4,
+        tool_calls: 5,
+        duplicate_executor_context_bytes: 0,
+      },
       quality_safety: {
         verified_success: true,
         executor_lifecycle_event_delta: 0,
@@ -58,11 +60,6 @@ describe("direct task supervision golden cost", () => {
       lifecycle_calls: 7,
       tool_calls: 7,
       duplicate_executor_context_bytes: 20_562,
-    });
-    expect(DIRECT_TASK_SUPERVISION_GOLDEN_COST).toEqual({
-      lifecycle_calls: 4,
-      tool_calls: 5,
-      duplicate_executor_context_bytes: 0,
     });
     expect(comparison).toEqual({
       lifecycle_calls_reduced: true,

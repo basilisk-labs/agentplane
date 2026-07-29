@@ -1,0 +1,15 @@
+{
+  "details": "Command: bunx vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/task/direct-task-finalization.test.ts packages/agentplane/src/commands/task/direct-task-supervision-benchmark.test.ts packages/agentplane/src/commands/task/direct-task-supervisor-closeout.test.ts packages/agentplane/src/commands/task/direct-task-supervisor.test.ts packages/agentplane/src/commands/task/direct-task-verification.test.ts\nResult: pass\nEvidence: 5 files, 19 tests passed.\nScope: RF-10a finalization, scope enforcement, golden-cost, closeout, and declared-check paths.\n\nCommand: bun run coverage:workflow-suite\nResult: pass\nEvidence: 14 files, 52 tests passed; workflow harness contract OK.\nScope: direct workflow coverage.\n\nCommand: bun run lifecycle:invariants\nResult: pass\nEvidence: 8 lifecycle invariants passed.\nScope: lifecycle ownership and task transition invariants.\n\nCommand: bun run test:critical\nResult: pass\nEvidence: critical-cli completed all 11 chunks on the implementation SHA.\nScope: critical CLI and agent-efficiency guard routes.\n\nCommand: bun run ci:contract\nResult: fail\nEvidence: all preceding contract gates passed; clone baseline stopped at sources=1236, clones=90, duplicatedLines=1430, duplicatedTokens=9973 versus baseline 1202/89/1418/9862.\nScope: repository-wide contract; failure is an existing baseline drift outside RF-10a source paths.",
+  "digest": "sha256:deedb5d6a025de274a288e781c5653ea9c05102e1f4543d543b48ef3d8f64b21",
+  "implementation_sha": "36caae4b79c208c4341235f38c1330eb7f0e6dd0",
+  "kind": "task_verification_record",
+  "note": "Implementation rework verified on 36caae4b79c2; contract CI remains blocked only by the pre-existing clone baseline drift.",
+  "recorded_at": "2026-07-29T03:24:42.824Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run the approved direct golden task. Expected: EXECUTOR performs zero AgentPlane lifecycle calls; supervisor starts, observes, evaluates, verifies, and finalizes.\n2. Change route state after every operation fixture. Expected: the supervisor recomputes from fresh state and never executes a stale next step.\n3. Exercise approval required, missing knowledge, evaluator rework, out-of-scope write, and adapter crash. Expected: bounded typed stops/retries with no synthesized semantic summary.\n4. Compare baseline metrics. Expected: lifecycle/tool/duplicate-context cost decreases without lower verified success or safety.\n5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests.",
+  "scope_digest": "sha256:6a6cea835f394ba6c184a4b98fbce30cefe999093db0c907abe0c855cb37daac",
+  "task_id": "202607221850-0SFMS7",
+  "verification_command": "agentplane verify 202607221850-0SFMS7 --rework --by TESTER",
+  "verifier": "TESTER"
+}

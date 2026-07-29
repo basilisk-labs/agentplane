@@ -5,7 +5,11 @@ import type { CommandCtx } from "../../cli/spec/spec.js";
 import { CliError } from "../../shared/errors.js";
 import type { TaskRouteDecision } from "../shared/route-decision-types.js";
 import type { CommandContext } from "../shared/task-backend.js";
-import { finishDirectTask, resolveDirectImplementationCommit } from "./direct-task-finalization.js";
+import {
+  finishDirectTask,
+  resolveDirectImplementationCommit,
+  type DirectImplementationEvidence,
+} from "./direct-task-finalization.js";
 import { recordDirectTaskFormalOperation } from "./direct-task-supervisor-formal-operation.js";
 import { runDirectTaskVerification } from "./direct-task-verification.js";
 import { cmdVerifyParsed } from "./verify-record.js";
@@ -37,18 +41,28 @@ type JournalRef = {
   journal_path: string;
 };
 
+type DirectTaskCloseoutStopped = JournalRef & {
+  status: "stopped";
+  decision: TaskRouteDecision;
+  declared_checks: number;
+  stop: DirectTaskCloseoutStop;
+};
+
+export type DirectTaskVerificationOutcome =
+  | (JournalRef & {
+      status: "verified";
+      decision: TaskRouteDecision;
+      declared_checks: number;
+    })
+  | DirectTaskCloseoutStopped;
+
 export type DirectTaskCloseoutOutcome =
   | (JournalRef & {
       status: "finalized";
       decision: TaskRouteDecision;
       declared_checks: number;
     })
-  | (JournalRef & {
-      status: "stopped";
-      decision: TaskRouteDecision;
-      declared_checks: number;
-      stop: DirectTaskCloseoutStop;
-    });
+  | DirectTaskCloseoutStopped;
 
 function verificationEligibleRoute(decision: TaskRouteDecision): boolean {
   const step = decision.workflowStep;
@@ -82,22 +96,24 @@ function staleRouteStop(opts: {
   };
 }
 
-/**
- * Performs the non-semantic direct closeout. It accepts only a fresh route,
- * executes the declared check grammar, records verification evidence, then
- * delegates final status transition to the normal task finish command.
- */
-export async function closeDirectTask(opts: {
+function formalOperationFailureClass(error: unknown): string {
+  if (error instanceof CliError) return error.code;
+  if (error instanceof Error && error.name.trim()) return error.name;
+  return "unknown_error";
+}
+
+/** Records CLI-owned checks and verification before the read-only evaluator freezes evidence. */
+export async function verifyDirectTask(opts: {
   ctx: CommandCtx;
   command: CommandContext;
   task_id: string;
   task: Pick<TaskData, "verify">;
-  evaluator: DirectTaskCloseoutEvaluatorEvidence;
+  implementation_evidence?: DirectImplementationEvidence;
+  evaluator?: DirectTaskCloseoutEvaluatorEvidence;
   decision: () => Promise<TaskRouteDecision>;
-  execution_base_commit: string | null;
-  allowed_paths: readonly string[];
+  on_lifecycle_operation?: () => void;
   journal: JournalRef;
-}): Promise<DirectTaskCloseoutOutcome> {
+}): Promise<DirectTaskVerificationOutcome> {
   const current = await opts.decision();
   if (!verificationEligibleRoute(current)) {
     return {
@@ -169,18 +185,47 @@ export async function closeDirectTask(opts: {
           taskId: opts.task_id,
           state: "ok",
           by: "SUPERVISOR",
-          note: "Verified: independent EVALUATOR pass is recorded in the task quality artifacts.",
+          note: opts.evaluator
+            ? "Verified: independent EVALUATOR pass is recorded in the task quality artifacts."
+            : "Verified: CLI declared checks passed; independent EVALUATOR review is pending.",
           details: [
-            "EvaluatorEvidence:",
-            `- evaluator: ${opts.evaluator.evaluator_id}`,
-            `- result: ${opts.evaluator.result_path}`,
-            `- report: ${opts.evaluator.report_path}`,
-            `- receipt: ${opts.evaluator.receipt_path}`,
-            "DeclaredCheckEvidence:",
-            `- artifact: ${checks.artifact_path}`,
-            `- status: ${checks.status}`,
-            `- executed: ${checks.checks.length}`,
-          ].join("\n"),
+            ...checks.checks.map((check, index) =>
+              [
+                `Command: ${check.command}`,
+                "Result: pass",
+                `Evidence: ${checks.artifact_path}#check-${String(index + 1)}`,
+                `Scope: direct task ${opts.task_id} declared verification`,
+              ].join("\n"),
+            ),
+            ...(opts.implementation_evidence
+              ? [
+                  [
+                    "Command: git diff --check <execution-base>..<implementation-commit>",
+                    "Result: pass",
+                    `Evidence: ${opts.implementation_evidence.artifact_path}#committed-diff-check`,
+                    "Scope: direct CLI commit integrity verification",
+                  ].join("\n"),
+                  [
+                    "Command: git diff --cached --check",
+                    "Result: pass",
+                    `Evidence: ${opts.implementation_evidence.artifact_path}#staged-diff-check`,
+                    "Scope: direct CLI staged-index verification",
+                  ].join("\n"),
+                  [
+                    "Command: git diff --name-status --diff-filter=ACDMRTUXB <execution-base>..<implementation-commit>",
+                    "Result: pass",
+                    `Evidence: ${opts.implementation_evidence.artifact_path}#commit-paths`,
+                    "Scope: direct CLI implementation commit scope verification",
+                  ].join("\n"),
+                  [
+                    "Command: git status --short --untracked-files=all",
+                    "Result: pass",
+                    `Evidence: ${opts.implementation_evidence.artifact_path}#final-repository-status`,
+                    "Scope: direct CLI final repository audit and concurrent-artifact classification",
+                  ].join("\n"),
+                ]
+              : []),
+          ].join("\n\n"),
           localOnly: false,
           repoFixable: false,
           incidentTags: [],
@@ -195,12 +240,12 @@ export async function closeDirectTask(opts: {
         }
         return {
           verification: "ok",
-          evaluator_result: opts.evaluator.result_path,
+          evaluator_result: opts.evaluator?.result_path ?? null,
           declared_checks: checks.artifact_path,
         };
       },
     });
-  } catch {
+  } catch (error) {
     return {
       ...opts.journal,
       status: "stopped",
@@ -208,12 +253,15 @@ export async function closeDirectTask(opts: {
       declared_checks: declaredChecks,
       stop: {
         code: "verification_check_failed",
-        reason: "The formal verification operation did not complete successfully.",
+        reason:
+          "The formal verification operation did not complete successfully " +
+          `(${formalOperationFailureClass(error)}).`,
         route_step_id: current.workflowStep.id,
         operation_id: null,
       },
     };
   }
+  opts.on_lifecycle_operation?.();
   if (!directCompletionEligibleRoute(verified.decision)) {
     return {
       journal: verified.journal,
@@ -229,6 +277,42 @@ export async function closeDirectTask(opts: {
     };
   }
 
+  return {
+    journal: verified.journal,
+    journal_path: verified.journal_path,
+    status: "verified",
+    decision: verified.decision,
+    declared_checks: declaredChecks,
+  };
+}
+
+/** Finishes a direct task only after its verified evidence has passed EVALUATOR review. */
+export async function finalizeDirectTask(opts: {
+  ctx: CommandCtx;
+  command: CommandContext;
+  task_id: string;
+  decision: () => Promise<TaskRouteDecision>;
+  execution_base_commit: string | null;
+  allowed_paths: readonly string[];
+  observed_changed_paths: readonly string[] | null;
+  on_lifecycle_operation?: () => void;
+  journal: JournalRef;
+  declared_checks: number;
+}): Promise<DirectTaskCloseoutOutcome> {
+  const current = await opts.decision();
+  if (!directCompletionEligibleRoute(current)) {
+    return {
+      ...opts.journal,
+      status: "stopped",
+      decision: current,
+      declared_checks: opts.declared_checks,
+      stop: staleRouteStop({
+        decision: current,
+        reason:
+          "The route changed after the EVALUATOR result; the supervisor will not finish from a stale completion state.",
+      }),
+    };
+  }
   let implementation: Awaited<ReturnType<typeof resolveDirectImplementationCommit>>;
   try {
     implementation = await resolveDirectImplementationCommit({
@@ -237,36 +321,35 @@ export async function closeDirectTask(opts: {
       task_id: opts.task_id,
       execution_base_commit: opts.execution_base_commit,
       allowed_paths: opts.allowed_paths,
+      observed_changed_paths: opts.observed_changed_paths,
     });
   } catch {
     return {
-      journal: verified.journal,
-      journal_path: verified.journal_path,
+      ...opts.journal,
       status: "stopped",
-      decision: verified.decision,
-      declared_checks: declaredChecks,
+      decision: current,
+      declared_checks: opts.declared_checks,
       stop: {
         code: "implementation_commit_missing",
         reason: "The CLI could not determine the committed implementation for direct finalization.",
-        route_step_id: verified.decision.workflowStep.id,
+        route_step_id: current.workflowStep.id,
         operation_id: null,
       },
     };
   }
   if (implementation.status !== "ready") {
     return {
-      journal: verified.journal,
-      journal_path: verified.journal_path,
+      ...opts.journal,
       status: "stopped",
-      decision: verified.decision,
-      declared_checks: declaredChecks,
+      decision: current,
+      declared_checks: opts.declared_checks,
       stop: {
         code:
           implementation.status === "scope_violation"
             ? "implementation_scope_violation"
             : "implementation_commit_missing",
         reason: implementation.reason,
-        route_step_id: verified.decision.workflowStep.id,
+        route_step_id: current.workflowStep.id,
         operation_id: null,
       },
     };
@@ -297,26 +380,26 @@ export async function closeDirectTask(opts: {
     });
   } catch {
     return {
-      journal: verified.journal,
-      journal_path: verified.journal_path,
+      ...opts.journal,
       status: "stopped",
-      decision: verified.decision,
-      declared_checks: declaredChecks,
+      decision: current,
+      declared_checks: opts.declared_checks,
       stop: {
         code: "finish_failed",
         reason: "The formal task finish operation did not complete successfully.",
-        route_step_id: verified.decision.workflowStep.id,
+        route_step_id: current.workflowStep.id,
         operation_id: null,
       },
     };
   }
+  opts.on_lifecycle_operation?.();
   if (String(finalized.decision.task.status).toUpperCase() !== "DONE") {
     return {
       journal: finalized.journal,
       journal_path: finalized.journal_path,
       status: "stopped",
       decision: finalized.decision,
-      declared_checks: declaredChecks,
+      declared_checks: opts.declared_checks,
       stop: {
         code: "finish_failed",
         reason: "The finish operation returned without a DONE task route.",
@@ -330,6 +413,40 @@ export async function closeDirectTask(opts: {
     journal_path: finalized.journal_path,
     status: "finalized",
     decision: finalized.decision,
-    declared_checks: declaredChecks,
+    declared_checks: opts.declared_checks,
   };
+}
+
+/**
+ * Compatibility composition for callers that already hold an EVALUATOR pass.
+ * Direct supervision uses the two phases separately so the evaluator can see
+ * CLI-owned verification evidence instead of requiring the executor to create it.
+ */
+export async function closeDirectTask(opts: {
+  ctx: CommandCtx;
+  command: CommandContext;
+  task_id: string;
+  task: Pick<TaskData, "verify">;
+  evaluator: DirectTaskCloseoutEvaluatorEvidence;
+  decision: () => Promise<TaskRouteDecision>;
+  execution_base_commit: string | null;
+  allowed_paths: readonly string[];
+  observed_changed_paths: readonly string[] | null;
+  on_lifecycle_operation?: () => void;
+  journal: JournalRef;
+}): Promise<DirectTaskCloseoutOutcome> {
+  const verified = await verifyDirectTask(opts);
+  if (verified.status === "stopped") return verified;
+  return await finalizeDirectTask({
+    ctx: opts.ctx,
+    command: opts.command,
+    task_id: opts.task_id,
+    decision: opts.decision,
+    execution_base_commit: opts.execution_base_commit,
+    allowed_paths: opts.allowed_paths,
+    observed_changed_paths: opts.observed_changed_paths,
+    on_lifecycle_operation: opts.on_lifecycle_operation,
+    journal: { journal: verified.journal, journal_path: verified.journal_path },
+    declared_checks: verified.declared_checks,
+  });
 }

@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 
@@ -23,6 +22,13 @@ import {
   resolveEvaluatorDiffBase,
   resolveEvaluatorDiffBaseRef,
 } from "./evaluator-diff-evidence.js";
+import {
+  evaluatorQualityDir,
+  freezeEvaluatorFile,
+  readEvaluatorFileDigest,
+  readDirectSupervisionEvidence,
+  writeEvaluatorArtifact,
+} from "./evaluator-review-artifacts.js";
 import { verificationRecordPaths } from "./evaluator-verification-records.js";
 import {
   EVALUATOR_OPINION_FILE,
@@ -161,41 +167,6 @@ function evaluatorObjective(task: TaskData): string {
   return taskSection(task, "Summary") ?? task.description?.trim() ?? task.title;
 }
 
-function qualityDir(opts: {
-  ctx: CommandContext;
-  taskId: string;
-  evaluatorId: string;
-  at: string;
-}): string {
-  return path.join(
-    opts.ctx.resolvedProject.gitRoot,
-    opts.ctx.config.paths.workflow_dir,
-    opts.taskId,
-    "quality",
-    `${timestampPathSegment(opts.at)}-${safePathSegment(opts.evaluatorId) || "evaluator"}`,
-  );
-}
-
-async function readFileDigest(filePath: string): Promise<`sha256:${string}`> {
-  return sha256(await readFile(filePath));
-}
-
-async function freezeFile(opts: {
-  gitRoot: string;
-  id: string;
-  kind: EvaluatorWorkOrder["evidence"][number]["kind"];
-  filePath: string;
-  required: boolean;
-}): Promise<EvaluatorWorkOrder["evidence"][number]> {
-  return {
-    id: opts.id,
-    kind: opts.kind,
-    path: relative(opts.gitRoot, opts.filePath),
-    sha256: await readFileDigest(opts.filePath),
-    required: opts.required,
-  };
-}
-
 async function assertTaskReviewWorkspaceClean(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -257,11 +228,14 @@ export async function prepareEvaluatorReview(opts: {
   await assertTaskReviewWorkspaceClean({ ctx: opts.ctx, taskId: opts.task.id });
   const gitRoot = opts.ctx.resolvedProject.gitRoot;
   const at = opts.at ?? new Date().toISOString();
-  const reviewDir = qualityDir({
-    ctx: opts.ctx,
+  const reviewDir = evaluatorQualityDir({
+    gitRoot,
+    workflowDir: opts.ctx.config.paths.workflow_dir,
     taskId: opts.task.id,
     evaluatorId: opts.evaluator.id,
-    at,
+    timestamp: at,
+    safePathSegment,
+    timestampPathSegment,
   });
   const paths = reportPaths(reviewDir);
   const taskReadmePath = path.join(
@@ -293,7 +267,7 @@ export async function prepareEvaluatorReview(opts: {
   );
   const verificationRecords = await Promise.all(
     recordPaths.map((filePath, index) =>
-      freezeFile({
+      freezeEvaluatorFile({
         gitRoot,
         id: `verification-record-${String(index + 1)}`,
         kind: "verification_log",
@@ -311,45 +285,46 @@ export async function prepareEvaluatorReview(opts: {
       sha256,
     })),
     runner_history: opts.task.runner?.history ?? [],
+    direct_supervision: await readDirectSupervisionEvidence({
+      gitRoot,
+      workflowDir: opts.ctx.config.paths.workflow_dir,
+      taskId: opts.task.id,
+    }),
   };
-  await mkdir(reviewDir, { recursive: true });
-  await writeFile(
-    path.join(reviewDir, EVALUATOR_DIFF_FILE),
-    await renderActualDiff(
+  await writeEvaluatorArtifact({
+    filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),
+    contents: await renderActualDiff(
       gitRoot,
       evaluatedSha,
       diffBaseSha,
       path.join(opts.ctx.config.paths.workflow_dir, opts.task.id),
     ),
-    "utf8",
-  );
-  await writeFile(
-    path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
-    `${JSON.stringify(observedChecks, null, 2)}\n`,
-    "utf8",
-  );
-  await writeFile(
-    path.join(reviewDir, EVALUATOR_BLUEPRINT_FILE),
-    `${JSON.stringify(blueprint, null, 2)}\n`,
-    "utf8",
-  );
+  });
+  await writeEvaluatorArtifact({
+    filePath: path.join(reviewDir, EVALUATOR_OBSERVED_CHECKS_FILE),
+    contents: `${JSON.stringify(observedChecks, null, 2)}\n`,
+  });
+  await writeEvaluatorArtifact({
+    filePath: path.join(reviewDir, EVALUATOR_BLUEPRINT_FILE),
+    contents: `${JSON.stringify(blueprint, null, 2)}\n`,
+  });
 
   const evidence: EvaluatorWorkOrder["evidence"] = [
-    await freezeFile({
+    await freezeEvaluatorFile({
       gitRoot,
       id: "task-document",
       kind: "task_document",
       filePath: taskReadmePath,
       required: true,
     }),
-    await freezeFile({
+    await freezeEvaluatorFile({
       gitRoot,
       id: "actual-diff",
       kind: "actual_diff",
       filePath: path.join(reviewDir, EVALUATOR_DIFF_FILE),
       required: true,
     }),
-    await freezeFile({
+    await freezeEvaluatorFile({
       gitRoot,
       id: "observed-checks",
       kind: "observed_checks",
@@ -357,7 +332,7 @@ export async function prepareEvaluatorReview(opts: {
       required: true,
     }),
     ...verificationRecords,
-    await freezeFile({
+    await freezeEvaluatorFile({
       gitRoot,
       id: "blueprint",
       kind: "blueprint",
@@ -369,7 +344,7 @@ export async function prepareEvaluatorReview(opts: {
     const policyPath = path.join(gitRoot, policyModule);
     try {
       evidence.push(
-        await freezeFile({
+        await freezeEvaluatorFile({
           gitRoot,
           id: `policy-${index + 1}`,
           kind: "policy_module",
@@ -421,10 +396,13 @@ export async function prepareEvaluatorReview(opts: {
     result_contract: "sgr.evaluator_result.v1",
     evidence,
   });
-  await writeFile(paths.work_order_path, `${JSON.stringify(workOrder, null, 2)}\n`, "utf8");
-  await writeFile(
-    paths.prompt_path,
-    renderEvaluatorPrompt({
+  await writeEvaluatorArtifact({
+    filePath: paths.work_order_path,
+    contents: `${JSON.stringify(workOrder, null, 2)}\n`,
+  });
+  await writeEvaluatorArtifact({
+    filePath: paths.prompt_path,
+    contents: renderEvaluatorPrompt({
       evaluator: opts.evaluator,
       taskId: opts.task.id,
       taskReadmePath: relative(gitRoot, taskReadmePath),
@@ -433,8 +411,7 @@ export async function prepareEvaluatorReview(opts: {
       reportPath: relative(gitRoot, paths.report_path),
       provenance: opts.provenance,
     }),
-    "utf8",
-  );
+  });
   return { work_order: workOrder, ...paths };
 }
 
@@ -587,7 +564,7 @@ export async function assertWorkOrderCurrent(opts: {
     const evidencePath = path.resolve(gitRoot, evidence.path);
     if (
       !isWithinRoot(gitRoot, evidencePath) ||
-      (await readFileDigest(evidencePath)) !== evidence.sha256
+      (await readEvaluatorFileDigest(evidencePath)) !== evidence.sha256
     ) {
       throw new CliError({
         code: "E_VALIDATION",

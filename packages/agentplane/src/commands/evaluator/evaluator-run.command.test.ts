@@ -629,6 +629,49 @@ describe("evaluator run command", () => {
     });
   });
 
+  it("freezes CLI-owned direct implementation evidence with the observed checks", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202605240900-EV17";
+    await addTask(root, taskId);
+    const implementationSha = await commitPath(
+      root,
+      "src/direct-evidence.ts",
+      "export const directEvidence = true;\n",
+      "feat: direct evidence",
+    );
+    const evidencePath = path.join(
+      root,
+      `.agentplane/tasks/${taskId}/supervision/implementation-evidence.json`,
+    );
+    await mkdir(path.dirname(evidencePath), { recursive: true });
+    await writeFile(
+      evidencePath,
+      `${JSON.stringify({
+        schema_version: 1,
+        kind: "direct_task_implementation_evidence",
+        task_id: taskId,
+        implementation_commit: implementationSha,
+        checks: [{ id: "final-repository-status", result: "pass" }],
+      })}\n`,
+      "utf8",
+    );
+
+    const { prepared } = await prepareTypedReview(root, taskId);
+    const observedChecksPath = prepared.work_order.evidence.find(
+      (entry) => entry.kind === "observed_checks",
+    )?.path;
+    expect(observedChecksPath).toBeTruthy();
+    const observedChecks = JSON.parse(
+      await readFile(path.join(root, observedChecksPath ?? ""), "utf8"),
+    ) as { direct_supervision: Record<string, unknown> | null };
+    expect(observedChecks.direct_supervision).toMatchObject({
+      task_id: taskId,
+      implementation_commit: implementationSha,
+      checks: [{ id: "final-repository-status", result: "pass" }],
+    });
+  });
+
   it("freezes the complete branch delta from the merge base through the evaluated SHA", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
