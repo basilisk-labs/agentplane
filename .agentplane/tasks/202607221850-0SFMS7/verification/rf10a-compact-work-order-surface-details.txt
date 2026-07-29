@@ -1,0 +1,14 @@
+Command: `bun run --cwd packages/agentplane test src/runner/usecases/agent-work-order.integration.test.ts src/runner/usecases/task-run-context.integration.test.ts && bun run test:fast`
+Result: pass
+Evidence: packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts | packages/agentplane/src/runner/usecases/task-run-context.integration.test.ts
+Scope: the runner AgentWorkOrder remains compact while task brief, next-action, and Hermes retain the CLI preparation projection; local and explicit remote policy surfaces remain consistent.
+
+Command: `bun run ci:contract`
+Result: pass
+Evidence: terminal output recorded for implementation commit `f7f5ff871ef5e65c06f541eab6c2892c322f0ff1`
+Scope: full repository contract validation after repairing the hosted unit-surface regression.
+
+Command: `node packages/agentplane/bin/agentplane.js task run 202607290849-SKZF6Y --sandbox danger-full-access --allow-danger-full-access`
+Result: pass
+Evidence: .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/runner/tasks/202607290849-SKZF6Y/runs/2026-07-29T08-51-26-348Z/execution-receipt.json | .agentplane/cache/rf10-live-terminal-control-20260729/.git/agentplane/supervisor/episodes/202607290849-SKZF6Y/journal.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/implementation-evidence.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/declared-checks.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/verification/20260729085226534-23f857ab93304c1c.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/evaluator-result.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/quality/20260729-085226890-recovery-context/quality-report.json | .agentplane/cache/rf10-live-terminal-control-20260729/.agentplane/tasks/202607290849-SKZF6Y/supervision/golden-metrics.json
+Scope: fresh standalone direct control task: scoped EXECUTOR commit, CLI verification, read-only EVALUATOR pass, CLI finish, persisted terminal journal (`stopped` / `completed`), and observed RF-10 metrics (3/4/15383 versus frozen 7/7/20562 baseline).

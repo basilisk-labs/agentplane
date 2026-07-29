@@ -16,12 +16,7 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 ## Verification
 
 - State: ok
-- Note:
-
-```text
-Verified: current implementation head links terminal runtime evidence and evaluator-budget closeout
-coverage for fresh quality review.
-```
+- Note: Verified: compact runner work-order contract and full unit suite are current for fresh quality review.
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -73,6 +68,7 @@ coverage for fresh quality review.
  .../agentplane/src/commands/task/run.command.ts    |  44 +-
  .../src/runner/context/task-context.test.ts        |   1 -
  .../agentplane/src/runner/context/task-context.ts  |  11 +-
+ .../usecases/agent-work-order.integration.test.ts  |  31 +-
  .../runner/usecases/task-run-active-claim.test.ts  |  44 +-
  .../task-run-bootstrap.result-examples.test.ts     |  14 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |  11 +-
@@ -81,7 +77,7 @@ coverage for fresh quality review.
  .../runner/supervisor-execution-episode.test.ts    |  44 ++
  .../src/runner/supervisor-execution-episode.ts     |  22 +-
  scripts/baselines/clone-baseline.json              |  24 +-
- 49 files changed, 5159 insertions(+), 250 deletions(-)
+ 50 files changed, 5181 insertions(+), 259 deletions(-)
 ```
 
 </details>
