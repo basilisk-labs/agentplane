@@ -1,0 +1,18 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run test:fast -- packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts packages/agentplane/src/commands/evaluator/evaluator-execute.command.test.ts packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts",
+    "bun run ci:contract"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T10:44:01.710Z",
+    "updated_by": "TESTER",
+    "note": "Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291035-XXKY7B",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T10:45:05.154Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "95ea07baae4d70773c3d4797e94eaa39ebee9c3f",
+  "blueprint_digest": "435770db05798b9dff128e1b32632452d244afbed820e54ee89464480ced8a3e",
+  "findings": [
+    "The implementation removes the self-referential evidence requirement from both recovery-context evaluator copies and adds focused prompt-contract regression coverage."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_episode_receipt",
+  "work_order_id": "evaluator-work-order-202607291035-XXKY7B-7d08f5592c14739e329145d5",
+  "provider": "codex",
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": []
+  },
+  "argv": [
+    "codex",
+    "-a",
+    "never",
+    "exec",
+    "--ignore-user-config",
+    "--strict-config",
+    "--disable",
+    "hooks",
+    "--ephemeral",
+    "--json",
+    "-C",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/tmp/integration-clean-main-branch-0SFMS7/.agentplane/tmp/evaluator-recovery-fix-base-20260729/.agentplane/worktrees/202607291035-XXKY7B-prevent-evaluator-self-referential-evidence-in-r",
+    "-s",
+    "read-only",
+    "--output-schema",
+    "/Users/densmirnov/Github/agentplane/.agentplane/tmp/inc-20260727-main-lane.prxk2f/repo/.agentplane/tmp/integration-clean-main-branch-0SFMS7/.agentplane/tmp/evaluator-recovery-fix-base-20260729/.agentplane/worktrees/202607291035-XXKY7B-prevent-evaluator-self-referential-evidence-in-r/.agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-result.schema.json",
+    "-"
+  ],
+  "started_at": "2026-07-29T10:44:31.270Z",
+  "ended_at": "2026-07-29T10:45:04.773Z",
+  "stdout_bytes": 64866,
+  "stderr_bytes": 6673,
+  "provider_usage": {
+    "input_tokens": 130700,
+    "output_tokens": 1432,
+    "total_tokens": 132132
+  },
+  "workspace_state": "unchanged",
+  "result_sha256": "sha256:e2e114e0d1d702c2d51196d759ca530eadaea70279f62998a996a11842966b3b"
+}

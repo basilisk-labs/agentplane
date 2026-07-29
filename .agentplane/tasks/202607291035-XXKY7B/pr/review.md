@@ -6,7 +6,7 @@ Created: 2026-07-29T10:37:41.423Z
 
 - Task: `202607291035-XXKY7B`
 - Title: Prevent evaluator self-referential evidence in recovery-context review
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291035-XXKY7B/prevent-evaluator-self-referential-evidence-in-r`
 - Canonical task record: `.agentplane/tasks/202607291035-XXKY7B/README.md`
 

@@ -1,10 +1,11 @@
 ---
 id: "202607291035-XXKY7B"
 title: "Prevent evaluator self-referential evidence in recovery-context review"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -27,9 +28,33 @@ verification:
   updated_by: "TESTER"
   note: "Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-29T10:45:05.154Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "95ea07baae4d70773c3d4797e94eaa39ebee9c3f"
+  blueprint_digest: "435770db05798b9dff128e1b32632452d244afbed820e54ee89464480ced8a3e"
+  evidence_refs:
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607291035-XXKY7B/README.md"
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607291035-XXKY7B/quality/20260729-104430711-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "The implementation removes the self-referential evidence requirement from both recovery-context evaluator copies and adds focused prompt-contract regression coverage."
 commit:
-  hash: "95ea07baae4d70773c3d4797e94eaa39ebee9c3f"
-  message: "fix(evaluator): prohibit self-referential evidence"
+  hash: "56de32dae5c72a0148be152fa7bd4e20c982db77"
+  message: "test(task): verify evaluator evidence fix"
 comments:
   -
     author: "CODER"
@@ -37,6 +62,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: removed the self-referential evaluator evidence requirement and added prompt-level regression coverage. Validation: evaluator suite 41/41; ci:contract passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -58,8 +86,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused evaluator regression suite passed (41/41); full ci:contract passed on the committed branch head."
+  -
+    type: "status"
+    at: "2026-07-29T10:45:45.601Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T10:44:02.998Z"
+doc_updated_at: "2026-07-29T10:45:45.602Z"
 doc_updated_by: "CODER"
 description: "Repair the recovery-context evaluator prompt contract so evaluator findings cite only frozen work-order evidence and cannot cite evaluator-generated work-order or report paths. Add a focused regression test and prove a replacement evaluator episode can be recorded for the blocked beta.1 qualification."
 sections:
@@ -118,6 +153,9 @@ sections:
       Impact: A provider response can no longer be instructed to cite a path that the CLI must reject.
       Resolution: Both built-in and repository evaluator modules were aligned; the prompt-level assertion prevents divergence.
 extensions:
+  implementation_commit:
+    hash: "95ea07baae4d70773c3d4797e94eaa39ebee9c3f"
+    message: "fix(evaluator): prohibit self-referential evidence"
   workflow_route_baseline:
     start_head_sha: "b90a9e6df9ae35a1a518e1ffa73903d6e5784d35"
     version: 1
