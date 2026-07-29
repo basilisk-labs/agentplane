@@ -4,10 +4,17 @@ import path from "node:path";
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 
 import type { TaskData } from "../../backends/task-backend.js";
+import { resolveQualityReviewTargetSha } from "../shared/quality-review-target.js";
 
 const CHECK_FIELDS = ["Command", "Result", "Evidence", "Scope"] as const;
 const RUNTIME_EVIDENCE_PREFIX = ".agentplane/cache/";
 const MAX_RUNTIME_EVIDENCE_FILES = 16;
+
+type VerificationRecordTargetContext = {
+  gitRoot: string;
+  workflowDir: string;
+  taskIds?: readonly string[];
+};
 
 function sha256(value: string): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -85,17 +92,32 @@ function hasValidRecordDigest(record: Record<string, unknown>): boolean {
   );
 }
 
-function matchesCurrentVerification(
+async function matchesCurrentVerification(
   raw: unknown,
   task: TaskData,
   evaluatedSha: string | null,
-): boolean {
+  targetContext?: VerificationRecordTargetContext,
+): Promise<boolean> {
   const verification = task.verification;
   const scopeDigest = verifyStepsDigest(task);
   if (!raw || typeof raw !== "object" || Array.isArray(raw) || !verification || !evaluatedSha) {
     return false;
   }
   const record = raw as Record<string, unknown>;
+  const implementationSha =
+    typeof record.implementation_sha === "string" ? record.implementation_sha : null;
+  const matchesEvaluatedTarget =
+    implementationSha === evaluatedSha ||
+    (implementationSha !== null &&
+      targetContext !== undefined &&
+      (await resolveQualityReviewTargetSha({
+        gitRoot: targetContext.gitRoot,
+        workflowDir: targetContext.workflowDir,
+        taskId: task.id,
+        taskIds: targetContext.taskIds,
+        headSha: implementationSha,
+        previousEvaluatedSha: evaluatedSha,
+      })) === evaluatedSha);
   return (
     record.schema_version === 1 &&
     record.kind === "task_verification_record" &&
@@ -104,7 +126,7 @@ function matchesCurrentVerification(
     record.result === verification.state &&
     record.verifier === verification.updated_by &&
     record.note === verification.note &&
-    record.implementation_sha === evaluatedSha &&
+    matchesEvaluatedTarget &&
     record.scope_digest === scopeDigest &&
     hasValidRecordDigest(record) &&
     hasConcreteCheckDetails(record.details)
@@ -115,12 +137,14 @@ async function isAcceptedVerificationRecord(
   filePath: string,
   task: TaskData,
   evaluatedSha: string | null,
+  targetContext?: VerificationRecordTargetContext,
 ): Promise<boolean> {
   try {
-    return matchesCurrentVerification(
+    return await matchesCurrentVerification(
       JSON.parse(await readFile(filePath, "utf8")),
       task,
       evaluatedSha,
+      targetContext,
     );
   } catch {
     return false;
@@ -131,6 +155,7 @@ export async function verificationRecordPaths(
   taskRoot: string,
   task: TaskData,
   evaluatedSha: string | null,
+  targetContext?: VerificationRecordTargetContext,
 ): Promise<string[]> {
   try {
     const entries = await readdir(path.join(taskRoot, "verification"), { withFileTypes: true });
@@ -141,7 +166,7 @@ export async function verificationRecordPaths(
     const accepted = await Promise.all(
       candidates.map(async (filePath) => ({
         filePath,
-        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha),
+        accepted: await isAcceptedVerificationRecord(filePath, task, evaluatedSha, targetContext),
       })),
     );
     return accepted.filter((entry) => entry.accepted).map((entry) => entry.filePath);
