@@ -4,7 +4,7 @@ title: "Supervise direct task execution end to end"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on:
@@ -44,30 +44,30 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-29T06:27:00.742Z"
+  updated_at: "2026-07-29T06:31:18.877Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 3 typed finding(s)."
-  evaluated_sha: "0f4f7dd9da92cc03a56b2c43eef122b29447874f"
+  evaluated_sha: "e4dd4a5fe7c9689e94e561875db3a7a2967a043a"
   blueprint_digest: "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2"
   evidence_refs:
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221850-0SFMS7/README.md"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-062548780-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
     - "Для оцениваемого SHA отсутствуют замороженные результаты обязательных проверок и наблюдаемого прямого запуска: verification_records и runner_history пусты, direct_supervision равен null, хотя задача помечена как проверенная."
-    - "Сравнение с версией 0.6.24 не основано на наблюдаемом golden-path запуске кандидата: тест конструирует показатели кандидата как baseline минус один, а число вызовов инструментов базовой версии выводится из ожидаемой трассы."
-    - "Патч изменяет scripts/baselines/clone-baseline.json после зафиксированного сбоя ci:contract, но замороженные доказательства не содержат успешного ci:contract на оцениваемом SHA или отдельного обоснования и одобрения изменения порога."
+    - "Сравнение с версией 0.6.24 не измеряет фактический golden-path запуск кандидата: показатели кандидата в тесте конструируются как baseline минус один."
+    - "Патч повышает clone baseline после зафиксированного сбоя ci:contract, но замороженные доказательства не содержат успешного ci:contract на оцениваемом SHA или одобренного изменения критерия приемки."
 commit: null
 comments:
   -

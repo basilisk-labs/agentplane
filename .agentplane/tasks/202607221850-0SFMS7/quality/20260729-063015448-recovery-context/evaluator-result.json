@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Для оцениваемого SHA отсутствуют замороженные результаты обязательных проверок и наблюдаемого прямого запуска: verification_records и runner_history пусты, direct_supervision равен null, хотя задача помечена как проверенная.",
+      "broken_invariant": "Pass допустим только при наличии доказательств позитивного, негативного и конкурентно-чувствительного прямого пути; DoD требует выполнить и записать все Verify Steps.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b9c3d514b86f0eedb5b11be79739828592be00eea7920921ce2f22fa7e2b2feb",
+          "section": "Verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "Сравнение с версией 0.6.24 не измеряет фактический golden-path запуск кандидата: показатели кандидата в тесте конструируются как baseline минус один.",
+      "broken_invariant": "Verify Step 4 требует сравнить наблюдаемые показатели качества и стоимости с baseline без снижения проверенного успеха или безопасности.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:d83a5f1421577eb7422307bf9abba3e7193bf63af813f646b0a704a57290d636",
+          "section": "packages/agentplane/src/commands/task/direct-task-supervision-benchmark.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b9c3d514b86f0eedb5b11be79739828592be00eea7920921ce2f22fa7e2b2feb",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "high",
+      "summary": "Патч повышает clone baseline после зафиксированного сбоя ci:contract, но замороженные доказательства не содержат успешного ci:contract на оцениваемом SHA или одобренного изменения критерия приемки.",
+      "broken_invariant": "Обязательная проверка ci:contract должна пройти либо иметь явно одобренный пропуск; изменение порога проверки является материальным дрейфом и требует повторного одобрения.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:d83a5f1421577eb7422307bf9abba3e7193bf63af813f646b0a704a57290d636",
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:b9c3d514b86f0eedb5b11be79739828592be00eea7920921ce2f22fa7e2b2feb",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/policy/dod.core.md",
+          "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+          "section": "Material drift criteria"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Наблюдаемый end-to-end прямой запуск на оцениваемом SHA с сохраненными execution receipt, runner history, direct supervision evidence и нулевым числом lifecycle-вызовов EXECUTOR.",
+    "Измерение фактических lifecycle calls, tool calls и duplicate executor context bytes кандидата с сопоставлением с замороженным baseline 0.6.24.",
+    "Успешный bun run ci:contract на оцениваемом SHA после изменения clone baseline либо проверка, доказывающая отдельно одобренный характер изменения порога."
+  ],
+  "hidden_assumptions": [
+    "Изолированный golden-path запуск, описанный в README, репрезентативен для оцениваемого SHA, хотя его наблюдаемые артефакты не включены в frozen evidence.",
+    "Синтетическое уменьшение каждого показателя baseline на единицу подтверждает реальное снижение стоимости оркестрации.",
+    "Рост clone baseline допустим без отдельного одобрения, поскольку дублирование считается внешним к RF-10a."
+  ],
+  "recovery_context": "Следующий исполнитель должен получить и заморозить доказательства реального прямого golden-path запуска именно на SHA e4dd4a5fe7c9689e94e561875db3a7a2967a043a, включая историю runner, direct supervision, результаты всех четырех обязательных проверок и фактически измеренные показатели относительно 0.6.24; изменение clone baseline необходимо либо обосновать и повторно одобрить как материальный дрейф, либо убрать."
+}

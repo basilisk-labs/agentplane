@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221850-0SFMS7-06f0ec7b2445eddf07d89853",
+  "prepared_at": "2026-07-29T06:30:15.448Z",
+  "task": {
+    "id": "202607221850-0SFMS7",
+    "revision": 18,
+    "objective": "Supervise direct task execution end to end\n\nRF-10a: implement the direct golden path from approved state through safe pre-operations, EXECUTOR work order, observed receipt, evaluator, post-operations, and typed approval/wait/human stops.",
+    "acceptance_criteria": [
+      "bun run ci:contract",
+      "bun run coverage:workflow-suite",
+      "bun run lifecycle:invariants",
+      "bun run test:critical",
+      "- In scope: direct workflow lifecycle automation, state refresh after each operation, zero EXECUTOR lifecycle calls, start/check/evaluate/finalize operations, retries, approvals, waits, human input, and golden scenario metrics.\n- Out of scope: branch_pr provider/PR/merge integration.",
+      "1. Map the direct lifecycle onto typed supervisor operations and episode boundaries.\n2. Prepare a role-specific EXECUTOR work order and launch through typed runner results.\n3. Observe process/Git/check/artifact evidence and run the EVALUATOR episode.\n4. Apply safe post-operations until terminal or an approval/wait/human step.\n5. Compare golden-path quality and orchestration cost to the 0.6.24 baseline.",
+      "1. Run the approved direct golden task. Expected: EXECUTOR performs zero AgentPlane lifecycle calls; supervisor starts, observes, evaluates, verifies, and finalizes.\n2. Change route state after every operation fixture. Expected: the supervisor recomputes from fresh state and never executes a stale next step.\n3. Exercise approval required, missing knowledge, evaluator rework, out-of-scope write, and adapter crash. Expected: bounded typed stops/retries with no synthesized semantic summary.\n4. Compare baseline metrics. Expected: lifecycle/tool/duplicate-context cost decreases without lower verified success or safety.\n5. Run direct workflow coverage, lifecycle invariants, contract CI, and focused tests."
+    ]
+  },
+  "evaluated_sha": "e4dd4a5fe7c9689e94e561875db3a7a2967a043a",
+  "diff_base_sha": "950e9cd2f222c12d16e930bdb8a3e39237659651",
+  "blueprint_digest": "ac660021630860db841d7e1292a7cccc7c99fc11e6ba3e0e2e37a54231d72ab2",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+      "sha256": "sha256:b9c3d514b86f0eedb5b11be79739828592be00eea7920921ce2f22fa7e2b2feb",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d83a5f1421577eb7422307bf9abba3e7193bf63af813f646b0a704a57290d636",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063015448-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:54154a3779ecae46ed5a9fb007da46d2114798064d7816fd727c2beecea2faec",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
