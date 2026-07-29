@@ -612,11 +612,11 @@ export function buildCandidateMeasurement({
     profile_match: stableJson(baselineRuntimeProfile) === stableJson(candidateRuntimeProfile),
   };
   const comparisons = [
-    ...Object.keys(candidateValues.provider_tokens).map((field) =>
+    ...Object.entries(candidateValues.provider_tokens).map(([field, candidate]) =>
       atMostComparison(
         `provider_tokens.${field}`,
         baselineValues.provider_tokens[field],
-        candidateValues.provider_tokens[field],
+        candidate,
       ),
     ),
     ...Object.keys(candidateValues.latency_ms).flatMap((field) => {
