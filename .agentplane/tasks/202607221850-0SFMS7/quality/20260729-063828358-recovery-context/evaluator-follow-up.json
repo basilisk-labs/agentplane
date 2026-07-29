@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221850-0SFMS7-65c5846eaa814c473db2ca61",
+  "task_id": "202607221850-0SFMS7",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Повторная оценка должна опираться на новый замороженный work order, содержащий фактический direct golden-path trace для финального SHA, непустые verification_records/runner_history/direct_supervision, успешные результаты всех четырех declared checks и измеренные candidate-метрики вместо синтетических baseline-minus-one значений.",
+  "findings": [
+    {
+      "id": "RC-001",
+      "summary": "Для оцениваемого SHA нет замороженного доказательства успешного прямого golden-path запуска и обязательных проверок: verification_records и runner_history пусты, direct_supervision равен null, а последняя запись verification=ok не содержит результатов проверок.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:04f3fddc3cac3f0af5ccf9190c6bd2c4f1859b281facd949fea1973f06fbb291",
+          "section": "Verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "summary": "Сравнение с baseline 0.6.24 не измеряет фактический кандидат: успешный тест конструирует candidate как baseline минус один, поэтому он доказывает только работу функции сравнения, но не снижение стоимости реального golden-path запуска.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b5e4d21f6d92045993a2ae0623b635b5de794553d3656d03ed46dfbb4dd8a314",
+          "section": "packages/agentplane/src/commands/task/direct-task-supervision-benchmark.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:04f3fddc3cac3f0af5ccf9190c6bd2c4f1859b281facd949fea1973f06fbb291",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "summary": "Патч обновляет clone baseline после зафиксированного падения ci:contract, но замороженные доказательства не показывают успешный ci:contract на оцениваемом SHA и не содержат отдельного обоснования допустимости нового baseline.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b5e4d21f6d92045993a2ae0623b635b5de794553d3656d03ed46dfbb4dd8a314",
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:04f3fddc3cac3f0af5ccf9190c6bd2c4f1859b281facd949fea1973f06fbb291",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-result.json"
+}

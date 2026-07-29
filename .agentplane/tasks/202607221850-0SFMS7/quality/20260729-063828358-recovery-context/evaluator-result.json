@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "Для оцениваемого SHA нет замороженного доказательства успешного прямого golden-path запуска и обязательных проверок: verification_records и runner_history пусты, direct_supervision равен null, а последняя запись verification=ok не содержит результатов проверок.",
+      "broken_invariant": "Pass допустим только при наличии доказательств положительного, отрицательного и concurrency-sensitive поведения; DoD требует выполнения и фиксации всех Verify Steps на финальном состоянии.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:04f3fddc3cac3f0af5ccf9190c6bd2c4f1859b281facd949fea1973f06fbb291",
+          "section": "Verification"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "Сравнение с baseline 0.6.24 не измеряет фактический кандидат: успешный тест конструирует candidate как baseline минус один, поэтому он доказывает только работу функции сравнения, но не снижение стоимости реального golden-path запуска.",
+      "broken_invariant": "Verify Step 4 требует сравнить фактические метрики кандидата с baseline и доказать снижение lifecycle/tool/duplicate-context cost без ухудшения безопасности.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b5e4d21f6d92045993a2ae0623b635b5de794553d3656d03ed46dfbb4dd8a314",
+          "section": "packages/agentplane/src/commands/task/direct-task-supervision-benchmark.test.ts"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:04f3fddc3cac3f0af5ccf9190c6bd2c4f1859b281facd949fea1973f06fbb291",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-003",
+      "severity": "medium",
+      "summary": "Патч обновляет clone baseline после зафиксированного падения ci:contract, но замороженные доказательства не показывают успешный ci:contract на оцениваемом SHA и не содержат отдельного обоснования допустимости нового baseline.",
+      "broken_invariant": "Явно объявленная проверка bun run ci:contract должна успешно пройти на финальном оцениваемом состоянии; изменение baseline не заменяет доказательство прохождения проверки.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:b5e4d21f6d92045993a2ae0623b635b5de794553d3656d03ed46dfbb4dd8a314",
+          "section": "scripts/baselines/clone-baseline.json"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:04f3fddc3cac3f0af5ccf9190c6bd2c4f1859b281facd949fea1973f06fbb291",
+          "section": "Verification"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-063828358-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:511f99f349d312b224aa02da70d7e17b5dd232cf6b53f361813efd0470879634"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Интеграционный запуск утвержденной direct-задачи на оцениваемом SHA с сохраненными receipt, runner history, direct_supervision, результатами всех declared checks, EVALUATOR pass и фактическим finish.",
+    "Измерение candidate lifecycle_calls, tool_calls и duplicate_executor_context_bytes из реального golden-path trace с последующим сравнением с замороженным baseline 0.6.24.",
+    "Успешный bun run ci:contract на оцениваемом SHA после изменения clone baseline с проверкой происхождения новых baseline-значений."
+  ],
+  "hidden_assumptions": [
+    "Модульные тесты с моками считаются эквивалентом наблюдаемого end-to-end direct запуска.",
+    "Искусственно заданные candidate=baseline-1 значения считаются фактическими метриками реализации.",
+    "Обновление clone baseline допустимо без замороженного успешного ci:contract на оцениваемом SHA."
+  ],
+  "recovery_context": "Повторная оценка должна опираться на новый замороженный work order, содержащий фактический direct golden-path trace для финального SHA, непустые verification_records/runner_history/direct_supervision, успешные результаты всех четырех declared checks и измеренные candidate-метрики вместо синтетических baseline-minus-one значений."
+}
