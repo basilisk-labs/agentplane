@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-8HBF4J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T00:37:52.225Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "e6dfdcad95e425b7c5db3699d0733c61decb704c",
+  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
+  "findings": [
+    "Every CLI-owned assimilation operation is covered by a failure-then-resume case that asserts completed operations are not replayed.",
+    "Repeated semantic rework uses one persisted cursor, creates ordered CURATOR work orders, replays only the required cycle, and stops before a new cycle when the shared episode, token, or no-progress budget is exhausted.",
+    "The generated CURATOR rework order carries only the typed semantic-result contract and explicit stop rules; it excludes lifecycle, indexing, validation, evaluator, ACR, and finalization commands."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-003752095-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
