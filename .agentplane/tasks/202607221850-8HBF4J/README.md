@@ -1,10 +1,11 @@
 ---
 id: "202607221850-8HBF4J"
 title: "Supervise context assimilation post-processing"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 17
+revision: 18
 origin:
   system: "manual"
 depends_on:
@@ -69,8 +70,8 @@ quality_review:
     - "Repeated semantic rework uses one persisted cursor, creates ordered CURATOR work orders, replays only the required cycle, and stops before a new cycle when the shared episode, token, or no-progress budget is exhausted."
     - "The generated CURATOR rework order carries only the typed semantic-result contract and explicit stop rules; it excludes lifecycle, indexing, validation, evaluator, ACR, and finalization commands."
 commit:
-  hash: "47c01f6c33ca35c36d7b53d4d5a03d891384c1e3"
-  message: "Implement supervised context assimilation post-processing"
+  hash: "fa94a0c028876cad78a8e7a1d03d982ce15c3eaf"
+  message: "🧩 8HBF4J context: record rework evaluation"
 comments:
   -
     author: "CODER"
@@ -78,6 +79,9 @@ comments:
   -
     author: "CODER"
     body: "Implemented: supervised context assimilation post-processing; CURATOR emits only semantic SGR while CLI journals resumable mechanical phases and bounded evaluator rework. Local checks: typecheck; focused core/context tests (43); workflow coverage (52); compatibility contract; formatting and lint."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -105,8 +109,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Rework verified: the context assimilation supervisor now has a mechanical failure/retry matrix, durable repeated rework cursor coverage, and shared token/no-progress budget-stop coverage."
+  -
+    type: "status"
+    at: "2026-07-29T00:39:04.810Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T00:35:54.408Z"
+doc_updated_at: "2026-07-29T00:39:04.811Z"
 doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -200,6 +211,9 @@ sections:
       Impact: The rework evidence now covers the retry and bounded-rework gaps identified by EVALUATOR.
       Resolution: Ready for a fresh EVALUATOR review on the current task branch.
 extensions:
+  implementation_commit:
+    hash: "e6dfdcad95e425b7c5db3699d0733c61decb704c"
+    message: "🐛 8HBF4J code: cover bounded context rework"
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
     version: 1
