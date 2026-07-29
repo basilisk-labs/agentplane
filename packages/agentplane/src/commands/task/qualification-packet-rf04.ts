@@ -1,5 +1,8 @@
 import { createHash } from "node:crypto";
+import { mkdir } from "node:fs/promises";
 import path from "node:path";
+
+import { execFileAsync } from "@agentplaneorg/core/process";
 
 import { CliError } from "../../shared/errors.js";
 import { isRecord } from "../../shared/guards.js";
@@ -60,6 +63,9 @@ type ReplayMetricSnapshot = {
   }[];
   latency: { scenario_id: string; values: JsonRecord }[];
 };
+
+const RF04_CURRENT_REBUILD_FILE = "rf04-current-rebuild.v1.json";
+const RF04_CAPTURE_SCRIPT = "scripts/bench/capture-agent-efficiency-replay.mjs";
 
 function sha256(value: string | Buffer): `sha256:${string}` {
   return `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -150,9 +156,46 @@ function buildReplayMetricSnapshot(opts: {
   };
 }
 
+function replayMeasurements(
+  snapshot: ReplayMetricSnapshot,
+): Omit<ReplayMetricSnapshot, "path" | "sha256"> {
+  const { path: _path, sha256: _sha256, ...measurements } = snapshot;
+  return measurements;
+}
+
+async function captureCurrentReplaySnapshot(opts: {
+  gitRoot: string;
+  taskId: string;
+  workflowDir: string;
+}): Promise<ReplayMetricSnapshot> {
+  const outputPath = path.join(
+    opts.gitRoot,
+    opts.workflowDir,
+    opts.taskId,
+    "evidence",
+    RF04_CURRENT_REBUILD_FILE,
+  );
+  await mkdir(path.dirname(outputPath), { recursive: true });
+  await execFileAsync(
+    process.execPath,
+    [path.join(opts.gitRoot, RF04_CAPTURE_SCRIPT), "--output", outputPath],
+    {
+      cwd: opts.gitRoot,
+    },
+  );
+  const current = await readJson(outputPath, "RF-04 current replay rebuild");
+  return buildReplayMetricSnapshot({
+    path: relative(opts.gitRoot, outputPath),
+    raw: current.raw,
+    replay: current.value,
+  });
+}
+
 export async function buildQualificationRf04Comparison(opts: {
   gitRoot: string;
   checks: readonly VerificationCheckDetail[];
+  taskId: string;
+  workflowDir: string;
 }): Promise<QualificationRf04Comparison> {
   const mainPath = path.join(opts.gitRoot, "scripts/baselines/agent-efficiency-pre-v0.7-main.json");
   const replayPath = path.join(
@@ -168,6 +211,17 @@ export async function buildQualificationRf04Comparison(opts: {
     raw: replay.raw,
     replay: replay.value,
   });
+  const currentRebuild = await captureCurrentReplaySnapshot(opts);
+  if (
+    JSON.stringify(replayMeasurements(currentRebuild)) !==
+    JSON.stringify(replayMeasurements(replaySnapshot))
+  ) {
+    throw new CliError({
+      code: "E_VALIDATION",
+      message:
+        "Qualification packet requires the current RF-04 replay rebuild to match every frozen replay measurement.",
+    });
+  }
   const verifiedByChecks = opts.checks
     .filter(
       (check) =>
@@ -193,7 +247,7 @@ export async function buildQualificationRf04Comparison(opts: {
     },
     replay_comparison: {
       baseline: replaySnapshot,
-      current_rebuild: structuredClone(replaySnapshot),
+      current_rebuild: currentRebuild,
       status: "exact_frozen_rebuild",
       verified_by_checks: verifiedByChecks,
       live_provider_measurement: "not_run_by_packet_builder",
