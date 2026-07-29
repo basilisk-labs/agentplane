@@ -12,8 +12,8 @@ Created: 2026-07-29T21:06:49.643Z
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: needs_rework
+- Note: Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
