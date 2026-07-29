@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "RC-001",
+      "severity": "high",
+      "summary": "The frozen verification packet does not substantiate the direct golden path or the required negative and concurrency-sensitive behavior at the evaluated SHA.",
+      "broken_invariant": "A pass requires verification evidence covering positive, negative, and concurrency-sensitive paths relevant to the task; however, the frozen observed-checks artifact contains no verification records, runner history, runtime evidence, or direct-supervision result.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:6f80c186199c00d5555dd6ae10aabfd2591c0030a277939663ba3d9699a0c607",
+          "section": "verification_records, runner_history, runtime_evidence, direct_supervision"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:fdc87ffd7bb97fc571f4bc73ceffe1608e58f1b1d0155b63408b00a87a2389c3",
+          "section": "Verify Steps"
+        }
+      ]
+    },
+    {
+      "id": "RC-002",
+      "severity": "high",
+      "summary": "The recorded successful verification and prior quality review target an older commit than the work order's evaluated SHA, leaving the final change unevaluated by the supplied evidence.",
+      "broken_invariant": "Verification and quality evidence must be current for the evaluated implementation revision; the task records verification for cb23e156a8c6ec8a9d851ed67d4410f4c515b502 while the work order evaluates 03577c779d3770139fb398385969e5194bd8f86b.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/README.md",
+          "sha256": "sha256:fdc87ffd7bb97fc571f4bc73ceffe1608e58f1b1d0155b63408b00a87a2389c3",
+          "section": "verification and quality_review"
+        },
+        {
+          "path": ".agentplane/tasks/202607221850-0SFMS7/quality/20260729-073039523-recovery-context/evaluator-blueprint.json",
+          "sha256": "sha256:54154a3779ecae46ed5a9fb007da46d2114798064d7816fd727c2beecea2faec",
+          "section": "evaluated revision context"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Provide frozen results at evaluated SHA 03577c779d3770139fb398385969e5194bd8f86b for all four declared repository checks.",
+    "Provide a frozen end-to-end direct-supervision run proving zero EXECUTOR lifecycle calls, successful evaluator handling, verification, and finalization.",
+    "Provide frozen negative-path results for approval-required, missing-knowledge, evaluator-rework, out-of-scope-write, and adapter-crash cases.",
+    "Provide a route-drift or concurrency-sensitive test showing state is refreshed after every operation and stale next steps are never executed."
+  ],
+  "hidden_assumptions": [
+    "The changes between cb23e156a8c6ec8a9d851ed67d4410f4c515b502 and 03577c779d3770139fb398385969e5194bd8f86b do not invalidate the earlier verification or quality verdict.",
+    "Runtime artifacts referenced inside the task README remain available, immutable, and representative even though they were not included in the frozen evidence packet.",
+    "The declared checks passed on the evaluated SHA despite the absence of frozen verification records."
+  ],
+  "recovery_context": "Rebuild the frozen evidence packet for evaluated SHA 03577c779d3770139fb398385969e5194bd8f86b with actual check records and direct-supervision runtime evidence covering the golden path, typed negative stops, stale-route refresh, and concurrency-sensitive behavior, then rerun this evaluator."
+}
