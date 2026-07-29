@@ -18,7 +18,7 @@ export type DirectTaskCloseoutStopCode =
   | "implementation_commit_missing"
   | "finish_failed";
 
-export type DirectTaskCloseoutStop = {
+type DirectTaskCloseoutStop = {
   code: DirectTaskCloseoutStopCode;
   reason: string;
   route_step_id: string;

@@ -10,7 +10,7 @@ const CHECK_TIMEOUT_MS = 10 * 60_000;
 const CHECK_OUTPUT_LIMIT = 4000;
 const SAFE_BUN_SCRIPT = /^[A-Za-z0-9][A-Za-z0-9:_-]*$/u;
 
-export type DirectTaskCheck = {
+type DirectTaskCheck = {
   command: string;
   script: string | null;
   exit_code: number | null;

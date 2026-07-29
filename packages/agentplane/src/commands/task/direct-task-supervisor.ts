@@ -54,7 +54,7 @@ type DirectTaskSupervisorStopCode =
   | "executor_lifecycle_mutation"
   | DirectTaskCloseoutStopCode;
 
-export type DirectTaskSupervisorStop = {
+type DirectTaskSupervisorStop = {
   code: DirectTaskSupervisorStopCode;
   reason: string;
   route_step_id: string;
