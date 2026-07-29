@@ -324,6 +324,42 @@ describe("evaluator qualification packet", () => {
         quiet: true,
       }),
     ).rejects.toThrow(`Qualification dependency leaf ${incompleteLeafId} is not DONE`);
+    const incompleteReadmePath = path.join(root, `.agentplane/tasks/${incompleteLeafId}/README.md`);
+    const incompleteReadme = await readFile(incompleteReadmePath, "utf8");
+    await applyTaskMutation({
+      ctx,
+      taskId: incompleteLeafId,
+      build: (current) => ({
+        intents: setTaskFieldsIntent({
+          status: "DONE",
+          verification: {
+            state: "ok",
+            updated_at: "2026-07-29T09:02:00.000Z",
+            updated_by: "TESTER",
+            note: "Current-only dependency override.",
+            attempts: 0,
+          },
+          tags: current.tags,
+        }),
+      }),
+    });
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: root,
+        taskId,
+        state: "ok",
+        by: "TESTER",
+        note: "Qualification checks passed on the reviewed SHA.",
+        details:
+          "Command: bun run ci:contract\nResult: pass\nEvidence: RF-04 replay rebuilt from 50 runs.\nScope: qualification contract",
+        quiet: true,
+      }),
+    ).rejects.toThrow(
+      `Qualification dependency task ${incompleteLeafId} document must match the exact blob at the reviewed implementation SHA`,
+    );
+    await writeFile(incompleteReadmePath, incompleteReadme, "utf8");
     await applyTaskMutation({
       ctx,
       taskId: aggregateId,
