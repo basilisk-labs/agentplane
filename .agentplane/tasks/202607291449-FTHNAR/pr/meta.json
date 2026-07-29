@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g",
   "created_at": "2026-07-29T14:50:37.577Z",
-  "diffstat_sha256": "sha256:005559278db08ccf380cb8682b30c6c33239fcc3bfca6097d8806e97ed873482",
-  "last_verified_at": "2026-07-29T16:36:44.768Z",
+  "diffstat_sha256": "sha256:555f0bd038d3dd35da2a9130417177f2e8842231c7105e3699a06596b0c3c82a",
+  "last_verified_at": "2026-07-29T17:06:00.534Z",
   "last_verified_diffstat_sha256": "sha256:005559278db08ccf380cb8682b30c6c33239fcc3bfca6097d8806e97ed873482",
   "pr_number": 4672,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4672",
-  "pre_merge_closure": {
-    "basis_commit": "92e068187c1b8d6a65566d458df3db9c4c9d6e2c",
-    "branch": "task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g",
-    "pr_number": 4672,
-    "recorded_at": "2026-07-29T16:38:49.927Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607291449-FTHNAR",
   "updated_at": "2026-07-29T14:51:25.267Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:e36a1b69eb933c25a151920ddf7ba4e609b0ddc28d5ce3e8fe4f26d0c455efce",
+  "implementation_sha": "a1582f3087f71d2376df22f49cac457f971ca915",
+  "kind": "task_verification_record",
+  "note": "Rework: include the dependent constrained-refspec publication repair so the FTH PR can complete its own evaluator and publication lifecycle without manual upstream mutation.",
+  "recorded_at": "2026-07-29T17:06:00.534Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
+  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --rework --by TESTER",
+  "verifier": "TESTER"
+}
