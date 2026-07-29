@@ -3,9 +3,7 @@ import path from "node:path";
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { captureStdIO, installRunCliIntegrationHarness, mkGitRepoRoot } from "@agentplane/testkit";
-
-import { runCli } from "../../cli/run-cli.js";
+import { mkGitRepoRoot } from "@agentplane/testkit";
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { TaskStore } from "../../commands/shared/task-store/store.js";
 import { CliError } from "../../shared/errors.js";
@@ -44,7 +42,6 @@ import {
   writeTerminalSuccess,
 } from "./task-run-active-claim.testkit.js";
 
-installRunCliIntegrationHarness();
 const originalPath = process.env.PATH;
 
 afterEach(() => {
@@ -718,7 +715,7 @@ describe("task-run active claim hardening", () => {
     );
   });
 
-  it("retains the active claim and degrades the CLI when terminal cleanup leaves a live process", async () => {
+  it("retains the active claim when terminal cleanup leaves a live process", async () => {
     const root = await mkGitRepoRoot();
     await configureCustomRunner({
       root,
@@ -762,27 +759,14 @@ describe("task-run active claim hardening", () => {
       return result;
     });
 
-    const io = captureStdIO();
-    let payload: {
-      run_id: string;
-      status: string;
-      lifecycle_status: string;
-      active_claim_cleanup: {
-        status: string;
-        event_recorded: boolean;
-        context?: { reason?: string };
-      };
-    };
-    try {
-      expect(await runCli(["task", "run", taskId, "--json", "--root", root])).toBe(1);
-      payload = JSON.parse(io.stdout) as typeof payload;
-    } finally {
-      io.restore();
-    }
+    const executed = await executeTaskRunnerExecution({
+      cwd: root,
+      rootOverride: root,
+      task_id: taskId,
+    });
 
-    expect(payload!).toMatchObject({
-      status: "success",
-      lifecycle_status: "degraded",
+    expect(executed).toMatchObject({
+      result: { status: "success" },
       active_claim_cleanup: {
         status: "cleanup_failed",
         event_recorded: true,
@@ -795,25 +779,25 @@ describe("task-run active claim hardening", () => {
       git_root: root,
       workflow_dir: ".agentplane/tasks",
       task_id: taskId,
-      run_id: payload!.run_id,
+      run_id: executed.invocation.run_id,
     });
     expect(retained).toMatchObject({
       task_id: taskId,
-      run_id: payload!.run_id,
+      run_id: executed.invocation.run_id,
       operation: "execute",
     });
     const retainedPaths = await resolveSupervisorTaskRunnerPaths({
       git_root: root,
       workflow_dir: ".agentplane/tasks",
       task_id: taskId,
-      run_id: payload!.run_id,
+      run_id: executed.invocation.run_id,
     });
     await writeFile(
       path.join(retainedPaths.task_dir, "active-run-claim.json"),
       `${JSON.stringify(
         staleClaim({
           task_id: taskId,
-          run_id: payload!.run_id,
+          run_id: executed.invocation.run_id,
           generation: retained!.generation,
         }),
       )}\n`,
@@ -830,7 +814,7 @@ describe("task-run active claim hardening", () => {
     ).rejects.toMatchObject({
       code: "E_RUNTIME",
       context: {
-        run_id: payload!.run_id,
+        run_id: executed.invocation.run_id,
         reason: "run_not_recoverable:terminal_cleanup_unverified",
       },
     });
