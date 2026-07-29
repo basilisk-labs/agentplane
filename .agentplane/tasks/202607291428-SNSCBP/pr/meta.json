@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607291428-SNSCBP/gate-beta-1-qualification-on-sha-bound-evaluator",
+  "created_at": "2026-07-29T14:28:55.639Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607291428-SNSCBP",
+  "updated_at": "2026-07-29T14:28:55.639Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
