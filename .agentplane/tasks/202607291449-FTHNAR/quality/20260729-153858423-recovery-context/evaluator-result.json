@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "recovery-route-contract-covered",
+      "severity": "low",
+      "summary": "The bounded recovery route is implemented and covered through evaluator-result persistence, normalization, reload, TESTER-only evidence refresh, and return to EVALUATOR review.",
+      "broken_invariant": "No invariant is broken; the implementation satisfies the requirement that deterministic evidence refresh neither changes implementation nor transfers semantic verdict ownership from EVALUATOR.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:29a032eb0a43066fef16ac2a3224d9407401136b1f125e4f63727262deac7573",
+          "section": "Changes to evaluator result validation and persistence, workflow-step routing, and persisted positive and negative regression coverage"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729153834273-c3d8cee96406aa89.json",
+          "sha256": "sha256:9e07fa8efd2a9bf39258f2f6c606eca835249645251ccce6b910d78fc5aae98c",
+          "section": "Passed evaluator persistence calibration, workflow routing, publication safety, policy routing, and doctor checks"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/README.md",
+          "sha256": "sha256:378540036e2f05df4508231496a70722f482ca5455dbba947f5d63fd16e49b87",
+          "section": "Plan, Verify Steps, and current verification record"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

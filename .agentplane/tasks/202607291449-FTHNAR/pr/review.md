@@ -6,14 +6,14 @@ Created: 2026-07-29T14:50:37.577Z
 
 - Task: `202607291449-FTHNAR`
 - Title: Permit evidence refresh after evaluator review gaps
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
 - Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
 
 ## Verification
 
 - State: ok
-- Note: Verified e9ef623: four declared checks passed with frozen command-level results.
+- Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

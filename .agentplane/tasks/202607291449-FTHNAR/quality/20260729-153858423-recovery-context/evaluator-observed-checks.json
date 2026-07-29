@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T15:38:34.273Z",
+    "updated_by": "TESTER",
+    "note": "Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729153834273-c3d8cee96406aa89.json",
+      "sha256": "sha256:9e07fa8efd2a9bf39258f2f6c606eca835249645251ccce6b910d78fc5aae98c"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}
