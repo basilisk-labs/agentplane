@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221850-8HBF4J",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T00:44:31.172Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "963e293db08884671bc4c262fef7d79aaaf46084",
+  "blueprint_digest": "ca32716bbebf15f72977ad2d6c3faa9b33798a500864fdc03cb9687f81a17bde",
+  "findings": [
+    "docs/user/cli-reference.generated.mdx was regenerated from the repository-built CLI and the freshness check passed.",
+    "Policy routing, doctor, and the whitespace check passed; the generated reference remains within the task's documented CLI boundary."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221850-8HBF4J/quality/20260729-004431041-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
