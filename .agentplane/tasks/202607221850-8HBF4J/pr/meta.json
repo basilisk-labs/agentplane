@@ -8,10 +8,10 @@
   "pr_number": 4659,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4659",
   "pre_merge_closure": {
-    "basis_commit": "44a2b77aea8217c476fa20cfc3c07ed8b0a59d24",
+    "basis_commit": "2535db79a1702ba5de0bed24ed42f8c6808b7c3b",
     "branch": "task/202607221850-8HBF4J/supervise-context-assimilation-post-processing",
     "pr_number": 4659,
-    "recorded_at": "2026-07-29T00:57:38.489Z",
+    "recorded_at": "2026-07-29T01:16:10.238Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -68,8 +68,8 @@ quality_review:
   findings:
     - "Removed stale assertions requiring reindex, wiki-index, and evaluator commands in the CURATOR prompt; added positive assertions for semantic-only output and explicit negative assertions for CLI operations."
 commit:
-  hash: "44a2b77aea8217c476fa20cfc3c07ed8b0a59d24"
-  message: "🧩 8HBF4J context: record hotspot evaluation"
+  hash: "2535db79a1702ba5de0bed24ed42f8c6808b7c3b"
+  message: "🧩 8HBF4J context: record prompt contract evaluation"
 comments:
   -
     author: "CODER"
@@ -80,6 +80,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -152,8 +155,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated release-readiness expectations to enforce CURATOR semantic-only prompts; focused contract tests pass and the isolated runner cancellation test passes."
+  -
+    type: "status"
+    at: "2026-07-29T01:16:10.181Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-29T01:13:53.660Z"
+doc_updated_at: "2026-07-29T01:16:10.181Z"
 doc_updated_by: "CODER"
 description: "RF-11/RF-25b: after the CURATOR semantic result, let the supervisor validate/apply, reindex, build/lint wiki, validate graph, run coverage/checks, evaluate, create ACR, and finalize with resumable mechanical operations."
 sections:
@@ -346,8 +356,8 @@ sections:
       Resolution: Ready for a fresh EVALUATOR review and pre-merge closure refresh.
 extensions:
   implementation_commit:
-    hash: "22cc0f2d658b61b574cbc79d342d31f1ed37b2e4"
-    message: "🐛 8HBF4J code: split context hotspots"
+    hash: "d3cfaad4e57b31324a9091d45c64989938018874"
+    message: "🧪 8HBF4J context: align semantic prompt contract tests"
   workflow_route_baseline:
     start_head_sha: "322533fd11f322aadf4e77a44d4343c0c6c19341"
     version: 1
