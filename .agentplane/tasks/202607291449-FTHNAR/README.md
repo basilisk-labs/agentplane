@@ -2,10 +2,10 @@
 id: "202607291449-FTHNAR"
 title: "Permit evidence refresh after evaluator review gaps"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 18
+revision: 19
 origin:
   system: "manual"
 depends_on: []
@@ -65,6 +65,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Start: hosted CI exposed an unrecorded evaluator recovery-contract delta; restore the approved candidate and rerun the full gate."
 events:
   -
     type: "status"
@@ -129,8 +132,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-29T15:55:48.769Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Start: hosted CI exposed an unrecorded evaluator recovery-contract delta; restore the approved candidate and rerun the full gate."
 doc_version: 3
-doc_updated_at: "2026-07-29T15:41:12.612Z"
+doc_updated_at: "2026-07-29T15:55:48.769Z"
 doc_updated_by: "CODER"
 description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
 sections:

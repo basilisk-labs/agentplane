@@ -1,4 +1,5 @@
  .../src/backends/task-backend/shared/normalize.ts  |   5 +
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  18 ++-
  .../evaluator-episode.calibration.test.ts          | 161 +++++++++++++++++++++
  .../src/commands/evaluator/evaluator-episode.ts    |   2 +
  .../evaluator/evaluator-quality-artifacts.ts       |   1 +
@@ -9,8 +10,10 @@
  .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++
  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
- .../agentplane/src/runtime/sgr/contracts.test.ts   |  29 ++++
+ .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 ++++
  packages/core/src/index.ts                         |   1 +
  packages/core/src/tasks/index.ts                   |   1 +
  packages/core/src/tasks/task-store.ts              |   2 +
- 15 files changed, 370 insertions(+)
+ .../baselines/v0.7-compatibility-candidate.json    |  19 +--
+ .../check-compatibility-contract-baseline.mjs      |  10 +-
+ 18 files changed, 396 insertions(+), 19 deletions(-)
