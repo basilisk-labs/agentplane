@@ -131,6 +131,8 @@
     "bench:compatibility:capture": "node scripts/bench/capture-compatibility-contract.mjs",
     "bench:compatibility:check": "node scripts/checks/check-compatibility-contract-baseline.mjs",
     "bench:agent-efficiency": "node scripts/bench/measure-agent-efficiency.mjs",
+    "bench:agent-efficiency:candidate": "node scripts/bench/capture-agent-efficiency-candidate.mjs",
+    "bench:agent-efficiency:candidate:check": "node scripts/bench/capture-agent-efficiency-candidate.mjs --check",
     "bench:agent-efficiency:check": "node scripts/checks/check-agent-efficiency-baseline.mjs",
     "bench:agent-efficiency:replay:capture": "node scripts/bench/capture-agent-efficiency-replay.mjs",
     "bench:agent-efficiency:replay:check": "node scripts/checks/check-agent-efficiency-replay.mjs",

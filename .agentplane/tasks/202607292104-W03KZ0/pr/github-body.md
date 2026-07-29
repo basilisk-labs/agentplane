@@ -22,12 +22,16 @@ Implement a candidate-SHA RF-04 measurement route that records actual token, lat
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-29T21:06:49.643Z
+- Updated: 2026-07-29T21:07:30.628Z
 - Branch: task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ package.json                                       |   2 +
+ ...cli.critical.agent-efficiency-candidate.test.ts | 167 ++++
+ scripts/README.md                                  |  32 +-
+ .../bench/capture-agent-efficiency-candidate.mjs   | 879 +++++++++++++++++++++
+ 4 files changed, 1065 insertions(+), 15 deletions(-)
 ```
 
 </details>

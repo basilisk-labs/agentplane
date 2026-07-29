@@ -1,0 +1,5 @@
+ package.json                                       |   2 +
+ ...cli.critical.agent-efficiency-candidate.test.ts | 167 ++++
+ scripts/README.md                                  |  32 +-
+ .../bench/capture-agent-efficiency-candidate.mjs   | 879 +++++++++++++++++++++
+ 4 files changed, 1065 insertions(+), 15 deletions(-)
