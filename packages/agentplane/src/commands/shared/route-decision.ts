@@ -37,6 +37,7 @@ import {
   type CommandContext,
 } from "./task-backend.js";
 import { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
+import { resolveQualityReviewTargetSha } from "./quality-review-target.js";
 export { buildRouteSourceConfidence } from "./route-decision-source-confidence.js";
 import { hasClosedPreMergeClosureMarker, parsePrMeta } from "./pr-meta.js";
 import { taskCloseAlreadyRecordedOnBase } from "../task/close-tail-state.js";
@@ -460,6 +461,19 @@ export async function buildTaskRouteDecision(opts: {
     remoteEnabled,
     onDiagnostic: recordLocalDiagnostic,
   });
+  const qualityReviewTargetSha =
+    task.quality_review?.state === "blocked" &&
+    task.quality_review.recovery_reason === "deterministic_evidence_gap" &&
+    task.quality_review.evaluated_sha
+      ? await resolveQualityReviewTargetSha({
+          gitRoot: ctx.resolvedProject.gitRoot,
+          workflowDir: ctx.config.paths.workflow_dir,
+          taskId: task.id,
+          taskIds: batchOwnership.role === "none" ? [task.id] : batchOwnership.allTaskIds,
+          headSha: prFlow?.branch.headSha ?? resume.head_sha,
+          previousEvaluatedSha: task.quality_review.evaluated_sha,
+        }).catch(() => null)
+      : null;
   const blockers = await deriveBlockers({
     ctx,
     task,
@@ -479,6 +493,7 @@ export async function buildTaskRouteDecision(opts: {
     cleanupProbe,
     blockers,
     batchOwnership,
+    qualityReviewTargetSha,
     remoteEnabled,
     taskWorktree: taskWorktreeCleanliness,
     conflictRework,

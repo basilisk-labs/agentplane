@@ -34,14 +34,16 @@ baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility
 ```text
  .../src/backends/task-backend/shared/normalize.ts  |   5 +
  ...-cli.critical.agent-efficiency-baseline.test.ts |  18 ++-
- .../evaluator-episode.calibration.test.ts          | 161 +++++++++++++++++++++
+ .../evaluator-episode.calibration.test.ts          | 162 +++++++++++++++++++++
  .../src/commands/evaluator/evaluator-episode.ts    |   2 +
  .../evaluator/evaluator-quality-artifacts.ts       |   1 +
  .../commands/evaluator/evaluator-review-apply.ts   |   3 +
  .../commands/evaluator/evaluator-review-usecase.ts |   2 +
- .../src/commands/shared/workflow-step-branch.ts    |  22 +++
+ .../src/commands/shared/route-decision.ts          |  15 ++
+ .../src/commands/shared/workflow-step-branch.ts    |  21 +++
  .../src/commands/shared/workflow-step-factory.ts   |  26 ++++
- .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++
+ .../src/commands/shared/workflow-step.test.ts      | 143 ++++++++++++++++++
+ .../src/commands/shared/workflow-step.ts           |   5 +
  .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
  .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
  .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 ++++
@@ -50,7 +52,7 @@ baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility
  packages/core/src/tasks/task-store.ts              |   2 +
  .../baselines/v0.7-compatibility-candidate.json    |  19 +--
  .../check-compatibility-contract-baseline.mjs      |  10 +-
- 18 files changed, 396 insertions(+), 19 deletions(-)
+ 20 files changed, 455 insertions(+), 19 deletions(-)
 ```
 
 </details>
