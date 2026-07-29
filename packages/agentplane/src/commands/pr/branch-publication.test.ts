@@ -142,6 +142,16 @@ async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
   });
   await execFileAsync(
     "git",
+    ["fetch", remotePath, `+refs/heads/${branch}:refs/remotes/origin/${branch}`],
+    { cwd: root, env: cleanGitEnv() },
+  );
+  await execFileAsync(
+    "git",
+    ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
+    { cwd: root, env: cleanGitEnv() },
+  );
+  await execFileAsync(
+    "git",
     ["commit", "--amend", "--allow-empty", "-m", "feat rebased task head"],
     {
       cwd: root,
@@ -188,7 +198,70 @@ async function setupRewrittenOpenPrBranch(scenarioName: string): Promise<{
   };
 }
 
+async function setupConstrainedRefspecBranch(): Promise<{
+  branch: string;
+  root: string;
+}> {
+  const root = await mkGitRepoRootWithBranch("main");
+  const execFileAsync = promisify(execFile);
+  await configureGitUser(root);
+  const remotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-pr-publication-origin-"));
+  await execFileAsync("git", ["init", "--bare", remotePath], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["remote", "add", "origin", remotePath], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync(
+    "git",
+    ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
+    { cwd: root, env: cleanGitEnv() },
+  );
+  await execFileAsync("git", ["commit", "--allow-empty", "-m", "chore initial main"], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+
+  const branch = "task/T-TRACK/constrained-refspec";
+  await execFileAsync("git", ["checkout", "-b", branch], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  await execFileAsync("git", ["commit", "--allow-empty", "-m", "feat task head"], {
+    cwd: root,
+    env: cleanGitEnv(),
+  });
+  return { branch, root };
+}
+
 describe("PR task branch publication", { timeout: TEST_TIMEOUT_MS }, () => {
+  it("materializes the tracking ref after publication with a constrained fetch refspec", async () => {
+    const fixture = await setupConstrainedRefspecBranch();
+    const execFileAsync = promisify(execFile);
+
+    await expect(
+      pushTaskBranchUpstreamIfConfigured({
+        gitRoot: fixture.root,
+        branch: fixture.branch,
+      }),
+    ).resolves.toBe(true);
+
+    const [{ stdout: trackingHeadStdout }, { stdout: localHeadStdout }] = await Promise.all([
+      execFileAsync("git", ["rev-parse", `refs/remotes/origin/${fixture.branch}`], {
+        cwd: fixture.root,
+        env: cleanGitEnv(),
+      }),
+      execFileAsync("git", ["rev-parse", fixture.branch], {
+        cwd: fixture.root,
+        env: cleanGitEnv(),
+      }),
+    ]);
+
+    expect(trackingHeadStdout.trim()).toBe(localHeadStdout.trim());
+  });
+
   it("publishes a rebased existing open PR branch with a ref-scoped observed lease", async () => {
     const fixture = await setupRewrittenOpenPrBranch("force-lease-success");
     const originalPath = process.env.PATH;
@@ -209,6 +282,13 @@ describe("PR task branch publication", { timeout: TEST_TIMEOUT_MS }, () => {
     await expect(readRemoteHead(fixture.root, fixture.remotePath, fixture.branch)).resolves.toBe(
       fixture.localHead,
     );
+    const execFileAsync = promisify(execFile);
+    const { stdout: trackingHead } = await execFileAsync(
+      "git",
+      ["rev-parse", `refs/remotes/origin/${fixture.branch}`],
+      { cwd: fixture.root, env: cleanGitEnv() },
+    );
+    expect(trackingHead.trim()).toBe(fixture.localHead);
   });
 
   it("refuses rewrite publication when the task branch tracks the wrong upstream", async () => {

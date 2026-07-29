@@ -1,5 +1,5 @@
 import { execFileAsync } from "@agentplaneorg/core/process";
-import { gitEnv } from "@agentplaneorg/core/git";
+import { gitEnv, gitRefreshBranchTrackingRef } from "@agentplaneorg/core/git";
 
 import { gitBranchUpstream, gitCurrentBranch } from "../shared/git-ops.js";
 import {
@@ -280,5 +280,6 @@ export async function pushTaskBranchUpstreamIfConfigured(opts: {
     });
     if (!publishedRebasedBranch) throw err;
   }
+  await gitRefreshBranchTrackingRef(opts.gitRoot, opts.branch);
   return true;
 }

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_escalation",
+  "source_work_order_id": "evaluator-work-order-202607291449-FTHNAR-3b2a17ae347c687da459f409",
+  "task_id": "202607291449-FTHNAR",
+  "verdict": "blocked",
+  "next_owner": "USER",
+  "instruction": "Refresh and freeze the declared deterministic verification evidence against evaluated SHA 50928b4871574d57669a7e0937b8578c1cafe626, including command, outcome, and SHA binding for all six approved check groups, then submit a new EVALUATOR review before publication.",
+  "findings": [
+    {
+      "id": "deterministic-evidence-absent",
+      "summary": "The frozen observed-checks artifact contains no declared checks, verification records, runner history, or runtime evidence, so the implementation cannot be semantically cleared for publication.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174300516-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:859978636d68cd61474fd0040cb6fce6ef0a14df5c2537296efefe374dcad020",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-174300516-recovery-context/evaluator-result.json"
+}

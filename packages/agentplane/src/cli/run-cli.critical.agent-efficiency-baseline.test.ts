@@ -181,12 +181,13 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607260007-DQM6AW",
           "202607260532-9M7RNH",
           "202607281655-YMPY8Y",
+          "202607291449-FTHNAR",
         ],
         candidate: {
-          surface_sha256: "18997149544b458868c40977e28bcc1ff1cb8ddd4d2f4d64fe6012b9e89ed642",
+          surface_sha256: "b3d74d362ddfe5f5a52eab68df9797756fd54c6140f9ca231e129d22061cab98",
           section_digests: {
             agent_facing_context_contracts:
-              "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
+              "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
             cli_topology: "f50e087e1317576b5adca56748f0acf2b04c61727adcfd51da462f17956b7fad",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
@@ -304,12 +305,12 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       });
       expect(compatibilityCandidate.deltas).toContainEqual({
         section: "agent_facing_context_contracts",
-        source_tasks: ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
+        source_tasks: ["202607221848-1HWR0R", "202607221849-8YYZ9X", "202607291449-FTHNAR"],
         from_sha256: "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
-        to_sha256: "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
+        to_sha256: "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
         classification: "additive",
         summary:
-          "Adds a CLI-owned immutable task-creation receipt and the typed EVALUATOR human-review escalation verdict.",
+          "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, and a bounded deterministic-evidence recovery classification.",
         evidence: {
           contract_count: 4,
           unchanged_contract_paths: [
@@ -319,16 +320,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           changed_contracts: [
             {
               path: "packages/agentplane/src/runtime/sgr/contract-types.ts",
-              change: "adds evaluator human_review as a typed semantic escalation verdict",
+              change:
+                "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
               before: {
                 normalized_bytes: 6471,
                 normalized_sha256:
                   "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
               },
               after: {
-                normalized_bytes: 6488,
+                normalized_bytes: 6538,
                 normalized_sha256:
-                  "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a",
+                  "e93f1584cd5af62de6ca9a5ff0971d62a871475c9fbae216df9be3e39ae7875c",
               },
             },
             {

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291449-FTHNAR-7ea3dd32b69a5fde0e3dcd6a",
+  "task_id": "202607291449-FTHNAR",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Make the bounded tracking-ref refresh support legitimate non-fast-forward task-branch updates, then verify both publication and integration preparation with a stale tracking ref under a constrained remote.fetch configuration.",
+  "findings": [
+    {
+      "id": "tracking-ref-refresh-rejects-rewritten-head",
+      "summary": "The tracking-ref helper fetches without a forced refspec, so it can reject a legitimate rewritten task head when the constrained checkout already has a stale tracking ref. This breaks rebased-branch publication and protected integration recovery.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3a4566934a493992a993c1aa3b9750b71ab4fa3f18c137ed4a1d6514216fef50",
+          "line": 3817,
+          "lines": "3805-3818",
+          "section": "gitRefreshBranchTrackingRef"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3a4566934a493992a993c1aa3b9750b71ab4fa3f18c137ed4a1d6514216fef50",
+          "line": 3138,
+          "lines": "3134-3139",
+          "section": "pushTaskBranchUpstreamIfConfigured"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-result.json"
+}

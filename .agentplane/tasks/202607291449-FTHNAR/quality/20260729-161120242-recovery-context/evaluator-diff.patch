@@ -1,0 +1,2228 @@
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/README.md b/.agentplane/tasks/202607291449-FTHNAR/README.md
+new file mode 100644
+index 000000000..76f3589de
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/README.md
+@@ -0,0 +1,607 @@
++---
++id: "202607291449-FTHNAR"
++title: "Permit evidence refresh after evaluator review gaps"
++result_summary: "pre-merge closure"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 19
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "evaluator"
++  - "recovery"
++  - "refactor"
++  - "v0.7"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-29T14:49:52.020Z"
++  updated_by: "USER"
++  note: "Standing approval granted by the user for the AgentPlane 0.7 refactor and recovery work."
++verification:
++  state: "ok"
++  updated_at: "2026-07-29T15:38:34.273Z"
++  updated_by: "TESTER"
++  note: "Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-29T15:39:51.241Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 1 typed finding(s)."
++  evaluated_sha: "36afba49f14321f1a12e00a902d63fcb5d3e2c3e"
++  blueprint_digest: "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e"
++  evidence_refs:
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607291449-FTHNAR/README.md"
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607291449-FTHNAR/verification/20260729153834273-c3d8cee96406aa89.json"
++    - ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-153858423-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The bounded recovery route is implemented and covered through evaluator-result persistence, normalization, reload, TESTER-only evidence refresh, and return to EVALUATOR review."
++commit:
++  hash: "36afba49f14321f1a12e00a902d63fcb5d3e2c3e"
++  message: "✅ FTHNAR test: cover persisted recovery route"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implementation: added the bounded TESTER evidence-refresh route for current EVALUATOR blocks and its regression coverage."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Start: hosted CI exposed an unrecorded evaluator recovery-contract delta; restore the approved candidate and rerun the full gate."
++events:
++  -
++    type: "status"
++    at: "2026-07-29T14:50:37.293Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-29T15:00:05.355Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation: added the bounded TESTER evidence-refresh route for current EVALUATOR blocks and its regression coverage."
++  -
++    type: "verify"
++    at: "2026-07-29T15:01:06.145Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified bounded evidence-refresh routing and protected quality-review handoff."
++  -
++    type: "status"
++    at: "2026-07-29T15:24:29.542Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++  -
++    type: "verify"
++    at: "2026-07-29T15:26:17.194Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified 9a4fc724: workflow route tests (24), route-decision tests (10), policy routing, and doctor passed."
++  -
++    type: "status"
++    at: "2026-07-29T15:30:39.633Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++  -
++    type: "verify"
++    at: "2026-07-29T15:30:45.049Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified e9ef623: four declared checks passed with frozen command-level results."
++  -
++    type: "status"
++    at: "2026-07-29T15:37:07.515Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++  -
++    type: "verify"
++    at: "2026-07-29T15:38:34.273Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed."
++  -
++    type: "status"
++    at: "2026-07-29T15:41:12.608Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "status"
++    at: "2026-07-29T15:55:48.769Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DOING"
++    note: "Start: hosted CI exposed an unrecorded evaluator recovery-contract delta; restore the approved candidate and rerun the full gate."
++doc_version: 3
++doc_updated_at: "2026-07-29T15:55:48.769Z"
++doc_updated_by: "CODER"
++description: "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication."
++sections:
++  Summary: |-
++    Permit evidence refresh after evaluator review gaps
++
++    Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
++  Scope: |-
++    - In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
++    - Out of scope: unrelated refactors not required for "Permit evidence refresh after evaluator review gaps".
++  Plan: |-
++    1. Identify the blocked-quality-review route that prevents a task from refreshing deterministic evidence requested by EVALUATOR.
++    2. Add a bounded recovery transition that permits only task verification; preserve EVALUATOR as the sole semantic verdict owner and require a fresh quality review before PR publication.
++    3. Add regression coverage for the blocked-to-verification route and verify that unrelated quality-review blocks remain non-mutating.
++    4. Run the focused tests, policy routing validation, and doctor; record exact results.
++    5. Obtain an independent EVALUATOR verdict, publish the narrow PR, wait for hosted checks, then integrate before resuming the beta.1 gate task.
++  Verify Steps: |-
++    1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.
++    2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.
++    3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.
++    4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-29T15:01:06.145Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified bounded evidence-refresh routing and protected quality-review handoff.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:00:05.355Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++    Details:
++
++    Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
++    Result: pass
++    Evidence: 22 pass; includes current EVALUATOR-blocked evidence-refresh route.
++    Scope: route reducer and execution-packet behavior.
++
++    Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++    Result: pass
++    Evidence: 10 pass; stale quality review remains ahead of PR-head publication.
++    Scope: branch_pr publication safety.
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK.
++    Scope: policy gateway compatibility.
++
++    Command: node packages/agentplane/bin/agentplane.js doctor
++    Result: pass
++    Evidence: 0 errors; two historical DONE-task commit warnings outside this task.
++    Scope: repository workflow health.
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T15:26:17.194Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified 9a4fc724: workflow route tests (24), route-decision tests (10), policy routing, and doctor passed.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:24:29.542Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T15:30:45.049Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified e9ef623: four declared checks passed with frozen command-level results.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:30:39.633Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++    Details:
++
++    Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
++    Result: pass
++    Evidence: 24 pass; 0 fail; 135 expectations
++    Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++    Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++    Result: pass
++    Evidence: 10 pass; 0 fail; 11 expectations
++    Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK
++    Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++    Command: node packages/agentplane/bin/agentplane.js doctor
++    Result: pass
++    Evidence: doctor OK; errors=0; historical warnings=2
++    Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-29T15:38:34.273Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:37:07.515Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++    Details:
++
++    Command: bun test packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
++    Result: pass
++    Evidence: 11 pass; persisted positive and negative recovery-route cases covered
++    Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++    Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
++    Result: pass
++    Evidence: 24 pass; 0 fail; 135 expectations
++    Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++    Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++    Result: pass
++    Evidence: 10 pass; 0 fail; 11 expectations
++    Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++    Command: node .agentplane/policy/check-routing.mjs
++    Result: pass
++    Evidence: policy routing OK
++    Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++    Command: node packages/agentplane/bin/agentplane.js doctor
++    Result: pass
++    Evidence: doctor OK; errors=0; historical warnings=2
++    Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++    - old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: Explicit evaluator reason and review-versus-verification freshness prevent semantic-block refresh and refresh loops.
++      Impact: TESTER may refresh only a current deterministic-evidence-gap block once before EVALUATOR re-review.
++      Resolution: Typed recovery_reason is persisted from the read-only evaluator result and guarded by route tests.
++
++    - Observation: The first recovery record lacked structured command evidence, so evaluator correctly blocked it.
++      Impact: A passing status without check-level details cannot establish deterministic verification.
++      Resolution: Fresh TESTER record freezes command, result, evidence summary, and evaluated SHA for all Verify Steps.
++
++    - Observation: Evaluator rework required persistence-boundary coverage beyond synthetic route fixtures.
++      Impact: A route field can be correct in memory yet fail after task serialization and normalization.
++      Resolution: Integration calibration now applies typed results, reloads TaskData, and asserts positive and negative next-action routing.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Permit evidence refresh after evaluator review gaps
++
++Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
++
++## Scope
++
++- In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
++- Out of scope: unrelated refactors not required for "Permit evidence refresh after evaluator review gaps".
++
++## Plan
++
++1. Identify the blocked-quality-review route that prevents a task from refreshing deterministic evidence requested by EVALUATOR.
++2. Add a bounded recovery transition that permits only task verification; preserve EVALUATOR as the sole semantic verdict owner and require a fresh quality review before PR publication.
++3. Add regression coverage for the blocked-to-verification route and verify that unrelated quality-review blocks remain non-mutating.
++4. Run the focused tests, policy routing validation, and doctor; record exact results.
++5. Obtain an independent EVALUATOR verdict, publish the narrow PR, wait for hosted checks, then integrate before resuming the beta.1 gate task.
++
++## Verify Steps
++
++1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.
++2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.
++3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.
++4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-29T15:01:06.145Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified bounded evidence-refresh routing and protected quality-review handoff.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:00:05.355Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++Details:
++
++Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
++Result: pass
++Evidence: 22 pass; includes current EVALUATOR-blocked evidence-refresh route.
++Scope: route reducer and execution-packet behavior.
++
++Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++Result: pass
++Evidence: 10 pass; stale quality review remains ahead of PR-head publication.
++Scope: branch_pr publication safety.
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK.
++Scope: policy gateway compatibility.
++
++Command: node packages/agentplane/bin/agentplane.js doctor
++Result: pass
++Evidence: 0 errors; two historical DONE-task commit warnings outside this task.
++Scope: repository workflow health.
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T15:26:17.194Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified 9a4fc724: workflow route tests (24), route-decision tests (10), policy routing, and doctor passed.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:24:29.542Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T15:30:45.049Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified e9ef623: four declared checks passed with frozen command-level results.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:30:39.633Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++Details:
++
++Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
++Result: pass
++Evidence: 24 pass; 0 fail; 135 expectations
++Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++Result: pass
++Evidence: 10 pass; 0 fail; 11 expectations
++Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK
++Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++Command: node packages/agentplane/bin/agentplane.js doctor
++Result: pass
++Evidence: doctor OK; errors=0; historical warnings=2
++Scope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607291449-FTHNAR
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-29T15:38:34.273Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T15:37:07.515Z, excerpt_hash=sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90
++
++Details:
++
++Command: bun test packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
++Result: pass
++Evidence: 11 pass; persisted positive and negative recovery-route cases covered
++Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts
++Result: pass
++Evidence: 24 pass; 0 fail; 135 expectations
++Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++Command: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts
++Result: pass
++Evidence: 10 pass; 0 fail; 11 expectations
++Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++Command: node .agentplane/policy/check-routing.mjs
++Result: pass
++Evidence: policy routing OK
++Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++Command: node packages/agentplane/bin/agentplane.js doctor
++Result: pass
++Evidence: doctor OK; errors=0; historical warnings=2
++Scope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291449-FTHNAR-permit-evidence-refresh-after-evaluator-review-g/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
++- old_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- current_digest: 2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607291449-FTHNAR
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: Explicit evaluator reason and review-versus-verification freshness prevent semantic-block refresh and refresh loops.
++  Impact: TESTER may refresh only a current deterministic-evidence-gap block once before EVALUATOR re-review.
++  Resolution: Typed recovery_reason is persisted from the read-only evaluator result and guarded by route tests.
++
++- Observation: The first recovery record lacked structured command evidence, so evaluator correctly blocked it.
++  Impact: A passing status without check-level details cannot establish deterministic verification.
++  Resolution: Fresh TESTER record freezes command, result, evidence summary, and evaluated SHA for all Verify Steps.
++
++- Observation: Evaluator rework required persistence-boundary coverage beyond synthetic route fixtures.
++  Impact: A route field can be correct in memory yet fail after task serialization and normalization.
++  Resolution: Integration calibration now applies typed results, reloads TaskData, and asserts positive and negative next-action routing.
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..7c6fc5497
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/blueprint/resolved-snapshot.json
+@@ -0,0 +1,574 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607291449-FTHNAR",
++    "title": "Permit evidence refresh after evaluator review gaps",
++    "description": "Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.",
++    "tags": [
++      "code",
++      "evaluator",
++      "recovery",
++      "refactor",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607291449-FTHNAR",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "2a14be3b05294f60e8e70e7ff63a2409a1c966bcb676b70a74c5254a3573587e"
++  }
++}
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/pr/diffstat.txt b/.agentplane/tasks/202607291449-FTHNAR/pr/diffstat.txt
+new file mode 100644
+index 000000000..143e07c84
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/pr/diffstat.txt
+@@ -0,0 +1,19 @@
++ .../src/backends/task-backend/shared/normalize.ts  |   5 +
++ ...-cli.critical.agent-efficiency-baseline.test.ts |  18 ++-
++ .../evaluator-episode.calibration.test.ts          | 161 +++++++++++++++++++++
++ .../src/commands/evaluator/evaluator-episode.ts    |   2 +
++ .../evaluator/evaluator-quality-artifacts.ts       |   1 +
++ .../commands/evaluator/evaluator-review-apply.ts   |   3 +
++ .../commands/evaluator/evaluator-review-usecase.ts |   2 +
++ .../src/commands/shared/workflow-step-branch.ts    |  22 +++
++ .../src/commands/shared/workflow-step-factory.ts   |  26 ++++
++ .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++
++ .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
++ .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
++ .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 ++++
++ packages/core/src/index.ts                         |   1 +
++ packages/core/src/tasks/index.ts                   |   1 +
++ packages/core/src/tasks/task-store.ts              |   2 +
++ .../baselines/v0.7-compatibility-candidate.json    |  19 +--
++ .../check-compatibility-contract-baseline.mjs      |  10 +-
++ 18 files changed, 396 insertions(+), 19 deletions(-)
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/pr/github-body.md b/.agentplane/tasks/202607291449-FTHNAR/pr/github-body.md
+new file mode 100644
+index 000000000..3405ebe35
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/pr/github-body.md
+@@ -0,0 +1,51 @@
++Task: `202607291449-FTHNAR`
++Title: Permit evidence refresh after evaluator review gaps
++Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
++
++## Summary
++
++Permit evidence refresh after evaluator review gaps
++
++Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
++
++## Scope
++
++- In scope: Restore a bounded recovery route when an evaluator blocks a task only because frozen deterministic verification evidence is missing. The CLI must permit the declared verification refresh, preserve semantic review ownership with EVALUATOR, and require a new review before publication.
++- Out of scope: unrelated refactors not required for "Permit evidence refresh after evaluator review gaps".
++
++## Verification
++
++- State: ok
++- Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T14:51:25.267Z
++- Branch: task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/backends/task-backend/shared/normalize.ts  |   5 +
++ ...-cli.critical.agent-efficiency-baseline.test.ts |  18 ++-
++ .../evaluator-episode.calibration.test.ts          | 161 +++++++++++++++++++++
++ .../src/commands/evaluator/evaluator-episode.ts    |   2 +
++ .../evaluator/evaluator-quality-artifacts.ts       |   1 +
++ .../commands/evaluator/evaluator-review-apply.ts   |   3 +
++ .../commands/evaluator/evaluator-review-usecase.ts |   2 +
++ .../src/commands/shared/workflow-step-branch.ts    |  22 +++
++ .../src/commands/shared/workflow-step-factory.ts   |  26 ++++
++ .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++
++ .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
++ .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
++ .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 ++++
++ packages/core/src/index.ts                         |   1 +
++ packages/core/src/tasks/index.ts                   |   1 +
++ packages/core/src/tasks/task-store.ts              |   2 +
++ .../baselines/v0.7-compatibility-candidate.json    |  19 +--
++ .../check-compatibility-contract-baseline.mjs      |  10 +-
++ 18 files changed, 396 insertions(+), 19 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/pr/github-title.txt b/.agentplane/tasks/202607291449-FTHNAR/pr/github-title.txt
+new file mode 100644
+index 000000000..f03d76a84
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 FTHNAR task: Permit evidence refresh after evaluator review gaps [202607291449-FTHNAR]
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/pr/meta.json b/.agentplane/tasks/202607291449-FTHNAR/pr/meta.json
+new file mode 100644
+index 000000000..6ea129fe0
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g",
++  "created_at": "2026-07-29T14:50:37.577Z",
++  "diffstat_sha256": "sha256:43383201c8ef2fbcd727bfd65be6e5e2a5952f66e7afd2bc21efaf037fc6e097",
++  "last_verified_at": "2026-07-29T15:38:34.273Z",
++  "last_verified_diffstat_sha256": "sha256:1f88340a66041af47c90cd5a42ba46bbefb9df4c173eaf9e991694972f4eddc6",
++  "pr_number": 4672,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4672",
++  "pre_merge_closure": {
++    "basis_commit": "36afba49f14321f1a12e00a902d63fcb5d3e2c3e",
++    "branch": "task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g",
++    "pr_number": 4672,
++    "recorded_at": "2026-07-29T15:41:12.836Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607291449-FTHNAR",
++  "updated_at": "2026-07-29T14:51:25.267Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/pr/review.md b/.agentplane/tasks/202607291449-FTHNAR/pr/review.md
+new file mode 100644
+index 000000000..46c450743
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/pr/review.md
+@@ -0,0 +1,54 @@
++# PR Review
++
++Created: 2026-07-29T14:50:37.577Z
++
++## Task
++
++- Task: `202607291449-FTHNAR`
++- Title: Permit evidence refresh after evaluator review gaps
++- Status: DOING
++- Branch: `task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g`
++- Canonical task record: `.agentplane/tasks/202607291449-FTHNAR/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-29T14:51:25.267Z
++- Branch: task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/backends/task-backend/shared/normalize.ts  |   5 +
++ ...-cli.critical.agent-efficiency-baseline.test.ts |  18 ++-
++ .../evaluator-episode.calibration.test.ts          | 161 +++++++++++++++++++++
++ .../src/commands/evaluator/evaluator-episode.ts    |   2 +
++ .../evaluator/evaluator-quality-artifacts.ts       |   1 +
++ .../commands/evaluator/evaluator-review-apply.ts   |   3 +
++ .../commands/evaluator/evaluator-review-usecase.ts |   2 +
++ .../src/commands/shared/workflow-step-branch.ts    |  22 +++
++ .../src/commands/shared/workflow-step-factory.ts   |  26 ++++
++ .../src/commands/shared/workflow-step.test.ts      | 104 +++++++++++++
++ .../src/runtime/sgr/contract-evaluator-routing.ts  |  10 ++
++ .../agentplane/src/runtime/sgr/contract-types.ts   |   1 +
++ .../agentplane/src/runtime/sgr/contracts.test.ts   |  27 ++++
++ packages/core/src/index.ts                         |   1 +
++ packages/core/src/tasks/index.ts                   |   1 +
++ packages/core/src/tasks/task-store.ts              |   2 +
++ .../baselines/v0.7-compatibility-candidate.json    |  19 +--
++ .../check-compatibility-contract-baseline.mjs      |  10 +-
++ 18 files changed, 396 insertions(+), 19 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/verification/20260729150106145-8b2f0cc0ece7db0c.json b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729150106145-8b2f0cc0ece7db0c.json
+new file mode 100644
+index 000000000..09c006cf1
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729150106145-8b2f0cc0ece7db0c.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts\nResult: pass\nEvidence: 22 pass; includes current EVALUATOR-blocked evidence-refresh route.\nScope: route reducer and execution-packet behavior.\n\nCommand: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: 10 pass; stale quality review remains ahead of PR-head publication.\nScope: branch_pr publication safety.\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK.\nScope: policy gateway compatibility.\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: 0 errors; two historical DONE-task commit warnings outside this task.\nScope: repository workflow health.",
++  "digest": "sha256:8b2f0cc0ece7db0c51d11977c1e9ff1ac2fdca8d2163b2b27b981c709e472180",
++  "implementation_sha": "425cc4268bb9ce250abf7ed0d19d1017cae0954b",
++  "kind": "task_verification_record",
++  "note": "Verified bounded evidence-refresh routing and protected quality-review handoff.",
++  "recorded_at": "2026-07-29T15:01:06.145Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
++  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
++  "task_id": "202607291449-FTHNAR",
++  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/verification/20260729152617194-836401b94e63fb22.json b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729152617194-836401b94e63fb22.json
+new file mode 100644
+index 000000000..8bc27397e
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729152617194-836401b94e63fb22.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:836401b94e63fb227dad8017508dc8859c4a8f96a1f1ed3ace093076b1c40276",
++  "implementation_sha": "e9ef6239774c4e2cff481d200a369c22225b38a1",
++  "kind": "task_verification_record",
++  "note": "Verified 9a4fc724: workflow route tests (24), route-decision tests (10), policy routing, and doctor passed.",
++  "recorded_at": "2026-07-29T15:26:17.194Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
++  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
++  "task_id": "202607291449-FTHNAR",
++  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/verification/20260729153045049-45a1e66a801bf33a.json b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729153045049-45a1e66a801bf33a.json
+new file mode 100644
+index 000000000..f1e5de29c
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729153045049-45a1e66a801bf33a.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts\nResult: pass\nEvidence: 24 pass; 0 fail; 135 expectations\nScope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1\n\nCommand: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: 10 pass; 0 fail; 11 expectations\nScope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: doctor OK; errors=0; historical warnings=2\nScope: implementation e9ef6239774c4e2cff481d200a369c22225b38a1",
++  "digest": "sha256:45a1e66a801bf33a3027b40c667a46e0117b70d99970fd42eee76f77a7c57dc1",
++  "implementation_sha": "e9ef6239774c4e2cff481d200a369c22225b38a1",
++  "kind": "task_verification_record",
++  "note": "Verified e9ef623: four declared checks passed with frozen command-level results.",
++  "recorded_at": "2026-07-29T15:30:45.049Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
++  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
++  "task_id": "202607291449-FTHNAR",
++  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/.agentplane/tasks/202607291449-FTHNAR/verification/20260729153834273-c3d8cee96406aa89.json b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729153834273-c3d8cee96406aa89.json
+new file mode 100644
+index 000000000..499c5af6b
+--- /dev/null
++++ b/.agentplane/tasks/202607291449-FTHNAR/verification/20260729153834273-c3d8cee96406aa89.json
+@@ -0,0 +1,15 @@
++{
++  "details": "Command: bun test packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts\nResult: pass\nEvidence: 11 pass; persisted positive and negative recovery-route cases covered\nScope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e\n\nCommand: bun test packages/agentplane/src/commands/shared/workflow-step.test.ts\nResult: pass\nEvidence: 24 pass; 0 fail; 135 expectations\nScope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e\n\nCommand: bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts\nResult: pass\nEvidence: 10 pass; 0 fail; 11 expectations\nScope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e\n\nCommand: node packages/agentplane/bin/agentplane.js doctor\nResult: pass\nEvidence: doctor OK; errors=0; historical warnings=2\nScope: implementation 36afba49f14321f1a12e00a902d63fcb5d3e2c3e",
++  "digest": "sha256:c3d8cee96406aa8960bf6b98452b377831eb8f043516f9f062efb11043f447ad",
++  "implementation_sha": "36afba49f14321f1a12e00a902d63fcb5d3e2c3e",
++  "kind": "task_verification_record",
++  "note": "Verified 36afba49: persisted recovery-boundary coverage and all declared checks passed.",
++  "recorded_at": "2026-07-29T15:38:34.273Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Run `bun test packages/agentplane/src/commands/shared/workflow-step.test.ts`. Expected: the current EVALUATOR-blocked review route delegates only to TESTER evidence refresh.\n2. Run `bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts`. Expected: existing stale-quality-review routing remains protected from PR publication.\n3. Run `node .agentplane/policy/check-routing.mjs`. Expected: policy routing remains valid after the command-route change.\n4. Run `node packages/agentplane/bin/agentplane.js doctor`. Expected: no new workflow health errors.",
++  "scope_digest": "sha256:ff7e31f8837a558320bd524bae30097f4fec3337b777fdba73addd370a35ae90",
++  "task_id": "202607291449-FTHNAR",
++  "verification_command": "agentplane verify 202607291449-FTHNAR --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/packages/agentplane/src/backends/task-backend/shared/normalize.ts b/packages/agentplane/src/backends/task-backend/shared/normalize.ts
+index a0b8bce88..020da2ca0 100644
+--- a/packages/agentplane/src/backends/task-backend/shared/normalize.ts
++++ b/packages/agentplane/src/backends/task-backend/shared/normalize.ts
+@@ -59,6 +59,10 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
+     value.blueprint_digest === null || typeof value.blueprint_digest === "string"
+       ? value.blueprint_digest
+       : null;
++  const recoveryReason =
++    value.recovery_reason === "deterministic_evidence_gap"
++      ? "deterministic_evidence_gap"
++      : undefined;
+   return {
+     state,
+     ...(provenance ? { provenance } : {}),
+@@ -69,6 +73,7 @@ export function normalizeQualityReviewResult(value: unknown): QualityReviewResul
+     blueprint_digest: blueprintDigest,
+     evidence_refs: normalizeStringArray(value.evidence_refs) ?? [],
+     findings: normalizeStringArray(value.findings) ?? [],
++    ...(recoveryReason ? { recovery_reason: recoveryReason } : {}),
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+index 8824a6541..1467cf6b5 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-baseline.test.ts
+@@ -181,12 +181,13 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           "202607260007-DQM6AW",
+           "202607260532-9M7RNH",
+           "202607281655-YMPY8Y",
++          "202607291449-FTHNAR",
+         ],
+         candidate: {
+-          surface_sha256: "18997149544b458868c40977e28bcc1ff1cb8ddd4d2f4d64fe6012b9e89ed642",
++          surface_sha256: "b3d74d362ddfe5f5a52eab68df9797756fd54c6140f9ca231e129d22061cab98",
+           section_digests: {
+             agent_facing_context_contracts:
+-              "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
++              "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
+             cli_topology: "f50e087e1317576b5adca56748f0acf2b04c61727adcfd51da462f17956b7fad",
+             machine_output_contract:
+               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+@@ -304,12 +305,12 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+       });
+       expect(compatibilityCandidate.deltas).toContainEqual({
+         section: "agent_facing_context_contracts",
+-        source_tasks: ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
++        source_tasks: ["202607221848-1HWR0R", "202607221849-8YYZ9X", "202607291449-FTHNAR"],
+         from_sha256: "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
+-        to_sha256: "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
++        to_sha256: "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
+         classification: "additive",
+         summary:
+-          "Adds a CLI-owned immutable task-creation receipt and the typed EVALUATOR human-review escalation verdict.",
++          "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, and a bounded deterministic-evidence recovery classification.",
+         evidence: {
+           contract_count: 4,
+           unchanged_contract_paths: [
+@@ -319,16 +320,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines",
+           changed_contracts: [
+             {
+               path: "packages/agentplane/src/runtime/sgr/contract-types.ts",
+-              change: "adds evaluator human_review as a typed semantic escalation verdict",
++              change:
++                "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
+               before: {
+                 normalized_bytes: 6471,
+                 normalized_sha256:
+                   "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261",
+               },
+               after: {
+-                normalized_bytes: 6488,
++                normalized_bytes: 6538,
+                 normalized_sha256:
+-                  "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a",
++                  "e93f1584cd5af62de6ca9a5ff0971d62a871475c9fbae216df9be3e39ae7875c",
+               },
+             },
+             {
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+index 35c00821d..6b7bc2962 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.calibration.test.ts
+@@ -7,7 +7,14 @@ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
+ import { describe, expect, it } from "vitest";
+ 
+ import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
++import type { PrFlowStatusReport } from "../pr/flow-status.js";
++import { reduceRouteState } from "../shared/workflow-step-reducer.js";
++import {
++  withBootstrapWorkflowFingerprint,
++  type WorkflowRouteStateInput,
++} from "../shared/workflow-step-fingerprint.js";
+ import { getHumanInputState } from "../task/human-input.js";
++import type { TaskResumeContext } from "../task/handoff.shared.js";
+ import { cmdTaskAdd } from "../workflow.js";
+ import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+ 
+@@ -81,6 +88,7 @@ async function prepare(
+ function result(
+   prepared: PreparedEvaluatorReview,
+   verdict: "pass" | "rework" | "blocked" | "human_review",
++  opts: { recoveryReason?: "deterministic_evidence_gap" } = {},
+ ) {
+   const diff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
+   if (!diff) throw new Error("Missing frozen diff evidence.");
+@@ -106,9 +114,76 @@ function result(
+         ? "Which of the two mutually incompatible acceptance interpretations should govern this task?"
+         : `Bounded ${verdict} follow-up required before another evaluator episode.`
+       : null,
++    ...(opts.recoveryReason ? { recovery_reason: opts.recoveryReason } : {}),
+   };
+ }
+ 
++function persistedBranchRouteStep(opts: {
++  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
++  evaluatedSha: string;
++}) {
++  const branch = `task/${opts.task.id}/evaluator-persistence`;
++  const resume = {
++    task_id: opts.task.id,
++    task_status: opts.task.status,
++    branch,
++    base_branch: "main",
++    head_sha: opts.evaluatedSha,
++    workspace_root: `/repo/.agentplane/worktrees/${opts.task.id}`,
++    pr_branch: branch,
++    latest_handoff: null,
++    runner: {
++      run_id: null,
++      status: null,
++      heartbeat_at: null,
++      state_path: null,
++      trace_path: null,
++      next_action: "none",
++      next_command: null,
++      resume_command: null,
++      retry_command: null,
++    },
++  } satisfies TaskResumeContext;
++  const prFlow = {
++    task: { id: opts.task.id, status: opts.task.status, verification: "ok" },
++    branch: { name: branch, headSha: opts.evaluatedSha, metaHeadSha: opts.evaluatedSha },
++    pr: {
++      provider: "github",
++      state: "OPEN",
++      source: "lookup",
++      prNumber: 1,
++      prUrl: "https://example.test/pull/1",
++      base: "main",
++      headSha: opts.evaluatedSha,
++      mergeCommit: null,
++    },
++    closeTail: { state: "not_applicable", reason: "implementation PR is not merged" },
++    hostedChecks: { checked: false, reason: "not requested" },
++    reviewThreads: { checked: false, reason: "not requested" },
++    queue: { present: false },
++    handoff: { present: false },
++    nextAction: "",
++  } satisfies PrFlowStatusReport;
++  const state = {
++    task: opts.task,
++    resume,
++    workflowMode: "branch_pr",
++    prFlow,
++    cleanupProbe: { state: "not_requested" },
++    blockers: [
++      { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
++    ],
++    batchOwnership: { role: "none" },
++    taskWorktree: {
++      state: "clean",
++      branch,
++      worktreePath: resume.workspace_root,
++      changedPaths: [],
++    },
++  } satisfies WorkflowRouteStateInput;
++  return reduceRouteState(withBootstrapWorkflowFingerprint(state));
++}
++
+ function provider(
+   rawResult: unknown,
+   inspect?: (invocation: Parameters<EvaluatorEpisodeProvider>[0]) => void,
+@@ -228,6 +303,7 @@ describe("evaluator episode calibration", () => {
+       required: string[];
+       properties: {
+         recovery_context: { type: string[] };
++        recovery_reason: { type: string[]; enum: (string | null)[] };
+         findings: {
+           minItems: number;
+           items: {
+@@ -252,6 +328,12 @@ describe("evaluator episode calibration", () => {
+     expect(outputSchema.properties.findings.minItems).toBe(1);
+     expect(outputSchema.required).toContain("recovery_context");
+     expect(outputSchema.properties.recovery_context.type).toEqual(["string", "null"]);
++    expect(outputSchema.required).toContain("recovery_reason");
++    expect(outputSchema.properties.recovery_reason.type).toEqual(["string", "null"]);
++    expect(outputSchema.properties.recovery_reason.enum).toEqual([
++      "deterministic_evidence_gap",
++      null,
++    ]);
+     expect(evidenceSchema.required).toEqual(["path", "sha256", "line", "lines", "section"]);
+     expect(evidenceSchema.properties.sha256.type).toEqual(["string", "null"]);
+     expect(evidenceSchema.properties.line.type).toEqual(["integer", "null"]);
+@@ -292,6 +374,85 @@ describe("evaluator episode calibration", () => {
+     }
+   });
+ 
++  it("routes only a persisted deterministic-evidence-gap block to TESTER refresh", async () => {
++    const root = await mkGitRepoRoot();
++    await writeDefaultConfig(root);
++    const taskId = "202607290000-EC07";
++    await addTask(root, taskId);
++    await commitTarget(root);
++
++    const initialCommand = await loadCommandContext({ cwd: root, rootOverride: root });
++    await applyTaskMutation({
++      ctx: initialCommand,
++      taskId,
++      policyAction: "task_verify",
++      phase: "verify",
++      build: () => ({
++        intents: setTaskFieldsIntent({
++          status: "DOING",
++          plan_approval: {
++            state: "approved",
++            updated_at: "2026-07-29T14:39:00.000Z",
++            updated_by: "ORCHESTRATOR",
++            note: "Fixture plan approved.",
++          },
++          verification: {
++            state: "ok",
++            attempts: 1,
++            updated_at: "2026-07-29T14:40:00.000Z",
++            updated_by: "TESTER",
++            note: "Focused checks passed.",
++          },
++        }),
++      }),
++    });
++
++    const positive = await prepare(root, taskId);
++    if (!positive.prepared.work_order.evaluated_sha) throw new Error("Missing evaluated SHA.");
++    await applyEvaluatorSgrReview({
++      ctx: positive.command,
++      task: positive.task,
++      workOrderPath: positive.prepared.work_order_path,
++      result: result(positive.prepared, "blocked", {
++        recoveryReason: "deterministic_evidence_gap",
++      }),
++    });
++    const persistedPositive = await loadTaskFromContext({ ctx: positive.command, taskId });
++
++    expect(persistedPositive.quality_review).toMatchObject({
++      recovery_reason: "deterministic_evidence_gap",
++    });
++    expect(
++      persistedBranchRouteStep({
++        task: persistedPositive,
++        evaluatedSha: positive.prepared.work_order.evaluated_sha,
++      }),
++    ).toMatchObject({
++      phase: "quality_evidence_refresh_needed",
++      episode: { purpose: "verification", role: "TESTER" },
++    });
++
++    const negative = await prepare(root, taskId);
++    await applyEvaluatorSgrReview({
++      ctx: negative.command,
++      task: negative.task,
++      workOrderPath: negative.prepared.work_order_path,
++      result: result(negative.prepared, "blocked"),
++    });
++    const persistedNegative = await loadTaskFromContext({ ctx: negative.command, taskId });
++
++    expect(persistedNegative.quality_review).not.toHaveProperty("recovery_reason");
++    expect(
++      persistedBranchRouteStep({
++        task: persistedNegative,
++        evaluatedSha: positive.prepared.work_order.evaluated_sha,
++      }),
++    ).toMatchObject({
++      phase: "quality_review_needed",
++      episode: { purpose: "quality_review", role: "EVALUATOR" },
++    });
++  });
++
+   it("escalates repeated ambiguous acceptance scenarios to a human without a router-selected verdict", async () => {
+     for (const run of [1, 2]) {
+       const root = await mkGitRepoRoot();
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+index 8def51af1..7abefdce3 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-episode.ts
+@@ -88,6 +88,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
+     missing_tests: { type: "array", items: { type: "string" } },
+     hidden_assumptions: { type: "array", items: { type: "string" } },
+     recovery_context: NULLABLE_NON_EMPTY_STRING_SCHEMA,
++    recovery_reason: { type: ["string", "null"], enum: ["deterministic_evidence_gap", null] },
+   },
+   required: [
+     "schema_version",
+@@ -98,6 +99,7 @@ const EVALUATOR_RESULT_OUTPUT_SCHEMA = {
+     "missing_tests",
+     "hidden_assumptions",
+     "recovery_context",
++    "recovery_reason",
+   ],
+ } as const;
+ 
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts b/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
+index 398191054..7f6bba0d6 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-quality-artifacts.ts
+@@ -70,6 +70,7 @@ export function renderEvaluatorPrompt(opts: {
+     "- findings: typed findings with id, severity, summary, broken_invariant, and non-empty evidence_refs",
+     "- missing_tests and hidden_assumptions: string arrays",
+     "- recovery_context: required non-empty string for rework, blocked, or human_review; for human_review it must be the single decision question for the human owner",
++    "- recovery_reason: null unless blocked solely because current deterministic verification evidence is absent; use deterministic_evidence_gap only for that case",
+     "",
+     "Every findings[].evidence_refs[].path must be an exact path from work_order.evidence. Do not add fields, commands, patches, lifecycle transitions, or a verdict outside this JSON result.",
+     "The CLI validates the schema, frozen evidence digests, task revision, evaluated SHA, and blueprint before it records quality state.",
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+index 4fb2efa61..da16731a6 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-apply.ts
+@@ -111,6 +111,9 @@ async function persistReview(opts: {
+           blueprint_digest: opts.report.blueprint_digest,
+           evidence_refs: evidenceRefs,
+           findings: opts.report.findings,
++          ...(opts.resultPayload?.recovery_reason
++            ? { recovery_reason: opts.resultPayload.recovery_reason }
++            : {}),
+         },
+         ...(humanInput ? { extensions: humanInput } : {}),
+       }),
+diff --git a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+index 770629a09..11111ea4e 100644
+--- a/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
++++ b/packages/agentplane/src/commands/evaluator/evaluator-review-usecase.ts
+@@ -446,6 +446,7 @@ function assertExactKeys(
+ function normalizeEvaluatorStructuredNulls(raw: Record<string, unknown>): Record<string, unknown> {
+   const normalized: Record<string, unknown> = { ...raw };
+   if (normalized.recovery_context === null) delete normalized.recovery_context;
++  if (normalized.recovery_reason === null) delete normalized.recovery_reason;
+   if (!Array.isArray(normalized.findings)) return normalized;
+   normalized.findings = (normalized.findings as unknown[]).map((finding: unknown): unknown => {
+     if (!finding || typeof finding !== "object" || Array.isArray(finding)) return finding;
+@@ -478,6 +479,7 @@ export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult
+       "missing_tests",
+       "hidden_assumptions",
+       "recovery_context",
++      "recovery_reason",
+     ],
+     "EvaluatorSgrResult",
+   );
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-branch.ts b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+index 7e48a6a91..35f9c5484 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-branch.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-branch.ts
+@@ -8,6 +8,7 @@ import {
+   commonExecution,
+   implementationReworkStep,
+   includedBatchStep,
++  qualityEvidenceRefreshStep,
+   qualityReviewStep,
+   routeBlockerFor,
+   routeBlockerSnapshot,
+@@ -24,6 +25,24 @@ function primaryIncludeTaskIds(state: WorkflowRouteState): readonly string[] {
+   return [...state.batchOwnership.includedTaskIds];
+ }
+ 
++function needsQualityEvidenceRefresh(state: WorkflowRouteState): boolean {
++  const review = state.task.quality_review;
++  const reviewedHead = state.prFlow?.branch.headSha ?? state.resume.head_sha;
++  return (
++    String(state.task.status).toUpperCase() === "DOING" &&
++    state.task.verification?.state === "ok" &&
++    review?.state === "blocked" &&
++    review.provenance === "evaluator_supplied" &&
++    review.recovery_reason === "deterministic_evidence_gap" &&
++    review.evaluated_sha === reviewedHead &&
++    typeof review.updated_at === "string" &&
++    typeof state.task.verification.updated_at === "string" &&
++    state.task.verification.updated_at <= review.updated_at &&
++    review.evidence_refs.some((ref) => ref.endsWith("/quality-report.json")) &&
++    review.findings.length > 0
++  );
++}
++
+ function branchHeadRepairStep(state: WorkflowRouteState): WorkflowStep {
+   return terminalStep({
+     state,
+@@ -522,6 +541,9 @@ export function branchStep(state: WorkflowRouteState): WorkflowStep {
+   if (state.blockers.some((blocker) => blocker.code === "verification_required")) {
+     return verificationStep(state);
+   }
++  if (needsQualityEvidenceRefresh(state)) {
++    return qualityEvidenceRefreshStep(state);
++  }
+   if (
+     state.blockers.some(
+       (blocker) =>
+diff --git a/packages/agentplane/src/commands/shared/workflow-step-factory.ts b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+index 38013a211..ad299a1d2 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step-factory.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step-factory.ts
+@@ -359,6 +359,32 @@ export function verificationStep(state: WorkflowRouteState): WorkflowStep {
+   });
+ }
+ 
++export function qualityEvidenceRefreshStep(state: WorkflowRouteState): WorkflowStep {
++  return agentEpisodeStep({
++    state,
++    id: "agent.quality_evidence_refresh",
++    code: "quality_evidence_refresh_required",
++    phase: "quality_evidence_refresh_needed",
++    checkout: "task_worktree",
++    role: "TESTER",
++    purpose: "verification",
++    summary:
++      "a fresh EVALUATOR block is bound to the current work unit; refresh only the declared deterministic verification evidence before another semantic review",
++    objective:
++      "Execute the declared verification contract against the reviewed work unit and record its evidence without changing implementation or assigning a semantic quality verdict.",
++    mustNot: [
++      "do not change implementation, task scope, or the EVALUATOR verdict while refreshing deterministic evidence",
++      "do not publish, queue, close, or integrate the PR before a fresh EVALUATOR review follows the verification record",
++      "do not synthesize a semantic verdict from the refreshed mechanical checks",
++    ],
++    returnControlWhen:
++      "after TESTER records fresh verification evidence; recompute the route and return semantic review to EVALUATOR",
++    verificationCandidate: "agentplane task verify-show <task-id>",
++    evidenceMissing: ["fresh_verification_record", "fresh_evaluator_quality_review"],
++    selectedBlocker: routeBlockerFor(state, "quality_review_stale"),
++  });
++}
++
+ export function qualityReviewStep(state: WorkflowRouteState): WorkflowStep {
+   return agentEpisodeStep({
+     state,
+diff --git a/packages/agentplane/src/commands/shared/workflow-step.test.ts b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+index 0aac2823f..ae7890288 100644
+--- a/packages/agentplane/src/commands/shared/workflow-step.test.ts
++++ b/packages/agentplane/src/commands/shared/workflow-step.test.ts
+@@ -832,6 +832,110 @@ describe("typed WorkflowStep reducer", () => {
+     expect(step.compatibility.command).toBeNull();
+   });
+ 
++  it("refreshes deterministic evidence after a current EVALUATOR block without changing implementation", () => {
++    const step = reduceRouteState(
++      routeState({
++        task: {
++          ...task,
++          verification: { state: "ok", updated_at: "2026-07-29T14:40:00.000Z" },
++          quality_review: {
++            state: "blocked",
++            provenance: "evaluator_supplied",
++            updated_at: "2026-07-29T14:40:56.727Z",
++            updated_by: "EVALUATOR",
++            note: "Frozen verification evidence is missing.",
++            evaluated_sha: resume.head_sha,
++            blueprint_digest: "fixture-blueprint",
++            evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
++            findings: ["Frozen deterministic verification evidence is missing."],
++            recovery_reason: "deterministic_evidence_gap",
++          },
++        },
++        prFlow: prFlow("OPEN"),
++        blockers: [
++          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
++        ],
++      }),
++    );
++
++    expect(step).toMatchObject({
++      kind: "agent_episode",
++      phase: "quality_evidence_refresh_needed",
++      episode: { purpose: "verification", role: "TESTER" },
++      selectedBlocker: { code: "quality_review_stale" },
++      execution: {
++        semanticMutationAllowed: false,
++        evidenceMissing: ["fresh_verification_record", "fresh_evaluator_quality_review"],
++      },
++    });
++    expect(step.compatibility.command).toBeNull();
++  });
++
++  it("does not refresh an unclassified semantic EVALUATOR block even when its evidence is current", () => {
++    const step = reduceRouteState(
++      routeState({
++        task: {
++          ...task,
++          verification: { state: "ok", updated_at: "2026-07-29T14:40:00.000Z" },
++          quality_review: {
++            state: "blocked",
++            provenance: "evaluator_supplied",
++            updated_at: "2026-07-29T14:40:56.727Z",
++            updated_by: "EVALUATOR",
++            note: "The implementation violates the task invariant.",
++            evaluated_sha: resume.head_sha,
++            blueprint_digest: "fixture-blueprint",
++            evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
++            findings: ["The implementation violates the task invariant."],
++          },
++        },
++        prFlow: prFlow("OPEN"),
++        blockers: [
++          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
++        ],
++      }),
++    );
++
++    expect(step).toMatchObject({
++      kind: "agent_episode",
++      phase: "quality_review_needed",
++      episode: { purpose: "quality_review", role: "EVALUATOR" },
++    });
++  });
++
++  it("returns a deterministic evidence block to EVALUATOR after TESTER refreshes verification", () => {
++    const step = reduceRouteState(
++      routeState({
++        task: {
++          ...task,
++          verification: { state: "ok", updated_at: "2026-07-29T14:41:00.000Z" },
++          quality_review: {
++            state: "blocked",
++            provenance: "evaluator_supplied",
++            updated_at: "2026-07-29T14:40:56.727Z",
++            updated_by: "EVALUATOR",
++            note: "Frozen verification evidence is missing.",
++            evaluated_sha: resume.head_sha,
++            blueprint_digest: "fixture-blueprint",
++            evidence_refs: [".agentplane/tasks/T-1/quality/current/quality-report.json"],
++            findings: ["Frozen deterministic verification evidence is missing."],
++            recovery_reason: "deterministic_evidence_gap",
++          },
++        },
++        prFlow: prFlow("OPEN"),
++        blockers: [
++          { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
++        ],
++      }),
++    );
++
++    expect(step).toMatchObject({
++      kind: "agent_episode",
++      phase: "quality_review_needed",
++      episode: { purpose: "quality_review", role: "EVALUATOR" },
++    });
++  });
++
+   it("derives deterministic fingerprints, idempotency keys, and compatibility projections", () => {
+     const first = reduceRouteState(routeStateWithAuthority());
+     const repeated = reduceRouteState(routeStateWithAuthority());
+diff --git a/packages/agentplane/src/runtime/sgr/contract-evaluator-routing.ts b/packages/agentplane/src/runtime/sgr/contract-evaluator-routing.ts
+index 61c5deaab..2ffaa3e96 100644
+--- a/packages/agentplane/src/runtime/sgr/contract-evaluator-routing.ts
++++ b/packages/agentplane/src/runtime/sgr/contract-evaluator-routing.ts
+@@ -48,6 +48,15 @@ export function validateEvaluatorSgrResult(
+     throw invalid(`${field}.findings`, "non-empty array for every evaluator verdict");
+   }
+   const recoveryContext = optionalString(result.recovery_context, `${field}.recovery_context`);
++  const recoveryReason =
++    result.recovery_reason === undefined
++      ? undefined
++      : requireEnum(result.recovery_reason, `${field}.recovery_reason`, [
++          "deterministic_evidence_gap",
++        ]);
++  if (recoveryReason && verdict !== "blocked") {
++    throw invalid(`${field}.recovery_reason`, '"deterministic_evidence_gap" only for blocked');
++  }
+   return {
+     schema_version: SGR_CONTRACT_SCHEMA_VERSION,
+     kind: "evaluator_result",
+@@ -60,6 +69,7 @@ export function validateEvaluatorSgrResult(
+       `${field}.hidden_assumptions`,
+     ),
+     recovery_context: recoveryContext,
++    ...(recoveryReason ? { recovery_reason: recoveryReason } : {}),
+   };
+ }
+ 
+diff --git a/packages/agentplane/src/runtime/sgr/contract-types.ts b/packages/agentplane/src/runtime/sgr/contract-types.ts
+index b67cfb1e7..52e7c75c8 100644
+--- a/packages/agentplane/src/runtime/sgr/contract-types.ts
++++ b/packages/agentplane/src/runtime/sgr/contract-types.ts
+@@ -225,6 +225,7 @@ export type EvaluatorSgrResult = {
+   missing_tests: string[];
+   hidden_assumptions: string[];
+   recovery_context?: string;
++  recovery_reason?: "deterministic_evidence_gap";
+ };
+ 
+ export type BlueprintRejectedRoute = {
+diff --git a/packages/agentplane/src/runtime/sgr/contracts.test.ts b/packages/agentplane/src/runtime/sgr/contracts.test.ts
+index a4df1dc6b..0d35bf9dd 100644
+--- a/packages/agentplane/src/runtime/sgr/contracts.test.ts
++++ b/packages/agentplane/src/runtime/sgr/contracts.test.ts
+@@ -521,6 +521,33 @@ describe("SGR reliability contracts", () => {
+     expect(result.findings).toHaveLength(1);
+   });
+ 
++  it("accepts the deterministic evidence-gap recovery reason only for blocked results", () => {
++    const blocked = {
++      schema_version: SGR_CONTRACT_SCHEMA_VERSION,
++      kind: "evaluator_result",
++      evaluator_id: "recovery-context",
++      verdict: "blocked",
++      findings: [
++        {
++          id: "finding.missing-frozen-verification",
++          severity: "medium",
++          summary: "The reviewed unit has no frozen deterministic verification evidence.",
++          broken_invariant: "The CLI must not treat an unproven verification as complete.",
++          evidence_refs: [sourceRef],
++        },
++      ],
++      missing_tests: [],
++      hidden_assumptions: [],
++      recovery_context: "Record the declared deterministic verification evidence.",
++      recovery_reason: "deterministic_evidence_gap",
++    } as const;
++
++    expect(validateEvaluatorSgrResult(blocked).recovery_reason).toBe("deterministic_evidence_gap");
++    expect(() => validateEvaluatorSgrResult({ ...blocked, verdict: "rework" })).toThrow(
++      "only for blocked",
++    );
++  });
++
+   it.each(["pass", "rework", "blocked", "human_review"] as const)(
+     "rejects %s evaluator results without findings",
+     (verdict) => {
+diff --git a/packages/core/src/index.ts b/packages/core/src/index.ts
+index 56df99908..e831049b6 100644
+--- a/packages/core/src/index.ts
++++ b/packages/core/src/index.ts
+@@ -380,6 +380,7 @@ export {
+   type TaskOrigin,
+   type TaskPriority,
+   type QualityReviewProvenance,
++  type QualityReviewRecoveryReason,
+   type QualityReviewResult,
+   type QualityReviewState,
+   type TaskRecord,
+diff --git a/packages/core/src/tasks/index.ts b/packages/core/src/tasks/index.ts
+index dbefcebb0..ec50d711b 100644
+--- a/packages/core/src/tasks/index.ts
++++ b/packages/core/src/tasks/index.ts
+@@ -107,6 +107,7 @@ export {
+   type TaskOrigin,
+   type TaskPriority,
+   type QualityReviewProvenance,
++  type QualityReviewRecoveryReason,
+   type QualityReviewResult,
+   type QualityReviewState,
+   type TaskRecord,
+diff --git a/packages/core/src/tasks/task-store.ts b/packages/core/src/tasks/task-store.ts
+index accb2702a..269df4549 100644
+--- a/packages/core/src/tasks/task-store.ts
++++ b/packages/core/src/tasks/task-store.ts
+@@ -46,6 +46,7 @@ export type VerificationResult = {
+ 
+ export type QualityReviewState = "pending" | "pass" | "rework" | "blocked" | "human_review";
+ export type QualityReviewProvenance = "human_supplied" | "evaluator_supplied";
++export type QualityReviewRecoveryReason = "deterministic_evidence_gap";
+ export type QualityReviewResult = {
+   state: QualityReviewState;
+   provenance?: QualityReviewProvenance;
+@@ -56,6 +57,7 @@ export type QualityReviewResult = {
+   blueprint_digest: string | null;
+   evidence_refs: string[];
+   findings: string[];
++  recovery_reason?: QualityReviewRecoveryReason;
+ };
+ 
+ export type TaskEventType = "status" | "comment" | "verify";
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 8532094d6..83b63a9bc 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -19,7 +19,8 @@
+     "202607242158-QV09NA",
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+-    "202607281655-YMPY8Y"
++    "202607281655-YMPY8Y",
++    "202607291449-FTHNAR"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -28,13 +29,13 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "18997149544b458868c40977e28bcc1ff1cb8ddd4d2f4d64fe6012b9e89ed642",
++    "surface_sha256": "b3d74d362ddfe5f5a52eab68df9797756fd54c6140f9ca231e129d22061cab98",
+     "section_digests": {
+       "cli_topology": "f50e087e1317576b5adca56748f0acf2b04c61727adcfd51da462f17956b7fad",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+-      "agent_facing_context_contracts": "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
++      "agent_facing_context_contracts": "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
+       "package_manifests": "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
+       "tarball_policy": "a0849de313a49f9ed016d5e1b0038d74170ae98f2c07afcfdc8fb9bf5b317091"
+     }
+@@ -1521,11 +1522,11 @@
+     },
+     {
+       "section": "agent_facing_context_contracts",
+-      "source_tasks": ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
++      "source_tasks": ["202607221848-1HWR0R", "202607221849-8YYZ9X", "202607291449-FTHNAR"],
+       "from_sha256": "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
+-      "to_sha256": "2a798f092ea1e9ffc4a57748653aeab944bc8ce9b0050fc4d0caee64f7181b3d",
++      "to_sha256": "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
+       "classification": "additive",
+-      "summary": "Adds a CLI-owned immutable task-creation receipt and the typed EVALUATOR human-review escalation verdict.",
++      "summary": "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, and a bounded deterministic-evidence recovery classification.",
+       "evidence": {
+         "contract_count": 4,
+         "unchanged_contract_paths": [
+@@ -1540,10 +1541,10 @@
+               "normalized_sha256": "e1b431c57a6e0a5db860b9f04d9a5cdc6f56be97deeea78c438d8017d03c1261"
+             },
+             "after": {
+-              "normalized_bytes": 6488,
+-              "normalized_sha256": "ba651d5acc81a27c969409397a0ac40ec7c25ff6f8f79fc8d0b1e4eea21e2b8a"
++              "normalized_bytes": 6538,
++              "normalized_sha256": "e93f1584cd5af62de6ca9a5ff0971d62a871475c9fbae216df9be3e39ae7875c"
+             },
+-            "change": "adds evaluator human_review as a typed semantic escalation verdict"
++            "change": "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification"
+           },
+           {
+             "path": "packages/agentplane/src/context/ingest-task-pack.ts",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index 4df02141a..a8ce040d7 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -344,6 +344,7 @@ function validateReviewedCandidate({
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+     "202607281655-YMPY8Y",
++    "202607291449-FTHNAR",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -664,7 +665,11 @@ function validateReviewedCandidate({
+     );
+   }
+   const expectedDeltaSources = {
+-    agent_facing_context_contracts: ["202607221848-1HWR0R", "202607221849-8YYZ9X"],
++    agent_facing_context_contracts: [
++      "202607221848-1HWR0R",
++      "202607221849-8YYZ9X",
++      "202607291449-FTHNAR",
++    ],
+     cli_topology: cliSourceTasks,
+     machine_output_contract: ["202607221848-ABG7SD"],
+     workflow_schema: ["202607221846-4VB97J"],
+@@ -768,7 +773,8 @@ function validateReviewedCandidate({
+           normalized_bytes: afterEvaluatorContract.normalized_bytes,
+           normalized_sha256: afterEvaluatorContract.normalized_sha256,
+         },
+-        change: "adds evaluator human_review as a typed semantic escalation verdict",
++        change:
++          "adds evaluator human_review escalation and the deterministic_evidence_gap recovery classification",
+       },
+       {
+         path: afterContextSource.path,

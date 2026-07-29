@@ -1,0 +1,15 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T16:10:55.644Z",
+    "updated_by": "TESTER",
+    "note": "Verification: workflow-step 24/24, route-decision 10/10, SGR contracts 26/26, critical compatibility baseline 7/7, routing, doctor, Prettier, diff check, and SHA-bound compatibility ratchet passed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}

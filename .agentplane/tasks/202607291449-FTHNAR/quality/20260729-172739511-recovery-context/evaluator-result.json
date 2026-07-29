@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "blocked",
+  "findings": [
+    {
+      "id": "F-001",
+      "severity": "high",
+      "summary": "Frozen observed checks contain no declared checks, verification records, runner history, or runtime evidence; the verification note alone does not provide deterministic command-level evidence for the evaluated SHA.",
+      "broken_invariant": "Pass requires frozen deterministic evidence covering the task’s positive, negative, and integration-sensitive verification paths.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-172739511-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:d274d969c55932f6977d307831652dc37ded0724c8f54a002a353626da66ffbd",
+          "section": "declared_checks, verification_records, runner_history, runtime_evidence"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Frozen command-level results for the focused workflow-route, Git helper, publication, and integration-preparation regression suites.",
+    "Frozen results for typecheck, focused lint, hotspot, routing-policy, and doctor checks."
+  ],
+  "hidden_assumptions": [
+    "The TESTER verification note accurately summarizes checks that ran against evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4.",
+    "Mock-based integration-preparation coverage is sufficient until the later controlled real-queue proof."
+  ],
+  "recovery_context": "Refresh and freeze deterministic command-level verification evidence for evaluated SHA c02ee8dc3475241f03ece468902f5e54da3f68c4, then obtain a new EVALUATOR review before publication.",
+  "recovery_reason": "deterministic_evidence_gap"
+}

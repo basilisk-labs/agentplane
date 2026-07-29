@@ -22,6 +22,11 @@ export type WorkflowRouteState = {
   blockers: readonly RouteBlocker[];
   batchOwnership: RouteBatchOwnership;
   /**
+   * The current semantic work unit resolved from the branch head. It may be
+   * older than HEAD when later commits contain only generated task artifacts.
+   */
+  qualityReviewTargetSha?: string | null;
+  /**
    * The route was computed with hosted-provider state. Approval grants must
    * rebuild the same route context instead of silently falling back to a
    * local-only decision.

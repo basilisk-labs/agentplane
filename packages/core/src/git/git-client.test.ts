@@ -5,7 +5,13 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { GitContext, gitConfigGet, gitMergeBase } from "./git-client.js";
+import {
+  GitContext,
+  gitBranchUpstream,
+  gitConfigGet,
+  gitMergeBase,
+  gitRefreshBranchTrackingRef,
+} from "./git-client.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -59,5 +65,81 @@ describe("git-client", () => {
 
     await expect(gitConfigGet(root, "remote.origin.url")).resolves.toBe("git@example.com:repo.git");
     await expect(gitConfigGet(root, "remote.missing.url")).resolves.toBeNull();
+  });
+
+  it("refreshes a configured upstream when the fetch refspec omits its tracking branch", async () => {
+    const root = await mkRepo();
+    const remotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-client-origin-"));
+    await execFileAsync("git", ["init", "--bare", remotePath], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remotePath], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
+      { cwd: root },
+    );
+    const branch = "task/T-TRACK/constrained-refspec";
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "task head"], { cwd: root });
+    await execFileAsync("git", ["push", "-u", "origin", `HEAD:refs/heads/${branch}`], {
+      cwd: root,
+    });
+    await expect(gitBranchUpstream(root, branch)).resolves.toBeNull();
+
+    await gitRefreshBranchTrackingRef(root, branch);
+
+    await expect(gitBranchUpstream(root, branch)).resolves.toBe(`origin/${branch}`);
+  });
+
+  it("force refreshes a stale constrained tracking ref after a task branch rewrite", async () => {
+    const root = await mkRepo();
+    const remotePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-client-origin-"));
+    await execFileAsync("git", ["init", "--bare", remotePath], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remotePath], { cwd: root });
+    await execFileAsync(
+      "git",
+      ["config", "remote.origin.fetch", "+refs/heads/main:refs/remotes/origin/main"],
+      { cwd: root },
+    );
+    const branch = "task/T-TRACK/rewritten-refspec";
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "original task head"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["push", "-u", "origin", `HEAD:refs/heads/${branch}`], {
+      cwd: root,
+    });
+    await gitRefreshBranchTrackingRef(root, branch);
+    const { stdout: originalHead } = await execFileAsync(
+      "git",
+      ["rev-parse", `refs/remotes/origin/${branch}`],
+      { cwd: root },
+    );
+
+    await execFileAsync("git", ["reset", "--hard", "HEAD~1"], { cwd: root });
+    await execFileAsync("git", ["commit", "--allow-empty", "-m", "rewritten task head"], {
+      cwd: root,
+    });
+    const { stdout: rewrittenHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await execFileAsync(
+      "git",
+      [
+        "push",
+        `--force-with-lease=refs/heads/${branch}:${originalHead.trim()}`,
+        "origin",
+        `HEAD:refs/heads/${branch}`,
+      ],
+      { cwd: root },
+    );
+
+    await gitRefreshBranchTrackingRef(root, branch);
+    const { stdout: trackingHead } = await execFileAsync(
+      "git",
+      ["rev-parse", `refs/remotes/origin/${branch}`],
+      { cwd: root },
+    );
+
+    expect(trackingHead.trim()).toBe(rewrittenHead.trim());
   });
 });

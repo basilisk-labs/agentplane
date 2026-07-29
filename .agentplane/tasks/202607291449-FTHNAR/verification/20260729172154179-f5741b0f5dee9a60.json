@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:f5741b0f5dee9a60c04e36619f172d156ec8f7f0483dd0cb622b0cf1fa1b9e6c",
+  "implementation_sha": "b110364150283a9ed9ed42d34bdc2b77fa65c9cf",
+  "kind": "task_verification_record",
+  "note": "Rework: integration queue on the base checkout cannot refresh a constrained-refspec task tracking ref; extend the existing source repair so protected integration validates the published head without manual fetch state.",
+  "recorded_at": "2026-07-29T17:21:54.179Z",
+  "result": "needs_rework",
+  "schema_version": 1,
+  "scope": "1. Run bun test packages/agentplane/src/commands/shared/workflow-step.test.ts and bun test packages/agentplane/src/commands/shared/route-decision-next-action.test.ts. Expected: evaluator evidence-refresh and stale-quality routing remain correct.\n2. Run bun test packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.test.ts. Expected: constrained-refspec publication creates the task tracking ref and AgentPlane resolves it.\n3. Run bun run typecheck. Expected: TypeScript typecheck passes.\n4. Run bunx eslint packages/core/src/git/git-client.ts packages/core/src/git/git-client.test.ts packages/agentplane/src/commands/pr/branch-publication.ts packages/agentplane/src/commands/pr/branch-publication.test.ts packages/agentplane/src/commands/shared/route-decision.ts packages/agentplane/src/commands/shared/workflow-step-branch.ts. Expected: no lint errors in changed scope.\n5. Run bun run hotspots:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor. Expected: structural and policy gates pass without new workflow errors.\n6. Publish FTH PR #4672 through agentplane pr open and run agentplane pr flow status 202607291449-FTHNAR --json. Expected: local, upstream, and hosted heads are aligned.\n7. Wait for the hosted matrix to settle. Expected: no failing required check.\n8. Close superseded PR #4673 without deleting its remote branch. Expected: the duplicate PR is closed only after #4672 carries the source repair.",
+  "scope_digest": "sha256:4224e02e6626f82e3581ba675f45e8bb8d0d5e6704a3c49850d13c6eb39a6337",
+  "task_id": "202607291449-FTHNAR",
+  "verification_command": "agentplane verify 202607291449-FTHNAR --rework --by TESTER",
+  "verifier": "TESTER"
+}

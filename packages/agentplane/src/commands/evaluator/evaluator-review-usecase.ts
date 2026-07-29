@@ -446,6 +446,7 @@ function assertExactKeys(
 function normalizeEvaluatorStructuredNulls(raw: Record<string, unknown>): Record<string, unknown> {
   const normalized: Record<string, unknown> = { ...raw };
   if (normalized.recovery_context === null) delete normalized.recovery_context;
+  if (normalized.recovery_reason === null) delete normalized.recovery_reason;
   if (!Array.isArray(normalized.findings)) return normalized;
   normalized.findings = (normalized.findings as unknown[]).map((finding: unknown): unknown => {
     if (!finding || typeof finding !== "object" || Array.isArray(finding)) return finding;
@@ -478,6 +479,7 @@ export function validateStrictEvaluatorResult(raw: unknown): EvaluatorSgrResult 
       "missing_tests",
       "hidden_assumptions",
       "recovery_context",
+      "recovery_reason",
     ],
     "EvaluatorSgrResult",
   );

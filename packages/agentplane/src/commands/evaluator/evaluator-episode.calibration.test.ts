@@ -7,7 +7,14 @@ import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
 import { loadEvaluatorCatalog } from "../../evaluators/catalog.js";
+import type { PrFlowStatusReport } from "../pr/flow-status.js";
+import { reduceRouteState } from "../shared/workflow-step-reducer.js";
+import {
+  withBootstrapWorkflowFingerprint,
+  type WorkflowRouteStateInput,
+} from "../shared/workflow-step-fingerprint.js";
 import { getHumanInputState } from "../task/human-input.js";
+import type { TaskResumeContext } from "../task/handoff.shared.js";
 import { cmdTaskAdd } from "../workflow.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 
@@ -81,6 +88,7 @@ async function prepare(
 function result(
   prepared: PreparedEvaluatorReview,
   verdict: "pass" | "rework" | "blocked" | "human_review",
+  opts: { recoveryReason?: "deterministic_evidence_gap" } = {},
 ) {
   const diff = prepared.work_order.evidence.find((entry) => entry.kind === "actual_diff");
   if (!diff) throw new Error("Missing frozen diff evidence.");
@@ -106,7 +114,75 @@ function result(
         ? "Which of the two mutually incompatible acceptance interpretations should govern this task?"
         : `Bounded ${verdict} follow-up required before another evaluator episode.`
       : null,
+    ...(opts.recoveryReason ? { recovery_reason: opts.recoveryReason } : {}),
   };
+}
+
+function persistedBranchRouteStep(opts: {
+  task: Awaited<ReturnType<typeof loadTaskFromContext>>;
+  evaluatedSha: string;
+}) {
+  const branch = `task/${opts.task.id}/evaluator-persistence`;
+  const resume = {
+    task_id: opts.task.id,
+    task_status: opts.task.status,
+    branch,
+    base_branch: "main",
+    head_sha: opts.evaluatedSha,
+    workspace_root: `/repo/.agentplane/worktrees/${opts.task.id}`,
+    pr_branch: branch,
+    latest_handoff: null,
+    runner: {
+      run_id: null,
+      status: null,
+      heartbeat_at: null,
+      state_path: null,
+      trace_path: null,
+      next_action: "none",
+      next_command: null,
+      resume_command: null,
+      retry_command: null,
+    },
+  } satisfies TaskResumeContext;
+  const prFlow = {
+    task: { id: opts.task.id, status: opts.task.status, verification: "ok" },
+    branch: { name: branch, headSha: opts.evaluatedSha, metaHeadSha: opts.evaluatedSha },
+    pr: {
+      provider: "github",
+      state: "OPEN",
+      source: "lookup",
+      prNumber: 1,
+      prUrl: "https://example.test/pull/1",
+      base: "main",
+      headSha: opts.evaluatedSha,
+      mergeCommit: null,
+    },
+    closeTail: { state: "not_applicable", reason: "implementation PR is not merged" },
+    hostedChecks: { checked: false, reason: "not requested" },
+    reviewThreads: { checked: false, reason: "not requested" },
+    queue: { present: false },
+    handoff: { present: false },
+    nextAction: "",
+  } satisfies PrFlowStatusReport;
+  const state = {
+    task: opts.task,
+    resume,
+    workflowMode: "branch_pr",
+    prFlow,
+    cleanupProbe: { state: "not_requested" },
+    blockers: [
+      { code: "quality_review_stale", summary: "quality review requires frozen evidence" },
+    ],
+    batchOwnership: { role: "none" },
+    qualityReviewTargetSha: opts.evaluatedSha,
+    taskWorktree: {
+      state: "clean",
+      branch,
+      worktreePath: resume.workspace_root,
+      changedPaths: [],
+    },
+  } satisfies WorkflowRouteStateInput;
+  return reduceRouteState(withBootstrapWorkflowFingerprint(state));
 }
 
 function provider(
@@ -228,6 +304,7 @@ describe("evaluator episode calibration", () => {
       required: string[];
       properties: {
         recovery_context: { type: string[] };
+        recovery_reason: { type: string[]; enum: (string | null)[] };
         findings: {
           minItems: number;
           items: {
@@ -252,6 +329,12 @@ describe("evaluator episode calibration", () => {
     expect(outputSchema.properties.findings.minItems).toBe(1);
     expect(outputSchema.required).toContain("recovery_context");
     expect(outputSchema.properties.recovery_context.type).toEqual(["string", "null"]);
+    expect(outputSchema.required).toContain("recovery_reason");
+    expect(outputSchema.properties.recovery_reason.type).toEqual(["string", "null"]);
+    expect(outputSchema.properties.recovery_reason.enum).toEqual([
+      "deterministic_evidence_gap",
+      null,
+    ]);
     expect(evidenceSchema.required).toEqual(["path", "sha256", "line", "lines", "section"]);
     expect(evidenceSchema.properties.sha256.type).toEqual(["string", "null"]);
     expect(evidenceSchema.properties.line.type).toEqual(["integer", "null"]);
@@ -290,6 +373,85 @@ describe("evaluator episode calibration", () => {
         source_work_order_id: prepared.work_order.work_order_id,
       });
     }
+  });
+
+  it("routes only a persisted deterministic-evidence-gap block to TESTER refresh", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202607290000-EC07";
+    await addTask(root, taskId);
+    await commitTarget(root);
+
+    const initialCommand = await loadCommandContext({ cwd: root, rootOverride: root });
+    await applyTaskMutation({
+      ctx: initialCommand,
+      taskId,
+      policyAction: "task_verify",
+      phase: "verify",
+      build: () => ({
+        intents: setTaskFieldsIntent({
+          status: "DOING",
+          plan_approval: {
+            state: "approved",
+            updated_at: "2026-07-29T14:39:00.000Z",
+            updated_by: "ORCHESTRATOR",
+            note: "Fixture plan approved.",
+          },
+          verification: {
+            state: "ok",
+            attempts: 1,
+            updated_at: "2026-07-29T14:40:00.000Z",
+            updated_by: "TESTER",
+            note: "Focused checks passed.",
+          },
+        }),
+      }),
+    });
+
+    const positive = await prepare(root, taskId);
+    if (!positive.prepared.work_order.evaluated_sha) throw new Error("Missing evaluated SHA.");
+    await applyEvaluatorSgrReview({
+      ctx: positive.command,
+      task: positive.task,
+      workOrderPath: positive.prepared.work_order_path,
+      result: result(positive.prepared, "blocked", {
+        recoveryReason: "deterministic_evidence_gap",
+      }),
+    });
+    const persistedPositive = await loadTaskFromContext({ ctx: positive.command, taskId });
+
+    expect(persistedPositive.quality_review).toMatchObject({
+      recovery_reason: "deterministic_evidence_gap",
+    });
+    expect(
+      persistedBranchRouteStep({
+        task: persistedPositive,
+        evaluatedSha: positive.prepared.work_order.evaluated_sha,
+      }),
+    ).toMatchObject({
+      phase: "quality_evidence_refresh_needed",
+      episode: { purpose: "verification", role: "TESTER" },
+    });
+
+    const negative = await prepare(root, taskId);
+    await applyEvaluatorSgrReview({
+      ctx: negative.command,
+      task: negative.task,
+      workOrderPath: negative.prepared.work_order_path,
+      result: result(negative.prepared, "blocked"),
+    });
+    const persistedNegative = await loadTaskFromContext({ ctx: negative.command, taskId });
+
+    expect(persistedNegative.quality_review).not.toHaveProperty("recovery_reason");
+    expect(
+      persistedBranchRouteStep({
+        task: persistedNegative,
+        evaluatedSha: positive.prepared.work_order.evaluated_sha,
+      }),
+    ).toMatchObject({
+      phase: "quality_review_needed",
+      episode: { purpose: "quality_review", role: "EVALUATOR" },
+    });
   });
 
   it("escalates repeated ambiguous acceptance scenarios to a human without a router-selected verdict", async () => {

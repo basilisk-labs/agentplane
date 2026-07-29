@@ -1,0 +1,20 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-29T17:32:42.102Z",
+    "updated_by": "TESTER",
+    "note": "Frozen semantic evidence passes for constrained-refspec integration repair at SHA c02ee8dc."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607291449-FTHNAR/verification/20260729173242102-51d4d8c73cd1183e.json",
+      "sha256": "sha256:18ca7f37a2b4b3004649eb6e8d9750c5e55df81ed4e9d79699685eac3a8faa76"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}

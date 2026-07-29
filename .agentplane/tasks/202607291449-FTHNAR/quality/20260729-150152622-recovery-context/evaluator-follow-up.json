@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607291449-FTHNAR-942c69c31fdf2e79f76c6c80",
+  "task_id": "202607291449-FTHNAR",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Narrow eligibility to an explicit deterministic-evidence-gap signal and add a freshness/consumption condition so one TESTER verification record terminates recovery and routes the unchanged work unit back to EVALUATOR; retain unrelated blocked reviews as non-mutating.",
+  "findings": [
+    {
+      "id": "RECOVERY-001",
+      "summary": "The recovery predicate does not establish that the evaluator block was caused only by missing deterministic verification evidence. Any current evaluator-supplied blocked review with a finding and quality-report reference is delegated to TESTER, including unrelated semantic or scope blocks.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-150152622-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:7b41a3b3e193a891ce43d426971dafa13dc52136c4dfe1e369c43790a9ca9cae",
+          "section": "needsQualityEvidenceRefresh"
+        }
+      ]
+    },
+    {
+      "id": "RECOVERY-002",
+      "summary": "The predicate contains no verification-versus-review freshness comparison. After TESTER records refreshed evidence without changing the reviewed SHA, the same blocked review can still satisfy the predicate and select another evidence-refresh episode instead of returning control to EVALUATOR.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-150152622-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:7b41a3b3e193a891ce43d426971dafa13dc52136c4dfe1e369c43790a9ca9cae",
+          "section": "needsQualityEvidenceRefresh and qualityEvidenceRefreshStep"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-150152622-recovery-context/evaluator-result.json"
+}
