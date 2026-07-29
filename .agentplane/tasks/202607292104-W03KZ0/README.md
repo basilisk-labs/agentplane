@@ -4,7 +4,7 @@ title: "Measure SHA-bound RF-04 candidate performance"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -26,13 +26,11 @@ plan_approval:
   note: null
 verification:
   state: "needs_rework"
-  updated_at: "2026-07-29T21:31:37.014Z"
+  updated_at: "2026-07-29T22:54:11.502Z"
   updated_by: "TESTER"
-  note: "Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent."
-  attempts: 1
-commit:
-  hash: "58fc7c1d7927e026d7a9346e8143d50a7ef2dd5f"
-  message: "📊 W03KZ0 task: bind candidate runtime provenance"
+  note: "RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly."
+  attempts: 2
+commit: null
 comments:
   -
     author: "CODER"
@@ -71,8 +69,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation rework committed: candidate captures now require an explicit Codex CLI version, bind it to every driver envelope and measurement, and keep historical RF-04 validation anchored to its frozen harness. Offline RF-04 replay check, focused critical tests, current 0.146.0-alpha.3.1 preflight, formatting, and scripts catalog check pass."
+  -
+    type: "verify"
+    at: "2026-07-29T22:54:11.502Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly."
 doc_version: 3
-doc_updated_at: "2026-07-29T21:44:58.343Z"
+doc_updated_at: "2026-07-29T22:54:12.293Z"
 doc_updated_by: "CODER"
 description: "Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria."
 sections:
@@ -123,6 +127,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T22:54:11.502Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.
+    Attempts: 2
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T21:44:58.343Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
+    - old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+    - current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -133,6 +167,10 @@ sections:
       Resolution: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify.
       Promotion: incident-candidate
       Fixability: external
+
+    - Observation: Candidate raw records are complete (50 envelopes and 50 evidence files) for b58705432c46df612a89348ef28ea268fdcc2b04; runtime profiles differ from the immutable baseline.
+      Impact: Beta.1 cannot use the observed token and outcome improvements as a causal comparison or materialize a passing qualification packet.
+      Resolution: Create a versioned runtime-bridge baseline for the historical SHA under the currently pinned ChatGPT-bundled Codex 0.146.0-alpha.3.1, preserve the frozen baseline unchanged, then compare the existing candidate evidence only against the matched runtime profile.
 extensions:
   workflow_route_baseline:
     start_head_sha: "8ae0a51a8684db03a0a9401f6c6b8f5b763850bd"
@@ -196,6 +234,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T22:54:11.502Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.
+Attempts: 2
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T21:44:58.343Z, excerpt_hash=sha256:be54a38d8d104dd6876e36618abd1bd557f312d6115402cc694e1efb0b1468f1
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-benchmark-base-20260729/.agentplane/worktrees/202607292104-W03KZ0-measure-sha-bound-rf-04-candidate-performance/.agentplane/tasks/202607292104-W03KZ0/blueprint/resolved-snapshot.json
+- old_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+- current_digest: a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607292104-W03KZ0
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -210,3 +278,7 @@ DecisionContextRef:
   Resolution: Run the existing capture only in the pinned provider CLI environment, then materialize the resulting candidate measurement and re-verify.
   Promotion: incident-candidate
   Fixability: external
+
+- Observation: Candidate raw records are complete (50 envelopes and 50 evidence files) for b58705432c46df612a89348ef28ea268fdcc2b04; runtime profiles differ from the immutable baseline.
+  Impact: Beta.1 cannot use the observed token and outcome improvements as a causal comparison or materialize a passing qualification packet.
+  Resolution: Create a versioned runtime-bridge baseline for the historical SHA under the currently pinned ChatGPT-bundled Codex 0.146.0-alpha.3.1, preserve the frozen baseline unchanged, then compare the existing candidate evidence only against the matched runtime profile.

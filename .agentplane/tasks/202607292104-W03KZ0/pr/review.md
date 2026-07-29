@@ -13,7 +13,7 @@ Created: 2026-07-29T21:06:49.643Z
 ## Verification
 
 - State: needs_rework
-- Note: Focused RF-04 candidate tests, generated scripts catalog, and ci:contract pass. Beta.1 candidate qualification remains incomplete: the authorized capture preflight stopped before provider execution because the installed Codex CLI is 0.146.0-alpha.3.1 but the RF-04 driver pins 0.145.0-alpha.18. No automatic retry occurred; 50-run / 55-episode actual values and evaluator materialization remain absent.
+- Note: RF-04 candidate code passes focused tests and ci:contract, and the authorized capture completed 50 runs / 55 provider episodes once. The candidate measurement remains non-qualifying because its runtime profile is 0.6.24/0.146.0-alpha.3.1 while the frozen historical baseline is 0.6.24/0.145.0-alpha.18; the comparator now rejects that mismatch explicitly.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
