@@ -78,7 +78,8 @@ function assertRuntimeProfile(baseline, codexCliVersion) {
 }
 
 function providerEpisodes(baseline) {
-  return baseline.diagnostics.scenarios.reduce((total, scenario) => {
+  let total = 0;
+  for (const scenario of baseline.diagnostics.scenarios) {
     const episodes = scenario.metrics?.llm_episodes;
     if (
       !Number.isInteger(episodes?.count) ||
@@ -88,8 +89,9 @@ function providerEpisodes(baseline) {
     ) {
       throw new Error("runtime bridge baseline has no exact provider-episode telemetry");
     }
-    return total + episodes.count * episodes.mean;
-  }, 0);
+    total += episodes.count * episodes.mean;
+  }
+  return total;
 }
 
 export function checkRuntimeBridge({ codexCliVersion }) {

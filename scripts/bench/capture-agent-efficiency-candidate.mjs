@@ -271,9 +271,17 @@ function readCandidateRegistry(subject, registryPath) {
   return registry;
 }
 
-export function createCandidateHarnessManifest(driverIdentity, dependencyClaim) {
-  const base = createReplayHarnessManifest(repoRoot, driverIdentity, { dependencyClaim });
-  const capturePath = path.join(repoRoot, CANDIDATE_CAPTURE_SCRIPT);
+export function createCandidateHarnessManifest(
+  driverIdentity,
+  dependencyClaim,
+  manifestRepoRoot = repoRoot,
+) {
+  const base = createReplayHarnessManifest(manifestRepoRoot, driverIdentity, { dependencyClaim });
+  const capturePath = path.join(manifestRepoRoot, CANDIDATE_CAPTURE_SCRIPT);
+  const captureStats = lstatSync(capturePath, { throwIfNoEntry: false });
+  if (!captureStats?.isFile() || captureStats.isSymbolicLink()) {
+    throw new Error("candidate replay harness capture script must be a regular non-symlink file");
+  }
   const files = [
     ...base.files,
     {
@@ -291,6 +299,50 @@ export function createCandidateHarnessManifest(driverIdentity, dependencyClaim) 
     files,
   };
   return { ...payload, sha256: sha256(canonicalBytes(payload)) };
+}
+
+function historicalCandidateHarnessSnapshot(subject) {
+  assertGitCommitAvailable(repoRoot, subject);
+  const temporaryParent = path.join(repoRoot, ".agentplane", "tmp");
+  assertRepoPathNoSymlinkEscape(repoRoot, temporaryParent, "historical candidate harness root", {
+    kind: "directory",
+  });
+  mkdirSync(temporaryParent, { recursive: true });
+  const snapshotRoot = mkdtempSync(path.join(temporaryParent, "rf04-historical-harness-"));
+  const archivePath = path.join(snapshotRoot, "candidate-source.tar");
+  try {
+    const archive = spawnSync(
+      "git",
+      ["archive", "--format=tar", `--output=${archivePath}`, subject],
+      {
+        cwd: repoRoot,
+        encoding: null,
+      },
+    );
+    if (archive.error || archive.status !== 0) {
+      throw new Error("candidate historical harness archive could not be read");
+    }
+    const extraction = spawnSync("tar", ["-xf", archivePath, "-C", snapshotRoot], {
+      encoding: null,
+    });
+    if (extraction.error || extraction.status !== 0) {
+      throw new Error("candidate historical harness archive could not be extracted");
+    }
+    rmSync(archivePath, { force: true });
+    return snapshotRoot;
+  } catch (error) {
+    rmSync(snapshotRoot, { force: true, recursive: true });
+    throw error;
+  }
+}
+
+function reconstructCandidateHarnessManifest({ dependencyClaim, driverIdentity, subject }) {
+  const snapshotRoot = historicalCandidateHarnessSnapshot(subject);
+  try {
+    return createCandidateHarnessManifest(driverIdentity, dependencyClaim, snapshotRoot);
+  } finally {
+    rmSync(snapshotRoot, { force: true, recursive: true });
+  }
 }
 
 function candidateInputFingerprint({
@@ -646,13 +698,8 @@ export function buildCandidateMeasurement({
     "candidate RF-04 capture",
   );
 
-  const {
-    baseline,
-    baselineGrouped,
-    baselineRegistry,
-    baselineRuntimeProfile,
-    replayBaselineSha256,
-  } = readComparisonBaseline({ baselineSource, runs });
+  const { baselineGrouped, baselineRegistry, baselineRuntimeProfile, replayBaselineSha256 } =
+    readComparisonBaseline({ baselineSource, runs });
   const baselineValues = summarizeActualValues(baselineGrouped, baselineRegistry);
   const candidateValues = summarizeActualValues(candidateGrouped, candidateRegistry);
   const runtimeComparison = {
@@ -931,19 +978,33 @@ function captureCandidate(options) {
   }
 }
 
-function recordedCandidateInputs({ candidateEnvelopeRecords, driverPath }) {
+function recordedCandidateInputs({ candidateEnvelopeRecords, driverPath, subject }) {
   const firstEnvelope = candidateEnvelopeRecords[0]?.value;
   const driverIdentity = firstEnvelope?.anchor?.driver;
-  const harnessManifest = firstEnvelope?.anchor?.harness;
-  if (!driverIdentity || !harnessManifest) {
-    throw new Error("candidate raw evidence is missing its reviewed driver or harness identity");
+  const harnessSha256 = firstEnvelope?.anchor?.harness_sha256;
+  if (!driverIdentity || !harnessSha256) {
+    throw new Error("candidate raw evidence is missing its reviewed driver or harness digest");
+  }
+  if (firstEnvelope.anchor.subject_sha !== subject) {
+    throw new Error("candidate raw evidence is not bound to the reviewed candidate subject");
   }
   const currentDriverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
   if (stableJson(currentDriverIdentity) !== stableJson(driverIdentity)) {
     throw new Error("runtime bridge requires the exact reviewed candidate driver bytes");
   }
+  const dependencyClaim = replayDependencyClaimFromEnvelopeRecords(candidateEnvelopeRecords);
+  const harnessManifest = reconstructCandidateHarnessManifest({
+    dependencyClaim,
+    driverIdentity,
+    subject,
+  });
+  if (harnessManifest.sha256 !== harnessSha256) {
+    throw new Error(
+      "candidate raw evidence harness digest does not match the reviewed candidate source",
+    );
+  }
   return {
-    dependencyClaim: replayDependencyClaimFromEnvelopeRecords(candidateEnvelopeRecords),
+    dependencyClaim,
     driverIdentity,
     harnessManifest,
   };
@@ -962,7 +1023,7 @@ function rebuildCandidateMeasurement({
   const candidateEnvelopeRecords = readReplayEnvelopeRecords(repoRoot, paths.envelopeDirectory);
   const candidateEvidenceRecords = readReplayEvidenceRecords(repoRoot, paths.evidenceDirectory);
   const inputs = useRecordedCandidateInputs
-    ? recordedCandidateInputs({ candidateEnvelopeRecords, driverPath })
+    ? recordedCandidateInputs({ candidateEnvelopeRecords, driverPath, subject })
     : (() => {
         const driverIdentity = createReplayDriverIdentity(repoRoot, driverPath);
         const dependencyClaim = replayDependencyClaimFromManifest(
