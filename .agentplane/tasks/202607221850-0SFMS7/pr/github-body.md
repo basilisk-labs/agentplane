@@ -19,8 +19,8 @@ RF-10a: implement the direct golden path from approved state through safe pre-op
 - Note:
 
 ```text
-RF-10a closure target classification now preserves verified implementation evidence across lifecycle
-artifacts; focused and full regression gates passed on 57637d153.
+RF-10a closure target classification and strict verification-record grammar passed; the record now
+freezes the checked lifecycle evidence.
 ```
 - Canonical workflow state lives in the task README.
 

@@ -13,7 +13,7 @@ Created: 2026-07-29T01:35:45.453Z
 ## Verification
 
 - State: ok
-- Note: RF-10a closure target classification now preserves verified implementation evidence across lifecycle artifacts; focused and full regression gates passed on 57637d153.
+- Note: RF-10a closure target classification and strict verification-record grammar passed; the record now freezes the checked lifecycle evidence.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
