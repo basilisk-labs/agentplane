@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "rework",
+  "findings": [
+    {
+      "id": "tracking-ref-refresh-rejects-rewritten-head",
+      "severity": "high",
+      "summary": "The tracking-ref helper fetches without a forced refspec, so it can reject a legitimate rewritten task head when the constrained checkout already has a stale tracking ref. This breaks rebased-branch publication and protected integration recovery.",
+      "broken_invariant": "The reusable helper must reliably refresh the configured task tracking ref under constrained refspecs, including after the permitted force-with-lease publication path, without changing remote.fetch.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3a4566934a493992a993c1aa3b9750b71ab4fa3f18c137ed4a1d6514216fef50",
+          "line": 3817,
+          "lines": "3805-3818",
+          "section": "gitRefreshBranchTrackingRef"
+        },
+        {
+          "path": ".agentplane/tasks/202607291449-FTHNAR/quality/20260729-173309191-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:3a4566934a493992a993c1aa3b9750b71ab4fa3f18c137ed4a1d6514216fef50",
+          "line": 3138,
+          "lines": "3134-3139",
+          "section": "pushTaskBranchUpstreamIfConfigured"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [
+    "Add a constrained-refspec regression where the tracking ref already points to the old task head, the remote task branch is rewritten through the force-with-lease publication path, and refresh must update the tracking ref to the rewritten head.",
+    "Add an integration-preparation test using a real Git repository with a stale, non-ancestor tracking ref; the current mocked test proves invocation but not successful non-fast-forward refresh."
+  ],
+  "hidden_assumptions": [
+    "The implementation assumes an explicit fetch refspec without a leading force marker can always replace an existing remote-tracking ref, including when the published branch history was rewritten."
+  ],
+  "recovery_context": "Make the bounded tracking-ref refresh support legitimate non-fast-forward task-branch updates, then verify both publication and integration preparation with a stale tracking ref under a constrained remote.fetch configuration."
+}

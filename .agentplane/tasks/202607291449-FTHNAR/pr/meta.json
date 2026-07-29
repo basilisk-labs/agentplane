@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607291449-FTHNAR/permit-evidence-refresh-after-evaluator-review-g",
   "created_at": "2026-07-29T14:50:37.577Z",
-  "diffstat_sha256": "sha256:e870f5d6c65153cc8f70d02ad50b931fa5f1995fb81f94ae8f44a7e0b6cdf38e",
+  "diffstat_sha256": "sha256:3df389604d89fc84dd13b20bb73448433b1e9096e791755b4a699aa75835c5ed",
   "last_verified_at": "2026-07-29T17:32:42.102Z",
   "last_verified_diffstat_sha256": "sha256:e870f5d6c65153cc8f70d02ad50b931fa5f1995fb81f94ae8f44a7e0b6cdf38e",
   "pr_number": 4672,

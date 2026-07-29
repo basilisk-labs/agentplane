@@ -157,7 +157,7 @@ export async function gitRefreshBranchTrackingRef(cwd: string, branch: string): 
       "--no-tags",
       "--no-write-fetch-head",
       remoteTarget,
-      `refs/heads/${target.remoteBranch}:refs/remotes/${target.remote}/${target.remoteBranch}`,
+      `+refs/heads/${target.remoteBranch}:refs/remotes/${target.remote}/${target.remoteBranch}`,
     ],
     { cwd, env: gitEnv() },
   );
