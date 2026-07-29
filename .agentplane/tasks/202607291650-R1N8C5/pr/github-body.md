@@ -22,12 +22,16 @@ Fix branch_pr publication when origin fetches only main: after a task branch is 
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-29T16:51:35.238Z
+- Updated: 2026-07-29T16:52:05.113Z
 - Branch: task/202607291650-R1N8C5/restore-pr-head-tracking-after-constrained-refsp
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../src/commands/pr/branch-publication.test.ts     | 63 ++++++++++++++++++++++
+ .../src/commands/pr/branch-publication.ts          | 27 ++++++++++
+ packages/core/src/git/git-client.test.ts           | 27 +++++++++-
+ packages/core/src/git/git-client.ts                | 21 +++++++-
+ 4 files changed, 135 insertions(+), 3 deletions(-)
 ```
 
 </details>

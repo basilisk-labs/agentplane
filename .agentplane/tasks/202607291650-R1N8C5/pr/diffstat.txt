@@ -1,0 +1,5 @@
+ .../src/commands/pr/branch-publication.test.ts     | 63 ++++++++++++++++++++++
+ .../src/commands/pr/branch-publication.ts          | 27 ++++++++++
+ packages/core/src/git/git-client.test.ts           | 27 +++++++++-
+ packages/core/src/git/git-client.ts                | 21 +++++++-
+ 4 files changed, 135 insertions(+), 3 deletions(-)
