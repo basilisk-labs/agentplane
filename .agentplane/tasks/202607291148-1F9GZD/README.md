@@ -2,10 +2,10 @@
 id: "202607291148-1F9GZD"
 title: "Formalize SHA-bound qualification packets for evaluator review"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 25
+revision: 26
 origin:
   system: "manual"
 depends_on: []
@@ -22,11 +22,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "ok"
-  updated_at: "2026-07-29T14:19:04.724Z"
+  state: "needs_rework"
+  updated_at: "2026-07-29T19:42:24.292Z"
   updated_by: "TESTER"
-  note: "Verified SHA-bound dependency lifecycle packet on 28b541f8."
-  attempts: 0
+  note: "Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb; ci:contract is blocked by a clone baseline mismatch already present at parent SHA ffbac377111bfa09810b5ca5f8fb3b8fd5458315."
+  attempts: 1
 quality_review:
   state: "blocked"
   provenance: "evaluator_supplied"
@@ -53,9 +53,7 @@ quality_review:
   findings:
     - "Для evaluated_sha 17e0f8f246d207483014ac16ec43af657296b9fb отсутствуют замороженные записи выполнения обязательных проверок; доступная верификация привязана к более раннему SHA 28b541f82687e465f36e5ecd50e98efdb806f85e."
   recovery_reason: "deterministic_evidence_gap"
-commit:
-  hash: "28b541f82687e465f36e5ecd50e98efdb806f85e"
-  message: "test(evaluator): pin dependency lifecycle to reviewed sha"
+commit: null
 comments:
   -
     author: "CODER"
@@ -128,8 +126,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "verify"
+    at: "2026-07-29T19:42:24.292Z"
+    author: "TESTER"
+    state: "needs_rework"
+    note: "Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb; ci:contract is blocked by a clone baseline mismatch already present at parent SHA ffbac377111bfa09810b5ca5f8fb3b8fd5458315."
 doc_version: 3
-doc_updated_at: "2026-07-29T14:21:30.102Z"
+doc_updated_at: "2026-07-29T19:42:30.217Z"
 doc_updated_by: "CODER"
 description: "Generate and freeze a deterministic qualification packet for metadata-only milestone gates: bind every recorded check to one reviewed SHA, prove per-dependency verification/evaluator/hosted-close closure, and expose baseline-versus-current RF-04 success, rework, safety, token, and latency values to the EVALUATOR work order. This follow-up is required by the beta.1 evaluator rework artifacts of 202607221908-MR9EA9."
 sections:
@@ -344,6 +348,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-29T19:42:24.292Z — VERIFY — needs_rework
+
+    By: TESTER
+
+    Note: Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb; ci:contract is blocked by a clone baseline mismatch already present at parent SHA ffbac377111bfa09810b5ca5f8fb3b8fd5458315.
+    Attempts: 1
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:21:30.102Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+    - old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+    - current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert task-related commit(s).
@@ -352,6 +386,10 @@ sections:
     - Observation: The evaluator work order freezes a packet bound to the durable verification record SHA and hashes each required leaf artifact.
       Impact: The beta qualification evaluator can inspect deterministic, pre-existing evidence instead of inferring cross-task state from prose.
       Resolution: Verification accepted; proceed to independent evaluator review.
+
+    - Observation: bun run test:fast -- packages/agentplane/src/commands/evaluator: 6 test files / 50 tests passed. bun run ci:contract failed only at clone guard (duplicatedLines 1431 > 1430; duplicatedTokens 9976 > 9973). The same clone check fails at the parent SHA before this task source change.
+      Impact: No SHA-bound passing ci:contract record can be frozen, so the evaluator correctly blocks qualification.
+      Resolution: Recover the clone baseline in a dedicated integration task, then rerun ci:contract and freeze verification for the implementation SHA.
 extensions:
   workflow_route_baseline:
     start_head_sha: "d0b9d694451714a0cbd5a01cdfb8db1faffee6aa"
@@ -580,6 +618,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-29T19:42:24.292Z — VERIFY — needs_rework
+
+By: TESTER
+
+Note: Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb; ci:contract is blocked by a clone baseline mismatch already present at parent SHA ffbac377111bfa09810b5ca5f8fb3b8fd5458315.
+Attempts: 1
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-29T14:21:30.102Z, excerpt_hash=sha256:e49fbad205c0347b323803a08a46b1fecf4ec1d48cca69d1e743c4b7476fb582
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-evaluator-recovery-base-20260729/.agentplane/worktrees/202607291148-1F9GZD-formalize-sha-bound-qualification-packets-for-ev/.agentplane/tasks/202607291148-1F9GZD/blueprint/resolved-snapshot.json
+- old_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+- current_digest: 1d103f73fa887ae7b0b43792c0c138dbd07b3de020062145eb0832324e88a391
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607291148-1F9GZD
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -592,3 +660,7 @@ DecisionContextRef:
 - Observation: The evaluator work order freezes a packet bound to the durable verification record SHA and hashes each required leaf artifact.
   Impact: The beta qualification evaluator can inspect deterministic, pre-existing evidence instead of inferring cross-task state from prose.
   Resolution: Verification accepted; proceed to independent evaluator review.
+
+- Observation: bun run test:fast -- packages/agentplane/src/commands/evaluator: 6 test files / 50 tests passed. bun run ci:contract failed only at clone guard (duplicatedLines 1431 > 1430; duplicatedTokens 9976 > 9973). The same clone check fails at the parent SHA before this task source change.
+  Impact: No SHA-bound passing ci:contract record can be frozen, so the evaluator correctly blocks qualification.
+  Resolution: Recover the clone baseline in a dedicated integration task, then rerun ci:contract and freeze verification for the implementation SHA.

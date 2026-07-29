@@ -15,8 +15,14 @@ Generate and freeze a deterministic qualification packet for metadata-only miles
 
 ## Verification
 
-- State: ok
-- Note: Verified SHA-bound dependency lifecycle packet on 28b541f8.
+- State: needs_rework
+- Note:
+
+```text
+Focused evaluator suite passed at implementation SHA 17e0f8f246d207483014ac16ec43af657296b9fb;
+ci:contract is blocked by a clone baseline mismatch already present at parent SHA
+ffbac377111bfa09810b5ca5f8fb3b8fd5458315.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
