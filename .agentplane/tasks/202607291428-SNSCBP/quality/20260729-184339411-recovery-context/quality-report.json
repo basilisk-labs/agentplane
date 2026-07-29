@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "task_id": "202607291428-SNSCBP",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-29T18:44:47.777Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "blocked",
+  "summary": "EVALUATOR returned blocked with 1 typed finding(s).",
+  "evaluated_sha": "65e6b7c925b1ef6f504cabd5c154ee400d509815",
+  "blueprint_digest": "a37e47826c5c3bb81cea348536b21c5378755b2db1a744334455e0c1a7a3749d",
+  "findings": [
+    "The frozen observed-checks artifact contains no verification records, runner history, or runtime evidence for evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815; the task document only summarizes checks performed at earlier SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-observed-checks.json",
+    ".agentplane/tasks/202607291428-SNSCBP/README.md",
+    ".agentplane/tasks/202607291428-SNSCBP/quality/20260729-184339411-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Freeze successful command-level results for task show 202607221908-MR9EA9, task active, policy routing, and doctor, all explicitly bound to evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815."
+  ],
+  "hidden_assumptions": [
+    "The dependency and route behavior verified at SHA 6c8a2220d5e5fcb2896a11b13aa57300a3038b43 is assumed to remain valid after the merge producing evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815.",
+    "Summarized verification text in the task README is assumed to substitute for frozen deterministic check records."
+  ],
+  "residual_risks": [
+    "Re-run and freeze the four declared deterministic checks against evaluated SHA 65e6b7c925b1ef6f504cabd5c154ee400d509815, then request a fresh evaluator review without changing semantic scope."
+  ]
+}
