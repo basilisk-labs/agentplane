@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual",
   "created_at": "2026-07-30T00:24:17.976Z",
-  "diffstat_sha256": "sha256:b30ab60c06aacd7881456a44deb6f806995a01bcc7954d2f31c1851f305559ff",
+  "diffstat_sha256": "sha256:fd9c7ee2dc1a6adea11760e3cc5c6ad09572275eaa4e1c4f69077a529767aff5",
   "last_verified_at": null,
   "pr_number": 4675,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4675",
