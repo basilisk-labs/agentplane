@@ -345,6 +345,7 @@ export async function writeQualificationPacket(opts: {
       checks,
       taskId: opts.task.id,
       workflowDir: opts.ctx.config.paths.workflow_dir,
+      reviewedSha: implementationSha,
     }),
   };
   const packet: QualificationPacket = {
@@ -445,6 +446,11 @@ function qualificationPinnedArtifacts(
       label: "RF-04 current replay rebuild",
       path: packet.rf04.replay_comparison.current_rebuild.path,
       sha256: packet.rf04.replay_comparison.current_rebuild.sha256,
+    },
+    {
+      label: "RF-04 candidate measurement",
+      path: packet.rf04.candidate_measurement.path,
+      sha256: packet.rf04.candidate_measurement.sha256,
     },
   ];
   for (const leaf of packet.dependency_closure.leaves) {
