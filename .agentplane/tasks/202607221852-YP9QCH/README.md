@@ -4,7 +4,7 @@ title: "Build source-driven canonical reconciliation candidates"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 12
 origin:
   system: "manual"
 depends_on:
@@ -39,31 +39,31 @@ verification:
 quality_review:
   state: "rework"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T10:01:22.620Z"
+  updated_at: "2026-07-30T10:03:21.974Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "18e8d9f30ffefb7f0cb0024f685ffc6ae141aa18"
+  evaluated_sha: "789bd26f46c2ede13ac1008c8e1b8f3ca25ba1e8"
   blueprint_digest: "198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-follow-up.json"
     - ".agentplane/tasks/202607221852-YP9QCH/README.md"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The candidate-term extractor returns a basename term for deleted source rows, which can surface stale candidates without task-bound source evidence."
+    - "The read failure branch returns basename instead of no term, so a vanished source path can create stale candidate evidence."
 commit:
-  hash: "18e8d9f30ffefb7f0cb0024f685ffc6ae141aa18"
-  message: "🚧 YP9QCH task: source-driven reconciliation candidates"
+  hash: "789bd26f46c2ede13ac1008c8e1b8f3ca25ba1e8"
+  message: "🚧 YP9QCH task: exclude deleted source candidates"
 comments:
   -
     author: "CODER"
@@ -71,6 +71,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: source-driven reconciliation candidates are deterministic, indexed, and CURATOR-owned. Verified: agentplane build; targeted context ingestion, task prompt, and release-readiness tests; Prettier; ESLint."
+  -
+    author: "CODER"
+    body: "Rework committed: deleted, unsupported, and unreadable manifest rows now produce no reconciliation query; added regression coverage."
 events:
   -
     type: "status"
@@ -92,8 +95,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Pass: deterministic task-bound candidates cover a canonical entity after the prior first-50 range; fixture proves exact label, alias, FTS graph/page, graph-neighbour evidence, stable ordering, refs, and digest. CURATOR remains the only identity decision owner. Checks: agentplane build; 42 focused tests; Prettier; ESLint; diff check."
+  -
+    type: "status"
+    at: "2026-07-30T10:02:57.366Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework committed: deleted, unsupported, and unreadable manifest rows now produce no reconciliation query; added regression coverage."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:00:52.681Z"
+doc_updated_at: "2026-07-30T10:02:57.366Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:

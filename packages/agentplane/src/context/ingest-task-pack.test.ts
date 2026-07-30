@@ -330,6 +330,7 @@ describe("context ingest task pack", () => {
     const sourcePath = "context/raw/specs/payment-api.md";
     const structuredSourcePath = "context/raw/specs/payment-terms.json";
     const deletedSourcePath = "context/raw/specs/removed-payment-api.md";
+    const unreadableSourcePath = "context/raw/specs/unreadable-payment-api.md";
     await write(
       root,
       sourcePath,
@@ -449,6 +450,14 @@ describe("context ingest task pack", () => {
         content_type: "text/markdown",
         status: "deleted" as const,
       },
+      {
+        path: unreadableSourcePath,
+        sha256: "sha256:unreadable-payment-api-source",
+        size_bytes: 32,
+        mtime: "2026-07-02T12:03:00.000Z",
+        content_type: "text/markdown",
+        status: "new" as const,
+      },
     ];
     const creation = {
       task_id: taskId,
@@ -502,6 +511,9 @@ describe("context ingest task pack", () => {
     expect(aliasCandidate?.reasons).toContain("alias_exact");
     expect(first.candidate_groups).not.toContainEqual(
       expect.objectContaining({ query: "removed payment api" }),
+    );
+    expect(first.candidate_groups).not.toContainEqual(
+      expect.objectContaining({ query: "unreadable payment api" }),
     );
     expect(first.candidate_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
     expect(second).toEqual(first);
