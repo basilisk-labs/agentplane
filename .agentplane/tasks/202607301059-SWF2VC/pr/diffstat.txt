@@ -1,4 +1,23 @@
  .agentplane/WORKFLOW.md                            |   3 +-
+ .agentplane/tasks/202607301059-SWF2VC/README.md    | 441 ++++++++++++++++++
+ .../blueprint/resolved-snapshot.json               | 494 +++++++++++++++++++++
+ .../tasks/202607301059-SWF2VC/pr/diffstat.txt      |  31 ++
+ .../tasks/202607301059-SWF2VC/pr/github-body.md    |  70 +++
+ .../tasks/202607301059-SWF2VC/pr/github-title.txt  |   1 +
+ .agentplane/tasks/202607301059-SWF2VC/pr/meta.json |  24 +
+ .agentplane/tasks/202607301059-SWF2VC/pr/review.md |  66 +++
+ .../evaluator-opinion.md                           |  24 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  26 ++
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
+ .../evaluator-opinion.md                           |  18 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  20 +
+ .../evaluator-opinion.md                           |  22 +
+ .../evaluator-prompt.md                            |  74 +++
+ .../quality-report.json                            |  24 +
  .agentplane/workflows/last-known-good.md           |   3 +-
  bun.lock                                           |  12 +-
  docs/assets/header.svg                             |   4 +-
@@ -16,16 +35,16 @@
  docs/assets/readme-headers/spec.svg                |   4 +-
  docs/assets/readme-headers/testkit.svg             |   4 +-
  docs/reference/generated-reference.mdx             |   6 +-
- docs/releases/v0.6.25.md                           |  41 ++++++
+ docs/releases/v0.6.25.md                           |  41 ++
  packages/agentplane/package.json                   |   6 +-
- .../agentplane/src/commands/pr/integrate/verify.ts |   9 ++
- .../agentplane/src/commands/shared/pr-meta.test.ts |  72 +++++++++--
- .../src/commands/shared/pr-meta/verify-log.ts      | 139 ++++++++++++++++++---
+ .../agentplane/src/commands/pr/integrate/verify.ts |   9 +
+ .../agentplane/src/commands/shared/pr-meta.test.ts |  72 ++-
+ .../src/commands/shared/pr-meta/verify-log.ts      | 139 +++++-
  packages/core/package.json                         |   2 +-
  packages/recipes/package.json                      |   2 +-
  packages/recipes/src/index.ts                      |   2 +-
  packages/spec/examples/acr.json                    |   4 +-
  packages/testkit/package.json                      |   2 +-
  .../static/img/social/docs/releases/v0.6.25.png    | Bin 0 -> 54765 bytes
- website/static/img/social/manifest.json            |   8 ++
- 30 files changed, 295 insertions(+), 72 deletions(-)
+ website/static/img/social/manifest.json            |   8 +
+ 49 files changed, 1898 insertions(+), 72 deletions(-)

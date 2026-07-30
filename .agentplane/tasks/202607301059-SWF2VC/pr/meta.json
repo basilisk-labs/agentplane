@@ -1,10 +1,15 @@
 {
+  "artifact_state": "merged",
+  "artifact_state_updated_at": "2026-07-30T13:34:09.863Z",
   "base": "codex/fix-v0.6.24-closeout-route",
   "branch": "task/202607301059-SWF2VC/release-v0-6-25",
   "created_at": "2026-07-30T10:59:38.090Z",
   "diffstat_sha256": "sha256:c68a151c32e3dea1ea2c661ad1ab1470e4545716e1452af0f49c8e08ff3297a6",
-  "last_verified_at": "2026-07-30T13:10:07.941Z",
+  "last_verified_at": "2026-07-30T13:34:09.863Z",
   "last_verified_diffstat_sha256": "sha256:c68a151c32e3dea1ea2c661ad1ab1470e4545716e1452af0f49c8e08ff3297a6",
+  "merge_commit": "3de0ffd329b9789fa261c8f605cc9ca8ad7b510b",
+  "merge_strategy": "merge",
+  "merged_at": "2026-07-30T13:34:09.863Z",
   "pr_number": 4691,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4691",
   "pre_merge_closure": {
@@ -15,9 +20,9 @@
     "state": "closed_before_merge"
   },
   "schema_version": 1,
-  "status": "OPEN",
+  "status": "MERGED",
   "task_id": "202607301059-SWF2VC",
-  "updated_at": "2026-07-30T11:00:00.322Z",
+  "updated_at": "2026-07-30T13:34:09.863Z",
   "verify": {
     "status": "pass"
   }

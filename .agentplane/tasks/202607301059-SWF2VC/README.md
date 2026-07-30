@@ -1,11 +1,11 @@
 ---
 id: "202607301059-SWF2VC"
 title: "Release AgentPlane v0.6.25"
-result_summary: "Prepared and verified v0.6.25 maintenance release candidate without integrating main."
-status: "DOING"
+result_summary: "integrate: merge task/202607301059-SWF2VC/release-v0-6-25"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 19
+revision: 20
 origin:
   system: "manual"
 depends_on: []
@@ -56,8 +56,8 @@ quality_review:
   findings:
     - "Focused pr-meta 21/21, lint, typecheck, fast prepublish, bootstrap, the preceding exact-SHA full prepublish, and hosted checks pass; queue rerun is required to prove the streamed path end to end."
 commit:
-  hash: "f905f72296101e08eacee1c0acd47b732c126a84"
-  message: "🎨 SWF2VC release: format versioned ACR example"
+  hash: "3de0ffd329b9789fa261c8f605cc9ca8ad7b510b"
+  message: "🔀 SWF2VC integrate: Release AgentPlane v0.6.25"
 comments:
   -
     author: "CODER"
@@ -68,6 +68,9 @@ comments:
   -
     author: "CODER"
     body: "Reopened: integration verification repeatedly fails only when AgentPlane buffers the passing full release prepublish command; fix the verify runner output ceiling before publication."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via merge; verify=ran; pr=.agentplane/tasks/202607301059-SWF2VC/pr."
 events:
   -
     type: "status"
@@ -114,9 +117,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: streamed integration verification keeps a bounded 1 MiB tail per stream without a fixed subprocess output ceiling; focused pr-meta 21/21, executable allowlist, failure-tail reporting, lint, typecheck, bootstrap, fast prepublish, prior exact-SHA full prepublish, and hosted checks pass."
+  -
+    type: "status"
+    at: "2026-07-30T13:34:09.908Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Integrated via merge; verify=ran; pr=.agentplane/tasks/202607301059-SWF2VC/pr."
 doc_version: 3
-doc_updated_at: "2026-07-30T13:10:08.083Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-07-30T13:34:09.912Z"
+doc_updated_by: "INTEGRATOR"
 description: "Prepare and publish v0.6.25 from codex/fix-v0.6.24-closeout-route only, including release notes, version parity, full release gates, exact-SHA hosted CI, npm publication, GitHub release verification, and proof that main does not contain the maintenance commits."
 sections:
   Summary: |-

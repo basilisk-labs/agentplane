@@ -1,0 +1,625 @@
+[2026-07-30T13:24:11.355Z] sha=6e6556ca2f3ff8d51f8c60703db9b4e36fb3e124 $ bun run release:prepublish
+Release incident gate passed: incidents.md has no active entries.
+ACR example version OK (0.6.25)
+README header artifacts are fresh for v0.6.25
+checked 219 docs social images
+@agentplaneorg/core build: $ node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .
+@agentplaneorg/core build: CLI Building entry: {"commit/index":"src/commit/index.ts","config/index":"src/config/index.ts","index":"src/index.ts","fs/index":"src/fs/index.ts","git/index":"src/git/index.ts","logger":"src/logger.ts","process/index":"src/process/index.ts","project/index":"src/project/index.ts","schemas/index":"src/schemas/index.ts","tasks/index":"src/tasks/index.ts"}
+@agentplaneorg/core build: CLI Using tsconfig: tsconfig.tsup.json
+@agentplaneorg/core build: CLI tsup v8.5.1
+@agentplaneorg/core build: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/packages/core/tsup.config.ts
+@agentplaneorg/core build: CLI Target: node20
+@agentplaneorg/core build: ESM Build start
+@agentplaneorg/core build: Generated an empty chunk: "chunk-U5GBORNO".
+@agentplaneorg/core build: ESM dist/chunk-U5GBORNO.js 0 B
+@agentplaneorg/core build: ESM dist/tasks/index.js    1.76 KB
+@agentplaneorg/core build: ESM dist/config/index.js   530.00 B
+@agentplaneorg/core build: ESM dist/schemas/index.js  1.26 KB
+@agentplaneorg/core build: ESM dist/index.js          4.05 KB
+@agentplaneorg/core build: ESM dist/fs/index.js       55.00 B
+@agentplaneorg/core build: ESM dist/chunk-VCP74TYX.js 2.49 KB
+@agentplaneorg/core build: ESM dist/chunk-TOHQE52A.js 5.35 KB
+@agentplaneorg/core build: ESM dist/git/index.js      971.00 B
+@agentplaneorg/core build: ESM dist/logger.js         74.00 B
+@agentplaneorg/core build: ESM dist/chunk-ST5EXNT6.js 972.00 B
+@agentplaneorg/core build: ESM dist/chunk-WRSJDOQ2.js 4.59 KB
+@agentplaneorg/core build: ESM dist/commit/index.js   310.00 B
+@agentplaneorg/core build: ESM dist/chunk-BVX2EQM3.js 527.00 B
+@agentplaneorg/core build: ESM dist/chunk-WZEUO3U2.js 21.12 KB
+@agentplaneorg/core build: ESM dist/chunk-JLAOJ4CP.js 12.56 KB
+@agentplaneorg/core build: ESM dist/chunk-KPXOX764.js 295.00 B
+@agentplaneorg/core build: ESM dist/chunk-LVB6CDWT.js 17.07 KB
+@agentplaneorg/core build: ESM dist/process/index.js  107.00 B
+@agentplaneorg/core build: ESM dist/chunk-WXGQX2NN.js 34.55 KB
+@agentplaneorg/core build: ESM dist/project/index.js  71.00 B
+@agentplaneorg/core build: ESM ⚡️ Build success in 95ms
+@agentplaneorg/core build: Exited with code 0
+agentplane build: $ node -e "require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});"
+agentplane build: $ node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .
+agentplane build: CLI Building entry: {"cli":"src/cli.ts"}
+agentplane build: CLI Using tsconfig: tsconfig.tsup.json
+agentplane build: CLI tsup v8.5.1
+agentplane build: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/packages/agentplane/tsup.config.ts
+agentplane build: CLI Target: node20
+agentplane build: ESM Build start
+agentplane build: ESM dist/cli.js 2.21 MB
+agentplane build: ESM ⚡️ Build success in 843ms
+agentplane build: Exited with code 0
+@agentplane/testkit build: Exited with code 0
+@agentplaneorg/recipes build: $ node ../../scripts/release/prune-package-js.mjs dist && node ../../scripts/checks/run-tsup-build.mjs && node ../../scripts/release/manifest.mjs build .
+@agentplaneorg/recipes build: CLI Building entry: {"index":"src/index.ts"}
+@agentplaneorg/recipes build: CLI Using tsconfig: tsconfig.tsup.json
+@agentplaneorg/recipes build: CLI tsup v8.5.1
+@agentplaneorg/recipes build: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/packages/recipes/tsup.config.ts
+@agentplaneorg/recipes build: CLI Target: node20
+@agentplaneorg/recipes build: ESM Build start
+@agentplaneorg/recipes build: ESM dist/index.js 27.42 KB
+@agentplaneorg/recipes build: ESM ⚡️ Build success in 39ms
+@agentplaneorg/recipes build: Exited with code 0
+package tarball policy OK (@agentplaneorg/core=88, @agentplaneorg/recipes=21, agentplane=53)
+blueprint release gate OK
+Checking formatting...
+All matched files use Prettier code style!
+schemas OK
+spec examples OK (7 examples validated against packages/core/schemas)
+ACR example version OK (0.6.25)
+agents templates OK
+policy routing OK
+Release parity check passed (core=0.6.25, agentplane=0.6.25, recipes=0.6.25, coreDep=0.6.25, recipesDep=0.6.25, recipesRuntime=0.6.25).
+../../../../../../../../../../../var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-bootstrap-doc-TjnOn6/agent-bootstrap.generated.mdx 24ms
+ok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned
+ok: agent onboarding scenario surfaces are aligned
+ok: docs IA, sidebar coverage, and current path references are aligned
+ok: scripts/README.md is up to date
+Hotspot warning: 3 runtime module(s) exceed 400 lines.
+- packages/agentplane/src/context/wiki-synthesis.ts: 500 lines
+- packages/agentplane/src/commands/pr/flow-status.ts: 467 lines
+- packages/agentplane/src/commands/evaluator/evaluator.command.ts: 420 lines
+Oversized test warning: 10 test file(s) exceed 1000 lines.
+- packages/agentplane/src/commands/task/finish.validation.unit.test.ts: 1281 lines
+- packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts: 1206 lines
+- packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts: 1190 lines
+- packages/agentplane/src/cli/run-cli.core.route-decision.test.ts: 1171 lines
+- packages/agentplane/src/cli/run-cli.core.incidents.test.ts: 1152 lines
+- packages/agentplane/src/commands/doctor.command.open-pr.test.ts: 1124 lines
+- packages/agentplane/src/commands/shared/task-store.test.ts: 1115 lines
+- packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts: 1102 lines
+- packages/agentplane/src/cli/run-cli.core.test.ts: 1046 lines
+- packages/agentplane/src/commands/doctor.command.runtime.test.ts: 1037 lines
+Hotspot threshold check passed (runtime: warn>400, error>600; tests: warn>1000, error>1300).
+Oversized test baseline OK (10 entries, 11424 total lines, threshold>1000).
+Lifecycle invariant check OK (8 invariants)
+types.ts guardrail OK (count=10, max=10)
+vitest workspace projects OK
+test routing OK (489 tests, 10 primary routes)
+shared guards OK
+production console usage OK (count=0, max=0)
+dependency-cruiser known violations OK (count=0, max=0, rules=)
+dependency-cruiser: packages/agentplane/src/adapters
+
+✔ no dependency violations found (6 modules, 5 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/agents
+
+✔ no dependency violations found (11 modules, 12 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/architecture
+
+✔ no dependency violations found (1 modules, 0 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/backends
+
+✔ no dependency violations found (63 modules, 118 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/blueprints
+
+✔ no dependency violations found (44 modules, 75 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/cli
+
+✔ no dependency violations found (1033 modules, 3101 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/cli.ts
+
+✔ no dependency violations found (851 modules, 2907 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/context
+
+✔ no dependency violations found (269 modules, 591 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/evaluators
+
+✔ no dependency violations found (13 modules, 20 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/harness
+
+✔ no dependency violations found (16 modules, 8 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/meta
+
+✔ no dependency violations found (5 modules, 5 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/policy
+
+✔ no dependency violations found (18 modules, 27 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/ports
+
+✔ no dependency violations found (4 modules, 0 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/runner
+
+✔ no dependency violations found (883 modules, 2962 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/runtime
+
+✔ no dependency violations found (170 modules, 280 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/shared
+
+✔ no dependency violations found (43 modules, 42 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/task-doc
+
+✔ no dependency violations found (4 modules, 3 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/workflow-lifecycle
+
+✔ no dependency violations found (17 modules, 24 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/workflow-runtime
+
+✔ no dependency violations found (20 modules, 35 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/acr
+
+✔ no dependency violations found (104 modules, 214 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/backend
+
+✔ no dependency violations found (82 modules, 165 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/blueprint
+
+✔ no dependency violations found (93 modules, 186 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/blueprints
+
+✔ no dependency violations found (50 modules, 84 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/branch
+
+✔ no dependency violations found (288 modules, 732 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/cleanup
+
+✔ no dependency violations found (164 modules, 424 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/codex
+
+✔ no dependency violations found (7 modules, 7 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/context
+
+✔ no dependency violations found (538 modules, 1568 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/docs
+
+✔ no dependency violations found (6 modules, 6 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/doctor
+
+✔ no dependency violations found (235 modules, 527 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/evaluator
+
+✔ no dependency violations found (359 modules, 1101 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/evidence
+
+✔ no dependency violations found (61 modules, 123 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/flow
+
+✔ no dependency violations found (277 modules, 704 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/guard
+
+✔ no dependency violations found (171 modules, 435 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/hermes
+
+✔ no dependency violations found (851 modules, 2908 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/hooks
+
+✔ no dependency violations found (182 modules, 469 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/incidents
+
+✔ no dependency violations found (144 modules, 344 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/insights
+
+✔ no dependency violations found (76 modules, 149 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/intake
+
+✔ no dependency violations found (57 modules, 117 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/pr
+
+✔ no dependency violations found (871 modules, 2934 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/recipes
+
+✔ no dependency violations found (160 modules, 376 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/release
+
+✔ no dependency violations found (201 modules, 435 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/scenario
+
+✔ no dependency violations found (73 modules, 145 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/shared
+
+✔ no dependency violations found (323 modules, 764 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/task
+
+✔ no dependency violations found (502 modules, 1413 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/upgrade
+
+✔ no dependency violations found (30 modules, 47 dependencies cruised)
+
+dependency-cruiser: packages/agentplane/src/commands/*.ts
+
+✔ no dependency violations found (529 modules, 1591 dependencies cruised)
+
+dependency-cruiser: packages/core/src
+
+✔ no dependency violations found (72 modules, 156 dependencies cruised)
+
+dependency-cruiser: packages/recipes/src
+
+✔ no dependency violations found (19 modules, 20 dependencies cruised)
+
+dependency-cruiser: packages/testkit/src
+
+✔ no dependency violations found (886 modules, 3002 dependencies cruised)
+
+Clone baseline OK (sources=1047, clones=86, duplicatedLines=1318, duplicatedTokens=9485, percentage=0.8302153016616903; baseline sources=843, clones=88, duplicatedLines=1581, duplicatedTokens=16784, percentage=1.44)
+Knip unused-code baseline OK (files=1/1, exports=185/185, types=369/369, enumMembers=0/0, namespaceMembers=0/0, total=555/555)
+Coverage threshold guard passed (lines=80 functions=80 branches=72 statements=80).
+agentplane artifact policy OK
+task state OK (tasks=3076)
+@agentplaneorg/core build:bundle: CLI Building entry: {"commit/index":"src/commit/index.ts","config/index":"src/config/index.ts","index":"src/index.ts","fs/index":"src/fs/index.ts","git/index":"src/git/index.ts","logger":"src/logger.ts","process/index":"src/process/index.ts","project/index":"src/project/index.ts","schemas/index":"src/schemas/index.ts","tasks/index":"src/tasks/index.ts"}
+@agentplaneorg/core build:bundle: CLI Using tsconfig: tsconfig.tsup.json
+@agentplaneorg/core build:bundle: CLI tsup v8.5.1
+@agentplaneorg/core build:bundle: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/packages/core/tsup.config.ts
+@agentplaneorg/core build:bundle: CLI Target: node20
+@agentplaneorg/core build:bundle: ESM Build start
+@agentplaneorg/core build:bundle: Generated an empty chunk: "chunk-U5GBORNO".
+@agentplaneorg/core build:bundle: ESM dist/chunk-U5GBORNO.js 0 B
+@agentplaneorg/core build:bundle: ESM dist/schemas/index.js  1.26 KB
+@agentplaneorg/core build:bundle: ESM dist/commit/index.js   310.00 B
+@agentplaneorg/core build:bundle: ESM dist/tasks/index.js    1.76 KB
+@agentplaneorg/core build:bundle: ESM dist/config/index.js   530.00 B
+@agentplaneorg/core build:bundle: ESM dist/index.js          4.05 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-VCP74TYX.js 2.49 KB
+@agentplaneorg/core build:bundle: ESM dist/fs/index.js       55.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-KPXOX764.js 295.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-TOHQE52A.js 5.35 KB
+@agentplaneorg/core build:bundle: ESM dist/logger.js         74.00 B
+@agentplaneorg/core build:bundle: ESM dist/process/index.js  107.00 B
+@agentplaneorg/core build:bundle: ESM dist/git/index.js      971.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-ST5EXNT6.js 972.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-WZEUO3U2.js 21.12 KB
+@agentplaneorg/core build:bundle: ESM dist/project/index.js  71.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-WRSJDOQ2.js 4.59 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-BVX2EQM3.js 527.00 B
+@agentplaneorg/core build:bundle: ESM dist/chunk-WXGQX2NN.js 34.55 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-LVB6CDWT.js 17.07 KB
+@agentplaneorg/core build:bundle: ESM dist/chunk-JLAOJ4CP.js 12.56 KB
+@agentplaneorg/core build:bundle: ESM ⚡️ Build success in 103ms
+@agentplaneorg/core build:bundle: Exited with code 0
+@agentplaneorg/recipes build:bundle: CLI Building entry: {"index":"src/index.ts"}
+@agentplaneorg/recipes build:bundle: CLI Using tsconfig: tsconfig.tsup.json
+@agentplaneorg/recipes build:bundle: CLI tsup v8.5.1
+@agentplaneorg/recipes build:bundle: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/packages/recipes/tsup.config.ts
+@agentplaneorg/recipes build:bundle: CLI Target: node20
+@agentplaneorg/recipes build:bundle: ESM Build start
+@agentplaneorg/recipes build:bundle: ESM dist/index.js 27.42 KB
+@agentplaneorg/recipes build:bundle: ESM ⚡️ Build success in 41ms
+@agentplaneorg/recipes build:bundle: Exited with code 0
+agentplane build:bundle: CLI Building entry: {"cli":"src/cli.ts"}
+agentplane build:bundle: CLI Using tsconfig: tsconfig.tsup.json
+agentplane build:bundle: CLI tsup v8.5.1
+agentplane build:bundle: CLI Using tsup config: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25/packages/agentplane/tsup.config.ts
+agentplane build:bundle: CLI Target: node20
+agentplane build:bundle: ESM Build start
+agentplane build:bundle: ESM dist/cli.js 2.21 MB
+agentplane build:bundle: ESM ⚡️ Build success in 888ms
+agentplane build:bundle: Exited with code 0
+package tarball policy OK (@agentplaneorg/core=88, @agentplaneorg/recipes=21, agentplane=53)
+local tarball install smoke OK (202607301326-XPY41F)
+/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-cli-docs-TnPA9C/cli-reference.generated.mdx
+../../../../../../../../../../../var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-cli-docs-TnPA9C/cli-reference.generated.mdx 107ms (unchanged)
+ok: docs/user/cli-reference.generated.mdx is up to date
+../../../../../../../../../../../var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-recipes-inventory-iUHXxt/recipes-inventory.json 13ms
+generated ../../../../../../../../../../../var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-recipes-inventory-iUHXxt/recipes-inventory.json
+ok: docs/recipes-inventory.json is up to date
+Vitest suite release-ci-base: chunk 1/82 (10 files): packages/agentplane/src/adapters/task-backend/task-backend-adapter.test.ts, packages/agentplane/src/agents/agents-template.test.ts, packages/agentplane/src/agents/policy-routing-check.test.ts, packages/agentplane/src/architecture/layering.imports.test.ts, packages/agentplane/src/backends/task-backend.cloud-regression.test.ts, packages/agentplane/src/backends/task-backend.cloud-remote-create-policy.test.ts, packages/agentplane/src/backends/task-backend.cloud-start-refresh.test.ts, packages/agentplane/src/backends/task-backend.cloud.test.ts, packages/agentplane/src/backends/task-backend.load.test.ts, packages/agentplane/src/backends/task-backend.local-handoff.test.ts
+Vitest suite release-ci-base: chunk 1/82 passed in 2939ms (Test Files  10 passed (10); Tests  70 passed (70); Duration  2.67s (transform 2.22s, setup 0ms, import 3.99s, tests 661ms, environment 0ms))
+Vitest suite release-ci-base: chunk 2/82 (10 files): packages/agentplane/src/backends/task-backend.local-sqlite-gitignore.test.ts, packages/agentplane/src/backends/task-backend.local.test.ts, packages/agentplane/src/backends/task-backend.test.ts, packages/agentplane/src/backends/task-backend/cloud-backend-state.test.ts, packages/agentplane/src/backends/task-backend/cloud-backend-utils.test.ts, packages/agentplane/src/backends/task-backend/local-task-sqlite-cache.test.ts, packages/agentplane/src/backends/task-index.test.ts, packages/agentplane/src/blueprints/execution.test.ts, packages/agentplane/src/blueprints/project-local.test.ts, packages/agentplane/src/blueprints/recipe-hints.test.ts
+Vitest suite release-ci-base: chunk 2/82 passed in 2486ms (Test Files  10 passed (10); Tests  74 passed (74); Duration  2.25s (transform 2.12s, setup 0ms, import 3.32s, tests 427ms, environment 0ms))
+Vitest suite release-ci-base: chunk 3/82 (10 files): packages/agentplane/src/blueprints/resolve.test.ts, packages/agentplane/src/blueprints/snapshot.test.ts, packages/agentplane/src/blueprints/validate.test.ts, packages/agentplane/src/cli/archive.test.ts, packages/agentplane/src/cli/bootstrap-doc-build-freshness.test.ts, packages/agentplane/src/cli/bootstrap-framework-dev-script.test.ts, packages/agentplane/src/cli/check-cli-cold-baseline-script.test.ts, packages/agentplane/src/cli/check-clone-baseline-script.test.ts, packages/agentplane/src/cli/check-github-protection-contract-script.test.ts, packages/agentplane/src/cli/check-knip-baseline-script.test.ts
+Vitest suite release-ci-base: chunk 3/82 passed in 3749ms (Test Files  10 passed (10); Tests  84 passed (84); Duration  3.50s (transform 121ms, setup 0ms, import 210ms, tests 6.11s, environment 0ms))
+Vitest suite release-ci-base: chunk 4/82 (10 files): packages/agentplane/src/cli/check-no-console-script.test.ts, packages/agentplane/src/cli/checksum.test.ts, packages/agentplane/src/cli/cli-contract.test.ts, packages/agentplane/src/cli/command-guide.test.ts, packages/agentplane/src/cli/dist-guard.test.ts, packages/agentplane/src/cli/error-map.test.ts, packages/agentplane/src/cli/exit-code.contract.test.ts, packages/agentplane/src/cli/fs-utils.test.ts, packages/agentplane/src/cli/generate-recipes-inventory-script.test.ts, packages/agentplane/src/cli/group-command.test.ts
+Vitest suite release-ci-base: chunk 4/82 passed in 2598ms (Test Files  10 passed (10); Tests  50 passed (50); Duration  2.35s (transform 1.21s, setup 0ms, import 1.66s, tests 2.38s, environment 0ms))
+Vitest suite release-ci-base: chunk 5/82 (10 files): packages/agentplane/src/cli/help.all-commands.contract.test.ts, packages/agentplane/src/cli/hotspot-report-script.test.ts, packages/agentplane/src/cli/http.test.ts, packages/agentplane/src/cli/init-recipes-cache.test.ts, packages/agentplane/src/cli/legacy-cli-regressions.test.ts, packages/agentplane/src/cli/local-ci-selection.test.ts, packages/agentplane/src/cli/measure-cli-cold-path-script.test.ts, packages/agentplane/src/cli/output.test.ts, packages/agentplane/src/cli/pre-commit-hook-script.test.ts, packages/agentplane/src/cli/pre-commit-staged-files.test.ts
+Vitest suite release-ci-base: chunk 5/82 passed in 3837ms (Test Files  10 passed (10); Tests  105 passed (105); Duration  3.58s (transform 1.21s, setup 0ms, import 2.17s, tests 4.32s, environment 0ms))
+Vitest suite release-ci-base: chunk 6/82 (9 files): packages/agentplane/src/cli/pre-commit-test-fast-script.test.ts, packages/agentplane/src/cli/prepare-hosted-task-closure-script.test.ts, packages/agentplane/src/cli/prompts.test.ts, packages/agentplane/src/cli/release-critical-lifecycle.test.ts, packages/agentplane/src/cli/release-smoke.test.ts, packages/agentplane/src/cli/repo-local-handoff.test.ts, packages/agentplane/src/cli/run-cli.core.agent-mode.test.ts, packages/agentplane/src/cli/run-cli.core.blueprint.test.ts, packages/agentplane/src/cli/run-cli.core.boot.test.ts
+Vitest suite release-ci-base: chunk 6/82 passed in 10584ms (Test Files  9 passed (9); Tests  57 passed (57); Duration  10.34s (transform 3.24s, setup 0ms, import 3.89s, tests 12.40s, environment 0ms))
+Vitest suite release-ci-base: chunk 7/82 (1 files): packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts
+Vitest suite release-ci-base: chunk 7/82 passed in 2625ms (Test Files  1 passed (1); Tests  18 passed (18); Duration  2.41s (transform 1.09s, setup 0ms, import 1.38s, tests 965ms, environment 0ms))
+Vitest suite release-ci-base: chunk 8/82 (2 files): packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts, packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts
+Vitest suite release-ci-base: chunk 8/82 passed in 2149ms (Test Files  2 passed (2); Tests  22 passed (22); Duration  1.94s (transform 2.17s, setup 0ms, import 2.79s, tests 936ms, environment 0ms))
+Vitest suite release-ci-base: chunk 9/82 (1 files): packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts
+Vitest suite release-ci-base: chunk 9/82 passed in 3508ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  3.30s (transform 1.07s, setup 0ms, import 1.36s, tests 1.87s, environment 0ms))
+Vitest suite release-ci-base: chunk 10/82 (2 files): packages/agentplane/src/cli/run-cli.core.branch-naming.test.ts, packages/agentplane/src/cli/run-cli.core.codex-plugin.test.ts
+Vitest suite release-ci-base: chunk 10/82 passed in 2089ms (Test Files  2 passed (2); Tests  3 passed (3); Duration  1.87s (transform 2.09s, setup 0ms, import 2.71s, tests 515ms, environment 0ms))
+Vitest suite release-ci-base: chunk 11/82 (1 files): packages/agentplane/src/cli/run-cli.core.context-init.test.ts
+Vitest suite release-ci-base: chunk 11/82 passed in 19010ms (Test Files  1 passed (1); Tests  6 passed (6); Duration  18.78s (transform 1.22s, setup 0ms, import 1.43s, tests 17.29s, environment 0ms))
+Vitest suite release-ci-base: chunk 12/82 (1 files): packages/agentplane/src/cli/run-cli.core.demo.test.ts
+Vitest suite release-ci-base: chunk 12/82 passed in 1934ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  1.72s (transform 1.05s, setup 0ms, import 1.34s, tests 321ms, environment 0ms))
+Vitest suite release-ci-base: chunk 13/82 (10 files): packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts, packages/agentplane/src/cli/run-cli.core.group-root-usage.test.ts, packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.close.test.ts, packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.env.test.ts, packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.policy.test.ts, packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.refresh.test.ts, packages/agentplane/src/cli/run-cli.core.guard.test.ts, packages/agentplane/src/cli/run-cli.core.help-contract.test.ts, packages/agentplane/src/cli/run-cli.core.help-snap.test.ts, packages/agentplane/src/cli/run-cli.core.hooks.deploy-fix.test.ts
+Vitest suite release-ci-base: chunk 13/82 passed in 5850ms (Test Files  10 passed (10); Tests  92 passed (92); Duration  5.62s (transform 2.20s, setup 0ms, import 4.99s, tests 5.44s, environment 0ms))
+Vitest suite release-ci-base: chunk 14/82 (10 files): packages/agentplane/src/cli/run-cli.core.hooks.hook-run.test.ts, packages/agentplane/src/cli/run-cli.core.hooks.install.test.ts, packages/agentplane/src/cli/run-cli.core.hooks.pre-commit.test.ts, packages/agentplane/src/cli/run-cli.core.hooks.pre-push-full-fast.test.ts, packages/agentplane/src/cli/run-cli.core.hooks.pre-push-task-binding.test.ts, packages/agentplane/src/cli/run-cli.core.hooks.runtime-shim.test.ts, packages/agentplane/src/cli/run-cli.core.hooks.uninstall.test.ts, packages/agentplane/src/cli/run-cli.core.incidents.test.ts, packages/agentplane/src/cli/run-cli.core.init-base-branch.test.ts, packages/agentplane/src/cli/run-cli.core.insights-report.test.ts
+Vitest suite release-ci-base: chunk 14/82 passed in 10010ms (Test Files  10 passed (10); Tests  95 passed (95); Duration  9.78s (transform 2.25s, setup 0ms, import 5.08s, tests 13.40s, environment 0ms))
+Vitest suite release-ci-base: chunk 15/82 (1 files): packages/agentplane/src/cli/run-cli.core.installed-smoke.test.ts
+Vitest suite release-ci-base: chunk 15/82 passed in 7743ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  7.53s (transform 1.14s, setup 0ms, import 1.45s, tests 6.01s, environment 0ms))
+Vitest suite release-ci-base: chunk 16/82 (1 files): packages/agentplane/src/cli/run-cli.core.intake.test.ts
+Vitest suite release-ci-base: chunk 16/82 passed in 1864ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  1.64s (transform 1.11s, setup 0ms, import 1.40s, tests 178ms, environment 0ms))
+Vitest suite release-ci-base: chunk 17/82 (2 files): packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.finish-branch-pr.test.ts
+Vitest suite release-ci-base: chunk 17/82 passed in 5569ms (Test Files  2 passed (2); Tests  12 passed (12); Duration  5.36s (transform 2.15s, setup 0ms, import 2.75s, tests 4.07s, environment 0ms))
+Vitest suite release-ci-base: chunk 18/82 (1 files): packages/agentplane/src/cli/run-cli.core.lifecycle.finish-close-commit.test.ts
+Vitest suite release-ci-base: chunk 18/82 passed in 4178ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  3.96s (transform 1.08s, setup 0ms, import 1.38s, tests 2.52s, environment 0ms))
+Vitest suite release-ci-base: chunk 19/82 (1 files): packages/agentplane/src/cli/run-cli.core.lifecycle.finish-validation.test.ts
+Vitest suite release-ci-base: chunk 19/82 passed in 3854ms (Test Files  1 passed (1); Tests  11 passed (11); Duration  3.64s (transform 1.08s, setup 0ms, import 1.37s, tests 2.21s, environment 0ms))
+Vitest suite release-ci-base: chunk 20/82 (1 files): packages/agentplane/src/cli/run-cli.core.lifecycle.plan.test.ts
+Vitest suite release-ci-base: chunk 20/82 passed in 2021ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  1.79s (transform 1.26s, setup 0ms, import 1.58s, tests 152ms, environment 0ms))
+Vitest suite release-ci-base: chunk 21/82 (1 files): packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.basic.test.ts
+Vitest suite release-ci-base: chunk 21/82 passed in 2392ms (Test Files  1 passed (1); Tests  2 passed (2); Duration  2.17s (transform 1.06s, setup 0ms, import 1.36s, tests 751ms, environment 0ms))
+Vitest suite release-ci-base: chunk 22/82 (1 files): packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.format.test.ts
+Vitest suite release-ci-base: chunk 22/82 passed in 2755ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  2.53s (transform 1.26s, setup 0ms, import 1.60s, tests 827ms, environment 0ms))
+Vitest suite release-ci-base: chunk 23/82 (1 files): packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.paths.test.ts
+Vitest suite release-ci-base: chunk 23/82 passed in 3861ms (Test Files  1 passed (1); Tests  4 passed (4); Duration  3.64s (transform 1.61s, setup 0ms, import 2.04s, tests 1.54s, environment 0ms))
+Vitest suite release-ci-base: chunk 24/82 (1 files): packages/agentplane/src/cli/run-cli.core.lifecycle.start-commit.policy.test.ts
+Vitest suite release-ci-base: chunk 24/82 passed in 3073ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  2.82s (transform 1.51s, setup 0ms, import 1.92s, tests 828ms, environment 0ms))
+Vitest suite release-ci-base: chunk 25/82 (7 files): packages/agentplane/src/cli/run-cli.core.lifecycle.start-readiness.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts, packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts, packages/agentplane/src/cli/run-cli.core.misc.test.ts, packages/agentplane/src/cli/run-cli.core.platform-sync.test.ts, packages/agentplane/src/cli/run-cli.core.pr-close-superseded.test.ts, packages/agentplane/src/cli/run-cli.core.pr-close.test.ts
+Vitest suite release-ci-base: chunk 25/82 passed in 6210ms (Test Files  7 passed (7); Tests  48 passed (48); Duration  5.96s (transform 2.52s, setup 0ms, import 4.59s, tests 6.81s, environment 0ms))
+Vitest suite release-ci-base: chunk 26/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts
+Vitest suite release-ci-base: chunk 26/82 passed in 5473ms (Test Files  1 passed (1); Tests  19 passed (19); Duration  5.26s (transform 1.20s, setup 0ms, import 1.51s, tests 3.68s, environment 0ms))
+Vitest suite release-ci-base: chunk 27/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-failures.test.ts
+Vitest suite release-ci-base: chunk 27/82 passed in 8490ms (Test Files  1 passed (1); Tests  4 passed (4); Duration  8.28s (transform 1.11s, setup 0ms, import 1.35s, tests 6.86s, environment 0ms))
+Vitest suite release-ci-base: chunk 28/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-merge.test.ts
+Vitest suite release-ci-base: chunk 28/82 passed in 12060ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  11.85s (transform 1.18s, setup 0ms, import 1.43s, tests 10.35s, environment 0ms))
+Vitest suite release-ci-base: chunk 29/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-rebase-race.test.ts
+Vitest suite release-ci-base: chunk 29/82 passed in 3787ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  3.57s (transform 1.14s, setup 0ms, import 1.38s, tests 2.13s, environment 0ms))
+Vitest suite release-ci-base: chunk 30/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-strategies.test.ts
+Vitest suite release-ci-base: chunk 30/82 passed in 11853ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  11.64s (transform 1.13s, setup 0ms, import 1.36s, tests 10.21s, environment 0ms))
+Vitest suite release-ci-base: chunk 31/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.integrate-validation.test.ts
+Vitest suite release-ci-base: chunk 31/82 passed in 6328ms (Test Files  1 passed (1); Tests  8 passed (8); Duration  6.12s (transform 1.10s, setup 0ms, import 1.35s, tests 4.71s, environment 0ms))
+Vitest suite release-ci-base: chunk 32/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-check-remote-artifacts.test.ts
+Vitest suite release-ci-base: chunk 32/82 passed in 2585ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  2.37s (transform 1.11s, setup 0ms, import 1.38s, tests 930ms, environment 0ms))
+Vitest suite release-ci-base: chunk 33/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-feedback.test.ts
+Vitest suite release-ci-base: chunk 33/82 passed in 2685ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  2.47s (transform 1.11s, setup 0ms, import 1.38s, tests 1.03s, environment 0ms))
+Vitest suite release-ci-base: chunk 34/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-lifecycle.test.ts
+Vitest suite release-ci-base: chunk 34/82 passed in 7597ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  7.38s (transform 1.12s, setup 0ms, import 1.40s, tests 5.92s, environment 0ms))
+Vitest suite release-ci-base: chunk 35/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-notes-verify.test.ts
+Vitest suite release-ci-base: chunk 35/82 passed in 6788ms (Test Files  1 passed (1); Tests  9 passed (9); Duration  6.57s (transform 1.14s, setup 0ms, import 1.42s, tests 5.09s, environment 0ms))
+Vitest suite release-ci-base: chunk 36/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.artifacts.test.ts
+Vitest suite release-ci-base: chunk 36/82 passed in 3383ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  3.17s (transform 1.35s, setup 0ms, import 1.67s, tests 1.43s, environment 0ms))
+Vitest suite release-ci-base: chunk 37/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.git.test.ts
+Vitest suite release-ci-base: chunk 37/82 passed in 10932ms (Test Files  1 passed (1); Tests  6 passed (6); Duration  10.67s (transform 1.20s, setup 0ms, import 1.52s, tests 9.09s, environment 0ms))
+Vitest suite release-ci-base: chunk 38/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.network.test.ts
+Vitest suite release-ci-base: chunk 38/82 passed in 4352ms (Test Files  1 passed (1); Tests  3 passed (3); Duration  4.14s (transform 1.07s, setup 0ms, import 1.34s, tests 2.73s, environment 0ms))
+Vitest suite release-ci-base: chunk 39/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-open.validation.test.ts
+Vitest suite release-ci-base: chunk 39/82 passed in 2404ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  2.19s (transform 1.12s, setup 0ms, import 1.41s, tests 715ms, environment 0ms))
+Vitest suite release-ci-base: chunk 40/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.open-hydration.test.ts
+Vitest suite release-ci-base: chunk 40/82 passed in 6989ms (Test Files  1 passed (1); Tests  5 passed (5); Duration  6.77s (transform 1.30s, setup 0ms, import 1.60s, tests 5.11s, environment 0ms))
+Vitest suite release-ci-base: chunk 41/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
+Vitest suite release-ci-base: chunk 41/82 passed in 5531ms (Test Files  1 passed (1); Tests  23 passed (23); Duration  5.32s (transform 1.14s, setup 0ms, import 1.41s, tests 3.84s, environment 0ms))
+Vitest suite release-ci-base: chunk 42/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.update.test.ts
+Vitest suite release-ci-base: chunk 42/82 passed in 2939ms (Test Files  1 passed (1); Tests  4 passed (4); Duration  2.73s (transform 1.17s, setup 0ms, import 1.46s, tests 1.20s, environment 0ms))
+Vitest suite release-ci-base: chunk 43/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.start-ready.test.ts
+Vitest suite release-ci-base: chunk 43/82 passed in 2253ms (Test Files  1 passed (1); Tests  1 passed (1); Duration  2.04s (transform 1.07s, setup 0ms, import 1.36s, tests 607ms, environment 0ms))
+Vitest suite release-ci-base: chunk 44/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.status.test.ts
+Vitest suite release-ci-base: chunk 44/82 passed in 4448ms (Test Files  1 passed (1); Tests  4 passed (4); Duration  4.22s (transform 1.13s, setup 0ms, import 1.42s, tests 2.74s, environment 0ms))
+Vitest suite release-ci-base: chunk 45/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts
+Vitest suite release-ci-base: chunk 45/82 passed in 2751ms (Test Files  1 passed (1); Tests  10 passed (10); Duration  2.53s (transform 1.14s, setup 0ms, import 1.45s, tests 1.02s, environment 0ms))
+Vitest suite release-ci-base: chunk 46/82 (1 files): packages/agentplane/src/cli/run-cli.core.pr-flow.worktree-runtime.test.ts
+Vitest suite release-ci-base: chunk 46/82 passed in 6839ms (Test Files  1 passed (1); Tests  6 passed (6); Duration  6.62s (transform 1.09s, setup 0ms, import 1.38s, tests 5.17s, environment 0ms))
+Vitest suite release-ci-base: chunk 47/82 (10 files): packages/agentplane/src/cli/run-cli.core.release-tasks-reconcile.test.ts, packages/agentplane/src/cli/run-cli.core.route-decision.batch.test.ts, packages/agentplane/src/cli/run-cli.core.route-decision.direct-closeout.test.ts, packages/agentplane/src/cli/run-cli.core.route-decision.pr-open-metadata.test.ts, packages/agentplane/src/cli/run-cli.core.route-decision.pre-merge.test.ts, packages/agentplane/src/cli/run-cli.core.route-decision.quality.test.ts, packages/agentplane/src/cli/run-cli.core.route-decision.test.ts, packages/agentplane/src/cli/run-cli.core.route-decision.work-start.test.ts, packages/agentplane/src/cli/run-cli.core.task-guided.test.ts, packages/agentplane/src/cli/run-cli.core.task-handoff.test.ts
+Vitest suite release-ci-base: chunk 47/82 passed in 9641ms (Test Files  10 passed (10); Tests  38 passed (38); Duration  9.40s (transform 2.28s, setup 0ms, import 5.23s, tests 12.68s, environment 0ms))
+Vitest suite release-ci-base: chunk 48/82 (10 files): packages/agentplane/src/cli/run-cli.core.task-hosted-close-pr.test.ts, packages/agentplane/src/cli/run-cli.core.task-hosted-close.test.ts, packages/agentplane/src/cli/run-cli.core.task-next-action-json.test.ts, packages/agentplane/src/cli/run-cli.core.task-run.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.active.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.branch-pr-list-state.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.close-noop-readme.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.create.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.doc-write.validation.test.ts
+Vitest suite release-ci-base: chunk 48/82 passed in 8653ms (Test Files  10 passed (10); Tests  48 passed (48); Duration  8.42s (transform 2.43s, setup 0ms, import 5.64s, tests 10.27s, environment 0ms))
+Vitest suite release-ci-base: chunk 49/82 (10 files): packages/agentplane/src/cli/run-cli.core.tasks.findings.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.human-input.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.incidents.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.lifecycle.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.list-active-summary.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.query-listing.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.update-scrub.test.ts, packages/agentplane/src/cli/run-cli.core.tasks.verify-matrix.test.ts
+Vitest suite release-ci-base: chunk 49/82 passed in 5827ms (Test Files  10 passed (10); Tests  72 passed (72); Duration  5.60s (transform 2.26s, setup 0ms, import 5.38s, tests 4.64s, environment 0ms))
+Vitest suite release-ci-base: chunk 50/82 (10 files): packages/agentplane/src/cli/run-cli.core.test.ts, packages/agentplane/src/cli/run-cli.core.upgrade-dirty-state.test.ts, packages/agentplane/src/cli/run-cli.core.upgrade.context-policy.test.ts, packages/agentplane/src/cli/run-cli.critical.exit-codes.test.ts, packages/agentplane/src/cli/run-cli.critical.git-edge.test.ts, packages/agentplane/src/cli/run-cli.critical.protected-paths.test.ts, packages/agentplane/src/cli/run-cli.critical.scope-leak.test.ts, packages/agentplane/src/cli/run-cli.critical.symlink-root.test.ts, packages/agentplane/src/cli/run-cli.recipes.install-project.test.ts, packages/agentplane/src/cli/run-cli.recipes.remote-usage.test.ts
+Vitest suite release-ci-base: chunk 50/82 passed in 12265ms (Test Files  10 passed (10); Tests  83 passed (83); Duration  11.98s (transform 5.13s, setup 0ms, import 8.10s, tests 15.11s, environment 0ms))
+Vitest suite release-ci-base: chunk 51/82 (10 files): packages/agentplane/src/cli/run-cli.recipes.validation-list.test.ts, packages/agentplane/src/cli/run-cli.scenario.test.ts, packages/agentplane/src/cli/run-cli.test-helpers.test.ts, packages/agentplane/src/cli/run-cli/agent-mode.test.ts, packages/agentplane/src/cli/run-cli/command-catalog.test.ts, packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts, packages/agentplane/src/cli/run-cli/commands/init/execution.test.ts, packages/agentplane/src/cli/run-cli/commands/init/prompts.test.ts, packages/agentplane/src/cli/run-cli/commands/init/steps/apply.test.ts, packages/agentplane/src/cli/run-cli/commands/init/steps/conflict-resolver.test.ts
+Vitest suite release-ci-base: chunk 51/82 passed in 5028ms (Test Files  10 passed (10); Tests  38 passed (38); Duration  4.74s (transform 5.49s, setup 0ms, import 7.11s, tests 798ms, environment 0ms))
+Vitest suite release-ci-base: chunk 52/82 (10 files): packages/agentplane/src/cli/run-cli/commands/init/steps/prompt-steps.test.ts, packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts, packages/agentplane/src/cli/runtime-context.test.ts, packages/agentplane/src/cli/runtime-watch.test.ts, packages/agentplane/src/cli/spec/docs-render.test.ts, packages/agentplane/src/cli/spec/help-render.test.ts, packages/agentplane/src/cli/spec/parse.test.ts, packages/agentplane/src/cli/spec/registry.test.ts, packages/agentplane/src/cli/spec/suggest.test.ts, packages/agentplane/src/cli/stale-dist-policy.test.ts
+Vitest suite release-ci-base: chunk 52/82 passed in 810ms (Test Files  10 passed (10); Tests  41 passed (41); Duration  563ms (transform 96ms, setup 0ms, import 157ms, tests 265ms, environment 0ms))
+Vitest suite release-ci-base: chunk 53/82 (10 files): packages/agentplane/src/cli/stale-dist-readonly.test.ts, packages/agentplane/src/cli/test-inventory.test.ts, packages/agentplane/src/cli/test-routing-check.test.ts, packages/agentplane/src/cli/update-check.test.ts, packages/agentplane/src/cli/verify-global-install-script.test.ts, packages/agentplane/src/cli/wait-remote-pr-checks-script.test.ts, packages/agentplane/src/commands/acr/acr.command.test.ts, packages/agentplane/src/commands/backend.test.ts, packages/agentplane/src/commands/blueprint/snapshot-artifact.test.ts, packages/agentplane/src/commands/blueprint/task-input.test.ts
+Vitest suite release-ci-base: chunk 53/82 passed in 7836ms (Test Files  10 passed (10); Tests  73 passed (73); Duration  7.62s (transform 449ms, setup 0ms, import 985ms, tests 10.44s, environment 0ms))
+Vitest suite release-ci-base: chunk 54/82 (10 files): packages/agentplane/src/commands/blueprints/catalog-cache.test.ts, packages/agentplane/src/commands/branch/work-start.direct.test.ts, packages/agentplane/src/commands/branch/work-start.hook-shim.test.ts, packages/agentplane/src/commands/codex/plugin-install.test.ts, packages/agentplane/src/commands/context/check.unit.test.ts, packages/agentplane/src/commands/context/dashboard.unit.test.ts, packages/agentplane/src/commands/context/extraction-apply.unit.test.ts, packages/agentplane/src/commands/context/finalize.unit.test.ts, packages/agentplane/src/commands/context/harvest-tasks.test.ts, packages/agentplane/src/commands/context/issue-gates.unit.test.ts
+Vitest suite release-ci-base: chunk 54/82 passed in 7294ms (Test Files  10 passed (10); Tests  50 passed (50); Duration  7.00s (transform 1.19s, setup 0ms, import 2.34s, tests 6.92s, environment 0ms))
+Vitest suite release-ci-base: chunk 55/82 (10 files): packages/agentplane/src/commands/context/migrate.unit.test.ts, packages/agentplane/src/commands/context/release-readiness.raw-deletion.test.ts, packages/agentplane/src/commands/context/release-readiness.test.ts, packages/agentplane/src/commands/context/sqlite.unit.test.ts, packages/agentplane/src/commands/context/verify-task.maximum-assimilation.test.ts, packages/agentplane/src/commands/context/verify-task.maximum-assimilation.unit.test.ts, packages/agentplane/src/commands/context/wiki-index.unit.test.ts, packages/agentplane/src/commands/context/wiki-lint.unit.test.ts, packages/agentplane/src/commands/context/wiki-reports.unit.test.ts, packages/agentplane/src/commands/context/wiki.obsidian.unit.test.ts
+Vitest suite release-ci-base: chunk 55/82 passed in 2804ms (Test Files  10 passed (10); Tests  45 passed (45); Duration  2.54s (transform 2.02s, setup 0ms, import 3.15s, tests 556ms, environment 0ms))
+Vitest suite release-ci-base: chunk 56/82 (10 files): packages/agentplane/src/commands/doctor.branch-pr.batch.test.ts, packages/agentplane/src/commands/doctor.branch-pr.memo.test.ts, packages/agentplane/src/commands/doctor.command.open-pr.test.ts, packages/agentplane/src/commands/doctor.command.runtime.test.ts, packages/agentplane/src/commands/doctor.command.task-docs.test.ts, packages/agentplane/src/commands/doctor.fast.test.ts, packages/agentplane/src/commands/doctor/archive.test.ts, packages/agentplane/src/commands/evaluator/evaluator-run.command.test.ts, packages/agentplane/src/commands/evidence/evidence.command.test.ts, packages/agentplane/src/commands/guard/impl/allow.test.ts
+Vitest suite release-ci-base: chunk 56/82 passed in 8591ms (Test Files  11 passed (11); Tests  88 passed (88); Duration  8.34s (transform 2.66s, setup 0ms, import 4.87s, tests 8.99s, environment 1ms))
+Vitest suite release-ci-base: chunk 57/82 (10 files): packages/agentplane/src/commands/guard/impl/close-message.test.ts, packages/agentplane/src/commands/guard/impl/commands.commit-close.unit.test.ts, packages/agentplane/src/commands/guard/impl/commands.commit-non-close.unit.test.ts, packages/agentplane/src/commands/guard/impl/commands.guard.unit.test.ts, packages/agentplane/src/commands/guard/impl/comment-commit.test.ts, packages/agentplane/src/commands/guard/impl/commit-diagnostics.unit.test.ts, packages/agentplane/src/commands/guard/impl/env.test.ts, packages/agentplane/src/commands/guard/impl/policy.test.ts, packages/agentplane/src/commands/guard/index.test.ts, packages/agentplane/src/commands/hermes/hermes.command.test.ts
+Vitest suite release-ci-base: chunk 57/82 passed in 7261ms (Test Files  17 passed (17); Tests  154 passed (154); Duration  6.98s (transform 3.16s, setup 0ms, import 4.84s, tests 7.70s, environment 1ms))
+Vitest suite release-ci-base: chunk 58/82 (10 files): packages/agentplane/src/commands/hooks/capabilities.test.ts, packages/agentplane/src/commands/hooks/task-context.test.ts, packages/agentplane/src/commands/incidents/shared.test.ts, packages/agentplane/src/commands/insights/insights-issue-publish.test.ts, packages/agentplane/src/commands/integrate-queue-lane.test.ts, packages/agentplane/src/commands/integrate-queue-recovery.test.ts, packages/agentplane/src/commands/integrate-queue.spec.test.ts, packages/agentplane/src/commands/pr/flow-status.pre-merge.test.ts, packages/agentplane/src/commands/pr/input-validation.test.ts, packages/agentplane/src/commands/pr/integrate/cmd.test.ts
+Vitest suite release-ci-base: chunk 58/82 passed in 2657ms (Test Files  10 passed (10); Tests  39 passed (39); Duration  2.38s (transform 1.58s, setup 0ms, import 2.31s, tests 800ms, environment 1ms))
+Vitest suite release-ci-base: chunk 59/82 (10 files): packages/agentplane/src/commands/pr/integrate/internal/bootstrap-guidance.test.ts, packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts, packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts, packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts, packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts, packages/agentplane/src/commands/pr/integrate/queue-mutex.test.ts, packages/agentplane/src/commands/pr/integrate/queue-state.test.ts, packages/agentplane/src/commands/pr/internal/auto-commit.test.ts, packages/agentplane/src/commands/pr/internal/batch-validation.test.ts, packages/agentplane/src/commands/pr/internal/freshness.test.ts
+Vitest suite release-ci-base: chunk 59/82 passed in 1405ms (Test Files  10 passed (10); Tests  49 passed (49); Duration  1.15s (transform 554ms, setup 0ms, import 842ms, tests 554ms, environment 1ms))
+Vitest suite release-ci-base: chunk 60/82 (10 files): packages/agentplane/src/commands/pr/internal/pr-artifact-snapshot.test.ts, packages/agentplane/src/commands/pr/internal/pr-paths.test.ts, packages/agentplane/src/commands/pr/internal/review-template.test.ts, packages/agentplane/src/commands/pr/internal/sync-batch-ownership.test.ts, packages/agentplane/src/commands/pr/internal/sync-branch.test.ts, packages/agentplane/src/commands/pr/internal/sync-github.test.ts, packages/agentplane/src/commands/pr/pr.spec.unit.test.ts, packages/agentplane/src/commands/recipes.cache.test.ts, packages/agentplane/src/commands/recipes.catalog-install.test.ts, packages/agentplane/src/commands/recipes.list.test.ts
+Vitest suite release-ci-base: chunk 60/82 passed in 5852ms (Test Files  10 passed (10); Tests  59 passed (59); Duration  5.54s (transform 2.77s, setup 0ms, import 4.60s, tests 4.41s, environment 1ms))
+Vitest suite release-ci-base: chunk 61/82 (10 files): packages/agentplane/src/commands/recipes.scenario.test.ts, packages/agentplane/src/commands/recipes.transaction.test.ts, packages/agentplane/src/commands/recipes/impl/constants.test.ts, packages/agentplane/src/commands/recipes/impl/overlay-project.test.ts, packages/agentplane/src/commands/recipes/impl/project-installed-recipes.test.ts, packages/agentplane/src/commands/recipes/impl/resolver.test.ts, packages/agentplane/src/commands/recipes/impl/scenario.test.ts, packages/agentplane/src/commands/release/apply.apply-flow.test.ts, packages/agentplane/src/commands/release/apply.mutation.unit.test.ts, packages/agentplane/src/commands/release/apply.preflight.test.ts
+Vitest suite release-ci-base: chunk 61/82 passed in 7296ms (Test Files  10 passed (10); Tests  54 passed (54); Duration  6.91s (transform 4.24s, setup 0ms, import 6.92s, tests 5.39s, environment 1ms))
+Vitest suite release-ci-base: chunk 62/82 (10 files): packages/agentplane/src/commands/release/apply.push-recovery.test.ts, packages/agentplane/src/commands/release/apply.version-mutation.test.ts, packages/agentplane/src/commands/release/audit-platform-publication-script.test.ts, packages/agentplane/src/commands/release/bun-compiled-cli-smoke-script.test.ts, packages/agentplane/src/commands/release/check-release-parity-script.test.ts, packages/agentplane/src/commands/release/check-release-version-script.test.ts, packages/agentplane/src/commands/release/ci-workflow-contract.test.ts, packages/agentplane/src/commands/release/generate-bun-cli-assets-script.test.ts, packages/agentplane/src/commands/release/generate-release-distribution-script.test.ts, packages/agentplane/src/commands/release/generate-standalone-cli-assets-script.test.ts
+Vitest suite release-ci-base: chunk 62/82 passed in 18796ms (Test Files  10 passed (10); Tests  43 passed (43); Duration  18.46s (transform 3.82s, setup 0ms, import 5.02s, tests 28.80s, environment 1ms))
+Vitest suite release-ci-base: chunk 63/82 (10 files): packages/agentplane/src/commands/release/local-release-e2e-script.test.ts, packages/agentplane/src/commands/release/npm-version-availability-script.test.ts, packages/agentplane/src/commands/release/plan.test.ts, packages/agentplane/src/commands/release/publish-external-distribution-script.test.ts, packages/agentplane/src/commands/release/publish-workflow-contract.test.ts, packages/agentplane/src/commands/release/release-check-script.test.ts, packages/agentplane/src/commands/release/release-ci-contract.test.ts, packages/agentplane/src/commands/release/release-incidents-script.test.ts, packages/agentplane/src/commands/release/release-next-action-script.test.ts, packages/agentplane/src/commands/release/release-ready-manifest-script.test.ts
+Vitest suite release-ci-base: chunk 63/82 passed in 10361ms (Test Files  10 passed (10); Tests  46 passed (46); Duration  9.98s (transform 1.83s, setup 0ms, import 2.87s, tests 16.18s, environment 1ms))
+Vitest suite release-ci-base: chunk 64/82 (10 files): packages/agentplane/src/commands/release/release-task-evidence-script.test.ts, packages/agentplane/src/commands/release/render-homebrew-formula-script.test.ts, packages/agentplane/src/commands/release/render-scoop-and-setup-standalone-script.test.ts, packages/agentplane/src/commands/release/resolve-canonical-release-sha-script.test.ts, packages/agentplane/src/commands/release/resolve-release-ready-source-script.test.ts, packages/agentplane/src/commands/release/task-registry-ready-script.test.ts, packages/agentplane/src/commands/release/task-state-script.test.ts, packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts, packages/agentplane/src/commands/release/write-publish-result-manifest-script.test.ts, packages/agentplane/src/commands/release/write-release-ready-manifest-script.test.ts
+Vitest suite release-ci-base: chunk 64/82 passed in 6407ms (Test Files  10 passed (10); Tests  47 passed (47); Duration  6.08s (transform 1.85s, setup 0ms, import 2.46s, tests 6.35s, environment 1ms))
+Vitest suite release-ci-base: chunk 65/82 (10 files): packages/agentplane/src/commands/runtime.command.test.ts, packages/agentplane/src/commands/scenario/impl/commands.test.ts, packages/agentplane/src/commands/shared/approval-requirements.test.ts, packages/agentplane/src/commands/shared/close-precheck.test.ts, packages/agentplane/src/commands/shared/comment-format.test.ts, packages/agentplane/src/commands/shared/diagnostics.test.ts, packages/agentplane/src/commands/shared/git-context.test.ts, packages/agentplane/src/commands/shared/merged-branch-cleanup.test.ts, packages/agentplane/src/commands/shared/network-approval.test.ts, packages/agentplane/src/commands/shared/operator-pipeline.test.ts
+Vitest suite release-ci-base: chunk 65/82 passed in 2091ms (Test Files  10 passed (10); Tests  48 passed (48); Duration  1.82s (transform 1.46s, setup 0ms, import 2.20s, tests 98ms, environment 0ms))
+Vitest suite release-ci-base: chunk 66/82 (10 files): packages/agentplane/src/commands/shared/pr-meta.test.ts, packages/agentplane/src/commands/shared/reconcile-check.test.ts, packages/agentplane/src/commands/shared/route-decision.source-confidence.test.ts, packages/agentplane/src/commands/shared/route-guidance.test.ts, packages/agentplane/src/commands/shared/route-oracle.test.ts, packages/agentplane/src/commands/shared/task-backend.test.ts, packages/agentplane/src/commands/shared/task-handoff.test.ts, packages/agentplane/src/commands/shared/task-mutation.test.ts, packages/agentplane/src/commands/shared/task-store.test.ts, packages/agentplane/src/commands/task/block.unit.test.ts
+Vitest suite release-ci-base: chunk 66/82 passed in 3738ms (Test Files  10 passed (10); Tests  80 passed (80); Duration  3.48s (transform 1.97s, setup 0ms, import 3.41s, tests 1.66s, environment 1ms))
+Vitest suite release-ci-base: chunk 67/82 (10 files): packages/agentplane/src/commands/task/close-shared.unit.test.ts, packages/agentplane/src/commands/task/close-tail-state.test.ts, packages/agentplane/src/commands/task/comment.unit.test.ts, packages/agentplane/src/commands/task/doc.unit.test.ts, packages/agentplane/src/commands/task/evidence-check.unit.test.ts, packages/agentplane/src/commands/task/findings.unit.test.ts, packages/agentplane/src/commands/task/finish-acr-refresh.unit.test.ts, packages/agentplane/src/commands/task/finish.close-tail.unit.test.ts, packages/agentplane/src/commands/task/finish.pre-merge-closure.unit.test.ts, packages/agentplane/src/commands/task/finish.quality-review-target.unit.test.ts
+Vitest suite release-ci-base: chunk 67/82 passed in 1970ms (Test Files  10 passed (10); Tests  42 passed (42); Duration  1.74s (transform 785ms, setup 0ms, import 1.16s, tests 1.37s, environment 1ms))
+Vitest suite release-ci-base: chunk 68/82 (10 files): packages/agentplane/src/commands/task/finish.state.unit.test.ts, packages/agentplane/src/commands/task/finish.validation.unit.test.ts, packages/agentplane/src/commands/task/hosted-close-pr.command.test.ts, packages/agentplane/src/commands/task/hosted-close-workflow-contract.test.ts, packages/agentplane/src/commands/task/hosted-close.command.test.ts, packages/agentplane/src/commands/task/hosted-merge-sync.test.ts, packages/agentplane/src/commands/task/lifecycle-commit-matrix.unit.test.ts, packages/agentplane/src/commands/task/list.stale-upstream.unit.test.ts, packages/agentplane/src/commands/task/migrate-doc.test.ts, packages/agentplane/src/commands/task/mutation-parity.unit.test.ts
+Vitest suite release-ci-base: chunk 68/82 passed in 4070ms (Test Files  10 passed (10); Tests  75 passed (75); Duration  3.80s (transform 2.23s, setup 0ms, import 3.75s, tests 2.79s, environment 1ms))
+Vitest suite release-ci-base: chunk 69/82 (10 files): packages/agentplane/src/commands/task/observations.unit.test.ts, packages/agentplane/src/commands/task/obsidian.unit.test.ts, packages/agentplane/src/commands/task/plan.unit.test.ts, packages/agentplane/src/commands/task/quality-review-gate.unit.test.ts, packages/agentplane/src/commands/task/set-status.unit.test.ts, packages/agentplane/src/commands/task/shared.unit.test.ts, packages/agentplane/src/commands/task/shared.verify-steps.test.ts, packages/agentplane/src/commands/task/shared/git-log.test.ts, packages/agentplane/src/commands/task/shared/transition-command.unit.test.ts, packages/agentplane/src/commands/task/start.unit.test.ts
+Vitest suite release-ci-base: chunk 69/82 passed in 1768ms (Test Files  10 passed (10); Tests  75 passed (75); Duration  1.51s (transform 744ms, setup 0ms, import 1.56s, tests 575ms, environment 1ms))
+Vitest suite release-ci-base: chunk 70/82 (10 files): packages/agentplane/src/commands/task/update.unit.test.ts, packages/agentplane/src/commands/task/verify-record.unit.test.ts, packages/agentplane/src/commands/task/warn-owner.unit.test.ts, packages/agentplane/src/commands/task/workflow-transition-service.unit.test.ts, packages/agentplane/src/commands/upgrade.agent-mode.test.ts, packages/agentplane/src/commands/upgrade.cleanup.test.ts, packages/agentplane/src/commands/upgrade.json-merge.stability.test.ts, packages/agentplane/src/commands/upgrade.merge.test.ts, packages/agentplane/src/commands/upgrade.release-assets.unit.test.ts, packages/agentplane/src/commands/upgrade.safety.test.ts
+Vitest suite release-ci-base: chunk 70/82 passed in 4635ms (Test Files  10 passed (10); Tests  55 passed (55); Duration  4.36s (transform 2.18s, setup 0ms, import 4.18s, tests 3.67s, environment 1ms))
+Vitest suite release-ci-base: chunk 71/82 (10 files): packages/agentplane/src/commands/upgrade.spec-parse.test.ts, packages/agentplane/src/commands/upgrade.tarball-url.unit.test.ts, packages/agentplane/src/commands/upgrade.unit.test.ts, packages/agentplane/src/commands/workflow.maintenance.test.ts, packages/agentplane/src/commands/workflow.task-doc.test.ts, packages/agentplane/src/commands/workflow.test.ts, packages/agentplane/src/commands/workflow.verify-hooks.test.ts, packages/agentplane/src/context/coverage-validation.test.ts, packages/agentplane/src/context/evaluator-projection.test.ts, packages/agentplane/src/context/extraction-transaction.test.ts
+Vitest suite release-ci-base: chunk 71/82 passed in 6541ms (Test Files  10 passed (10); Tests  76 passed (76); Duration  6.25s (transform 3.73s, setup 0ms, import 6.60s, tests 4.71s, environment 1ms))
+Vitest suite release-ci-base: chunk 72/82 (10 files): packages/agentplane/src/context/extraction-writer.test.ts, packages/agentplane/src/context/ingest-task-pack.test.ts, packages/agentplane/src/context/ingest-task.test.ts, packages/agentplane/src/context/maximum-assimilation-artifacts-validation.test.ts, packages/agentplane/src/context/source-spans.test.ts, packages/agentplane/src/context/verify-task-policy.test.ts, packages/agentplane/src/context/verify-task.test.ts, packages/agentplane/src/context/wiki-synthesis.test.ts, packages/agentplane/src/harness/dynamic-tool-contract.test.ts, packages/agentplane/src/harness/hooks-lifecycle.test.ts
+Vitest suite release-ci-base: chunk 72/82 passed in 1995ms (Test Files  10 passed (10); Tests  32 passed (32); Duration  1.58s (transform 1.05s, setup 0ms, import 1.60s, tests 389ms, environment 1ms))
+Vitest suite release-ci-base: chunk 73/82 (10 files): packages/agentplane/src/harness/reconcile.test.ts, packages/agentplane/src/harness/retry-policy.test.ts, packages/agentplane/src/harness/scheduler.test.ts, packages/agentplane/src/harness/state-machine.test.ts, packages/agentplane/src/harness/token-accounting.test.ts, packages/agentplane/src/harness/workspace-safety.test.ts, packages/agentplane/src/meta/release.test.ts, packages/agentplane/src/policy/engine.test.ts, packages/agentplane/src/policy/evaluate.test.ts, packages/agentplane/src/policy/taxonomy.test.ts
+Vitest suite release-ci-base: chunk 73/82 passed in 932ms (Test Files  10 passed (10); Tests  42 passed (42); Duration  614ms (transform 142ms, setup 0ms, import 311ms, tests 42ms, environment 1ms))
+Vitest suite release-ci-base: chunk 74/82 (10 files): packages/agentplane/src/runner/adapters/codex.test.ts, packages/agentplane/src/runner/adapters/custom.test.ts, packages/agentplane/src/runner/artifacts.test.ts, packages/agentplane/src/runner/codex-approval-probe.test.ts, packages/agentplane/src/runner/codex-smoke.test.ts, packages/agentplane/src/runner/config.test.ts, packages/agentplane/src/runner/context/base-prompts.test.ts, packages/agentplane/src/runner/context/task-context.test.ts, packages/agentplane/src/runner/playbooks.test.ts, packages/agentplane/src/runner/policy-decision.test.ts
+Vitest suite release-ci-base: chunk 74/82 passed in 9921ms (Test Files  10 passed (10); Tests  57 passed (57); Duration  9.66s (transform 3.13s, setup 0ms, import 4.71s, tests 13.50s, environment 0ms))
+Vitest suite release-ci-base: chunk 75/82 (10 files): packages/agentplane/src/runner/process-supervision.test.ts, packages/agentplane/src/runner/result-manifest-policy.test.ts, packages/agentplane/src/runner/result-manifest.test.ts, packages/agentplane/src/runner/task-run-paths.test.ts, packages/agentplane/src/runner/trace.test.ts, packages/agentplane/src/runner/usecases/scenario-materialize-task.test.ts, packages/agentplane/src/runner/usecases/task-run-blueprint.test.ts, packages/agentplane/src/runner/usecases/task-run-lifecycle.test.ts, packages/agentplane/src/runtime/approvals/runtime.test.ts, packages/agentplane/src/runtime/behavior/resolve.test.ts
+Vitest suite release-ci-base: chunk 75/82 passed in 7135ms (Test Files  10 passed (10); Tests  49 passed (49); Duration  6.89s (transform 2.20s, setup 0ms, import 3.43s, tests 9.37s, environment 0ms))
+Vitest suite release-ci-base: chunk 76/82 (10 files): packages/agentplane/src/runtime/capabilities/resolve.test.ts, packages/agentplane/src/runtime/execution-profile/resolve.test.ts, packages/agentplane/src/runtime/explain/resolve.test.ts, packages/agentplane/src/runtime/harness/resolve.test.ts, packages/agentplane/src/runtime/incidents/resolve.test.ts, packages/agentplane/src/runtime/prompt-fragments/json.test.ts, packages/agentplane/src/runtime/prompt-fragments/markdown.test.ts, packages/agentplane/src/runtime/prompt-modules/compiler.test.ts, packages/agentplane/src/runtime/prompt-modules/gpt55-contract.test.ts, packages/agentplane/src/runtime/prompt-modules/gpt56-contract.test.ts
+Vitest suite release-ci-base: chunk 76/82 passed in 975ms (Test Files  10 passed (10); Tests  50 passed (50); Duration  762ms (transform 247ms, setup 0ms, import 551ms, tests 129ms, environment 1ms))
+Vitest suite release-ci-base: chunk 77/82 (10 files): packages/agentplane/src/runtime/prompt-modules/model.test.ts, packages/agentplane/src/runtime/prompt-modules/mutations.test.ts, packages/agentplane/src/runtime/prompt-modules/registry.test.ts, packages/agentplane/src/runtime/protocol/resolve.test.ts, packages/agentplane/src/runtime/sgr/contracts.test.ts, packages/agentplane/src/runtime/shared/repo-cli-version.test.ts, packages/agentplane/src/runtime/shared/runtime-source.test.ts, packages/agentplane/src/runtime/task-intake/resolve.test.ts, packages/agentplane/src/shared/ansi.test.ts, packages/agentplane/src/shared/env.test.ts
+Vitest suite release-ci-base: chunk 77/82 passed in 2470ms (Test Files  10 passed (10); Tests  45 passed (45); Duration  2.21s (transform 1.71s, setup 0ms, import 2.49s, tests 111ms, environment 1ms))
+Vitest suite release-ci-base: chunk 78/82 (10 files): packages/agentplane/src/shared/errors.test.ts, packages/agentplane/src/shared/git-index-lock-guard.test.ts, packages/agentplane/src/shared/git-mutation.test.ts, packages/agentplane/src/shared/json-io.test.ts, packages/agentplane/src/shared/package-paths.test.ts, packages/agentplane/src/shared/protected-paths.test.ts, packages/agentplane/src/shared/runtime-env.test.ts, packages/agentplane/src/shared/trace-events.test.ts, packages/agentplane/src/shared/write-if-changed.test.ts, packages/agentplane/src/workflow-lifecycle/contract.test.ts
+Vitest suite release-ci-base: chunk 78/82 passed in 943ms (Test Files  10 passed (10); Tests  28 passed (28); Duration  667ms (transform 200ms, setup 0ms, import 330ms, tests 224ms, environment 0ms))
+Vitest suite release-ci-base: chunk 79/82 (10 files): packages/agentplane/src/workflow-lifecycle/parity-check.test.ts, packages/agentplane/src/workflow-runtime/build.test.ts, packages/agentplane/src/workflow-runtime/enforcement.test.ts, packages/agentplane/src/workflow-runtime/file-ops.test.ts, packages/agentplane/src/workflow-runtime/template.test.ts, packages/agentplane/src/workflow-runtime/validate.test.ts, packages/core/src/commit/commit-policy.test.ts, packages/core/src/config/config.test.ts, packages/core/src/config/execution-profile.test.ts, packages/core/src/fs/atomic-write.test.ts
+Vitest suite release-ci-base: chunk 79/82 passed in 1035ms (Test Files  10 passed (10); Tests  81 passed (81); Duration  785ms (transform 282ms, setup 0ms, import 705ms, tests 190ms, environment 0ms))
+Vitest suite release-ci-base: chunk 80/82 (10 files): packages/core/src/git/base-branch.test.ts, packages/core/src/git/git-client.test.ts, packages/core/src/git/git-diff.test.ts, packages/core/src/git/git-utils.test.ts, packages/core/src/git/git-worktree.test.ts, packages/core/src/logger.test.ts, packages/core/src/process/run-process.test.ts, packages/core/src/project/project-root.test.ts, packages/core/src/tasks/task-artifact-schema.test.ts, packages/core/src/tasks/task-doc-mutation.test.ts
+Vitest suite release-ci-base: chunk 80/82 passed in 2481ms (Test Files  10 passed (10); Tests  84 passed (84); Duration  2.27s (transform 223ms, setup 0ms, import 711ms, tests 2.96s, environment 0ms))
+Vitest suite release-ci-base: chunk 81/82 (10 files): packages/core/src/tasks/task-doc.test.ts, packages/core/src/tasks/task-provider-safe-projection.test.ts, packages/core/src/tasks/task-readme-io.test.ts, packages/core/src/tasks/task-readme.test.ts, packages/core/src/tasks/task-status.test.ts, packages/core/src/tasks/task-store.test.ts, packages/core/src/tasks/task-sync-envelope-schema.test.ts, packages/core/src/tasks/tasks-export.test.ts, packages/core/src/tasks/tasks-lint.test.ts, packages/recipes/src/blueprint-extensions.test.ts
+Vitest suite release-ci-base: chunk 81/82 passed in 1151ms (Test Files  10 passed (10); Tests  82 passed (82); Duration  903ms (transform 189ms, setup 0ms, import 689ms, tests 442ms, environment 0ms))
+Vitest suite release-ci-base: chunk 82/82 (5 files): packages/recipes/src/index.test.ts, packages/recipes/src/overlay.test.ts, packages/testkit/src/cli-harness/recipe-archives.test.ts, packages/testkit/src/cli.test.ts, packages/testkit/src/index.test.ts
+Vitest suite release-ci-base: chunk 82/82 passed in 2129ms (Test Files  5 passed (5); Tests  16 passed (16); Duration  1.88s (transform 2.61s, setup 0ms, import 3.35s, tests 42ms, environment 0ms))
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25
+
+
+ Test Files  13 passed (13)
+      Tests  34 passed (34)
+   Start at  16:33:45
+   Duration  400ms (transform 249ms, setup 0ms, import 626ms, tests 90ms, environment 1ms)
+
+Workflow harness suite contract OK (5 source targets; matrix=docs/developer/workflow-harness-test-matrix.mdx).
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25
+
+
+ Test Files  19 passed (19)
+      Tests  204 passed (204)
+   Start at  16:33:46
+   Duration  6.88s (transform 7.72s, setup 0ms, import 11.80s, tests 12.00s, environment 1ms)
+
+Significant suite contract OK (17 source targets).
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25
+
+
+ Test Files  4 passed (4)
+      Tests  16 passed (16)
+   Start at  16:33:54
+   Duration  13.77s (transform 6.70s, setup 0ms, import 8.40s, tests 18.08s, environment 0ms)
+
+$ bun run release:prepublish:fast && bun run release:prepublish:heavy
+$ bun run release:check
+$ bun run release:incidents:check && bun run release:acr-example:check && bun run docs:readme-header:check && bun run docs:social:check && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && bun run --filter=@agentplane/testkit build && bun run --filter=@agentplaneorg/recipes build && node scripts/release-check.mjs
+$ node scripts/check-release-incidents.mjs
+$ node scripts/checks/check-acr-example-version.mjs
+$ node scripts/generate/generate-readme-header.mjs --check
+$ cd website && bun run check-social-images
+$ node scripts/generate-social-images.mjs --check
+$ bun run release:ci-check
+$ bun run ci:contract && bun run ci:release-extras
+$ bun run format:check && bun run schemas:check && bun run spec:examples:check && bun run release:acr-example:check && bun run agents:check && bun run policy:routing:check && bun run release:parity && bun run docs:bootstrap:check && bun run docs:onboarding:check && bun run docs:ia:check && bun run docs:scripts:check && bun run hotspots:check && bun run lifecycle:invariants && bun run check:types-files && bun run vitest:projects:check && bun run guards:check && bun run lint:core && bun run logging:check && bun run arch:check && bun run clone:check && bun run knip:check && bun run coverage:thresholds:check
+$ prettier . --check
+$ bun scripts/generate/sync-schemas.mjs check
+$ node scripts/checks/check-spec-examples.mjs
+$ node scripts/checks/check-acr-example-version.mjs
+$ node scripts/generate/sync-agent-templates.mjs check
+$ node scripts/checks/check-policy-routing.mjs
+$ node scripts/release/check-release-parity.mjs
+$ node scripts/checks/check-agent-bootstrap-fresh.mjs
+$ node scripts/checks/check-agent-onboarding-scenario.mjs
+$ node scripts/checks/check-docs-ia.mjs
+$ node scripts/generate/generate-scripts-readme.mjs --check
+$ node scripts/checks/hotspot-report.mjs --check --warning-lines 400 --oversized-lines 600 --test-warning-lines 1000 --oversized-test-lines 1300 && node scripts/checks/check-oversized-test-baseline.mjs --threshold-lines 1000
+$ node scripts/checks/check-lifecycle-invariants.mjs
+$ node scripts/checks/check-types-files.mjs
+$ node scripts/checks/check-vitest-projects.mjs
+$ node scripts/checks/check-shared-guards.mjs
+$ eslint packages scripts eslint.config.cjs vitest.config.ts
+$ node scripts/checks/check-no-console.mjs
+$ bun run arch:baseline && bun run arch:deps
+$ node scripts/checks/check-depcruise-known-violations.mjs
+$ node scripts/checks/run-depcruise-arch.mjs depcruise.config.cjs
+$ node scripts/checks/check-clone-baseline.mjs
+$ node scripts/checks/check-knip-baseline.mjs
+$ node scripts/checks/check-coverage-thresholds.mjs
+$ bun run artifacts:check && bun run task-state:check && bun run build && bun run package:tarball:check && bun run package:install-smoke && bun run docs:cli:check && bun run docs:recipes:check && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com node scripts/checks/run-vitest-suite.mjs release-ci-base && bun run coverage:workflow-suite && bun run coverage:significant-suite && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci@example.com GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:release:critical
+$ node scripts/checks/check-agentplane-artifacts.mjs
+$ node scripts/checks/check-task-state.mjs
+$ node scripts/checks/run-typescript-build.mjs && bun run --filter=@agentplaneorg/core build:bundle && bun run --filter=@agentplaneorg/recipes build:bundle && bun run --filter=agentplane build:bundle
+$ node scripts/release/check-package-tarball.mjs
+$ node scripts/release/check-local-tarball-install-smoke.mjs
+$ node scripts/checks/check-cli-reference-fresh.mjs
+$ node scripts/checks/check-recipes-inventory-fresh.mjs
+$ node scripts/workflow/run-workflow-coverage-suite.mjs
+{"ts":"2026-07-30T13:33:46.168Z","component":"workflow-runtime","event":"workflow_build_started"}
+{"ts":"2026-07-30T13:33:46.175Z","component":"workflow-runtime","event":"workflow_build_failed","details":{"diagnostics":1}}
+{"ts":"2026-07-30T13:33:46.175Z","component":"workflow-runtime","event":"workflow_build_started"}
+{"ts":"2026-07-30T13:33:46.178Z","component":"workflow-runtime","event":"workflow_build_failed","details":{"diagnostics":2}}
+{"ts":"2026-07-30T13:33:46.178Z","component":"workflow-runtime","event":"workflow_build_started"}
+{"ts":"2026-07-30T13:33:46.180Z","component":"workflow-runtime","event":"workflow_build_completed","details":{"diagnostics":0}}
+{"ts":"2026-07-30T13:33:46.195Z","component":"workflow-runtime","event":"workflow_publish_completed","details":{"workflowPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-pRuf5p/.agentplane/WORKFLOW.md","lastKnownGoodPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-pRuf5p/.agentplane/workflows/last-known-good.md"}}
+{"ts":"2026-07-30T13:33:46.203Z","component":"workflow-runtime","event":"workflow_publish_completed","details":{"workflowPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-lKs9Gp/.agentplane/WORKFLOW.md","lastKnownGoodPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-lKs9Gp/.agentplane/workflows/last-known-good.md"}}
+{"ts":"2026-07-30T13:33:46.205Z","component":"workflow-runtime","event":"workflow_restore_completed","details":{"workflowPath":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-lKs9Gp/.agentplane/WORKFLOW.md","from":"/var/folders/80/hzx36fdd7ps2j5gbpwm5mcjr0000gn/T/agentplane-workflow-lKs9Gp/.agentplane/workflows/last-known-good.md"}}
+$ node scripts/checks/check-workflow-harness-coverage.mjs
+$ node scripts/checks/run-significant-coverage-suite.mjs
+$ node scripts/checks/check-significant-coverage.mjs
+$ node scripts/checks/run-vitest-suite.mjs release-critical
+
+[2026-07-30T13:34:08.064Z] sha=6e6556ca2f3ff8d51f8c60703db9b4e36fb3e124 $ node scripts/check-release-incidents.mjs
+Release incident gate passed: incidents.md has no active entries.
+
+[2026-07-30T13:34:08.094Z] sha=6e6556ca2f3ff8d51f8c60703db9b4e36fb3e124 $ node scripts/release/check-task-registry-ready.mjs --allow-active-release-task
+task state OK (tasks=3076)
+
+[2026-07-30T13:34:08.688Z] sha=6e6556ca2f3ff8d51f8c60703db9b4e36fb3e124 $ bun run test:project -- agentplane packages/agentplane/src/commands/shared/pr-meta.test.ts
+
+ RUN  v4.1.9 /Users/densmirnov/Github/agentplane/.agentplane/tmp/v0625-release.eugTda/repo/.agentplane/worktrees/202607301059-SWF2VC-release-v0-6-25
+
+
+ Test Files  1 passed (1)
+      Tests  21 passed (21)
+   Start at  16:34:09
+   Duration  227ms (transform 73ms, setup 0ms, import 153ms, tests 9ms, environment 0ms)
+
+$ vitest --config vitest.workspace.ts run --project agentplane packages/agentplane/src/commands/shared/pr-meta.test.ts
+
+[2026-07-30T13:34:09.625Z] ✅ verified_sha=6e6556ca2f3ff8d51f8c60703db9b4e36fb3e124
+
