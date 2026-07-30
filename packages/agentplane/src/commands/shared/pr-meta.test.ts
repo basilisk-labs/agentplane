@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { PassThrough } from "node:stream";
 
 import {
   buildObservedGithubPrMeta,
@@ -54,23 +55,74 @@ describe("pr-meta shell invocations", () => {
     });
   });
 
-  it("uses current shell invocation for command execution", async () => {
+  it("streams verify output without a fixed child-process buffer", async () => {
     delete process.env.COMSPEC;
     delete process.env.ComSpec;
     const gitProcess = await import("@agentplaneorg/core/process");
-    const execFileAsync = vi.spyOn(gitProcess, "execFileAsync").mockResolvedValue({
-      stdout: "ok",
-      stderr: "",
-    });
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    let resolveProcess: ((value: { exitCode: number }) => void) | undefined;
+    const child = Object.assign(
+      new Promise<{ exitCode: number }>((resolve) => {
+        resolveProcess = resolve;
+      }),
+      { stdout, stderr },
+    );
+    const startProcess = vi.spyOn(gitProcess, "startProcess").mockReturnValue(child as never);
 
-    const result = await runShellCommand("echo hello", process.cwd());
+    const pending = runShellCommand("node --version", process.cwd());
+    stdout.end("ok");
+    stderr.end("");
+    resolveProcess?.({ exitCode: 0 });
+    const result = await pending;
 
-    expect(execFileAsync).toHaveBeenCalledWith(
-      "echo",
-      ["hello"],
-      expect.objectContaining({ cwd: process.cwd() }),
+    expect(startProcess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        command: "node",
+        args: ["--version"],
+        cwd: process.cwd(),
+        buffer: false,
+        stdout: "pipe",
+        stderr: "pipe",
+      }),
     );
     expect(result).toEqual({ code: 0, output: "ok" });
+  });
+
+  it("keeps only a bounded tail for release-sized verify output", async () => {
+    const gitProcess = await import("@agentplaneorg/core/process");
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    let resolveProcess: ((value: { exitCode: number }) => void) | undefined;
+    const child = Object.assign(
+      new Promise<{ exitCode: number }>((resolve) => {
+        resolveProcess = resolve;
+      }),
+      { stdout, stderr },
+    );
+    vi.spyOn(gitProcess, "startProcess").mockReturnValue(child as never);
+
+    const pending = runShellCommand("bun test", process.cwd());
+    stdout.end(`discard-me${"x".repeat(1024 * 1024)}tail`);
+    stderr.end("");
+    resolveProcess?.({ exitCode: 0 });
+    const result = await pending;
+
+    expect(result.code).toBe(0);
+    expect(result.output).toContain("[output truncated; showing last 1048576 bytes]");
+    expect(result.output).not.toContain("discard-me");
+    expect(result.output.endsWith("tail")).toBe(true);
+  });
+
+  it("rejects non-allowlisted verify executables before process start", async () => {
+    const gitProcess = await import("@agentplaneorg/core/process");
+    const startProcess = vi.spyOn(gitProcess, "startProcess");
+
+    await expect(runShellCommand("custom-runner --version", process.cwd())).resolves.toEqual({
+      code: 1,
+      output: "verify command executable is not allowed: custom-runner",
+    });
+    expect(startProcess).not.toHaveBeenCalled();
   });
 
   it("rejects invalid pr/meta schema shapes", () => {
