@@ -33,7 +33,9 @@ latency verdict without a provider retry.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ .agentplane/policy/incidents.md                    |    3 +-
  package.json                                       |    2 +
+ packages/agentplane/assets/policy/incidents.md     |    3 +-
  ...cli.critical.agent-efficiency-candidate.test.ts |  214 ++++
  ...critical.agent-efficiency-replay-driver.test.ts |   12 +
  ...tical.agent-efficiency-replay-hardening.test.ts |   27 +
@@ -48,7 +50,7 @@ latency verdict without a provider retry.
  scripts/checks/check-agent-efficiency-replay.mjs   |   30 +-
  scripts/lib/agent-efficiency-replay-safety.mjs     |   20 +-
  scripts/lib/agent-efficiency-replay.mjs            |   58 +
- 15 files changed, 1761 insertions(+), 61 deletions(-)
+ 17 files changed, 1763 insertions(+), 65 deletions(-)
 ```
 
 </details>
