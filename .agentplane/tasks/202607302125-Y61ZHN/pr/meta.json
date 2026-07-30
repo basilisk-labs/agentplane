@@ -8,10 +8,10 @@
   "pr_number": 4696,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4696",
   "pre_merge_closure": {
-    "basis_commit": "8b25b6a2fc417cce9aff9c2575577cd014877d4e",
+    "basis_commit": "a5e04e978ed156de8033a728ab027a400a363d59",
     "branch": "task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit",
     "pr_number": 4696,
-    "recorded_at": "2026-07-30T22:15:45.804Z",
+    "recorded_at": "2026-07-30T22:32:50.883Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
