@@ -589,4 +589,5 @@ export {
   persistTaskKnowledgeRequestAudit,
   taskKnowledgeRequestAuditPath,
   TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY,
+  withTaskKnowledgeRequestAuditReservation,
 } from "./task-knowledge-request-audit.js";

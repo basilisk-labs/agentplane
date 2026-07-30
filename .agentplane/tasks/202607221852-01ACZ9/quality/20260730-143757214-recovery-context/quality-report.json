@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-01ACZ9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T14:38:55.030Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "b05cb41623df33dd5f1883158af057dc808fcf0a",
+  "blueprint_digest": "74844e812dd39e4dafac4298d591a610b79c6d53703b8c720346e0ba53a15e01",
+  "findings": [
+    "Параллельные запросы одного запуска могут получить одинаковый номер раунда и независимо пройти лимит или проверку повторного нерешённого запроса."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-143757214-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Одновременно обслужить два запроса с одинаковыми run_id, work_order_id и fingerprint и подтвердить уникальное последовательное резервирование раундов.",
+    "Одновременно повторить один блокирующий нерешённый запрос и подтвердить, что один результат становится typed escalation, а лимит раундов не превышается."
+  ],
+  "hidden_assumptions": [
+    "Предполагается, что для одного запуска knowledge requests всегда обслуживаются строго последовательно.",
+    "Уникальный путь audit-файла предотвращает потерю артефактов, но сам по себе не сериализует вычисление номера раунда и проверку предыдущих результатов."
+  ],
+  "residual_risks": [
+    "Следующему исполнителю нужно сделать резервирование раунда и проверку repeated-unresolved атомарными на уровне run/work-order binding, затем добавить конкурентные тесты для лимита раундов и блокирующей эскалации."
+  ]
+}

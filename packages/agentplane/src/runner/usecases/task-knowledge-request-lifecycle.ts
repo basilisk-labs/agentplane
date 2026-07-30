@@ -8,6 +8,7 @@ import {
   persistTaskKnowledgeRequestAudit,
   serveTaskKnowledgeRequest,
   taskKnowledgeRequestAuditPath,
+  withTaskKnowledgeRequestAuditReservation,
 } from "./task-knowledge-request.js";
 
 function requestedKnowledge(result: RunnerResult) {
@@ -29,45 +30,54 @@ export async function serveRunnerKnowledgeRequest(opts: {
   result: RunnerResult;
 }): Promise<RunnerResult> {
   const semanticResult = requestedKnowledge(opts.result);
-  if (!semanticResult || !opts.work_order) return opts.result;
+  const workOrder = opts.work_order;
+  if (!semanticResult || !workOrder) return opts.result;
   const requestInvocation = {
     run_id: opts.invocation.run_id,
     work_order_id: opts.invocation.work_order_id,
-    state_fingerprint_digest: opts.work_order.state_fingerprint.digest,
+    state_fingerprint_digest: workOrder.state_fingerprint.digest,
   };
-  const priorAudits = await loadTaskKnowledgeRequestAudits({
-    runs_dir: path.dirname(opts.invocation.run_dir),
+  const runsDir = path.dirname(opts.invocation.run_dir);
+  return await withTaskKnowledgeRequestAuditReservation({
+    runs_dir: runsDir,
     invocation: requestInvocation,
-    role: opts.work_order.role,
-  });
-  const response = await serveTaskKnowledgeRequest({
-    repository_root: opts.repository_root,
-    invocation: requestInvocation,
-    work_order: opts.work_order,
-    semantic_result: semanticResult,
-    prior_audits: priorAudits,
-  });
-  const auditPath = taskKnowledgeRequestAuditPath({
-    run_dir: opts.invocation.run_dir,
-    audit: response,
-  });
-  await persistTaskKnowledgeRequestAudit({ file_path: auditPath, audit: response });
-  return {
-    ...opts.result,
-    knowledge_response: response,
-    artifacts: [
-      ...(opts.result.artifacts ?? []),
-      { path: auditPath, label: "knowledge-request-audit" },
-    ],
-    output_paths: [...(opts.result.output_paths ?? []), auditPath],
-    evidence: {
-      ...opts.result.evidence,
-      knowledge_request: {
-        audit_path: auditPath,
-        audit_digest: response.digest,
-        outcome: response.outcome,
-        round: response.round,
-      },
+    role: workOrder.role,
+    work: async () => {
+      const priorAudits = await loadTaskKnowledgeRequestAudits({
+        runs_dir: runsDir,
+        invocation: requestInvocation,
+        role: workOrder.role,
+      });
+      const response = await serveTaskKnowledgeRequest({
+        repository_root: opts.repository_root,
+        invocation: requestInvocation,
+        work_order: workOrder,
+        semantic_result: semanticResult,
+        prior_audits: priorAudits,
+      });
+      const auditPath = taskKnowledgeRequestAuditPath({
+        run_dir: opts.invocation.run_dir,
+        audit: response,
+      });
+      await persistTaskKnowledgeRequestAudit({ file_path: auditPath, audit: response });
+      return {
+        ...opts.result,
+        knowledge_response: response,
+        artifacts: [
+          ...(opts.result.artifacts ?? []),
+          { path: auditPath, label: "knowledge-request-audit" },
+        ],
+        output_paths: [...(opts.result.output_paths ?? []), auditPath],
+        evidence: {
+          ...opts.result.evidence,
+          knowledge_request: {
+            audit_path: auditPath,
+            audit_digest: response.digest,
+            outcome: response.outcome,
+            round: response.round,
+          },
+        },
+      };
     },
-  };
+  });
 }

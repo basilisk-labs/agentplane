@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { loadCommandContext } from "../../commands/shared/task-backend.js";
 import { cmdContextReindex } from "../../context/reindex.js";
+import type { RunnerResult } from "../types.js";
 import { loadTaskKnowledgeRequestAudits } from "./task-knowledge-request.js";
 import { serveRunnerKnowledgeRequest } from "./task-knowledge-request-lifecycle.js";
 import { createDoingRunnerTask } from "./task-run-lifecycle.testkit.js";
@@ -19,7 +20,10 @@ afterEach(() => {
   process.env.PATH = originalPath;
 });
 
-function needsContextSemanticResult(workOrderId: string): string {
+function needsContextSemanticResult(
+  workOrderId: string,
+  query = "bounded retrieval continuation",
+): string {
   return JSON.stringify({
     schema_version: 2,
     kind: "agent_semantic_result",
@@ -31,13 +35,28 @@ function needsContextSemanticResult(workOrderId: string): string {
     knowledge_request: {
       schema_version: 1,
       kind: "knowledge_request",
-      query: "bounded retrieval continuation",
+      query,
       reason: "The next semantic decision depends on the canonical retrieval boundary.",
       desired_kind: "wiki",
       scope: "task_context",
       blocking: true,
     },
   });
+}
+
+function needsContextRunnerResult(workOrderId: string, query?: string): RunnerResult {
+  return {
+    status: "success",
+    exit_code: 0,
+    started_at: "2026-07-30T00:00:00.000Z",
+    ended_at: "2026-07-30T00:00:01.000Z",
+    semantic_result: {
+      provenance: "agent_reported",
+      value: JSON.parse(needsContextSemanticResult(workOrderId, query)) as NonNullable<
+        RunnerResult["semantic_result"]
+      >["value"],
+    },
+  };
 }
 
 async function configureNeedsContextRunner(root: string): Promise<void> {
@@ -126,23 +145,84 @@ describe("runner knowledge-request lifecycle", () => {
         work_order_id: executed.invocation.work_order_id,
       },
       work_order: executed.bundle.work_order,
-      result: {
-        status: "success",
-        exit_code: 0,
-        started_at: "2026-07-30T00:00:00.000Z",
-        ended_at: "2026-07-30T00:00:01.000Z",
-        semantic_result: {
-          provenance: "agent_reported",
-          value: JSON.parse(
-            needsContextSemanticResult(executed.invocation.work_order_id),
-          ) as NonNullable<typeof executed.result.semantic_result>["value"],
-        },
-      },
+      result: needsContextRunnerResult(executed.invocation.work_order_id),
     });
     expect(continuation.knowledge_response).toMatchObject({
       round: 2,
       outcome: "served",
       run: { run_id: "run-knowledge-lifecycle-002" },
     });
+
+    const runsDir = path.dirname(executed.invocation.run_dir);
+    const concurrentWorkOrder = {
+      ...executed.bundle.work_order!,
+      work_order_id: "work-order-knowledge-concurrent-001",
+    };
+    const concurrentInvocations = [
+      {
+        run_id: "run-knowledge-concurrent-001",
+        run_dir: path.join(runsDir, "run-knowledge-concurrent-001"),
+        work_order_id: concurrentWorkOrder.work_order_id,
+      },
+      {
+        run_id: "run-knowledge-concurrent-002",
+        run_dir: path.join(runsDir, "run-knowledge-concurrent-002"),
+        work_order_id: concurrentWorkOrder.work_order_id,
+      },
+    ];
+    const concurrent = await Promise.all(
+      concurrentInvocations.map(
+        async (invocation) =>
+          await serveRunnerKnowledgeRequest({
+            repository_root: root,
+            invocation,
+            work_order: concurrentWorkOrder,
+            result: needsContextRunnerResult(concurrentWorkOrder.work_order_id),
+          }),
+      ),
+    );
+    expect(
+      concurrent
+        .map((result) => result.knowledge_response?.round)
+        .toSorted((left, right) => (left ?? 0) - (right ?? 0)),
+    ).toEqual([1, 2]);
+
+    const unresolvedWorkOrder = {
+      ...concurrentWorkOrder,
+      work_order_id: "work-order-knowledge-unresolved-001",
+    };
+    const unresolvedInvocations = [
+      {
+        run_id: "run-knowledge-unresolved-001",
+        run_dir: path.join(runsDir, "run-knowledge-unresolved-001"),
+        work_order_id: unresolvedWorkOrder.work_order_id,
+      },
+      {
+        run_id: "run-knowledge-unresolved-002",
+        run_dir: path.join(runsDir, "run-knowledge-unresolved-002"),
+        work_order_id: unresolvedWorkOrder.work_order_id,
+      },
+    ];
+    const unresolved = await Promise.all(
+      unresolvedInvocations.map(
+        async (invocation) =>
+          await serveRunnerKnowledgeRequest({
+            repository_root: root,
+            invocation,
+            work_order: unresolvedWorkOrder,
+            result: needsContextRunnerResult(
+              unresolvedWorkOrder.work_order_id,
+              "unmatched concurrent knowledge gap",
+            ),
+          }),
+      ),
+    );
+    const unresolvedByRound = unresolved
+      .map((result) => result.knowledge_response)
+      .toSorted((left, right) => (left?.round ?? 0) - (right?.round ?? 0));
+    expect(unresolvedByRound).toMatchObject([
+      { round: 1, outcome: "unresolved" },
+      { round: 2, outcome: "escalated" },
+    ]);
   });
 });

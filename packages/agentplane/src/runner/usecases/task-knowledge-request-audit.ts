@@ -1,5 +1,7 @@
-import { mkdir, readdir, readFile } from "node:fs/promises";
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { setTimeout as sleep } from "node:timers/promises";
 
 import { atomicWriteFile } from "@agentplaneorg/core/fs";
 import type { AgentWorkOrderV2 } from "@agentplaneorg/core/schemas";
@@ -10,6 +12,10 @@ import {
 } from "./task-knowledge-request.js";
 
 export const TASK_KNOWLEDGE_REQUEST_AUDIT_DIRECTORY = "knowledge-requests" as const;
+const AUDIT_RESERVATION_STALE_AFTER_MS = 60_000;
+const AUDIT_RESERVATION_RETRY_DELAY_MS = 10;
+const AUDIT_RESERVATION_WAIT_MS = 5000;
+const AUDIT_RESERVATION_OWNER_FILE = "owner";
 
 type KnowledgeRequestInvocation = {
   run_id: string;
@@ -25,6 +31,74 @@ function matchesInvocation(opts: {
     opts.audit.run.work_order_id === opts.invocation.work_order_id &&
     opts.audit.run.state_fingerprint_digest === opts.invocation.state_fingerprint_digest
   );
+}
+
+function reservationLockPath(opts: {
+  runs_dir: string;
+  invocation: KnowledgeRequestInvocation;
+  role: AgentWorkOrderV2["role"];
+}): string {
+  const binding = JSON.stringify({
+    work_order_id: opts.invocation.work_order_id,
+    state_fingerprint_digest: opts.invocation.state_fingerprint_digest,
+    role: opts.role,
+  });
+  const suffix = createHash("sha256").update(binding, "utf8").digest("hex").slice(0, 32);
+  return path.join(opts.runs_dir, `.knowledge-request-${suffix}.lock`);
+}
+
+/**
+ * Keep audit reload, round calculation, and durable persistence in one
+ * cross-process critical section. The lock is keyed to the immutable work
+ * order binding, not a physical run id, because a continuation may allocate a
+ * later run directory for the same semantic episode.
+ */
+export async function withTaskKnowledgeRequestAuditReservation<T>(opts: {
+  runs_dir: string;
+  invocation: KnowledgeRequestInvocation;
+  role: AgentWorkOrderV2["role"];
+  work: () => Promise<T>;
+}): Promise<T> {
+  await mkdir(opts.runs_dir, { recursive: true, mode: 0o700 });
+  const lockPath = reservationLockPath(opts);
+  const deadline = Date.now() + AUDIT_RESERVATION_WAIT_MS;
+  const owner = randomUUID();
+  while (true) {
+    try {
+      await mkdir(lockPath, { mode: 0o700 });
+      try {
+        await writeFile(path.join(lockPath, AUDIT_RESERVATION_OWNER_FILE), `${owner}\n`, "utf8");
+      } catch (error) {
+        await rm(lockPath, { recursive: true, force: true });
+        throw error;
+      }
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException | null)?.code !== "EEXIST") throw error;
+      const age = await stat(lockPath)
+        .then((entry) => Date.now() - entry.mtimeMs)
+        .catch(() => 0);
+      if (age > AUDIT_RESERVATION_STALE_AFTER_MS) {
+        await rm(lockPath, { recursive: true, force: true });
+        continue;
+      }
+      if (Date.now() >= deadline) {
+        throw new Error(`Timed out reserving task knowledge request audit: ${lockPath}`);
+      }
+      await sleep(AUDIT_RESERVATION_RETRY_DELAY_MS);
+    }
+  }
+  try {
+    return await opts.work();
+  } finally {
+    const observedOwner = await readFile(
+      path.join(lockPath, AUDIT_RESERVATION_OWNER_FILE),
+      "utf8",
+    ).catch(() => null);
+    if (observedOwner?.trim() === owner) {
+      await rm(lockPath, { recursive: true, force: true });
+    }
+  }
 }
 
 export async function persistTaskKnowledgeRequestAudit(opts: {
