@@ -105,7 +105,7 @@ export async function runShellCommand(
     const { stdout, stderr } = await execFileAsync(invocation.command, invocation.args, {
       cwd,
       env: process.env,
-      maxBuffer: 10 * 1024 * 1024,
+      maxBuffer: 50 * 1024 * 1024,
     });
     let output = "";
     if (stdout) output += stdout;

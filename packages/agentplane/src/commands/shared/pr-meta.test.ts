@@ -54,7 +54,7 @@ describe("pr-meta shell invocations", () => {
     });
   });
 
-  it("uses current shell invocation for command execution", async () => {
+  it("uses current shell invocation with a release-sized output buffer", async () => {
     delete process.env.COMSPEC;
     delete process.env.ComSpec;
     const gitProcess = await import("@agentplaneorg/core/process");
@@ -68,7 +68,10 @@ describe("pr-meta shell invocations", () => {
     expect(execFileAsync).toHaveBeenCalledWith(
       "echo",
       ["hello"],
-      expect.objectContaining({ cwd: process.cwd() }),
+      expect.objectContaining({
+        cwd: process.cwd(),
+        maxBuffer: 50 * 1024 * 1024,
+      }),
     );
     expect(result).toEqual({ code: 0, output: "ok" });
   });
