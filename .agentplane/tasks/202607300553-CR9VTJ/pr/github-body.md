@@ -22,12 +22,14 @@ Replace the stranded beta.1 gate with a current-main qualification record. Prese
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T05:53:55.797Z
+- Updated: 2026-07-30T05:54:22.913Z
 - Branch: task/202607300553-CR9VTJ/requalify-the-agentplane-0-7-0-beta-1-decision-o
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .agentplane/tasks/202607221908-0JP0ZZ/README.md |  4 ++--
+ .agentplane/tasks/202607221908-MR9EA9/README.md | 22 ++++++++++++++++------
+ 2 files changed, 18 insertions(+), 8 deletions(-)
 ```
 
 </details>

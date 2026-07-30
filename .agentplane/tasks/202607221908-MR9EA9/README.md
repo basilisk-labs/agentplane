@@ -1,10 +1,10 @@
 ---
 id: "202607221908-MR9EA9"
 title: "Qualify the AgentPlane 0.7.0-beta.1 milestone"
-status: "TODO"
+status: "BLOCKED"
 priority: "high"
 owner: "TESTER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -44,11 +44,21 @@ verification:
   note: null
   attempts: 0
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "TESTER"
+    body: "Blocked: the legacy beta.1 gate branch has only stale task artifacts on b90a9e6df9a and conflicting PR #4668; it cannot qualify current main. Frozen RF-04 and F8 evidence remain preserved for its successor."
+events:
+  -
+    type: "status"
+    at: "2026-07-30T05:52:31.933Z"
+    author: "TESTER"
+    from: "TODO"
+    to: "BLOCKED"
+    note: "Blocked: the legacy beta.1 gate branch has only stale task artifacts on b90a9e6df9a and conflicting PR #4668; it cannot qualify current main. Frozen RF-04 and F8 evidence remain preserved for its successor."
 doc_version: 3
-doc_updated_at: "2026-07-24T22:50:18.565Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-07-30T05:52:31.933Z"
+doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
   Summary: |-

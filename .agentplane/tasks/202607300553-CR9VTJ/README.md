@@ -4,7 +4,7 @@ title: "Requalify the AgentPlane 0.7.0-beta.1 decision on current main"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 4
+revision: 7
 origin:
   system: "manual"
 depends_on:
@@ -46,6 +46,9 @@ comments:
   -
     author: "TESTER"
     body: "Start: establish the current-main beta.1 no-publish decision without provider retry."
+  -
+    author: "CODER"
+    body: "Checkpoint: rewired beta.2 to the current-main successor gate, retained the legacy gate as blocked, and completed deterministic validation without provider access."
 events:
   -
     type: "status"
@@ -54,9 +57,14 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: establish the current-main beta.1 no-publish decision without provider retry."
+  -
+    type: "comment"
+    at: "2026-07-30T05:58:27.695Z"
+    author: "CODER"
+    body: "Checkpoint: rewired beta.2 to the current-main successor gate, retained the legacy gate as blocked, and completed deterministic validation without provider access."
 doc_version: 3
-doc_updated_at: "2026-07-30T05:53:55.660Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-07-30T05:58:27.695Z"
+doc_updated_by: "CODER"
 description: "Replace the stranded beta.1 gate with a current-main qualification record. Preserve the immutable failed RF-04 candidate and F8 attribution, execute deterministic checks without provider calls, record do-not-publish for beta.1, and unblock beta.2 through an explicit successor dependency."
 sections:
   Summary: |-
@@ -79,7 +87,14 @@ sections:
   Rollback Plan: |-
     - Revert task-related commit(s).
     - Re-run required checks to confirm rollback safety.
-  Findings: ""
+  Findings: |-
+    - Observation: Prior RF-04 incident advice requires a pinned provider CLI only for a new candidate capture.
+      Impact: The immutable beta.1 sample remains non-causal and beta.1 publication stays blocked; retrying it would violate the approved no-provider constraint.
+      Resolution: Validate the frozen measurement and F8 timing partition on current main without provider access; defer any future capture to an explicitly approved task.
+
+    - Observation: Current-main deterministic validation passed: RF-04 driver and qualification packet tests are 20/20, replay baseline validates 50 runs and 55 provider episodes, ci:contract and test:critical pass.
+      Impact: The framework contracts and frozen evidence lineage remain intact on main, but this does not alter the candidate latency verdict.
+      Resolution: Retain the committed F3 decision do_not_publish: latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms exceed their frozen thresholds; no beta.1 prerelease is published.
 extensions:
   workflow_route_baseline:
     start_head_sha: "7856c47baaab749275df9f7bbdc640bac19c86d5"
@@ -120,3 +135,11 @@ PLANNER fallback scaffold for "Requalify the AgentPlane 0.7.0-beta.1 decision on
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- Observation: Prior RF-04 incident advice requires a pinned provider CLI only for a new candidate capture.
+  Impact: The immutable beta.1 sample remains non-causal and beta.1 publication stays blocked; retrying it would violate the approved no-provider constraint.
+  Resolution: Validate the frozen measurement and F8 timing partition on current main without provider access; defer any future capture to an explicitly approved task.
+
+- Observation: Current-main deterministic validation passed: RF-04 driver and qualification packet tests are 20/20, replay baseline validates 50 runs and 55 provider episodes, ci:contract and test:critical pass.
+  Impact: The framework contracts and frozen evidence lineage remain intact on main, but this does not alter the candidate latency verdict.
+  Resolution: Retain the committed F3 decision do_not_publish: latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms exceed their frozen thresholds; no beta.1 prerelease is published.
