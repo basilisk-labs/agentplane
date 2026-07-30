@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300150-MGCHE6-f51c815057c0c1c19918511c",
+  "prepared_at": "2026-07-30T02:31:23.386Z",
+  "task": {
+    "id": "202607300150-MGCHE6",
+    "revision": 13,
+    "objective": "Recover diverged task PR identities safely\n\nProvide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.",
+    "acceptance_criteria": [
+      "- In scope: Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.\n- Out of scope: unrelated refactors not required for \"Recover diverged task PR identities safely\".",
+      "1. Add an explicit branch_pr recovery command that accepts the observed local and provider head identities, fails closed on any drift, archives the local unpublished head under a deterministic recovery ref, fetches and adopts only the exact provider task-branch head, and never rebase-merges, force-pushes, or resolves semantic conflicts. 2. Expose the recovery result as a compact packet with archive ref, adopted head, and the exact follow-up conflict-rework command; register it in the PR CLI/help surface. 3. Cover success and refusal cases: head drift, non-conflicting or missing PR, dirty worktree, wrong branch, and archive collision. 4. Run focused tests plus contract/type checks; use the recovery command against MR9EA9 only after its local and remote SHAs are recorded, then rebuild its read-only conflict packet. 5. Do not publish, delete remote data, retry providers, or alter beta.1 qualification thresholds.",
+      "PLANNER fallback scaffold for \"Recover diverged task PR identities safely\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover diverged task PR identities safely\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "b58491cd78a310e0e007f36cec35cc90db834d51",
+  "diff_base_sha": "88c7ead3e32920f31a219880f72651635c41778a",
+  "blueprint_digest": "5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300150-MGCHE6/README.md",
+      "sha256": "sha256:78a7029dfe294344185e0d67cd91eae089559612b2b9d918d00b8da011b3bb60",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-023123386-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:d5d1dc9bd514971a7aa8a6b202602689e9e8983344a70a5220eb1fb26d75aa85",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-023123386-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:08e8b5996a78e976ae5ff14b54356454bbc69eac511fb464e8b700f3adbdb057",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-023123386-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:db21b3a866d3f5aa1adb3b64ed1a4ad95704bb83f8da174c6ab13ecf5409d0d9",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,1696 @@
+diff --git a/.agentplane/tasks/202607300150-MGCHE6/README.md b/.agentplane/tasks/202607300150-MGCHE6/README.md
+new file mode 100644
+index 000000000..c1a3a9e2d
+--- /dev/null
++++ b/.agentplane/tasks/202607300150-MGCHE6/README.md
+@@ -0,0 +1,125 @@
++---
++id: "202607300150-MGCHE6"
++title: "Recover diverged task PR identities safely"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 7
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "code"
++  - "branch-pr"
++  - "recovery"
++  - "workflow"
++  - "v0.7"
++verify: []
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T01:51:13.648Z"
++  updated_by: "USER"
++  note: null
++verification:
++  state: "pending"
++  updated_at: null
++  updated_by: null
++  note: null
++  attempts: 0
++commit:
++  hash: "be17d45d4163a4b207b85aba2d3ee61a57b7a7ed"
++  message: "✨ MGCHE6 task: safely recover diverged PR identity"
++comments:
++  -
++    author: "ORCHESTRATOR"
++    body: "Start: recover the exact provider/local task-branch identity mismatch without losing the local rework commit or performing automatic semantic resolution."
++  -
++    author: "CODER"
++    body: "Implementation: committed be17d45d4163; added explicit diverged-head recovery that archives the unpublished local SHA, validates the provider SHA after fetch, and resets only the clean dedicated task worktree; full ci:contract passed."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T01:51:17.231Z"
++    author: "ORCHESTRATOR"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: recover the exact provider/local task-branch identity mismatch without losing the local rework commit or performing automatic semantic resolution."
++  -
++    type: "status"
++    at: "2026-07-30T02:11:56.828Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation: committed be17d45d4163; added explicit diverged-head recovery that archives the unpublished local SHA, validates the provider SHA after fetch, and resets only the clean dedicated task worktree; full ci:contract passed."
++  -
++    type: "status"
++    at: "2026-07-30T02:12:17.722Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++doc_version: 3
++doc_updated_at: "2026-07-30T02:12:17.722Z"
++doc_updated_by: "CODER"
++description: "Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner."
++sections:
++  Summary: |-
++    Recover diverged task PR identities safely
++
++    Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.
++  Scope: |-
++    - In scope: Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.
++    - Out of scope: unrelated refactors not required for "Recover diverged task PR identities safely".
++  Plan: "1. Add an explicit branch_pr recovery command that accepts the observed local and provider head identities, fails closed on any drift, archives the local unpublished head under a deterministic recovery ref, fetches and adopts only the exact provider task-branch head, and never rebase-merges, force-pushes, or resolves semantic conflicts. 2. Expose the recovery result as a compact packet with archive ref, adopted head, and the exact follow-up conflict-rework command; register it in the PR CLI/help surface. 3. Cover success and refusal cases: head drift, non-conflicting or missing PR, dirty worktree, wrong branch, and archive collision. 4. Run focused tests plus contract/type checks; use the recovery command against MR9EA9 only after its local and remote SHAs are recorded, then rebuild its read-only conflict packet. 5. Do not publish, delete remote data, retry providers, or alter beta.1 qualification thresholds."
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Recover diverged task PR identities safely". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Recover diverged task PR identities safely". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "88c7ead3e32920f31a219880f72651635c41778a"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Recover diverged task PR identities safely
++
++Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.
++
++## Scope
++
++- In scope: Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.
++- Out of scope: unrelated refactors not required for "Recover diverged task PR identities safely".
++
++## Plan
++
++1. Add an explicit branch_pr recovery command that accepts the observed local and provider head identities, fails closed on any drift, archives the local unpublished head under a deterministic recovery ref, fetches and adopts only the exact provider task-branch head, and never rebase-merges, force-pushes, or resolves semantic conflicts. 2. Expose the recovery result as a compact packet with archive ref, adopted head, and the exact follow-up conflict-rework command; register it in the PR CLI/help surface. 3. Cover success and refusal cases: head drift, non-conflicting or missing PR, dirty worktree, wrong branch, and archive collision. 4. Run focused tests plus contract/type checks; use the recovery command against MR9EA9 only after its local and remote SHAs are recorded, then rebuild its read-only conflict packet. 5. Do not publish, delete remote data, retry providers, or alter beta.1 qualification thresholds.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Recover diverged task PR identities safely". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Recover diverged task PR identities safely". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
+diff --git a/.agentplane/tasks/202607300150-MGCHE6/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300150-MGCHE6/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..20ede47b8
+--- /dev/null
++++ b/.agentplane/tasks/202607300150-MGCHE6/blueprint/resolved-snapshot.json
+@@ -0,0 +1,574 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300150-MGCHE6",
++    "title": "Recover diverged task PR identities safely",
++    "description": "Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.",
++    "tags": [
++      "code",
++      "branch-pr",
++      "recovery",
++      "workflow",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": []
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607300150-MGCHE6",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "mutationScope": "code"
++    },
++    "whySelected": [
++      "task kind resolved to code",
++      "workflow mode: branch_pr",
++      "mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "task kind resolved to code",
++    "workflow mode: branch_pr",
++    "mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e"
++  }
++}
+diff --git a/.agentplane/tasks/202607300150-MGCHE6/pr/diffstat.txt b/.agentplane/tasks/202607300150-MGCHE6/pr/diffstat.txt
+new file mode 100644
+index 000000000..25441fe3f
+--- /dev/null
++++ b/.agentplane/tasks/202607300150-MGCHE6/pr/diffstat.txt
+@@ -0,0 +1,8 @@
++ .../commands/pr/conflict-rework-recovery.test.ts   | 221 +++++++++++++++++++++
++ .../src/commands/pr/conflict-rework-recovery.ts    | 190 ++++++++++++++++++
++ .../src/commands/pr/conflict-rework.command.ts     |  33 +++
++ packages/agentplane/src/commands/pr/pr.command.ts  |   3 +
++ packages/agentplane/src/commands/pr/pr.spec.ts     |  73 ++++++-
++ .../baselines/v0.7-compatibility-candidate.json    |  69 ++++++-
++ .../check-compatibility-contract-baseline.mjs      |  42 ++++
++ 7 files changed, 623 insertions(+), 8 deletions(-)
+diff --git a/.agentplane/tasks/202607300150-MGCHE6/pr/github-body.md b/.agentplane/tasks/202607300150-MGCHE6/pr/github-body.md
+new file mode 100644
+index 000000000..3ff49c6ac
+--- /dev/null
++++ b/.agentplane/tasks/202607300150-MGCHE6/pr/github-body.md
+@@ -0,0 +1,40 @@
++Task: `202607300150-MGCHE6`
++Title: Recover diverged task PR identities safely
++Canonical task record: `.agentplane/tasks/202607300150-MGCHE6/README.md`
++
++## Summary
++
++Recover diverged task PR identities safely
++
++Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.
++
++## Scope
++
++- In scope: Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner.
++- Out of scope: unrelated refactors not required for "Recover diverged task PR identities safely".
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T01:54:04.757Z
++- Branch: task/202607300150-MGCHE6/recover-diverged-task-pr-identities-safely
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/pr/conflict-rework-recovery.test.ts   | 221 +++++++++++++++++++++
++ .../src/commands/pr/conflict-rework-recovery.ts    | 190 ++++++++++++++++++
++ .../src/commands/pr/conflict-rework.command.ts     |  33 +++
++ packages/agentplane/src/commands/pr/pr.command.ts  |   3 +
++ packages/agentplane/src/commands/pr/pr.spec.ts     |  73 ++++++-
++ .../baselines/v0.7-compatibility-candidate.json    |  69 ++++++-
++ .../check-compatibility-contract-baseline.mjs      |  42 ++++
++ 7 files changed, 623 insertions(+), 8 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300150-MGCHE6/pr/github-title.txt b/.agentplane/tasks/202607300150-MGCHE6/pr/github-title.txt
+new file mode 100644
+index 000000000..74a040ffe
+--- /dev/null
++++ b/.agentplane/tasks/202607300150-MGCHE6/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 MGCHE6 task: Recover diverged task PR identities safely [202607300150-MGCHE6]
+diff --git a/.agentplane/tasks/202607300150-MGCHE6/pr/meta.json b/.agentplane/tasks/202607300150-MGCHE6/pr/meta.json
+new file mode 100644
+index 000000000..420640bc1
+--- /dev/null
++++ b/.agentplane/tasks/202607300150-MGCHE6/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607300150-MGCHE6/recover-diverged-task-pr-identities-safely",
++  "created_at": "2026-07-30T01:54:00.904Z",
++  "diffstat_sha256": "sha256:a92fe7a49ea13b2aec24b2c84d96691ad4bbf9fa087c22280b77f9924480b5d4",
++  "last_verified_at": null,
++  "pr_number": 4677,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4677",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607300150-MGCHE6",
++  "updated_at": "2026-07-30T01:54:04.757Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607300150-MGCHE6/pr/review.md b/.agentplane/tasks/202607300150-MGCHE6/pr/review.md
+new file mode 100644
+index 000000000..88ac7c19f
+--- /dev/null
++++ b/.agentplane/tasks/202607300150-MGCHE6/pr/review.md
+@@ -0,0 +1,43 @@
++# PR Review
++
++Created: 2026-07-30T01:54:00.904Z
++
++## Task
++
++- Task: `202607300150-MGCHE6`
++- Title: Recover diverged task PR identities safely
++- Status: DOING
++- Branch: `task/202607300150-MGCHE6/recover-diverged-task-pr-identities-safely`
++- Canonical task record: `.agentplane/tasks/202607300150-MGCHE6/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T01:54:04.757Z
++- Branch: task/202607300150-MGCHE6/recover-diverged-task-pr-identities-safely
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../commands/pr/conflict-rework-recovery.test.ts   | 221 +++++++++++++++++++++
++ .../src/commands/pr/conflict-rework-recovery.ts    | 190 ++++++++++++++++++
++ .../src/commands/pr/conflict-rework.command.ts     |  33 +++
++ packages/agentplane/src/commands/pr/pr.command.ts  |   3 +
++ packages/agentplane/src/commands/pr/pr.spec.ts     |  73 ++++++-
++ .../baselines/v0.7-compatibility-candidate.json    |  69 ++++++-
++ .../check-compatibility-contract-baseline.mjs      |  42 ++++
++ 7 files changed, 623 insertions(+), 8 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts b/packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
+new file mode 100644
+index 000000000..af53c7695
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/conflict-rework-recovery.test.ts
+@@ -0,0 +1,221 @@
++import { execFile } from "node:child_process";
++import { mkdtemp, rm, writeFile } from "node:fs/promises";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { promisify } from "node:util";
++
++import { describe, expect, it } from "vitest";
++
++import type { TaskWorktreeCleanliness } from "../shared/task-worktree-cleanliness.js";
++import {
++  recoverDivergedConflictHead,
++  type DivergedConflictHeadRecoveryGitOps,
++} from "./conflict-rework-recovery.js";
++import type { PrFlowStatusReport } from "./flow-status.js";
++
++const taskId = "202607300150-MGCHE6";
++const branch = `task/${taskId}/recover-diverged-task-pr-identities-safely`;
++const localHead = "1111111111111111111111111111111111111111";
++const providerHead = "2222222222222222222222222222222222222222";
++const movedProviderHead = "3333333333333333333333333333333333333333";
++const worktreePath = "/repo/.agentplane/worktrees/recovery";
++const execFileAsync = promisify(execFile);
++
++async function runGit(cwd: string, args: string[]) {
++  return await execFileAsync("git", args, { cwd });
++}
++
++function report(overrides: Record<string, unknown> = {}): PrFlowStatusReport {
++  return {
++    branch: { name: branch, headSha: localHead, metaHeadSha: null },
++    pr: { state: "OPEN" },
++    providerObservation: {
++      state: "found",
++      pr: {
++        status: "OPEN",
++        headSha: providerHead,
++        headRef: branch,
++        mergeability: { state: "conflicting", mergeable: false, providerState: "dirty" },
++      },
++    },
++    ...overrides,
++  } as unknown as PrFlowStatusReport;
++}
++
++const cleanWorktree = {
++  state: "clean",
++  branch,
++  worktreePath,
++  changedPaths: [],
++} as const satisfies TaskWorktreeCleanliness;
++
++function createGit(opts: { fetchedHead?: string; archiveHead?: string | null } = {}) {
++  const calls: string[] = [];
++  const trackingRef = `refs/remotes/origin/${branch}`;
++  const archiveHeads = new Map<string, string>();
++  if (opts.archiveHead) {
++    archiveHeads.set(`refs/agentplane/recovery/${taskId}/${localHead}`, opts.archiveHead);
++  }
++  const gitOps: DivergedConflictHeadRecoveryGitOps = {
++    currentBranch: () => {
++      calls.push("current-branch");
++      return Promise.resolve(branch);
++    },
++    fetchBranch: () => {
++      calls.push("fetch");
++      return Promise.resolve();
++    },
++    refExists: (_root, ref) => {
++      calls.push(`exists:${ref}`);
++      return Promise.resolve(archiveHeads.has(ref));
++    },
++    resolveRef: (_cwd, ref) => {
++      calls.push(`resolve:${ref}`);
++      if (ref === "HEAD") return Promise.resolve(localHead);
++      if (ref === trackingRef) return Promise.resolve(opts.fetchedHead ?? providerHead);
++      return Promise.resolve(archiveHeads.get(ref) ?? "");
++    },
++    resetHard: (_worktree, ref) => {
++      calls.push(`reset:${ref}`);
++      return Promise.resolve();
++    },
++    setUpstream: (_worktree, upstream) => {
++      calls.push(`upstream:${upstream}`);
++      return Promise.resolve();
++    },
++    updateRef: (_root, ref, sha) => {
++      calls.push(`archive:${ref}:${sha}`);
++      archiveHeads.set(ref, sha);
++      return Promise.resolve();
++    },
++  };
++  return { calls, gitOps };
++}
++
++async function recover(
++  opts: {
++    report?: PrFlowStatusReport;
++    expectedLocalHead?: string;
++    expectedProviderHead?: string;
++    taskWorktree?: TaskWorktreeCleanliness;
++    git?: ReturnType<typeof createGit>;
++  } = {},
++) {
++  const git = opts.git ?? createGit();
++  const result = await recoverDivergedConflictHead({
++    gitRoot: "/repo",
++    taskId,
++    report: opts.report ?? report(),
++    taskWorktree: opts.taskWorktree ?? cleanWorktree,
++    expectedLocalHead: opts.expectedLocalHead ?? localHead,
++    expectedProviderHead: opts.expectedProviderHead ?? providerHead,
++    gitOps: git.gitOps,
++  });
++  return { result, calls: git.calls };
++}
++
++describe("diverged conflict head recovery", () => {
++  it("archives the exact local head before adopting the exact provider head", async () => {
++    const { result, calls } = await recover();
++
++    expect(result).toEqual({
++      task_id: taskId,
++      branch,
++      archived_local_head: localHead,
++      archive_ref: `refs/agentplane/recovery/${taskId}/${localHead}`,
++      adopted_provider_head: providerHead,
++      provider_tracking_ref: `refs/remotes/origin/${branch}`,
++      next_command: `agentplane pr conflict-rework ${taskId} --json`,
++    });
++    expect(calls).toContain(`archive:refs/agentplane/recovery/${taskId}/${localHead}:${localHead}`);
++    expect(calls).toContain(`reset:refs/remotes/origin/${branch}`);
++    expect(calls).toContain(`upstream:origin/${branch}`);
++    expect(calls.some((call) => /(?:merge|rebase|push)/u.test(call))).toBe(false);
++  });
++
++  it("fails before fetch when the explicit observed identities are stale", async () => {
++    const git = createGit();
++
++    await expect(recover({ git, expectedProviderHead: movedProviderHead })).rejects.toThrow(
++      "Observed task heads changed",
++    );
++    expect(git.calls).toEqual([]);
++  });
++
++  it("fails closed when the provider head moves during the bounded fetch", async () => {
++    const git = createGit({ fetchedHead: movedProviderHead });
++
++    await expect(recover({ git })).rejects.toThrow("Provider task head changed during fetch");
++    expect(git.calls).toContain("fetch");
++    expect(git.calls.some((call) => call.startsWith("archive:"))).toBe(false);
++    expect(git.calls.some((call) => call.startsWith("reset:"))).toBe(false);
++  });
++
++  it("refuses an archive collision that does not preserve the exact local head", async () => {
++    const git = createGit({ archiveHead: providerHead });
++
++    await expect(recover({ git })).rejects.toThrow("Recovery archive collision");
++    expect(git.calls).not.toContain("fetch");
++    expect(git.calls.some((call) => call.startsWith("reset:"))).toBe(false);
++  });
++
++  it("recovers a clean real worktree from a local bare remote without pushing", async () => {
++    const fixtureRoot = await mkdtemp(path.join(tmpdir(), "agentplane-conflict-recovery-"));
++    const remote = path.join(fixtureRoot, "remote.git");
++    const repo = path.join(fixtureRoot, "repo");
++    try {
++      await runGit(fixtureRoot, ["init", "--bare", remote]);
++      await runGit(fixtureRoot, ["init", "--initial-branch=main", repo]);
++      await runGit(repo, ["config", "user.email", "test@example.com"]);
++      await runGit(repo, ["config", "user.name", "AgentPlane test"]);
++      await writeFile(path.join(repo, "seed.txt"), "seed\n", "utf8");
++      await runGit(repo, ["add", "seed.txt"]);
++      await runGit(repo, ["commit", "-m", "seed"]);
++      await runGit(repo, ["remote", "add", "origin", remote]);
++      await runGit(repo, ["push", "-u", "origin", "main"]);
++      await runGit(repo, ["checkout", "-b", branch]);
++      await writeFile(path.join(repo, "remote.txt"), "provider head\n", "utf8");
++      await runGit(repo, ["add", "remote.txt"]);
++      await runGit(repo, ["commit", "-m", "provider head"]);
++      await runGit(repo, ["push", "-u", "origin", branch]);
++      const { stdout: providerRaw } = await runGit(repo, ["rev-parse", "HEAD"]);
++      const realProviderHead = providerRaw.trim();
++      await writeFile(path.join(repo, "local.txt"), "unpublished local head\n", "utf8");
++      await runGit(repo, ["add", "local.txt"]);
++      await runGit(repo, ["commit", "-m", "unpublished local head"]);
++      const { stdout: localRaw } = await runGit(repo, ["rev-parse", "HEAD"]);
++      const realLocalHead = localRaw.trim();
++      const result = await recoverDivergedConflictHead({
++        gitRoot: repo,
++        taskId,
++        report: report({
++          branch: { name: branch, headSha: realLocalHead, metaHeadSha: null },
++          providerObservation: {
++            state: "found",
++            pr: {
++              status: "OPEN",
++              headSha: realProviderHead,
++              headRef: branch,
++              mergeability: { state: "conflicting", mergeable: false, providerState: "dirty" },
++            },
++          },
++        }),
++        taskWorktree: { ...cleanWorktree, worktreePath: repo },
++        expectedLocalHead: realLocalHead,
++        expectedProviderHead: realProviderHead,
++      });
++
++      const [{ stdout: adoptedRaw }, { stdout: archivedRaw }, { stdout: statusRaw }] =
++        await Promise.all([
++          runGit(repo, ["rev-parse", "HEAD"]),
++          runGit(repo, ["rev-parse", result.archive_ref]),
++          runGit(repo, ["status", "--porcelain"]),
++        ]);
++      expect(adoptedRaw.trim()).toBe(realProviderHead);
++      expect(archivedRaw.trim()).toBe(realLocalHead);
++      expect(statusRaw).toBe("");
++    } finally {
++      await rm(fixtureRoot, { recursive: true, force: true });
++    }
++  });
++});
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-recovery.ts b/packages/agentplane/src/commands/pr/conflict-rework-recovery.ts
+new file mode 100644
+index 000000000..536bc0d6c
+--- /dev/null
++++ b/packages/agentplane/src/commands/pr/conflict-rework-recovery.ts
+@@ -0,0 +1,190 @@
++import { execFileAsync } from "@agentplaneorg/core/process";
++import { gitEnv } from "@agentplaneorg/core/git";
++
++import { exitCodeForError } from "../../cli/exit-codes.js";
++import { CliError } from "../../shared/errors.js";
++import type { TaskWorktreeCleanliness } from "../shared/task-worktree-cleanliness.js";
++import type { PrFlowStatusReport } from "./flow-status.js";
++import { isSettledGithubPrConflict } from "./internal/sync-github.js";
++
++const GIT_OBJECT_ID = /^[0-9a-f]{40}(?:[0-9a-f]{24})?$/iu;
++const ZERO_OBJECT_ID = "0".repeat(40);
++
++export type DivergedConflictHeadRecovery = {
++  task_id: string;
++  branch: string;
++  archived_local_head: string;
++  archive_ref: string;
++  adopted_provider_head: string;
++  provider_tracking_ref: string;
++  next_command: string;
++};
++
++export type DivergedConflictHeadRecoveryGitOps = {
++  currentBranch: (cwd: string) => Promise<string>;
++  fetchBranch: (gitRoot: string, branch: string, trackingRef: string) => Promise<void>;
++  refExists: (gitRoot: string, ref: string) => Promise<boolean>;
++  resolveRef: (cwd: string, ref: string) => Promise<string>;
++  resetHard: (worktreePath: string, ref: string) => Promise<void>;
++  setUpstream: (worktreePath: string, branch: string) => Promise<void>;
++  updateRef: (gitRoot: string, ref: string, sha: string) => Promise<void>;
++};
++
++function recoveryError(message: string, code: "E_VALIDATION" | "E_GIT" = "E_VALIDATION"): CliError {
++  return new CliError({ exitCode: exitCodeForError(code), code, message });
++}
++
++async function gitStdout(cwd: string, args: string[]): Promise<string> {
++  const { stdout } = await execFileAsync("git", args, { cwd, env: gitEnv() });
++  return stdout.trim();
++}
++
++const defaultGitOps: DivergedConflictHeadRecoveryGitOps = {
++  currentBranch: (cwd) => gitStdout(cwd, ["branch", "--show-current"]),
++  fetchBranch: async (gitRoot, branch, trackingRef) => {
++    await execFileAsync(
++      "git",
++      ["fetch", "--no-tags", "origin", `refs/heads/${branch}:${trackingRef}`],
++      { cwd: gitRoot, env: gitEnv() },
++    );
++  },
++  refExists: async (gitRoot, ref) => {
++    try {
++      await execFileAsync("git", ["show-ref", "--verify", "--quiet", ref], {
++        cwd: gitRoot,
++        env: gitEnv(),
++      });
++      return true;
++    } catch {
++      return false;
++    }
++  },
++  resolveRef: (cwd, ref) => gitStdout(cwd, ["rev-parse", ref]),
++  resetHard: async (worktreePath, ref) => {
++    await execFileAsync("git", ["reset", "--hard", ref], { cwd: worktreePath, env: gitEnv() });
++  },
++  setUpstream: async (worktreePath, branch) => {
++    await execFileAsync("git", ["branch", "--set-upstream-to", branch], {
++      cwd: worktreePath,
++      env: gitEnv(),
++    });
++  },
++  updateRef: async (gitRoot, ref, sha) => {
++    await execFileAsync("git", ["update-ref", ref, sha, ZERO_OBJECT_ID], {
++      cwd: gitRoot,
++      env: gitEnv(),
++    });
++  },
++};
++
++function normalizedSha(value: string, label: string): string {
++  const sha = value.trim();
++  if (!GIT_OBJECT_ID.test(sha)) {
++    throw recoveryError(`${label} must be a full Git object id`);
++  }
++  return sha;
++}
++
++function providerIdentity(report: PrFlowStatusReport): {
++  branch: string;
++  localHead: string;
++  providerHead: string;
++} {
++  const branch = report.branch.name?.trim() ?? "";
++  const localHead = report.branch.headSha?.trim() ?? "";
++  const observation = report.providerObservation;
++  if (
++    report.pr.state !== "OPEN" ||
++    observation?.state !== "found" ||
++    observation.pr.status !== "OPEN" ||
++    !isSettledGithubPrConflict(observation.pr.mergeability)
++  ) {
++    throw recoveryError(
++      "Diverged-head recovery requires an OPEN provider PR with settled merge conflicts",
++    );
++  }
++  const providerHead = observation.pr.headSha?.trim() ?? "";
++  if (!branch || !localHead || !providerHead || observation.pr.headRef?.trim() !== branch) {
++    throw recoveryError("Provider conflict identity is incomplete or bound to another task branch");
++  }
++  if (localHead === providerHead) {
++    throw recoveryError("Local and provider task heads already match; recovery is not required");
++  }
++  return { branch, localHead, providerHead };
++}
++
++export async function recoverDivergedConflictHead(opts: {
++  gitRoot: string;
++  taskId: string;
++  report: PrFlowStatusReport;
++  taskWorktree: TaskWorktreeCleanliness;
++  expectedLocalHead: string;
++  expectedProviderHead: string;
++  gitOps?: DivergedConflictHeadRecoveryGitOps;
++}): Promise<DivergedConflictHeadRecovery> {
++  const git = opts.gitOps ?? defaultGitOps;
++  const { branch, localHead, providerHead } = providerIdentity(opts.report);
++  const expectedLocalHead = normalizedSha(opts.expectedLocalHead, "Expected local head");
++  const expectedProviderHead = normalizedSha(opts.expectedProviderHead, "Expected provider head");
++  if (localHead !== expectedLocalHead || providerHead !== expectedProviderHead) {
++    throw recoveryError(
++      `Observed task heads changed: local=${localHead} provider=${providerHead}. Recompute before recovery.`,
++    );
++  }
++  if (opts.taskWorktree.state !== "clean" || !opts.taskWorktree.worktreePath) {
++    throw recoveryError("Diverged-head recovery requires a clean dedicated task worktree");
++  }
++  if (opts.taskWorktree.branch !== branch) {
++    throw recoveryError("Dedicated task worktree branch does not match the provider task branch");
++  }
++  const worktreePath = opts.taskWorktree.worktreePath;
++  const [currentBranch, currentHead] = await Promise.all([
++    git.currentBranch(worktreePath),
++    git.resolveRef(worktreePath, "HEAD"),
++  ]);
++  if (currentBranch !== branch || currentHead !== expectedLocalHead) {
++    throw recoveryError(
++      `Task worktree changed: branch=${currentBranch || "<detached>"} head=${currentHead}. Recompute before recovery.`,
++    );
++  }
++
++  const archiveRef = `refs/agentplane/recovery/${opts.taskId}/${expectedLocalHead}`;
++  if (await git.refExists(opts.gitRoot, archiveRef)) {
++    const archived = await git.resolveRef(opts.gitRoot, archiveRef);
++    if (archived !== expectedLocalHead) {
++      throw recoveryError(`Recovery archive collision at ${archiveRef}`);
++    }
++  }
++
++  const providerTrackingRef = `refs/remotes/origin/${branch}`;
++  try {
++    await git.fetchBranch(opts.gitRoot, branch, providerTrackingRef);
++    const fetchedHead = await git.resolveRef(opts.gitRoot, providerTrackingRef);
++    if (fetchedHead !== expectedProviderHead) {
++      throw recoveryError(
++        `Provider task head changed during fetch: expected=${expectedProviderHead} fetched=${fetchedHead}.`,
++      );
++    }
++    if (!(await git.refExists(opts.gitRoot, archiveRef))) {
++      await git.updateRef(opts.gitRoot, archiveRef, expectedLocalHead);
++    }
++    await git.setUpstream(worktreePath, `origin/${branch}`);
++    await git.resetHard(worktreePath, providerTrackingRef);
++  } catch (err) {
++    if (err instanceof CliError) throw err;
++    throw recoveryError(
++      `Diverged-head recovery stopped before semantic resolution: ${err instanceof Error ? err.message : String(err)}`,
++      "E_GIT",
++    );
++  }
++
++  return {
++    task_id: opts.taskId,
++    branch,
++    archived_local_head: expectedLocalHead,
++    archive_ref: archiveRef,
++    adopted_provider_head: expectedProviderHead,
++    provider_tracking_ref: providerTrackingRef,
++    next_command: `agentplane pr conflict-rework ${opts.taskId} --json`,
++  };
++}
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.command.ts b/packages/agentplane/src/commands/pr/conflict-rework.command.ts
+index 7fb6e7263..0d003644b 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.command.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.command.ts
+@@ -8,6 +8,7 @@ import {
+   type TaskWorktreeCleanliness,
+ } from "../shared/task-worktree-cleanliness.js";
+ import { prepareConflictReworkPacket, type ConflictReworkPreparation } from "./conflict-rework.js";
++import { recoverDivergedConflictHead } from "./conflict-rework-recovery.js";
+ import { resolvePrFlowStatus } from "./flow-status.js";
+ 
+ function packetFailure(
+@@ -51,6 +52,9 @@ export async function cmdPrConflictRework(opts: {
+   rootOverride?: string;
+   taskId: string;
+   expectedFreshnessToken?: string | null;
++  recoverDivergedHead?: boolean;
++  expectedLocalHead?: string | null;
++  expectedProviderHead?: string | null;
+   json: boolean;
+ }): Promise<number> {
+   try {
+@@ -70,6 +74,35 @@ export async function cmdPrConflictRework(opts: {
+           branch,
+         })
+       : { state: "not_present", branch: "", worktreePath: null, changedPaths: [] };
++    if (opts.recoverDivergedHead) {
++      const recovery = await recoverDivergedConflictHead({
++        gitRoot: ctx.resolvedProject.gitRoot,
++        taskId: opts.taskId,
++        report,
++        taskWorktree,
++        expectedLocalHead: opts.expectedLocalHead ?? "",
++        expectedProviderHead: opts.expectedProviderHead ?? "",
++      });
++      const output = createCliEmitter();
++      if (opts.json) {
++        output.json({ schema_version: 1, mode: "diverged_head_recovery", recovery });
++        return 0;
++      }
++      output.report(
++        [
++          { label: "task", value: recovery.task_id },
++          { label: "branch", value: recovery.branch },
++          { label: "archived_local_head", value: recovery.archived_local_head },
++          { label: "archive_ref", value: recovery.archive_ref },
++          { label: "adopted_provider_head", value: recovery.adopted_provider_head },
++          { label: "provider_tracking_ref", value: recovery.provider_tracking_ref },
++          { label: "next", value: recovery.next_command },
++          { label: "semantic_resolution", value: "not performed" },
++        ],
++        { header: infoMessage(`Recovered diverged PR head: ${opts.taskId}`) },
++      );
++      return 0;
++    }
+     const preparation = await prepareConflictReworkPacket({
+       gitRoot: ctx.resolvedProject.gitRoot,
+       taskId: opts.taskId,
+diff --git a/packages/agentplane/src/commands/pr/pr.command.ts b/packages/agentplane/src/commands/pr/pr.command.ts
+index 1185833da..676695ec6 100644
+--- a/packages/agentplane/src/commands/pr/pr.command.ts
++++ b/packages/agentplane/src/commands/pr/pr.command.ts
+@@ -106,6 +106,9 @@ export function makeRunPrConflictReworkHandler(getCtx: (cmd: string) => Promise<
+       rootOverride: ctx.rootOverride,
+       taskId: p.taskId,
+       expectedFreshnessToken: p.expectedFreshnessToken,
++      recoverDivergedHead: p.recoverDivergedHead,
++      expectedLocalHead: p.expectedLocalHead,
++      expectedProviderHead: p.expectedProviderHead,
+       json: p.json,
+     });
+   };
+diff --git a/packages/agentplane/src/commands/pr/pr.spec.ts b/packages/agentplane/src/commands/pr/pr.spec.ts
+index 315645c08..47c50f2d1 100644
+--- a/packages/agentplane/src/commands/pr/pr.spec.ts
++++ b/packages/agentplane/src/commands/pr/pr.spec.ts
+@@ -245,6 +245,9 @@ export const prFlowStatusSpec: CommandSpec<PrFlowStatusParsed> = {
+ export type PrConflictReworkParsed = {
+   taskId: string;
+   expectedFreshnessToken: string | null;
++  recoverDivergedHead: boolean;
++  expectedLocalHead: string | null;
++  expectedProviderHead: string | null;
+   json: boolean;
+ };
+ 
+@@ -252,7 +255,7 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
+   id: ["pr", "conflict-rework"],
+   group: "PR",
+   summary:
+-    "Prepare a bounded read-only semantic rework packet for a provider-reported merge conflict.",
++    "Prepare a bounded conflict packet, or explicitly recover a diverged local/provider task head without semantic resolution.",
+   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
+   options: [
+     {
+@@ -261,6 +264,27 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
+       valueHint: "<sha256-token>",
+       description: "Fail closed unless the newly observed conflict packet matches this token.",
+     },
++    {
++      kind: "boolean",
++      name: "recover-diverged-head",
++      default: false,
++      description:
++        "Archive the exact local head and adopt the exact provider task head after explicit identity checks.",
++    },
++    {
++      kind: "string",
++      name: "expected-local-head",
++      valueHint: "<full-sha>",
++      description:
++        "Required with --recover-diverged-head. Exact local task-branch head to archive.",
++    },
++    {
++      kind: "string",
++      name: "expected-provider-head",
++      valueHint: "<full-sha>",
++      description:
++        "Required with --recover-diverged-head. Exact provider task-branch head to adopt.",
++    },
+     {
+       kind: "boolean",
+       name: "json",
+@@ -273,6 +297,10 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
+       cmd: "agentplane pr conflict-rework 202602030608-F1Q8AB --json",
+       why: "Read current provider conflict truth without changing any branch, worktree, PR, or queue state.",
+     },
++    {
++      cmd: "agentplane pr conflict-rework 202602030608-F1Q8AB --recover-diverged-head --expected-local-head <sha> --expected-provider-head <sha>",
++      why: "Preserve an unpublished local head before adopting the exact conflicting provider head.",
++    },
+   ],
+   validateRaw: (raw) => {
+     const token = raw.opts["expect-freshness-token"];
+@@ -283,6 +311,40 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
+         message: "Invalid value for --expect-freshness-token: empty.",
+       });
+     }
++    const recoverDivergedHead = raw.opts["recover-diverged-head"] === true;
++    const expectedLocalHead = raw.opts["expected-local-head"];
++    const expectedProviderHead = raw.opts["expected-provider-head"];
++    if (
++      recoverDivergedHead &&
++      (typeof expectedLocalHead !== "string" ||
++        !expectedLocalHead.trim() ||
++        typeof expectedProviderHead !== "string" ||
++        !expectedProviderHead.trim())
++    ) {
++      throw usageError({
++        spec: prConflictReworkSpec,
++        command: "pr conflict-rework",
++        message:
++          "--recover-diverged-head requires both --expected-local-head and --expected-provider-head.",
++      });
++    }
++    if (
++      !recoverDivergedHead &&
++      (typeof expectedLocalHead === "string" || typeof expectedProviderHead === "string")
++    ) {
++      throw usageError({
++        spec: prConflictReworkSpec,
++        command: "pr conflict-rework",
++        message: "Expected head options require --recover-diverged-head.",
++      });
++    }
++    if (recoverDivergedHead && typeof token === "string") {
++      throw usageError({
++        spec: prConflictReworkSpec,
++        command: "pr conflict-rework",
++        message: "--expect-freshness-token is only valid for read-only conflict packets.",
++      });
++    }
+   },
+   parse: (raw) => ({
+     taskId: String(raw.args["task-id"]),
+@@ -290,6 +352,15 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
+       typeof raw.opts["expect-freshness-token"] === "string"
+         ? raw.opts["expect-freshness-token"].trim()
+         : null,
++    recoverDivergedHead: raw.opts["recover-diverged-head"] === true,
++    expectedLocalHead:
++      typeof raw.opts["expected-local-head"] === "string"
++        ? raw.opts["expected-local-head"].trim()
++        : null,
++    expectedProviderHead:
++      typeof raw.opts["expected-provider-head"] === "string"
++        ? raw.opts["expected-provider-head"].trim()
++        : null,
+     json: raw.opts.json === true,
+   }),
+ };
+diff --git a/scripts/baselines/v0.7-compatibility-candidate.json b/scripts/baselines/v0.7-compatibility-candidate.json
+index 83b63a9bc..4212e2073 100644
+--- a/scripts/baselines/v0.7-compatibility-candidate.json
++++ b/scripts/baselines/v0.7-compatibility-candidate.json
+@@ -20,7 +20,8 @@
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+     "202607281655-YMPY8Y",
+-    "202607291449-FTHNAR"
++    "202607291449-FTHNAR",
++    "202607300150-MGCHE6"
+   ],
+   "base": {
+     "baseline_id": "agentplane.compatibility.v0.6.24",
+@@ -29,9 +30,9 @@
+     "surface_sha256": "79d9462b114a65e0a5897ab1e40dbec424e6a79940e875b8e40c832805766839"
+   },
+   "candidate": {
+-    "surface_sha256": "b3d74d362ddfe5f5a52eab68df9797756fd54c6140f9ca231e129d22061cab98",
++    "surface_sha256": "fb5800bf34706aeff9d8e64d38bfed557b5e74c4467c9227ed930584602e6f34",
+     "section_digests": {
+-      "cli_topology": "f50e087e1317576b5adca56748f0acf2b04c61727adcfd51da462f17956b7fad",
++      "cli_topology": "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
+       "exit_error_contract": "ff4cae2b7920fe6c226a578dcb7463fdaf1fd3abe7fa55a111984c2fedf51653",
+       "machine_output_contract": "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
+       "workflow_schema": "41efbc04ff954b8a1bfc163235fe885068a837e7d55b4179da79126a9717e788",
+@@ -367,12 +368,13 @@
+         "202607242158-QV09NA",
+         "202607260007-DQM6AW",
+         "202607260532-9M7RNH",
+-        "202607281655-YMPY8Y"
++        "202607281655-YMPY8Y",
++        "202607300150-MGCHE6"
+       ],
+       "from_sha256": "6babcf5971bbab8a2e29f08e086267c93d83e5e4f3efa2ce7226a909948bcb4a",
+-      "to_sha256": "f50e087e1317576b5adca56748f0acf2b04c61727adcfd51da462f17956b7fad",
++      "to_sha256": "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
+       "classification": "additive",
+-      "summary": "Adds a bounded CLI-owned context assimilation supervisor and one explicit EVALUATOR --replacement successor for a terminal known failure; no command or option is removed or mutated.",
++      "summary": "Adds a bounded CLI-owned context assimilation supervisor, one explicit EVALUATOR --replacement successor, and an exact-SHA recovery route for diverged task PR heads; no command or option is removed or mutated.",
+       "evidence": {
+         "command_count": {
+           "from": 243,
+@@ -384,7 +386,7 @@
+         },
+         "option_count": {
+           "from": 767,
+-          "to": 818
++          "to": 821
+         },
+         "added_commands": [
+           "context supervise-task",
+@@ -568,6 +570,22 @@
+                 "kind": "string",
+                 "valueHint": "<sha256-token>"
+               },
++              {
++                "name": "recover-diverged-head",
++                "kind": "boolean",
++                "valueHint": null,
++                "default": false
++              },
++              {
++                "name": "expected-local-head",
++                "kind": "string",
++                "valueHint": "<full-sha>"
++              },
++              {
++                "name": "expected-provider-head",
++                "kind": "string",
++                "valueHint": "<full-sha>"
++              },
+               {
+                 "name": "json",
+                 "kind": "boolean",
+@@ -930,6 +948,18 @@
+             "kind": "string",
+             "valueHint": "<sha256-token>"
+           },
++          {
++            "command": "pr conflict-rework",
++            "name": "expected-local-head",
++            "kind": "string",
++            "valueHint": "<full-sha>"
++          },
++          {
++            "command": "pr conflict-rework",
++            "name": "expected-provider-head",
++            "kind": "string",
++            "valueHint": "<full-sha>"
++          },
+           {
+             "command": "pr conflict-rework",
+             "name": "json",
+@@ -937,6 +967,13 @@
+             "valueHint": null,
+             "default": false
+           },
++          {
++            "command": "pr conflict-rework",
++            "name": "recover-diverged-head",
++            "kind": "boolean",
++            "valueHint": null,
++            "default": false
++          },
+           {
+             "command": "sync",
+             "name": "adopt-projection-identity",
+@@ -1325,12 +1362,30 @@
+             "name": "expect-freshness-token",
+             "source_task": "202607260007-DQM6AW"
+           },
++          {
++            "kind": "option",
++            "command": "pr conflict-rework",
++            "name": "expected-local-head",
++            "source_task": "202607300150-MGCHE6"
++          },
++          {
++            "kind": "option",
++            "command": "pr conflict-rework",
++            "name": "expected-provider-head",
++            "source_task": "202607300150-MGCHE6"
++          },
+           {
+             "kind": "option",
+             "command": "pr conflict-rework",
+             "name": "json",
+             "source_task": "202607260007-DQM6AW"
+           },
++          {
++            "kind": "option",
++            "command": "pr conflict-rework",
++            "name": "recover-diverged-head",
++            "source_task": "202607300150-MGCHE6"
++          },
+           {
+             "kind": "option",
+             "command": "sync",
+diff --git a/scripts/checks/check-compatibility-contract-baseline.mjs b/scripts/checks/check-compatibility-contract-baseline.mjs
+index a8ce040d7..e6256cfd6 100644
+--- a/scripts/checks/check-compatibility-contract-baseline.mjs
++++ b/scripts/checks/check-compatibility-contract-baseline.mjs
+@@ -324,6 +324,7 @@ function validateReviewedCandidate({
+     "202607260007-DQM6AW",
+     "202607260532-9M7RNH",
+     "202607281655-YMPY8Y",
++    "202607300150-MGCHE6",
+   ];
+   const expectedSourceTasks = [
+     "202607221846-4VB97J",
+@@ -345,6 +346,7 @@ function validateReviewedCandidate({
+     "202607260532-9M7RNH",
+     "202607281655-YMPY8Y",
+     "202607291449-FTHNAR",
++    "202607300150-MGCHE6",
+   ];
+   assert(
+     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
+@@ -1117,6 +1119,9 @@ function validateReviewedCandidate({
+       ],
+       options: [
+         { name: "expect-freshness-token", kind: "string", valueHint: "<sha256-token>" },
++        { name: "recover-diverged-head", kind: "boolean", valueHint: null, default: false },
++        { name: "expected-local-head", kind: "string", valueHint: "<full-sha>" },
++        { name: "expected-provider-head", kind: "string", valueHint: "<full-sha>" },
+         { name: "json", kind: "boolean", valueHint: null, default: false },
+       ],
+     },
+@@ -1292,6 +1297,18 @@ function validateReviewedCandidate({
+       kind: "string",
+       valueHint: "<sha256-token>",
+     },
++    {
++      command: "pr conflict-rework",
++      name: "expected-local-head",
++      kind: "string",
++      valueHint: "<full-sha>",
++    },
++    {
++      command: "pr conflict-rework",
++      name: "expected-provider-head",
++      kind: "string",
++      valueHint: "<full-sha>",
++    },
+     {
+       command: "pr conflict-rework",
+       name: "json",
+@@ -1299,6 +1316,13 @@ function validateReviewedCandidate({
+       valueHint: null,
+       default: false,
+     },
++    {
++      command: "pr conflict-rework",
++      name: "recover-diverged-head",
++      kind: "boolean",
++      valueHint: null,
++      default: false,
++    },
+     {
+       command: "sync",
+       name: "adopt-projection-identity",
+@@ -1545,12 +1569,30 @@ function validateReviewedCandidate({
+       name: "expect-freshness-token",
+       source_task: "202607260007-DQM6AW",
+     },
++    {
++      kind: "option",
++      command: "pr conflict-rework",
++      name: "expected-local-head",
++      source_task: "202607300150-MGCHE6",
++    },
++    {
++      kind: "option",
++      command: "pr conflict-rework",
++      name: "expected-provider-head",
++      source_task: "202607300150-MGCHE6",
++    },
+     {
+       kind: "option",
+       command: "pr conflict-rework",
+       name: "json",
+       source_task: "202607260007-DQM6AW",
+     },
++    {
++      kind: "option",
++      command: "pr conflict-rework",
++      name: "recover-diverged-head",
++      source_task: "202607300150-MGCHE6",
++    },
+     {
+       kind: "option",
+       command: "sync",

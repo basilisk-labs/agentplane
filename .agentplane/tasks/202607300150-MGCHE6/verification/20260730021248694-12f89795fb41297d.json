@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:12f89795fb41297d6367905964852516fd65cfe792577584dae9fdbee519466b",
+  "implementation_sha": "4eb1bca90c544aaa6a5eb3cf1ef220880a47b40a",
+  "kind": "task_verification_record",
+  "note": "Focused recovery tests passed (29/29), typecheck passed, compatibility gate passed, and the full ci:contract suite passed.",
+  "recorded_at": "2026-07-30T02:12:48.694Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "PLANNER fallback scaffold for \"Recover diverged task PR identities safely\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Recover diverged task PR identities safely\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
+  "scope_digest": "sha256:8e32be94b05c9807415151f4973944015a4219dd2bf86685dbe1a4b2e09518d6",
+  "task_id": "202607300150-MGCHE6",
+  "verification_command": "agentplane verify 202607300150-MGCHE6 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -106,6 +106,9 @@ export function makeRunPrConflictReworkHandler(getCtx: (cmd: string) => Promise<
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
       expectedFreshnessToken: p.expectedFreshnessToken,
+      recoverDivergedHead: p.recoverDivergedHead,
+      expectedLocalHead: p.expectedLocalHead,
+      expectedProviderHead: p.expectedProviderHead,
       json: p.json,
     });
   };
