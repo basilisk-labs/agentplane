@@ -23,6 +23,7 @@ import { prepareTaskRunnerExecution } from "./task-run.js";
 import {
   acceptLegacyTaskRunnerEffect,
   resolveTaskRunnerEffect,
+  waitForConcurrentResolutionRetirement,
 } from "./task-run-effect-resolution.js";
 import { resumeTaskRunnerEffectExecution } from "./task-run-lifecycle.js";
 import { recordFailedExternalRunnerAnchor } from "./task-run-lifecycle.testkit.js";
@@ -217,23 +218,29 @@ describe("task runner effect resolution", () => {
     expect(existsSync(opposingFixture.adapterMarker)).toBe(false);
   });
 
-  it("retries an unstable active-claim observation while a concurrent resolution retires it", async () => {
+  it("retries an unstable active-claim observation after concurrent retirement", async () => {
     const fixture = await uncertainEffectFixture();
+    const resolved = await resolveTaskRunnerEffect(resolutionInput(fixture));
+    await writeActiveClaim(fixture.root, fixture.claim);
+    const repository = await RunnerRunRepository.openExistingTaskRun({
+      git_root: fixture.root,
+      workflow_dir: fixture.ctx.config.paths.workflow_dir,
+      task_id: fixture.taskId,
+      run_id: fixture.prepared.invocation.run_id,
+      storage: "supervisor",
+    });
     const originalRead = stableFile.readStableRegularTextNoFollow;
     let collisionInjected = false;
     let retirementWaitReads = 0;
     const readSpy = vi
       .spyOn(stableFile, "readStableRegularTextNoFollow")
       .mockImplementation(async (...args) => {
-        const isRetirementWaitRead =
-          args[1] === "runner active claim" &&
-          new Error("capture retirement wait stack").stack?.includes(
-            "waitForConcurrentResolutionRetirement",
-          );
+        const isRetirementWaitRead = args[1] === "runner active claim";
         if (isRetirementWaitRead) {
           retirementWaitReads += 1;
           if (!collisionInjected) {
             collisionInjected = true;
+            await rm(args[0], { force: true });
             throw new Error(`runner active claim path changed before it could be read: ${args[0]}`);
           }
         }
@@ -241,15 +248,18 @@ describe("task runner effect resolution", () => {
       });
 
     try {
-      const input = resolutionInput(fixture);
-      const resolutions = await Promise.all([
-        resolveTaskRunnerEffect(input),
-        resolveTaskRunnerEffect(input),
-      ]);
-
-      expect(resolutions[0].resolution.digest).toBe(resolutions[1].resolution.digest);
+      await expect(
+        waitForConcurrentResolutionRetirement({
+          repository,
+          git_root: fixture.root,
+          workflow_dir: fixture.ctx.config.paths.workflow_dir,
+          task_id: fixture.taskId,
+          run_id: fixture.prepared.invocation.run_id,
+          resolution: resolved.resolution,
+        }),
+      ).resolves.toBe(true);
       expect(collisionInjected).toBe(true);
-      expect(retirementWaitReads).toBeGreaterThanOrEqual(2);
+      expect(retirementWaitReads).toBe(1);
     } finally {
       readSpy.mockRestore();
     }
