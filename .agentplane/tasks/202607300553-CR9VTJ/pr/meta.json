@@ -1,0 +1,13 @@
+{
+  "base": "main",
+  "branch": "task/202607300553-CR9VTJ/requalify-the-agentplane-0-7-0-beta-1-decision-o",
+  "created_at": "2026-07-30T05:53:55.797Z",
+  "diffstat_sha256": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "last_verified_at": null,
+  "schema_version": 1,
+  "task_id": "202607300553-CR9VTJ",
+  "updated_at": "2026-07-30T05:53:55.797Z",
+  "verify": {
+    "status": "skipped"
+  }
+}
