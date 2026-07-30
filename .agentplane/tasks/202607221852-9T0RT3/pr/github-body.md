@@ -37,8 +37,8 @@ chunks.
  .../runner/usecases/agent-work-order-projection.ts |   2 +
  .../usecases/agent-work-order.integration.test.ts  | 127 ++++
  .../src/runner/usecases/agent-work-order.ts        |   9 +
- .../runner/usecases/task-knowledge-retrieval.ts    | 722 +++++++++++++++++++++
- 5 files changed, 889 insertions(+), 5 deletions(-)
+ .../runner/usecases/task-knowledge-retrieval.ts    | 740 +++++++++++++++++++++
+ 5 files changed, 907 insertions(+), 5 deletions(-)
 ```
 
 </details>

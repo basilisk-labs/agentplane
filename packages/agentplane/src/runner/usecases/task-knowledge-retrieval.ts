@@ -177,9 +177,13 @@ function stringsFromText(value: string): string[] {
 }
 
 function pathSignals(value: string): string[] {
-  const matches = value.match(/(?:\.agentplane\/|context\/)(?:[A-Za-z0-9_.-]+\/)*[A-Za-z0-9_.-]+/gu) ?? [];
+  const matches =
+    value.match(/(?:\.agentplane\/|context\/)(?:[A-Za-z0-9_.-]+\/)*[A-Za-z0-9_.-]+/gu) ?? [];
   return matches.flatMap((item) => {
-    const stem = path.basename(item).replace(/\.[^.]+$/u, "").replaceAll(/[_-]+/gu, " ");
+    const stem = path
+      .basename(item)
+      .replace(/\.[^.]+$/u, "")
+      .replaceAll(/[_-]+/gu, " ");
     return [item.replaceAll(/[/_-]+/gu, " "), stem];
   });
 }
@@ -248,8 +252,9 @@ function taskQueryPlan(opts: {
     addQuery(queries, value, "task_intent", 0);
   }
   for (const section of opts.task_envelope.task.narrative.sections) {
-    const signal: RetrievalSignal =
-      /verify|acceptance|scope|plan/iu.test(section.name) ? "acceptance" : "finding";
+    const signal: RetrievalSignal = /verify|acceptance|scope|plan/iu.test(section.name)
+      ? "acceptance"
+      : "finding";
     for (const value of stringsFromText(section.text)) addQuery(queries, value, signal, 2);
   }
   const ordered = [...queries.values()]
@@ -382,11 +387,13 @@ async function buildEntityIndex(root: string): Promise<EntityIndex> {
       index.neighbours.set(left, current);
     }
   }
-  for (const values of index.by_term.values()) values.sort((left, right) => left.localeCompare(right));
+  for (const values of index.by_term.values())
+    values.sort((left, right) => left.localeCompare(right));
   for (const values of index.neighbours.values()) {
     values.sort(
       (left, right) =>
-        left.entity_id.localeCompare(right.entity_id) || (left.edge_id ?? "").localeCompare(right.edge_id ?? ""),
+        left.entity_id.localeCompare(right.entity_id) ||
+        (left.edge_id ?? "").localeCompare(right.edge_id ?? ""),
     );
   }
   return index;
@@ -445,7 +452,12 @@ function exactCandidates(queries: QueryTerm[]): Candidate[] {
   const output: Candidate[] = [];
   for (const query of queries) {
     for (const ref of query.exact_refs) {
-      const candidate = candidateFromRef({ ref, retrieval: "exact", score: 1, reason: "task_path_exact" });
+      const candidate = candidateFromRef({
+        ref,
+        retrieval: "exact",
+        score: 1,
+        reason: "task_path_exact",
+      });
       if (candidate) output.push(candidate);
     }
   }
@@ -462,7 +474,8 @@ async function ftsCandidates(opts: {
     .filter((query) => query.exact_refs.length === 0)
     .toSorted(
       (left, right) =>
-        querySignalRank(left) - querySignalRank(right) || left.normalized.localeCompare(right.normalized),
+        querySignalRank(left) - querySignalRank(right) ||
+        left.normalized.localeCompare(right.normalized),
     )
     .slice(0, MAX_FTS_QUERIES);
   for (const query of ftsQueries) {
@@ -554,9 +567,9 @@ async function dependencyContext(opts: {
   if (taskIds.length === 0) return [];
   const tasks = opts.ctx.taskBackend.getTasks
     ? await opts.ctx.taskBackend.getTasks(taskIds).catch(() => [])
-    : await Promise.all(taskIds.map(async (taskId) => await opts.ctx.taskBackend.getTask(taskId))).catch(
-        () => [],
-      );
+    : await Promise.all(
+        taskIds.map(async (taskId) => await opts.ctx.taskBackend.getTask(taskId)),
+      ).catch(() => []);
   return tasks
     .flatMap((task) =>
       task?.status === "DONE"
@@ -648,14 +661,15 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
     }
   }
   const excerpts = await Promise.all(
-    materialized.map(async ({ ref }) =>
-      await prepareKnowledgeExcerpt({
-        repository_root: opts.repository_root,
-        knowledge_ref: ref,
-        max_bytes: MAX_EXCERPT_BYTES,
-        max_lines: MAX_EXCERPT_LINES,
-        index_snapshot: projection,
-      }),
+    materialized.map(
+      async ({ ref }) =>
+        await prepareKnowledgeExcerpt({
+          repository_root: opts.repository_root,
+          knowledge_ref: ref,
+          max_bytes: MAX_EXCERPT_BYTES,
+          max_lines: MAX_EXCERPT_LINES,
+          index_snapshot: projection,
+        }),
     ),
   );
   const includedIdentities = new Set(
@@ -665,8 +679,7 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
   );
   const knowledgeRefs = materialized.map(({ candidate, ref }, indexPosition) => {
     const identity = `${ref.ref}\u0000${ref.digest}`;
-    const required =
-      indexPosition < MAX_REQUIRED_REFERENCES && includedIdentities.has(identity);
+    const required = indexPosition < MAX_REQUIRED_REFERENCES && includedIdentities.has(identity);
     if (!includedIdentities.has(identity)) {
       omissions.push({
         query: null,
@@ -682,7 +695,12 @@ export async function prepareTaskKnowledgeRetrieval(opts: {
     kind: "task_knowledge_retrieval_receipt" as const,
     projection: {
       available: projection !== null,
-      digest: projection ? digest({ metadata: projection.metadata, rows: projection.rows.map((row) => ({ path: row.path, sha256: row.sha256 })) }) : null,
+      digest: projection
+        ? digest({
+            metadata: projection.metadata,
+            rows: projection.rows.map((row) => ({ path: row.path, sha256: row.sha256 })),
+          })
+        : null,
       projection_version: projection?.metadata.projection_version ?? null,
     },
     budgets: {
