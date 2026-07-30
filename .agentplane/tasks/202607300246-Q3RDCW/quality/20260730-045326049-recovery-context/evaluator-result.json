@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "The lease boundary deterministically proves catch-and-wait behavior and convergence of two resolvers, while the original upstream-binding recovery source and its safety tests remain untouched.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-045326049-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The production resolver keeps its initial active-claim read as a precondition; removal should fail this integration test and prompt explicit review."
+  ]
+}
