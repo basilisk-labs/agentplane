@@ -15,8 +15,15 @@ RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reprod
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Pass: deterministic task-bound candidates cover a canonical entity after the prior first-50 range;
+fixture proves exact label, alias, FTS graph/page, graph-neighbour evidence, stable ordering, refs,
+and digest. CURATOR remains the only identity decision owner. Checks: agentplane build; 42 focused
+tests; Prettier; ESLint; diff check.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
@@ -28,12 +35,12 @@ RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reprod
 
 ```text
  .../src/commands/context/release-readiness.test.ts |   4 +-
- .../src/context/ingest-task-pack.test.ts           | 215 ++++++++-
+ .../src/context/ingest-task-pack.test.ts           | 227 ++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
  .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
  packages/agentplane/src/context/ingest-task.ts     |   5 +-
  .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
- 6 files changed, 765 insertions(+), 68 deletions(-)
+ 6 files changed, 777 insertions(+), 68 deletions(-)
 ```
 
 </details>

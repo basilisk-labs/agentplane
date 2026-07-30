@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-YP9QCH",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T10:01:22.620Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 1 typed finding(s).",
+  "evaluated_sha": "18e8d9f30ffefb7f0cb0024f685ffc6ae141aa18",
+  "blueprint_digest": "198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324",
+  "findings": [
+    "The candidate-term extractor returns a basename term for deleted source rows, which can surface stale candidates without task-bound source evidence."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100122509-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [
+    "Deleted manifest entry produces no candidate term or candidate group."
+  ],
+  "hidden_assumptions": [
+    "A deleted path remains valid reconciliation evidence."
+  ],
+  "residual_risks": [
+    "Suppress all candidate-term extraction for deleted, unsupported, and unreadable source rows; add a focused deterministic regression test."
+  ]
+}

@@ -1,0 +1,1825 @@
+diff --git a/.agentplane/tasks/202607221852-YP9QCH/README.md b/.agentplane/tasks/202607221852-YP9QCH/README.md
+index 3a81b4a0b..72bce1f9e 100644
+--- a/.agentplane/tasks/202607221852-YP9QCH/README.md
++++ b/.agentplane/tasks/202607221852-YP9QCH/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221852-YP9QCH"
+ title: "Build source-driven canonical reconciliation candidates"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 7
+ origin:
+   system: "manual"
+ depends_on:
+@@ -26,9 +26,9 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-30T09:44:14.049Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -37,11 +37,21 @@ verification:
+   note: null
+   attempts: 0
+ commit: null
+-comments: []
+-events: []
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T09:44:33.679Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:14.643Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-30T09:44:33.679Z"
++doc_updated_by: "CODER"
+ description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
+ sections:
+   Summary: |-
+@@ -70,6 +80,10 @@ sections:
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "e9f2cbe94440b925b16f04da815cd21628812161"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..2bd980d98
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-YP9QCH",
++    "title": "Build source-driven canonical reconciliation candidates",
++    "description": "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest.",
++    "tags": [
++      "assimilation",
++      "context",
++      "milestone-beta2",
++      "reconciliation",
++      "refactor",
++      "rf-17",
++      "v0.7",
++      "wave-retrieval"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-YP9QCH",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-YP9QCH/pr/diffstat.txt b/.agentplane/tasks/202607221852-YP9QCH/pr/diffstat.txt
+new file mode 100644
+index 000000000..80e48096e
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-YP9QCH/pr/diffstat.txt
+@@ -0,0 +1,7 @@
++ .../src/commands/context/release-readiness.test.ts |   4 +-
++ .../src/context/ingest-task-pack.test.ts           | 215 ++++++++-
++ .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
++ .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
++ packages/agentplane/src/context/ingest-task.ts     |   5 +-
++ .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
++ 6 files changed, 765 insertions(+), 68 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-YP9QCH/pr/github-body.md b/.agentplane/tasks/202607221852-YP9QCH/pr/github-body.md
+new file mode 100644
+index 000000000..b46771bbb
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-YP9QCH/pr/github-body.md
+@@ -0,0 +1,39 @@
++Task: `202607221852-YP9QCH`
++Title: Build source-driven canonical reconciliation candidates
++Canonical task record: `.agentplane/tasks/202607221852-YP9QCH/README.md`
++
++## Summary
++
++Build source-driven canonical reconciliation candidates
++
++RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest.
++
++## Scope
++
++- In scope: source-derived query terms, candidate fusion from FTS/aliases/graph/page families, deterministic scoring/reasons, bounded additional search, index digest, full-catalog compatibility, and entity-resolution fixture metrics.
++- Out of scope: deciding semantic identity in CLI; CURATOR remains authoritative.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T09:44:58.527Z
++- Branch: task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/commands/context/release-readiness.test.ts |   4 +-
++ .../src/context/ingest-task-pack.test.ts           | 215 ++++++++-
++ .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
++ .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
++ packages/agentplane/src/context/ingest-task.ts     |   5 +-
++ .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
++ 6 files changed, 765 insertions(+), 68 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-YP9QCH/pr/github-title.txt b/.agentplane/tasks/202607221852-YP9QCH/pr/github-title.txt
+new file mode 100644
+index 000000000..ec0563278
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-YP9QCH/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 YP9QCH task: Build source-driven canonical reconciliation candidates [202607221852-YP9QCH]
+diff --git a/.agentplane/tasks/202607221852-YP9QCH/pr/meta.json b/.agentplane/tasks/202607221852-YP9QCH/pr/meta.json
+new file mode 100644
+index 000000000..55a521395
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-YP9QCH/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can",
++  "created_at": "2026-07-30T09:44:33.829Z",
++  "diffstat_sha256": "sha256:97e940bc5967c92a0c2f3429ce5ebf3c1ab3a8f281d9c1e4be0bbc01afecdc68",
++  "last_verified_at": null,
++  "pr_number": 4688,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4688",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-YP9QCH",
++  "updated_at": "2026-07-30T09:44:58.527Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-YP9QCH/pr/review.md b/.agentplane/tasks/202607221852-YP9QCH/pr/review.md
+new file mode 100644
+index 000000000..cd1cd3d64
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-YP9QCH/pr/review.md
+@@ -0,0 +1,42 @@
++# PR Review
++
++Created: 2026-07-30T09:44:33.829Z
++
++## Task
++
++- Task: `202607221852-YP9QCH`
++- Title: Build source-driven canonical reconciliation candidates
++- Status: DOING
++- Branch: `task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can`
++- Canonical task record: `.agentplane/tasks/202607221852-YP9QCH/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T09:44:58.527Z
++- Branch: task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/commands/context/release-readiness.test.ts |   4 +-
++ .../src/context/ingest-task-pack.test.ts           | 215 ++++++++-
++ .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
++ .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
++ packages/agentplane/src/context/ingest-task.ts     |   5 +-
++ .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
++ 6 files changed, 765 insertions(+), 68 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/commands/context/release-readiness.test.ts b/packages/agentplane/src/commands/context/release-readiness.test.ts
+index 4e4a4ff8b..bd57a3127 100644
+--- a/packages/agentplane/src/commands/context/release-readiness.test.ts
++++ b/packages/agentplane/src/commands/context/release-readiness.test.ts
+@@ -802,7 +802,9 @@ describe("context release readiness guards", () => {
+     const prompt =
+       createdArgs.parsed?.extensions?.["agentplane.context"]?.prompt_modules?.[0]?.content ?? "";
+     expect(prompt).toContain("context.maximum_assimilation");
+-    expect(prompt).toContain("Reconcile semantically: compare each source term");
++    expect(prompt).toContain(
++      "Reconcile semantically: inspect the source-driven candidate evidence",
++    );
+     expect(prompt).toContain("reuse `canonical_entity_id`");
+     expect(prompt).toContain("Return only that semantic result");
+     expect(prompt).toContain("CLI supervision materializes the formal layer");
+diff --git a/packages/agentplane/src/context/ingest-task-pack.test.ts b/packages/agentplane/src/context/ingest-task-pack.test.ts
+index 39e7cd74e..7c88bfcd7 100644
+--- a/packages/agentplane/src/context/ingest-task-pack.test.ts
++++ b/packages/agentplane/src/context/ingest-task-pack.test.ts
+@@ -5,8 +5,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
+ 
+ import type { CommandContext } from "../commands/shared/task-backend.js";
+ import type { TaskNewParsed } from "../commands/task/new.js";
++import { writeSqliteProjection } from "../commands/context/sqlite.js";
+ import { cmdContextIngest } from "./ingest.js";
+ import { inspectContextIngestRuns } from "./ingest-run-diagnostics.js";
++import { writeContextTaskPack } from "./ingest-task-pack.js";
++import { PROJECTION_VERSION } from "./reindex.js";
+ 
+ let tempRoots: string[] = [];
+ 
+@@ -152,11 +155,19 @@ describe("context ingest task pack", () => {
+         facts: { row_count: number; sha256: string };
+         graph_entities: { row_count: number; sha256: string };
+       };
+-      candidates: {
+-        wiki_pages: { path: string; title: string }[];
+-        graph_entities: { id: string; label: string }[];
+-      };
+     }>(root, `${taskRoot}/canonical-snapshot.json`);
++    const reconciliationCandidates = await readJson<{
++      version: number;
++      index: { available: boolean; digest: string | null; fts_results_per_query: number };
++      candidate_digest: string;
++      semantic_decision_owner: string;
++      candidate_groups: {
++        query: string;
++        source_paths: string[];
++        source_span_ids: string[];
++        candidates: unknown[];
++      }[];
++    }>(root, `${taskRoot}/canonical-reconciliation-candidates.json`);
+     const canonicalEntityCatalog = await readJson<{
+       version: number;
+       entity_count: number;
+@@ -218,16 +229,12 @@ describe("context ingest task pack", () => {
+       ]),
+     );
+     expect(canonicalSnapshot).toMatchObject({
+-      version: 2,
++      version: 3,
+       surfaces: {
+         wiki: { file_count: 1 },
+         facts: { row_count: 1 },
+         graph_entities: { row_count: 1 },
+       },
+-      candidates: {
+-        wiki_pages: [{ path: "context/wiki/payments.md", title: "Payments" }],
+-        graph_entities: [{ id: "entity.payments", label: "Payments" }],
+-      },
+     });
+     expect(canonicalSnapshot.surfaces.wiki.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+     expect(canonicalSnapshot.surfaces.facts.sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
+@@ -254,10 +261,28 @@ describe("context ingest task pack", () => {
+       ],
+     });
+     expect(canonicalEntityCatalog.catalog_sha256).toMatch(/^sha256:[a-f0-9]{64}$/u);
++    expect(reconciliationCandidates).toMatchObject({
++      version: 1,
++      index: { available: false, digest: null, fts_results_per_query: 20 },
++      semantic_decision_owner: "CURATOR",
++    });
++    expect(reconciliationCandidates.candidate_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
++    expect(reconciliationCandidates.candidate_groups).toEqual(
++      expect.arrayContaining([
++        expect.objectContaining({
++          query: "payment api",
++          source_paths: ["context/raw/specs/payment-api.md"],
++          source_span_ids: [expect.stringMatching(/^span\./u)],
++        }),
++      ]),
++    );
+     expect(expectedArtifacts.required).toContain(`${taskRoot}/source-spans.skeleton.jsonl`);
+     expect(expectedArtifacts.required).toContain(`${taskRoot}/task-creation.json`);
+     expect(expectedArtifacts.required).toContain(`${taskRoot}/extraction-contract.json`);
+     expect(expectedArtifacts.required).toContain(`${taskRoot}/canonical-entity-catalog.json`);
++    expect(expectedArtifacts.required).toContain(
++      `${taskRoot}/canonical-reconciliation-candidates.json`,
++    );
+     expect(expectedArtifacts.required).toEqual(
+       expect.arrayContaining([
+         ".agentplane/context/derived/ontology/entity-resolution.jsonl",
+@@ -284,6 +309,7 @@ describe("context ingest task pack", () => {
+         ".agentplane/tasks/${taskId}/extraction-contract.json",
+         ".agentplane/tasks/${taskId}/canonical-snapshot.json",
+         ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
++        ".agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json",
+         ".agentplane/tasks/${taskId}/source-set.lock.json",
+         ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
+         ".agentplane/tasks/${taskId}/expected-artifacts.json",
+@@ -298,6 +324,177 @@ describe("context ingest task pack", () => {
+     expect(parsedTaskDocSections?.Findings).toContain("Semantic identity is agent-owned");
+   });
+ 
++  it("builds stable source-driven candidates beyond the former alphabetical first-50 slice", async () => {
++    const root = await tempRoot();
++    const taskId = "202607021203-CANDID";
++    const sourcePath = "context/raw/specs/payment-api.md";
++    const structuredSourcePath = "context/raw/specs/payment-terms.json";
++    await write(
++      root,
++      sourcePath,
++      "# Payment API\n\nUse the legacy Payment Gateway name only in migration notes.\n",
++    );
++    await write(
++      root,
++      "context/wiki/payment-api.md",
++      "# Payment API\n\nCanonical payment contract.\n",
++    );
++    await write(root, structuredSourcePath, JSON.stringify({ title: "Payment Gateway" }));
++    const fillerEntities = Array.from({ length: 55 }, (_, index) => ({
++      id: `entity.${String(index).padStart(3, "0")}`,
++      kind: "concept",
++      label: `Filler ${index}`,
++    }));
++    const paymentApi = {
++      id: "entity.zz-payment-api",
++      kind: "service",
++      label: "Payment API",
++      source_refs: ["context/raw/specs/legacy-payments.md#L1-L4"],
++    };
++    await write(
++      root,
++      ".agentplane/context/derived/graph/entities.jsonl",
++      [...fillerEntities, paymentApi].map((row) => JSON.stringify(row)).join("\n") + "\n",
++    );
++    await write(
++      root,
++      ".agentplane/context/derived/ontology/aliases.jsonl",
++      `${JSON.stringify({
++        id: "alias.payment-gateway",
++        alias: "Payment Gateway",
++        canonical_entity_id: paymentApi.id,
++      })}\n`,
++    );
++    await write(
++      root,
++      ".agentplane/context/derived/graph/edges.jsonl",
++      `${JSON.stringify({
++        id: "edge.payment-api.uses.ledger",
++        from: paymentApi.id,
++        to: "entity.010",
++        relation: "uses",
++      })}\n`,
++    );
++    await write(
++      root,
++      ".agentplane/context/derived/wiki/page-manifests.jsonl",
++      `${JSON.stringify({
++        id: "page.payment-api",
++        path: "context/wiki/payment-api.md",
++        canonical_entity_ids: [paymentApi.id],
++      })}\n`,
++    );
++    await writeSqliteProjection(path.join(root, ".agentplane", "cache.sqlite"), {
++      metadata: {
++        projection_version: PROJECTION_VERSION,
++        generated_at: "2026-07-02T12:03:00.000Z",
++        workspace_hash: "fixture-reconciliation-index",
++        include_tasks: false,
++        include_raw: false,
++        source_bytes: 100,
++        search_text_bytes: 100,
++        preview_text_bytes: 100,
++        projection_elapsed_ms: 1,
++      },
++      rows: [
++        {
++          path: ".agentplane/context/derived/graph/entities.jsonl#entity=entity.zz-payment-api",
++          sha256: "payment-api-graph-row",
++          content_type: "application/json",
++          projection_version: PROJECTION_VERSION,
++          indexed_at: "2026-07-02T12:03:00.000Z",
++          size_bytes: 50,
++          kind: "jsonl-row",
++          search_text: "Payment API service",
++          preview_text: "Payment API service",
++          source_refs: paymentApi.source_refs,
++        },
++        {
++          path: "context/wiki/payment-api.md#section=payment-api",
++          sha256: "payment-api-wiki-row",
++          content_type: "text/markdown",
++          projection_version: PROJECTION_VERSION,
++          indexed_at: "2026-07-02T12:03:00.000Z",
++          size_bytes: 50,
++          kind: "markdown-section",
++          search_text: "Payment API canonical contract",
++          preview_text: "Payment API canonical contract",
++          source_refs: ["context/wiki/payment-api.md#section=payment-api"],
++        },
++      ],
++    });
++    const sources = [
++      {
++        path: sourcePath,
++        sha256: "sha256:payment-api-source",
++        size_bytes: 74,
++        mtime: "2026-07-02T12:03:00.000Z",
++        content_type: "text/markdown",
++        status: "new" as const,
++      },
++      {
++        path: structuredSourcePath,
++        sha256: "sha256:payment-terms-source",
++        size_bytes: 27,
++        mtime: "2026-07-02T12:03:00.000Z",
++        content_type: "application/json",
++        status: "new" as const,
++      },
++    ];
++    const creation = {
++      task_id: taskId,
++      revision: 1,
++      backend_id: "local",
++      artifact_paths: [`.agentplane/tasks/${taskId}/README.md`],
++    };
++    const generatedAt = "2026-07-02T12:03:00.000Z";
++    await writeContextTaskPack({ root, taskId, sources, creation, generatedAt });
++    const first = await readJson<{
++      index: { available: boolean; digest: string | null };
++      candidate_digest: string;
++      candidate_groups: {
++        query: string;
++        origins: string[];
++        candidates: {
++          canonical_entity_id: string;
++          score: number;
++          reasons: string[];
++          evidence_refs: string[];
++        }[];
++      }[];
++    }>(root, `.agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json`);
++    await writeContextTaskPack({ root, taskId, sources, creation, generatedAt });
++    const second = await readJson(
++      root,
++      `.agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json`,
++    );
++
++    const paymentGroup = first.candidate_groups.find((group) => group.query === "payment api");
++    const paymentCandidate = paymentGroup?.candidates.find(
++      (candidate) => candidate.canonical_entity_id === paymentApi.id,
++    );
++    const aliasGroup = first.candidate_groups.find((group) => group.query === "payment gateway");
++    const aliasCandidate = aliasGroup?.candidates.find(
++      (candidate) => candidate.canonical_entity_id === paymentApi.id,
++    );
++    expect(paymentCandidate).toMatchObject({
++      score: expect.any(Number),
++      reasons: expect.arrayContaining(["label_exact", "fts_graph_entity", "fts_page_family"]),
++      evidence_refs: expect.arrayContaining([
++        ".agentplane/context/derived/graph/entities.jsonl#entity=entity.zz-payment-api",
++        "context/wiki/payment-api.md#section=payment-api",
++      ]),
++    });
++    expect(first.index).toMatchObject({
++      available: true,
++      digest: expect.stringMatching(/^sha256:/u),
++    });
++    expect(aliasGroup).toMatchObject({ origins: expect.arrayContaining(["structured_field"]) });
++    expect(aliasCandidate?.reasons).toContain("alias_exact");
++    expect(first.candidate_digest).toMatch(/^sha256:[a-f0-9]{64}$/u);
++    expect(second).toEqual(first);
++  });
++
+   it("persists the exact creation receipt before a later task-pack failure", async () => {
+     const root = await tempRoot();
+     await write(root, "context/raw/partial.md", "# Partial\n\nKeep the task identity.\n");
+diff --git a/packages/agentplane/src/context/ingest-task-pack.ts b/packages/agentplane/src/context/ingest-task-pack.ts
+index ce1b35ae0..e9771ca56 100644
+--- a/packages/agentplane/src/context/ingest-task-pack.ts
++++ b/packages/agentplane/src/context/ingest-task-pack.ts
+@@ -7,6 +7,11 @@ import { CONTEXT_EXTRACTION_CONTRACT } from "../runtime/sgr/index.js";
+ import type { TaskCreationResult } from "../commands/task/new.js";
+ 
+ import type { ManifestEntry } from "./ingest-manifest.js";
++import {
++  buildCanonicalReconciliationCandidates,
++  type CanonicalCatalogEntity,
++  type CanonicalEntityCatalog,
++} from "./reconciliation-candidates.js";
+ import { buildSourceSpanSkeleton } from "./source-spans.js";
+ 
+ const CONTEXT_TASK_PACK_FILES = [
+@@ -15,13 +20,12 @@ const CONTEXT_TASK_PACK_FILES = [
+   "extraction-contract.json",
+   "canonical-snapshot.json",
+   "canonical-entity-catalog.json",
++  "canonical-reconciliation-candidates.json",
+   "source-set.lock.json",
+   "source-spans.skeleton.jsonl",
+   "expected-artifacts.json",
+ ] as const;
+ 
+-const CANDIDATE_LIMIT = 50;
+-
+ const SNAPSHOT_SURFACES = {
+   wiki: { path: "context/wiki", kind: "directory" },
+   glossary: { path: "context/wiki/glossary.md", kind: "jsonl_or_file" },
+@@ -159,48 +163,6 @@ async function directoryExists(directoryPath: string): Promise<boolean> {
+   }
+ }
+ 
+-function wikiTitle(text: string, relativePath: string): string {
+-  const frontmatterTitle = /^---\s*[\s\S]*?^title:\s*["']?([^\n"']+)/mu.exec(text)?.[1]?.trim();
+-  const headingTitle = /^#\s+(.+)$/mu.exec(text)?.[1]?.trim();
+-  return (
+-    frontmatterTitle ?? headingTitle ?? path.basename(relativePath, path.extname(relativePath))
+-  );
+-}
+-
+-async function wikiCandidates(root: string, files: string[]) {
+-  const candidates = [];
+-  for (const relativePath of files.slice(0, CANDIDATE_LIMIT)) {
+-    const text = await readFile(path.join(root, relativePath), "utf8");
+-    candidates.push({ path: relativePath, title: wikiTitle(text, relativePath) });
+-  }
+-  return candidates;
+-}
+-
+-async function entityCandidates(root: string) {
+-  const relativePath = ".agentplane/context/derived/graph/entities.jsonl";
+-  const content = await readFileOrNull(path.join(root, relativePath));
+-  if (!content) return [];
+-  const rows: { id: string; label?: string; kind?: string; aliases?: string[] }[] = [];
+-  for (const line of content.toString("utf8").split("\n")) {
+-    if (!line.trim()) continue;
+-    try {
+-      const row = JSON.parse(line) as Record<string, unknown>;
+-      if (typeof row.id !== "string" || !row.id.trim()) continue;
+-      rows.push({
+-        id: row.id,
+-        ...(typeof row.label === "string" ? { label: row.label } : {}),
+-        ...(typeof row.kind === "string" ? { kind: row.kind } : {}),
+-        ...(Array.isArray(row.aliases) && row.aliases.every((alias) => typeof alias === "string")
+-          ? { aliases: row.aliases as string[] }
+-          : {}),
+-      });
+-    } catch {
+-      continue;
+-    }
+-  }
+-  return rows.toSorted((left, right) => left.id.localeCompare(right.id)).slice(0, CANDIDATE_LIMIT);
+-}
+-
+ async function jsonlRecords(
+   root: string,
+   relativePath: string,
+@@ -245,7 +207,7 @@ async function buildCanonicalEntityCatalog(opts: {
+   root: string;
+   taskId: string;
+   generatedAt: string;
+-}): Promise<Record<string, unknown>> {
++}): Promise<CanonicalEntityCatalog> {
+   const [entities, aliases, edges, pageManifests] = await Promise.all([
+     jsonlRecords(opts.root, ".agentplane/context/derived/graph/entities.jsonl"),
+     jsonlRecords(opts.root, ".agentplane/context/derived/ontology/aliases.jsonl"),
+@@ -293,7 +255,7 @@ async function buildCanonicalEntityCatalog(opts: {
+     });
+     relationsByEntity.set(to, incoming);
+   }
+-  const catalogEntities = entities
++  const catalogEntities: CanonicalCatalogEntity[] = entities
+     .flatMap((entity) => {
+       const id = optionalText(entity, "id");
+       if (!id) return [];
+@@ -352,15 +314,10 @@ async function buildCanonicalSnapshot(opts: { root: string; taskId: string; gene
+     ),
+   );
+   return {
+-    version: 2,
++    version: 3,
+     task_id: opts.taskId,
+     generated_at: opts.generatedAt,
+-    candidate_limit: CANDIDATE_LIMIT,
+     surfaces: Object.fromEntries(surfaceEntries),
+-    candidates: {
+-      wiki_pages: await wikiCandidates(opts.root, wikiFiles),
+-      graph_entities: await entityCandidates(opts.root),
+-    },
+   };
+ }
+ 
+@@ -447,8 +404,9 @@ function buildContextPackMarkdown(opts: {
+     "- `task-creation.json`: CLI-owned receipt containing the exact created task identity, revision, backend, and recovery artifact paths; treat it as immutable during semantic work.",
+     "- `source-set.lock.json`: selected source identity, hashes, status, type, and size.",
+     "- `extraction-contract.json`: exact SGR v2 payload requirements plus a valid example.",
+-    "- `canonical-snapshot.json`: current surface counts, digests, and bounded page/entity candidates for reconciliation.",
++    "- `canonical-snapshot.json`: current canonical surface counts and digests.",
+     "- `canonical-entity-catalog.json`: complete canonical entity inventory with aliases, provenance, wiki targets, and graph neighborhoods.",
++    "- `canonical-reconciliation-candidates.json`: source-derived lexical and structural candidate evidence, deterministic scores/reasons/refs, exact index digest, and bounded follow-up search queries. It never decides identity.",
+     "- `source-spans.skeleton.jsonl`: deterministic addressable source spans for semantic classification.",
+     "- `expected-artifacts.json`: required output contract for this task.",
+     "",
+@@ -466,7 +424,7 @@ function buildContextPackMarkdown(opts: {
+     "",
+     "For every source term that may denote an entity, CURATOR must decide meaning before creating or updating graph rows. Deterministic AgentPlane code must not make this decision.",
+     "",
+-    "1. Search the complete canonical entity catalog, then use context search and graph neighbors for plausible lexical and semantic candidates.",
++    "1. Inspect the source-driven reconciliation candidates, then search the complete canonical entity catalog and use context search and graph neighbors for additional plausible lexical and semantic candidates.",
+     "2. Compare kind, scope, time/validity, ownership, defining properties, aliases, source evidence, wiki use, and graph neighborhood. Similar spelling alone is insufficient.",
+     "3. Emit one evidence-bearing entity_resolution row: same_as, alias_of, distinct_entity, possibly_same_as, or new_entity_proposal.",
+     "4. For same_as or alias_of, reuse canonical_entity_id and do not emit a second graph_entity. For ambiguity, preserve both identities and list evidence still needed. Propose a new entity only after documenting the candidates and why none match.",
+@@ -505,6 +463,14 @@ export async function writeContextTaskPack(opts: {
+     taskId: opts.taskId,
+     generatedAt,
+   });
++  const reconciliationCandidates = await buildCanonicalReconciliationCandidates({
++    root: opts.root,
++    taskId: opts.taskId,
++    generatedAt,
++    sources: opts.sources,
++    spans,
++    catalog: canonicalEntityCatalog,
++  });
+   await writeJsonStableIfChanged(path.join(taskDir, "source-set.lock.json"), {
+     version: 1,
+     task_id: opts.taskId,
+@@ -517,6 +483,10 @@ export async function writeContextTaskPack(opts: {
+     path.join(taskDir, "canonical-entity-catalog.json"),
+     canonicalEntityCatalog,
+   );
++  await writeJsonStableIfChanged(
++    path.join(taskDir, "canonical-reconciliation-candidates.json"),
++    reconciliationCandidates,
++  );
+   await writeTextIfChanged(
+     path.join(taskDir, "source-spans.skeleton.jsonl"),
+     spans.map((span) => JSON.stringify(span)).join("\n") + (spans.length > 0 ? "\n" : ""),
+diff --git a/packages/agentplane/src/context/ingest-task-prompt.ts b/packages/agentplane/src/context/ingest-task-prompt.ts
+index d5b4c6652..c3a0d22bf 100644
+--- a/packages/agentplane/src/context/ingest-task-prompt.ts
++++ b/packages/agentplane/src/context/ingest-task-prompt.ts
+@@ -38,14 +38,15 @@ export function buildContextAssimilationPromptModule(
+       "Read these before writing:",
+       "- `source-set.lock.json`: exact selected paths, hashes, status, type, and size.",
+       "- `source-spans.skeleton.jsonl`: stable span ids for line-addressed extraction and coverage.",
+-      "- `canonical-snapshot.json`: current surface counts/digests plus bounded existing page/entity candidates.",
++      "- `canonical-snapshot.json`: current canonical surface counts and digests.",
+       "- `canonical-entity-catalog.json`: complete existing entity inventory with aliases, source refs, wiki targets, and graph neighborhoods. Treat it as evidence to inspect, not as an automatic matching result.",
++      "- `canonical-reconciliation-candidates.json`: deterministic source-derived lexical and structural candidate evidence with scores, reasons, references, index digest, and bounded follow-up queries. Treat it as evidence, never as an identity decision.",
+       "- `extraction-contract.json`: authoritative SGR v2 payload fields and a complete valid example.",
+       "- `expected-artifacts.json`: finish contract.",
+       "",
+       "## Semantic work",
+       "",
+-      "1. Reconcile semantically: compare each source term with the complete canonical entity catalog and the task-bound evidence for plausible candidates. CURATOR owns this judgment; deterministic AgentPlane code must not infer equivalence from spelling, identifiers, embeddings, or heuristics.",
++      "1. Reconcile semantically: inspect the source-driven candidate evidence, then compare each source term with the complete canonical entity catalog and task-bound evidence for plausible candidates. CURATOR owns this judgment; deterministic AgentPlane code must not infer equivalence from spelling, identifiers, embeddings, or heuristics.",
+       "2. For every entity-bearing term, compare kind, scope, time/validity, ownership, defining properties, aliases, source evidence, wiki use, and graph neighborhood. Record candidates checked, decision dimensions, evidence for and against, rationale, and unresolved questions in one `entity_resolution` row.",
+       "3. Choose exactly one resolution: `same_as`, `alias_of`, `distinct_entity`, `possibly_same_as`, or `new_entity_proposal`. `same_as` and `alias_of` must reuse `canonical_entity_id` and must not emit a duplicate `graph_entity`. `possibly_same_as` must preserve both identities and state what evidence is missing. `new_entity_proposal` requires evidence that checked candidates do not match.",
+       "4. Classify every selected span as significant, boilerplate, redacted, duplicate, conflict, out-of-scope, or unresolved.",
+diff --git a/packages/agentplane/src/context/ingest-task.ts b/packages/agentplane/src/context/ingest-task.ts
+index e1e54990d..5129e798d 100644
+--- a/packages/agentplane/src/context/ingest-task.ts
++++ b/packages/agentplane/src/context/ingest-task.ts
+@@ -77,7 +77,7 @@ function buildIngestMetadata(
+     `Owner: CURATOR; prompt: ${promptRef}; blueprint: ${blueprintId}.`,
+     ...deprecatedModeNote(workspaceMode),
+     "",
+-    "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
++    "Read the task-bound `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `canonical-reconciliation-candidates.json`, `extraction-contract.json`, and `expected-artifacts.json` before mutation.",
+     "CURATOR owns semantic entity reconciliation and returns one schema-valid SGR extraction. The CLI supervisor owns validation, atomic materialization, indexes, reports, retrieval checks, evaluation, ACR, and finalization. Raw sources are read-only; unresolved identity or conflict must remain explicit.",
+   ].join("\n");
+   return {
+@@ -100,7 +100,7 @@ function buildContextTaskDocSections(): NonNullable<TaskNewParsed["taskDocSectio
+       "5. Stop after the semantic SGR result. CLI supervision owns all materialization, validation, retrieval, evaluation, ACR, and finalization gates.",
+     ].join("\n"),
+     "Verify Steps": [
+-      "1. Inspect `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
++      "1. Inspect `context-pack.md`, CLI-owned `task-creation.json` (treat it as immutable), `source-set.lock.json`, `source-spans.skeleton.jsonl`, `canonical-snapshot.json`, `canonical-entity-catalog.json`, `canonical-reconciliation-candidates.json`, `extraction-contract.json`, and `expected-artifacts.json`. Expected: inputs are task-bound, complete, and hashes/counts agree with the selected source set and canonical layer.",
+       "2. Validate the SGR extraction before apply. Expected: every entity-bearing term has exactly one supported semantic resolution with candidates checked, comparison dimensions, evidence for and against, rationale, and explicit unresolved questions where needed; same_as/alias_of reuse an existing canonical ID and add no duplicate graph entity.",
+       "3. Return the SGR without applying, indexing, validating, evaluating, or finalizing it. Expected: only semantic output and evidence-bearing decisions are produced by CURATOR.",
+       "4. Expected from the CLI supervisor: formal and Wiki artifacts are atomically materialized, indexes/reports/graph/task checks pass, and curated retrieval remains useful without raw source dependence.",
+@@ -139,6 +139,7 @@ export function createTaskNewParsed(
+     ".agentplane/tasks/${taskId}/extraction-contract.json",
+     ".agentplane/tasks/${taskId}/canonical-snapshot.json",
+     ".agentplane/tasks/${taskId}/canonical-entity-catalog.json",
++    ".agentplane/tasks/${taskId}/canonical-reconciliation-candidates.json",
+     ".agentplane/tasks/${taskId}/source-set.lock.json",
+     ".agentplane/tasks/${taskId}/source-spans.skeleton.jsonl",
+     ".agentplane/tasks/${taskId}/expected-artifacts.json",
+diff --git a/packages/agentplane/src/context/reconciliation-candidates.ts b/packages/agentplane/src/context/reconciliation-candidates.ts
+new file mode 100644
+index 000000000..a0e6baf0e
+--- /dev/null
++++ b/packages/agentplane/src/context/reconciliation-candidates.ts
+@@ -0,0 +1,526 @@
++import { createHash } from "node:crypto";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++
++import { readContextProjection, searchContextProjection } from "./reindex.js";
++import type { ManifestEntry } from "./ingest-manifest.js";
++import type { SourceSpanSkeletonRow } from "./source-spans.js";
++
++export type CanonicalCatalogEntity = {
++  id: string;
++  kind?: string;
++  label?: string;
++  aliases: string[];
++  source_refs: string[];
++  wiki_paths: string[];
++  relations: {
++    direction: "outgoing" | "incoming";
++    relation: string;
++    entity_id: string;
++    edge_id?: string;
++  }[];
++};
++
++export type CanonicalEntityCatalog = {
++  version: 1;
++  task_id: string;
++  generated_at: string;
++  entity_count: number;
++  catalog_sha256: string;
++  entities: CanonicalCatalogEntity[];
++};
++
++type CandidateTerm = {
++  query: string;
++  normalized_query: string;
++  source_paths: string[];
++  source_span_ids: string[];
++  origins: ("markdown_heading" | "path_basename" | "structured_field")[];
++};
++
++type CandidateScore = {
++  score: number;
++  reasons: Set<string>;
++  evidenceRefs: Set<string>;
++};
++
++type CandidateIndex = {
++  entitiesById: Map<string, CanonicalCatalogEntity>;
++  entityIdsByAlias: Map<string, Set<string>>;
++  entityIdsByLabel: Map<string, Set<string>>;
++  entityIdsBySourceRef: Map<string, Set<string>>;
++  entityIdsByToken: Map<string, Set<string>>;
++  entityIdsByWikiPath: Map<string, Set<string>>;
++};
++
++const MAX_QUERY_TERMS = 64;
++const MAX_TERMS_PER_SOURCE = 12;
++const MAX_FTS_RESULTS_PER_QUERY = 20;
++const MAX_CANDIDATES_PER_QUERY = 20;
++const MAX_ADDITIONAL_SEARCH_QUERIES = 12;
++
++function digest(value: string): string {
++  return `sha256:${createHash("sha256").update(value).digest("hex")}`;
++}
++
++function normalizedText(value: string): string {
++  return (
++    value
++      .normalize("NFKC")
++      .toLocaleLowerCase("en-US")
++      .match(/[\p{L}\p{N}]+/gu)
++      ?.join(" ")
++      .trim() ?? ""
++  );
++}
++
++function textTokens(value: string): string[] {
++  return normalizedText(value).split(" ").filter(Boolean);
++}
++
++function comparablePhrase(value: string): string | null {
++  const normalized = normalizedText(value);
++  const tokens = normalized.split(" ").filter(Boolean);
++  if (tokens.length === 0 || tokens.length > 12 || normalized.length > 120) return null;
++  return normalized;
++}
++
++function sourceBasenameTerm(sourcePath: string): string | null {
++  const basename = path.basename(sourcePath, path.extname(sourcePath));
++  return comparablePhrase(basename.replaceAll(/[_-]+/gu, " "));
++}
++
++function structuredTerms(value: unknown, terms: string[], depth = 0): void {
++  if (terms.length >= MAX_TERMS_PER_SOURCE || depth > 3) return;
++  if (typeof value === "string") {
++    const term = comparablePhrase(value);
++    if (term) terms.push(term);
++    return;
++  }
++  if (Array.isArray(value)) {
++    for (const item of value) structuredTerms(item, terms, depth + 1);
++    return;
++  }
++  if (!value || typeof value !== "object") return;
++  for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
++    if (!/(?:alias|component|entity|label|name|service|term|title)$/iu.test(key)) continue;
++    structuredTerms(item, terms, depth + 1);
++  }
++}
++
++async function sourceTerms(
++  source: ManifestEntry,
++  root: string,
++): Promise<{
++  markdownHeadings: string[];
++  structuredFields: string[];
++  basename: string | null;
++}> {
++  const basename = sourceBasenameTerm(source.path);
++  if (
++    source.status === "deleted" ||
++    source.status === "unsupported" ||
++    source.status === "error" ||
++    !(
++      source.content_type.startsWith("text/") ||
++      source.content_type === "application/json" ||
++      source.path.toLowerCase().endsWith(".jsonl")
++    )
++  ) {
++    return { markdownHeadings: [], structuredFields: [], basename };
++  }
++  let text: string;
++  try {
++    text = await readFile(path.join(root, source.path), "utf8");
++  } catch {
++    return { markdownHeadings: [], structuredFields: [], basename };
++  }
++  const markdownHeadings =
++    source.content_type === "text/markdown"
++      ? text
++          .split(/\r?\n/u)
++          .flatMap((line) => {
++            const heading = /^#{1,6}\s+(.+)$/u.exec(line)?.[1];
++            const term = heading ? comparablePhrase(heading) : null;
++            return term ? [term] : [];
++          })
++          .slice(0, MAX_TERMS_PER_SOURCE)
++      : [];
++  const structuredFields: string[] = [];
++  if (source.content_type === "application/json") {
++    try {
++      structuredTerms(JSON.parse(text) as unknown, structuredFields);
++    } catch {
++      // Invalid structured input still receives basename and span-derived candidate queries.
++    }
++  } else if (source.path.toLowerCase().endsWith(".jsonl")) {
++    for (const line of text.split(/\r?\n/u)) {
++      if (!line.trim()) continue;
++      try {
++        structuredTerms(JSON.parse(line) as unknown, structuredFields);
++      } catch {
++        // Malformed JSONL rows stay available only through their source span evidence.
++      }
++      if (structuredFields.length >= MAX_TERMS_PER_SOURCE) break;
++    }
++  } else if (source.content_type === "text/yaml") {
++    for (const line of text.split(/\r?\n/u)) {
++      const match = /^(?:alias|component|entity|label|name|service|term|title):\s*(.+)$/iu.exec(
++        line.trim(),
++      );
++      const term = match?.[1] ? comparablePhrase(match[1]) : null;
++      if (term) structuredFields.push(term);
++      if (structuredFields.length >= MAX_TERMS_PER_SOURCE) break;
++    }
++  }
++  return { markdownHeadings, structuredFields, basename };
++}
++
++async function buildCandidateTerms(opts: {
++  root: string;
++  sources: ManifestEntry[];
++  spans: SourceSpanSkeletonRow[];
++}): Promise<CandidateTerm[]> {
++  const terms = new Map<string, CandidateTerm>();
++  const spansByPath = new Map<string, SourceSpanSkeletonRow[]>();
++  for (const span of opts.spans) {
++    const rows = spansByPath.get(span.source_path) ?? [];
++    rows.push(span);
++    spansByPath.set(span.source_path, rows);
++  }
++  for (const source of opts.sources.toSorted((left, right) =>
++    left.path.localeCompare(right.path),
++  )) {
++    const extracted = await sourceTerms(source, opts.root);
++    const sourceEntries: { query: string; origin: CandidateTerm["origins"][number] }[] = [];
++    if (extracted.basename)
++      sourceEntries.push({ query: extracted.basename, origin: "path_basename" });
++    sourceEntries.push(
++      ...extracted.markdownHeadings.map((query) => ({
++        query,
++        origin: "markdown_heading" as const,
++      })),
++      ...extracted.structuredFields.map((query) => ({
++        query,
++        origin: "structured_field" as const,
++      })),
++    );
++    for (const entry of sourceEntries.slice(0, MAX_TERMS_PER_SOURCE)) {
++      const normalized = comparablePhrase(entry.query);
++      if (!normalized) continue;
++      const current = terms.get(normalized) ?? {
++        query: normalized,
++        normalized_query: normalized,
++        source_paths: [],
++        source_span_ids: [],
++        origins: [],
++      };
++      if (!current.source_paths.includes(source.path)) current.source_paths.push(source.path);
++      if (!current.origins.includes(entry.origin)) current.origins.push(entry.origin);
++      for (const span of spansByPath.get(source.path) ?? []) {
++        if (normalizedText(span.text_preview).includes(normalized)) {
++          current.source_span_ids.push(span.span_id);
++        }
++      }
++      terms.set(normalized, current);
++      if (terms.size >= MAX_QUERY_TERMS) break;
++    }
++    if (terms.size >= MAX_QUERY_TERMS) break;
++  }
++  return [...terms.values()]
++    .map((term) => ({
++      ...term,
++      source_paths: term.source_paths.toSorted((left, right) => left.localeCompare(right)),
++      source_span_ids: [...new Set(term.source_span_ids)].toSorted((left, right) =>
++        left.localeCompare(right),
++      ),
++      origins: term.origins.toSorted((left, right) => left.localeCompare(right)),
++    }))
++    .toSorted((left, right) => left.normalized_query.localeCompare(right.normalized_query));
++}
++
++function addScore(
++  scores: Map<string, CandidateScore>,
++  entityId: string,
++  score: number,
++  reason: string,
++  evidenceRefs: string[] = [],
++): void {
++  const current = scores.get(entityId) ?? {
++    score: 0,
++    reasons: new Set<string>(),
++    evidenceRefs: new Set<string>(),
++  };
++  current.score += score;
++  current.reasons.add(reason);
++  for (const ref of evidenceRefs) current.evidenceRefs.add(ref);
++  scores.set(entityId, current);
++}
++
++function addToIndex(index: Map<string, Set<string>>, key: string, entityId: string): void {
++  if (!key) return;
++  const entityIds = index.get(key) ?? new Set<string>();
++  entityIds.add(entityId);
++  index.set(key, entityIds);
++}
++
++function buildCandidateIndex(entities: CanonicalCatalogEntity[]): CandidateIndex {
++  const index: CandidateIndex = {
++    entitiesById: new Map(),
++    entityIdsByAlias: new Map(),
++    entityIdsByLabel: new Map(),
++    entityIdsBySourceRef: new Map(),
++    entityIdsByToken: new Map(),
++    entityIdsByWikiPath: new Map(),
++  };
++  for (const entity of entities) {
++    index.entitiesById.set(entity.id, entity);
++    const label = entity.label ? normalizedText(entity.label) : "";
++    if (label) {
++      addToIndex(index.entityIdsByLabel, label, entity.id);
++      for (const token of textTokens(label)) addToIndex(index.entityIdsByToken, token, entity.id);
++    }
++    for (const alias of entity.aliases) {
++      const normalizedAlias = normalizedText(alias);
++      if (!normalizedAlias) continue;
++      addToIndex(index.entityIdsByAlias, normalizedAlias, entity.id);
++      for (const token of textTokens(normalizedAlias)) {
++        addToIndex(index.entityIdsByToken, token, entity.id);
++      }
++    }
++    for (const ref of entity.source_refs) addToIndex(index.entityIdsBySourceRef, ref, entity.id);
++    for (const wikiPath of entity.wiki_paths) {
++      addToIndex(index.entityIdsByWikiPath, wikiPath, entity.id);
++    }
++  }
++  return index;
++}
++
++function indexEntityIds(index: Map<string, Set<string>>, key: string): string[] {
++  return [...(index.get(key) ?? [])];
++}
++
++function sharedTokenCount(left: string[], right: string[]): number {
++  const rightSet = new Set(right);
++  return left.filter((token) => rightSet.has(token)).length;
++}
++
++function directLexicalScores(
++  term: CandidateTerm,
++  index: CandidateIndex,
++): Map<string, CandidateScore> {
++  const scores = new Map<string, CandidateScore>();
++  const queryTokens = textTokens(term.normalized_query);
++  const candidateIds = new Set<string>([
++    ...indexEntityIds(index.entityIdsByLabel, term.normalized_query),
++    ...indexEntityIds(index.entityIdsByAlias, term.normalized_query),
++    ...queryTokens.flatMap((token) => indexEntityIds(index.entityIdsByToken, token)),
++  ]);
++  for (const entityId of candidateIds) {
++    const entity = index.entitiesById.get(entityId);
++    if (!entity) continue;
++    const label = entity.label ? normalizedText(entity.label) : "";
++    if (label === term.normalized_query) {
++      addScore(scores, entity.id, 100, "label_exact", entity.source_refs);
++    } else if (label) {
++      const overlap = sharedTokenCount(queryTokens, textTokens(label));
++      if (overlap > 0 && overlap === queryTokens.length) {
++        addScore(
++          scores,
++          entity.id,
++          45 + overlap,
++          `label_token_overlap:${overlap}/${queryTokens.length}`,
++          entity.source_refs,
++        );
++      }
++    }
++    for (const alias of entity.aliases) {
++      const normalizedAlias = normalizedText(alias);
++      if (normalizedAlias === term.normalized_query) {
++        addScore(scores, entity.id, 95, "alias_exact", entity.source_refs);
++      } else if (normalizedAlias) {
++        const overlap = sharedTokenCount(queryTokens, textTokens(normalizedAlias));
++        if (overlap > 0 && overlap === queryTokens.length) {
++          addScore(
++            scores,
++            entity.id,
++            40 + overlap,
++            `alias_token_overlap:${overlap}/${queryTokens.length}`,
++            entity.source_refs,
++          );
++        }
++      }
++    }
++  }
++  return scores;
++}
++
++function pathWithoutSelector(value: string): string {
++  return value.split("#", 1)[0] ?? value;
++}
++
++function entityIdFromGraphRef(value: string): string | null {
++  const match = /\.agentplane\/context\/derived\/graph\/entities\.jsonl#entity=(.+)$/u.exec(value);
++  if (!match?.[1]) return null;
++  try {
++    return decodeURIComponent(match[1]);
++  } catch {
++    return match[1];
++  }
++}
++
++async function ftsScores(opts: {
++  root: string;
++  term: CandidateTerm;
++  index: CandidateIndex;
++  scores: Map<string, CandidateScore>;
++}): Promise<void> {
++  const result = await searchContextProjection(opts.root, {
++    query: opts.term.query,
++    scopes: ["wiki", "facts", "graph"],
++    limit: MAX_FTS_RESULTS_PER_QUERY,
++    offset: 0,
++  });
++  if (!result) return;
++  for (const row of result.rows) {
++    const rowRefs = row.source_refs ?? [];
++    const graphEntityId = entityIdFromGraphRef(row.path);
++    if (graphEntityId && opts.index.entitiesById.has(graphEntityId)) {
++      addScore(opts.scores, graphEntityId, 80, "fts_graph_entity", [row.path, ...rowRefs]);
++    }
++    const pagePath = pathWithoutSelector(row.path);
++    for (const entityId of indexEntityIds(opts.index.entityIdsByWikiPath, pagePath)) {
++      addScore(opts.scores, entityId, 30, "fts_page_family", [row.path, ...rowRefs]);
++    }
++    for (const ref of rowRefs) {
++      for (const entityId of indexEntityIds(opts.index.entityIdsBySourceRef, ref)) {
++        addScore(opts.scores, entityId, 20, "fts_source_ref", [row.path, ref]);
++      }
++    }
++  }
++}
++
++function addGraphNeighbourScores(scores: Map<string, CandidateScore>, index: CandidateIndex): void {
++  const seedIds = [...scores.keys()];
++  for (const seedId of seedIds) {
++    const seed = index.entitiesById.get(seedId);
++    if (!seed) continue;
++    for (const relation of seed.relations) {
++      if (!index.entitiesById.has(relation.entity_id)) continue;
++      addScore(
++        scores,
++        relation.entity_id,
++        10,
++        `graph_neighbour:${relation.direction}:${relation.relation}:${seedId}`,
++        relation.edge_id ? [relation.edge_id] : [],
++      );
++    }
++  }
++}
++
++function projectionIndexDigest(
++  projection: Awaited<ReturnType<typeof readContextProjection>>,
++): string | null {
++  if (!projection) return null;
++  return digest(
++    JSON.stringify({
++      metadata: {
++        projection_version: projection.metadata.projection_version,
++        workspace_hash: projection.metadata.workspace_hash,
++        include_tasks: projection.metadata.include_tasks,
++        include_raw: projection.metadata.include_raw,
++      },
++      rows: projection.rows
++        .map((row) => ({
++          path: row.path,
++          sha256: row.sha256,
++          source_refs: row.source_refs ?? [],
++        }))
++        .toSorted((left, right) => left.path.localeCompare(right.path)),
++    }),
++  );
++}
++
++export async function buildCanonicalReconciliationCandidates(opts: {
++  root: string;
++  taskId: string;
++  generatedAt: string;
++  sources: ManifestEntry[];
++  spans: SourceSpanSkeletonRow[];
++  catalog: CanonicalEntityCatalog;
++}): Promise<Record<string, unknown>> {
++  const [terms, projection] = await Promise.all([
++    buildCandidateTerms({ root: opts.root, sources: opts.sources, spans: opts.spans }),
++    readContextProjection(opts.root),
++  ]);
++  const candidateIndex = buildCandidateIndex(opts.catalog.entities);
++  const groups = [];
++  for (const term of terms) {
++    const scores = directLexicalScores(term, candidateIndex);
++    await ftsScores({ root: opts.root, term, index: candidateIndex, scores });
++    addGraphNeighbourScores(scores, candidateIndex);
++    const candidates = [...scores.entries()]
++      .flatMap(([entityId, score]) => {
++        const entity = candidateIndex.entitiesById.get(entityId);
++        if (!entity) return [];
++        return [
++          {
++            canonical_entity_id: entity.id,
++            ...(entity.label ? { label: entity.label } : {}),
++            ...(entity.kind ? { kind: entity.kind } : {}),
++            score: score.score,
++            reasons: [...score.reasons].toSorted((left, right) => left.localeCompare(right)),
++            evidence_refs: [...score.evidenceRefs].toSorted((left, right) =>
++              left.localeCompare(right),
++            ),
++          },
++        ];
++      })
++      .toSorted(
++        (left, right) =>
++          right.score - left.score ||
++          left.canonical_entity_id.localeCompare(right.canonical_entity_id),
++      )
++      .slice(0, MAX_CANDIDATES_PER_QUERY);
++    groups.push({
++      query: term.query,
++      normalized_query: term.normalized_query,
++      source_paths: term.source_paths,
++      source_span_ids: term.source_span_ids,
++      origins: term.origins,
++      candidates,
++    });
++  }
++  const additionalSearch = groups
++    .filter((group) => group.candidates.length === 0)
++    .slice(0, MAX_ADDITIONAL_SEARCH_QUERIES)
++    .map((group) => ({
++      query: group.query,
++      source_paths: group.source_paths,
++      source_span_ids: group.source_span_ids,
++    }));
++  const index = {
++    available: projection !== null,
++    digest: projectionIndexDigest(projection),
++    fts_results_per_query: MAX_FTS_RESULTS_PER_QUERY,
++  };
++  const logicalPayload = {
++    index,
++    query_terms: terms,
++    candidate_groups: groups,
++    additional_search: {
++      max_queries: MAX_ADDITIONAL_SEARCH_QUERIES,
++      max_results_per_query: MAX_FTS_RESULTS_PER_QUERY,
++      queries: additionalSearch,
++    },
++  };
++  return {
++    version: 1,
++    task_id: opts.taskId,
++    generated_at: opts.generatedAt,
++    ...logicalPayload,
++    candidate_digest: digest(JSON.stringify(logicalPayload)),
++    semantic_decision_owner: "CURATOR",
++    note: "CLI-generated lexical and structural evidence only. CURATOR decides identity and rationale.",
++  };
++}
