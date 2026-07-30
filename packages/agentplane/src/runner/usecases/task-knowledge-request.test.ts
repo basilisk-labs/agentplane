@@ -17,6 +17,7 @@ import {
   validateTaskKnowledgeRequestResponse,
   type TaskKnowledgeRequestAudit,
 } from "./task-knowledge-request.js";
+import { digestJson } from "./task-knowledge-request-codec.js";
 import { materializeKnowledgeRef } from "../../context/knowledge-ref.js";
 
 let tempRoots: string[] = [];
@@ -81,18 +82,33 @@ async function inputWithVerifiedKnowledgeRef(
   root: string,
   opts: Parameters<typeof input>[0] & { ref: string },
 ) {
-  const request = input(opts);
-  request.work_order.knowledge_refs = [
-    await materializeKnowledgeRef({
-      repository_root: root,
-      ref: opts.ref,
-      kind: "wiki",
-      reason: "test digest-bound task context",
-      retrieval: "fts",
-      required: false,
-    }),
-  ];
+  const request = await inputWithVerifiedKnowledgeRefs(root, { ...opts, refs: [opts.ref] });
   return request;
+}
+
+async function inputWithVerifiedKnowledgeRefs(
+  root: string,
+  opts: Parameters<typeof input>[0] & { refs: readonly string[] },
+) {
+  const request = input(opts);
+  request.work_order.knowledge_refs = await Promise.all(
+    opts.refs.map(
+      async (ref) =>
+        await materializeKnowledgeRef({
+          repository_root: root,
+          ref,
+          kind: "wiki",
+          reason: "test digest-bound task context",
+          retrieval: "fts",
+          required: false,
+        }),
+    ),
+  );
+  return request;
+}
+
+function serializedTokenEstimate(value: unknown): number {
+  return Math.ceil(Buffer.byteLength(JSON.stringify(value), "utf8") / 4);
 }
 
 afterEach(async () => {
@@ -257,6 +273,91 @@ describe("bounded task knowledge requests", () => {
     expect(rejected.omissions[0]?.detail).toContain("digest_mismatch");
   });
 
+  it("keeps six long task-context candidates, metadata, and omission receipts within the response budget", async () => {
+    const root = await tempRoot();
+    const refs = [
+      "context/wiki/aaa-stale.md",
+      ...Array.from({ length: 6 }, (_, index) => `context/wiki/valid-${index}.md`),
+    ];
+    await Promise.all(
+      refs.map(
+        async (ref) =>
+          await write(
+            root,
+            ref,
+            `# ${path.basename(ref)}\n\nComplete response budget marker ${"evidence ".repeat(5)}\n`,
+          ),
+      ),
+    );
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
+    stdout.mockRestore();
+    const request = await inputWithVerifiedKnowledgeRefs(root, {
+      refs,
+      semantic_result: requestResult({
+        work_order_id: "work-order-example-001",
+        query: "complete response budget marker",
+      }),
+    });
+    await write(
+      root,
+      "context/wiki/aaa-stale.md",
+      "# Stale\n\nChanged after the work order was created.\n",
+    );
+
+    const served = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
+
+    expect(served).toMatchObject({ outcome: "served" });
+    expect(served.knowledge_refs).toHaveLength(2);
+    expect(served.omissions).toEqual(
+      expect.arrayContaining([expect.objectContaining({ code: "excerpt_not_included" })]),
+    );
+    expect(serializedTokenEstimate(served)).toBe(served.usage.estimated_response_tokens);
+    expect(served.usage.estimated_response_tokens).toBeLessThanOrEqual(
+      served.usage.max_response_tokens,
+    );
+    expect(validateTaskKnowledgeRequestResponse(served)).toEqual(served);
+  });
+
+  it("leaves a matching excerpt out when complete-response metadata uses the remaining budget", async () => {
+    const root = await tempRoot();
+    const refs = ["context/wiki/first.md", "context/wiki/second.md"];
+    await Promise.all(
+      refs.map(
+        async (ref) =>
+          await write(
+            root,
+            ref,
+            `# ${path.basename(ref)}\n\nMetadata response budget marker ${"payload ".repeat(190)}\n`,
+          ),
+      ),
+    );
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    await cmdContextReindex({
+      cwd: root,
+      parsed: { includeTasks: false, includeRaw: false, reset: false },
+    });
+    stdout.mockRestore();
+    const request = await inputWithVerifiedKnowledgeRefs(root, {
+      refs,
+      semantic_result: requestResult({
+        work_order_id: "work-order-example-001",
+        query: "metadata response budget marker",
+      }),
+    });
+
+    const served = await serveTaskKnowledgeRequest({ repository_root: root, ...request });
+
+    expect(served).toMatchObject({ outcome: "served" });
+    expect(served.knowledge_refs).toHaveLength(1);
+    expect(served.omissions).toEqual([expect.objectContaining({ code: "excerpt_not_included" })]);
+    expect(served.omissions[0]?.detail).toContain("complete response token budget");
+    expect(serializedTokenEstimate(served)).toBe(served.usage.estimated_response_tokens);
+  });
+
   it("accepts an EVALUATOR request under the same bounded policy", async () => {
     const root = await tempRoot();
     const response = await serveTaskKnowledgeRequest({
@@ -377,5 +478,17 @@ describe("bounded task knowledge requests", () => {
     expect(() =>
       validateTaskKnowledgeRequestResponse({ ...response, digest: "sha256:tampered" }),
     ).toThrow(/digest or version is invalid/u);
+
+    const { digest: _digest, ...unsigned } = response;
+    const underreported = {
+      ...unsigned,
+      usage: { ...unsigned.usage, estimated_response_tokens: 0 },
+    };
+    expect(() =>
+      validateTaskKnowledgeRequestResponse({
+        ...underreported,
+        digest: digestJson(underreported),
+      }),
+    ).toThrow(/exceeded its token budget/u);
   });
 });

@@ -13,7 +13,7 @@ Created: 2026-07-30T13:20:41.795Z
 ## Verification
 
 - State: ok
-- Note: RF-22 verified. schemas:check passed; focused agentplane suite 76/76 and core suite 25/25 passed; critical CLI matrix passed 12/12 chunks. Valid EXECUTOR/EVALUATOR requests, bounded denials, repeated-gap escalation, and digest/work-order/fingerprint tamper rejection are covered.
+- Note: RF-22 evidence refresh: declared schema, critical CLI, and type checks passed at 18c2c433; focused adversarial retrieval coverage also passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
@@ -37,11 +37,12 @@ Created: 2026-07-30T13:20:41.795Z
  packages/agentplane/src/runner/types/invocation.ts |   9 +
  .../src/runner/usecases/agent-work-order-build.ts  |   3 +
  .../usecases/task-knowledge-request-audit.ts       | 105 ++++
- .../task-knowledge-request-lifecycle.test.ts       | 148 +++++
+ .../usecases/task-knowledge-request-codec.ts       |  56 ++
+ .../task-knowledge-request-lifecycle.test.ts       | 148 ++++++
  .../usecases/task-knowledge-request-lifecycle.ts   |  73 +++
  .../usecases/task-knowledge-request-scope.ts       |  88 +++
- .../runner/usecases/task-knowledge-request.test.ts | 381 +++++++++++++
- .../src/runner/usecases/task-knowledge-request.ts  | 595 +++++++++++++++++++++
+ .../runner/usecases/task-knowledge-request.test.ts | 494 +++++++++++++++++
+ .../src/runner/usecases/task-knowledge-request.ts  | 592 +++++++++++++++++++++
  .../runner/usecases/task-knowledge-retrieval.ts    |  14 +
  .../task-run-bootstrap.result-examples.test.ts     |   6 +-
  .../src/runner/usecases/task-run-bootstrap.ts      |   9 +
@@ -55,7 +56,7 @@ Created: 2026-07-30T13:20:41.795Z
  ...ent-semantic-result-v2.needs-context.valid.json |   7 +-
  .../agent-work-order-v2.camel-case.compat.json     |   1 +
  schemas/examples/agent-work-order-v2.valid.json    |   1 +
- 26 files changed, 1625 insertions(+), 13 deletions(-)
+ 27 files changed, 1791 insertions(+), 13 deletions(-)
 ```
 
 </details>

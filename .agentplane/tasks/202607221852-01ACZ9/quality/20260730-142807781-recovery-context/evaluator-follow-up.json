@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-01ACZ9-1e65cb0f2353503d04d6ccb7",
+  "task_id": "202607221852-01ACZ9",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Rework response budgeting to account for the complete serialized knowledge response, reserve deterministic overhead before adding references or excerpts, and add worst-case boundary tests covering metadata and omission receipts.",
+  "findings": [
+    {
+      "id": "F-001",
+      "summary": "The response token budget counts only excerpt content, while returned references, omission receipts, run metadata, blocker text, and serialization overhead are excluded; therefore a response can exceed the declared token limit while reporting itself within budget.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:77b6ae9dae16d979ee3356d025d4913f184f2a34fa1e751214e95e3e519764b1"
+        },
+        {
+          "path": ".agentplane/tasks/202607221852-01ACZ9/README.md",
+          "sha256": "sha256:350cc12de62a3da4d30faea65a8366ec3b406735b1c5ca5ebffccdaf3c53348f",
+          "section": "Scope"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-01ACZ9/quality/20260730-142807781-recovery-context/evaluator-result.json"
+}
