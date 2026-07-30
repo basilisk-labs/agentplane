@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 27
+revision: 28
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
   findings:
     - "The split keeps one semantic owner and durable selection receipt across normal, concurrent, stale-lock, pre-marker, and marker-only recovery paths; no automatic knowledge publication was introduced."
 commit:
-  hash: "365e2f5a784338f0d6e584f855b0010f4ed76a0d"
-  message: "🧪 WF8A0X task: record current CURATOR recovery review"
+  hash: "f0bbd2f7d5cb592f4d6ebbc2a68cdb6b0b0e9721"
+  message: "🧪 WF8A0X task: record hotspot repair review"
 comments:
   -
     author: "CODER"
@@ -76,6 +76,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
   -
     author: "CODER"
     body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
@@ -144,8 +147,15 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T19:25:30.890Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T18:58:39.874Z"
+doc_updated_at: "2026-07-30T19:25:30.892Z"
 doc_updated_by: "CODER"
 description: "RF-20: collect source-backed durable-knowledge candidates after tasks but publish nothing automatically; route selected proposals through a separate CURATOR task with dedupe and consolidation checks."
 sections:
@@ -485,8 +495,8 @@ sections:
   Findings: ""
 extensions:
   implementation_commit:
-    hash: "f73a9d4713af26770eb5fd88852800058dca5d29"
-    message: "🧹 WF8A0X task: format CURATOR recovery"
+    hash: "574f417af6a49d1e37150a4166d857a1423198bb"
+    message: "🧹 WF8A0X task: split CURATOR harvest modules"
   workflow_route_baseline:
     start_head_sha: "12115a42325bb38de85f15df89b96b2675b595cb"
     version: 1
