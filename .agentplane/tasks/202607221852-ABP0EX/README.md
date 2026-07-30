@@ -2,10 +2,10 @@
 id: "202607221852-ABP0EX"
 title: "Add policy-gated semantic retrieval escalation"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -75,6 +75,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: hosted routed CI found nine lint-only violations in the new selector and fixtures; correcting the lint surface without changing retrieval behavior."
 events:
   -
     type: "status"
@@ -103,8 +106,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T12:59:45.336Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: hosted routed CI found nine lint-only violations in the new selector and fixtures; correcting the lint surface without changing retrieval behavior."
 doc_version: 3
-doc_updated_at: "2026-07-30T12:54:35.613Z"
+doc_updated_at: "2026-07-30T12:59:45.336Z"
 doc_updated_by: "CODER"
 description: "RF-19b: invoke an optional selector/reranker only for oversized, low-confidence, conflicting-domain, or broad-synthesis candidate sets; preserve deterministic retrieval as the default."
 sections:

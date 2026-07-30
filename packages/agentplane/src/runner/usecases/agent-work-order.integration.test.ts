@@ -362,9 +362,9 @@ describe("AgentWorkOrder v2 surface integration", () => {
       title: "Use high-confidence retrieval",
       description: "Read context/wiki/high-confidence.md before completing the task.",
     });
-    const selector = vi.fn(async () => {
-      throw new Error("selector must not run for a high-confidence fixture");
-    });
+    const selector = vi.fn(() =>
+      Promise.reject(new Error("selector must not run for a high-confidence fixture")),
+    );
 
     const prepared = requirePreparedAgentWorkOrder(
       await prepareAgentWorkOrder({

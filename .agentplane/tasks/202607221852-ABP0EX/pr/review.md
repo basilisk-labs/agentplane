@@ -6,7 +6,7 @@ Created: 2026-07-30T12:36:18.395Z
 
 - Task: `202607221852-ABP0EX`
 - Title: Add policy-gated semantic retrieval escalation
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607221852-ABP0EX/add-policy-gated-semantic-retrieval-escalation`
 - Canonical task record: `.agentplane/tasks/202607221852-ABP0EX/README.md`
 
@@ -33,9 +33,9 @@ Created: 2026-07-30T12:36:18.395Z
  .../src/runner/usecases/agent-work-order.ts        |   7 +-
  .../usecases/task-knowledge-retrieval-query.ts     |   2 +
  .../runner/usecases/task-knowledge-retrieval.ts    |  38 +-
- .../task-knowledge-semantic-escalation.test.ts     | 191 ++++++++
- .../usecases/task-knowledge-semantic-escalation.ts | 493 +++++++++++++++++++++
- 6 files changed, 780 insertions(+), 5 deletions(-)
+ .../task-knowledge-semantic-escalation.test.ts     | 195 ++++++++
+ .../usecases/task-knowledge-semantic-escalation.ts | 494 +++++++++++++++++++++
+ 6 files changed, 785 insertions(+), 5 deletions(-)
 ```
 
 </details>
