@@ -8,10 +8,10 @@
   "pr_number": 4690,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4690",
   "pre_merge_closure": {
-    "basis_commit": "244a6a82fa6ff3b96858cb06e819ab7648eba618",
+    "basis_commit": "ac3525f509876231900d5b6612669c7d194fa870",
     "branch": "task/202607221852-9T0RT3/build-deterministic-task-knowledge-retrieval",
     "pr_number": 4690,
-    "recorded_at": "2026-07-30T12:09:35.328Z",
+    "recorded_at": "2026-07-30T12:22:19.245Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
