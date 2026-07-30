@@ -79,8 +79,8 @@ function createGit(opts: { fetchedHead?: string; archiveHead?: string | null } =
       calls.push(`reset:${ref}`);
       return Promise.resolve();
     },
-    setUpstream: (_worktree, upstream) => {
-      calls.push(`upstream:${upstream}`);
+    setUpstream: (_worktree, upstreamBranch) => {
+      calls.push(`upstream:${upstreamBranch}`);
       return Promise.resolve();
     },
     updateRef: (_root, ref, sha) => {
@@ -129,7 +129,7 @@ describe("diverged conflict head recovery", () => {
     });
     expect(calls).toContain(`archive:refs/agentplane/recovery/${taskId}/${localHead}:${localHead}`);
     expect(calls).toContain(`reset:refs/remotes/origin/${branch}`);
-    expect(calls).toContain(`upstream:origin/${branch}`);
+    expect(calls).toContain(`upstream:${branch}`);
     expect(calls.some((call) => /(?:merge|rebase|push)/u.test(call))).toBe(false);
   });
 
@@ -172,12 +172,17 @@ describe("diverged conflict head recovery", () => {
       await runGit(repo, ["add", "seed.txt"]);
       await runGit(repo, ["commit", "-m", "seed"]);
       await runGit(repo, ["remote", "add", "origin", remote]);
+      await runGit(repo, [
+        "config",
+        "remote.origin.fetch",
+        "+refs/heads/main:refs/remotes/origin/main",
+      ]);
       await runGit(repo, ["push", "-u", "origin", "main"]);
       await runGit(repo, ["checkout", "-b", branch]);
       await writeFile(path.join(repo, "remote.txt"), "provider head\n", "utf8");
       await runGit(repo, ["add", "remote.txt"]);
       await runGit(repo, ["commit", "-m", "provider head"]);
-      await runGit(repo, ["push", "-u", "origin", branch]);
+      await runGit(repo, ["push", "origin", `HEAD:${branch}`]);
       const { stdout: providerRaw } = await runGit(repo, ["rev-parse", "HEAD"]);
       const realProviderHead = providerRaw.trim();
       await writeFile(path.join(repo, "local.txt"), "unpublished local head\n", "utf8");
@@ -185,6 +190,21 @@ describe("diverged conflict head recovery", () => {
       await runGit(repo, ["commit", "-m", "unpublished local head"]);
       const { stdout: localRaw } = await runGit(repo, ["rev-parse", "HEAD"]);
       const realLocalHead = localRaw.trim();
+      await expect(runGit(repo, ["config", "--get", `branch.${branch}.remote`])).rejects.toThrow();
+      const providerTrackingRef = `refs/remotes/origin/${branch}`;
+      await runGit(repo, ["update-ref", "-d", providerTrackingRef]);
+      await expect(
+        runGit(repo, ["show-ref", "--verify", "--quiet", providerTrackingRef]),
+      ).rejects.toThrow();
+      await runGit(repo, [
+        "fetch",
+        "--no-tags",
+        "origin",
+        `refs/heads/${branch}:${providerTrackingRef}`,
+      ]);
+      await expect(
+        runGit(repo, ["branch", "--set-upstream-to", `origin/${branch}`]),
+      ).rejects.toThrow();
       const result = await recoverDivergedConflictHead({
         gitRoot: repo,
         taskId,
@@ -205,15 +225,24 @@ describe("diverged conflict head recovery", () => {
         expectedProviderHead: realProviderHead,
       });
 
-      const [{ stdout: adoptedRaw }, { stdout: archivedRaw }, { stdout: statusRaw }] =
-        await Promise.all([
-          runGit(repo, ["rev-parse", "HEAD"]),
-          runGit(repo, ["rev-parse", result.archive_ref]),
-          runGit(repo, ["status", "--porcelain"]),
-        ]);
+      const [
+        { stdout: adoptedRaw },
+        { stdout: archivedRaw },
+        { stdout: statusRaw },
+        { stdout: upstreamRemote },
+        { stdout: upstreamMerge },
+      ] = await Promise.all([
+        runGit(repo, ["rev-parse", "HEAD"]),
+        runGit(repo, ["rev-parse", result.archive_ref]),
+        runGit(repo, ["status", "--porcelain"]),
+        runGit(repo, ["config", "--get", `branch.${branch}.remote`]),
+        runGit(repo, ["config", "--get", `branch.${branch}.merge`]),
+      ]);
       expect(adoptedRaw.trim()).toBe(realProviderHead);
       expect(archivedRaw.trim()).toBe(realLocalHead);
       expect(statusRaw).toBe("");
+      expect(upstreamRemote.trim()).toBe("origin");
+      expect(upstreamMerge.trim()).toBe(`refs/heads/${branch}`);
     } finally {
       await rm(fixtureRoot, { recursive: true, force: true });
     }
