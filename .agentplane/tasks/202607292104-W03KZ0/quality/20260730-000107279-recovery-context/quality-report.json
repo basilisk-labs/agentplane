@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task_id": "202607292104-W03KZ0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T00:01:07.561Z",
+  "provenance": "human_supplied",
+  "verdict": "pass",
+  "summary": "W03 correctly delivers a SHA-bound, matched-runtime RF-04 measurement route. The immutable candidate comparison is valid and intentionally reports a beta.1 quality failure rather than hiding it.",
+  "evaluated_sha": "2790e0b0e485adf0505d9d3899d4c74b922a2e3d",
+  "blueprint_digest": "a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc",
+  "findings": [
+    "The historical anchor and candidate were compared under the same 0.6.24/0.146.0-alpha.3.1 runtime profile with complete 50-run raw envelope/evidence sets; the recorded failure is limited to the two declared latency gates.",
+    "Historical candidate harness identity is reconstructed from the reviewed candidate SHA and must match the raw harness digest before bridge measurement materialization."
+  ],
+  "evidence_refs": [
+    "scripts/bench/capture-agent-efficiency-runtime-bridge.mjs --check (50 runs, 55 episodes)",
+    ".agentplane/cache/rf04-candidate/b58705432c46df612a89348ef28ea268fdcc2b04/measurement.runtime-bridge-codex-0.146.0-alpha.3.1.json",
+    "bun run ci:contract (pass)"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Latency samples were not captured as an interleaved paired A/B experiment, so the recorded failure is a valid gate result but not by itself a causal attribution to product code."
+  ],
+  "residual_risks": [
+    "The beta.1 qualification remains blocked by latency.harness_setup_latency_ms.mean_ms and latency.time_to_verified_result_ms.mean_ms; W03 must not be treated as product-quality approval."
+  ]
+}

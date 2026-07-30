@@ -3,15 +3,22 @@
   "branch": "task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance",
   "created_at": "2026-07-29T21:06:49.643Z",
   "diffstat_sha256": "sha256:09217d394c2d7d732bccef3aa2808192ab7bd8a3373fb1ccb299274d83cf4892",
-  "last_verified_at": "2026-07-29T23:57:01.227Z",
+  "last_verified_at": "2026-07-29T23:59:58.908Z",
   "last_verified_diffstat_sha256": "sha256:09217d394c2d7d732bccef3aa2808192ab7bd8a3373fb1ccb299274d83cf4892",
   "pr_number": 4674,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4674",
+  "pre_merge_closure": {
+    "basis_commit": "c6a10db56506a3e38cba675cc2923569daa7e45e",
+    "branch": "task/202607292104-W03KZ0/measure-sha-bound-rf-04-candidate-performance",
+    "pr_number": 4674,
+    "recorded_at": "2026-07-30T00:01:53.056Z",
+    "state": "closed_before_merge"
+  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607292104-W03KZ0",
   "updated_at": "2026-07-29T21:07:30.628Z",
   "verify": {
-    "status": "fail"
+    "status": "pass"
   }
 }

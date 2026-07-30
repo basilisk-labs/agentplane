@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607292104-W03KZ0-65c19af5295fcaee1379e3f4",
+  "prepared_at": "2026-07-30T00:01:07.279Z",
+  "task": {
+    "id": "202607292104-W03KZ0",
+    "revision": 11,
+    "objective": "Measure SHA-bound RF-04 candidate performance\n\nImplement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.",
+    "acceptance_criteria": [
+      "- In scope: Implement a candidate-SHA RF-04 measurement route that records actual token, latency, success, rework, and safety values for the reviewed beta.1 product SHA, compares them with the frozen baseline using declared thresholds, and emits evaluator-reviewable evidence. Keep publication blocked; do not weaken beta.1 acceptance criteria.\n- Out of scope: unrelated refactors not required for \"Measure SHA-bound RF-04 candidate performance\".",
+      "1. Inspect the historical RF-04 capture, the frozen baseline artifacts, and the beta.1 evaluator finding RCI-002; preserve the historical anchor as baseline-only. 2. Implement a candidate capture contract that binds every recorded run to an explicit reviewed product SHA and rejects a baseline-only capture as candidate evidence. 3. Capture actual per-run token, latency, success, rework, and safety values for the ten scenarios/fifty runs (and their provider episodes), then compare them with frozen baseline values through declared regression thresholds; timing cannot be silently disabled. 4. Emit bounded frozen evidence that an EVALUATOR can consume, including run records, summaries, comparison values/deltas/thresholds, the reviewed SHA, and the verdict. 5. Add focused deterministic tests for SHA binding, threshold failure, count-only rejection, and evidence materialization; run the provider capture only after the deterministic route passes. 6. Keep beta.1 publication blocked until the candidate comparison and a fresh semantic qualification are both complete.",
+      "1. Add focused tests for the RF-04 candidate capture and comparator. Expected: an explicit candidate SHA is required; a historical baseline anchor cannot be relabelled as candidate data; each run record binds to the reviewed product SHA; and a count-only or timing-disabled comparison fails qualification.\n2. Run the focused benchmark tests. Expected: declared thresholds are applied to actual baseline/candidate token, latency, success, rework, and safety values, including a regression verdict when any required metric is missing or worse than threshold.\n3. Run the deterministic candidate-capture fixture. Expected: it materializes ten scenarios, fifty runs, all provider-episode records, an immutable metric table, deltas, thresholds, and a reviewed-SHA binding without a live provider call.\n4. Run the authorized live candidate capture against the reviewed beta.1 SHA. Expected: fifty runs and fifty-five provider episodes complete once, with raw records and comparison verdict frozen under the approved evidence boundary; no retry is performed for a failed provider episode unless separately recorded as an incident.\n5. Run bun run ci:contract. Expected: the full repository contract passes.\n6. Run the beta.1 qualification evidence materializer and inspect its evaluator-facing packet. Expected: it cites the new candidate metrics, no longer accepts counts as values, and rejects a disabled timing comparison."
+    ]
+  },
+  "evaluated_sha": "2790e0b0e485adf0505d9d3899d4c74b922a2e3d",
+  "diff_base_sha": "8ae0a51a8684db03a0a9401f6c6b8f5b763850bd",
+  "blueprint_digest": "a5d6ec4f4c5e9467b92a41ad7af7874f6496fa89756bbd7001681467813f18fc",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607292104-W03KZ0/README.md",
+      "sha256": "sha256:dc457cdc136c10f629c1ae18142867a8356a9401d1964256a3be6f02cc032cb8",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:3bf8115b7dcedfc374da53eee4c777b27581cfe296c43043ceea62d1b8f3dbe6",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:152ffef20c3cbaa556dd09b3b9af80fba400f597832913ab8a4e027671d7fa1d",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607292104-W03KZ0/quality/20260730-000107279-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:69e5b3d379c36e823b780f7c814a35f8dab5c886a338cdd40c0a5d713b00f25e",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}
