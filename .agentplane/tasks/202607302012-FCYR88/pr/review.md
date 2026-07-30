@@ -6,7 +6,7 @@ Created: 2026-07-30T20:13:04.252Z
 
 - Task: `202607302012-FCYR88`
 - Title: Unblock protected-base conflict rework after main advancement
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607302012-FCYR88/protected-base-conflict-rework`
 - Canonical task record: `.agentplane/tasks/202607302012-FCYR88/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-30T20:13:04.252Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T20:13:04.252Z
+- Updated: 2026-07-30T20:23:18.010Z
 - Branch: task/202607302012-FCYR88/protected-base-conflict-rework
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
