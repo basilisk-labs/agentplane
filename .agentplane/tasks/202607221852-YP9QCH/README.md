@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 22
+revision: 23
 origin:
   system: "manual"
 depends_on:
@@ -33,9 +33,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T10:16:56.873Z"
+  updated_at: "2026-07-30T10:19:14.880Z"
   updated_by: "TESTER"
-  note: "Verified exact implementation commit 24cb5a3ab574: compatibility ratchet passed at c35c4a49; candidate determinism, beyond-first-50 recall, CURATOR-only semantic ownership, and the focused context suite passed (42 tests)."
+  note: "Verified the compatibility ratchet and RF-17 candidate behavior on the reviewed task branch."
   attempts: 0
 quality_review:
   state: "pass"
@@ -172,8 +172,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified exact implementation commit 24cb5a3ab574: compatibility ratchet passed at c35c4a49; candidate determinism, beyond-first-50 recall, CURATOR-only semantic ownership, and the focused context suite passed (42 tests)."
+  -
+    type: "verify"
+    at: "2026-07-30T10:19:14.880Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified the compatibility ratchet and RF-17 candidate behavior on the reviewed task branch."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:16:57.560Z"
+doc_updated_at: "2026-07-30T10:19:15.936Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
@@ -297,6 +303,61 @@ sections:
     VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:16:21.908Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
 
     Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+    - old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
+    ### 2026-07-30T10:19:14.880Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified the compatibility ratchet and RF-17 candidate behavior on the reviewed task branch.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:16:57.560Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+    Details:
+
+    Command: bun run bench:compatibility:check
+    Result: pass
+    Evidence: scripts/baselines/v0.7-compatibility-candidate.json#agent_facing_context_contracts; current=c35c4a49829e3a0376712e560334feb6bc2c7b178792fdb7aa18ecaeb0de67a6
+    Scope: reviewed v0.7 compatibility candidate and immutable v0.6.24 baseline boundary
+
+    Command: bun run --filter=agentplane test -- src/context/ingest-task-pack.test.ts src/context/ingest-task.test.ts src/context/ingest-task-prompt.test.ts src/commands/context/release-readiness.test.ts
+    Result: pass
+    Evidence: 42 focused tests passed, including deterministic candidate ordering, beyond-first-50 recall, and CURATOR semantic ownership
+    Scope: RF-17 reconciliation task pack and executor prompt contract
+
+    Command: bun run --filter=agentplane build
+    Result: pass
+    Evidence: packages/agentplane/dist/cli.js built successfully
+    Scope: AgentPlane CLI TypeScript build
+
+    Command: bun run lint:core
+    Result: pass
+    Evidence: ESLint completed for packages, scripts, and configuration
+    Scope: changed source, candidate, checker, and pin-test lint coverage
+
+    Command: git diff --check
+    Result: pass
+    Evidence: no whitespace errors in the compatibility rework diff
+    Scope: task branch diff integrity
 
     BlueprintSnapshotRef:
     - state: current
@@ -461,6 +522,61 @@ Attempts: 0
 VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:16:21.908Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
 
 Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+- old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
+### 2026-07-30T10:19:14.880Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified the compatibility ratchet and RF-17 candidate behavior on the reviewed task branch.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:16:57.560Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+Details:
+
+Command: bun run bench:compatibility:check
+Result: pass
+Evidence: scripts/baselines/v0.7-compatibility-candidate.json#agent_facing_context_contracts; current=c35c4a49829e3a0376712e560334feb6bc2c7b178792fdb7aa18ecaeb0de67a6
+Scope: reviewed v0.7 compatibility candidate and immutable v0.6.24 baseline boundary
+
+Command: bun run --filter=agentplane test -- src/context/ingest-task-pack.test.ts src/context/ingest-task.test.ts src/context/ingest-task-prompt.test.ts src/commands/context/release-readiness.test.ts
+Result: pass
+Evidence: 42 focused tests passed, including deterministic candidate ordering, beyond-first-50 recall, and CURATOR semantic ownership
+Scope: RF-17 reconciliation task pack and executor prompt contract
+
+Command: bun run --filter=agentplane build
+Result: pass
+Evidence: packages/agentplane/dist/cli.js built successfully
+Scope: AgentPlane CLI TypeScript build
+
+Command: bun run lint:core
+Result: pass
+Evidence: ESLint completed for packages, scripts, and configuration
+Scope: changed source, candidate, checker, and pin-test lint coverage
+
+Command: git diff --check
+Result: pass
+Evidence: no whitespace errors in the compatibility rework diff
+Scope: task branch diff integrity
 
 BlueprintSnapshotRef:
 - state: current
