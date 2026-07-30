@@ -2,7 +2,7 @@
   "base": "main",
   "branch": "task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider",
   "created_at": "2026-07-30T05:26:25.323Z",
-  "diffstat_sha256": "sha256:7d8ce69cee4a532ae558e0d4856da08c03bf3eeca59603d471d8e8292e77db4f",
+  "diffstat_sha256": "sha256:4c49e87357ee26659b950db7f3f5a96a893254a05d8a88e8e641752ba705a699",
   "last_verified_at": "2026-07-30T05:28:30.525Z",
   "last_verified_diffstat_sha256": "sha256:7d8ce69cee4a532ae558e0d4856da08c03bf3eeca59603d471d8e8292e77db4f",
   "pr_number": 4680,

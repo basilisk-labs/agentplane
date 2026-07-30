@@ -6,7 +6,7 @@ Created: 2026-07-30T05:26:25.323Z
 
 - Task: `202607300518-A5CTP0`
 - Title: Attribute RF-04 harness latency without provider retries
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider`
 - Canonical task record: `.agentplane/tasks/202607300518-A5CTP0/README.md`
 
@@ -29,9 +29,9 @@ Created: 2026-07-30T05:26:25.323Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- ...critical.agent-efficiency-replay-driver.test.ts | 30 +++++++++++++++++-
- .../bench/run-agent-efficiency-codex-replay.mjs    | 36 ++++++++++++++++++++++
- 2 files changed, 65 insertions(+), 1 deletion(-)
+ ...critical.agent-efficiency-replay-driver.test.ts | 30 ++++++++++++++++++-
+ .../bench/run-agent-efficiency-codex-replay.mjs    | 35 ++++++++++++++++++++++
+ 2 files changed, 64 insertions(+), 1 deletion(-)
 ```
 
 </details>
