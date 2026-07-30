@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 20
+revision: 21
 origin:
   system: "manual"
 depends_on:
@@ -32,11 +32,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "needs_rework"
-  updated_at: "2026-07-30T10:10:52.504Z"
+  state: "ok"
+  updated_at: "2026-07-30T10:16:56.873Z"
   updated_by: "TESTER"
-  note: "Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test."
-  attempts: 1
+  note: "Verified exact implementation commit 24cb5a3ab574: compatibility ratchet passed at c35c4a49; candidate determinism, beyond-first-50 recall, CURATOR-only semantic ownership, and the focused context suite passed (42 tests)."
+  attempts: 0
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
@@ -164,8 +164,14 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Compatibility candidate ratcheted for the canonical reconciliation artifact; local compatibility, focused context tests, build, lint, and diff checks pass."
+  -
+    type: "verify"
+    at: "2026-07-30T10:16:56.873Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified exact implementation commit 24cb5a3ab574: compatibility ratchet passed at c35c4a49; candidate determinism, beyond-first-50 recall, CURATOR-only semantic ownership, and the focused context suite passed (42 tests)."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:16:21.908Z"
+doc_updated_at: "2026-07-30T10:16:57.560Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
@@ -279,12 +285,45 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T10:16:56.873Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified exact implementation commit 24cb5a3ab574: compatibility ratchet passed at c35c4a49; candidate determinism, beyond-first-50 recall, CURATOR-only semantic ownership, and the focused context suite passed (42 tests).
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:16:21.908Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+    - old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
     - Re-run equivalence, recall, lifecycle, and type checks.
-  Findings: ""
+  Findings: |-
+    - Observation: Candidate provenance now includes RF-17; immutable v0.6.24 baseline hash remains 29fa03085735dd881e7f2101a84766169c43f1397fd3fff1134a61fe30ff913b.
+      Impact: Hosted verify-routed can accept the reviewed additive context contract instead of treating it as unrecorded drift.
+      Resolution: Updated only the v0.7 reviewed candidate, strict ratchet checker, and candidate pin test.
 extensions:
   workflow_route_baseline:
     start_head_sha: "e9f2cbe94440b925b16f04da815cd21628812161"
@@ -410,6 +449,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T10:16:56.873Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified exact implementation commit 24cb5a3ab574: compatibility ratchet passed at c35c4a49; candidate determinism, beyond-first-50 recall, CURATOR-only semantic ownership, and the focused context suite passed (42 tests).
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T10:16:21.908Z, excerpt_hash=sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-YP9QCH-build-source-driven-canonical-reconciliation-can/.agentplane/tasks/202607221852-YP9QCH/blueprint/resolved-snapshot.json
+- old_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- current_digest: 198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-YP9QCH
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -419,3 +488,7 @@ DecisionContextRef:
 - Re-run equivalence, recall, lifecycle, and type checks.
 
 ## Findings
+
+- Observation: Candidate provenance now includes RF-17; immutable v0.6.24 baseline hash remains 29fa03085735dd881e7f2101a84766169c43f1397fd3fff1134a61fe30ff913b.
+  Impact: Hosted verify-routed can accept the reviewed additive context contract instead of treating it as unrecorded drift.
+  Resolution: Updated only the v0.7 reviewed candidate, strict ratchet checker, and candidate pin test.
