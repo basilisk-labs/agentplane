@@ -182,6 +182,29 @@ export function partitionReplayClock({
   };
 }
 
+export function partitionHarnessSetupClock({
+  anchorRuntimeReadyAt,
+  harnessReadyAt,
+  harnessStartedAt,
+}) {
+  const ordered = [harnessStartedAt, anchorRuntimeReadyAt, harnessReadyAt];
+  if (
+    ordered.some((value) => !Number.isFinite(value)) ||
+    anchorRuntimeReadyAt < harnessStartedAt ||
+    harnessReadyAt < anchorRuntimeReadyAt
+  ) {
+    fail("REPLAY_HARNESS_CLOCK_ORDER");
+  }
+  const harness_setup_latency_ms = Math.round(harnessReadyAt - harnessStartedAt);
+  const anchor_runtime_build_latency_ms = Math.round(anchorRuntimeReadyAt - harnessStartedAt);
+  return {
+    anchor_runtime_build_latency_ms,
+    fixture_initialization_latency_ms:
+      harness_setup_latency_ms - anchor_runtime_build_latency_ms,
+    harness_setup_latency_ms,
+  };
+}
+
 function observeFirstScopedMutation(fixtureRoot) {
   let observedAt = null;
   let observationFailed = false;
@@ -244,6 +267,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
   const runtimeCliVersion = resolveCodexReplayCliVersion();
   const harnessStartedAt = performance.now();
   const anchorRuntime = buildAnchorRuntime(subjectRoot, anchor, dependencyClaim);
+  const anchorRuntimeReadyAt = performance.now();
   const cliPath = anchorRuntime.cliPath;
   const counters = { anchorPreparationCliCalls: 0, metrics: {}, preparationLatencyMs: 0 };
   const fixtureRoot = initializeFixture(
@@ -254,6 +278,11 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
     counters,
   );
   const harnessReadyAt = performance.now();
+  const harnessSetupTiming = partitionHarnessSetupClock({
+    anchorRuntimeReadyAt,
+    harnessReadyAt,
+    harnessStartedAt,
+  });
   const roleTasks = Object.fromEntries(
     expectedRoles.map((role) => [
       role,
@@ -477,6 +506,9 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
     harnessStartedAt,
     preparationLatencyMs: counters.preparationLatencyMs,
   });
+  if (timing.harness_setup_latency_ms !== harnessSetupTiming.harness_setup_latency_ms) {
+    fail("REPLAY_HARNESS_CLOCK_PARTITION");
+  }
   const metrics = {
     bootstrap_bytes: bootstrapBytes,
     bundle_bytes: bundleBytes,
@@ -516,6 +548,10 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
     anchor_cli_preparation: true,
     anchor_runtime_build: "typescript_plus_core_cli_bundle_manifest_v1",
     anchor_runtime_integrity: anchorRuntime.receipt,
+    harness_setup_timing: {
+      method: "monotonic_phase_partition_v1",
+      ...harnessSetupTiming,
+    },
     changed_paths: [...allChangedPaths].toSorted(),
     fixture_context_lookup: {
       context_exists: existsSync(contextPath),
