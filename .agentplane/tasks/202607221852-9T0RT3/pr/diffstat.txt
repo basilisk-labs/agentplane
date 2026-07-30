@@ -1,6 +1,6 @@
  .../src/runner/usecases/agent-work-order-build.ts  |  34 +-
  .../runner/usecases/agent-work-order-projection.ts |   2 +
- .../usecases/agent-work-order.integration.test.ts  |  94 +++
+ .../usecases/agent-work-order.integration.test.ts  | 127 ++++
  .../src/runner/usecases/agent-work-order.ts        |   9 +
- .../runner/usecases/task-knowledge-retrieval.ts    | 646 +++++++++++++++++++++
- 5 files changed, 780 insertions(+), 5 deletions(-)
+ .../runner/usecases/task-knowledge-retrieval.ts    | 706 +++++++++++++++++++++
+ 5 files changed, 873 insertions(+), 5 deletions(-)

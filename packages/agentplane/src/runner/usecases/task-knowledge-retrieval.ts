@@ -40,6 +40,7 @@ type QueryTerm = {
   normalized: string;
   signals: RetrievalSignal[];
   exact_refs: string[];
+  source_priority: number;
 };
 
 type Candidate = {
@@ -123,6 +124,7 @@ function addQuery(
   queries: Map<string, QueryTerm>,
   value: string,
   signal: RetrievalSignal,
+  sourcePriority = 1,
 ): void {
   const exactRefs =
     value.match(
@@ -135,17 +137,31 @@ function addQuery(
       const current = queries.get(key);
       if (current) {
         if (!current.signals.includes(signal)) current.signals.push(signal);
+        current.source_priority = Math.min(current.source_priority, sourcePriority);
         continue;
       }
       if (queries.size >= MAX_COLLECTED_QUERY_TERMS) return;
-      queries.set(key, { query: key, normalized: key, signals: [signal], exact_refs: [ref] });
+      queries.set(key, {
+        query: key,
+        normalized: key,
+        signals: [signal],
+        exact_refs: [ref],
+        source_priority: sourcePriority,
+      });
     }
     return;
   }
   const existing = queries.get(query);
   if (!existing && queries.size >= MAX_COLLECTED_QUERY_TERMS) return;
-  const current = existing ?? { query, normalized: query, signals: [], exact_refs: [] };
+  const current = existing ?? {
+    query,
+    normalized: query,
+    signals: [],
+    exact_refs: [],
+    source_priority: sourcePriority,
+  };
   if (!current.signals.includes(signal)) current.signals.push(signal);
+  current.source_priority = Math.min(current.source_priority, sourcePriority);
   for (const ref of exactRefs) {
     if (!current.exact_refs.includes(ref)) current.exact_refs.push(ref);
   }
@@ -180,8 +196,8 @@ function querySignalRank(query: Pick<QueryTerm, "signals">): number {
     task_intent: 2,
     acceptance: 3,
     blueprint: 5,
-    dependency: 6,
-    finding: 7,
+    dependency: 3,
+    finding: 3,
   };
   return Math.min(...query.signals.map((signal) => ranks[signal]));
 }
@@ -195,28 +211,30 @@ function taskQueryPlan(opts: {
   const task = opts.task_envelope.source_task;
   const taskText = `${task.title}\n${task.description}\n${task.doc ?? ""}`;
   for (const value of pathSignals(taskText)) {
-    addQuery(queries, value, "path");
+    addQuery(queries, value, "path", 0);
   }
   for (const value of symbolSignals(taskText)) {
-    addQuery(queries, value, "symbol");
+    addQuery(queries, value, "symbol", 0);
   }
-  for (const tag of task.tags ?? []) addQuery(queries, tag, "tag");
+  for (const tag of task.tags ?? []) addQuery(queries, tag, "tag", 0);
   addQuery(queries, opts.blueprint.blueprintId, "blueprint");
   for (const dependency of opts.dependencies) {
     for (const value of stringsFromText(
       `${dependency.title}\n${dependency.result_summary ?? ""}\n${dependency.description}`,
     )) {
-      addQuery(queries, value, "dependency");
+      addQuery(queries, value, "dependency", 0);
     }
   }
-  for (const finding of task.quality_review?.findings ?? []) addQuery(queries, finding, "finding");
+  for (const finding of task.quality_review?.findings ?? []) {
+    addQuery(queries, finding, "finding", 0);
+  }
   for (const value of stringsFromText(`${task.title}\n${task.description}`)) {
-    addQuery(queries, value, "task_intent");
+    addQuery(queries, value, "task_intent", 0);
   }
   for (const section of opts.task_envelope.task.narrative.sections) {
     const signal: RetrievalSignal =
       /verify|acceptance|scope|plan/iu.test(section.name) ? "acceptance" : "finding";
-    for (const value of stringsFromText(section.text)) addQuery(queries, value, signal);
+    for (const value of stringsFromText(section.text)) addQuery(queries, value, signal, 2);
   }
   const ordered = [...queries.values()]
     .map((query) => ({
@@ -226,11 +244,48 @@ function taskQueryPlan(opts: {
     }))
     .toSorted(
       (left, right) =>
-        querySignalRank(left) - querySignalRank(right) || left.normalized.localeCompare(right.normalized),
+        left.source_priority - right.source_priority ||
+        Number(right.exact_refs.length > 0) - Number(left.exact_refs.length > 0) ||
+        querySignalRank(left) - querySignalRank(right) ||
+        left.normalized.localeCompare(right.normalized),
     );
+  const signalQuotas: [RetrievalSignal, number][] = [
+    ["path", 3],
+    ["symbol", 2],
+    ["task_intent", 5],
+    ["tag", 2],
+    ["dependency", 3],
+    ["finding", 3],
+    ["acceptance", 3],
+    ["blueprint", 1],
+  ];
+  const selected: QueryTerm[] = [];
+  const selectedKeys = new Set<string>();
+  for (const [signal, quota] of signalQuotas) {
+    let selectedForSignal = 0;
+    for (const query of ordered) {
+      if (
+        selected.length >= MAX_QUERY_TERMS ||
+        selectedForSignal >= quota ||
+        selectedKeys.has(query.normalized) ||
+        !query.signals.includes(signal)
+      ) {
+        continue;
+      }
+      selected.push(query);
+      selectedKeys.add(query.normalized);
+      selectedForSignal += 1;
+    }
+  }
+  for (const query of ordered) {
+    if (selected.length >= MAX_QUERY_TERMS) break;
+    if (selectedKeys.has(query.normalized)) continue;
+    selected.push(query);
+    selectedKeys.add(query.normalized);
+  }
   return {
-    queries: ordered.slice(0, MAX_QUERY_TERMS),
-    omitted_count: ordered.length - MAX_QUERY_TERMS,
+    queries: selected,
+    omitted_count: ordered.length - selected.length,
     collection_saturated: queries.size === MAX_COLLECTED_QUERY_TERMS,
   };
 }
@@ -439,7 +494,12 @@ async function ftsCandidates(opts: {
 function entityCandidates(opts: { queries: QueryTerm[]; index: EntityIndex }): Candidate[] {
   const candidates: Candidate[] = [];
   for (const query of opts.queries) {
-    for (const entityId of opts.index.by_term.get(query.normalized) ?? []) {
+    const entityIds = new Set(opts.index.by_term.get(query.normalized));
+    for (const [term, ids] of opts.index.by_term) {
+      if (!term.includes(" ") || !` ${query.normalized} `.includes(` ${term} `)) continue;
+      for (const id of ids) entityIds.add(id);
+    }
+    for (const entityId of [...entityIds].toSorted()) {
       const entity = candidateFromRef({
         ref: `.agentplane/context/derived/graph/entities.jsonl#entity=${encoded(entityId)}`,
         retrieval: "alias",
