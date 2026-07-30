@@ -30,7 +30,7 @@ Created: 2026-07-30T01:54:00.904Z
 
 ```text
  docs/user/cli-reference.generated.mdx              |  11 +-
- ...-cli.critical.agent-efficiency-baseline.test.ts |   2 +-
+ ...-cli.critical.agent-efficiency-baseline.test.ts |   7 +-
  .../commands/pr/conflict-rework-recovery.test.ts   | 221 +++++++++++++++++++++
  .../src/commands/pr/conflict-rework-recovery.ts    | 190 ++++++++++++++++++
  .../src/commands/pr/conflict-rework.command.ts     |  33 +++
@@ -38,7 +38,7 @@ Created: 2026-07-30T01:54:00.904Z
  packages/agentplane/src/commands/pr/pr.spec.ts     |  73 ++++++-
  .../baselines/v0.7-compatibility-candidate.json    |  69 ++++++-
  .../check-compatibility-contract-baseline.mjs      |  42 ++++
- 9 files changed, 634 insertions(+), 10 deletions(-)
+ 9 files changed, 637 insertions(+), 12 deletions(-)
 ```
 
 </details>

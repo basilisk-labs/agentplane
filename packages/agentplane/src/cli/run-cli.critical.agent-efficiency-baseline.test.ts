@@ -182,13 +182,14 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607260532-9M7RNH",
           "202607281655-YMPY8Y",
           "202607291449-FTHNAR",
+          "202607300150-MGCHE6",
         ],
         candidate: {
-          surface_sha256: "b3d74d362ddfe5f5a52eab68df9797756fd54c6140f9ca231e129d22061cab98",
+          surface_sha256: "fb5800bf34706aeff9d8e64d38bfed557b5e74c4467c9227ed930584602e6f34",
           section_digests: {
             agent_facing_context_contracts:
               "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
-            cli_topology: "f50e087e1317576b5adca56748f0acf2b04c61727adcfd51da462f17956b7fad",
+            cli_topology: "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
             package_manifests: "2a2e2668620dd74fe0f79818798434b89b80253f86c1a3d48f8ca8307fbfc76a",
