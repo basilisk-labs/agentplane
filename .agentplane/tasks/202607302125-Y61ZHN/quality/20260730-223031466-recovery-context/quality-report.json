@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "202607302125-Y61ZHN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T22:30:31.978Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "5646a4f5034a0267d4ff39d0a181e48e5dae1465",
+  "blueprint_digest": "6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185",
+  "findings": [
+    "queue-state-superseded retains the same rework-only transition, successor receipt, reason requirement, and released-entry cleanup through the shared transition helper.",
+    "workflow-step-provider-conflict-superseded preserves the terminal stop outcome and explicit prohibition on reopening, enqueueing, or integrating the closed PR."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-223031466-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
