@@ -1,0 +1,1139 @@
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/README.md b/.agentplane/tasks/202607300518-A5CTP0/README.md
+new file mode 100644
+index 000000000..e83f269b3
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/README.md
+@@ -0,0 +1,242 @@
++---
++id: "202607300518-A5CTP0"
++title: "Attribute RF-04 harness latency without provider retries"
++result_summary: "pre-merge closure"
++status: "DOING"
++priority: "high"
++owner: "CODER"
++revision: 9
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "beta1"
++  - "latency"
++  - "no-provider"
++  - "performance"
++  - "rf-04"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "performance.benchmark"
++verify:
++  - "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T05:19:11.067Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "ok"
++  updated_at: "2026-07-30T05:28:30.525Z"
++  updated_by: "TESTER"
++  note: "Verified: attribution preserves the RF-04 aggregate harness metric while recording anchor-runtime-build and fixture-initialization components; no provider capture was invoked."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-30T05:29:51.780Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 1 typed finding(s)."
++  evaluated_sha: "9eba6daf7e4074b9b6d9835cc65adacfa386c06f"
++  blueprint_digest: "c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf"
++  evidence_refs:
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607300518-A5CTP0/README.md"
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The receipt now attributes harness setup to anchor runtime build and fixture initialization without changing the immutable candidate, thresholds, or provider behavior."
++commit:
++  hash: "9eba6daf7e4074b9b6d9835cc65adacfa386c06f"
++  message: "⚡ A5CTP0 code: attribute RF-04 harness latency"
++comments:
++  -
++    author: "CODER"
++    body: "Start: isolate the immutable RF-04 latency signal with deterministic no-provider provenance before any remediation."
++  -
++    author: "CODER"
++    body: "Implementation: added monotonic attribution for anchor runtime build and fixture initialization while preserving the aggregate RF-04 harness setup metric; no provider capture was invoked."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Rework: hosted verify-contract rejected only Prettier formatting in scripts/bench/run-agent-efficiency-codex-replay.mjs; no behavioral or provider failure occurred."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T05:19:18.679Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: isolate the immutable RF-04 latency signal with deterministic no-provider provenance before any remediation."
++  -
++    type: "status"
++    at: "2026-07-30T05:27:56.198Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation: added monotonic attribution for anchor runtime build and fixture initialization while preserving the aggregate RF-04 harness setup metric; no provider capture was invoked."
++  -
++    type: "verify"
++    at: "2026-07-30T05:28:30.525Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified: attribution preserves the RF-04 aggregate harness metric while recording anchor-runtime-build and fixture-initialization components; no provider capture was invoked."
++  -
++    type: "status"
++    at: "2026-07-30T05:30:33.226Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "status"
++    at: "2026-07-30T05:32:13.884Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DOING"
++    note: "Rework: hosted verify-contract rejected only Prettier formatting in scripts/bench/run-agent-efficiency-codex-replay.mjs; no behavioral or provider failure occurred."
++doc_version: 3
++doc_updated_at: "2026-07-30T05:32:13.884Z"
++doc_updated_by: "CODER"
++description: "Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate."
++sections:
++  Summary: |-
++    Attribute RF-04 harness latency without provider retries
++
++    Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.
++  Scope: |-
++    - In scope: Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.
++    - Out of scope: unrelated refactors not required for "Attribute RF-04 harness latency without provider retries".
++  Plan: "1. Inspect the frozen beta.1 candidate and replay driver boundaries; identify which pre-ready operations contribute to harness_setup_latency_ms without invoking a provider. 2. Add additive per-component timing provenance while preserving the existing aggregate metric and immutable candidate semantics. 3. Add deterministic no-provider tests for timing partitioning and aggregate consistency. 4. Run focused replay tests, typecheck, lint, and the performance-benchmark evidence checks; record measured attribution and residual causal limits."
++  Verify Steps: |-
++    PLANNER fallback scaffold for "Attribute RF-04 harness latency without provider retries". Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Review the requested outcome for "Attribute RF-04 harness latency without provider retries". Expected: the visible result matches ## Summary and stays inside approved scope.
++    2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++    3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-30T05:28:30.525Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified: attribution preserves the RF-04 aggregate harness metric while recording anchor-runtime-build and fixture-initialization components; no provider capture was invoked.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T05:27:56.198Z, excerpt_hash=sha256:fbb29b830893007ef1d34f05f76bce814a1f6fc1cd6fb0e1d2f23d019c08d9de
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300518-A5CTP0-attribute-rf-04-harness-latency-without-provider/.agentplane/tasks/202607300518-A5CTP0/blueprint/resolved-snapshot.json
++    - old_digest: c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf
++    - current_digest: c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607300518-A5CTP0
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607300518-A5CTP0
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: Focused replay/candidate/hardening suites, RF-04 artifact check, TypeScript, lint, and all 12 critical chunks passed.
++      Impact: The immutable beta.1 candidate remains do_not_publish because its two latency failures are retained; the new receipt prevents treating a harness aggregate as causal attribution.
++      Resolution: Future authorized captures can compare measured setup components without changing the frozen candidate or its thresholds.
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "09aace085172be78274fe0209ec6de0dd38ac0ec"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Attribute RF-04 harness latency without provider retries
++
++Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.
++
++## Scope
++
++- In scope: Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.
++- Out of scope: unrelated refactors not required for "Attribute RF-04 harness latency without provider retries".
++
++## Plan
++
++1. Inspect the frozen beta.1 candidate and replay driver boundaries; identify which pre-ready operations contribute to harness_setup_latency_ms without invoking a provider. 2. Add additive per-component timing provenance while preserving the existing aggregate metric and immutable candidate semantics. 3. Add deterministic no-provider tests for timing partitioning and aggregate consistency. 4. Run focused replay tests, typecheck, lint, and the performance-benchmark evidence checks; record measured attribution and residual causal limits.
++
++## Verify Steps
++
++PLANNER fallback scaffold for "Attribute RF-04 harness latency without provider retries". Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Review the requested outcome for "Attribute RF-04 harness latency without provider retries". Expected: the visible result matches ## Summary and stays inside approved scope.
++2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.
++3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-30T05:28:30.525Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified: attribution preserves the RF-04 aggregate harness metric while recording anchor-runtime-build and fixture-initialization components; no provider capture was invoked.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T05:27:56.198Z, excerpt_hash=sha256:fbb29b830893007ef1d34f05f76bce814a1f6fc1cd6fb0e1d2f23d019c08d9de
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607300518-A5CTP0-attribute-rf-04-harness-latency-without-provider/.agentplane/tasks/202607300518-A5CTP0/blueprint/resolved-snapshot.json
++- old_digest: c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf
++- current_digest: c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607300518-A5CTP0
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607300518-A5CTP0
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: Focused replay/candidate/hardening suites, RF-04 artifact check, TypeScript, lint, and all 12 critical chunks passed.
++  Impact: The immutable beta.1 candidate remains do_not_publish because its two latency failures are retained; the new receipt prevents treating a harness aggregate as causal attribution.
++  Resolution: Future authorized captures can compare measured setup components without changing the frozen candidate or its thresholds.
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607300518-A5CTP0/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..51391a30d
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/blueprint/resolved-snapshot.json
+@@ -0,0 +1,604 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607300518-A5CTP0",
++    "title": "Attribute RF-04 harness latency without provider retries",
++    "description": "Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.",
++    "tags": [
++      "beta1",
++      "latency",
++      "no-provider",
++      "performance",
++      "rf-04",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "performance.benchmark"
++  },
++  "selectedBlueprint": {
++    "id": "performance.benchmark",
++    "version": 1,
++    "title": "Performance benchmark",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "performance.benchmark",
++    "blueprintVersion": 1,
++    "title": "Performance benchmark",
++    "taskId": "202607300518-A5CTP0",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "performance.benchmark"
++    },
++    "whySelected": [
++      "explicit blueprint requested: performance.benchmark",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "final_output"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "benchmark.baseline",
++        "kind": "artifact",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Baseline measurement artifact."
++      },
++      {
++        "id": "benchmark.method",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Benchmark method, environment, and warm/cold mode."
++      },
++      {
++        "id": "benchmark.runs",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Run count and raw measurement results."
++      },
++      {
++        "id": "benchmark.threshold",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Accepted threshold or noise tolerance."
++      },
++      {
++        "id": "benchmark.comparison",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Before/after comparison result."
++      },
++      {
++        "id": "benchmark.verdict",
++        "kind": "final_output",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Faster, slower, unchanged, or noisy verdict."
++      },
++      {
++        "id": "benchmark.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "benchmark.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "benchmark baseline command",
++      "benchmark comparison command",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "final_output"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "benchmark.baseline",
++      "kind": "artifact",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Baseline measurement artifact."
++    },
++    {
++      "id": "benchmark.method",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Benchmark method, environment, and warm/cold mode."
++    },
++    {
++      "id": "benchmark.runs",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Run count and raw measurement results."
++    },
++    {
++      "id": "benchmark.threshold",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Accepted threshold or noise tolerance."
++    },
++    {
++      "id": "benchmark.comparison",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Before/after comparison result."
++    },
++    {
++      "id": "benchmark.verdict",
++      "kind": "final_output",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Faster, slower, unchanged, or noisy verdict."
++    },
++    {
++      "id": "benchmark.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "benchmark.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "benchmark baseline command",
++    "benchmark comparison command",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: performance.benchmark",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf"
++  }
++}
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/pr/diffstat.txt b/.agentplane/tasks/202607300518-A5CTP0/pr/diffstat.txt
+new file mode 100644
+index 000000000..9f5f241e9
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/pr/diffstat.txt
+@@ -0,0 +1,3 @@
++ ...critical.agent-efficiency-replay-driver.test.ts | 30 ++++++++++++++++++-
++ .../bench/run-agent-efficiency-codex-replay.mjs    | 35 ++++++++++++++++++++++
++ 2 files changed, 64 insertions(+), 1 deletion(-)
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/pr/github-body.md b/.agentplane/tasks/202607300518-A5CTP0/pr/github-body.md
+new file mode 100644
+index 000000000..55c70b16a
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/pr/github-body.md
+@@ -0,0 +1,40 @@
++Task: `202607300518-A5CTP0`
++Title: Attribute RF-04 harness latency without provider retries
++Canonical task record: `.agentplane/tasks/202607300518-A5CTP0/README.md`
++
++## Summary
++
++Attribute RF-04 harness latency without provider retries
++
++Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.
++
++## Scope
++
++- In scope: Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.
++- Out of scope: unrelated refactors not required for "Attribute RF-04 harness latency without provider retries".
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++Verified: attribution preserves the RF-04 aggregate harness metric while recording
++anchor-runtime-build and fixture-initialization components; no provider capture was invoked.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T05:27:22.411Z
++- Branch: task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ ...critical.agent-efficiency-replay-driver.test.ts | 30 ++++++++++++++++++-
++ .../bench/run-agent-efficiency-codex-replay.mjs    | 35 ++++++++++++++++++++++
++ 2 files changed, 64 insertions(+), 1 deletion(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/pr/github-title.txt b/.agentplane/tasks/202607300518-A5CTP0/pr/github-title.txt
+new file mode 100644
+index 000000000..08d809293
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 A5CTP0 task: Attribute RF-04 harness latency without provider retries [202607300518-A5CTP0]
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/pr/meta.json b/.agentplane/tasks/202607300518-A5CTP0/pr/meta.json
+new file mode 100644
+index 000000000..f620dbca6
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider",
++  "created_at": "2026-07-30T05:26:25.323Z",
++  "diffstat_sha256": "sha256:4c49e87357ee26659b950db7f3f5a96a893254a05d8a88e8e641752ba705a699",
++  "last_verified_at": "2026-07-30T05:28:30.525Z",
++  "last_verified_diffstat_sha256": "sha256:7d8ce69cee4a532ae558e0d4856da08c03bf3eeca59603d471d8e8292e77db4f",
++  "pr_number": 4680,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4680",
++  "pre_merge_closure": {
++    "basis_commit": "9eba6daf7e4074b9b6d9835cc65adacfa386c06f",
++    "branch": "task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider",
++    "pr_number": 4680,
++    "recorded_at": "2026-07-30T05:30:33.280Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607300518-A5CTP0",
++  "updated_at": "2026-07-30T05:27:22.411Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/pr/review.md b/.agentplane/tasks/202607300518-A5CTP0/pr/review.md
+new file mode 100644
+index 000000000..2012956a3
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/pr/review.md
+@@ -0,0 +1,38 @@
++# PR Review
++
++Created: 2026-07-30T05:26:25.323Z
++
++## Task
++
++- Task: `202607300518-A5CTP0`
++- Title: Attribute RF-04 harness latency without provider retries
++- Status: DOING
++- Branch: `task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider`
++- Canonical task record: `.agentplane/tasks/202607300518-A5CTP0/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified: attribution preserves the RF-04 aggregate harness metric while recording anchor-runtime-build and fixture-initialization components; no provider capture was invoked.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T05:27:22.411Z
++- Branch: task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ ...critical.agent-efficiency-replay-driver.test.ts | 30 ++++++++++++++++++-
++ .../bench/run-agent-efficiency-codex-replay.mjs    | 35 ++++++++++++++++++++++
++ 2 files changed, 64 insertions(+), 1 deletion(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607300518-A5CTP0/verification/20260730052830525-1362b08b05ff6355.json b/.agentplane/tasks/202607300518-A5CTP0/verification/20260730052830525-1362b08b05ff6355.json
+new file mode 100644
+index 000000000..2466e7383
+--- /dev/null
++++ b/.agentplane/tasks/202607300518-A5CTP0/verification/20260730052830525-1362b08b05ff6355.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:1362b08b05ff6355a5cd7d391d60b316a0db36607cb65eb03724e41d18b2d591",
++  "implementation_sha": "9eba6daf7e4074b9b6d9835cc65adacfa386c06f",
++  "kind": "task_verification_record",
++  "note": "Verified: attribution preserves the RF-04 aggregate harness metric while recording anchor-runtime-build and fixture-initialization components; no provider capture was invoked.",
++  "recorded_at": "2026-07-30T05:28:30.525Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "PLANNER fallback scaffold for \"Attribute RF-04 harness latency without provider retries\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Attribute RF-04 harness latency without provider retries\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit.",
++  "scope_digest": "sha256:fbb29b830893007ef1d34f05f76bce814a1f6fc1cd6fb0e1d2f23d019c08d9de",
++  "task_id": "202607300518-A5CTP0",
++  "verification_command": "agentplane verify 202607300518-A5CTP0 --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+index c3bfc8d58..df31dd56b 100644
+--- a/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
++++ b/packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay-driver.test.ts
+@@ -84,6 +84,15 @@ type DriverModule = {
+     time_to_first_scoped_mutation_ms: number | null;
+     time_to_verified_result_ms: number;
+   };
++  partitionHarnessSetupClock(clock: {
++    anchorRuntimeReadyAt: number;
++    harnessReadyAt: number;
++    harnessStartedAt: number;
++  }): {
++    anchor_runtime_build_latency_ms: number;
++    fixture_initialization_latency_ms: number;
++    harness_setup_latency_ms: number;
++  };
+   resolveCodexReplayCliVersion(source: Record<string, string>): string;
+ };
+ 
+@@ -336,9 +345,28 @@ describeCritical("critical: RF-04 Codex replay driver", () => {
+     ]);
+   });
+ 
+-  it("excludes runtime compilation and fixture prerequisites from scenario timing", async () => {
++  it("separates runtime and fixture setup without changing scenario timing", async () => {
+     const replayDriver = await driver();
+ 
++    expect(
++      replayDriver.partitionHarnessSetupClock({
++        anchorRuntimeReadyAt: 650,
++        harnessReadyAt: 800,
++        harnessStartedAt: 100,
++      }),
++    ).toEqual({
++      anchor_runtime_build_latency_ms: 550,
++      fixture_initialization_latency_ms: 150,
++      harness_setup_latency_ms: 700,
++    });
++    expect(() =>
++      replayDriver.partitionHarnessSetupClock({
++        anchorRuntimeReadyAt: 99,
++        harnessReadyAt: 800,
++        harnessStartedAt: 100,
++      }),
++    ).toThrow("REPLAY_HARNESS_CLOCK_ORDER");
++
+     expect(
+       replayDriver.partitionReplayClock({
+         completedAt: 1200,
+diff --git a/scripts/bench/run-agent-efficiency-codex-replay.mjs b/scripts/bench/run-agent-efficiency-codex-replay.mjs
+index 1635f74ca..dd1dacf73 100644
+--- a/scripts/bench/run-agent-efficiency-codex-replay.mjs
++++ b/scripts/bench/run-agent-efficiency-codex-replay.mjs
+@@ -182,6 +182,28 @@ export function partitionReplayClock({
+   };
+ }
+ 
++export function partitionHarnessSetupClock({
++  anchorRuntimeReadyAt,
++  harnessReadyAt,
++  harnessStartedAt,
++}) {
++  const ordered = [harnessStartedAt, anchorRuntimeReadyAt, harnessReadyAt];
++  if (
++    ordered.some((value) => !Number.isFinite(value)) ||
++    anchorRuntimeReadyAt < harnessStartedAt ||
++    harnessReadyAt < anchorRuntimeReadyAt
++  ) {
++    fail("REPLAY_HARNESS_CLOCK_ORDER");
++  }
++  const harness_setup_latency_ms = Math.round(harnessReadyAt - harnessStartedAt);
++  const anchor_runtime_build_latency_ms = Math.round(anchorRuntimeReadyAt - harnessStartedAt);
++  return {
++    anchor_runtime_build_latency_ms,
++    fixture_initialization_latency_ms: harness_setup_latency_ms - anchor_runtime_build_latency_ms,
++    harness_setup_latency_ms,
++  };
++}
++
+ function observeFirstScopedMutation(fixtureRoot) {
+   let observedAt = null;
+   let observationFailed = false;
+@@ -244,6 +266,7 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
+   const runtimeCliVersion = resolveCodexReplayCliVersion();
+   const harnessStartedAt = performance.now();
+   const anchorRuntime = buildAnchorRuntime(subjectRoot, anchor, dependencyClaim);
++  const anchorRuntimeReadyAt = performance.now();
+   const cliPath = anchorRuntime.cliPath;
+   const counters = { anchorPreparationCliCalls: 0, metrics: {}, preparationLatencyMs: 0 };
+   const fixtureRoot = initializeFixture(
+@@ -254,6 +277,11 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
+     counters,
+   );
+   const harnessReadyAt = performance.now();
++  const harnessSetupTiming = partitionHarnessSetupClock({
++    anchorRuntimeReadyAt,
++    harnessReadyAt,
++    harnessStartedAt,
++  });
+   const roleTasks = Object.fromEntries(
+     expectedRoles.map((role) => [
+       role,
+@@ -477,6 +505,9 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
+     harnessStartedAt,
+     preparationLatencyMs: counters.preparationLatencyMs,
+   });
++  if (timing.harness_setup_latency_ms !== harnessSetupTiming.harness_setup_latency_ms) {
++    fail("REPLAY_HARNESS_CLOCK_PARTITION");
++  }
+   const metrics = {
+     bootstrap_bytes: bootstrapBytes,
+     bundle_bytes: bundleBytes,
+@@ -516,6 +547,10 @@ export async function runReplayDriver(argv = process.argv.slice(2), dependencies
+     anchor_cli_preparation: true,
+     anchor_runtime_build: "typescript_plus_core_cli_bundle_manifest_v1",
+     anchor_runtime_integrity: anchorRuntime.receipt,
++    harness_setup_timing: {
++      method: "monotonic_phase_partition_v1",
++      ...harnessSetupTiming,
++    },
+     changed_paths: [...allChangedPaths].toSorted(),
+     fixture_context_lookup: {
+       context_exists: existsSync(contextPath),

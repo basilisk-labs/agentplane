@@ -8,10 +8,10 @@
   "pr_number": 4680,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4680",
   "pre_merge_closure": {
-    "basis_commit": "9eba6daf7e4074b9b6d9835cc65adacfa386c06f",
+    "basis_commit": "404828da8d78ed464c1916e8a6dd1af65afddad1",
     "branch": "task/202607300518-A5CTP0/attribute-rf-04-harness-latency-without-provider",
     "pr_number": 4680,
-    "recorded_at": "2026-07-30T05:30:33.280Z",
+    "recorded_at": "2026-07-30T05:34:31.725Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,

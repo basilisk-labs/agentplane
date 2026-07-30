@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607300518-A5CTP0",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T05:33:48.154Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "404828da8d78ed464c1916e8a6dd1af65afddad1",
+  "blueprint_digest": "c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf",
+  "findings": [
+    "The hosted failure was solely Prettier formatting in the modified replay driver; the current formatted diff preserves the previously reviewed monotonic timing partition."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The frozen candidate remains non-causal for component attribution and is not retried; this formatting rework does not change that limit."
+  ],
+  "residual_risks": []
+}

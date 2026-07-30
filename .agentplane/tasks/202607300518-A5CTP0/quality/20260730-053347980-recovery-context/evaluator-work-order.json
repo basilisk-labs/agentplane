@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607300518-A5CTP0-06ec4f731d5716c1ad0f43c2",
+  "prepared_at": "2026-07-30T05:33:47.980Z",
+  "task": {
+    "id": "202607300518-A5CTP0",
+    "revision": 9,
+    "objective": "Attribute RF-04 harness latency without provider retries\n\nPreserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.",
+    "acceptance_criteria": [
+      "bun test packages/agentplane/src/cli/run-cli.critical.agent-efficiency-replay.test.ts",
+      "- In scope: Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate.\n- Out of scope: unrelated refactors not required for \"Attribute RF-04 harness latency without provider retries\".",
+      "1. Inspect the frozen beta.1 candidate and replay driver boundaries; identify which pre-ready operations contribute to harness_setup_latency_ms without invoking a provider. 2. Add additive per-component timing provenance while preserving the existing aggregate metric and immutable candidate semantics. 3. Add deterministic no-provider tests for timing partitioning and aggregate consistency. 4. Run focused replay tests, typecheck, lint, and the performance-benchmark evidence checks; record measured attribution and residual causal limits.",
+      "PLANNER fallback scaffold for \"Attribute RF-04 harness latency without provider retries\". Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Review the requested outcome for \"Attribute RF-04 harness latency without provider retries\". Expected: the visible result matches ## Summary and stays inside approved scope.\n2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched behavior.\n3. Compare the final result against ## Scope and record any residual follow-up in ## Findings. Expected: open edges are explicit rather than implicit."
+    ]
+  },
+  "evaluated_sha": "404828da8d78ed464c1916e8a6dd1af65afddad1",
+  "diff_base_sha": "09aace085172be78274fe0209ec6de0dd38ac0ec",
+  "blueprint_digest": "c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607300518-A5CTP0/README.md",
+      "sha256": "sha256:1be772850f45e977c0b3aa8e76a7db01024b65ab0983ffe8ea6ec5d8606d7f2f",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:8fe455769df412e27e800d5a84a2b6d9f0f4483947dfea047d9dd63702da5bd9",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:a46cb7e1548daf45330907cc4f32d751df3a55e31ead8fc299e27ede617716d2",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:1d742e42bbbb7f17ef59dcaaf6225dd7697ca8a542836894bd51078ef826e52c",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

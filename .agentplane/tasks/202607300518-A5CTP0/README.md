@@ -2,10 +2,10 @@
 id: "202607300518-A5CTP0"
 title: "Attribute RF-04 harness latency without provider retries"
 result_summary: "pre-merge closure"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -35,30 +35,30 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T05:29:51.780Z"
+  updated_at: "2026-07-30T05:33:48.154Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "9eba6daf7e4074b9b6d9835cc65adacfa386c06f"
+  evaluated_sha: "404828da8d78ed464c1916e8a6dd1af65afddad1"
   blueprint_digest: "c6102a3a57dab85064f7244010f8d4782128c6dc460c43162dfa2aafb451e1bf"
   evidence_refs:
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607300518-A5CTP0/README.md"
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-052951683-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300518-A5CTP0/quality/20260730-053347980-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The receipt now attributes harness setup to anchor runtime build and fixture initialization without changing the immutable candidate, thresholds, or provider behavior."
+    - "The hosted failure was solely Prettier formatting in the modified replay driver; the current formatted diff preserves the previously reviewed monotonic timing partition."
 commit:
-  hash: "9eba6daf7e4074b9b6d9835cc65adacfa386c06f"
-  message: "⚡ A5CTP0 code: attribute RF-04 harness latency"
+  hash: "404828da8d78ed464c1916e8a6dd1af65afddad1"
+  message: "🐛 A5CTP0 code: format RF-04 latency attribution"
 comments:
   -
     author: "CODER"
@@ -72,6 +72,9 @@ comments:
   -
     author: "CODER"
     body: "Rework: hosted verify-contract rejected only Prettier formatting in scripts/bench/run-agent-efficiency-codex-replay.mjs; no behavioral or provider failure occurred."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -107,8 +110,15 @@ events:
     from: "DONE"
     to: "DOING"
     note: "Rework: hosted verify-contract rejected only Prettier formatting in scripts/bench/run-agent-efficiency-codex-replay.mjs; no behavioral or provider failure occurred."
+  -
+    type: "status"
+    at: "2026-07-30T05:34:31.670Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T05:32:13.884Z"
+doc_updated_at: "2026-07-30T05:34:31.670Z"
 doc_updated_by: "CODER"
 description: "Preserve the immutable beta.1 candidate and add deterministic, no-provider attribution for harness setup latency so any performance remediation targets a measured component rather than masking the aggregate gate."
 sections:
