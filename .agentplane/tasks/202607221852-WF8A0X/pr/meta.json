@@ -8,10 +8,10 @@
   "pr_number": 4694,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4694",
   "pre_merge_closure": {
-    "basis_commit": "f80c562d0abc3d3f2932dd8350a3a504c0ec034f",
+    "basis_commit": "365e2f5a784338f0d6e584f855b0010f4ed76a0d",
     "branch": "task/202607221852-WF8A0X/create-curator-gated-post-task-knowledge-proposa",
     "pr_number": 4694,
-    "recorded_at": "2026-07-30T18:45:25.027Z",
+    "recorded_at": "2026-07-30T18:58:39.939Z",
     "state": "closed_before_merge"
   },
   "schema_version": 1,
