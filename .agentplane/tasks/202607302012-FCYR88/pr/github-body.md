@@ -32,11 +32,11 @@ targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../src/commands/pr/conflict-rework-legacy.ts      | 19 ++++++++++++
- .../pr/conflict-rework-route-eligibility.ts        | 26 ++++++++++++++++
- .../pr/conflict-rework.legacy-base.test.ts         | 36 ++++++++++++++++++++++
- .../agentplane/src/commands/pr/conflict-rework.ts  |  3 +-
- 4 files changed, 83 insertions(+), 1 deletion(-)
+ .../src/commands/pr/conflict-rework-legacy.ts      | 21 +++++++
+ .../pr/conflict-rework-route-eligibility.ts        | 26 +++++++++
+ .../pr/conflict-rework.legacy-base.test.ts         | 68 ++++++++++++++++++++++
+ .../agentplane/src/commands/pr/conflict-rework.ts  |  7 ++-
+ 4 files changed, 121 insertions(+), 1 deletion(-)
 ```
 
 </details>
