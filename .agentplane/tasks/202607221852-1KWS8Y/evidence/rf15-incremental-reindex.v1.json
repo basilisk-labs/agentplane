@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "corpus": {
+    "files": 600,
+    "markdown_bytes_per_file": 2048,
+    "changed_sources_per_run": 1,
+    "scopes": [
+      "context/wiki"
+    ]
+  },
+  "method": {
+    "warmup_runs": 3,
+    "runs_per_strategy": 15,
+    "candidate": "RF-15 SQLite source delta after one source rewrite",
+    "baseline": "controlled full SQLite projection rebuild after the same rewrite"
+  },
+  "baseline": {
+    "runs": 15,
+    "p50_ms": 115.319,
+    "p95_ms": 124.49
+  },
+  "candidate": {
+    "runs": 15,
+    "p50_ms": 49.351,
+    "p95_ms": 52.557
+  },
+  "threshold": {
+    "metric": "candidate_p95_ms / full_rebuild_p95_ms",
+    "maximum": 0.8,
+    "observed": 0.422,
+    "passed": true
+  },
+  "residual_scope": "Both strategies still enumerate, stat, read, and hash all eligible sources; RF-15 avoids projection parsing and SQLite corpus rewrite for unchanged sources."
+}

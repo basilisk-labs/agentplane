@@ -2,9 +2,15 @@
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 
-import { openSqliteDatabase, type SqliteDatabase } from "../shared/sqlite-driver.js";
+import {
+  openSqliteDatabase,
+  type SqliteDatabase,
+  type SqliteStatement,
+} from "../shared/sqlite-driver.js";
 
 type SqliteProjectionRow = {
+  /** Origin file retained internally so one source can be updated atomically. */
+  source_path?: string;
   path: string;
   sha256: string;
   content_type: string;
@@ -29,7 +35,14 @@ type SqliteProjection = {
     preview_text_bytes: number;
     projection_elapsed_ms: number;
   };
+  sources?: SqliteProjectionSource[];
   rows: SqliteProjectionRow[];
+};
+
+type SqliteProjectionSource = {
+  source_path: string;
+  sha256: string;
+  size_bytes: number;
 };
 
 export type SqliteProjectionSearchOptions = {
@@ -47,6 +60,23 @@ export type SqliteProjectionSearchResult = {
   })[];
 };
 
+export type SqliteProjectionState = {
+  metadata: SqliteProjection["metadata"];
+  sourceHashes: Map<string, string>;
+  rowCount: number;
+};
+
+export type SqliteProjectionDelta = {
+  metadata: SqliteProjection["metadata"];
+  changed: {
+    source_path: string;
+    sha256: string;
+    size_bytes: number;
+    rows: SqliteProjectionRow[];
+  }[];
+  removed_source_paths: string[];
+};
+
 type SqliteProjectionMetadataRow = {
   projection_version?: unknown;
   generated_at?: unknown;
@@ -60,6 +90,7 @@ type SqliteProjectionMetadataRow = {
 };
 
 type SqliteProjectionRowRecord = {
+  source_path?: unknown;
   path?: unknown;
   sha256?: unknown;
   content_type?: unknown;
@@ -163,8 +194,12 @@ function scopeWhereClause(scopes: SqliteProjectionSearchOptions["scopes"]): {
 
 function resetContextProjectionSchema(db: SqliteDatabase): void {
   db.exec(`
+    DROP TRIGGER IF EXISTS projection_rows_ai;
+    DROP TRIGGER IF EXISTS projection_rows_ad;
+    DROP TRIGGER IF EXISTS projection_rows_au;
     DROP TABLE IF EXISTS projection_metadata;
     DROP TABLE IF EXISTS projection_rows;
+    DROP TABLE IF EXISTS projection_sources;
     DROP TABLE IF EXISTS projection_fts;
     CREATE TABLE projection_metadata (
       projection_version INTEGER NOT NULL,
@@ -177,7 +212,13 @@ function resetContextProjectionSchema(db: SqliteDatabase): void {
       preview_text_bytes INTEGER NOT NULL,
       projection_elapsed_ms INTEGER NOT NULL
     );
+    CREATE TABLE projection_sources (
+      source_path TEXT PRIMARY KEY,
+      sha256 TEXT NOT NULL,
+      size_bytes INTEGER NOT NULL
+    );
     CREATE TABLE projection_rows (
+      source_path TEXT NOT NULL,
       path TEXT PRIMARY KEY,
       sha256 TEXT NOT NULL,
       content_type TEXT NOT NULL,
@@ -189,13 +230,121 @@ function resetContextProjectionSchema(db: SqliteDatabase): void {
       preview_text TEXT NOT NULL,
       source_refs TEXT NOT NULL
     );
+    CREATE INDEX projection_rows_source_path_idx ON projection_rows(source_path);
     CREATE VIRTUAL TABLE projection_fts USING fts5(
       path,
       search_text,
       content='projection_rows',
       content_rowid='rowid'
     );
+    CREATE TRIGGER projection_rows_ai AFTER INSERT ON projection_rows BEGIN
+      INSERT INTO projection_fts(rowid, path, search_text)
+      VALUES (new.rowid, new.path, new.search_text);
+    END;
+    CREATE TRIGGER projection_rows_ad AFTER DELETE ON projection_rows BEGIN
+      INSERT INTO projection_fts(projection_fts, rowid, path, search_text)
+      VALUES ('delete', old.rowid, old.path, old.search_text);
+    END;
+    CREATE TRIGGER projection_rows_au AFTER UPDATE ON projection_rows BEGIN
+      INSERT INTO projection_fts(projection_fts, rowid, path, search_text)
+      VALUES ('delete', old.rowid, old.path, old.search_text);
+      INSERT INTO projection_fts(rowid, path, search_text)
+      VALUES (new.rowid, new.path, new.search_text);
+    END;
   `);
+}
+
+function sourcePathForRow(row: SqliteProjectionRow): string {
+  return row.source_path ?? row.path.split("#", 1)[0] ?? row.path;
+}
+
+function metadataFromRow(metadata: SqliteProjectionMetadataRow): SqliteProjection["metadata"] {
+  return {
+    projection_version: Number(metadata.projection_version ?? 0),
+    generated_at: String(metadata.generated_at ?? ""),
+    workspace_hash: String(metadata.workspace_hash ?? ""),
+    include_tasks: Number(metadata.include_tasks ?? 0) === 1,
+    include_raw: Number(metadata.include_raw ?? 0) === 1,
+    source_bytes: Number(metadata.source_bytes ?? 0),
+    search_text_bytes: Number(metadata.search_text_bytes ?? 0),
+    preview_text_bytes: Number(metadata.preview_text_bytes ?? 0),
+    projection_elapsed_ms: Number(metadata.projection_elapsed_ms ?? 0),
+  };
+}
+
+function writeMetadataStatement(db: SqliteDatabase, metadata: SqliteProjection["metadata"]): void {
+  db.prepare(
+    "INSERT INTO projection_metadata (projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  ).run(
+    metadata.projection_version,
+    metadata.generated_at,
+    metadata.workspace_hash,
+    metadata.include_tasks ? 1 : 0,
+    metadata.include_raw ? 1 : 0,
+    metadata.source_bytes,
+    metadata.search_text_bytes,
+    metadata.preview_text_bytes,
+    metadata.projection_elapsed_ms,
+  );
+}
+
+function insertProjectionRowStatement(db: SqliteDatabase) {
+  return db.prepare(
+    "INSERT INTO projection_rows (source_path, path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, search_text, preview_text, source_refs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  );
+}
+
+function insertProjectionSourceStatement(db: SqliteDatabase): SqliteStatement {
+  return db.prepare(
+    "INSERT INTO projection_sources (source_path, sha256, size_bytes) VALUES (?, ?, ?)",
+  );
+}
+
+function sourcesFromRows(rows: SqliteProjectionRow[]): SqliteProjectionSource[] {
+  const sources = new Map<string, Omit<SqliteProjectionSource, "source_path">>();
+  for (const row of rows) {
+    const sourcePath = sourcePathForRow(row);
+    const current = sources.get(sourcePath);
+    if (!current || row.path === sourcePath) {
+      sources.set(sourcePath, { sha256: row.sha256, size_bytes: row.size_bytes });
+    }
+  }
+  return [...sources].map(([source_path, source]) => ({ source_path, ...source }));
+}
+
+function insertProjectionRow(statement: SqliteStatement, row: SqliteProjectionRow): void {
+  statement.run(
+    sourcePathForRow(row),
+    row.path,
+    row.sha256,
+    row.content_type,
+    row.projection_version,
+    row.indexed_at,
+    row.size_bytes,
+    row.kind,
+    row.search_text,
+    row.preview_text,
+    refsToJson(row.source_refs),
+  );
+}
+
+function projectionTotals(
+  db: SqliteDatabase,
+): Pick<SqliteProjection["metadata"], "source_bytes" | "search_text_bytes" | "preview_text_bytes"> {
+  const totals = db
+    .prepare(
+      `SELECT
+         COALESCE((SELECT SUM(size_bytes) FROM projection_sources), 0) AS source_bytes,
+         COALESCE(SUM(length(CAST(search_text AS BLOB))), 0) AS search_text_bytes,
+         COALESCE(SUM(length(CAST(preview_text AS BLOB))), 0) AS preview_text_bytes
+       FROM projection_rows`,
+    )
+    .get() as SqliteProjectionMetadataRow | undefined;
+  return {
+    source_bytes: Number(totals?.source_bytes ?? 0),
+    search_text_bytes: Number(totals?.search_text_bytes ?? 0),
+    preview_text_bytes: Number(totals?.preview_text_bytes ?? 0),
+  };
 }
 
 export async function writeSqliteProjection(
@@ -209,40 +358,91 @@ export async function writeSqliteProjection(
     db.pragma("synchronous = NORMAL");
     const transaction = db.transaction((payload: SqliteProjection) => {
       resetContextProjectionSchema(db);
-      db.prepare(
-        "INSERT INTO projection_metadata (projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      ).run(
-        payload.metadata.projection_version,
-        payload.metadata.generated_at,
-        payload.metadata.workspace_hash,
-        payload.metadata.include_tasks ? 1 : 0,
-        payload.metadata.include_raw ? 1 : 0,
-        payload.metadata.source_bytes,
-        payload.metadata.search_text_bytes,
-        payload.metadata.preview_text_bytes,
-        payload.metadata.projection_elapsed_ms,
-      );
-
-      const insertRow = db.prepare(
-        "INSERT INTO projection_rows (path, sha256, content_type, projection_version, indexed_at, size_bytes, kind, search_text, preview_text, source_refs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-      );
-      for (const row of payload.rows) {
-        insertRow.run(
-          row.path,
-          row.sha256,
-          row.content_type,
-          row.projection_version,
-          row.indexed_at,
-          row.size_bytes,
-          row.kind,
-          row.search_text,
-          row.preview_text,
-          refsToJson(row.source_refs),
-        );
+      writeMetadataStatement(db, payload.metadata);
+      const insertSource = insertProjectionSourceStatement(db);
+      for (const source of payload.sources ?? sourcesFromRows(payload.rows)) {
+        insertSource.run(source.source_path, source.sha256, source.size_bytes);
       }
-      db.prepare("INSERT INTO projection_fts(projection_fts) VALUES('rebuild')").run();
+      const insertRow = insertProjectionRowStatement(db);
+      for (const row of payload.rows) {
+        insertProjectionRow(insertRow, row);
+      }
     });
     transaction(projection);
+  } finally {
+    db.close();
+  }
+}
+
+export async function readSqliteProjectionState(
+  dbPath: string,
+): Promise<SqliteProjectionState | null> {
+  const db = await openSqliteDatabase(dbPath, { readonly: true, fileMustExist: true });
+  if (!db) return null;
+  try {
+    const metadata = db
+      .prepare(
+        "SELECT projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms FROM projection_metadata LIMIT 1",
+      )
+      .get() as SqliteProjectionMetadataRow | undefined;
+    if (!metadata) return null;
+    const sourceRows = db
+      .prepare("SELECT source_path, sha256 FROM projection_sources ORDER BY source_path")
+      .all() as SqliteProjectionRowRecord[];
+    const rowCount = db.prepare("SELECT COUNT(*) AS row_count FROM projection_rows").get() as {
+      row_count?: unknown;
+    };
+    return {
+      metadata: metadataFromRow(metadata),
+      sourceHashes: new Map(
+        sourceRows
+          .filter(
+            (row): row is SqliteProjectionRowRecord & { source_path: string; sha256: string } =>
+              typeof row.source_path === "string" && typeof row.sha256 === "string",
+          )
+          .map((row) => [row.source_path, row.sha256]),
+      ),
+      rowCount: Number(rowCount.row_count ?? 0),
+    };
+  } catch {
+    return null;
+  } finally {
+    db.close();
+  }
+}
+
+export async function applySqliteProjectionDelta(
+  dbPath: string,
+  delta: SqliteProjectionDelta,
+): Promise<SqliteProjection["metadata"]> {
+  const db = await openRequiredDatabase(dbPath);
+  try {
+    db.pragma("journal_mode = WAL");
+    db.pragma("synchronous = NORMAL");
+    const transaction = db.transaction((payload: SqliteProjectionDelta) => {
+      const deleteRows = db.prepare("DELETE FROM projection_rows WHERE source_path = ?");
+      const deleteSource = db.prepare("DELETE FROM projection_sources WHERE source_path = ?");
+      const insertSource = insertProjectionSourceStatement(db);
+      const insertRow = insertProjectionRowStatement(db);
+      const replacementPaths = new Set<string>(payload.removed_source_paths);
+      for (const change of payload.changed) replacementPaths.add(change.source_path);
+      for (const sourcePath of replacementPaths) {
+        deleteRows.run(sourcePath);
+        deleteSource.run(sourcePath);
+      }
+      for (const change of payload.changed) {
+        insertSource.run(change.source_path, change.sha256, change.size_bytes);
+        for (const row of change.rows) {
+          insertProjectionRow(insertRow, { ...row, source_path: change.source_path });
+        }
+      }
+
+      const metadata = { ...payload.metadata, ...projectionTotals(db) };
+      db.prepare("DELETE FROM projection_metadata").run();
+      writeMetadataStatement(db, metadata);
+      return metadata;
+    });
+    return transaction(delta);
   } finally {
     db.close();
   }
@@ -266,17 +466,7 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
       .all() as SqliteProjectionRowRecord[];
 
     return {
-      metadata: {
-        projection_version: Number(metadata.projection_version ?? 0),
-        generated_at: String(metadata.generated_at ?? ""),
-        workspace_hash: String(metadata.workspace_hash ?? ""),
-        include_tasks: Number(metadata.include_tasks ?? 0) === 1,
-        include_raw: Number(metadata.include_raw ?? 0) === 1,
-        source_bytes: Number(metadata.source_bytes ?? 0),
-        search_text_bytes: Number(metadata.search_text_bytes ?? 0),
-        preview_text_bytes: Number(metadata.preview_text_bytes ?? 0),
-        projection_elapsed_ms: Number(metadata.projection_elapsed_ms ?? 0),
-      },
+      metadata: metadataFromRow(metadata),
       rows: rows.map((row) => ({
         path: String(row.path ?? ""),
         sha256: String(row.sha256 ?? ""),
@@ -331,17 +521,7 @@ export async function searchSqliteProjection(
     })[];
 
     return {
-      metadata: {
-        projection_version: Number(metadata.projection_version ?? 0),
-        generated_at: String(metadata.generated_at ?? ""),
-        workspace_hash: String(metadata.workspace_hash ?? ""),
-        include_tasks: Number(metadata.include_tasks ?? 0) === 1,
-        include_raw: Number(metadata.include_raw ?? 0) === 1,
-        source_bytes: Number(metadata.source_bytes ?? 0),
-        search_text_bytes: Number(metadata.search_text_bytes ?? 0),
-        preview_text_bytes: Number(metadata.preview_text_bytes ?? 0),
-        projection_elapsed_ms: Number(metadata.projection_elapsed_ms ?? 0),
-      },
+      metadata: metadataFromRow(metadata),
       rows: records.map((row) => ({
         path: String(row.path ?? ""),
         sha256: String(row.sha256 ?? ""),

@@ -11,21 +11,20 @@ import {
   captureContainedPathChainIdentity,
   readContainedStableTextNoFollow,
 } from "../shared/contained-stable-file.js";
-import { collectMatchingFiles, fileExists, readText, toPosix } from "./context-utils.js";
+import { collectMatchingFiles, readText, toPosix } from "./context-utils.js";
+import { isSupportedProjectionPath, projectRowsForFile } from "./reindex-projection.js";
 import {
-  isSupportedProjectionPath,
-  projectRowsForFile,
-  type ProjectionSourceRow,
-} from "./reindex-projection.js";
-import {
+  applySqliteProjectionDelta,
+  checkSqliteProjection,
   readSqliteProjection,
+  readSqliteProjectionState,
   searchSqliteProjection,
   writeSqliteProjection,
   type SqliteProjectionSearchOptions,
   type SqliteProjectionSearchResult,
 } from "./sqlite.js";
 
-export const PROJECTION_VERSION = 2;
+export const PROJECTION_VERSION = 3;
 const MAX_LEGACY_JSON_PROJECTION_BYTES = 256 * 1024 * 1024;
 
 type ProjectionIndex = {
@@ -41,6 +40,7 @@ type ProjectionIndex = {
     projection_elapsed_ms: number;
   };
   rows: {
+    source_path?: string;
     path: string;
     sha256: string;
     content_type: string;
@@ -52,6 +52,25 @@ type ProjectionIndex = {
     preview_text: string;
     source_refs?: string[];
   }[];
+};
+
+type SourceSnapshot = {
+  source_path: string;
+  sha256: string;
+  size_bytes: number;
+  text: string;
+};
+
+type ReindexStrategy = "no-op" | "incremental" | "full-rebuild";
+
+type ReindexReceipt = {
+  strategy: ReindexStrategy;
+  reason: string;
+  added: number;
+  changed: number;
+  removed: number;
+  unchanged: number;
+  rows: number;
 };
 
 function defaultWorkspaceHash(root: string): string {
@@ -97,6 +116,96 @@ async function enumerateSourceFiles(
   return [...out].sort();
 }
 
+async function captureSourceSnapshots(root: string, files: string[]): Promise<SourceSnapshot[]> {
+  const snapshots: SourceSnapshot[] = [];
+  for (const rel of files) {
+    const sourcePath = toPosix(rel);
+    if (!isSupportedProjectionPath(sourcePath)) continue;
+    const abs = path.join(root, sourcePath);
+    try {
+      const fileStats = await stat(abs);
+      if (!fileStats.isFile()) continue;
+      const text = await readText(abs);
+      snapshots.push({
+        source_path: sourcePath,
+        sha256: `sha256:${createHash("sha256").update(text).digest("hex")}`,
+        size_bytes: Buffer.byteLength(text, "utf8"),
+        text,
+      });
+    } catch {
+      // A file can disappear or become unreadable while the source tree is traversed.
+    }
+  }
+  return snapshots;
+}
+
+function projectSnapshotRows(snapshot: SourceSnapshot, indexedAt: string): ProjectionIndex["rows"] {
+  return projectRowsForFile(snapshot.source_path, snapshot.text, snapshot.sha256).map((row) => ({
+    ...row,
+    source_path: snapshot.source_path,
+    projection_version: PROJECTION_VERSION,
+    indexed_at: indexedAt,
+  }));
+}
+
+function projectionMetadata(
+  root: string,
+  parsed: { includeTasks: boolean; includeRaw: boolean },
+  generatedAt: string,
+  elapsedMs: number,
+): ProjectionIndex["metadata"] {
+  return {
+    projection_version: PROJECTION_VERSION,
+    generated_at: generatedAt,
+    workspace_hash: defaultWorkspaceHash(root),
+    include_tasks: parsed.includeTasks,
+    include_raw: parsed.includeRaw,
+    source_bytes: 0,
+    search_text_bytes: 0,
+    preview_text_bytes: 0,
+    projection_elapsed_ms: elapsedMs,
+  };
+}
+
+async function isExistingFile(filePath: string): Promise<boolean> {
+  try {
+    return (await stat(filePath)).isFile();
+  } catch {
+    return false;
+  }
+}
+
+async function removeProjectionFiles(sqlitePath: string): Promise<void> {
+  await Promise.all(
+    [sqlitePath, `${sqlitePath}-wal`, `${sqlitePath}-shm`].map((filePath) =>
+      rm(filePath, { force: true }).catch(() => {}),
+    ),
+  );
+}
+
+function writeReceipt(
+  sqlitePath: string,
+  receipt: ReindexReceipt,
+  metadata: ProjectionIndex["metadata"],
+): void {
+  process.stdout.write(infoMessage(`reindex prepared at ${sqlitePath}`) + "\n");
+  process.stdout.write(
+    infoMessage(
+      `reindex_receipt strategy=${receipt.strategy} reason=${receipt.reason} added=${receipt.added} changed=${receipt.changed} removed=${receipt.removed} unchanged=${receipt.unchanged}`,
+    ) + "\n",
+  );
+  process.stdout.write(
+    infoMessage(
+      `rows=${receipt.rows} files=${receipt.added + receipt.changed + receipt.unchanged}\n`,
+    ),
+  );
+  process.stdout.write(
+    infoMessage(
+      `projection_metrics source_bytes=${metadata.source_bytes} search_text_bytes=${metadata.search_text_bytes} preview_text_bytes=${metadata.preview_text_bytes} elapsed_ms=${metadata.projection_elapsed_ms}`,
+    ) + "\n",
+  );
+}
+
 export async function cmdContextReindex(opts: {
   cwd: string;
   rootOverride?: string;
@@ -107,13 +216,10 @@ export async function cmdContextReindex(opts: {
   const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
 
   if (opts.parsed.reset) {
-    await rm(sqlitePath, { force: true }).catch(() => {});
+    await removeProjectionFiles(sqlitePath);
   }
 
   await mkdir(service, { recursive: true });
-  await rm(path.join(service, "cache"), { force: true, recursive: true }).catch(() => {});
-  await rm(path.join(service, "embeddings"), { force: true, recursive: true }).catch(() => {});
-  await rm(path.join(service, "remotes"), { force: true, recursive: true }).catch(() => {});
   await mkdir(path.join(service, "cache"), { recursive: true });
   await mkdir(path.join(service, "embeddings"), { recursive: true });
   await mkdir(path.join(service, "remotes"), { recursive: true });
@@ -122,75 +228,200 @@ export async function cmdContextReindex(opts: {
     includeTasks: opts.parsed.includeTasks,
     includeRaw: opts.parsed.includeRaw,
   });
-  if (files.length === 0) {
+  const projectionStartedAt = performance.now();
+  const snapshots = await captureSourceSnapshots(root, files);
+  if (snapshots.length === 0) {
     process.stdout.write(
       warnMessage(`no source files found for reindex under configured scopes\n`),
     );
   }
-
   const now = new Date().toISOString();
-  const projectionStartedAt = performance.now();
-  const rows: ProjectionSourceRow[] = [];
-  let sourceBytes = 0;
-  for (const rel of files) {
-    const abs = path.join(root, rel);
-    if (!(await fileExists(abs))) {
-      continue;
-    }
-    if (!isSupportedProjectionPath(toPosix(rel))) {
-      continue;
-    }
 
-    const fileStats = await stat(abs);
-    if (!fileStats.isFile()) {
-      continue;
-    }
-    try {
-      const text = await readText(abs);
-      const nextRows = projectRowsForFile(toPosix(rel), text);
-      rows.push(...nextRows);
-      sourceBytes += Buffer.byteLength(text, "utf8");
-    } catch {
-      // Skip unreadable files from projection to keep reindex resilient.
-      continue;
+  let state = null;
+  let rebuildReason: string | null = null;
+  if (opts.parsed.reset) {
+    rebuildReason = "reset-requested";
+  } else if (!(await isExistingFile(sqlitePath))) {
+    rebuildReason = "missing-index";
+  } else if (!(await checkSqliteProjection(sqlitePath))) {
+    rebuildReason = "integrity-failure";
+  } else {
+    state = await readSqliteProjectionState(sqlitePath);
+    if (!state) {
+      rebuildReason = "schema-or-state-unavailable";
+    } else if (state.metadata.projection_version !== PROJECTION_VERSION) {
+      rebuildReason = "projection-version-mismatch";
+    } else if (
+      state.metadata.include_tasks !== opts.parsed.includeTasks ||
+      state.metadata.include_raw !== opts.parsed.includeRaw
+    ) {
+      rebuildReason = "index-scope-changed";
     }
   }
 
-  const payload: ProjectionIndex = {
-    metadata: {
-      projection_version: PROJECTION_VERSION,
-      generated_at: now,
-      workspace_hash: defaultWorkspaceHash(root),
-      include_tasks: opts.parsed.includeTasks,
-      include_raw: opts.parsed.includeRaw,
-      source_bytes: sourceBytes,
-      search_text_bytes: rows.reduce(
-        (total, row) => total + Buffer.byteLength(row.search_text, "utf8"),
-        0,
-      ),
-      preview_text_bytes: rows.reduce(
-        (total, row) => total + Buffer.byteLength(row.preview_text, "utf8"),
-        0,
-      ),
-      projection_elapsed_ms: Math.round(performance.now() - projectionStartedAt),
-    },
-    rows: rows.map((row) => ({
-      ...row,
-      projection_version: PROJECTION_VERSION,
-      indexed_at: now,
-      size_bytes: row.size_bytes,
-    })),
-  };
-  await ensureRuntimeSqliteGitignore({ gitRoot: root }).catch(() => null);
-  await writeSqliteProjection(sqlitePath, payload);
+  if (rebuildReason) {
+    if (rebuildReason === "integrity-failure") {
+      await removeProjectionFiles(sqlitePath);
+    }
+    const rows = snapshots.flatMap((snapshot) => projectSnapshotRows(snapshot, now));
+    const metadata = projectionMetadata(
+      root,
+      opts.parsed,
+      now,
+      Math.round(performance.now() - projectionStartedAt),
+    );
+    metadata.source_bytes = snapshots.reduce((total, snapshot) => total + snapshot.size_bytes, 0);
+    metadata.search_text_bytes = rows.reduce(
+      (total, row) => total + Buffer.byteLength(row.search_text, "utf8"),
+      0,
+    );
+    metadata.preview_text_bytes = rows.reduce(
+      (total, row) => total + Buffer.byteLength(row.preview_text, "utf8"),
+      0,
+    );
+    await ensureRuntimeSqliteGitignore({ gitRoot: root }).catch(() => null);
+    await writeSqliteProjection(sqlitePath, {
+      metadata,
+      sources: snapshots.map(({ source_path, sha256, size_bytes }) => ({
+        source_path,
+        sha256,
+        size_bytes,
+      })),
+      rows,
+    });
+    if (!(await checkSqliteProjection(sqlitePath))) {
+      throw new Error("Context projection rebuild did not pass SQLite integrity check.");
+    }
+    writeReceipt(
+      sqlitePath,
+      {
+        strategy: "full-rebuild",
+        reason: rebuildReason,
+        added: snapshots.length,
+        changed: 0,
+        removed: 0,
+        unchanged: 0,
+        rows: rows.length,
+      },
+      metadata,
+    );
+    return 0;
+  }
 
-  process.stdout.write(infoMessage(`reindex prepared at ${sqlitePath}`) + "\n");
-  process.stdout.write(infoMessage(`rows=${rows.length} files=${files.length}\n`));
-  process.stdout.write(
-    infoMessage(
-      `projection_metrics source_bytes=${payload.metadata.source_bytes} search_text_bytes=${payload.metadata.search_text_bytes} preview_text_bytes=${payload.metadata.preview_text_bytes} elapsed_ms=${payload.metadata.projection_elapsed_ms}`,
-    ) + "\n",
+  if (!state) {
+    throw new Error("Context projection state was unavailable after rebuild routing.");
+  }
+  const currentByPath = new Map(snapshots.map((snapshot) => [snapshot.source_path, snapshot]));
+  const added = snapshots.filter((snapshot) => !state.sourceHashes.has(snapshot.source_path));
+  const changed = snapshots.filter(
+    (snapshot) =>
+      state.sourceHashes.has(snapshot.source_path) &&
+      state.sourceHashes.get(snapshot.source_path) !== snapshot.sha256,
   );
+  const removed = [...state.sourceHashes.keys()].filter(
+    (sourcePath) => !currentByPath.has(sourcePath),
+  );
+  const unchanged = snapshots.length - added.length - changed.length;
+
+  if (added.length === 0 && changed.length === 0 && removed.length === 0) {
+    writeReceipt(
+      sqlitePath,
+      {
+        strategy: "no-op",
+        reason: "source-fingerprints-unchanged",
+        added: 0,
+        changed: 0,
+        removed: 0,
+        unchanged,
+        rows: state.rowCount,
+      },
+      state.metadata,
+    );
+    return 0;
+  }
+
+  const replacementSnapshots = [...added, ...changed];
+  const metadata = projectionMetadata(
+    root,
+    opts.parsed,
+    now,
+    Math.round(performance.now() - projectionStartedAt),
+  );
+  await ensureRuntimeSqliteGitignore({ gitRoot: root }).catch(() => null);
+  try {
+    const nextMetadata = await applySqliteProjectionDelta(sqlitePath, {
+      metadata,
+      changed: replacementSnapshots.map((snapshot) => ({
+        source_path: snapshot.source_path,
+        sha256: snapshot.sha256,
+        size_bytes: snapshot.size_bytes,
+        rows: projectSnapshotRows(snapshot, now),
+      })),
+      removed_source_paths: removed,
+    });
+    const nextState = await readSqliteProjectionState(sqlitePath);
+    if (!nextState || !(await checkSqliteProjection(sqlitePath))) {
+      throw new Error("incremental projection did not produce a readable index");
+    }
+    writeReceipt(
+      sqlitePath,
+      {
+        strategy: "incremental",
+        reason: "source-fingerprints-changed",
+        added: added.length,
+        changed: changed.length,
+        removed: removed.length,
+        unchanged,
+        rows: nextState.rowCount,
+      },
+      nextMetadata,
+    );
+  } catch {
+    const rows = snapshots.flatMap((snapshot) => projectSnapshotRows(snapshot, now));
+    const repairedMetadata = projectionMetadata(
+      root,
+      opts.parsed,
+      now,
+      Math.round(performance.now() - projectionStartedAt),
+    );
+    repairedMetadata.source_bytes = snapshots.reduce(
+      (total, snapshot) => total + snapshot.size_bytes,
+      0,
+    );
+    repairedMetadata.search_text_bytes = rows.reduce(
+      (total, row) => total + Buffer.byteLength(row.search_text, "utf8"),
+      0,
+    );
+    repairedMetadata.preview_text_bytes = rows.reduce(
+      (total, row) => total + Buffer.byteLength(row.preview_text, "utf8"),
+      0,
+    );
+    await writeSqliteProjection(sqlitePath, {
+      metadata: repairedMetadata,
+      sources: snapshots.map(({ source_path, sha256, size_bytes }) => ({
+        source_path,
+        sha256,
+        size_bytes,
+      })),
+      rows,
+    });
+    if (!(await checkSqliteProjection(sqlitePath))) {
+      throw new Error("Context projection repair did not pass SQLite integrity check.");
+    }
+    writeReceipt(
+      sqlitePath,
+      {
+        strategy: "full-rebuild",
+        reason: "incremental-write-repair",
+        added: added.length,
+        changed: changed.length,
+        removed: removed.length,
+        unchanged,
+        rows: rows.length,
+      },
+      repairedMetadata,
+    );
+  }
   return 0;
 }
 

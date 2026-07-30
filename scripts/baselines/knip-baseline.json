@@ -3272,16 +3272,6 @@
       ]
     },
     {
-      "file": "packages/agentplane/src/shared/sqlite-driver.ts",
-      "types": [
-        {
-          "name": "SqliteStatement",
-          "line": 41,
-          "col": 13
-        }
-      ]
-    },
-    {
       "file": "packages/agentplane/src/workflow-lifecycle/contract.ts",
       "types": [
         {
@@ -3509,9 +3499,9 @@
   "counts": {
     "files": 1,
     "exports": 178,
-    "types": 367,
+    "types": 366,
     "enumMembers": 0,
     "namespaceMembers": 0,
-    "total": 546
+    "total": 545
   }
 }

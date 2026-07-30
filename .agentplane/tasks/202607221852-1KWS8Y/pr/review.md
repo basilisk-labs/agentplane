@@ -24,12 +24,21 @@ Created: 2026-07-30T08:43:03.527Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T08:43:03.527Z
+- Updated: 2026-07-30T08:43:27.463Z
 - Branch: task/202607221852-1KWS8Y/batch-context-freshness-and-incrementally-update
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../context/reindex.incremental.unit.test.ts       | 172 ++++++++++
+ packages/agentplane/src/commands/context/search.ts |  32 +-
+ .../agentplane/src/context/reindex-projection.ts   |  40 ++-
+ packages/agentplane/src/context/reindex.ts         | 365 +++++++++++++++++----
+ .../agentplane/src/context/search-freshness.ts     |  59 ++++
+ .../src/context/search-freshness.unit.test.ts      |  49 +++
+ packages/agentplane/src/context/sqlite.ts          | 286 +++++++++++++---
+ scripts/baselines/knip-baseline.json               |  14 +-
+ scripts/bench/context-incremental-reindex.mts      | 138 ++++++++
+ 9 files changed, 982 insertions(+), 173 deletions(-)
 ```
 
 </details>
