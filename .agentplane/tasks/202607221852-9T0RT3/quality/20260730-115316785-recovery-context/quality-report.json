@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-9T0RT3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T11:53:16.904Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "a53a24b50edf52a22ee3884d3c7062980113b33d",
+  "blueprint_digest": "b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408",
+  "findings": [
+    "Exact, FTS, alias, and graph candidates retain retrieval reasons and explicit omission receipts.",
+    "Structured path, dependency-output, and evaluator-finding signals are quota-protected before narrative expansion."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "FTS results require a current context projection; unavailable projections are recorded as omissions."
+  ],
+  "residual_risks": []
+}
