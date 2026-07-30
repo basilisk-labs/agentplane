@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Recovery validates exact heads, fetches the provider ref explicitly, writes standard branch upstream fields without relying on fetch refspec discovery, and asserts archive < upstream configuration < hard reset.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "The real Git fixture limits origin fetch to main, demonstrates shorthand upstream binding fails, then verifies recovery preserves the local archive, adopts the provider head, remains clean, and writes remote and merge configuration.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607300246-Q3RDCW/quality/20260730-025919494-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": []
+}

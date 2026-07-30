@@ -6,7 +6,7 @@ Created: 2026-07-30T02:49:39.908Z
 
 - Task: `202607300246-Q3RDCW`
 - Title: Fix diverged-head recovery upstream binding
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300246-Q3RDCW/fix-diverged-head-recovery-upstream-binding`
 - Canonical task record: `.agentplane/tasks/202607300246-Q3RDCW/README.md`
 
