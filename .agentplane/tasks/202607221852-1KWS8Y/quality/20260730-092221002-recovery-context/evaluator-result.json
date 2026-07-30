@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Current-head review: source manifests, transactional source replacement, FTS external-content triggers, and full-rebuild fallback preserve search continuity across add/change/delete and corrupt or obsolete indexes.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-1KWS8Y/quality/20260730-092221002-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Performance evidence: the declared 600-source benchmark satisfies the p95 threshold (0.422 observed <= 0.8 required); the result correctly scopes the remaining all-source snapshot cost.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-1KWS8Y/quality/20260730-092221002-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "RF-15 still enumerates, stats, reads, and hashes every eligible source to detect changes; it does not claim watcher-based invalidation."
+  ]
+}

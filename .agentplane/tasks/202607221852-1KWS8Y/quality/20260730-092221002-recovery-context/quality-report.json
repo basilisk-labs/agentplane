@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-1KWS8Y",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T09:22:21.188Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "efadd7678c8ed997024f51fb7f3c79eaa42ba0d3",
+  "blueprint_digest": "990a68eab3e06df2e77bcc94c4d6ddb89b2ada9f8a6c643c1fbe52b39f9ec1c4",
+  "findings": [
+    "Current-head review: source manifests, transactional source replacement, FTS external-content triggers, and full-rebuild fallback preserve search continuity across add/change/delete and corrupt or obsolete indexes.",
+    "Performance evidence: the declared 600-source benchmark satisfies the p95 threshold (0.422 observed <= 0.8 required); the result correctly scopes the remaining all-source snapshot cost."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-1KWS8Y/quality/20260730-092221002-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "RF-15 still enumerates, stats, reads, and hashes every eligible source to detect changes; it does not claim watcher-based invalidation."
+  ],
+  "residual_risks": []
+}
