@@ -15,8 +15,13 @@ Repair branch_pr conflict-rework routing when a protected-base PR retains a veri
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck,
+targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
