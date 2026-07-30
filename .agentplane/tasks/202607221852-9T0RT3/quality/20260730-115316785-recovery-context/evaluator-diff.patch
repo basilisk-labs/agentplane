@@ -1,0 +1,1812 @@
+diff --git a/.agentplane/tasks/202607221852-9T0RT3/README.md b/.agentplane/tasks/202607221852-9T0RT3/README.md
+index 638f393cb..e5163f266 100644
+--- a/.agentplane/tasks/202607221852-9T0RT3/README.md
++++ b/.agentplane/tasks/202607221852-9T0RT3/README.md
+@@ -1,10 +1,10 @@
+ ---
+ id: "202607221852-9T0RT3"
+ title: "Build deterministic task knowledge retrieval"
+-status: "TODO"
++status: "DOING"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 8
+ origin:
+   system: "manual"
+ depends_on:
+@@ -28,9 +28,9 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-30T10:59:02.025Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+   state: "pending"
+@@ -38,12 +38,34 @@ verification:
+   updated_by: null
+   note: null
+   attempts: 0
+-commit: null
+-comments: []
+-events: []
++commit:
++  hash: "e6b89ac4410e24344f0ec04a4c3d80d2e2ebafce"
++  message: "🚧 9T0RT3 task: add deterministic task knowledge retrieval"
++comments:
++  -
++    author: "CODER"
++    body: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implementation committed: deterministic retrieval prepares exact, FTS, alias, and graph evidence with bounded receipts; targeted retrieval test, typecheck, and lint passed."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T10:59:23.864Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: continue branch_pr task in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-30T11:42:20.822Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation committed: deterministic retrieval prepares exact, FTS, alias, and graph evidence with bounded receipts; targeted retrieval test, typecheck, and lint passed."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:17.445Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-30T11:42:20.822Z"
++doc_updated_by: "CODER"
+ description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
+ sections:
+   Summary: |-
+@@ -73,6 +95,10 @@ sections:
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+   Findings: ""
++extensions:
++  workflow_route_baseline:
++    start_head_sha: "2872d82ce71ecfa658dc9686ed1d36bb101f9278"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+diff --git a/.agentplane/tasks/202607221852-9T0RT3/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-9T0RT3/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..c06317111
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-9T0RT3/blueprint/resolved-snapshot.json
+@@ -0,0 +1,584 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-9T0RT3",
++    "title": "Build deterministic task knowledge retrieval",
++    "description": "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder.",
++    "tags": [
++      "context",
++      "milestone-beta2",
++      "refactor",
++      "retrieval",
++      "rf-19",
++      "v0.7",
++      "wave-retrieval",
++      "work-order"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607221852-9T0RT3",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-9T0RT3/pr/diffstat.txt b/.agentplane/tasks/202607221852-9T0RT3/pr/diffstat.txt
+new file mode 100644
+index 000000000..9e8a676c4
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-9T0RT3/pr/diffstat.txt
+@@ -0,0 +1,6 @@
++ .../src/runner/usecases/agent-work-order-build.ts  |  34 +-
++ .../runner/usecases/agent-work-order-projection.ts |   2 +
++ .../usecases/agent-work-order.integration.test.ts  | 127 ++++
++ .../src/runner/usecases/agent-work-order.ts        |   9 +
++ .../runner/usecases/task-knowledge-retrieval.ts    | 706 +++++++++++++++++++++
++ 5 files changed, 873 insertions(+), 5 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-9T0RT3/pr/github-body.md b/.agentplane/tasks/202607221852-9T0RT3/pr/github-body.md
+new file mode 100644
+index 000000000..a4b7f9c4e
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-9T0RT3/pr/github-body.md
+@@ -0,0 +1,38 @@
++Task: `202607221852-9T0RT3`
++Title: Build deterministic task knowledge retrieval
++Canonical task record: `.agentplane/tasks/202607221852-9T0RT3/README.md`
++
++## Summary
++
++Build deterministic task knowledge retrieval
++
++RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder.
++
++## Scope
++
++- In scope: deterministic query planning, exact/FTS/alias/graph retrieval, scoring/reasons, budgets, prepared excerpts, missing/omitted receipt, work-order integration, relevance fixtures, and metrics.
++- Out of scope: always-on CURATOR or semantic reranking.
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T10:59:50.919Z
++- Branch: task/202607221852-9T0RT3/build-deterministic-task-knowledge-retrieval
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/runner/usecases/agent-work-order-build.ts  |  34 +-
++ .../runner/usecases/agent-work-order-projection.ts |   2 +
++ .../usecases/agent-work-order.integration.test.ts  | 127 ++++
++ .../src/runner/usecases/agent-work-order.ts        |   9 +
++ .../runner/usecases/task-knowledge-retrieval.ts    | 706 +++++++++++++++++++++
++ 5 files changed, 873 insertions(+), 5 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-9T0RT3/pr/github-title.txt b/.agentplane/tasks/202607221852-9T0RT3/pr/github-title.txt
+new file mode 100644
+index 000000000..f4ee4c532
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-9T0RT3/pr/github-title.txt
+@@ -0,0 +1 @@
++🚧 9T0RT3 task: Build deterministic task knowledge retrieval [202607221852-9T0RT3]
+diff --git a/.agentplane/tasks/202607221852-9T0RT3/pr/meta.json b/.agentplane/tasks/202607221852-9T0RT3/pr/meta.json
+new file mode 100644
+index 000000000..6e14f6d38
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-9T0RT3/pr/meta.json
+@@ -0,0 +1,16 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-9T0RT3/build-deterministic-task-knowledge-retrieval",
++  "created_at": "2026-07-30T10:59:23.993Z",
++  "diffstat_sha256": "sha256:25838848e55bdd819bf7cc8cad3ab17042d18fb5cf07b6d74df4d39ffe5fb25e",
++  "last_verified_at": null,
++  "pr_number": 4690,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4690",
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-9T0RT3",
++  "updated_at": "2026-07-30T10:59:50.919Z",
++  "verify": {
++    "status": "skipped"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-9T0RT3/pr/review.md b/.agentplane/tasks/202607221852-9T0RT3/pr/review.md
+new file mode 100644
+index 000000000..f21fa610a
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-9T0RT3/pr/review.md
+@@ -0,0 +1,41 @@
++# PR Review
++
++Created: 2026-07-30T10:59:23.993Z
++
++## Task
++
++- Task: `202607221852-9T0RT3`
++- Title: Build deterministic task knowledge retrieval
++- Status: DOING
++- Branch: `task/202607221852-9T0RT3/build-deterministic-task-knowledge-retrieval`
++- Canonical task record: `.agentplane/tasks/202607221852-9T0RT3/README.md`
++
++## Verification
++
++- State: pending
++- Note: Not recorded yet.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T10:59:50.919Z
++- Branch: task/202607221852-9T0RT3/build-deterministic-task-knowledge-retrieval
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/runner/usecases/agent-work-order-build.ts  |  34 +-
++ .../runner/usecases/agent-work-order-projection.ts |   2 +
++ .../usecases/agent-work-order.integration.test.ts  | 127 ++++
++ .../src/runner/usecases/agent-work-order.ts        |   9 +
++ .../runner/usecases/task-knowledge-retrieval.ts    | 706 +++++++++++++++++++++
++ 5 files changed, 873 insertions(+), 5 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+index 38824cf24..b2632d785 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order-build.ts
+@@ -25,6 +25,7 @@ import type {
+   AgentWorkOrderLegacyBriefProjection,
+   AgentWorkOrderSourceManifest,
+ } from "./agent-work-order-projection.js";
++import type { TaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
+ 
+ /**
+  * A work order carries the resolved prompt, policy, and blueprint manifests as
+@@ -258,6 +259,7 @@ function protectedPaths(executionContext: ReadOnlyExecutionContext): string[] {
+ function requiredInputs(opts: {
+   task_envelope: RunnerTaskContextEnvelope;
+   source_manifest: AgentWorkOrderSourceManifest;
++  knowledge_retrieval: TaskKnowledgeRetrieval;
+ }): AgentWorkOrderV2["required_inputs"] {
+   const taskReadme = opts.source_manifest.source_paths.find((source) =>
+     source.endsWith("/README.md"),
+@@ -296,6 +298,16 @@ function requiredInputs(opts: {
+       required: false,
+     });
+   }
++  for (const [index, knowledge] of opts.knowledge_retrieval.knowledge_refs.entries()) {
++    inputs.push({
++      id: `knowledge-ref-${index + 1}`,
++      kind: "knowledge_ref",
++      description: `Prepared knowledge selected by ${knowledge.retrieval}: ${knowledge.reason}`,
++      path: knowledge.ref,
++      digest: knowledge.digest,
++      required: knowledge.required,
++    });
++  }
+   return inputs;
+ }
+ 
+@@ -306,6 +318,7 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     route_decision: TaskRouteDecision;
+   };
+   source_manifest: AgentWorkOrderSourceManifest;
++  knowledge_retrieval: TaskKnowledgeRetrieval;
+ }): AgentWorkOrderV2 {
+   const {
+     task_envelope: taskEnvelope,
+@@ -327,6 +340,9 @@ export function buildCanonicalAgentWorkOrder(opts: {
+         "workspace_write",
+       ]
+     : ["repository_read", "git_read", "run_checks", "report_result", "report_blocker"];
++  if (opts.knowledge_retrieval.knowledge_refs.length > 0) {
++    allowedToolClasses.push("knowledge_read");
++  }
+   const summary =
+     episodeSectionText({ task_envelope: taskEnvelope, section: "Summary" }) ||
+     task.narrative.description;
+@@ -371,15 +387,23 @@ export function buildCanonicalAgentWorkOrder(opts: {
+     },
+     context_intent: {
+       purpose:
+-        "Provide the bounded task, route, prompt, and verification context for one semantic agent episode.",
+-      required_knowledge_ref_digests: [],
+-      require_prepared_evidence: false,
++        "Provide bounded task, route, prompt, verification, and deterministic knowledge context for one semantic agent episode.",
++      required_knowledge_ref_digests: opts.knowledge_retrieval.knowledge_refs
++        .filter((knowledge) => knowledge.required)
++        .map((knowledge) => knowledge.digest),
++      require_prepared_evidence: opts.knowledge_retrieval.prepared_evidence.some(
++        (excerpt) => excerpt.status === "included",
++      ),
+     },
+-    knowledge_refs: [],
+-    prepared_evidence: [],
++    knowledge_refs: opts.knowledge_retrieval.knowledge_refs,
++    prepared_evidence: opts.knowledge_retrieval.prepared_evidence.map((excerpt) => ({
++      role,
++      excerpt,
++    })),
+     required_inputs: requiredInputs({
+       task_envelope: taskEnvelope,
+       source_manifest: opts.source_manifest,
++      knowledge_retrieval: opts.knowledge_retrieval,
+     }),
+     required_outputs: [
+       {
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order-projection.ts b/packages/agentplane/src/runner/usecases/agent-work-order-projection.ts
+index 7908e3541..8c65db7e0 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order-projection.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order-projection.ts
+@@ -2,6 +2,7 @@ import type { AgentWorkOrderV2, StateFingerprint } from "@agentplaneorg/core/sch
+ 
+ import type { TaskRouteDecision } from "../../commands/shared/route-decision-types.js";
+ import type { TaskBlueprintLifecycleSummary } from "../../commands/task/blueprint-summary.js";
++import type { TaskKnowledgeRetrievalReceipt } from "./task-knowledge-retrieval.js";
+ 
+ type AgentWorkOrderRemotePolicy = {
+   schema_version: 1;
+@@ -82,6 +83,7 @@ export type AgentWorkOrderPreparationView = {
+   remote_policy: AgentWorkOrderRemotePolicy;
+   route: AgentWorkOrderRouteProjection;
+   source_manifest: AgentWorkOrderSourceManifest;
++  knowledge_retrieval: TaskKnowledgeRetrievalReceipt;
+   verification_intent: AgentWorkOrderV2["verification_intent"];
+ };
+ 
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+index 1bd68425d..e2dbceabd 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.integration.test.ts
+@@ -13,6 +13,7 @@ import {
+ import { describe, expect, it } from "vitest";
+ 
+ import { runCli } from "../../cli/run-cli.js";
++import { cmdContextReindex } from "../../commands/context/reindex.js";
+ import { projectTaskBriefFromPreparedWorkOrder } from "../../commands/task/brief-model.js";
+ import { routePacket } from "../../commands/hermes/hermes-runtime.js";
+ import { loadCommandContext, loadTaskFromContext } from "../../commands/shared/task-backend.js";
+@@ -43,6 +44,7 @@ type WorkOrderView = {
+     remote_policy: unknown;
+     route: unknown;
+     source_manifest: unknown;
++    knowledge_retrieval: unknown;
+   };
+   execution?: {
+     sandbox_policy?: {
+@@ -213,6 +215,131 @@ function duplicatePromptOverlayBundle(): Record<string, unknown> {
+ }
+ 
+ describe("AgentWorkOrder v2 surface integration", () => {
++  it("prepares deterministic bounded knowledge through exact, FTS, alias, and graph adapters", async () => {
++    const root = await mkGitRepoRoot();
++    const taskId = await createPreparedTask(root);
++    const dependencyId = await createDoingRunnerTask({
++      root,
++      title: "Completed prerequisite",
++      plan_text: "Prepare the dependency output fixture.",
++    });
++    await mkdir(path.join(root, "context", "wiki"), { recursive: true });
++    await mkdir(path.join(root, ".agentplane", "context", "derived", "graph"), {
++      recursive: true,
++    });
++    await mkdir(path.join(root, ".agentplane", "context", "derived", "ontology"), {
++      recursive: true,
++    });
++    await writeFile(
++      path.join(root, "context", "wiki", "retrieval.md"),
++      "# Retrieval Guide\n\nUse the deterministic retrieval receipt before repository discovery.\n",
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, "context", "wiki", "fts-only.md"),
++      "# Market Signal\n\nMarket context is indexed only through deterministic full-text retrieval.\n",
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, ".agentplane", "context", "derived", "graph", "entities.jsonl"),
++      `${JSON.stringify({ id: "payment-gateway", label: "Payment Gateway", aliases: ["Billing API"] })}\n` +
++        `${JSON.stringify({ id: "billing-ledger", label: "Billing Ledger" })}\n` +
++        `${JSON.stringify({ id: "dependency-result", label: "Dependency Result Sentinel" })}\n` +
++        `${JSON.stringify({ id: "prior-finding", label: "Prior Finding Sentinel" })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, ".agentplane", "context", "derived", "graph", "edges.jsonl"),
++      `${JSON.stringify({ id: "edge.payment-ledger", from: "payment-gateway", to: "billing-ledger" })}\n`,
++      "utf8",
++    );
++    await writeFile(
++      path.join(root, ".agentplane", "context", "derived", "ontology", "aliases.jsonl"),
++      `${JSON.stringify({ alias: "Payment Gateway", canonical_entity_id: "payment-gateway" })}\n`,
++      "utf8",
++    );
++    await cmdContextReindex({
++      cwd: root,
++      rootOverride: root,
++      parsed: { includeTasks: false, includeRaw: false, reset: true },
++    });
++    const commandCtx = await loadCommandContext({ cwd: root, rootOverride: root });
++    const dependency = await commandCtx.taskBackend.getTask(dependencyId);
++    expect(dependency).toBeTruthy();
++    await commandCtx.taskBackend.writeTask({
++      ...dependency!,
++      status: "DONE",
++      result_summary: "Dependency Result Sentinel",
++    });
++    const task = await commandCtx.taskBackend.getTask(taskId);
++    expect(task).toBeTruthy();
++    await commandCtx.taskBackend.writeTask({
++      ...task!,
++      title: "Build Payment Gateway retrieval",
++      description:
++        "Payment Gateway; use retrieval context/wiki/retrieval.md; missing context/wiki/not-present.md must be recorded, not fabricated.",
++      depends_on: [dependencyId],
++      tags: ["retrieval", "market"],
++      quality_review: {
++        state: "pass",
++        provenance: "evaluator_supplied",
++        updated_at: "2026-07-30T00:00:00.000Z",
++        updated_by: "EVALUATOR",
++        note: "Prior finding fixture.",
++        evaluated_sha: null,
++        blueprint_digest: null,
++        evidence_refs: [],
++        findings: ["Prior Finding Sentinel"],
++      },
++    });
++    const prepare = async () =>
++      requirePreparedAgentWorkOrder(
++        await prepareAgentWorkOrder({
++          command_ctx: commandCtx,
++          cwd: root,
++          root_override: root,
++          task_id: taskId,
++        }),
++      );
++    const first = await prepare();
++    const second = await prepare();
++    expect(first.work_order.knowledge_refs).toEqual(second.work_order.knowledge_refs);
++    expect(first.preparation.knowledge_retrieval).toEqual(second.preparation.knowledge_retrieval);
++    expect(first.work_order.knowledge_refs).toEqual(
++      expect.arrayContaining([
++        expect.objectContaining({
++          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=payment-gateway",
++          retrieval: "alias",
++        }),
++        expect.objectContaining({
++          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=billing-ledger",
++          retrieval: "graph",
++        }),
++        expect.objectContaining({ ref: "context/wiki/retrieval.md", retrieval: "exact" }),
++        expect.objectContaining({ ref: "context/wiki/fts-only.md", retrieval: "fts" }),
++        expect.objectContaining({
++          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=dependency-result",
++          retrieval: "alias",
++        }),
++        expect.objectContaining({
++          ref: ".agentplane/context/derived/graph/entities.jsonl#entity=prior-finding",
++          retrieval: "alias",
++        }),
++      ]),
++    );
++    expect(first.work_order.authority.allowed_tool_classes).toContain("knowledge_read");
++    expect(first.work_order.context_intent.require_prepared_evidence).toBe(true);
++    expect(first.preparation.knowledge_retrieval.budgets).toMatchObject({
++      max_references: 12,
++      max_fts_queries: 12,
++    });
++    expect(
++      first.preparation.knowledge_retrieval.omissions.some(
++        (omission) => omission.reason_code === "not_materializable",
++      ),
++    ).toBe(true);
++  });
++
+   it("renders one canonical work order through real brief, next-action, runner, and Hermes surfaces", async () => {
+     for (const workflowMode of ["direct", "branch_pr"] as const) {
+       const root = await mkGitRepoRoot();
+diff --git a/packages/agentplane/src/runner/usecases/agent-work-order.ts b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+index ed416951a..6ee988fbd 100644
+--- a/packages/agentplane/src/runner/usecases/agent-work-order.ts
++++ b/packages/agentplane/src/runner/usecases/agent-work-order.ts
+@@ -41,6 +41,7 @@ import {
+   type AgentWorkOrderPreparationView,
+ } from "./agent-work-order-projection.js";
+ import { resolveRunnerBlueprintPlan } from "./task-run-blueprint-plan.js";
++import { prepareTaskKnowledgeRetrieval } from "./task-knowledge-retrieval.js";
+ 
+ export {
+   type AgentWorkOrderLegacyBriefProjection,
+@@ -207,6 +208,12 @@ export async function prepareAgentWorkOrder(opts: {
+         execution_context: executionContext,
+       },
+     });
++    const knowledgeRetrieval = await prepareTaskKnowledgeRetrieval({
++      command_ctx: executionContext.command,
++      task_envelope: taskEnvelope,
++      blueprint,
++      repository_root: executionContext.repo.git_root,
++    });
+     const briefProjection = await buildAgentWorkOrderLegacyBriefProjection({
+       command_ctx: executionContext.command,
+       task_envelope: taskEnvelope,
+@@ -219,6 +226,7 @@ export async function prepareAgentWorkOrder(opts: {
+         route_decision: routeDecision,
+       },
+       source_manifest: sourceManifest,
++      knowledge_retrieval: knowledgeRetrieval,
+     });
+     const preparation: AgentWorkOrderPreparationView = {
+       schema_version: 2,
+@@ -231,6 +239,7 @@ export async function prepareAgentWorkOrder(opts: {
+       }),
+       route: projectAgentWorkOrderRoute(routeDecision),
+       source_manifest: sourceManifest,
++      knowledge_retrieval: knowledgeRetrieval.receipt,
+       verification_intent: structuredClone(canonicalWorkOrder.verification_intent),
+     };
+     return {
+diff --git a/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+new file mode 100644
+index 000000000..33dcc697a
+--- /dev/null
++++ b/packages/agentplane/src/runner/usecases/task-knowledge-retrieval.ts
+@@ -0,0 +1,706 @@
++import { createHash } from "node:crypto";
++import { readFile } from "node:fs/promises";
++import path from "node:path";
++
++import {
++  parseCanonicalKnowledgeRef,
++  type KnowledgeRef,
++  type PreparedKnowledgeExcerpt,
++} from "@agentplaneorg/core/schemas";
++
++import type { BlueprintPlanArtifact } from "../../blueprints/index.js";
++import type { CommandContext } from "../../commands/shared/task-backend.js";
++import { materializeKnowledgeRef, prepareKnowledgeExcerpt } from "../../context/knowledge-ref.js";
++import { readContextProjection, searchContextProjection } from "../../context/reindex.js";
++import type { RunnerTaskContextEnvelope } from "../context/task-context.js";
++
++const MAX_QUERY_TERMS = 24;
++const MAX_COLLECTED_QUERY_TERMS = MAX_QUERY_TERMS * 8;
++const MAX_FTS_QUERIES = 12;
++const MAX_FTS_RESULTS_PER_QUERY = 8;
++const MAX_REFERENCES = 12;
++const MAX_REQUIRED_REFERENCES = 3;
++const MAX_EXCERPT_BYTES = 3 * 1024;
++const MAX_EXCERPT_LINES = 80;
++const MAX_STRUCTURED_FILE_BYTES = 2 * 1024 * 1024;
++
++type RetrievalAdapter = "exact" | "fts" | "alias" | "graph";
++type RetrievalSignal =
++  | "task_intent"
++  | "acceptance"
++  | "path"
++  | "symbol"
++  | "blueprint"
++  | "tag"
++  | "dependency"
++  | "finding";
++
++type QueryTerm = {
++  query: string;
++  normalized: string;
++  signals: RetrievalSignal[];
++  exact_refs: string[];
++  source_priority: number;
++};
++
++type Candidate = {
++  ref: string;
++  kind: KnowledgeRef["kind"];
++  retrieval: RetrievalAdapter;
++  score: number;
++  reasons: string[];
++};
++
++type ReceiptOmission = {
++  query: string | null;
++  adapter: RetrievalAdapter | "selection";
++  reason_code:
++    | "projection_unavailable"
++    | "no_match"
++    | "unsupported_ref"
++    | "not_materializable"
++    | "query_term_budget_exhausted"
++    | "reference_budget_exhausted"
++    | "excerpt_not_included";
++  detail: string;
++};
++
++export type TaskKnowledgeRetrievalReceipt = {
++  schema_version: 1;
++  kind: "task_knowledge_retrieval_receipt";
++  projection: {
++    available: boolean;
++    digest: string | null;
++    projection_version: number | null;
++  };
++  budgets: {
++    max_query_terms: number;
++    max_fts_queries: number;
++    max_fts_results_per_query: number;
++    max_references: number;
++    max_excerpt_bytes: number;
++    max_excerpt_lines: number;
++  };
++  query_plan: { query: string; signals: RetrievalSignal[] }[];
++  adapter_counts: Record<RetrievalAdapter, number>;
++  selected: { ref: string; retrieval: RetrievalAdapter; score: number; reasons: string[] }[];
++  omissions: ReceiptOmission[];
++  digest: string;
++};
++
++export type TaskKnowledgeRetrieval = {
++  knowledge_refs: KnowledgeRef[];
++  prepared_evidence: PreparedKnowledgeExcerpt[];
++  receipt: TaskKnowledgeRetrievalReceipt;
++};
++
++type EntityIndex = {
++  by_term: Map<string, string[]>;
++  neighbours: Map<string, { entity_id: string; edge_id: string | null }[]>;
++};
++
++function digest(value: unknown): string {
++  return `sha256:${createHash("sha256").update(JSON.stringify(value), "utf8").digest("hex")}`;
++}
++
++function normalized(value: string): string {
++  return (
++    value
++      .normalize("NFKC")
++      .toLocaleLowerCase("en-US")
++      .match(/[\p{L}\p{N}_]+/gu)
++      ?.join(" ")
++      .trim() ?? ""
++  );
++}
++
++function compactQuery(value: string): string | null {
++  const query = normalized(value);
++  if (query.length < 2 || query.length > 160 || query.split(" ").length > 16) return null;
++  return query;
++}
++
++function addQuery(
++  queries: Map<string, QueryTerm>,
++  value: string,
++  signal: RetrievalSignal,
++  sourcePriority = 1,
++): void {
++  const exactRefs =
++    value.match(
++      /(?:context\/(?:wiki|raw)\/[A-Za-z0-9_./-]+(?:#(?:line|lines|section)=[A-Za-z0-9_%-]+)?)/gu,
++    ) ?? [];
++  const query = compactQuery(value);
++  if (!query) {
++    for (const ref of exactRefs) {
++      const key = `exact ${ref}`;
++      const current = queries.get(key);
++      if (current) {
++        if (!current.signals.includes(signal)) current.signals.push(signal);
++        current.source_priority = Math.min(current.source_priority, sourcePriority);
++        continue;
++      }
++      if (queries.size >= MAX_COLLECTED_QUERY_TERMS) return;
++      queries.set(key, {
++        query: key,
++        normalized: key,
++        signals: [signal],
++        exact_refs: [ref],
++        source_priority: sourcePriority,
++      });
++    }
++    return;
++  }
++  const existing = queries.get(query);
++  if (!existing && queries.size >= MAX_COLLECTED_QUERY_TERMS) return;
++  const current = existing ?? {
++    query,
++    normalized: query,
++    signals: [],
++    exact_refs: [],
++    source_priority: sourcePriority,
++  };
++  if (!current.signals.includes(signal)) current.signals.push(signal);
++  current.source_priority = Math.min(current.source_priority, sourcePriority);
++  for (const ref of exactRefs) {
++    if (!current.exact_refs.includes(ref)) current.exact_refs.push(ref);
++  }
++  queries.set(query, current);
++}
++
++function stringsFromText(value: string): string[] {
++  const phrases = value
++    .split(/[\r\n;:!?()[\]{}]+/u)
++    .map((part) => part.trim())
++    .filter((part) => part.length >= 3 && part.length <= 180);
++  return [value, ...phrases];
++}
++
++function pathSignals(value: string): string[] {
++  const matches = value.match(/(?:\.agentplane\/|context\/)(?:[A-Za-z0-9_.-]+\/)*[A-Za-z0-9_.-]+/gu) ?? [];
++  return matches.flatMap((item) => {
++    const stem = path.basename(item).replace(/\.[^.]+$/u, "").replaceAll(/[_-]+/gu, " ");
++    return [item.replaceAll(/[/_-]+/gu, " "), stem];
++  });
++}
++
++function symbolSignals(value: string): string[] {
++  return value.match(/\b[A-Za-z][A-Za-z0-9]*(?:[A-Z][A-Za-z0-9]+)+\b/g) ?? [];
++}
++
++function querySignalRank(query: Pick<QueryTerm, "signals">): number {
++  const ranks: Record<RetrievalSignal, number> = {
++    path: 0,
++    symbol: 1,
++    tag: 2,
++    task_intent: 2,
++    acceptance: 3,
++    blueprint: 5,
++    dependency: 3,
++    finding: 3,
++  };
++  return Math.min(...query.signals.map((signal) => ranks[signal]));
++}
++
++function taskQueryPlan(opts: {
++  task_envelope: RunnerTaskContextEnvelope;
++  blueprint: BlueprintPlanArtifact;
++  dependencies: { title: string; result_summary?: string; description: string }[];
++}): { queries: QueryTerm[]; omitted_count: number; collection_saturated: boolean } {
++  const queries = new Map<string, QueryTerm>();
++  const task = opts.task_envelope.source_task;
++  const taskText = `${task.title}\n${task.description}\n${task.doc ?? ""}`;
++  for (const value of pathSignals(taskText)) {
++    addQuery(queries, value, "path", 0);
++  }
++  for (const value of symbolSignals(taskText)) {
++    addQuery(queries, value, "symbol", 0);
++  }
++  for (const tag of task.tags ?? []) addQuery(queries, tag, "tag", 0);
++  addQuery(queries, opts.blueprint.blueprintId, "blueprint");
++  for (const dependency of opts.dependencies) {
++    for (const value of stringsFromText(
++      `${dependency.title}\n${dependency.result_summary ?? ""}\n${dependency.description}`,
++    )) {
++      addQuery(queries, value, "dependency", 0);
++    }
++  }
++  for (const finding of task.quality_review?.findings ?? []) {
++    addQuery(queries, finding, "finding", 0);
++  }
++  for (const value of stringsFromText(`${task.title}\n${task.description}`)) {
++    addQuery(queries, value, "task_intent", 0);
++  }
++  for (const section of opts.task_envelope.task.narrative.sections) {
++    const signal: RetrievalSignal =
++      /verify|acceptance|scope|plan/iu.test(section.name) ? "acceptance" : "finding";
++    for (const value of stringsFromText(section.text)) addQuery(queries, value, signal, 2);
++  }
++  const ordered = [...queries.values()]
++    .map((query) => ({
++      ...query,
++      signals: [...query.signals].toSorted(),
++      exact_refs: [...query.exact_refs].toSorted(),
++    }))
++    .toSorted(
++      (left, right) =>
++        left.source_priority - right.source_priority ||
++        Number(right.exact_refs.length > 0) - Number(left.exact_refs.length > 0) ||
++        querySignalRank(left) - querySignalRank(right) ||
++        left.normalized.localeCompare(right.normalized),
++    );
++  const signalQuotas: [RetrievalSignal, number][] = [
++    ["path", 3],
++    ["symbol", 2],
++    ["task_intent", 5],
++    ["tag", 2],
++    ["dependency", 3],
++    ["finding", 3],
++    ["acceptance", 3],
++    ["blueprint", 1],
++  ];
++  const selected: QueryTerm[] = [];
++  const selectedKeys = new Set<string>();
++  for (const [signal, quota] of signalQuotas) {
++    let selectedForSignal = 0;
++    for (const query of ordered) {
++      if (
++        selected.length >= MAX_QUERY_TERMS ||
++        selectedForSignal >= quota ||
++        selectedKeys.has(query.normalized) ||
++        !query.signals.includes(signal)
++      ) {
++        continue;
++      }
++      selected.push(query);
++      selectedKeys.add(query.normalized);
++      selectedForSignal += 1;
++    }
++  }
++  for (const query of ordered) {
++    if (selected.length >= MAX_QUERY_TERMS) break;
++    if (selectedKeys.has(query.normalized)) continue;
++    selected.push(query);
++    selectedKeys.add(query.normalized);
++  }
++  return {
++    queries: selected,
++    omitted_count: ordered.length - selected.length,
++    collection_saturated: queries.size === MAX_COLLECTED_QUERY_TERMS,
++  };
++}
++
++function stringArray(value: unknown): string[] {
++  return Array.isArray(value)
++    ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
++    : [];
++}
++
++function addEntityTerm(index: EntityIndex, term: string, entityId: string): void {
++  const key = compactQuery(term);
++  if (!key || !entityId.trim()) return;
++  const current = index.by_term.get(key) ?? [];
++  if (!current.includes(entityId)) current.push(entityId);
++  index.by_term.set(key, current);
++}
++
++async function readJsonl(root: string, relative: string): Promise<Record<string, unknown>[]> {
++  try {
++    const raw = await readFile(path.join(root, relative), "utf8");
++    if (Buffer.byteLength(raw, "utf8") > MAX_STRUCTURED_FILE_BYTES) return [];
++    return raw.split(/\r?\n/u).flatMap((line) => {
++      if (!line.trim()) return [];
++      try {
++        const row = JSON.parse(line) as unknown;
++        return row && typeof row === "object" && !Array.isArray(row)
++          ? [row as Record<string, unknown>]
++          : [];
++      } catch {
++        return [];
++      }
++    });
++  } catch {
++    return [];
++  }
++}
++
++function stringField(row: Record<string, unknown>, ...keys: string[]): string | null {
++  for (const key of keys) {
++    const value = row[key];
++    if (typeof value === "string" && value.trim()) return value.trim();
++  }
++  return null;
++}
++
++async function buildEntityIndex(root: string): Promise<EntityIndex> {
++  const index: EntityIndex = { by_term: new Map(), neighbours: new Map() };
++  const [entities, aliases, edges] = await Promise.all([
++    readJsonl(root, ".agentplane/context/derived/graph/entities.jsonl"),
++    readJsonl(root, ".agentplane/context/derived/ontology/aliases.jsonl"),
++    readJsonl(root, ".agentplane/context/derived/graph/edges.jsonl"),
++  ]);
++  for (const entity of entities) {
++    const id = stringField(entity, "id", "entity_id");
++    if (!id) continue;
++    addEntityTerm(index, id, id);
++    const label = stringField(entity, "label", "name", "title");
++    if (label) addEntityTerm(index, label, id);
++    for (const alias of stringArray(entity.aliases)) addEntityTerm(index, alias, id);
++  }
++  for (const alias of aliases) {
++    const entityId = stringField(alias, "canonical_entity_id", "entity_id", "target_id");
++    const value = stringField(alias, "alias", "label", "name");
++    if (entityId && value) addEntityTerm(index, value, entityId);
++  }
++  for (const edge of edges) {
++    const from = stringField(edge, "from", "from_id", "source", "subject_id");
++    const to = stringField(edge, "to", "to_id", "target", "object_id");
++    if (!from || !to) continue;
++    const edgeId = stringField(edge, "id", "edge_id");
++    for (const [left, right] of [
++      [from, to],
++      [to, from],
++    ] as const) {
++      const current = index.neighbours.get(left) ?? [];
++      current.push({ entity_id: right, edge_id: edgeId });
++      index.neighbours.set(left, current);
++    }
++  }
++  for (const values of index.by_term.values()) values.sort((left, right) => left.localeCompare(right));
++  for (const values of index.neighbours.values()) {
++    values.sort(
++      (left, right) =>
++        left.entity_id.localeCompare(right.entity_id) || (left.edge_id ?? "").localeCompare(right.edge_id ?? ""),
++    );
++  }
++  return index;
++}
++
++function encoded(value: string): string {
++  return encodeURIComponent(value).replaceAll("%3A", ":");
++}
++
++function canonicalKind(ref: string): KnowledgeRef["kind"] | null {
++  try {
++    const parsed = parseCanonicalKnowledgeRef(ref);
++    if (parsed.path.startsWith("context/wiki/")) return "wiki";
++    if (parsed.path.startsWith("context/raw/")) return "source";
++    if (parsed.selector?.key === "fact") return "fact";
++    if (parsed.selector?.key === "entity") return "entity";
++    if (parsed.selector?.key === "edge") return "edge";
++    return null;
++  } catch {
++    return null;
++  }
++}
++
++function addCandidate(candidates: Map<string, Candidate>, candidate: Candidate): void {
++  const current = candidates.get(candidate.ref);
++  if (!current) {
++    candidates.set(candidate.ref, candidate);
++    return;
++  }
++  current.score = Math.max(current.score, candidate.score);
++  for (const reason of candidate.reasons) {
++    if (!current.reasons.includes(reason)) current.reasons.push(reason);
++  }
++  if (retrievalPriority(candidate.retrieval) < retrievalPriority(current.retrieval)) {
++    current.retrieval = candidate.retrieval;
++  }
++}
++
++function retrievalPriority(retrieval: RetrievalAdapter): number {
++  return { exact: 0, alias: 1, graph: 2, fts: 3 }[retrieval];
++}
++
++function candidateFromRef(opts: {
++  ref: string;
++  retrieval: RetrievalAdapter;
++  score: number;
++  reason: string;
++}): Candidate | null {
++  const kind = canonicalKind(opts.ref);
++  return kind
++    ? { ref: opts.ref, kind, retrieval: opts.retrieval, score: opts.score, reasons: [opts.reason] }
++    : null;
++}
++
++function exactCandidates(queries: QueryTerm[]): Candidate[] {
++  const output: Candidate[] = [];
++  for (const query of queries) {
++    for (const ref of query.exact_refs) {
++      const candidate = candidateFromRef({ ref, retrieval: "exact", score: 1, reason: "task_path_exact" });
++      if (candidate) output.push(candidate);
++    }
++  }
++  return output;
++}
++
++async function ftsCandidates(opts: {
++  root: string;
++  queries: QueryTerm[];
++  omissions: ReceiptOmission[];
++}): Promise<Candidate[]> {
++  const candidates: Candidate[] = [];
++  const ftsQueries = opts.queries
++    .filter((query) => query.exact_refs.length === 0)
++    .toSorted(
++      (left, right) =>
++        querySignalRank(left) - querySignalRank(right) || left.normalized.localeCompare(right.normalized),
++    )
++    .slice(0, MAX_FTS_QUERIES);
++  for (const query of ftsQueries) {
++    const result = await searchContextProjection(opts.root, {
++      query: query.query,
++      scopes: ["wiki", "facts", "graph", "raw"],
++      limit: MAX_FTS_RESULTS_PER_QUERY,
++      offset: 0,
++    });
++    if (!result) {
++      opts.omissions.push({
++        query: query.query,
++        adapter: "fts",
++        reason_code: "projection_unavailable",
++        detail: "SQLite context projection is unavailable or does not include this query.",
++      });
++      continue;
++    }
++    let found = 0;
++    for (const row of result.rows) {
++      for (const ref of [row.path, ...(row.source_refs ?? [])]) {
++        const candidate = candidateFromRef({
++          ref,
++          retrieval: "fts",
++          score: Math.max(0, Math.min(1, 1 / (1 + Math.max(0, row.rank)))),
++          reason: `fts:${query.query}`,
++        });
++        if (!candidate) continue;
++        candidates.push(candidate);
++        found += 1;
++      }
++    }
++    if (found === 0) {
++      opts.omissions.push({
++        query: query.query,
++        adapter: "fts",
++        reason_code: "no_match",
++        detail: "No FTS result resolved to a canonical KnowledgeRef.",
++      });
++    }
++  }
++  return candidates;
++}
++
++function entityCandidates(opts: { queries: QueryTerm[]; index: EntityIndex }): Candidate[] {
++  const candidates: Candidate[] = [];
++  for (const query of opts.queries) {
++    const entityIds = new Set(opts.index.by_term.get(query.normalized));
++    for (const [term, ids] of opts.index.by_term) {
++      if (!term.includes(" ") || !` ${query.normalized} `.includes(` ${term} `)) continue;
++      for (const id of ids) entityIds.add(id);
++    }
++    for (const entityId of [...entityIds].toSorted()) {
++      const entity = candidateFromRef({
++        ref: `.agentplane/context/derived/graph/entities.jsonl#entity=${encoded(entityId)}`,
++        retrieval: "alias",
++        score: 0.95,
++        reason: `alias_or_entity_exact:${query.query}`,
++      });
++      if (entity) candidates.push(entity);
++      for (const neighbour of opts.index.neighbours.get(entityId) ?? []) {
++        const neighbourRef = candidateFromRef({
++          ref: `.agentplane/context/derived/graph/entities.jsonl#entity=${encoded(neighbour.entity_id)}`,
++          retrieval: "graph",
++          score: 0.45,
++          reason: `graph_neighbour:${entityId}`,
++        });
++        if (neighbourRef) candidates.push(neighbourRef);
++        if (neighbour.edge_id) {
++          const edgeRef = candidateFromRef({
++            ref: `.agentplane/context/derived/graph/edges.jsonl#edge=${encoded(neighbour.edge_id)}`,
++            retrieval: "graph",
++            score: 0.4,
++            reason: `graph_edge:${entityId}`,
++          });
++          if (edgeRef) candidates.push(edgeRef);
++        }
++      }
++    }
++  }
++  return candidates;
++}
++
++async function dependencyContext(opts: {
++  ctx: CommandContext;
++  task_envelope: RunnerTaskContextEnvelope;
++}): Promise<{ title: string; result_summary?: string; description: string }[]> {
++  const taskIds = opts.task_envelope.source_task.depends_on ?? [];
++  if (taskIds.length === 0) return [];
++  const tasks = opts.ctx.taskBackend.getTasks
++    ? await opts.ctx.taskBackend.getTasks(taskIds).catch(() => [])
++    : await Promise.all(taskIds.map(async (taskId) => await opts.ctx.taskBackend.getTask(taskId))).catch(
++        () => [],
++      );
++  return tasks
++    .flatMap((task) =>
++      task?.status === "DONE"
++        ? [
++            {
++              title: task.title,
++              ...(task.result_summary ? { result_summary: task.result_summary } : {}),
++              description: task.description,
++            },
++          ]
++        : [],
++    )
++    .toSorted((left, right) => left.title.localeCompare(right.title));
++}
++
++export async function prepareTaskKnowledgeRetrieval(opts: {
++  command_ctx: CommandContext;
++  task_envelope: RunnerTaskContextEnvelope;
++  blueprint: BlueprintPlanArtifact;
++  repository_root: string;
++}): Promise<TaskKnowledgeRetrieval> {
++  const [projection, index, dependencies] = await Promise.all([
++    readContextProjection(opts.repository_root),
++    buildEntityIndex(opts.repository_root),
++    dependencyContext({ ctx: opts.command_ctx, task_envelope: opts.task_envelope }),
++  ]);
++  const queryPlan = taskQueryPlan({
++    task_envelope: opts.task_envelope,
++    blueprint: opts.blueprint,
++    dependencies,
++  });
++  const queries = queryPlan.queries;
++  const omissions: ReceiptOmission[] = [];
++  if (queryPlan.omitted_count > 0 || queryPlan.collection_saturated) {
++    omissions.push({
++      query: null,
++      adapter: "selection",
++      reason_code: "query_term_budget_exhausted",
++      detail: `${queryPlan.collection_saturated ? "At least " : ""}${queryPlan.omitted_count} lower-priority query terms were omitted by the bounded query plan.`,
++    });
++  }
++  const candidates = new Map<string, Candidate>();
++  for (const candidate of exactCandidates(queries)) addCandidate(candidates, candidate);
++  for (const candidate of entityCandidates({ queries, index })) addCandidate(candidates, candidate);
++  for (const candidate of await ftsCandidates({ root: opts.repository_root, queries, omissions })) {
++    addCandidate(candidates, candidate);
++  }
++  const ordered = [...candidates.values()]
++    .map((candidate) => ({ ...candidate, reasons: [...candidate.reasons].toSorted() }))
++    .toSorted(
++      (left, right) =>
++        right.score - left.score ||
++        left.ref.localeCompare(right.ref) ||
++        left.retrieval.localeCompare(right.retrieval),
++    );
++  if (ordered.length > MAX_REFERENCES) {
++    omissions.push({
++      query: null,
++      adapter: "selection",
++      reason_code: "reference_budget_exhausted",
++      detail: `${ordered.length - MAX_REFERENCES} lower-ranked references were omitted by the bounded selection budget.`,
++    });
++  }
++  const materialized: { candidate: Candidate; ref: KnowledgeRef }[] = [];
++  for (const candidate of ordered.slice(0, MAX_REFERENCES)) {
++    try {
++      materialized.push({
++        candidate,
++        ref: await materializeKnowledgeRef({
++          repository_root: opts.repository_root,
++          ref: candidate.ref,
++          kind: candidate.kind,
++          reason: candidate.reasons.join("; "),
++          retrieval: candidate.retrieval,
++          required: false,
++          score: candidate.score,
++          index_snapshot: projection,
++        }),
++      });
++    } catch (error) {
++      omissions.push({
++        query: null,
++        adapter: candidate.retrieval,
++        reason_code: "not_materializable",
++        detail:
++          `Candidate ${candidate.ref} could not be materialized as a fresh KnowledgeRef` +
++          `${error instanceof Error && error.message ? `: ${error.message}` : "."}`,
++      });
++    }
++  }
++  const excerpts = await Promise.all(
++    materialized.map(async ({ ref }) =>
++      await prepareKnowledgeExcerpt({
++        repository_root: opts.repository_root,
++        knowledge_ref: ref,
++        max_bytes: MAX_EXCERPT_BYTES,
++        max_lines: MAX_EXCERPT_LINES,
++        index_snapshot: projection,
++      }),
++    ),
++  );
++  const includedIdentities = new Set(
++    excerpts
++      .filter((excerpt) => excerpt.status === "included")
++      .map((excerpt) => `${excerpt.knowledge_ref.ref}\u0000${excerpt.knowledge_ref.digest}`),
++  );
++  const knowledgeRefs = materialized.map(({ candidate, ref }, indexPosition) => {
++    const identity = `${ref.ref}\u0000${ref.digest}`;
++    const required =
++      indexPosition < MAX_REQUIRED_REFERENCES && includedIdentities.has(identity);
++    if (!includedIdentities.has(identity)) {
++      omissions.push({
++        query: null,
++        adapter: candidate.retrieval,
++        reason_code: "excerpt_not_included",
++        detail: `Candidate ${ref.ref} is represented by a non-included excerpt receipt.`,
++      });
++    }
++    return { ...ref, required };
++  });
++  const receiptBase = {
++    schema_version: 1 as const,
++    kind: "task_knowledge_retrieval_receipt" as const,
++    projection: {
++      available: projection !== null,
++      digest: projection ? digest({ metadata: projection.metadata, rows: projection.rows.map((row) => ({ path: row.path, sha256: row.sha256 })) }) : null,
++      projection_version: projection?.metadata.projection_version ?? null,
++    },
++    budgets: {
++      max_query_terms: MAX_QUERY_TERMS,
++      max_fts_queries: MAX_FTS_QUERIES,
++      max_fts_results_per_query: MAX_FTS_RESULTS_PER_QUERY,
++      max_references: MAX_REFERENCES,
++      max_excerpt_bytes: MAX_EXCERPT_BYTES,
++      max_excerpt_lines: MAX_EXCERPT_LINES,
++    },
++    query_plan: queries.map((query) => ({ query: query.query, signals: query.signals })),
++    adapter_counts: {
++      exact: ordered.filter((candidate) => candidate.retrieval === "exact").length,
++      fts: ordered.filter((candidate) => candidate.retrieval === "fts").length,
++      alias: ordered.filter((candidate) => candidate.retrieval === "alias").length,
++      graph: ordered.filter((candidate) => candidate.retrieval === "graph").length,
++    },
++    selected: materialized.map(({ candidate, ref }) => ({
++      ref: ref.ref,
++      retrieval: candidate.retrieval,
++      score: candidate.score,
++      reasons: candidate.reasons,
++    })),
++    omissions: omissions.toSorted(
++      (left, right) =>
++        (left.query ?? "").localeCompare(right.query ?? "") ||
++        left.adapter.localeCompare(right.adapter) ||
++        left.reason_code.localeCompare(right.reason_code) ||
++        left.detail.localeCompare(right.detail),
++    ),
++  };
++  return {
++    knowledge_refs: knowledgeRefs,
++    prepared_evidence: excerpts,
++    receipt: { ...receiptBase, digest: digest(receiptBase) },
++  };
++}

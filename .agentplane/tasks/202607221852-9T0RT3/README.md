@@ -1,10 +1,11 @@
 ---
 id: "202607221852-9T0RT3"
 title: "Build deterministic task knowledge retrieval"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 8
+revision: 11
 origin:
   system: "manual"
 depends_on:
@@ -33,14 +34,39 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-30T11:52:33.137Z"
+  updated_by: "TESTER"
+  note: "Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12 chunks."
   attempts: 0
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-30T11:53:16.904Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "a53a24b50edf52a22ee3884d3c7062980113b33d"
+  blueprint_digest: "b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408"
+  evidence_refs:
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-9T0RT3/README.md"
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-115316785-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Exact, FTS, alias, and graph candidates retain retrieval reasons and explicit omission receipts."
+    - "Structured path, dependency-output, and evaluator-finding signals are quota-protected before narrative expansion."
 commit:
-  hash: "e6b89ac4410e24344f0ec04a4c3d80d2e2ebafce"
-  message: "🚧 9T0RT3 task: add deterministic task knowledge retrieval"
+  hash: "a53a24b50edf52a22ee3884d3c7062980113b33d"
+  message: "🚧 9T0RT3 task: preserve structured retrieval signals"
 comments:
   -
     author: "CODER"
@@ -48,6 +74,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation committed: deterministic retrieval prepares exact, FTS, alias, and graph evidence with bounded receipts; targeted retrieval test, typecheck, and lint passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -63,8 +92,21 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Implementation committed: deterministic retrieval prepares exact, FTS, alias, and graph evidence with bounded receipts; targeted retrieval test, typecheck, and lint passed."
+  -
+    type: "verify"
+    at: "2026-07-30T11:52:33.137Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12 chunks."
+  -
+    type: "status"
+    at: "2026-07-30T11:53:48.455Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T11:42:20.822Z"
+doc_updated_at: "2026-07-30T11:53:48.456Z"
 doc_updated_by: "CODER"
 description: "RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, blueprint, dependencies, and evaluator findings; attach bounded refs, excerpts, and a retrieval receipt to AgentWorkOrder."
 sections:
@@ -89,6 +131,36 @@ sections:
     5. Run work-order/retrieval tests and typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-30T11:52:33.137Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12 chunks.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T11:42:20.822Z, excerpt_hash=sha256:87ed15263a2f5f035f42a831a0aefa6c1b3a7d79e4cf3a4dd351495390992992
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-9T0RT3-build-deterministic-task-knowledge-retrieval/.agentplane/tasks/202607221852-9T0RT3/blueprint/resolved-snapshot.json
+    - old_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+    - current_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-9T0RT3
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221852-9T0RT3
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
@@ -131,6 +203,36 @@ RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, bl
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-30T11:52:33.137Z — VERIFY — ok
+
+By: TESTER
+
+Note: Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12 chunks.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T11:42:20.822Z, excerpt_hash=sha256:87ed15263a2f5f035f42a831a0aefa6c1b3a7d79e4cf3a4dd351495390992992
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-9T0RT3-build-deterministic-task-knowledge-retrieval/.agentplane/tasks/202607221852-9T0RT3/blueprint/resolved-snapshot.json
+- old_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+- current_digest: b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-9T0RT3
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221852-9T0RT3
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

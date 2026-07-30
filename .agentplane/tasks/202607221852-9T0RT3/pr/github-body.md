@@ -15,8 +15,14 @@ RF-19a: derive exact/FTS/alias/graph queries from task intent, paths/symbols, bl
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Passed: deterministic retrieval fixture covers exact, FTS, alias, graph, dependency output, and
+prior finding; work-order integration 7/7; typecheck and lint pass; test:critical completed 12/12
+chunks.
+```
 - Canonical workflow state lives in the task README.
 
 <details>
