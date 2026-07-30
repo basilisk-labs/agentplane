@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-WF8A0X",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T16:51:58.433Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "rework",
+  "summary": "EVALUATOR returned rework with 3 typed finding(s).",
+  "evaluated_sha": "5dec70046e5b4006ffa4b78593154ad3409ad764",
+  "blueprint_digest": "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01",
+  "findings": [
+    "Every completed task becomes a proposal because task_pr_decision is added unconditionally, so transient and noisy tasks are not filtered before proposal creation.",
+    "Proposal signals are derived from the full task text, but every proposal cites only README lines 1-80; signals originating later in the task record can therefore lack exact supporting evidence, and no PR, diff, or evaluator reference is attached.",
+    "The frozen check record contains no verification records, runner history, or runtime evidence, and its note lists focused checks rather than the three declared acceptance commands."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-diff.patch",
+    ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-observed-checks.json"
+  ],
+  "missing_tests": [
+    "A completed task containing only transient implementation details produces no knowledge proposal.",
+    "A durable signal located after README line 80 receives an exact source reference covering that signal, or is rejected.",
+    "Proposal provenance includes available PR, diff, decision, and evaluator references and rejects unsupported signals.",
+    "Recorded execution of bun run task-state:check, bun run test:critical, and bun run typecheck at the evaluated SHA.",
+    "Concurrent or repeated harvest and selection attempts preserve one proposal identity, one selection receipt, and one CURATOR owner without overwriting active work."
+  ],
+  "hidden_assumptions": [
+    "Every completed task or task/PR decision is inherently a durable-knowledge candidate.",
+    "README lines 1-80 always contain the evidence used by full-record signal detection.",
+    "An explicit task ID is sufficient semantic selection even when the generated proposal has not demonstrated durable content.",
+    "A verification note without runner or runtime records proves the declared acceptance commands passed at the evaluated SHA."
+  ],
+  "residual_risks": [
+    "Filter proposal creation to explicit durable signals, bind each signal to the exact evidence span and available task/PR/diff/evaluator provenance, add transient and concurrency-sensitive negative tests, and provide deterministic records for all declared acceptance commands."
+  ]
+}

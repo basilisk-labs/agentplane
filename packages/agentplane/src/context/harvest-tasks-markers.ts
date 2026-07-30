@@ -91,6 +91,7 @@ export function taskText(task: HarvestMarkerTask): string {
           sectionText(task, "Plan"),
           sectionText(task, "Verification"),
           sectionText(task, "Findings"),
+          sectionText(task, "Decision"),
         ]),
     task.commit && typeof task.commit.message === "string" ? task.commit.message : "",
   ];

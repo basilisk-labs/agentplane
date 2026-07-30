@@ -32,8 +32,10 @@ it no longer owns the SQLite file.
 ## Task-history extraction
 
 `context harvest tasks` first produces source-backed, unpublished proposal records for completed
-task history. It does not infer facts, graph edges, wiki content, or semantic identity from task
-text. A CURATOR work order is created only after exactly one explicit `--task` selection; its context
+task history only when an explicit durable marker is present: ADR/public interface, stable workflow
+rule, recurring finding, resolved conflict, or recorded decision. It captures exact source lines and
+available PR, diff, or evaluator evidence; it does not infer facts, graph edges, wiki content, or
+semantic identity from task text. A CURATOR work order is created only after exactly one explicit `--task` selection; its context
 extension names the proposal, task README, ACR file, source digest, allowed outputs, and a
 replaceable prompt module.
 

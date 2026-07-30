@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_rework_work_order",
+  "source_work_order_id": "evaluator-work-order-202607221852-WF8A0X-2fa203def12fb2e9804325e7",
+  "task_id": "202607221852-WF8A0X",
+  "verdict": "rework",
+  "next_owner": "CODER",
+  "instruction": "Filter proposal creation to explicit durable signals, bind each signal to the exact evidence span and available task/PR/diff/evaluator provenance, add transient and concurrency-sensitive negative tests, and provide deterministic records for all declared acceptance commands.",
+  "findings": [
+    {
+      "id": "F1",
+      "summary": "Every completed task becomes a proposal because task_pr_decision is added unconditionally, so transient and noisy tasks are not filtered before proposal creation.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:128e947b0ad06683b077d1865e1ab3f22f06b26525bbdadb5088e76a5a2383f8",
+          "section": "packages/agentplane/src/context/harvest-tasks-builders.ts"
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "summary": "Proposal signals are derived from the full task text, but every proposal cites only README lines 1-80; signals originating later in the task record can therefore lack exact supporting evidence, and no PR, diff, or evaluator reference is attached.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-diff.patch",
+          "sha256": "sha256:128e947b0ad06683b077d1865e1ab3f22f06b26525bbdadb5088e76a5a2383f8",
+          "section": "packages/agentplane/src/context/harvest-tasks-builders.ts"
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "summary": "The frozen check record contains no verification records, runner history, or runtime evidence, and its note lists focused checks rather than the three declared acceptance commands.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-observed-checks.json",
+          "sha256": "sha256:bfe30a5c4d4f0e1c35f72b1afa2706fc15c35db9a3c027820a9b77168cd305c1",
+          "section": "declared_checks and verification evidence"
+        }
+      ]
+    }
+  ],
+  "source_result": ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-result.json"
+}

@@ -4,7 +4,7 @@ title: "Create CURATOR-gated post-task knowledge proposals"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 10
 origin:
   system: "manual"
 depends_on:
@@ -38,6 +38,33 @@ verification:
   updated_by: "TESTER"
   note: "Verified RF-20: proposal collection writes no wiki/fact/graph artifacts; duplicate/consolidation evidence is recorded before exact CURATOR selection; CLI builds the bounded source/canonical/SGR work pack and retains apply ownership. Checks: typecheck; focused harvest tasks 9/9; Knip baseline; CLI docs freshness; targeted ESLint; diff check."
   attempts: 0
+quality_review:
+  state: "rework"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-30T16:51:58.433Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned rework with 3 typed finding(s)."
+  evaluated_sha: "5dec70046e5b4006ffa4b78593154ad3409ad764"
+  blueprint_digest: "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01"
+  evidence_refs:
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/README.md"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-165042993-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Every completed task becomes a proposal because task_pr_decision is added unconditionally, so transient and noisy tasks are not filtered before proposal creation."
+    - "Proposal signals are derived from the full task text, but every proposal cites only README lines 1-80; signals originating later in the task record can therefore lack exact supporting evidence, and no PR, diff, or evaluator reference is attached."
+    - "The frozen check record contains no verification records, runner history, or runtime evidence, and its note lists focused checks rather than the three declared acceptance commands."
 commit:
   hash: "5dec70046e5b4006ffa4b78593154ad3409ad764"
   message: "🚧 WF8A0X task: gate task knowledge proposals"

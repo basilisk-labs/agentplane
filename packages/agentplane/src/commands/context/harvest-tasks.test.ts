@@ -53,6 +53,7 @@ function task(input: Partial<TaskData> & { id: string; title: string }): TaskDat
       Verification: "Verified with focused tests.",
     },
     comments: input.comments ?? [],
+    doc: input.doc,
     commit: input.commit ?? {
       hash: `abc${input.id.slice(-6)}`,
       message: `${input.title} implementation`,
@@ -147,6 +148,8 @@ describe("context harvest tasks", () => {
         id: "202604010900-REL001",
         title: "Harden the release workflow",
         tags: ["release", "workflow"],
+        description:
+          "Stable workflow rule: release changes require a checked PR before integration.",
       }),
     ];
 
@@ -174,12 +177,12 @@ describe("context harvest tasks", () => {
       publication_state: "not_published",
       source_task_id: "202604010900-REL001",
     });
-    expect(proposal.source_refs).toEqual([
-      ".agentplane/tasks/202604010900-REL001/README.md#lines=1-80",
-    ]);
-    expect(proposal.signals.map((signal) => signal.kind)).toEqual(
-      expect.arrayContaining(["task_pr_decision", "stable_workflow_rule_candidate"]),
+    expect(proposal.source_refs).toEqual(
+      expect.arrayContaining(["context/raw/tasks/202604010900-REL001.json#source_text_lines=3"]),
     );
+    expect(proposal.signals.map((signal) => signal.kind)).toEqual([
+      "stable_workflow_rule_candidate",
+    ]);
     await expect(
       readFile(path.join(root, "context/wiki/proposals/task-harvest/done-release.md")),
     ).rejects.toThrow();
@@ -205,13 +208,13 @@ describe("context harvest tasks", () => {
       task({
         id: "202604010900-DUP001",
         title: "Harden branch_pr close flow",
-        description: "First independently recorded workflow decision.",
+        description: "Stable workflow rule: first independently recorded close-flow rule.",
         tags: ["workflow"],
       }),
       task({
         id: "202604020900-DUP002",
         title: "Harden branch_pr close flow",
-        description: "Second independently recorded workflow decision.",
+        description: "Stable workflow rule: second independently recorded close-flow rule.",
         tags: ["workflow"],
       }),
     ];
@@ -294,6 +297,7 @@ describe("context harvest tasks", () => {
       id: "202604010900-FIRST1",
       title: "Harden task lifecycle workflow",
       tags: ["workflow"],
+      description: "Decision: task lifecycle changes require one separate CURATOR owner.",
     });
     const tasks = [source];
     const createdParsed: unknown[] = [];
@@ -303,6 +307,17 @@ describe("context harvest tasks", () => {
       "# Source task\n\n## Summary\n\nHarden task lifecycle workflow.\n",
     );
     await write(root, `.agentplane/tasks/${source.id}/acr.json`, '{"result":"verified"}\n');
+    await write(
+      root,
+      `.agentplane/tasks/${source.id}/pr/meta.json`,
+      '{"pr_url":"https://example.invalid/pull/42"}\n',
+    );
+    await write(root, `.agentplane/tasks/${source.id}/pr/diffstat.txt`, "1 file changed\n");
+    await write(
+      root,
+      `.agentplane/tasks/${source.id}/quality/20260402-evaluator/evaluator-result.json`,
+      '{"verdict":"pass"}\n',
+    );
 
     await cmdContextHarvestTasks({
       ctx: ctx(root, tasks),
@@ -398,6 +413,22 @@ describe("context harvest tasks", () => {
     ).resolves.toContain(`"path": ".agentplane/tasks/${source.id}/README.md"`);
     await expect(
       readFile(
+        path.join(root, ".agentplane/tasks/202604040900-CURAT1/source-set.lock.json"),
+        "utf8",
+      ),
+    ).resolves.toContain(`"path": "context/raw/tasks/${source.id}.json"`);
+    await expect(
+      readFile(
+        path.join(
+          root,
+          ".agentplane/context/derived/proposals/task-knowledge",
+          `${proposalId}.json`,
+        ),
+        "utf8",
+      ),
+    ).resolves.toContain(`.agentplane/tasks/${source.id}/pr/meta.json#all`);
+    await expect(
+      readFile(
         path.join(root, ".agentplane/tasks/202604040900-CURAT1/canonical-snapshot.json"),
         "utf8",
       ),
@@ -417,7 +448,14 @@ describe("context harvest tasks", () => {
     const root = await tempRoot();
     await initContextWorkspace(root);
     const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
-    const tasks = [task({ id: "202604010900-REL001", title: "Release gate", tags: ["release"] })];
+    const tasks = [
+      task({
+        id: "202604010900-REL001",
+        title: "Release gate",
+        tags: ["release"],
+        description: "Decision: release gates require recorded verification.",
+      }),
+    ];
 
     await cmdContextHarvestTasks({
       ctx: ctx(root, tasks),
@@ -478,5 +516,121 @@ describe("context harvest tasks", () => {
         path.join(root, ".agentplane/context/derived/reports/task-knowledge-proposals-bad.json"),
       ),
     ).resolves.toBeNull();
+  });
+
+  it("does not create a proposal for a completed transient implementation task", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, [
+        task({
+          id: "202604010900-TRANS1",
+          title: "Rename a local test helper",
+          description: "Rename the helper after a unit-test cleanup.",
+        }),
+      ]),
+      cwd: root,
+      parsed: parsed({ writeProposals: true, format: "json" }),
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      counts: { proposals: number };
+      selection_gate: { state: string };
+    };
+    expect(payload.counts.proposals).toBe(0);
+    expect(payload.selection_gate.state).toBe("blocked");
+    await expect(
+      readdir(path.join(root, ".agentplane/context/derived/proposals/task-knowledge")),
+    ).rejects.toThrow();
+  });
+
+  it("anchors a late durable signal to the exact captured source line", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    const lateDoc = [
+      ...Array.from({ length: 80 }, () => "Transient implementation detail."),
+      "Decision: retain the explicit source boundary.",
+    ].join("\n");
+
+    await cmdContextHarvestTasks({
+      ctx: ctx(root, [
+        task({
+          id: "202604010900-LATE01",
+          title: "Document task outcome",
+          description: "Capture a completed task outcome.",
+          doc: lateDoc,
+        }),
+      ]),
+      cwd: root,
+      parsed: parsed({ writeProposals: true, format: "json" }),
+    });
+
+    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+      source_refs: string[];
+    };
+    expect(payload.source_refs).toContain(
+      "context/raw/tasks/202604010900-LATE01.json#source_text_lines=85",
+    );
+  });
+
+  it("keeps one CURATOR owner when the same proposal is selected concurrently", async () => {
+    const root = await tempRoot();
+    await initContextWorkspace(root);
+    const source = task({
+      id: "202604010900-LOCK01",
+      title: "Keep one CURATOR owner",
+      description: "Decision: this proposal has one CURATOR owner.",
+    });
+    const tasks = [source];
+    const createdTaskIds: string[] = [];
+    await write(root, `.agentplane/tasks/${source.id}/README.md`, "# Source task\n");
+
+    const createTask = async ({
+      ctx: commandCtx,
+      parsed: taskParsed,
+    }: {
+      ctx: CommandContext;
+      parsed: {
+        title: string;
+        owner: string;
+        priority: string;
+        tags: string[];
+        description: string;
+        extensions: Record<string, unknown>;
+      };
+    }) => {
+      const taskId = `202604040900-CURAT${createdTaskIds.length + 1}`;
+      createdTaskIds.push(taskId);
+      await commandCtx.taskBackend.writeTask({
+        id: taskId,
+        title: taskParsed.title,
+        status: "TODO",
+        owner: taskParsed.owner,
+        priority: taskParsed.priority,
+        tags: taskParsed.tags,
+        description: taskParsed.description,
+        extensions: taskParsed.extensions,
+      } as TaskData);
+      return taskCreationResult(taskId);
+    };
+
+    const selection = () =>
+      cmdContextHarvestTasks({
+        ctx: ctx(root, tasks),
+        cwd: root,
+        parsed: parsed({ task: [source.id], createExtractionTasks: true }),
+        createTask: createTask as never,
+      });
+    const results = await Promise.allSettled([selection(), selection()]);
+
+    expect(results.filter((result) => result.status === "fulfilled")).toHaveLength(1);
+    expect(results.filter((result) => result.status === "rejected")).toHaveLength(1);
+    expect(createdTaskIds).toHaveLength(1);
+    expect(tasks.find((row) => row.id === source.id)?.extensions).toMatchObject({
+      context_task_extraction: { extraction_task_id: createdTaskIds[0] },
+    });
   });
 });

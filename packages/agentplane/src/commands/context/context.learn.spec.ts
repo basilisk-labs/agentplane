@@ -98,7 +98,7 @@ export const contextLearnTasksSpec: CommandSpec<{
   summary:
     "Collect completed-task knowledge proposals; select one task to create a CURATOR work order.",
   description:
-    "Collects source-backed, unpublished knowledge proposals from completed task README/ACR evidence. An exact single --task selection also creates one CURATOR semantic work order. This command never writes wiki, facts, or graph artifacts directly.",
+    "Collects source-backed, unpublished knowledge proposals only from explicit durable markers in completed task evidence. An exact single --task selection also creates one CURATOR semantic work order. This command never writes wiki, facts, or graph artifacts directly.",
   options: [
     {
       kind: "string",

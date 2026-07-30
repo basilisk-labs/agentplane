@@ -35,8 +35,10 @@ export type TaskEvidence = {
   blueprint_request: string | null;
   commit: { hash?: string; message?: string } | null;
   source_refs: string[];
+  provenance_refs: string[];
   extracted_at: string;
   text_digest: string;
+  source_text_lines: string[];
   excerpts: string[];
 };
 

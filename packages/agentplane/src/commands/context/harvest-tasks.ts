@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, stat } from "node:fs/promises";
+import { mkdir, open, readFile, readdir, stat, unlink } from "node:fs/promises";
 import path from "node:path";
 
 import type { TaskData } from "../../backends/task-backend.js";
@@ -55,6 +55,105 @@ function sameMarker(current: unknown, next: TaskHarvestMarker): boolean {
   return isRecord(current) && JSON.stringify(current) === JSON.stringify(next);
 }
 
+function taskKnowledgeRawEvidencePath(taskId: string): string {
+  return `context/raw/tasks/${taskId}.json`;
+}
+
+function optionalTaskArtifactPaths(taskId: string): string[] {
+  return [
+    `.agentplane/tasks/${taskId}/pr/meta.json`,
+    `.agentplane/tasks/${taskId}/pr/diffstat.txt`,
+  ];
+}
+
+async function existingTaskKnowledgeProvenanceRefs(
+  root: string,
+  taskId: string,
+): Promise<string[]> {
+  const refs: string[] = [];
+  for (const rel of optionalTaskArtifactPaths(taskId)) {
+    if (await fileExists(path.join(root, rel))) refs.push(`${rel}#all`);
+  }
+  const qualityRoot = path.join(root, ".agentplane/tasks", taskId, "quality");
+  try {
+    const qualityEntries = await readdir(qualityRoot, { withFileTypes: true });
+    const directories = qualityEntries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .toSorted();
+    for (const directory of directories) {
+      const rel = `.agentplane/tasks/${taskId}/quality/${directory}/evaluator-result.json`;
+      if (await fileExists(path.join(root, rel))) refs.push(`${rel}#all`);
+    }
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  return refs;
+}
+
+async function taskKnowledgeProvenanceRefs(
+  root: string,
+  tasks: readonly TaskData[],
+): Promise<Map<string, string[]>> {
+  return new Map(
+    await Promise.all(
+      tasks.map(
+        async (task) =>
+          [task.id, await existingTaskKnowledgeProvenanceRefs(root, task.id)] as const,
+      ),
+    ),
+  );
+}
+
+function taskHasCurrentCuratorSelection(opts: {
+  task: TaskData;
+  fingerprint: TaskSourceFingerprint | undefined;
+}): string | null {
+  const extensions = isRecord(opts.task.extensions) ? opts.task.extensions : {};
+  const marker = extensions.context_task_extraction;
+  if (!isRecord(marker) || marker.state !== "selected") return null;
+  if (typeof marker.extraction_task_id !== "string" || !marker.extraction_task_id.trim()) {
+    return null;
+  }
+  if (
+    opts.fingerprint &&
+    (marker.source_digest !== opts.fingerprint.digest ||
+      marker.source_fingerprint_version !== opts.fingerprint.version)
+  ) {
+    return null;
+  }
+  return marker.extraction_task_id;
+}
+
+async function acquireTaskKnowledgeSelectionLock(opts: {
+  root: string;
+  proposalId: string;
+}): Promise<() => Promise<void>> {
+  const rel = `.agentplane/context/derived/proposals/task-knowledge/${opts.proposalId}.selection.lock`;
+  const target = path.join(opts.root, rel);
+  await mkdir(path.dirname(target), { recursive: true });
+  let handle: Awaited<ReturnType<typeof open>>;
+  try {
+    handle = await open(target, "wx");
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message:
+          "A CURATOR selection is already being created for this task knowledge proposal. Re-run after the active selection finishes.",
+      });
+    }
+    throw error;
+  }
+  return async () => {
+    await handle.close();
+    await unlink(target).catch((error: NodeJS.ErrnoException) => {
+      if (error.code !== "ENOENT") throw error;
+    });
+  };
+}
+
 async function writeTaskMarkers(ctx: CommandContext, output: ReturnType<typeof buildOutput>) {
   const changed: string[] = [];
   for (const task of output.selected) {
@@ -80,9 +179,13 @@ async function buildTaskProposalSourceRows(
 ): Promise<ManifestEntry[]> {
   const rows: ManifestEntry[] = [];
   for (const taskId of taskIds) {
+    const provenanceRefs = await existingTaskKnowledgeProvenanceRefs(root, taskId);
+    const provenancePaths = provenanceRefs.map((ref) => ref.replace(/#all$/u, ""));
     const candidates = [
       { path: `.agentplane/tasks/${taskId}/README.md`, required: true },
       { path: `.agentplane/tasks/${taskId}/acr.json`, required: false },
+      { path: taskKnowledgeRawEvidencePath(taskId), required: true },
+      ...provenancePaths.map((candidatePath) => ({ path: candidatePath, required: false })),
     ];
     for (const candidate of candidates) {
       const absolute = path.join(root, candidate.path);
@@ -121,137 +224,168 @@ async function createExtractionTasks(opts: {
   sourceRowsByTask: ReadonlyMap<string, ManifestEntry[]>;
   createTask?: typeof runTaskNewParsed;
 }) {
-  const plans = buildExtractionTaskPlans(
-    opts.output.selected,
-    opts.parsed,
-    opts.sourceFingerprints,
+  const proposalByTaskId = new Map(
+    opts.output.proposals.map((proposal) => [proposal.source_task_id, proposal]),
   );
+  const proposalTasks = opts.output.selected.filter((task) => proposalByTaskId.has(task.id));
+  const plans = buildExtractionTaskPlans(proposalTasks, opts.parsed, opts.sourceFingerprints);
   const createTask = opts.createTask ?? runTaskNewParsed;
-  const createdTaskIds: string[] = [];
-  const taskPackPaths: string[] = [];
-  for (const plan of plans) {
-    const created: TaskCreationResult = await createTask({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      parsed: plan.parsed,
-      printTaskId: false,
-    });
-    const createdTaskId = created.task_id;
-    await writeContextTaskPack({
-      root: opts.ctx.resolvedProject.gitRoot,
-      taskId: createdTaskId,
-      sources: plan.source_task_ids.flatMap((sourceTaskId) => {
-        const rows = opts.sourceRowsByTask.get(sourceTaskId);
-        if (rows) return rows;
+  const releases: (() => Promise<void>)[] = [];
+  try {
+    for (const task of proposalTasks) {
+      const proposal = proposalByTaskId.get(task.id);
+      if (!proposal) continue;
+      const release = await acquireTaskKnowledgeSelectionLock({
+        root: opts.ctx.resolvedProject.gitRoot,
+        proposalId: proposal.id,
+      });
+      releases.push(release);
+      const latestTasks = await opts.ctx.taskBackend.listTasks();
+      const latest = latestTasks.find((candidate) => candidate.id === task.id);
+      const existingCuratorTaskId = latest
+        ? taskHasCurrentCuratorSelection({
+            task: latest,
+            fingerprint: opts.sourceFingerprints.get(task.id),
+          })
+        : null;
+      if (existingCuratorTaskId) {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
-          message: `Task knowledge proposal source set is missing: ${sourceTaskId}`,
+          message:
+            `Task knowledge proposal for ${task.id} is already owned by CURATOR task ${existingCuratorTaskId}. ` +
+            "Change the source before selecting it again.",
         });
-      }),
-      creation: created,
-    });
-    const taskRoot = `.agentplane/tasks/${createdTaskId}`;
-    taskPackPaths.push(
-      `${taskRoot}/task-creation.json`,
-      `${taskRoot}/context-pack.md`,
-      `${taskRoot}/extraction-contract.json`,
-      `${taskRoot}/canonical-snapshot.json`,
-      `${taskRoot}/canonical-entity-catalog.json`,
-      `${taskRoot}/canonical-reconciliation-candidates.json`,
-      `${taskRoot}/source-set.lock.json`,
-      `${taskRoot}/source-spans.skeleton.jsonl`,
-      `${taskRoot}/expected-artifacts.json`,
-    );
-    createdTaskIds.push(createdTaskId);
-  }
-  const sourceChangedPaths: string[] = [];
-  const selectionReceiptPaths: string[] = [];
-  const queuedAt = new Date().toISOString();
-  const latestTasks = await opts.ctx.taskBackend.listTasks();
-  const latestById = new Map(
-    latestTasks
-      .filter((task): task is TaskData & { id: string; title: string; status: string } => {
-        return (
-          typeof task.id === "string" &&
-          typeof task.title === "string" &&
-          typeof task.status === "string"
-        );
-      })
-      .map((task) => [task.id, task]),
-  );
-  for (const plan of plans) {
-    const extractionTaskId = createdTaskIds[plan.batch_index - 1];
-    if (!extractionTaskId) continue;
-    for (const sourceTaskId of plan.source_task_ids) {
-      const task =
-        latestById.get(sourceTaskId) ??
-        opts.output.selected.find((candidate) => candidate.id === sourceTaskId);
-      if (!task) continue;
-      const marker = buildTaskExtractionMarker({
-        task,
-        queuedAt,
-        extractionTaskId,
-        batchIndex: plan.batch_index,
-        batchCount: plan.batch_count,
-        fingerprint: opts.sourceFingerprints.get(sourceTaskId),
-      });
-      const extensions = isRecord(task.extensions) ? task.extensions : {};
-      if (isRecord(extensions.context_task_extraction)) {
-        const current = JSON.stringify(extensions.context_task_extraction);
-        if (current === JSON.stringify(marker)) continue;
-      }
-      await opts.ctx.taskBackend.writeTask({
-        ...task,
-        extensions: {
-          ...extensions,
-          context_task_extraction: marker,
-        },
-      });
-      sourceChangedPaths.push(`.agentplane/tasks/${task.id}/README.md`);
-      const proposal = opts.output.proposals.find(
-        (candidate) => candidate.source_task_id === sourceTaskId,
-      );
-      if (!proposal) {
-        throw new CliError({
-          exitCode: 3,
-          code: "E_VALIDATION",
-          message: `Cannot select task knowledge proposal for ${sourceTaskId}: proposal record is missing.`,
-        });
-      }
-      const receiptPath = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.selection.json`;
-      await mkdir(path.dirname(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath)), {
-        recursive: true,
-      });
-      if (
-        await writeJsonStableIfChanged(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath), {
-          schema_version: 1,
-          kind: "task_knowledge_proposal_selection",
-          proposal_id: proposal.id,
-          source_task_id: proposal.source_task_id,
-          source_digest: proposal.source_digest,
-          source_refs: proposal.source_refs,
-          curator_task_id: extractionTaskId,
-          selected_at: queuedAt,
-          selected_by: "context.harvest.tasks",
-          publication_state: "not_published",
-        })
-      ) {
-        selectionReceiptPaths.push(receiptPath);
       }
     }
+    const createdTaskIds: string[] = [];
+    const taskPackPaths: string[] = [];
+    for (const plan of plans) {
+      const created: TaskCreationResult = await createTask({
+        ctx: opts.ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        parsed: plan.parsed,
+        printTaskId: false,
+      });
+      const createdTaskId = created.task_id;
+      await writeContextTaskPack({
+        root: opts.ctx.resolvedProject.gitRoot,
+        taskId: createdTaskId,
+        sources: plan.source_task_ids.flatMap((sourceTaskId) => {
+          const rows = opts.sourceRowsByTask.get(sourceTaskId);
+          if (rows) return rows;
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message: `Task knowledge proposal source set is missing: ${sourceTaskId}`,
+          });
+        }),
+        creation: created,
+      });
+      const taskRoot = `.agentplane/tasks/${createdTaskId}`;
+      taskPackPaths.push(
+        `${taskRoot}/task-creation.json`,
+        `${taskRoot}/context-pack.md`,
+        `${taskRoot}/extraction-contract.json`,
+        `${taskRoot}/canonical-snapshot.json`,
+        `${taskRoot}/canonical-entity-catalog.json`,
+        `${taskRoot}/canonical-reconciliation-candidates.json`,
+        `${taskRoot}/source-set.lock.json`,
+        `${taskRoot}/source-spans.skeleton.jsonl`,
+        `${taskRoot}/expected-artifacts.json`,
+      );
+      createdTaskIds.push(createdTaskId);
+    }
+    const sourceChangedPaths: string[] = [];
+    const selectionReceiptPaths: string[] = [];
+    const queuedAt = new Date().toISOString();
+    const latestTasks = await opts.ctx.taskBackend.listTasks();
+    const latestById = new Map(
+      latestTasks
+        .filter((task): task is TaskData & { id: string; title: string; status: string } => {
+          return (
+            typeof task.id === "string" &&
+            typeof task.title === "string" &&
+            typeof task.status === "string"
+          );
+        })
+        .map((task) => [task.id, task]),
+    );
+    for (const plan of plans) {
+      const extractionTaskId = createdTaskIds[plan.batch_index - 1];
+      if (!extractionTaskId) continue;
+      for (const sourceTaskId of plan.source_task_ids) {
+        const task =
+          latestById.get(sourceTaskId) ??
+          opts.output.selected.find((candidate) => candidate.id === sourceTaskId);
+        if (!task) continue;
+        const marker = buildTaskExtractionMarker({
+          task,
+          queuedAt,
+          extractionTaskId,
+          batchIndex: plan.batch_index,
+          batchCount: plan.batch_count,
+          fingerprint: opts.sourceFingerprints.get(sourceTaskId),
+        });
+        const extensions = isRecord(task.extensions) ? task.extensions : {};
+        if (isRecord(extensions.context_task_extraction)) {
+          const current = JSON.stringify(extensions.context_task_extraction);
+          if (current === JSON.stringify(marker)) continue;
+        }
+        await opts.ctx.taskBackend.writeTask({
+          ...task,
+          extensions: {
+            ...extensions,
+            context_task_extraction: marker,
+          },
+        });
+        sourceChangedPaths.push(`.agentplane/tasks/${task.id}/README.md`);
+        const proposal = opts.output.proposals.find(
+          (candidate) => candidate.source_task_id === sourceTaskId,
+        );
+        if (!proposal) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message: `Cannot select task knowledge proposal for ${sourceTaskId}: proposal record is missing.`,
+          });
+        }
+        const receiptPath = `.agentplane/context/derived/proposals/task-knowledge/${proposal.id}.selection.json`;
+        await mkdir(path.dirname(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath)), {
+          recursive: true,
+        });
+        if (
+          await writeJsonStableIfChanged(path.join(opts.ctx.resolvedProject.gitRoot, receiptPath), {
+            schema_version: 1,
+            kind: "task_knowledge_proposal_selection",
+            proposal_id: proposal.id,
+            source_task_id: proposal.source_task_id,
+            source_digest: proposal.source_digest,
+            source_refs: proposal.source_refs,
+            curator_task_id: extractionTaskId,
+            selected_at: queuedAt,
+            selected_by: "context.harvest.tasks",
+            publication_state: "not_published",
+          })
+        ) {
+          selectionReceiptPaths.push(receiptPath);
+        }
+      }
+    }
+    return {
+      plans,
+      taskIds: createdTaskIds,
+      changedPaths: [
+        ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
+        ...taskPackPaths,
+        ...sourceChangedPaths,
+        ...selectionReceiptPaths,
+      ],
+    };
+  } finally {
+    await Promise.all(releases.map(async (release) => await release()));
   }
-  return {
-    plans,
-    taskIds: createdTaskIds,
-    changedPaths: [
-      ...createdTaskIds.map((taskId) => `.agentplane/tasks/${taskId}/README.md`),
-      ...taskPackPaths,
-      ...sourceChangedPaths,
-      ...selectionReceiptPaths,
-    ],
-  };
 }
 
 export async function cmdContextHarvestTasks(opts: {
@@ -297,13 +431,26 @@ export async function cmdContextHarvestTasks(opts: {
         "context harvest could not resolve the explicit task selection to one eligible knowledge proposal.",
     });
   }
-  const output = buildOutput(opts.parsed, selected);
+  const provenanceRefsByTask = await taskKnowledgeProvenanceRefs(root, selected);
+  const output = buildOutput(opts.parsed, selected, provenanceRefsByTask);
+  if (opts.parsed.createExtractionTasks && output.proposals.length !== 1) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        "context harvest could not create a CURATOR work order because the explicit task selection has no durable, source-backed knowledge signal.",
+    });
+  }
   const shouldWrite = opts.parsed.writeProposals || opts.parsed.createExtractionTasks;
   const shouldCreateExtractionTasks = opts.parsed.createExtractionTasks;
 
   if (!opts.parsed.dryRun && (shouldWrite || shouldCreateExtractionTasks)) {
     await assertContextWorkspaceReady(root);
   }
+  const written =
+    opts.parsed.dryRun || !shouldWrite
+      ? []
+      : [...(await writeOutputs(root, output)), ...(await writeTaskMarkers(ctx, output))];
   const sourceRowsByTask =
     opts.parsed.dryRun || !shouldCreateExtractionTasks
       ? new Map<string, ManifestEntry[]>()
@@ -315,11 +462,6 @@ export async function cmdContextHarvestTasks(opts: {
             ),
           ),
         );
-
-  const written =
-    opts.parsed.dryRun || !shouldWrite
-      ? []
-      : [...(await writeOutputs(root, output)), ...(await writeTaskMarkers(ctx, output))];
   const extraction =
     opts.parsed.dryRun || !shouldCreateExtractionTasks
       ? {
