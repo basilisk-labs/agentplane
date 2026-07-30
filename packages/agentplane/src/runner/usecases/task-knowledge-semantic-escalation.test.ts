@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   selectSemanticRetrievalCandidates,
+  type SemanticRetrievalEscalationReason,
   type SemanticRetrievalSelectionCandidate,
   type SemanticRetrievalSelectionWorkOrder,
 } from "./task-knowledge-semantic-escalation.js";
@@ -95,9 +96,9 @@ describe("selectSemanticRetrievalCandidates", () => {
       reason: "broad_synthesis",
     },
   ])("invokes exactly one bounded selector episode for $name", async (fixture) => {
-    const selector = vi.fn(async (workOrder: SemanticRetrievalSelectionWorkOrder) =>
-      response(workOrder, [workOrder.candidates.at(-1)!]),
-    );
+    const selector = vi.fn((workOrder: SemanticRetrievalSelectionWorkOrder) => {
+      return Promise.resolve(response(workOrder, [workOrder.candidates.at(-1)!]));
+    });
     const result = await selectSemanticRetrievalCandidates({
       candidates: fixture.candidates,
       collected_candidate_count: fixture.collected_candidate_count,
@@ -106,10 +107,10 @@ describe("selectSemanticRetrievalCandidates", () => {
     });
 
     expect(selector).toHaveBeenCalledTimes(1);
-    const workOrder = selector.mock.calls[0]?.[0];
+    const workOrder = result.receipt.work_order;
+    if (!workOrder) throw new Error("selector work order was not captured");
     expect(workOrder).toMatchObject({
       kind: "task_knowledge_selection",
-      trigger: { reasons: expect.arrayContaining([fixture.reason]) },
       authority: {
         network: "deny",
         max_selector_episodes: 1,
@@ -117,7 +118,10 @@ describe("selectSemanticRetrievalCandidates", () => {
         max_selected_references: 12,
       },
     });
-    expect(workOrder?.candidates).toHaveLength(fixture.candidates.length);
+    expect(workOrder.trigger.reasons).toContain(
+      fixture.reason as SemanticRetrievalEscalationReason,
+    );
+    expect(workOrder.candidates).toHaveLength(fixture.candidates.length);
     expect(result.receipt).toMatchObject({
       state: "selected",
       selected: { source: "semantic_selector" },
@@ -134,25 +138,25 @@ describe("selectSemanticRetrievalCandidates", () => {
   it.each([
     {
       name: "stale candidate set",
-      selector: async (workOrder: SemanticRetrievalSelectionWorkOrder) => ({
-        ...response(workOrder),
-        candidate_set_digest: "sha256:stale",
-      }),
+      selector: (workOrder: SemanticRetrievalSelectionWorkOrder) =>
+        Promise.resolve({
+          ...response(workOrder),
+          candidate_set_digest: "sha256:stale",
+        }),
       failure: "candidate_set_stale",
     },
     {
       name: "unknown candidate",
-      selector: async (workOrder: SemanticRetrievalSelectionWorkOrder) => ({
-        ...response(workOrder),
-        selected: [{ ref: "context/wiki/unknown.md", digest: "sha256:unknown" }],
-      }),
+      selector: (workOrder: SemanticRetrievalSelectionWorkOrder) =>
+        Promise.resolve({
+          ...response(workOrder),
+          selected: [{ ref: "context/wiki/unknown.md", digest: "sha256:unknown" }],
+        }),
       failure: "invalid_selection",
     },
     {
       name: "selector failure",
-      selector: async () => {
-        throw new Error("provider unavailable");
-      },
+      selector: () => Promise.reject(new Error("provider unavailable")),
       failure: "selector_failed",
     },
   ])("falls back to deterministic retrieval after $name", async (fixture) => {

@@ -6,7 +6,7 @@ export const SEMANTIC_RETRIEVAL_SELECTION_LIMITS = {
   max_selector_episodes: 1,
   max_candidates: 12,
   max_selected_references: 12,
-  max_input_tokens: 2_048,
+  max_input_tokens: 2048,
   max_output_tokens: 512,
   low_confidence_top_score: 0.7,
   conflicting_domain_score_delta: 0.1,
@@ -171,10 +171,11 @@ function escalationReasons(opts: {
               candidate.score >=
               topScore - SEMANTIC_RETRIEVAL_SELECTION_LIMITS.conflicting_domain_score_delta,
           )
-          .map(domain),
+          .map((candidate) => domain(candidate)),
   );
   const distinctQuerySignalCount = signalCount(opts.queries);
-  const materializedDomainCount = new Set(opts.candidates.map(domain)).size;
+  const materializedDomainCount = new Set(opts.candidates.map((candidate) => domain(candidate)))
+    .size;
   const reasons: SemanticRetrievalEscalationReason[] = [];
   if (opts.collected_candidate_count > SEMANTIC_RETRIEVAL_SELECTION_LIMITS.max_candidates) {
     reasons.push("candidate_set_oversized");

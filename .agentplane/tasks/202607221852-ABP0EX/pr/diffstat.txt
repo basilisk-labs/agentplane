@@ -2,6 +2,6 @@
  .../src/runner/usecases/agent-work-order.ts        |   7 +-
  .../usecases/task-knowledge-retrieval-query.ts     |   2 +
  .../runner/usecases/task-knowledge-retrieval.ts    |  38 +-
- .../task-knowledge-semantic-escalation.test.ts     | 191 ++++++++
- .../usecases/task-knowledge-semantic-escalation.ts | 493 +++++++++++++++++++++
- 6 files changed, 780 insertions(+), 5 deletions(-)
+ .../task-knowledge-semantic-escalation.test.ts     | 195 ++++++++
+ .../usecases/task-knowledge-semantic-escalation.ts | 494 +++++++++++++++++++++
+ 6 files changed, 785 insertions(+), 5 deletions(-)
