@@ -1,6 +1,8 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { canonicalizeJson } from "@agentplaneorg/core/tasks";
 import { mkGitRepoRoot, writeDefaultConfig } from "@agentplane/testkit";
 import { describe, expect, it } from "vitest";
 
@@ -13,6 +15,7 @@ import {
   isQualificationTask,
 } from "../task/qualification-packet.js";
 import { resolveQualificationDependencyLeaves } from "../task/qualification-packet-dependencies.js";
+import { readQualificationRf04CandidateMeasurement } from "../task/qualification-packet-rf04.js";
 import { cmdVerifyParsed } from "../task/verify-record.js";
 
 import {
@@ -21,6 +24,77 @@ import {
   execFileAsync,
   prepareTypedReview,
 } from "./evaluator-test-helpers.js";
+
+const CANDIDATE_EVIDENCE_PATH =
+  "scripts/baselines/agent-efficiency-v0.7-beta1-candidate.json";
+
+function canonicalSha256(value: unknown): `sha256:${string}` {
+  return `sha256:${createHash("sha256")
+    .update(JSON.stringify(canonicalizeJson(value)))
+    .digest("hex")}`;
+}
+
+function candidateEvidenceDocument(opts?: {
+  candidateRuntimeVersion?: string;
+  candidateSubjectSha?: string;
+}) {
+  const baselineRuntimeVersion = "0.6.24/codex-0.146.0-alpha.3.1";
+  const candidateRuntimeVersion = opts?.candidateRuntimeVersion ?? baselineRuntimeVersion;
+  const profile = (runtimeVersion: string) => ({
+    adapter_id: "codex-exec-jsonl-supervisor",
+    cache_mode: "ephemeral-provider-default",
+    model_id: "gpt-5.6-terra",
+    provider_id: "openai-chatgpt",
+    reasoning_effort: "low",
+    runtime_id: "agentplane-anchor-cli-preparation/codex-cli-execution",
+    runtime_version: runtimeVersion,
+    sandbox_mode: "workspace-write-network-disabled",
+  });
+  const measurement = {
+    schema_version: 1,
+    kind: "agent_efficiency_candidate_measurement_v1",
+    baseline: {
+      source: "runtime_bridge",
+      subject_sha: "a".repeat(40),
+      runtime_profile: profile(baselineRuntimeVersion),
+    },
+    candidate: {
+      subject_sha: opts?.candidateSubjectSha ?? "b".repeat(40),
+      runtime_profile: profile(candidateRuntimeVersion),
+      coverage: { replay_runs: 50, scenarios: 10 },
+      actual_values: { provider_episodes: 55 },
+    },
+    runtime_comparison: {
+      baseline: baselineRuntimeVersion,
+      candidate: candidateRuntimeVersion,
+      profile_match: true,
+    },
+    comparisons: [
+      { id: "runtime.profile", verdict: "pass" },
+      { id: "latency.harness_setup_latency_ms.mean_ms", verdict: "fail" },
+    ],
+    failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+    verdict: "fail",
+  };
+  return {
+    schema_version: 1,
+    kind: "agentplane.rf04.qualification_candidate_evidence",
+    source: {
+      task_id: "202607292104-W03KZ0",
+      task_artifact_commit: "c".repeat(40),
+      measurement_source_sha256: `sha256:${"d".repeat(64)}`,
+      measurement_canonical_sha256: canonicalSha256(measurement),
+    },
+    measurement,
+  };
+}
+
+async function writeCandidateEvidence(root: string, document = candidateEvidenceDocument()) {
+  const filePath = path.join(root, CANDIDATE_EVIDENCE_PATH);
+  await mkdir(path.dirname(filePath), { recursive: true });
+  await writeFile(filePath, `${JSON.stringify(document, null, 2)}\n`, "utf8");
+  return filePath;
+}
 
 describe("evaluator qualification packet", () => {
   it("classifies the beta milestone taxonomy without promoting technical support tasks", () => {
@@ -60,6 +134,67 @@ describe("evaluator qualification packet", () => {
         loadTask: backend.getTask,
       }),
     ).rejects.toThrow("Qualification dependency cycle detected");
+  });
+
+  it("requires sealed, matched-runtime RF-04 candidate evidence and preserves a failed verdict", async () => {
+    const root = await mkGitRepoRoot();
+    const evidencePath = await writeCandidateEvidence(root);
+    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: add RF-04 candidate evidence"], {
+      cwd: root,
+    });
+    const { stdout: validShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    const validSha = validShaOutput.trim();
+    await expect(
+      readQualificationRf04CandidateMeasurement({ gitRoot: root, reviewedSha: validSha }),
+    ).resolves.toMatchObject({
+      coverage: { replay_runs: 50, scenarios: 10, provider_episodes: 55 },
+      verdict: "fail",
+      failure_ids: ["latency.harness_setup_latency_ms.mean_ms"],
+      qualification_decision: "do_not_publish",
+    });
+
+    await writeCandidateEvidence(
+      root,
+      candidateEvidenceDocument({ candidateRuntimeVersion: "0.6.24/codex-0.146.0-alpha.3.2" }),
+    );
+    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: cross-runtime RF-04 evidence"], {
+      cwd: root,
+    });
+    const { stdout: crossRuntimeShaOutput } = await execFileAsync(
+      "git",
+      ["rev-parse", "HEAD"],
+      { cwd: root },
+    );
+    await expect(
+      readQualificationRf04CandidateMeasurement({
+        gitRoot: root,
+        reviewedSha: crossRuntimeShaOutput.trim(),
+      }),
+    ).rejects.toThrow("requires an exact matched runtime profile");
+
+    await writeCandidateEvidence(root, candidateEvidenceDocument({ candidateSubjectSha: "invalid" }));
+    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: invalid RF-04 candidate SHA"], {
+      cwd: root,
+    });
+    const { stdout: invalidShaOutput } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    await expect(
+      readQualificationRf04CandidateMeasurement({
+        gitRoot: root,
+        reviewedSha: invalidShaOutput.trim(),
+      }),
+    ).rejects.toThrow("invalid candidate.subject_sha");
+
+    await rm(evidencePath);
+    await expect(
+      readQualificationRf04CandidateMeasurement({ gitRoot: root, reviewedSha: validSha }),
+    ).rejects.toThrow("no such file or directory");
   });
 
   it("makes non-qualification explicit in frozen evaluator checks", async () => {
@@ -411,6 +546,11 @@ describe("evaluator qualification packet", () => {
     });
     await execFileAsync("git", ["add", "--", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "test: restore leaf evaluator state"], {
+      cwd: root,
+    });
+    await writeCandidateEvidence(root);
+    await execFileAsync("git", ["add", "--", CANDIDATE_EVIDENCE_PATH], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "test: pin RF-04 candidate evidence"], {
       cwd: root,
     });
     const reviewedSha = await commitPath(

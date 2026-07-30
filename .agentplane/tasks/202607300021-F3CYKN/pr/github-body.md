@@ -22,12 +22,16 @@ Make the beta.1 qualification packet consume commit-owned, SHA-bound RF-04 candi
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T00:24:17.976Z
+- Updated: 2026-07-30T00:25:08.421Z
 - Branch: task/202607300021-F3CYKN/bind-rf-04-candidate-evidence-to-the-beta-1-qual
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../evaluator-qualification-packet.test.ts         | 142 +++++++++-
+ .../src/commands/task/qualification-packet-rf04.ts | 278 ++++++++++++++++++-
+ .../src/commands/task/qualification-packet.ts      |   6 +
+ .../agent-efficiency-v0.7-beta1-candidate.json     | 304 +++++++++++++++++++++
+ 4 files changed, 728 insertions(+), 2 deletions(-)
 ```
 
 </details>
