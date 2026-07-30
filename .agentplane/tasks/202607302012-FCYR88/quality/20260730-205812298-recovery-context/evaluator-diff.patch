@@ -1,0 +1,1303 @@
+diff --git a/.agentplane/tasks/202607302012-FCYR88/README.md b/.agentplane/tasks/202607302012-FCYR88/README.md
+new file mode 100644
+index 000000000..0b2acdfac
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/README.md
+@@ -0,0 +1,315 @@
++---
++id: "202607302012-FCYR88"
++title: "Unblock protected-base conflict rework after main advancement"
++result_summary: "pre-merge closure"
++status: "DONE"
++priority: "high"
++owner: "CODER"
++revision: 10
++origin:
++  system: "manual"
++depends_on: []
++tags:
++  - "branch-pr"
++  - "code"
++  - "conflict-rework"
++  - "followup"
++  - "release-blocker"
++  - "v0.7"
++task_kind: "code"
++mutation_scope: "code"
++blueprint_request: "code.branch_pr"
++verify:
++  - "bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism"
++  - "bun run test:critical"
++  - "bun run typecheck"
++plan_approval:
++  state: "approved"
++  updated_at: "2026-07-30T20:12:34.537Z"
++  updated_by: "ORCHESTRATOR"
++  note: null
++verification:
++  state: "ok"
++  updated_at: "2026-07-30T20:34:18.525Z"
++  updated_by: "CODER"
++  note: "Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head."
++  attempts: 0
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-30T20:37:35.166Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 1 typed finding(s)."
++  evaluated_sha: "2d9696d797ee04e2d74e1ac0edb5d866d08f2da2"
++  blueprint_digest: "9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2"
++  evidence_refs:
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607302012-FCYR88/README.md"
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "No blocking defect found in the reviewed source diff. The added tests cover both the advanced-base topology and the prior equal-base regression."
++commit:
++  hash: "f6e1e6293f0043ba5da446b3a91096313b95c5e5"
++  message: "🧪 FCYR88 task: refresh equal-base evaluation"
++comments:
++  -
++    author: "CODER"
++    body: "Start: repair protected-base conflict rework routing after main advanced."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T20:13:03.894Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: repair protected-base conflict rework routing after main advanced."
++  -
++    type: "verify"
++    at: "2026-07-30T20:22:00.707Z"
++    author: "CODER"
++    state: "ok"
++    note: "Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green."
++  -
++    type: "status"
++    at: "2026-07-30T20:24:17.364Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "verify"
++    at: "2026-07-30T20:34:18.525Z"
++    author: "CODER"
++    state: "ok"
++    note: "Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head."
++  -
++    type: "status"
++    at: "2026-07-30T20:38:49.935Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DONE"
++    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++doc_version: 3
++doc_updated_at: "2026-07-30T20:38:49.936Z"
++doc_updated_by: "CODER"
++description: "Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668."
++sections:
++  Summary: |-
++    Unblock protected-base conflict rework after main advancement
++
++    Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
++  Scope: |-
++    - In scope: Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
++    - Out of scope: unrelated refactors not required for "Unblock protected-base conflict rework after main advancement".
++  Plan: "1. Reproduce the protected-base base-advancement state using a current provider head, INTEGRATOR handoff, queue rework state, and advanced local main. 2. Change only conflict-route eligibility/preparation so current provider-base handoffs either yield the formal adoption receipt or a bounded semantic-rework packet; CLI must not auto-rebase, auto-merge, force-push, or choose conflict hunks. 3. Add focused coverage for current provider-base and legacy absent-base handoffs, including stale-token rejection. 4. Run the declared focused test, typecheck, critical suite, record verifier/evaluator evidence, and integrate through the normal PR queue."
++  Verify Steps: |-
++    PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++
++    1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.
++    2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
++    3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.
++    4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
++    5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
++  Verification: |-
++    <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-30T20:22:00.707Z — VERIFY — ok
++
++    By: CODER
++
++    Note: Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T20:13:03.894Z, excerpt_hash=sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302012-FCYR88-protected-base-conflict-rework/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
++    - old_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++    - current_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607302012-FCYR88
++
++    DecisionContextRef:
++    - operator_action: provider_action
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    ### 2026-07-30T20:34:18.525Z — VERIFY — ok
++
++    By: CODER
++
++    Note: Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T20:24:17.365Z, excerpt_hash=sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302012-FCYR88-protected-base-conflict-rework/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
++    - old_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++    - current_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607302012-FCYR88
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: none
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
++    <!-- END VERIFICATION RESULTS -->
++  Rollback Plan: |-
++    - Revert task-related commit(s).
++    - Re-run required checks to confirm rollback safety.
++  Findings: |-
++    - Observation: A verified INTEGRATOR handoff with a known provider base and a rework queue now yields a bounded read-only packet after strict provider-to-queue-to-current ancestry checks.
++      Impact: A main advancement no longer deadlocks semantic conflict routing; the CLI still leaves rebase, merge, and hunk decisions to the executing agent.
++      Resolution: Continue with independent evaluator review and normal PR lifecycle.
++
++    - Observation: Equal-base rework retains the ordinary protected-handoff path; ancestry reconciliation is now used only when main actually advanced.
++      Impact: The route preserves both current same-base recovery and bounded base-advanced recovery without CLI semantic mutation.
++      Resolution: Refresh independent evaluator evidence and pre-merge closure before publishing the review fix.
++extensions:
++  implementation_commit:
++    hash: "2d9696d797ee04e2d74e1ac0edb5d866d08f2da2"
++    message: "🐛 FCYR88 code: preserve equal-base conflict routing"
++  workflow_route_baseline:
++    start_head_sha: "ce7af971c0609eed73710cd239a3f2897ae3bd7e"
++    version: 1
++id_source: "generated"
++---
++## Summary
++
++Unblock protected-base conflict rework after main advancement
++
++Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
++
++## Scope
++
++- In scope: Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
++- Out of scope: unrelated refactors not required for "Unblock protected-base conflict rework after main advancement".
++
++## Plan
++
++1. Reproduce the protected-base base-advancement state using a current provider head, INTEGRATOR handoff, queue rework state, and advanced local main. 2. Change only conflict-route eligibility/preparation so current provider-base handoffs either yield the formal adoption receipt or a bounded semantic-rework packet; CLI must not auto-rebase, auto-merge, force-push, or choose conflict hunks. 3. Add focused coverage for current provider-base and legacy absent-base handoffs, including stale-token rejection. 4. Run the declared focused test, typecheck, critical suite, record verifier/evaluator evidence, and integrate through the normal PR queue.
++
++## Verify Steps
++
++PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.
++
++1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.
++2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.
++3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.
++4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.
++5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.
++
++## Verification
++
++<!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-30T20:22:00.707Z — VERIFY — ok
++
++By: CODER
++
++Note: Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T20:13:03.894Z, excerpt_hash=sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302012-FCYR88-protected-base-conflict-rework/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
++- old_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++- current_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607302012-FCYR88
++
++DecisionContextRef:
++- operator_action: provider_action
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++### 2026-07-30T20:34:18.525Z — VERIFY — ok
++
++By: CODER
++
++Note: Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T20:24:17.365Z, excerpt_hash=sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607302012-FCYR88-protected-base-conflict-rework/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
++- old_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++- current_digest: 9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607302012-FCYR88
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: none
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
++<!-- END VERIFICATION RESULTS -->
++
++## Rollback Plan
++
++- Revert task-related commit(s).
++- Re-run required checks to confirm rollback safety.
++
++## Findings
++
++- Observation: A verified INTEGRATOR handoff with a known provider base and a rework queue now yields a bounded read-only packet after strict provider-to-queue-to-current ancestry checks.
++  Impact: A main advancement no longer deadlocks semantic conflict routing; the CLI still leaves rebase, merge, and hunk decisions to the executing agent.
++  Resolution: Continue with independent evaluator review and normal PR lifecycle.
++
++- Observation: Equal-base rework retains the ordinary protected-handoff path; ancestry reconciliation is now used only when main actually advanced.
++  Impact: The route preserves both current same-base recovery and bounded base-advanced recovery without CLI semantic mutation.
++  Resolution: Refresh independent evaluator evidence and pre-merge closure before publishing the review fix.
+diff --git a/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..c738ea0c9
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/blueprint/resolved-snapshot.json
+@@ -0,0 +1,582 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607302012-FCYR88",
++    "title": "Unblock protected-base conflict rework after main advancement",
++    "description": "Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.",
++    "tags": [
++      "branch-pr",
++      "code",
++      "conflict-rework",
++      "followup",
++      "release-blocker",
++      "v0.7"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "code.branch_pr"
++  },
++  "selectedBlueprint": {
++    "id": "code.branch_pr",
++    "version": 1,
++    "title": "Branch PR code change",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "code.branch_pr",
++    "blueprintVersion": 1,
++    "title": "Branch PR code change",
++    "taskId": "202607302012-FCYR88",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "code.branch_pr"
++    },
++    "whySelected": [
++      "explicit blueprint requested: code.branch_pr",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "code_pr.paths",
++        "kind": "changed_paths",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Changed source paths."
++      },
++      {
++        "id": "code_pr.fast_checks",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Fast local checks."
++      },
++      {
++        "id": "code_pr.pr",
++        "kind": "external_link",
++        "producedBy": "pr_artifact",
++        "required": true,
++        "description": "Pull request artifact."
++      },
++      {
++        "id": "code_pr.verify",
++        "kind": "check_result",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Task branch verification."
++      },
++      {
++        "id": "code_pr.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "code_pr.hosted",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Hosted check evidence."
++      },
++      {
++        "id": "code_pr.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 14,
++      "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "code_pr.paths",
++      "kind": "changed_paths",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Changed source paths."
++    },
++    {
++      "id": "code_pr.fast_checks",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Fast local checks."
++    },
++    {
++      "id": "code_pr.pr",
++      "kind": "external_link",
++      "producedBy": "pr_artifact",
++      "required": true,
++      "description": "Pull request artifact."
++    },
++    {
++      "id": "code_pr.verify",
++      "kind": "check_result",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Task branch verification."
++    },
++    {
++      "id": "code_pr.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "code_pr.hosted",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Hosted check evidence."
++    },
++    {
++      "id": "code_pr.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 14,
++    "rationale": "Branch PR code work needs code DoD, branch_pr route policy, and evidence checks."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: code.branch_pr",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2"
++  }
++}
+diff --git a/.agentplane/tasks/202607302012-FCYR88/pr/diffstat.txt b/.agentplane/tasks/202607302012-FCYR88/pr/diffstat.txt
+new file mode 100644
+index 000000000..a8ed531cb
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/pr/diffstat.txt
+@@ -0,0 +1,6 @@
++ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |  2 +-
++ .../src/commands/pr/conflict-rework-legacy.ts      | 21 +++++++
++ .../pr/conflict-rework-route-eligibility.ts        | 26 +++++++++
++ .../pr/conflict-rework.legacy-base.test.ts         | 68 ++++++++++++++++++++++
++ .../agentplane/src/commands/pr/conflict-rework.ts  |  7 ++-
++ 5 files changed, 122 insertions(+), 2 deletions(-)
+diff --git a/.agentplane/tasks/202607302012-FCYR88/pr/github-body.md b/.agentplane/tasks/202607302012-FCYR88/pr/github-body.md
+new file mode 100644
+index 000000000..b93646903
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/pr/github-body.md
+@@ -0,0 +1,43 @@
++Task: `202607302012-FCYR88`
++Title: Unblock protected-base conflict rework after main advancement
++Canonical task record: `.agentplane/tasks/202607302012-FCYR88/README.md`
++
++## Summary
++
++Unblock protected-base conflict rework after main advancement
++
++Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
++
++## Scope
++
++- In scope: Repair branch_pr conflict-rework routing when a protected-base PR retains a verified INTEGRATOR handoff but the provider base SHA is behind current main. Preserve the CLI/agent boundary: CLI may derive the bounded packet and adoption evidence, but must never auto-rebase, merge, force-push, or select semantic conflict hunks. This unblocks beta.1 PR #4668.
++- Out of scope: unrelated refactors not required for "Unblock protected-base conflict rework after main advancement".
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted
++format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T20:23:18.010Z
++- Branch: task/202607302012-FCYR88/protected-base-conflict-rework
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |  2 +-
++ .../src/commands/pr/conflict-rework-legacy.ts      | 21 +++++++
++ .../pr/conflict-rework-route-eligibility.ts        | 26 +++++++++
++ .../pr/conflict-rework.legacy-base.test.ts         | 68 ++++++++++++++++++++++
++ .../agentplane/src/commands/pr/conflict-rework.ts  |  7 ++-
++ 5 files changed, 122 insertions(+), 2 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607302012-FCYR88/pr/github-title.txt b/.agentplane/tasks/202607302012-FCYR88/pr/github-title.txt
+new file mode 100644
+index 000000000..abd53a51a
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/pr/github-title.txt
+@@ -0,0 +1 @@
++✅ FCYR88 task: Unblock protected-base conflict rework after main advancement [202607302012-FCYR88]
+diff --git a/.agentplane/tasks/202607302012-FCYR88/pr/meta.json b/.agentplane/tasks/202607302012-FCYR88/pr/meta.json
+new file mode 100644
+index 000000000..d8e8866c8
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607302012-FCYR88/protected-base-conflict-rework",
++  "created_at": "2026-07-30T20:13:04.252Z",
++  "diffstat_sha256": "sha256:7f10560f5ad9adb0a5ac19ddb51151938be98c8d30ef19a895f04d7915c1898b",
++  "last_verified_at": "2026-07-30T20:34:18.525Z",
++  "last_verified_diffstat_sha256": "sha256:6b457a305ab1fc409be8e96ae142d6134c185b53e75415e2700640d0350b9d16",
++  "pr_number": 4695,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4695",
++  "pre_merge_closure": {
++    "basis_commit": "f6e1e6293f0043ba5da446b3a91096313b95c5e5",
++    "branch": "task/202607302012-FCYR88/protected-base-conflict-rework",
++    "pr_number": 4695,
++    "recorded_at": "2026-07-30T20:38:50.019Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607302012-FCYR88",
++  "updated_at": "2026-07-30T20:23:18.010Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607302012-FCYR88/pr/review.md b/.agentplane/tasks/202607302012-FCYR88/pr/review.md
+new file mode 100644
+index 000000000..312511419
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/pr/review.md
+@@ -0,0 +1,41 @@
++# PR Review
++
++Created: 2026-07-30T20:13:04.252Z
++
++## Task
++
++- Task: `202607302012-FCYR88`
++- Title: Unblock protected-base conflict rework after main advancement
++- Status: DONE
++- Branch: `task/202607302012-FCYR88/protected-base-conflict-rework`
++- Canonical task record: `.agentplane/tasks/202607302012-FCYR88/README.md`
++
++## Verification
++
++- State: ok
++- Note: Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T20:23:18.010Z
++- Branch: task/202607302012-FCYR88/protected-base-conflict-rework
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../cli/run-cli.core.pr-flow.pr-validation.test.ts |  2 +-
++ .../src/commands/pr/conflict-rework-legacy.ts      | 21 +++++++
++ .../pr/conflict-rework-route-eligibility.ts        | 26 +++++++++
++ .../pr/conflict-rework.legacy-base.test.ts         | 68 ++++++++++++++++++++++
++ .../agentplane/src/commands/pr/conflict-rework.ts  |  7 ++-
++ 5 files changed, 122 insertions(+), 2 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607302012-FCYR88/verification/20260730202200707-4b3da0745fed2ac3.json b/.agentplane/tasks/202607302012-FCYR88/verification/20260730202200707-4b3da0745fed2ac3.json
+new file mode 100644
+index 000000000..1f0818451
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/verification/20260730202200707-4b3da0745fed2ac3.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:4b3da0745fed2ac35bbee1301cd371d0b2ba5c2e0c4659bd6aaae853653478db",
++  "implementation_sha": "3f61098fd12e2a8359ed90d3aae50f8282ecce4f",
++  "kind": "task_verification_record",
++  "note": "Protected-base conflict route passed: focused legacy/current handoff regression 16 tests, typecheck, targeted ESLint and Prettier, and critical suite 12/12 (76 tests) are green.",
++  "recorded_at": "2026-07-30T20:22:00.707Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
++  "scope_digest": "sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c",
++  "task_id": "202607302012-FCYR88",
++  "verification_command": "agentplane verify 202607302012-FCYR88 --ok --by CODER",
++  "verifier": "CODER"
++}
+diff --git a/.agentplane/tasks/202607302012-FCYR88/verification/20260730203418525-f9bd82e398bb6956.json b/.agentplane/tasks/202607302012-FCYR88/verification/20260730203418525-f9bd82e398bb6956.json
+new file mode 100644
+index 000000000..3b4643716
+--- /dev/null
++++ b/.agentplane/tasks/202607302012-FCYR88/verification/20260730203418525-f9bd82e398bb6956.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:f9bd82e398bb6956f7a175fcba006fa7fd243cabcf1e936c9c13daf14a178cb5",
++  "implementation_sha": "2d9696d797ee04e2d74e1ac0edb5d866d08f2da2",
++  "kind": "task_verification_record",
++  "note": "Review fix verified: focused protected-base route regression 17 tests, typecheck, targeted format/lint, and critical suite 12/12 (76 tests) passed on the updated head.",
++  "recorded_at": "2026-07-30T20:34:18.525Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "PLANNER fallback scaffold. Replace with task-specific acceptance checks when PLANNER context is available.\n\n1. Run `bun run test -- packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts --maxWorkers=1 --no-file-parallelism`. Expected: it succeeds and confirms the requested outcome for this task.\n2. Run `bun run typecheck`. Expected: it succeeds and confirms the requested outcome for this task.\n3. Run `bun run test:critical`. Expected: it succeeds and confirms the requested outcome for this task.\n4. Review the changed artifact or behavior for the `code` task. Expected: the requested outcome is visible and matches the approved scope.\n5. Compare the final result against the task summary and touched scope. Expected: remaining follow-up is either resolved or explicit in ## Findings.",
++  "scope_digest": "sha256:22eade0b671a9f83f5c0ea2f3f907f2a0f576608fb804b0d2cecc7c02e02ba0c",
++  "task_id": "202607302012-FCYR88",
++  "verification_command": "agentplane verify 202607302012-FCYR88 --ok --by CODER",
++  "verifier": "CODER"
++}
+diff --git a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
+index 211408b1e..082c736df 100644
+--- a/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
++++ b/packages/agentplane/src/cli/run-cli.core.pr-flow.pr-validation.test.ts
+@@ -1090,7 +1090,7 @@ describe("runCli PR validation and hydration flow", { timeout: PR_FLOW_LONG_TIME
+       expect(code).toBe(2);
+       expect(io.stderr).toContain("Usage:");
+       expect(io.stderr).toContain(
+-        "agentplane pr <open|update|check|flow status|note|close|close-superseded>",
++        "agentplane pr <open|update|check|flow status|conflict-rework|note|close|close-superseded>",
+       );
+     } finally {
+       io.restore();
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-legacy.ts b/packages/agentplane/src/commands/pr/conflict-rework-legacy.ts
+index 1fdb9a3c0..41477ae4b 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework-legacy.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework-legacy.ts
+@@ -8,6 +8,16 @@ export type LegacyProtectedConflictRouteEvidence = Extract<
+   }
+ >;
+ 
++export type BaseAdvancedProtectedConflictRouteEvidence = Extract<
++  ConflictRouteEvidence,
++  {
++    kind:
++      | "current_protected_base_rework"
++      | "legacy_unadopted_protected_base_handoff"
++      | "legacy_adopted_protected_base_handoff";
++  }
++>;
++
+ type MergeBaseGitOps = {
+   mergeBase: (gitRoot: string, left: string, right: string) => Promise<string>;
+ };
+@@ -21,6 +31,17 @@ export function isLegacyProtectedConflictRoute(
+   );
+ }
+ 
++export function isBaseAdvancedProtectedConflictRoute(
++  routeEvidence: ConflictRouteEvidence,
++  localBaseSha: string,
++  providerBaseSha: string,
++): routeEvidence is BaseAdvancedProtectedConflictRouteEvidence {
++  return (
++    isLegacyProtectedConflictRoute(routeEvidence) ||
++    (routeEvidence.kind === "current_protected_base_rework" && localBaseSha !== providerBaseSha)
++  );
++}
++
+ export async function localAncestry(opts: {
+   gitRoot: string;
+   gitOps: MergeBaseGitOps;
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts b/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
+index 4c6e80efa..eddc243fb 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework-route-eligibility.ts
+@@ -47,6 +47,12 @@ type LegacyAdoptedConflictRouteEvidence = {
+   adoption: LegacyProtectedConflictAdoptionReceipt;
+ };
+ 
++type CurrentProtectedBaseReworkRouteEvidence = {
++  kind: "current_protected_base_rework";
++  queue: ConflictRouteEvidenceQueue;
++  handoff: ConflictRouteEvidenceHandoff;
++};
++
+ export type ConflictRouteEvidence =
+   | {
+       kind: "current_queue";
+@@ -58,6 +64,7 @@ export type ConflictRouteEvidence =
+       queue: null;
+       handoff: ConflictRouteEvidenceHandoff;
+     }
++  | CurrentProtectedBaseReworkRouteEvidence
+   | LegacyAdoptedConflictRouteEvidence
+   | LegacyUnadoptedConflictRouteEvidence;
+ 
+@@ -245,6 +252,25 @@ export function resolveConflictRouteEligibility(opts: {
+ 
+   const handoff = matchingProtectedBaseHandoff(opts.report, opts.identity);
+   const handoffEvidenceValue = handoff ? handoffEvidence(handoff) : null;
++  if (
++    queue?.status === "rework" &&
++    handoffEvidenceValue?.provider_base_sha_state === "present" &&
++    handoffEvidenceValue.provider_base_sha === opts.identity.providerBase &&
++    handoffEvidenceValue.created_at !== null &&
++    handoffEvidenceValue.from_role === "INTEGRATOR"
++  ) {
++    const evidence = queueEvidence({ queue, status: "rework" });
++    if (evidence) {
++      return {
++        state: "eligible",
++        evidence: {
++          kind: "current_protected_base_rework",
++          queue: evidence,
++          handoff: handoffEvidenceValue,
++        },
++      };
++    }
++  }
+   if (
+     handoffEvidenceValue?.provider_base_sha_state === "present" &&
+     handoffEvidenceValue.provider_base_sha === opts.identity.providerBase
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts b/packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts
+index daf4c861e..3e58dd059 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.legacy-base.test.ts
+@@ -214,6 +214,74 @@ function prepare(opts: { report?: PrFlowStatusReport; git?: ReturnType<typeof le
+ }
+ 
+ describe("legacy protected conflict-base reconciliation", () => {
++  it("prepares a bounded packet when a current protected handoff records the provider base", async () => {
++    const current = report();
++    if (!current.queue.present || !current.handoff.present) throw new Error("fixture error");
++    current.queue.legacyProtectedConflictAdoption = null;
++    current.handoff = {
++      ...current.handoff,
++      routeProviderBaseSha: providerBaseSha,
++      routeProviderBaseShaState: "present",
++    };
++    const git = legacyGit();
++
++    const prepared = await prepare({ git, report: current });
++
++    expect(prepared).toMatchObject({
++      state: "ready",
++      packet: {
++        route_evidence: {
++          kind: "current_protected_base_rework",
++          queue: { status: "rework", base_sha: queueBaseSha },
++          handoff: { provider_base_sha: providerBaseSha, provider_base_sha_state: "present" },
++        },
++        base_context: {
++          provider_conflict_base_sha: providerBaseSha,
++          current_base_sha: currentBaseSha,
++          legacy_queue_base_sha: queueBaseSha,
++          relation: "provider_base_ancestor_of_current_base",
++        },
++      },
++    });
++    expect(git.calls.mergeBase).toEqual([
++      [providerBaseSha, queueBaseSha],
++      [queueBaseSha, currentBaseSha],
++      [currentBaseSha, headSha],
++    ]);
++  });
++
++  it("preserves equal-base current handoff eligibility when a rework queue is present", async () => {
++    const current = report();
++    if (!current.queue.present || !current.handoff.present) throw new Error("fixture error");
++    current.queue.legacyProtectedConflictAdoption = null;
++    current.handoff = {
++      ...current.handoff,
++      routeProviderBaseSha: providerBaseSha,
++      routeProviderBaseShaState: "present",
++    };
++    const git = legacyGit({
++      localBase: providerBaseSha,
++      mergeBases: { [key(providerBaseSha, headSha)]: conflictMergeBaseSha },
++      diffs: { [key(conflictMergeBaseSha, providerBaseSha)]: ["shared.ts"] },
++    });
++
++    const prepared = await prepare({ git, report: current });
++
++    expect(prepared).toMatchObject({
++      state: "ready",
++      packet: {
++        route_evidence: { kind: "current_protected_base_rework" },
++        base_context: {
++          provider_conflict_base_sha: providerBaseSha,
++          current_base_sha: providerBaseSha,
++          relation: "equal",
++          legacy_queue_base_sha: null,
++        },
++      },
++    });
++    expect(git.calls.mergeBase).toEqual([[providerBaseSha, headSha]]);
++  });
++
+   it("prepares a read-only packet only for the proven provider-to-queue-to-current topology", async () => {
+     const git = legacyGit();
+     const prepared = await prepare({ git });
+diff --git a/packages/agentplane/src/commands/pr/conflict-rework.ts b/packages/agentplane/src/commands/pr/conflict-rework.ts
+index fdfe69fa4..86f675dd5 100644
+--- a/packages/agentplane/src/commands/pr/conflict-rework.ts
++++ b/packages/agentplane/src/commands/pr/conflict-rework.ts
+@@ -16,6 +16,7 @@ import type { PrFlowStatusReport } from "./flow-status.js";
+ import { legacyProtectedConflictAdoptionToken } from "./integrate/queue-state.js";
+ import type { LegacyProtectedConflictAdoptionEvidence } from "./integrate/queue-state.js";
+ import {
++  isBaseAdvancedProtectedConflictRoute,
+   isLegacyProtectedConflictRoute,
+   legacyProtectedConflictAdoptionEvidence,
+   localAncestry,
+@@ -352,7 +353,11 @@ export async function prepareConflictReworkPacket(opts: {
+   if (!localBase.ok) return localBase.preparation;
+ 
+   const routeEvidence = routeEligibility.evidence;
+-  const baseContext = isLegacyProtectedConflictRoute(routeEvidence)
++  const baseContext = isBaseAdvancedProtectedConflictRoute(
++    routeEvidence,
++    localBase.value,
++    providerBase,
++  )
+     ? await (async () => {
+         const legacyQueueBase = routeEvidence.queue.base_sha;
+         if (localBase.value === providerBase) {

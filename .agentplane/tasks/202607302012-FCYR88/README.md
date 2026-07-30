@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 10
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -37,27 +37,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T20:37:35.166Z"
+  updated_at: "2026-07-30T20:58:12.849Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "2d9696d797ee04e2d74e1ac0edb5d866d08f2da2"
+  evaluated_sha: "4d9d4f0b85801ef47890365ee325f689ad3dbbdd"
   blueprint_digest: "9df647c48381f73db327c2e85bebd654707bb2e709e64e77b5f053d39062e1e2"
   evidence_refs:
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607302012-FCYR88/README.md"
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-203734611-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607302012-FCYR88/quality/20260730-205812298-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "No blocking defect found in the reviewed source diff. The added tests cover both the advanced-base topology and the prior equal-base regression."
+    - "No blocking defect found. The regression is limited to the unknown-subcommand usage contract; current source and expected usage list agree."
 commit:
   hash: "f6e1e6293f0043ba5da446b3a91096313b95c5e5"
   message: "🧪 FCYR88 task: refresh equal-base evaluation"
