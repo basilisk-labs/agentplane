@@ -1,0 +1,22 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [
+    "bun run ci:contract",
+    "bun run coverage:workflow-suite",
+    "bun run lifecycle:invariants",
+    "bun run test:critical",
+    "bun run schemas:check",
+    "bun run package:install-smoke"
+  ],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-30T20:01:16.339Z",
+    "updated_by": "TESTER",
+    "note": "beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed."
+  },
+  "verification_records": [],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null
+}
