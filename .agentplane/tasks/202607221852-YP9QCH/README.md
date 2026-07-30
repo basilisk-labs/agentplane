@@ -1,10 +1,11 @@
 ---
 id: "202607221852-YP9QCH"
 title: "Build source-driven canonical reconciliation candidates"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 12
+revision: 15
 origin:
   system: "manual"
 depends_on:
@@ -37,33 +38,32 @@ verification:
   note: "Pass: deterministic task-bound candidates cover a canonical entity after the prior first-50 range; fixture proves exact label, alias, FTS graph/page, graph-neighbour evidence, stable ordering, refs, and digest. CURATOR remains the only identity decision owner. Checks: agentplane build; 42 focused tests; Prettier; ESLint; diff check."
   attempts: 0
 quality_review:
-  state: "rework"
+  state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T10:03:21.974Z"
+  updated_at: "2026-07-30T10:04:58.055Z"
   updated_by: "EVALUATOR"
-  note: "EVALUATOR returned rework with 1 typed finding(s)."
-  evaluated_sha: "789bd26f46c2ede13ac1008c8e1b8f3ca25ba1e8"
+  note: "EVALUATOR returned pass with 1 typed finding(s)."
+  evaluated_sha: "f5b153ccdfdac3a7b9621d7ed84f080b986918e6"
   blueprint_digest: "198a7d19555b5b9a35fd7db335c3335d455661b8d4ef0efb80d4a8972643c324"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-result.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-follow-up.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221852-YP9QCH/README.md"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100321786-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-YP9QCH/quality/20260730-100457833-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The read failure branch returns basename instead of no term, so a vanished source path can create stale candidate evidence."
+    - "All four Verify Steps are covered: deterministic double build; canonical entity beyond the former first-50 range; lexical/structural evidence only with CURATOR as semantic owner; focused context regression suite."
 commit:
-  hash: "789bd26f46c2ede13ac1008c8e1b8f3ca25ba1e8"
-  message: "🚧 YP9QCH task: exclude deleted source candidates"
+  hash: "f5b153ccdfdac3a7b9621d7ed84f080b986918e6"
+  message: "🚧 YP9QCH task: reject unreadable source candidates"
 comments:
   -
     author: "CODER"
@@ -74,6 +74,12 @@ comments:
   -
     author: "CODER"
     body: "Rework committed: deleted, unsupported, and unreadable manifest rows now produce no reconciliation query; added regression coverage."
+  -
+    author: "CODER"
+    body: "Rework committed: unreadable source rows now produce no reconciliation query; regression fixture covers both deleted and unreadable sources."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -102,8 +108,22 @@ events:
     from: "DOING"
     to: "DOING"
     note: "Rework committed: deleted, unsupported, and unreadable manifest rows now produce no reconciliation query; added regression coverage."
+  -
+    type: "status"
+    at: "2026-07-30T10:04:44.365Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Rework committed: unreadable source rows now produce no reconciliation query; regression fixture covers both deleted and unreadable sources."
+  -
+    type: "status"
+    at: "2026-07-30T10:05:22.882Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:02:57.366Z"
+doc_updated_at: "2026-07-30T10:05:22.883Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
