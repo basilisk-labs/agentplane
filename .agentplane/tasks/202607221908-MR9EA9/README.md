@@ -4,7 +4,7 @@ title: "Qualify the AgentPlane 0.7.0-beta.1 milestone"
 status: "DOING"
 priority: "high"
 owner: "TESTER"
-revision: 12
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -38,9 +38,9 @@ plan_approval:
   note: null
 verification:
   state: "ok"
-  updated_at: "2026-07-30T19:58:50.903Z"
+  updated_at: "2026-07-30T20:01:16.339Z"
   updated_by: "TESTER"
-  note: "beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures 34 tests all passed."
+  note: "beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed."
   attempts: 0
 quality_review:
   state: "pass"
@@ -85,8 +85,14 @@ events:
     author: "TESTER"
     state: "ok"
     note: "beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures 34 tests all passed."
+  -
+    type: "verify"
+    at: "2026-07-30T20:01:16.339Z"
+    author: "TESTER"
+    state: "ok"
+    note: "beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed."
 doc_version: 3
-doc_updated_at: "2026-07-30T19:58:52.310Z"
+doc_updated_at: "2026-07-30T20:01:17.387Z"
 doc_updated_by: "TESTER"
 description: "Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DONE and stable, compare required safety/quality metrics, and record whether publishing this optional prerelease is justified."
 sections:
@@ -136,6 +142,36 @@ sections:
     - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
     - risks: none
 
+    ### 2026-07-30T20:01:16.339Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T19:58:52.310Z, excerpt_hash=sha256:30e4c5027093bce34db76bbb664a88009f81254b3688947bc6d3811e8efa7164
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-MR9EA9-qualify-the-agentplane-0-7-0-beta-1-milestone/.agentplane/tasks/202607221908-MR9EA9/blueprint/resolved-snapshot.json
+    - old_digest: 5eefdd9ac6e227ddcf17015c1bc89a13316a980373639bbf5225cea73a59427e
+    - current_digest: 5eefdd9ac6e227ddcf17015c1bc89a13316a980373639bbf5225cea73a59427e
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221908-MR9EA9
+
+    DecisionContextRef:
+    - operator_action: provider_action
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: none
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Do not mutate product state during qualification beyond evidence artifacts.
@@ -145,6 +181,10 @@ sections:
     - Observation: All declared beta.1 checks and bounded rework fixtures passed on the task branch.
       Impact: The qualification gate has current deterministic and installed-package evidence.
       Resolution: Proceed to independent evaluator review and provider-conflict route.
+
+    - Observation: The quality evidence remains green after snapshot pinning.
+      Impact: Pre-merge closure can bind the qualification evidence to the resolved blueprint.
+      Resolution: Submit the snapshot and current verification for independent evaluation.
 extensions:
   workflow_route_baseline:
     start_head_sha: "b90a9e6df9ae35a1a518e1ffa73903d6e5784d35"
@@ -207,6 +247,36 @@ DecisionContextRef:
 - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
 - risks: none
 
+### 2026-07-30T20:01:16.339Z — VERIFY — ok
+
+By: TESTER
+
+Note: beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T19:58:52.310Z, excerpt_hash=sha256:30e4c5027093bce34db76bbb664a88009f81254b3688947bc6d3811e8efa7164
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221908-MR9EA9-qualify-the-agentplane-0-7-0-beta-1-milestone/.agentplane/tasks/202607221908-MR9EA9/blueprint/resolved-snapshot.json
+- old_digest: 5eefdd9ac6e227ddcf17015c1bc89a13316a980373639bbf5225cea73a59427e
+- current_digest: 5eefdd9ac6e227ddcf17015c1bc89a13316a980373639bbf5225cea73a59427e
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221908-MR9EA9
+
+DecisionContextRef:
+- operator_action: provider_action
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: none
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -220,3 +290,7 @@ DecisionContextRef:
 - Observation: All declared beta.1 checks and bounded rework fixtures passed on the task branch.
   Impact: The qualification gate has current deterministic and installed-package evidence.
   Resolution: Proceed to independent evaluator review and provider-conflict route.
+
+- Observation: The quality evidence remains green after snapshot pinning.
+  Impact: Pre-merge closure can bind the qualification evidence to the resolved blueprint.
+  Resolution: Submit the snapshot and current verification for independent evaluation.

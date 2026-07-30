@@ -13,7 +13,7 @@ Created: 2026-07-29T10:19:28.019Z
 ## Verification
 
 - State: ok
-- Note: beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures 34 tests all passed.
+- Note: beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

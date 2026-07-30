@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:3caa4dfdca1c99ad7f1f8c1e9b847e721b4953bab89f735173f7c690cc42f913",
+  "implementation_sha": "7746efc035a53ab7432ca01ed108d669986945b6",
+  "kind": "task_verification_record",
+  "note": "beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34 bounded EXECUTOR/CURATOR fixture tests passed.",
+  "recorded_at": "2026-07-30T20:01:16.339Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Resolve the dependency closure from this gate. Expected: every required leaf for 0.7.0-beta.1, including 202607242236-1BFWEY, is an ancestor and has merged verification/evaluator/hosted-close evidence. 2. Run bun run test:critical, bun run coverage:workflow-suite, bun run lifecycle:invariants, bun run ci:contract, bun run schemas:check, and bun run package:install-smoke. Expected: all milestone checks and the installed-package journal/migration smoke pass on one reviewed SHA. 3. Run direct EXECUTOR and context/CURATOR rework fixtures through their configured episode/token/no-progress limits and restart checkpoints. Expected: both are bounded, resumable, and cannot replay completed agent or effect operations. 4. Compare golden metrics and residual risks. Expected: no verified-success or safety regression is hidden by token/latency improvements. 5. Record a publish decision. Expected: publication is optional, explicit, and never substitutes for unfinished dependencies.",
+  "scope_digest": "sha256:30e4c5027093bce34db76bbb664a88009f81254b3688947bc6d3811e8efa7164",
+  "task_id": "202607221908-MR9EA9",
+  "verification_command": "agentplane verify 202607221908-MR9EA9 --ok --by TESTER",
+  "verifier": "TESTER"
+}

@@ -19,9 +19,8 @@ Run the executable fan-in gate for 0.7.0-beta.1, prove every included leaf is DO
 - Note:
 
 ```text
-beta.1 gate passed: critical 11/11 (72 tests); workflow coverage 14 files/52 tests; lifecycle
-invariants, schemas, CI contract, local tarball install smoke, and bounded EXECUTOR/CURATOR fixtures
-34 tests all passed.
+beta.1 gate revalidated against the current blueprint snapshot: all six required checks and 34
+bounded EXECUTOR/CURATOR fixture tests passed.
 ```
 - Canonical workflow state lives in the task README.
 
