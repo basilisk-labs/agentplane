@@ -15,8 +15,8 @@ Add a terminal superseded outcome for a semantic provider-conflict resolution. A
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.
 - Canonical workflow state lives in the task README.
 
 <details>

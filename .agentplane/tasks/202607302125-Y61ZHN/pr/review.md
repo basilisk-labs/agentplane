@@ -6,14 +6,14 @@ Created: 2026-07-30T21:28:13.122Z
 
 - Task: `202607302125-Y61ZHN`
 - Title: Record superseded provider-conflict outcomes without false integration
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607302125-Y61ZHN/record-superseded-provider-conflict-outcomes-wit`
 - Canonical task record: `.agentplane/tasks/202607302125-Y61ZHN/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified semantic supersession lifecycle and compatibility ratchet on commit 9840fe498.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

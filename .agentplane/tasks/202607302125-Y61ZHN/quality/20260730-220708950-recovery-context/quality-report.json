@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607302125-Y61ZHN",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T22:07:09.209Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "9840fe49865ee220d7185e65b1d7a73d60d379a5",
+  "blueprint_digest": "6618fcb2c99f0728ca28a6e81fa688e7a705a3ef66c909525c1b9c939544a185",
+  "findings": [
+    "The release handler reads current-base task state and provider observation, then requires BLOCKED legacy state, DONE successor, and a currently observed CLOSED PR before any queue write.",
+    "Queue state accepts supersession only from rework, preserves a named successor, and route projection stops reopening, enqueueing, or integrating the closed PR."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607302125-Y61ZHN/quality/20260730-220708950-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "GitHub provider lookup remains the authoritative current observation of a PR closed outside the task worktree."
+  ],
+  "residual_risks": []
+}
