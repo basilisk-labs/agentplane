@@ -1,0 +1,15 @@
+{
+  "details": "Command: bun run --cwd packages/agentplane test src/cli/run-cli.critical.agent-efficiency-replay-hardening.test.ts src/commands/evaluator/evaluator-qualification-packet.test.ts; bun run ci:contract; bun -e buildQualificationRf04Comparison probe\nResult: pass\nEvidence: 6 focused tests passed; ci:contract passed; deterministic rebuild matched the 50-run frozen baseline and the packet builder returned candidate verdict fail, decision do_not_publish, with two latency failure IDs\nScope: qualification-only replay projection, task-local output safety, no-driver/no-replace controls, and RF-04 candidate gate",
+  "digest": "sha256:8773f55dfa661da70bf895bd4882feddfbfe7fdc83bfcc220d2595ed05407c2d",
+  "implementation_sha": "f94ad71e8b08d3d18fa96c6736749b389159a893",
+  "kind": "task_verification_record",
+  "note": "Qualification rebuild evidence is restricted to the deterministic task-local path and preserves the RF-04 non-publication gate.",
+  "recorded_at": "2026-07-30T01:28:59.008Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Focused RF-04 safety and capture-script tests prove that only the exact .agentplane/tasks/<task-id>/evidence/rf04-current-rebuild.v1.json target is accepted for qualification rebuilds.\n2. Focused qualification-packet tests prove the packet emits that evidence path and rejects divergent frozen measurements.\n3. Tests prove qualification rebuild rejects --driver, --replace, --pilot, conflicting --output, malformed task IDs, and path traversal.\n4. `bun run ci:contract` passes.\n5. A real local `ap task verify ok` packet-build probe reaches the RF-04 candidate gate without provider driver/retry/replacement execution; beta.1 remains blocked if candidate verdict is fail.",
+  "scope_digest": "sha256:5f3bdd034f32f4706503baa8737cbe68323b0a26c124ff555846c4d54eef18e2",
+  "task_id": "202607300112-48RH1X",
+  "verification_command": "agentplane task verify ok 202607300112-48RH1X --ok --by TESTER",
+  "verifier": "TESTER"
+}

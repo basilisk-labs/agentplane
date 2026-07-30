@@ -1,0 +1,5 @@
+ .../evaluator-qualification-packet.test.ts         | 120 ++++++++++++++++++++-
+ .../src/commands/task/qualification-packet-rf04.ts |  10 +-
+ scripts/bench/capture-agent-efficiency-replay.mjs  | 108 +++++++++++++++++--
+ scripts/lib/agent-efficiency-replay-safety.mjs     |  32 +++++-
+ 4 files changed, 256 insertions(+), 14 deletions(-)

@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import { canonicalizeJson } from "@agentplaneorg/core/tasks";
@@ -441,10 +440,15 @@ async function captureCurrentReplaySnapshot(opts: {
     "evidence",
     RF04_CURRENT_REBUILD_FILE,
   );
-  await mkdir(path.dirname(outputPath), { recursive: true });
   await execFileAsync(
     process.execPath,
-    [path.join(opts.gitRoot, RF04_CAPTURE_SCRIPT), "--output", outputPath],
+    [
+      path.join(opts.gitRoot, RF04_CAPTURE_SCRIPT),
+      "--output",
+      outputPath,
+      "--qualification-task-id",
+      opts.taskId,
+    ],
     {
       cwd: opts.gitRoot,
     },

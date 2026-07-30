@@ -1,0 +1,24 @@
+{
+  "task_status": "DOING",
+  "declared_checks": [],
+  "verification": {
+    "state": "ok",
+    "attempts": 0,
+    "updated_at": "2026-07-30T01:28:59.008Z",
+    "updated_by": "TESTER",
+    "note": "Qualification rebuild evidence is restricted to the deterministic task-local path and preserves the RF-04 non-publication gate."
+  },
+  "verification_records": [
+    {
+      "path": ".agentplane/tasks/202607300112-48RH1X/verification/20260730012859008-8773f55dfa661da7.json",
+      "sha256": "sha256:646f52fdc113db9cf2d7743c47fc314bce1a362981463d2a90f378e6bc865623"
+    }
+  ],
+  "runner_history": [],
+  "runtime_evidence": [],
+  "direct_supervision": null,
+  "qualification_packet": {
+    "state": "not_required",
+    "reason": "not a milestone qualification task"
+  }
+}
