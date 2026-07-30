@@ -12,8 +12,8 @@ Created: 2026-07-30T09:44:33.829Z
 
 ## Verification
 
-- State: needs_rework
-- Note: Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed candidate, strict candidate checker, and its pin test.
+- State: ok
+- Note: Verified exact implementation commit 24cb5a3ab574: compatibility ratchet passed at c35c4a49; candidate determinism, beyond-first-50 recall, CURATOR-only semantic ownership, and the focused context suite passed (42 tests).
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes
