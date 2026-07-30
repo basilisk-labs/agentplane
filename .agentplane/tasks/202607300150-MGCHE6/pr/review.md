@@ -6,7 +6,7 @@ Created: 2026-07-30T01:54:00.904Z
 
 - Task: `202607300150-MGCHE6`
 - Title: Recover diverged task PR identities safely
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300150-MGCHE6/recover-diverged-task-pr-identities-safely`
 - Canonical task record: `.agentplane/tasks/202607300150-MGCHE6/README.md`
 

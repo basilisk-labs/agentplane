@@ -1,10 +1,11 @@
 ---
 id: "202607300150-MGCHE6"
 title: "Recover diverged task PR identities safely"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 11
 origin:
   system: "manual"
 depends_on: []
@@ -29,31 +30,31 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T02:13:32.504Z"
+  updated_at: "2026-07-30T02:14:48.827Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 2 typed finding(s)."
-  evaluated_sha: "be17d45d4163a4b207b85aba2d3ee61a57b7a7ed"
+  evaluated_sha: "4eb1bca90c544aaa6a5eb3cf1ef220880a47b40a"
   blueprint_digest: "5ac7117996bb0ad45d2a4bfdd9ad0396bbf7d46881eeab9b3172419dea8e8f5e"
   evidence_refs:
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607300150-MGCHE6/README.md"
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021332256-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607300150-MGCHE6/quality/20260730-021448606-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "Validated the safety boundary: stale identities, a provider move during fetch, an archive collision, a dirty/mismatched worktree, and non-conflicting provider truth fail closed before reset."
-    - "Validated the compatibility boundary: the cumulative v0.7 candidate explicitly records all three new CLI options and preserves the immutable v0.6.24 anchor."
+    - "No unsafe transition is introduced: recovery requires a clean dedicated task worktree, matching branch and exact observed SHA pair, then validates fetched provider truth before creating the archive/upstream/reset sequence."
+    - "The test suite exercises mock refusal paths and a real bare remote recovery; the candidate compatibility inventory accounts for the three new public options."
 commit:
-  hash: "be17d45d4163a4b207b85aba2d3ee61a57b7a7ed"
-  message: "✨ MGCHE6 task: safely recover diverged PR identity"
+  hash: "98320a03497de247e7391eb93d9fc053bd7d5ae2"
+  message: "📝 MGCHE6 task: record verification and review evidence"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -61,6 +62,9 @@ comments:
   -
     author: "CODER"
     body: "Implementation: committed be17d45d4163; added explicit diverged-head recovery that archives the unpublished local SHA, validates the provider SHA after fetch, and resets only the clean dedicated task worktree; full ci:contract passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -88,8 +92,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Focused recovery tests passed (29/29), typecheck passed, compatibility gate passed, and the full ci:contract suite passed."
+  -
+    type: "status"
+    at: "2026-07-30T02:15:26.688Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T02:12:49.332Z"
+doc_updated_at: "2026-07-30T02:15:26.689Z"
 doc_updated_by: "CODER"
 description: "Provide a bounded CLI recovery route for branch_pr tasks whose local worktree head and hosted PR head diverge. Preserve the local unpublished commit as explicit recovery evidence, adopt the observed remote task-branch head without force-push or automatic conflict resolution, and restore a fresh conflict-rework packet for the task owner."
 sections:
@@ -148,6 +159,9 @@ sections:
       Impact: The task can safely re-enter normal conflict-rework preparation without overwriting local evidence or selecting semantic conflict resolution.
       Resolution: No rebase, merge, force-push, or provider write is performed; remaining semantic resolution stays on the existing conflict-rework route.
 extensions:
+  implementation_commit:
+    hash: "4eb1bca90c544aaa6a5eb3cf1ef220880a47b40a"
+    message: "📝 MGCHE6 task: record implementation evidence"
   workflow_route_baseline:
     start_head_sha: "88c7ead3e32920f31a219880f72651635c41778a"
     version: 1
