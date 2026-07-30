@@ -6,7 +6,7 @@ Created: 2026-07-29T10:19:28.019Z
 
 - Task: `202607221908-MR9EA9`
 - Title: Qualify the AgentPlane 0.7.0-beta.1 milestone
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221908-MR9EA9/qualify-the-agentplane-0-7-0-beta-1-milestone`
 - Canonical task record: `.agentplane/tasks/202607221908-MR9EA9/README.md`
 
