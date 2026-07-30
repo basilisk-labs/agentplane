@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-9T0RT3",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T12:08:33.275Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "911c4c95343a4de1b2ca89f0c75cbd40e3dfb01a",
+  "blueprint_digest": "b4de788bbd37dcd3b697503ffb19cd646d3e0ab1f1d209574ffec8ebd6cf8408",
+  "findings": [
+    "Boundedness and traceability are satisfied: query, FTS, reference, excerpt, and structured-file budgets are explicit, while the receipt binds projection state, selected references, adapter counts, and omissions.",
+    "Executor authority remains least-privilege: knowledge_read and required inputs are added only when materialized knowledge exists; prepared-evidence intent is derived from included excerpts.",
+    "The current commit is formatting-only after the CodeQL-safe symbol scan; it does not alter retrieval behavior validated by the focused integration test and full fast CI."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-9T0RT3/quality/20260730-120832957-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
