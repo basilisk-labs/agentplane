@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 24
+revision: 25
 origin:
   system: "manual"
 depends_on:
@@ -42,28 +42,27 @@ verification:
 quality_review:
   state: "pass"
   provenance: "evaluator_supplied"
-  updated_at: "2026-07-30T18:44:40.699Z"
+  updated_at: "2026-07-30T18:56:43.354Z"
   updated_by: "EVALUATOR"
   note: "EVALUATOR returned pass with 1 typed finding(s)."
-  evaluated_sha: "f80c562d0abc3d3f2932dd8350a3a504c0ec034f"
+  evaluated_sha: "f73a9d4713af26770eb5fd88852800058dca5d29"
   blueprint_digest: "0c96a75b3c97a38dc41f0a58424c1833887cb8e29959bca451a7e5c65645de01"
   evidence_refs:
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-work-order.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/quality-report.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-prompt.md"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-opinion.md"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/evaluator-result.json"
     - ".agentplane/tasks/202607221852-WF8A0X/README.md"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-diff.patch"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-observed-checks.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/verification/20260730184305515-0c5535a2ed9aea25.json"
-    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-184324612-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-WF8A0X/quality/20260730-185642940-recovery-context/evaluator-blueprint.json"
     - ".agentplane/policy/dod.code.md"
     - ".agentplane/policy/dod.core.md"
     - ".agentplane/policy/security.must.md"
     - ".agentplane/policy/workflow.branch_pr.md"
   findings:
-    - "The interrupted marker-only CURATOR handoff now converges to the existing CURATOR task and completes the missing selection receipt without creating a second owner."
+    - "The CURATOR handoff preserves one exact owner across both interruption windows and completes the receipt without automatic knowledge publication."
 commit:
   hash: "f80c562d0abc3d3f2932dd8350a3a504c0ec034f"
   message: "🐛 WF8A0X task: recover marker-only CURATOR selections"
