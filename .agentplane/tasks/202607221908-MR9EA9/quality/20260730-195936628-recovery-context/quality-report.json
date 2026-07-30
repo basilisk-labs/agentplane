@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221908-MR9EA9",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T19:59:37.281Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 1 typed finding(s).",
+  "evaluated_sha": "460440ac1e36b1261bd1077295f4a50bdf9fc91c",
+  "blueprint_digest": "5eefdd9ac6e227ddcf17015c1bc89a13316a980373639bbf5225cea73a59427e",
+  "findings": [
+    "The provider-reported conflict is lifecycle context, not a failed quality gate: verification is now current and semantic conflict rework can be derived from a fresh provider packet."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221908-MR9EA9/quality/20260730-195936628-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [],
+  "residual_risks": []
+}
