@@ -5,7 +5,7 @@ result_summary: "pre-merge closure"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 26
+revision: 27
 origin:
   system: "manual"
 depends_on:
@@ -64,8 +64,8 @@ quality_review:
     - "The hotspot guard passes with the pre-existing 10-entry, 11418-line oversized-test baseline; no baseline or threshold was widened."
     - "The candidate contract, immutable baseline boundary, deterministic evidence, and CURATOR-only semantic decision remain unchanged by this test-only repair."
 commit:
-  hash: "ae5a7a51f17509cd75f2233bb2f95d05219ed6e9"
-  message: "🔎 YP9QCH task: refresh quality review"
+  hash: "c0dc433be858dfbc236877fabe9ccbf6ac308b82"
+  message: "🔎 YP9QCH task: review hotspot-budget repair"
 comments:
   -
     author: "CODER"
@@ -94,6 +94,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -188,8 +191,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T10:32:15.584Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T10:20:42.945Z"
+doc_updated_at: "2026-07-30T10:32:15.588Z"
 doc_updated_by: "CODER"
 description: "RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reproducible source terms, FTS matches, glossary aliases, graph neighbours, page families, scores, reasons, and index digest."
 sections:
@@ -399,8 +409,8 @@ sections:
       Resolution: Updated only the v0.7 reviewed candidate, strict ratchet checker, and candidate pin test.
 extensions:
   implementation_commit:
-    hash: "4b4ce38d33cfd6af44c81eae3227f6829d18f393"
-    message: "📝 YP9QCH task: record compatibility rework"
+    hash: "17f175b15631e5bc6752857cd210f9bb0d42c775"
+    message: "🧪 YP9QCH task: keep context tests within hotspot budget"
   workflow_route_baseline:
     start_head_sha: "e9f2cbe94440b925b16f04da815cd21628812161"
     version: 1
