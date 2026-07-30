@@ -27,7 +27,7 @@ RF-04 non-publication gate.
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T01:13:16.182Z
+- Updated: 2026-07-30T01:30:02.043Z
 - Branch: task/202607300112-48RH1X/authorize-deterministic-rf-04-qualification-rebu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 

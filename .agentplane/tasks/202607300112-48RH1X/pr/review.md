@@ -6,7 +6,7 @@ Created: 2026-07-30T01:13:16.182Z
 
 - Task: `202607300112-48RH1X`
 - Title: Authorize deterministic RF-04 qualification rebuild evidence
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607300112-48RH1X/authorize-deterministic-rf-04-qualification-rebu`
 - Canonical task record: `.agentplane/tasks/202607300112-48RH1X/README.md`
 
@@ -24,7 +24,7 @@ Created: 2026-07-30T01:13:16.182Z
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T01:13:16.182Z
+- Updated: 2026-07-30T01:30:02.043Z
 - Branch: task/202607300112-48RH1X/authorize-deterministic-rf-04-qualification-rebu
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
