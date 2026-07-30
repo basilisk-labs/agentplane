@@ -1,1 +1,1 @@
-🚧 J910P6 task: Separate indexed search text from preview snippets [202607221852-J910P6]
+✅ J910P6 task: Separate indexed search text from preview snippets [202607221852-J910P6]

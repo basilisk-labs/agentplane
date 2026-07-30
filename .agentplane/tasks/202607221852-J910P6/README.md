@@ -1,10 +1,11 @@
 ---
 id: "202607221852-J910P6"
 title: "Separate indexed search text from preview snippets"
-status: "DOING"
+result_summary: "pre-merge closure"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 9
+revision: 13
 origin:
   system: "manual"
 depends_on:
@@ -30,16 +31,49 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved under the user-authorized v0.7 controlled-wave plan after source inspection: schema v2, rebuild compatibility, exact refs, bounded previews, and measurable projection budgets."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-07-30T07:34:02.279Z"
+  updated_by: "TESTER"
+  note: "Verified projection schema v2 against all four task criteria: long markdown tail remains searchable with bounded exact section preview; JSONL/JSON units retain stable refs and digests; metrics expose source/search/preview bytes with explicit 20-line/2048-byte and <2000ms fixture budgets; focused tests, typecheck, critical CLI suite, and ci:local:fast passed."
   attempts: 0
-commit: null
+quality_review:
+  state: "pass"
+  provenance: "evaluator_supplied"
+  updated_at: "2026-07-30T07:34:55.135Z"
+  updated_by: "EVALUATOR"
+  note: "EVALUATOR returned pass with 2 typed finding(s)."
+  evaluated_sha: "9d682177db11508e776d619e7e3d6f0a59fd1c7b"
+  blueprint_digest: "627704d0f5043b3c40622b89a861bc0f6e493433abf749abe3645bae0c12093f"
+  evidence_refs:
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-work-order.json"
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/quality-report.json"
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-prompt.md"
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-opinion.md"
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-result.json"
+    - ".agentplane/tasks/202607221852-J910P6/README.md"
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-diff.patch"
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-observed-checks.json"
+    - ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-blueprint.json"
+    - ".agentplane/policy/dod.code.md"
+    - ".agentplane/policy/dod.core.md"
+    - ".agentplane/policy/security.must.md"
+    - ".agentplane/policy/workflow.branch_pr.md"
+  findings:
+    - "Reviewed commit 9d682177: SQLite stores and FTS-indexes search_text, while previews are independently capped at 20 lines and 2048 UTF-8 bytes."
+    - "Markdown sections, JSONL rows, and JSON line windows retain deterministic refs; search recomputes the exact current projection unit before accepting cached results."
+commit:
+  hash: "9d682177db11508e776d619e7e3d6f0a59fd1c7b"
+  message: "🚧 J910P6 context: separate search text from previews"
 comments:
   -
     author: "CODER"
     body: "Start: implement projection schema v2 with full search text, bounded previews, exact source refs, and rebuild compatibility in the dedicated task worktree."
+  -
+    author: "CODER"
+    body: "Implemented: projection schema v2 separates complete search text from bounded previews; preserves section/window/row refs; invalidates v1 cache for full rebuild; focused tests, typecheck, changed-file lint, and critical CLI suite passed."
+  -
+    author: "CODER"
+    body: "Verified: pre-merge closure packet is ready for the task PR."
 events:
   -
     type: "status"
@@ -48,8 +82,28 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement projection schema v2 with full search text, bounded previews, exact source refs, and rebuild compatibility in the dedicated task worktree."
+  -
+    type: "status"
+    at: "2026-07-30T07:28:34.167Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DOING"
+    note: "Implemented: projection schema v2 separates complete search text from bounded previews; preserves section/window/row refs; invalidates v1 cache for full rebuild; focused tests, typecheck, changed-file lint, and critical CLI suite passed."
+  -
+    type: "verify"
+    at: "2026-07-30T07:34:02.279Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified projection schema v2 against all four task criteria: long markdown tail remains searchable with bounded exact section preview; JSONL/JSON units retain stable refs and digests; metrics expose source/search/preview bytes with explicit 20-line/2048-byte and <2000ms fixture budgets; focused tests, typecheck, critical CLI suite, and ci:local:fast passed."
+  -
+    type: "status"
+    at: "2026-07-30T07:35:20.135Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-merge closure packet is ready for the task PR."
 doc_version: 3
-doc_updated_at: "2026-07-30T07:25:15.644Z"
+doc_updated_at: "2026-07-30T07:35:20.135Z"
 doc_updated_by: "CODER"
 description: "RF-16: index complete section/window/row content while keeping bounded previews and precise source spans for markdown, JSONL, and structured context files."
 sections:
@@ -73,6 +127,36 @@ sections:
     4. Run focused projection/search tests and typecheck.
   Verification: |-
     <!-- BEGIN VERIFICATION RESULTS -->
+    ### 2026-07-30T07:34:02.279Z — VERIFY — ok
+
+    By: TESTER
+
+    Note: Verified projection schema v2 against all four task criteria: long markdown tail remains searchable with bounded exact section preview; JSONL/JSON units retain stable refs and digests; metrics expose source/search/preview bytes with explicit 20-line/2048-byte and <2000ms fixture budgets; focused tests, typecheck, critical CLI suite, and ci:local:fast passed.
+    Attempts: 0
+
+    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T07:28:34.167Z, excerpt_hash=sha256:cac0e2ebef08220d49be203fa6e924241dd5f9276277f44601d8450f65312bcd
+
+    Details:
+
+    BlueprintSnapshotRef:
+    - state: current
+    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-J910P6-separate-indexed-search-text-from-preview-snippe/.agentplane/tasks/202607221852-J910P6/blueprint/resolved-snapshot.json
+    - old_digest: 627704d0f5043b3c40622b89a861bc0f6e493433abf749abe3645bae0c12093f
+    - current_digest: 627704d0f5043b3c40622b89a861bc0f6e493433abf749abe3645bae0c12093f
+    - route_changed: no
+    - safe_command: agentplane blueprint snapshot 202607221852-J910P6
+
+    DecisionContextRef:
+    - operator_action: stop
+    - can_execute_now: false
+    - safe_command: none
+    - diagnostic_command: agentplane task verify-show 202607221852-J910P6
+    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+    - freshness: route=computed_local remote=remote_skipped
+    - repeat_allowed: false
+    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+    - risks: none
+
     <!-- END VERIFICATION RESULTS -->
   Rollback Plan: |-
     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
@@ -119,6 +203,36 @@ RF-16: index complete section/window/row content while keeping bounded previews 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+### 2026-07-30T07:34:02.279Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified projection schema v2 against all four task criteria: long markdown tail remains searchable with bounded exact section preview; JSONL/JSON units retain stable refs and digests; metrics expose source/search/preview bytes with explicit 20-line/2048-byte and <2000ms fixture budgets; focused tests, typecheck, critical CLI suite, and ci:local:fast passed.
+Attempts: 0
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T07:28:34.167Z, excerpt_hash=sha256:cac0e2ebef08220d49be203fa6e924241dd5f9276277f44601d8450f65312bcd
+
+Details:
+
+BlueprintSnapshotRef:
+- state: current
+- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-J910P6-separate-indexed-search-text-from-preview-snippe/.agentplane/tasks/202607221852-J910P6/blueprint/resolved-snapshot.json
+- old_digest: 627704d0f5043b3c40622b89a861bc0f6e493433abf749abe3645bae0c12093f
+- current_digest: 627704d0f5043b3c40622b89a861bc0f6e493433abf749abe3645bae0c12093f
+- route_changed: no
+- safe_command: agentplane blueprint snapshot 202607221852-J910P6
+
+DecisionContextRef:
+- operator_action: stop
+- can_execute_now: false
+- safe_command: none
+- diagnostic_command: agentplane task verify-show 202607221852-J910P6
+- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
+- freshness: route=computed_local remote=remote_skipped
+- repeat_allowed: false
+- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
+- risks: none
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

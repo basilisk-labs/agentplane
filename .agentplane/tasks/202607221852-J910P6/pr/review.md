@@ -6,14 +6,14 @@ Created: 2026-07-30T07:16:50.265Z
 
 - Task: `202607221852-J910P6`
 - Title: Separate indexed search text from preview snippets
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-J910P6/separate-indexed-search-text-from-preview-snippe`
 - Canonical task record: `.agentplane/tasks/202607221852-J910P6/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified projection schema v2 against all four task criteria: long markdown tail remains searchable with bounded exact section preview; JSONL/JSON units retain stable refs and digests; metrics expose source/search/preview bytes with explicit 20-line/2048-byte and <2000ms fixture budgets; focused tests, typecheck, critical CLI suite, and ci:local:fast passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:31737447352d801e9c1de5e39f66d4cf061e4bce8b858d0cbfb35b055690947d",
+  "implementation_sha": "9d682177db11508e776d619e7e3d6f0a59fd1c7b",
+  "kind": "task_verification_record",
+  "note": "Verified projection schema v2 against all four task criteria: long markdown tail remains searchable with bounded exact section preview; JSONL/JSON units retain stable refs and digests; metrics expose source/search/preview bytes with explicit 20-line/2048-byte and <2000ms fixture budgets; focused tests, typecheck, critical CLI suite, and ci:local:fast passed.",
+  "recorded_at": "2026-07-30T07:34:02.279Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Index a long markdown page with a unique tail term. Expected: the term is searchable in projection data while the preview remains bounded and points to the exact section/lines.\n2. Project JSONL and structured fixtures. Expected: row/entity boundaries and canonical refs are stable and reproducible.\n3. Compare old/new index size and build latency. Expected: measured results and explicit budgets, not an assumed improvement.\n4. Run focused projection/search tests and typecheck.",
+  "scope_digest": "sha256:cac0e2ebef08220d49be203fa6e924241dd5f9276277f44601d8450f65312bcd",
+  "task_id": "202607221852-J910P6",
+  "verification_command": "agentplane verify 202607221852-J910P6 --ok --by TESTER",
+  "verifier": "TESTER"
+}

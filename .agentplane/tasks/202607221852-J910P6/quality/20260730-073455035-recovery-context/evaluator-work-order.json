@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-J910P6-1f81ec873c3d55bbbc23943c",
+  "prepared_at": "2026-07-30T07:34:55.035Z",
+  "task": {
+    "id": "202607221852-J910P6",
+    "revision": 11,
+    "objective": "Separate indexed search text from preview snippets\n\nRF-16: index complete section/window/row content while keeping bounded previews and precise source spans for markdown, JSONL, and structured context files.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: versioned projection units, full search_text, bounded preview_text, markdown section/window splitting, JSONL row units, structured-field units, exact line/section/entity refs, and size/latency instrumentation.\n- Out of scope: FTS query execution or incremental update logic.",
+      "1. Introduce projection schema v2 with complete `search_text`, UTF-8-bounded `preview_text`, stable source refs, and persisted byte/latency metrics.\n2. Project markdown sections and plain-text windows without searchable-tail truncation; retain bounded file previews only for canonical whole-file refs.\n3. Project JSONL rows and structured JSON units with deterministic selectors or line spans, preserving canonical refs and item digests.\n4. Make search rank/match full `search_text` but render `preview_text`; recompute selector freshness from the current projected unit.\n5. Treat v1 SQLite/legacy projections as rebuild-required, add focused schema/projection/search tests plus a scalable fixture with explicit preview-size and projection-latency budgets.",
+      "1. Index a long markdown page with a unique tail term. Expected: the term is searchable in projection data while the preview remains bounded and points to the exact section/lines.\n2. Project JSONL and structured fixtures. Expected: row/entity boundaries and canonical refs are stable and reproducible.\n3. Compare old/new index size and build latency. Expected: measured results and explicit budgets, not an assumed improvement.\n4. Run focused projection/search tests and typecheck."
+    ]
+  },
+  "evaluated_sha": "9d682177db11508e776d619e7e3d6f0a59fd1c7b",
+  "diff_base_sha": "b8dbca7245172f6b85d5431960a90debbc274c9d",
+  "blueprint_digest": "627704d0f5043b3c40622b89a861bc0f6e493433abf749abe3645bae0c12093f",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-J910P6/README.md",
+      "sha256": "sha256:0d994363cc2e74756c82ee6785a7a1c891120438e2ce37d3dd0946953ba9354c",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:3df2ed6b6e2245453dd91c92cc1c0a94f9a7a91d813b5719f6340e8fae6ccfec",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:be4e394a2b51cfc2576b8795e57a884a203997e0cb26b5fa5902a627bcfd21fd",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:549f33504cac772c8743d538e5541ef2eaa35c4c93ef5aad8b75a77fcf91a606",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

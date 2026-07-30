@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_result",
+  "evaluator_id": "recovery-context",
+  "verdict": "pass",
+  "findings": [
+    {
+      "id": "compatibility-finding-1",
+      "severity": "medium",
+      "summary": "Reviewed commit 9d682177: SQLite stores and FTS-indexes search_text, while previews are independently capped at 20 lines and 2048 UTF-8 bytes.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    },
+    {
+      "id": "compatibility-finding-2",
+      "severity": "medium",
+      "summary": "Markdown sections, JSONL rows, and JSON line windows retain deterministic refs; search recomputes the exact current projection unit before accepting cached results.",
+      "broken_invariant": "Compatibility evaluator facade requires independent review evidence.",
+      "evidence_refs": [
+        {
+          "path": ".agentplane/tasks/202607221852-J910P6/quality/20260730-073455035-recovery-context/evaluator-diff.patch"
+        }
+      ]
+    }
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "Full reindex remains the atomic compatibility path for every v1 cache; incremental migration is deliberately out of scope."
+  ]
+}
