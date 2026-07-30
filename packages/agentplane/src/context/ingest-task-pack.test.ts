@@ -495,20 +495,23 @@ describe("context ingest task pack", () => {
     const aliasCandidate = aliasGroup?.candidates.find(
       (candidate) => candidate.canonical_entity_id === paymentApi.id,
     );
-    expect(paymentCandidate).toMatchObject({
-      score: expect.any(Number),
-      reasons: expect.arrayContaining(["label_exact", "fts_graph_entity", "fts_page_family"]),
-      evidence_refs: expect.arrayContaining([
-        ".agentplane/context/derived/graph/entities.jsonl#entity=entity.zz-payment-api",
-        "context/wiki/payment-api.md#section=payment-api",
-      ]),
-    });
-    expect(first.index).toMatchObject({
-      available: true,
-      digest: expect.stringMatching(/^sha256:/u),
-    });
-    expect(aliasGroup).toMatchObject({ origins: expect.arrayContaining(["structured_field"]) });
-    expect(aliasCandidate?.reasons).toContain("alias_exact");
+    if (!paymentCandidate || !aliasGroup || !aliasCandidate) {
+      throw new Error("expected source-driven payment candidates are missing");
+    }
+    expect(paymentCandidate.score).toBeTypeOf("number");
+    for (const reason of ["label_exact", "fts_graph_entity", "fts_page_family"]) {
+      expect(paymentCandidate.reasons).toContain(reason);
+    }
+    for (const ref of [
+      ".agentplane/context/derived/graph/entities.jsonl#entity=entity.zz-payment-api",
+      "context/wiki/payment-api.md#section=payment-api",
+    ]) {
+      expect(paymentCandidate.evidence_refs).toContain(ref);
+    }
+    expect(first.index.available).toBe(true);
+    expect(first.index.digest).toMatch(/^sha256:/u);
+    expect(aliasGroup.origins).toContain("structured_field");
+    expect(aliasCandidate.reasons).toContain("alias_exact");
     expect(first.candidate_groups).not.toContainEqual(
       expect.objectContaining({ query: "removed payment api" }),
     );
