@@ -2,10 +2,10 @@
 id: "202607300411-6QF79Y"
 title: "Stabilize concurrent effect-resolution retirement test"
 result_summary: "pre-merge closure"
-status: "DONE"
+status: "DOING"
 priority: "med"
 owner: "CODER"
-revision: 8
+revision: 9
 origin:
   system: "manual"
 depends_on: []
@@ -56,6 +56,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    author: "CODER"
+    body: "Rework: GitHub review found that direct helper coverage could bypass the production resolveTaskRunnerEffect catch-and-wait integration. Reopening this pre-merge task to make the test deterministic through the production path."
 events:
   -
     type: "status"
@@ -84,8 +87,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-merge closure packet is ready for the task PR."
+  -
+    type: "status"
+    at: "2026-07-30T04:32:44.997Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DOING"
+    note: "Rework: GitHub review found that direct helper coverage could bypass the production resolveTaskRunnerEffect catch-and-wait integration. Reopening this pre-merge task to make the test deterministic through the production path."
 doc_version: 3
-doc_updated_at: "2026-07-30T04:27:56.261Z"
+doc_updated_at: "2026-07-30T04:32:44.997Z"
 doc_updated_by: "CODER"
 description: "Make the concurrent effect-resolution retirement retry test deterministic so hosted unit CI no longer depends on scheduler timing."
 sections:

@@ -27,9 +27,8 @@ Make the concurrent effect-resolution retirement retry test deterministic so hos
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../usecases/task-run-effect-resolution.test.ts    | 38 ++++++++++++++--------
- .../runner/usecases/task-run-effect-resolution.ts  |  2 +-
- 2 files changed, 25 insertions(+), 15 deletions(-)
+ .../usecases/task-run-effect-resolution.test.ts    | 63 +++++++++++++++-------
+ 1 file changed, 44 insertions(+), 19 deletions(-)
 ```
 
 </details>

@@ -6,7 +6,7 @@ Created: 2026-07-30T04:12:14.054Z
 
 - Task: `202607300411-6QF79Y`
 - Title: Stabilize concurrent effect-resolution retirement test
-- Status: DONE
+- Status: DOING
 - Branch: `task/202607300411-6QF79Y/stabilize-effect-resolution-test`
 - Canonical task record: `.agentplane/tasks/202607300411-6QF79Y/README.md`
 
@@ -29,9 +29,8 @@ Created: 2026-07-30T04:12:14.054Z
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
- .../usecases/task-run-effect-resolution.test.ts    | 38 ++++++++++++++--------
- .../runner/usecases/task-run-effect-resolution.ts  |  2 +-
- 2 files changed, 25 insertions(+), 15 deletions(-)
+ .../usecases/task-run-effect-resolution.test.ts    | 63 +++++++++++++++-------
+ 1 file changed, 44 insertions(+), 19 deletions(-)
 ```
 
 </details>
