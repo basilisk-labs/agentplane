@@ -15,8 +15,13 @@ RF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pa
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note:
+
+```text
+Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet,
+benchmark, and the 12-chunk critical CLI suite passed.
+```
 - Canonical workflow state lives in the task README.
 
 <details>

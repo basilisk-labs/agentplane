@@ -6,14 +6,14 @@ Created: 2026-07-30T07:51:18.809Z
 
 - Task: `202607221852-ADC3A5`
 - Title: Query context projections with SQLite FTS5 and BM25
-- Status: DOING
+- Status: DONE
 - Branch: `task/202607221852-ADC3A5/query-context-projections-with-sqlite-fts5-and-b`
 - Canonical task record: `.agentplane/tasks/202607221852-ADC3A5/README.md`
 
 ## Verification
 
-- State: pending
-- Note: Not recorded yet.
+- State: ok
+- Note: Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed.
 - Canonical workflow state lives in the task README.
 
 ## Handoff Notes

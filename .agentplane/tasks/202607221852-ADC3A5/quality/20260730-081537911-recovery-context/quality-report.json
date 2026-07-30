@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-ADC3A5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T08:15:38.033Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 3 typed finding(s).",
+  "evaluated_sha": "b7860bab46d9001e31c46d5adf8aaba8423b48b7",
+  "blueprint_digest": "d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e",
+  "findings": [
+    "The valid-index command path delegates matching and BM25 ordering to SQLite FTS5; it does not materialize or iterate the projection row set.",
+    "The checked JSON receipt distinguishes FTS-only execution from bounded live fallback while preserving the existing public CLI topology.",
+    "The benchmark artifact records equal 24/24 recall and a 93.5% p95 gain on its declared reproducible synthetic indexed corpus."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-081537911-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "The measured 3,000-row synthetic corpus models indexed retrieval only; filesystem fallback and a production corpus are deliberately outside this benchmark."
+  ],
+  "residual_risks": []
+}
