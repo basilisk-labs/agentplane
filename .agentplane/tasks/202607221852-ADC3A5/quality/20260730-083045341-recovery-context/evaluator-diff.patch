@@ -1,0 +1,1929 @@
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/README.md b/.agentplane/tasks/202607221852-ADC3A5/README.md
+index effac02d1..f45e82a8e 100644
+--- a/.agentplane/tasks/202607221852-ADC3A5/README.md
++++ b/.agentplane/tasks/202607221852-ADC3A5/README.md
+@@ -1,10 +1,11 @@
+ ---
+ id: "202607221852-ADC3A5"
+ title: "Query context projections with SQLite FTS5 and BM25"
+-status: "TODO"
++result_summary: "pre-merge closure"
++status: "DONE"
+ priority: "high"
+ owner: "CODER"
+-revision: 5
++revision: 13
+ origin:
+   system: "manual"
+ depends_on:
+@@ -26,22 +27,95 @@ verify:
+   - "bun run test:critical"
+   - "bun run typecheck"
+ plan_approval:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
++  state: "approved"
++  updated_at: "2026-07-30T07:50:56.329Z"
++  updated_by: "ORCHESTRATOR"
+   note: null
+ verification:
+-  state: "pending"
+-  updated_at: null
+-  updated_by: null
+-  note: null
++  state: "ok"
++  updated_at: "2026-07-30T08:15:01.897Z"
++  updated_by: "TESTER"
++  note: "Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed."
+   attempts: 0
+-commit: null
+-comments: []
+-events: []
++quality_review:
++  state: "pass"
++  provenance: "evaluator_supplied"
++  updated_at: "2026-07-30T08:22:14.441Z"
++  updated_by: "EVALUATOR"
++  note: "EVALUATOR returned pass with 2 typed finding(s)."
++  evaluated_sha: "3893e0be01a8b4a5ed2bd6d8163d0532936af114"
++  blueprint_digest: "d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e"
++  evidence_refs:
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/evaluator-work-order.json"
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/quality-report.json"
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/evaluator-prompt.md"
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/evaluator-opinion.md"
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/evaluator-result.json"
++    - ".agentplane/tasks/202607221852-ADC3A5/README.md"
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/evaluator-diff.patch"
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/evaluator-observed-checks.json"
++    - ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-082214226-recovery-context/evaluator-blueprint.json"
++    - ".agentplane/policy/dod.code.md"
++    - ".agentplane/policy/dod.core.md"
++    - ".agentplane/policy/security.must.md"
++    - ".agentplane/policy/workflow.branch_pr.md"
++  findings:
++    - "The moved test preserves the same stable-ref pagination and no-fallback assertions; product code and benchmark evidence are unchanged."
++    - "The source test file is now 999 lines and the new focused file is 62 lines, so the previous hotspot baseline remains at 10 oversized files."
++commit:
++  hash: "4b25ba310b81742985d9aff4e58b7096948afc47"
++  message: "🔍 ADC3A5 fts5: record refreshed quality review"
++comments:
++  -
++    author: "CODER"
++    body: "Start: implement the approved FTS5/BM25 retrieval slice in the dedicated task worktree."
++  -
++    author: "CODER"
++    body: "Implementation: SQLite FTS5/BM25 retrieval committed in b7860bab46d9001e31c46d5adf8aaba8423b48b7; focused tests and benchmark completed."
++  -
++    author: "CODER"
++    body: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    author: "CODER"
++    body: "Verified: refreshed pre-merge closure packet is ready for the task PR."
++events:
++  -
++    type: "status"
++    at: "2026-07-30T07:51:18.700Z"
++    author: "CODER"
++    from: "TODO"
++    to: "DOING"
++    note: "Start: implement the approved FTS5/BM25 retrieval slice in the dedicated task worktree."
++  -
++    type: "status"
++    at: "2026-07-30T08:13:42.259Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DOING"
++    note: "Implementation: SQLite FTS5/BM25 retrieval committed in b7860bab46d9001e31c46d5adf8aaba8423b48b7; focused tests and benchmark completed."
++  -
++    type: "verify"
++    at: "2026-07-30T08:15:01.897Z"
++    author: "TESTER"
++    state: "ok"
++    note: "Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed."
++  -
++    type: "status"
++    at: "2026-07-30T08:16:00.946Z"
++    author: "CODER"
++    from: "DOING"
++    to: "DONE"
++    note: "Verified: pre-merge closure packet is ready for the task PR."
++  -
++    type: "status"
++    at: "2026-07-30T08:23:16.650Z"
++    author: "CODER"
++    from: "DONE"
++    to: "DONE"
++    note: "Verified: refreshed pre-merge closure packet is ready for the task PR."
+ doc_version: 3
+-doc_updated_at: "2026-07-22T18:52:09.037Z"
+-doc_updated_by: "PLANNER"
++doc_updated_at: "2026-07-30T08:23:16.650Z"
++doc_updated_by: "CODER"
+ description: "RF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pagination, stable refs, snippets, truthful strategy output, and bounded live fallback."
+ sections:
+   Summary: |-
+@@ -65,12 +139,52 @@ sections:
+     5. Run focused search/SQLite tests and typecheck.
+   Verification: |-
+     <!-- BEGIN VERIFICATION RESULTS -->
++    ### 2026-07-30T08:15:01.897Z — VERIFY — ok
++
++    By: TESTER
++
++    Note: Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed.
++    Attempts: 0
++
++    VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T08:13:42.259Z, excerpt_hash=sha256:2c4139b1e980415caefc3735e1ac117c071c7d5323ca2dbdb167cb40784ea9fb
++
++    Details:
++
++    BlueprintSnapshotRef:
++    - state: current
++    - path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-ADC3A5-query-context-projections-with-sqlite-fts5-and-b/.agentplane/tasks/202607221852-ADC3A5/blueprint/resolved-snapshot.json
++    - old_digest: d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e
++    - current_digest: d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e
++    - route_changed: no
++    - safe_command: agentplane blueprint snapshot 202607221852-ADC3A5
++
++    DecisionContextRef:
++    - operator_action: stop
++    - can_execute_now: false
++    - safe_command: none
++    - diagnostic_command: agentplane task verify-show 202607221852-ADC3A5
++    - source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++    - freshness: route=computed_local remote=remote_skipped
++    - repeat_allowed: false
++    - repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++    - risks: none
++
+     <!-- END VERIFICATION RESULTS -->
+   Rollback Plan: |-
+     - Revert the bounded retrieval or authority slice and restore the previous projection version or compatibility adapter.
+     - Preserve durable context data and use the documented full-rebuild/repair path rather than deleting it.
+     - Re-run equivalence, recall, lifecycle, and type checks.
+-  Findings: ""
++  Findings: |-
++    - Observation: Indexed queries use FTS5/BM25 with stable scope filters, pagination and highlights; stale or unavailable indexes return a bounded fallback receipt.
++      Impact: The prior linear projection scan is removed from the valid-index command path without changing the public CLI topology.
++      Resolution: Benchmark artifact reports 24/24 recall and 93.5% p95 improvement on the reproducible synthetic indexed corpus.
++extensions:
++  implementation_commit:
++    hash: "3893e0be01a8b4a5ed2bd6d8163d0532936af114"
++    message: "🧪 ADC3A5 fts5: isolate pagination coverage"
++  workflow_route_baseline:
++    start_head_sha: "5300e2fc75a17b15aaa0c0ff9fc1edbebadba163"
++    version: 1
+ id_source: "generated"
+ ---
+ ## Summary
+@@ -103,6 +217,36 @@ RF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pa
+ ## Verification
+ 
+ <!-- BEGIN VERIFICATION RESULTS -->
++### 2026-07-30T08:15:01.897Z — VERIFY — ok
++
++By: TESTER
++
++Note: Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed.
++Attempts: 0
++
++VerifyStepsRef: doc_version=3, doc_updated_at=2026-07-30T08:13:42.259Z, excerpt_hash=sha256:2c4139b1e980415caefc3735e1ac117c071c7d5323ca2dbdb167cb40784ea9fb
++
++Details:
++
++BlueprintSnapshotRef:
++- state: current
++- path: /Users/densmirnov/Github/agentplane/.agentplane/tmp/v07-packet-fix-control-20260730/.agentplane/worktrees/202607221852-ADC3A5-query-context-projections-with-sqlite-fts5-and-b/.agentplane/tasks/202607221852-ADC3A5/blueprint/resolved-snapshot.json
++- old_digest: d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e
++- current_digest: d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e
++- route_changed: no
++- safe_command: agentplane blueprint snapshot 202607221852-ADC3A5
++
++DecisionContextRef:
++- operator_action: stop
++- can_execute_now: false
++- safe_command: none
++- diagnostic_command: agentplane task verify-show 202607221852-ADC3A5
++- source_of_truth: route=task_next_action diagnostic=task_next_action remote=not_checked
++- freshness: route=computed_local remote=remote_skipped
++- repeat_allowed: false
++- repeat_stop_condition: after any non-zero exit or completed mutation, recompute task next-action before a second step
++- risks: none
++
+ <!-- END VERIFICATION RESULTS -->
+ 
+ ## Rollback Plan
+@@ -112,3 +256,7 @@ RF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pa
+ - Re-run equivalence, recall, lifecycle, and type checks.
+ 
+ ## Findings
++
++- Observation: Indexed queries use FTS5/BM25 with stable scope filters, pagination and highlights; stale or unavailable indexes return a bounded fallback receipt.
++  Impact: The prior linear projection scan is removed from the valid-index command path without changing the public CLI topology.
++  Resolution: Benchmark artifact reports 24/24 recall and 93.5% p95 improvement on the reproducible synthetic indexed corpus.
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/benchmark/fts5-bm25.json b/.agentplane/tasks/202607221852-ADC3A5/benchmark/fts5-bm25.json
+new file mode 100644
+index 000000000..ac98af4d0
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/benchmark/fts5-bm25.json
+@@ -0,0 +1,36 @@
++{
++  "schema_version": 1,
++  "task_id": "202607221852-ADC3A5",
++  "measured_at": "2026-07-30T11:00:00.000Z",
++  "method": {
++    "command": "bun scripts/bench/context-fts5-bm25.mts",
++    "corpus": "3,000 materialized context rows; each row has 1,536 filler bytes and every 125th row contains the two-token target query.",
++    "warmup_runs_per_strategy": 5,
++    "measured_runs_per_strategy": 31,
++    "recall_contract": "Both strategies must return all 24 target rows before latency is recorded.",
++    "baseline_scope": "The v0.6.24 indexed branch materializes every projection row and filters it in JavaScript. The harness reproduces that indexed algorithm only; filesystem fallback is intentionally excluded from both sides."
++  },
++  "baseline": {
++    "version": "v0.6.24",
++    "commit": "30f62b82dff28909dcb3ccc2ace2bf3e356203bb",
++    "implementation": "linear materialized-projection scan",
++    "p50_ms": 5.306,
++    "p95_ms": 6.615
++  },
++  "candidate": {
++    "implementation": "SQLite FTS5/BM25",
++    "p50_ms": 0.343,
++    "p95_ms": 0.433
++  },
++  "comparison": {
++    "expected_recall": 24,
++    "baseline_recall": 24,
++    "candidate_recall": 24,
++    "p95_improvement_percent": 93.5,
++    "verdict": "pass"
++  },
++  "threshold": {
++    "recall_regression_allowed": 0,
++    "p95_must_not_regress": true
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/blueprint/resolved-snapshot.json b/.agentplane/tasks/202607221852-ADC3A5/blueprint/resolved-snapshot.json
+new file mode 100644
+index 000000000..7a88fe881
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/blueprint/resolved-snapshot.json
+@@ -0,0 +1,606 @@
++{
++  "schemaVersion": 1,
++  "artifactKind": "agentplane.blueprint.resolved_snapshot",
++  "resolverInput": {
++    "taskId": "202607221852-ADC3A5",
++    "title": "Query context projections with SQLite FTS5 and BM25",
++    "description": "RF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pagination, stable refs, snippets, truthful strategy output, and bounded live fallback.",
++    "tags": [
++      "context",
++      "fts5",
++      "milestone-beta2",
++      "performance",
++      "refactor",
++      "rf-14",
++      "v0.7",
++      "wave-retrieval"
++    ],
++    "owner": "CODER",
++    "taskKind": "code",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "mutation": "code",
++    "mutationScope": "code",
++    "touchedPaths": [],
++    "recipeHints": [],
++    "riskFlags": [],
++    "blueprintRequest": "performance.benchmark"
++  },
++  "selectedBlueprint": {
++    "id": "performance.benchmark",
++    "version": 1,
++    "title": "Performance benchmark",
++    "taskKinds": [
++      "code"
++    ],
++    "workflowModes": [
++      "branch_pr"
++    ]
++  },
++  "plan": {
++    "schemaVersion": 1,
++    "blueprintId": "performance.benchmark",
++    "blueprintVersion": 1,
++    "title": "Performance benchmark",
++    "taskId": "202607221852-ADC3A5",
++    "workflowMode": "branch_pr",
++    "workflowGitCapabilities": {
++      "workflowMode": "branch_pr",
++      "implementationCommitLocation": "task_worktree",
++      "finishCommitSource": "explicit_hash",
++      "closeTailRequired": true,
++      "lifecycleCommentCommitLocation": "task_worktree",
++      "finishCommitFromComment": false
++    },
++    "taskIntent": {
++      "taskKind": "code",
++      "mutationScope": "code",
++      "blueprintRequest": "performance.benchmark"
++    },
++    "whySelected": [
++      "explicit blueprint requested: performance.benchmark",
++      "task intent kind: code",
++      "workflow mode: branch_pr",
++      "task intent mutation scope: code"
++    ],
++    "states": [
++      {
++        "id": "intake",
++        "kind": "intake",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": []
++      },
++      {
++        "id": "scope",
++        "kind": "scope",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "assumptions"
++        ]
++      },
++      {
++        "id": "approval_gate",
++        "kind": "approval_gate",
++        "mode": "approval",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "approval"
++        ]
++      },
++      {
++        "id": "context_resolve",
++        "kind": "context_resolve",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [
++          ".agentplane/policy/security.must.md",
++          ".agentplane/policy/dod.core.md",
++          ".agentplane/policy/dod.code.md",
++          ".agentplane/policy/workflow.branch_pr.md"
++        ],
++        "evidenceKinds": [
++          "context_manifest"
++        ]
++      },
++      {
++        "id": "worktree_start",
++        "kind": "worktree_start",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths"
++        ]
++      },
++      {
++        "id": "work_unit",
++        "kind": "work_unit",
++        "mode": "agentic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "changed_paths",
++          "artifact"
++        ]
++      },
++      {
++        "id": "fast_local_checks",
++        "kind": "fast_local_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane task verify-show <task-id>",
++          "project focused checks"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result"
++        ]
++      },
++      {
++        "id": "pr_artifact",
++        "kind": "pr_artifact",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [
++          "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "artifact",
++          "external_link"
++        ]
++      },
++      {
++        "id": "verify_record",
++        "kind": "verify_record",
++        "mode": "record",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "final_output"
++        ]
++      },
++      {
++        "id": "quality_gate",
++        "kind": "quality_gate",
++        "mode": "agentic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "quality_report"
++        ]
++      },
++      {
++        "id": "hosted_checks",
++        "kind": "hosted_checks",
++        "mode": "deterministic",
++        "required": true,
++        "protected": false,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "check_result",
++          "external_link"
++        ]
++      },
++      {
++        "id": "publish_or_integrate",
++        "kind": "publish_or_integrate",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [
++          "agentplane integrate <task-id> --branch <branch> --run-verify"
++        ],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit",
++          "external_link"
++        ]
++      },
++      {
++        "id": "finish",
++        "kind": "finish",
++        "mode": "deterministic",
++        "required": true,
++        "protected": true,
++        "allowedCommands": [],
++        "policyModules": [],
++        "evidenceKinds": [
++          "commit"
++        ]
++      }
++    ],
++    "requiredEvidence": [
++      {
++        "id": "benchmark.baseline",
++        "kind": "artifact",
++        "producedBy": "work_unit",
++        "required": true,
++        "description": "Baseline measurement artifact."
++      },
++      {
++        "id": "benchmark.method",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Benchmark method, environment, and warm/cold mode."
++      },
++      {
++        "id": "benchmark.runs",
++        "kind": "check_result",
++        "producedBy": "fast_local_checks",
++        "required": true,
++        "description": "Run count and raw measurement results."
++      },
++      {
++        "id": "benchmark.threshold",
++        "kind": "assumptions",
++        "producedBy": "scope",
++        "required": true,
++        "description": "Accepted threshold or noise tolerance."
++      },
++      {
++        "id": "benchmark.comparison",
++        "kind": "check_result",
++        "producedBy": "hosted_checks",
++        "required": true,
++        "description": "Before/after comparison result."
++      },
++      {
++        "id": "benchmark.verdict",
++        "kind": "final_output",
++        "producedBy": "verify_record",
++        "required": true,
++        "description": "Faster, slower, unchanged, or noisy verdict."
++      },
++      {
++        "id": "benchmark.quality",
++        "kind": "quality_report",
++        "producedBy": "quality_gate",
++        "required": true,
++        "description": "EVALUATOR quality verdict."
++      },
++      {
++        "id": "benchmark.commit",
++        "kind": "commit",
++        "producedBy": "publish_or_integrate",
++        "required": true,
++        "description": "Integration commit."
++      }
++    ],
++    "policyModules": [
++      ".agentplane/policy/dod.code.md",
++      ".agentplane/policy/dod.core.md",
++      ".agentplane/policy/security.must.md",
++      ".agentplane/policy/workflow.branch_pr.md"
++    ],
++    "allowedCommands": [
++      "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++      "agentplane integrate <task-id> --branch <branch> --run-verify",
++      "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++      "agentplane task verify-show <task-id>",
++      "agentplane verify <task-id> --ok|--rework",
++      "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++      "benchmark baseline command",
++      "benchmark comparison command",
++      "project focused checks"
++    ],
++    "contextBudget": {
++      "maxPolicyModules": 4,
++      "maxPromptBlocks": 16,
++      "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++    },
++    "contextManifest": [],
++    "acceptedRecipeExtensions": [],
++    "rejectedRecipeExtensions": [],
++    "stopReasons": []
++  },
++  "nodes": [
++    {
++      "id": "intake",
++      "kind": "intake",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": []
++    },
++    {
++      "id": "scope",
++      "kind": "scope",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "assumptions"
++      ]
++    },
++    {
++      "id": "approval_gate",
++      "kind": "approval_gate",
++      "mode": "approval",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "approval"
++      ]
++    },
++    {
++      "id": "context_resolve",
++      "kind": "context_resolve",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [
++        ".agentplane/policy/security.must.md",
++        ".agentplane/policy/dod.core.md",
++        ".agentplane/policy/dod.code.md",
++        ".agentplane/policy/workflow.branch_pr.md"
++      ],
++      "evidenceKinds": [
++        "context_manifest"
++      ]
++    },
++    {
++      "id": "worktree_start",
++      "kind": "worktree_start",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths"
++      ]
++    },
++    {
++      "id": "work_unit",
++      "kind": "work_unit",
++      "mode": "agentic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "changed_paths",
++        "artifact"
++      ]
++    },
++    {
++      "id": "fast_local_checks",
++      "kind": "fast_local_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane task verify-show <task-id>",
++        "project focused checks"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result"
++      ]
++    },
++    {
++      "id": "pr_artifact",
++      "kind": "pr_artifact",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [
++        "agentplane pr open <task-id> --branch <branch> --author <ROLE>"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "artifact",
++        "external_link"
++      ]
++    },
++    {
++      "id": "verify_record",
++      "kind": "verify_record",
++      "mode": "record",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "final_output"
++      ]
++    },
++    {
++      "id": "quality_gate",
++      "kind": "quality_gate",
++      "mode": "agentic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "quality_report"
++      ]
++    },
++    {
++      "id": "hosted_checks",
++      "kind": "hosted_checks",
++      "mode": "deterministic",
++      "required": true,
++      "protected": false,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "check_result",
++        "external_link"
++      ]
++    },
++    {
++      "id": "publish_or_integrate",
++      "kind": "publish_or_integrate",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [
++        "agentplane integrate <task-id> --branch <branch> --run-verify"
++      ],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit",
++        "external_link"
++      ]
++    },
++    {
++      "id": "finish",
++      "kind": "finish",
++      "mode": "deterministic",
++      "required": true,
++      "protected": true,
++      "allowedCommands": [],
++      "policyModules": [],
++      "evidenceKinds": [
++        "commit"
++      ]
++    }
++  ],
++  "requiredEvidence": [
++    {
++      "id": "benchmark.baseline",
++      "kind": "artifact",
++      "producedBy": "work_unit",
++      "required": true,
++      "description": "Baseline measurement artifact."
++    },
++    {
++      "id": "benchmark.method",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Benchmark method, environment, and warm/cold mode."
++    },
++    {
++      "id": "benchmark.runs",
++      "kind": "check_result",
++      "producedBy": "fast_local_checks",
++      "required": true,
++      "description": "Run count and raw measurement results."
++    },
++    {
++      "id": "benchmark.threshold",
++      "kind": "assumptions",
++      "producedBy": "scope",
++      "required": true,
++      "description": "Accepted threshold or noise tolerance."
++    },
++    {
++      "id": "benchmark.comparison",
++      "kind": "check_result",
++      "producedBy": "hosted_checks",
++      "required": true,
++      "description": "Before/after comparison result."
++    },
++    {
++      "id": "benchmark.verdict",
++      "kind": "final_output",
++      "producedBy": "verify_record",
++      "required": true,
++      "description": "Faster, slower, unchanged, or noisy verdict."
++    },
++    {
++      "id": "benchmark.quality",
++      "kind": "quality_report",
++      "producedBy": "quality_gate",
++      "required": true,
++      "description": "EVALUATOR quality verdict."
++    },
++    {
++      "id": "benchmark.commit",
++      "kind": "commit",
++      "producedBy": "publish_or_integrate",
++      "required": true,
++      "description": "Integration commit."
++    }
++  ],
++  "policyModules": [
++    ".agentplane/policy/dod.code.md",
++    ".agentplane/policy/dod.core.md",
++    ".agentplane/policy/security.must.md",
++    ".agentplane/policy/workflow.branch_pr.md"
++  ],
++  "allowedCommands": [
++    "agentplane evaluator run <task-id> --provenance human_supplied|evaluator_supplied --verdict pass|rework|blocked|human_review",
++    "agentplane integrate <task-id> --branch <branch> --run-verify",
++    "agentplane pr open <task-id> --branch <branch> --author <ROLE>",
++    "agentplane task verify-show <task-id>",
++    "agentplane verify <task-id> --ok|--rework",
++    "agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree",
++    "benchmark baseline command",
++    "benchmark comparison command",
++    "project focused checks"
++  ],
++  "contextBudget": {
++    "maxPolicyModules": 4,
++    "maxPromptBlocks": 16,
++    "rationale": "Benchmark work needs normal branch_pr code policy plus room for baseline and comparison artifacts."
++  },
++  "contextManifest": [],
++  "acceptedRecipeExtensions": [],
++  "rejectedRecipeExtensions": [],
++  "stopReasons": [],
++  "selectionReasons": [
++    "explicit blueprint requested: performance.benchmark",
++    "task intent kind: code",
++    "workflow mode: branch_pr",
++    "task intent mutation scope: code"
++  ],
++  "digest": {
++    "algorithm": "sha256",
++    "value": "d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/pr/diffstat.txt b/.agentplane/tasks/202607221852-ADC3A5/pr/diffstat.txt
+new file mode 100644
+index 000000000..526df62aa
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/pr/diffstat.txt
+@@ -0,0 +1,12 @@
++ .../src/commands/context/issue-gates.unit.test.ts  |  10 +
++ .../agentplane/src/commands/context/reindex.ts     |   6 +-
++ .../src/commands/context/release-readiness.test.ts |   6 +
++ .../src/commands/context/search.fts5.unit.test.ts  |  62 ++++++
++ packages/agentplane/src/commands/context/search.ts | 212 ++++++++++++++-------
++ packages/agentplane/src/commands/context/sqlite.ts |   1 +
++ .../src/commands/context/sqlite.unit.test.ts       |  89 ++++++++-
++ packages/agentplane/src/context/context-utils.ts   |   2 +-
++ packages/agentplane/src/context/reindex.ts         |  31 ++-
++ packages/agentplane/src/context/sqlite.ts          | 140 ++++++++++++++
++ scripts/bench/context-fts5-bm25.mts                | 130 +++++++++++++
++ 11 files changed, 620 insertions(+), 69 deletions(-)
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/pr/github-body.md b/.agentplane/tasks/202607221852-ADC3A5/pr/github-body.md
+new file mode 100644
+index 000000000..480c856a0
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/pr/github-body.md
+@@ -0,0 +1,49 @@
++Task: `202607221852-ADC3A5`
++Title: Query context projections with SQLite FTS5 and BM25
++Canonical task record: `.agentplane/tasks/202607221852-ADC3A5/README.md`
++
++## Summary
++
++Query context projections with SQLite FTS5 and BM25
++
++RF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pagination, stable refs, snippets, truthful strategy output, and bounded live fallback.
++
++## Scope
++
++- In scope: SQLite search API, MATCH/BM25 ranking, path/scope/kind filters, stable pagination, snippets/highlights, canonical dedupe, adapter/strategy receipts, recall fixtures, and p95 benchmark.
++- Out of scope: semantic ranking; live filesystem scan remains only a missing/stale-index fallback.
++
++## Verification
++
++- State: ok
++- Note:
++
++```text
++Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet,
++benchmark, and the 12-chunk critical CLI suite passed.
++```
++- Canonical workflow state lives in the task README.
++
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T07:51:52.760Z
++- Branch: task/202607221852-ADC3A5/query-context-projections-with-sqlite-fts5-and-b
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/commands/context/issue-gates.unit.test.ts  |  10 +
++ .../agentplane/src/commands/context/reindex.ts     |   6 +-
++ .../src/commands/context/release-readiness.test.ts |   6 +
++ .../src/commands/context/search.fts5.unit.test.ts  |  62 ++++++
++ packages/agentplane/src/commands/context/search.ts | 212 ++++++++++++++-------
++ packages/agentplane/src/commands/context/sqlite.ts |   1 +
++ .../src/commands/context/sqlite.unit.test.ts       |  89 ++++++++-
++ packages/agentplane/src/context/context-utils.ts   |   2 +-
++ packages/agentplane/src/context/reindex.ts         |  31 ++-
++ packages/agentplane/src/context/sqlite.ts          | 140 ++++++++++++++
++ scripts/bench/context-fts5-bm25.mts                | 130 +++++++++++++
++ 11 files changed, 620 insertions(+), 69 deletions(-)
++```
++
++</details>
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/pr/github-title.txt b/.agentplane/tasks/202607221852-ADC3A5/pr/github-title.txt
+new file mode 100644
+index 000000000..7fdf43914
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/pr/github-title.txt
+@@ -0,0 +1 @@
++✅ ADC3A5 task: Query context projections with SQLite FTS5 and BM25 [202607221852-ADC3A5]
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/pr/meta.json b/.agentplane/tasks/202607221852-ADC3A5/pr/meta.json
+new file mode 100644
+index 000000000..bedafa68d
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/pr/meta.json
+@@ -0,0 +1,24 @@
++{
++  "base": "main",
++  "branch": "task/202607221852-ADC3A5/query-context-projections-with-sqlite-fts5-and-b",
++  "created_at": "2026-07-30T07:51:18.809Z",
++  "diffstat_sha256": "sha256:b8602311a8330a4136033719abfc06595ddcb30c3386dd95b2a76b31dc4f0cd4",
++  "last_verified_at": "2026-07-30T08:15:01.897Z",
++  "last_verified_diffstat_sha256": "sha256:13896516b434f21138402747a72a9df89d9ec7a4f88a9aab3ea2e73a3c396bb7",
++  "pr_number": 4686,
++  "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4686",
++  "pre_merge_closure": {
++    "basis_commit": "4b25ba310b81742985d9aff4e58b7096948afc47",
++    "branch": "task/202607221852-ADC3A5/query-context-projections-with-sqlite-fts5-and-b",
++    "pr_number": 4686,
++    "recorded_at": "2026-07-30T08:23:16.706Z",
++    "state": "closed_before_merge"
++  },
++  "schema_version": 1,
++  "status": "OPEN",
++  "task_id": "202607221852-ADC3A5",
++  "updated_at": "2026-07-30T07:51:52.760Z",
++  "verify": {
++    "status": "pass"
++  }
++}
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/pr/review.md b/.agentplane/tasks/202607221852-ADC3A5/pr/review.md
+new file mode 100644
+index 000000000..7af49b0e7
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/pr/review.md
+@@ -0,0 +1,47 @@
++# PR Review
++
++Created: 2026-07-30T07:51:18.809Z
++
++## Task
++
++- Task: `202607221852-ADC3A5`
++- Title: Query context projections with SQLite FTS5 and BM25
++- Status: DONE
++- Branch: `task/202607221852-ADC3A5/query-context-projections-with-sqlite-fts5-and-b`
++- Canonical task record: `.agentplane/tasks/202607221852-ADC3A5/README.md`
++
++## Verification
++
++- State: ok
++- Note: Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed.
++- Canonical workflow state lives in the task README.
++
++## Handoff Notes
++
++- No handoff notes recorded yet. Use `agentplane pr note ...` to append one.
++
++<!-- BEGIN AUTO SUMMARY -->
++<details>
++<summary>Raw evidence</summary>
++
++- Updated: 2026-07-30T07:51:52.760Z
++- Branch: task/202607221852-ADC3A5/query-context-projections-with-sqlite-fts5-and-b
++- Head: computed live by `agentplane pr check` / `agentplane integrate`
++
++```text
++ .../src/commands/context/issue-gates.unit.test.ts  |  10 +
++ .../agentplane/src/commands/context/reindex.ts     |   6 +-
++ .../src/commands/context/release-readiness.test.ts |   6 +
++ .../src/commands/context/search.fts5.unit.test.ts  |  62 ++++++
++ packages/agentplane/src/commands/context/search.ts | 212 ++++++++++++++-------
++ packages/agentplane/src/commands/context/sqlite.ts |   1 +
++ .../src/commands/context/sqlite.unit.test.ts       |  89 ++++++++-
++ packages/agentplane/src/context/context-utils.ts   |   2 +-
++ packages/agentplane/src/context/reindex.ts         |  31 ++-
++ packages/agentplane/src/context/sqlite.ts          | 140 ++++++++++++++
++ scripts/bench/context-fts5-bm25.mts                | 130 +++++++++++++
++ 11 files changed, 620 insertions(+), 69 deletions(-)
++```
++
++</details>
++<!-- END AUTO SUMMARY -->
+diff --git a/.agentplane/tasks/202607221852-ADC3A5/verification/20260730081501897-53bd426fae1bff33.json b/.agentplane/tasks/202607221852-ADC3A5/verification/20260730081501897-53bd426fae1bff33.json
+new file mode 100644
+index 000000000..f18f37b53
+--- /dev/null
++++ b/.agentplane/tasks/202607221852-ADC3A5/verification/20260730081501897-53bd426fae1bff33.json
+@@ -0,0 +1,15 @@
++{
++  "details": null,
++  "digest": "sha256:53bd426fae1bff330beb8b352ef2d0f38ffbb0e2587b801cc3c1acde316c9fa7",
++  "implementation_sha": "b7860bab46d9001e31c46d5adf8aaba8423b48b7",
++  "kind": "task_verification_record",
++  "note": "Verified SQLite FTS5/BM25 retrieval: 32 focused context tests, typecheck, compatibility ratchet, benchmark, and the 12-chunk critical CLI suite passed.",
++  "recorded_at": "2026-07-30T08:15:01.897Z",
++  "result": "ok",
++  "schema_version": 1,
++  "scope": "1. Search the known-ref corpus. Expected: every target appears within its declared top-k and carries a stable canonical ref and snippet.\n2. Inspect indexed query execution. Expected: no full projection-row iteration or duplicate live result path.\n3. Remove or stale the index. Expected: JSON reports the bounded fallback and its reason.\n4. Compare p50/p95 against the 0.6.24 baseline on the same corpus. Expected: statistically supported improvement without recall regression.\n5. Run focused search/SQLite tests and typecheck.",
++  "scope_digest": "sha256:2c4139b1e980415caefc3735e1ac117c071c7d5323ca2dbdb167cb40784ea9fb",
++  "task_id": "202607221852-ADC3A5",
++  "verification_command": "agentplane verify 202607221852-ADC3A5 --ok --by TESTER",
++  "verifier": "TESTER"
++}
+diff --git a/packages/agentplane/src/commands/context/issue-gates.unit.test.ts b/packages/agentplane/src/commands/context/issue-gates.unit.test.ts
+index c45beaea6..969cadc5b 100644
+--- a/packages/agentplane/src/commands/context/issue-gates.unit.test.ts
++++ b/packages/agentplane/src/commands/context/issue-gates.unit.test.ts
+@@ -324,9 +324,19 @@ describe("context GitHub issue regression gates", () => {
+       parsed: { query: "staleonly", scope: "wiki", format: "json", explain: false },
+     });
+     const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
++      adapter: string;
++      strategy: string;
++      fallback: { used: boolean; reason: string | null; max_files: number };
+       results: { ref: string }[];
+     };
+     expect(payload.results).toEqual([]);
++    expect(payload.adapter).toBe("sqlite");
++    expect(payload.strategy).toBe("fts5-bm25+bounded-live-fallback");
++    expect(payload.fallback).toEqual({
++      used: true,
++      reason: "stale_projection_row",
++      max_files: 200,
++    });
+   });
+ 
+   it("uses SQLite projection and token matching for all-scope search", async () => {
+diff --git a/packages/agentplane/src/commands/context/reindex.ts b/packages/agentplane/src/commands/context/reindex.ts
+index 6c49e789d..07f894675 100644
+--- a/packages/agentplane/src/commands/context/reindex.ts
++++ b/packages/agentplane/src/commands/context/reindex.ts
+@@ -1 +1,5 @@
+-export { cmdContextReindex, readContextProjection } from "../../context/reindex.js";
++export {
++  cmdContextReindex,
++  readContextProjection,
++  searchContextProjection,
++} from "../../context/reindex.js";
+diff --git a/packages/agentplane/src/commands/context/release-readiness.test.ts b/packages/agentplane/src/commands/context/release-readiness.test.ts
+index 43db57ec2..4e4a4ff8b 100644
+--- a/packages/agentplane/src/commands/context/release-readiness.test.ts
++++ b/packages/agentplane/src/commands/context/release-readiness.test.ts
+@@ -398,6 +398,9 @@ describe("context release readiness guards", () => {
+ 
+     const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
+       adapter: string;
++      strategy: string;
++      index_digest: string;
++      fallback: { used: boolean; reason: string | null };
+       results: {
+         ref: string;
+         snippet: string;
+@@ -409,6 +412,9 @@ describe("context release readiness guards", () => {
+       (result) => result.ref === "context/wiki/projection.md#section=complete-section",
+     );
+     expect(payload.adapter).toBe("sqlite");
++    expect(payload.strategy).toBe("fts5-bm25");
++    expect(payload.index_digest).toMatch(/^sha256:/u);
++    expect(payload.fallback).toEqual({ used: false, reason: null, max_files: 0 });
+     expect(section).toMatchObject({
+       freshness: { stale: false },
+       source_refs: [
+diff --git a/packages/agentplane/src/commands/context/search.fts5.unit.test.ts b/packages/agentplane/src/commands/context/search.fts5.unit.test.ts
+new file mode 100644
+index 000000000..34dba8915
+--- /dev/null
++++ b/packages/agentplane/src/commands/context/search.fts5.unit.test.ts
+@@ -0,0 +1,62 @@
++import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import { afterEach, describe, expect, it, vi } from "vitest";
++
++import { cmdContextReindex } from "./reindex.js";
++import { cmdContextSearch } from "./search.js";
++
++let tempRoots: string[] = [];
++
++async function tempRoot(): Promise<string> {
++  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-context-fts5-"));
++  tempRoots.push(root);
++  return root;
++}
++
++async function write(root: string, rel: string, text: string): Promise<void> {
++  const target = path.join(root, rel);
++  await mkdir(path.dirname(target), { recursive: true });
++  await writeFile(target, text, "utf8");
++}
++
++afterEach(async () => {
++  vi.restoreAllMocks();
++  await Promise.all(tempRoots.map((root) => rm(root, { recursive: true, force: true })));
++  tempRoots = [];
++});
++
++describe("context search FTS5", () => {
++  it("paginates FTS results by stable canonical ref without a live fallback", async () => {
++    const root = await tempRoot();
++    await write(root, "context/wiki/a.md", "# A\n\npaged needle\n");
++    await write(root, "context/wiki/b.md", "# B\n\npaged needle\n");
++    await write(root, "context/wiki/c.md", "# C\n\npaged needle\n");
++    await cmdContextReindex({
++      cwd: root,
++      parsed: { includeTasks: false, includeRaw: false, reset: false },
++    });
++    const out = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
++
++    await cmdContextSearch({
++      cwd: root,
++      parsed: {
++        query: "paged needle",
++        scope: "wiki",
++        format: "json",
++        explain: false,
++        topK: "1",
++        page: "2",
++      },
++    });
++
++    const payload = JSON.parse(out.mock.calls.map((call) => String(call[0])).join("")) as {
++      pagination: { top_k: number; page: number };
++      fallback: { used: boolean };
++      results: { ref: string }[];
++    };
++    expect(payload.pagination).toEqual({ top_k: 1, page: 2 });
++    expect(payload.fallback.used).toBe(false);
++    expect(payload.results.map((result) => result.ref)).toEqual(["context/wiki/b.md"]);
++  });
++});
+diff --git a/packages/agentplane/src/commands/context/search.ts b/packages/agentplane/src/commands/context/search.ts
+index 6e94f0b8a..3bb03116e 100644
+--- a/packages/agentplane/src/commands/context/search.ts
++++ b/packages/agentplane/src/commands/context/search.ts
+@@ -9,19 +9,23 @@ import {
+   buildSnippet,
+   fileExists,
+   normalizeScopeList,
+-  pathMatchesScopes,
+   parseJsonlLines,
+   readText,
+   scoreMatch,
+   walkScopeFiles,
+ } from "./context-utils.js";
+ import { projectRowsForFile } from "../../context/reindex-projection.js";
+-import { readContextProjection } from "./reindex.js";
++import { searchContextProjection } from "./reindex.js";
++
++const MAX_FALLBACK_FILES = 200;
++const DEFAULT_TOP_K = 20;
++const MAX_TOP_K = 100;
+ 
+ type SearchResult = {
+   path: string;
+   score: number;
+   snippet: string;
++  highlight?: string;
+   line?: number;
+   refs?: string[];
+   freshness: {
+@@ -38,6 +42,8 @@ export async function cmdContextSearch(opts: {
+     scope: string;
+     format: "text" | "json";
+     explain: boolean;
++    topK?: string;
++    page?: string;
+     projectRoot?: string;
+   };
+   rootOverride?: string;
+@@ -49,29 +55,141 @@ export async function cmdContextSearch(opts: {
+ 
+   const root = path.resolve(opts.rootOverride ?? opts.cwd);
+   const scopes = normalizeScopeList(opts.parsed.scope);
++  const pagination = parsePagination(opts.parsed);
++  const indexed = await searchContextProjection(root, {
++    query,
++    scopes,
++    limit: pagination.topK * pagination.page,
++    offset: 0,
++  });
+   const results: SearchResult[] = [];
+-  let usedSQLite = false;
+-  const projection = await readContextProjection(root);
+-  if (projection) {
+-    usedSQLite = true;
+-    for (const row of projection.rows) {
+-      if (!pathMatchesScopes(row.path, scopes)) continue;
+-      if (matchesQuery(row.search_text, query)) {
+-        const freshness = await buildFreshness(root, row.path, row.sha256);
+-        if (freshness.stale) continue;
+-        results.push({
+-          path: row.path,
+-          score: scoreSearchText(row.search_text, query),
+-          snippet: row.preview_text,
+-          refs: row.source_refs?.length ? row.source_refs : [row.path],
+-          freshness,
+-        });
++  let fallbackReason: string | null = indexed ? null : "missing_or_unreadable_index";
++
++  if (indexed) {
++    for (const row of indexed.rows) {
++      const freshness = await buildFreshness(root, row.path, row.sha256);
++      if (freshness.stale) {
++        fallbackReason ??= "stale_projection_row";
++        continue;
+       }
++      results.push({
++        path: row.path,
++        score: Number.isFinite(row.rank) ? -row.rank : 0,
++        snippet: row.preview_text,
++        highlight: row.highlight,
++        refs: row.source_refs?.length ? row.source_refs : [row.path],
++        freshness,
++      });
++    }
++    if (requiresUnindexedFallback(indexed.metadata, scopes)) {
++      fallbackReason ??= "unindexed_scope";
++    }
++  }
++
++  if (fallbackReason) {
++    results.push(
++      ...(await searchLiveFallback(root, scopes, query, pagination.topK * pagination.page)),
++    );
++  }
++
++  const ordered = dedupeAndSort(results).slice(
++    pagination.offset,
++    pagination.offset + pagination.topK,
++  );
++
++  if (opts.parsed.format === "json") {
++    process.stdout.write(
++      JSON.stringify(
++        {
++          query,
++          scope: scopes,
++          adapter: indexed ? "sqlite" : "local-stub",
++          strategy: indexed
++            ? fallbackReason
++              ? "fts5-bm25+bounded-live-fallback"
++              : "fts5-bm25"
++            : "bounded-live-fallback",
++          index_digest: indexed?.metadata.workspace_hash ?? null,
++          fallback: {
++            used: fallbackReason !== null,
++            reason: fallbackReason,
++            max_files: fallbackReason ? MAX_FALLBACK_FILES : 0,
++          },
++          pagination: { top_k: pagination.topK, page: pagination.page },
++          explain: opts.parsed.explain,
++          count: ordered.length,
++          results: ordered.map((item) => ({
++            ref: item.path,
++            title: item.path.split("/").at(-1),
++            kind: item.path.endsWith(".jsonl") ? "jsonl" : "document",
++            score: item.score,
++            snippet: item.snippet,
++            highlight: item.highlight ?? null,
++            line: item.line,
++            source_refs: item.refs ?? [],
++            freshness: item.freshness,
++          })),
++        },
++        null,
++        2,
++      ),
++    );
++    process.stdout.write("\n");
++    return 0;
++  }
++
++  if (ordered.length === 0) {
++    process.stdout.write("No matches\n");
++    return 0;
++  }
++
++  for (const result of ordered) {
++    const score = result.score.toFixed(2);
++    process.stdout.write(`${score} ${result.path}\n`);
++    if (result.line) process.stdout.write(`  line: ${result.line}\n`);
++    if (result.freshness.stale) {
++      process.stdout.write(
++        `  stale_projection=true (projection=${result.freshness.projection_sha256 ?? "n/a"})\n`,
++      );
+     }
++    process.stdout.write(`  ${result.snippet.replaceAll("\n", String.raw`\n`)}\n`);
+   }
++  return 0;
++}
++
++function parsePagination(parsed: { topK?: string; page?: string }): {
++  topK: number;
++  page: number;
++  offset: number;
++} {
++  const requestedTopK = Number(parsed.topK ?? DEFAULT_TOP_K);
++  const requestedPage = Number(parsed.page ?? 1);
++  const topK = Number.isInteger(requestedTopK)
++    ? Math.min(MAX_TOP_K, Math.max(1, requestedTopK))
++    : DEFAULT_TOP_K;
++  const page = Number.isInteger(requestedPage) ? Math.max(1, requestedPage) : 1;
++  return { topK, page, offset: (page - 1) * topK };
++}
+ 
+-  const files = await walkScopeFiles(root, scopes);
++function requiresUnindexedFallback(
++  metadata: { include_tasks: boolean; include_raw: boolean },
++  scopes: ReturnType<typeof normalizeScopeList>,
++): boolean {
++  return (
++    (scopes.includes("raw") && !metadata.include_raw) ||
++    (scopes.some((scope) => scope === "tasks" || scope === "tasks-acr") && !metadata.include_tasks)
++  );
++}
+ 
++async function searchLiveFallback(
++  root: string,
++  scopes: ReturnType<typeof normalizeScopeList>,
++  query: string,
++  resultLimit: number,
++): Promise<SearchResult[]> {
++  const results: SearchResult[] = [];
++  const scopedFiles = await walkScopeFiles(root, scopes);
++  const files = scopedFiles.slice(0, MAX_FALLBACK_FILES);
+   for (const relative of files) {
+     const abs = path.join(root, relative);
+     if (!(await fileExists(abs))) continue;
+@@ -119,54 +237,18 @@ export async function cmdContextSearch(opts: {
+       freshness: { projection_sha256: null, file_sha256: null, stale: false },
+     });
+   }
++  return dedupeAndSort(results).slice(0, resultLimit);
++}
+ 
+-  if (opts.parsed.format === "json") {
+-    process.stdout.write(
+-      JSON.stringify(
+-        {
+-          query,
+-          scope: scopes,
+-          adapter: usedSQLite ? "sqlite" : "local-stub",
+-          explain: opts.parsed.explain,
+-          count: results.length,
+-          results: results
+-            .map((item) => ({
+-              ref: item.path,
+-              title: item.path.split("/").at(-1),
+-              kind: item.path.endsWith(".jsonl") ? "jsonl" : "document",
+-              score: item.score,
+-              snippet: item.snippet,
+-              line: item.line,
+-              source_refs: item.refs ?? [],
+-              freshness: item.freshness,
+-            }))
+-            .sort((left, right) => right.score - left.score),
+-        },
+-        null,
+-        2,
+-      ),
+-    );
+-    process.stdout.write("\n");
+-    return 0;
+-  }
+-
+-  if (results.length === 0) {
+-    process.stdout.write("No matches\n");
+-    return 0;
+-  }
+-
+-  for (const result of results.sort((left, right) => right.score - left.score)) {
+-    const score = result.score.toFixed(2);
+-    process.stdout.write(`${score} ${result.path}\n`);
+-    if (result.line) process.stdout.write(`  line: ${result.line}\n`);
+-    if (result.freshness.stale) {
+-      process.stdout.write(
+-        `  stale_projection=true (projection=${result.freshness.projection_sha256 ?? "n/a"})\n`,
+-      );
+-    }
+-    process.stdout.write(`  ${result.snippet.replaceAll("\n", String.raw`\n`)}\n`);
++function dedupeAndSort(results: SearchResult[]): SearchResult[] {
++  const byPath = new Map<string, SearchResult>();
++  for (const result of results) {
++    const existing = byPath.get(result.path);
++    if (!existing || result.score > existing.score) byPath.set(result.path, result);
+   }
+-  return 0;
++  return [...byPath.values()].sort(
++    (left, right) => right.score - left.score || left.path.localeCompare(right.path),
++  );
+ }
+ 
+ function queryTokens(query: string): string[] {
+diff --git a/packages/agentplane/src/commands/context/sqlite.ts b/packages/agentplane/src/commands/context/sqlite.ts
+index 8b7a0ceda..ff661b6db 100644
+--- a/packages/agentplane/src/commands/context/sqlite.ts
++++ b/packages/agentplane/src/commands/context/sqlite.ts
+@@ -1,5 +1,6 @@
+ export {
+   checkSqliteProjection,
+   readSqliteProjection,
++  searchSqliteProjection,
+   writeSqliteProjection,
+ } from "../../context/sqlite.js";
+diff --git a/packages/agentplane/src/commands/context/sqlite.unit.test.ts b/packages/agentplane/src/commands/context/sqlite.unit.test.ts
+index 2282ccb50..2bdfac2ec 100644
+--- a/packages/agentplane/src/commands/context/sqlite.unit.test.ts
++++ b/packages/agentplane/src/commands/context/sqlite.unit.test.ts
+@@ -5,7 +5,12 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
+ import { mkTempDir } from "@agentplane/testkit";
+ 
+ import { PROJECTION_VERSION, readContextProjection } from "../../context/reindex.js";
+-import { checkSqliteProjection, readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
++import {
++  checkSqliteProjection,
++  readSqliteProjection,
++  searchSqliteProjection,
++  writeSqliteProjection,
++} from "./sqlite.js";
+ 
+ describe("context SQLite projection", () => {
+   let tempDir = "";
+@@ -115,4 +120,86 @@ describe("context SQLite projection", () => {
+     expect(legacyProjection?.metadata.projection_version).toBe(PROJECTION_VERSION - 1);
+     expect(await readContextProjection(tempDir)).toBeNull();
+   });
++
++  it("uses FTS5/BM25 with stable scope filtering and pagination", async () => {
++    const dbPath = path.join(tempDir, ".agentplane", "cache.sqlite");
++    await writeSqliteProjection(dbPath, {
++      metadata: {
++        projection_version: PROJECTION_VERSION,
++        generated_at: "2026-01-01T00:00:00.000Z",
++        workspace_hash: "digest-fts",
++        include_tasks: false,
++        include_raw: true,
++        source_bytes: 90,
++        search_text_bytes: 90,
++        preview_text_bytes: 30,
++        projection_elapsed_ms: 3,
++      },
++      rows: [
++        {
++          path: "context/wiki/a.md#section=alpha",
++          sha256: "hash-a",
++          content_type: "text/markdown",
++          projection_version: PROJECTION_VERSION,
++          indexed_at: "2026-01-01T00:00:00.000Z",
++          size_bytes: 30,
++          kind: "markdown-section",
++          search_text: "shared fts sentinel alpha",
++          preview_text: "shared sentinel alpha",
++          source_refs: ["context/wiki/a.md#section=alpha"],
++        },
++        {
++          path: "context/wiki/b.md#section=beta",
++          sha256: "hash-b",
++          content_type: "text/markdown",
++          projection_version: PROJECTION_VERSION,
++          indexed_at: "2026-01-01T00:00:00.000Z",
++          size_bytes: 30,
++          kind: "markdown-section",
++          search_text: "shared fts sentinel beta",
++          preview_text: "shared sentinel beta",
++          source_refs: ["context/wiki/b.md#section=beta"],
++        },
++        {
++          path: "context/raw/private/hidden.md",
++          sha256: "hash-private",
++          content_type: "text/markdown",
++          projection_version: PROJECTION_VERSION,
++          indexed_at: "2026-01-01T00:00:00.000Z",
++          size_bytes: 30,
++          kind: "markdown",
++          search_text: "shared fts sentinel private",
++          preview_text: "shared sentinel private",
++          source_refs: ["context/raw/private/hidden.md"],
++        },
++      ],
++    });
++
++    const first = await searchSqliteProjection(dbPath, {
++      query: "fts sentinel",
++      scopes: ["wiki"],
++      limit: 1,
++      offset: 0,
++    });
++    const second = await searchSqliteProjection(dbPath, {
++      query: "fts sentinel",
++      scopes: ["wiki"],
++      limit: 1,
++      offset: 1,
++    });
++    const raw = await searchSqliteProjection(dbPath, {
++      query: "fts sentinel",
++      scopes: ["raw"],
++      limit: 10,
++      offset: 0,
++    });
++
++    expect(first?.metadata.workspace_hash).toBe("digest-fts");
++    expect(first?.rows).toHaveLength(1);
++    expect(second?.rows).toHaveLength(1);
++    expect(first?.rows[0]?.path).toBe("context/wiki/a.md#section=alpha");
++    expect(second?.rows[0]?.path).toBe("context/wiki/b.md#section=beta");
++    expect(first?.rows[0]?.highlight).toContain("[fts]");
++    expect(raw?.rows).toEqual([]);
++  });
+ });
+diff --git a/packages/agentplane/src/context/context-utils.ts b/packages/agentplane/src/context/context-utils.ts
+index 9c875a940..f43319ef3 100644
+--- a/packages/agentplane/src/context/context-utils.ts
++++ b/packages/agentplane/src/context/context-utils.ts
+@@ -130,7 +130,7 @@ export function normalizeScopeList(scopeValue: string): ScopeName[] {
+   return [...new Set(scopes)];
+ }
+ 
+-export function pathMatchesScopes(rowPath: string, scopes: ScopeName[]): boolean {
++function pathMatchesScopes(rowPath: string, scopes: ScopeName[]): boolean {
+   return scopes.some((scope) => {
+     switch (scope) {
+       case "wiki": {
+diff --git a/packages/agentplane/src/context/reindex.ts b/packages/agentplane/src/context/reindex.ts
+index 57f9ea33b..ec805e8d1 100644
+--- a/packages/agentplane/src/context/reindex.ts
++++ b/packages/agentplane/src/context/reindex.ts
+@@ -17,7 +17,13 @@ import {
+   projectRowsForFile,
+   type ProjectionSourceRow,
+ } from "./reindex-projection.js";
+-import { readSqliteProjection, writeSqliteProjection } from "./sqlite.js";
++import {
++  readSqliteProjection,
++  searchSqliteProjection,
++  writeSqliteProjection,
++  type SqliteProjectionSearchOptions,
++  type SqliteProjectionSearchResult,
++} from "./sqlite.js";
+ 
+ export const PROJECTION_VERSION = 2;
+ const MAX_LEGACY_JSON_PROJECTION_BYTES = 256 * 1024 * 1024;
+@@ -235,3 +241,26 @@ export async function readContextProjection(root: string): Promise<ProjectionInd
+     return null;
+   }
+ }
++
++export async function searchContextProjection(
++  root: string,
++  opts: SqliteProjectionSearchOptions,
++): Promise<SqliteProjectionSearchResult | null> {
++  const sqlitePath = resolveAgentplaneCacheSqlitePath(root);
++  let pathIdentity;
++  try {
++    pathIdentity = await captureContainedPathChainIdentity({
++      repository_root: root,
++      file_path: sqlitePath,
++      label: "context projection cache",
++    });
++  } catch (error) {
++    if ((error as NodeJS.ErrnoException | null)?.code === "ENOENT") return null;
++    throw error;
++  }
++  if (!pathIdentity.target_exists) return null;
++
++  const result = await searchSqliteProjection(pathIdentity.file_path, opts).catch(() => null);
++  await assertContainedPathChainIdentityUnchanged(pathIdentity, "context projection cache");
++  return result?.metadata.projection_version === PROJECTION_VERSION ? result : null;
++}
+diff --git a/packages/agentplane/src/context/sqlite.ts b/packages/agentplane/src/context/sqlite.ts
+index 22ac06ff3..9e8113e97 100644
+--- a/packages/agentplane/src/context/sqlite.ts
++++ b/packages/agentplane/src/context/sqlite.ts
+@@ -32,6 +32,21 @@ type SqliteProjection = {
+   rows: SqliteProjectionRow[];
+ };
+ 
++export type SqliteProjectionSearchOptions = {
++  query: string;
++  scopes: ("wiki" | "facts" | "graph" | "tasks" | "capabilities" | "tasks-acr" | "raw")[];
++  limit: number;
++  offset: number;
++};
++
++export type SqliteProjectionSearchResult = {
++  metadata: SqliteProjection["metadata"];
++  rows: (Omit<SqliteProjectionRow, "search_text"> & {
++    rank: number;
++    highlight: string;
++  })[];
++};
++
+ type SqliteProjectionMetadataRow = {
+   projection_version?: unknown;
+   generated_at?: unknown;
+@@ -87,6 +102,65 @@ function parseRefs(raw: unknown): string[] {
+   }
+ }
+ 
++function ftsTokens(query: string): string[] {
++  return query.match(/[\p{L}\p{N}_]+/gu)?.filter(Boolean) ?? [];
++}
++
++function toFtsMatchQuery(query: string): string | null {
++  const tokens = ftsTokens(query);
++  return tokens.length > 0 ? tokens.map((token) => `${token}*`).join(" AND ") : null;
++}
++
++function scopeWhereClause(scopes: SqliteProjectionSearchOptions["scopes"]): {
++  sql: string;
++  params: string[];
++} {
++  const clauses: string[] = [];
++  const params: string[] = [];
++  for (const scope of scopes) {
++    switch (scope) {
++      case "wiki": {
++        clauses.push("rows.path LIKE ?");
++        params.push("context/wiki/%");
++        break;
++      }
++      case "facts": {
++        clauses.push("rows.path LIKE ?");
++        params.push(".agentplane/context/derived/facts/%");
++        break;
++      }
++      case "graph": {
++        clauses.push("rows.path LIKE ?");
++        params.push(".agentplane/context/derived/graph/%");
++        break;
++      }
++      case "tasks": {
++        clauses.push("rows.path LIKE ?");
++        params.push(".agentplane/tasks/%");
++        break;
++      }
++      case "tasks-acr": {
++        clauses.push("(rows.path LIKE ? AND rows.path LIKE ?)");
++        params.push(".agentplane/tasks/%", "%/acr.json%");
++        break;
++      }
++      case "capabilities": {
++        clauses.push("(rows.path LIKE ? OR rows.path LIKE ?)");
++        params.push("context/capabilities/%", ".agentplane/context/derived/capabilities/%");
++        break;
++      }
++      case "raw": {
++        clauses.push("(rows.path LIKE ? AND rows.path NOT LIKE ?)");
++        params.push("context/raw/%", "context/raw/private/%");
++        break;
++      }
++    }
++  }
++  return clauses.length > 0
++    ? { sql: ` AND (${clauses.join(" OR ")})`, params }
++    : { sql: "", params };
++}
++
+ function resetContextProjectionSchema(db: SqliteDatabase): void {
+   db.exec(`
+     DROP TABLE IF EXISTS projection_metadata;
+@@ -223,6 +297,72 @@ export async function readSqliteProjection(dbPath: string): Promise<SqliteProjec
+   }
+ }
+ 
++export async function searchSqliteProjection(
++  dbPath: string,
++  opts: SqliteProjectionSearchOptions,
++): Promise<SqliteProjectionSearchResult | null> {
++  const matchQuery = toFtsMatchQuery(opts.query);
++  if (!matchQuery) return null;
++  const db = await openSqliteDatabase(dbPath, { readonly: true, fileMustExist: true });
++  if (!db) return null;
++  try {
++    const metadata = db
++      .prepare(
++        "SELECT projection_version, generated_at, workspace_hash, include_tasks, include_raw, source_bytes, search_text_bytes, preview_text_bytes, projection_elapsed_ms FROM projection_metadata LIMIT 1",
++      )
++      .get() as SqliteProjectionMetadataRow | undefined;
++    if (!metadata) return null;
++
++    const scope = scopeWhereClause(opts.scopes);
++    const records = db
++      .prepare(
++        `SELECT rows.path, rows.sha256, rows.content_type, rows.projection_version, rows.indexed_at, rows.size_bytes, rows.kind, rows.preview_text, rows.source_refs,
++                bm25(projection_fts) AS rank,
++                snippet(projection_fts, 1, '[', ']', ' … ', 12) AS highlight
++           FROM projection_fts
++           JOIN projection_rows AS rows ON rows.rowid = projection_fts.rowid
++          WHERE projection_fts MATCH ?${scope.sql}
++          ORDER BY rank ASC, rows.path ASC
++          LIMIT ? OFFSET ?`,
++      )
++      .all(matchQuery, ...scope.params, opts.limit, opts.offset) as (SqliteProjectionRowRecord & {
++      rank?: unknown;
++      highlight?: unknown;
++    })[];
++
++    return {
++      metadata: {
++        projection_version: Number(metadata.projection_version ?? 0),
++        generated_at: String(metadata.generated_at ?? ""),
++        workspace_hash: String(metadata.workspace_hash ?? ""),
++        include_tasks: Number(metadata.include_tasks ?? 0) === 1,
++        include_raw: Number(metadata.include_raw ?? 0) === 1,
++        source_bytes: Number(metadata.source_bytes ?? 0),
++        search_text_bytes: Number(metadata.search_text_bytes ?? 0),
++        preview_text_bytes: Number(metadata.preview_text_bytes ?? 0),
++        projection_elapsed_ms: Number(metadata.projection_elapsed_ms ?? 0),
++      },
++      rows: records.map((row) => ({
++        path: String(row.path ?? ""),
++        sha256: String(row.sha256 ?? ""),
++        content_type: String(row.content_type ?? ""),
++        projection_version: Number(row.projection_version ?? 0),
++        indexed_at: String(row.indexed_at ?? ""),
++        size_bytes: Number(row.size_bytes ?? 0),
++        kind: String(row.kind ?? ""),
++        preview_text: String(row.preview_text ?? ""),
++        source_refs: parseRefs(row.source_refs),
++        rank: Number(row.rank ?? 0),
++        highlight: String(row.highlight ?? ""),
++      })),
++    };
++  } catch {
++    return null;
++  } finally {
++    db.close();
++  }
++}
++
+ export async function checkSqliteProjection(dbPath: string): Promise<boolean> {
+   const db = await openSqliteDatabase(dbPath, { readonly: true });
+   if (!db) return false;
+diff --git a/scripts/bench/context-fts5-bm25.mts b/scripts/bench/context-fts5-bm25.mts
+new file mode 100644
+index 000000000..8a262b087
+--- /dev/null
++++ b/scripts/bench/context-fts5-bm25.mts
+@@ -0,0 +1,130 @@
++import { mkdir, mkdtemp, rm } from "node:fs/promises";
++import path from "node:path";
++
++import {
++  readSqliteProjection,
++  searchSqliteProjection,
++  writeSqliteProjection,
++} from "../../packages/agentplane/src/context/sqlite.ts";
++
++const TOTAL_ROWS = 3000;
++const RUNS_PER_STRATEGY = 31;
++const WARMUP_RUNS = 5;
++const QUERY = "needle latency";
++const EXPECTED_RECALL = 24;
++const FILLER = "x".repeat(1536);
++
++type Measurement = {
++  runs: number;
++  p50_ms: number;
++  p95_ms: number;
++};
++
++function percentile(values: number[], percentileValue: number): number {
++  const ordered = [...values].sort((left, right) => left - right);
++  const index = Math.min(ordered.length - 1, Math.ceil(ordered.length * percentileValue) - 1);
++  return ordered[index] ?? 0;
++}
++
++async function measure(operation: () => Promise<number>): Promise<Measurement> {
++  for (let index = 0; index < WARMUP_RUNS; index += 1) {
++    await operation();
++  }
++  const values: number[] = [];
++  for (let index = 0; index < RUNS_PER_STRATEGY; index += 1) {
++    const started = performance.now();
++    const recall = await operation();
++    values.push(performance.now() - started);
++    if (recall !== EXPECTED_RECALL) {
++      throw new Error(`Unexpected recall: expected ${EXPECTED_RECALL}, received ${recall}`);
++    }
++  }
++  return {
++    runs: values.length,
++    p50_ms: Number(percentile(values, 0.5).toFixed(3)),
++    p95_ms: Number(percentile(values, 0.95).toFixed(3)),
++  };
++}
++
++const root = path.resolve(process.cwd());
++const temporaryParent = path.join(root, ".agentplane", "tmp");
++await mkdir(temporaryParent, { recursive: true });
++const temporaryRoot = await mkdtemp(path.join(temporaryParent, "rf14-benchmark-"));
++const dbPath = path.join(temporaryRoot, "projection.sqlite");
++
++try {
++  await writeSqliteProjection(dbPath, {
++    metadata: {
++      projection_version: 2,
++      generated_at: "2026-07-30T00:00:00.000Z",
++      workspace_hash: "sha256:rf14-benchmark",
++      include_tasks: false,
++      include_raw: false,
++      source_bytes: TOTAL_ROWS * FILLER.length,
++      search_text_bytes: TOTAL_ROWS * (FILLER.length + 64),
++      preview_text_bytes: TOTAL_ROWS * 32,
++      projection_elapsed_ms: 0,
++    },
++    rows: Array.from({ length: TOTAL_ROWS }, (_, index) => ({
++      path: `context/wiki/doc-${String(index).padStart(4, "0")}.md#section=benchmark`,
++      sha256: `sha256:${String(index).padStart(8, "0")}`,
++      content_type: "text/markdown",
++      projection_version: 2,
++      indexed_at: "2026-07-30T00:00:00.000Z",
++      size_bytes: FILLER.length,
++      kind: "markdown-section",
++      search_text:
++        `document ${index} ` +
++        (index % 125 === 0 ? "needle latency target " : "ordinary context ") +
++        FILLER,
++      preview_text: `document ${index} preview`,
++      source_refs: [`context/wiki/doc-${String(index).padStart(4, "0")}.md`],
++    })),
++  });
++
++  const candidate = await measure(async () => {
++    const result = await searchSqliteProjection(dbPath, {
++      query: QUERY,
++      scopes: ["wiki"],
++      limit: 100,
++      offset: 0,
++    });
++    return result?.rows.length ?? 0;
++  });
++  const baseline = await measure(async () => {
++    const projection = await readSqliteProjection(dbPath);
++    return (
++      projection?.rows.filter((row) =>
++        QUERY.split(" ").every((token) => row.search_text.toLowerCase().includes(token)),
++      ).length ?? 0
++    );
++  });
++
++  process.stdout.write(
++    `${JSON.stringify(
++      {
++        schema_version: 1,
++        corpus: {
++          rows: TOTAL_ROWS,
++          search_text_bytes: TOTAL_ROWS * (FILLER.length + 64),
++          expected_recall: EXPECTED_RECALL,
++          query: QUERY,
++        },
++        runs_per_strategy: RUNS_PER_STRATEGY,
++        baseline: {
++          implementation: "v0.6.24 linear materialized-projection scan",
++          commit: "30f62b82dff28909dcb3ccc2ace2bf3e356203bb",
++          ...baseline,
++        },
++        candidate: { implementation: "SQLite FTS5/BM25", ...candidate },
++        p95_improvement_percent: Number(
++          (((baseline.p95_ms - candidate.p95_ms) / baseline.p95_ms) * 100).toFixed(1),
++        ),
++      },
++      null,
++      2,
++    )}\n`,
++  );
++} finally {
++  await rm(temporaryRoot, { recursive: true, force: true });
++}

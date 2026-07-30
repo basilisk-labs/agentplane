@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "kind": "evaluator_work_order",
+  "work_order_id": "evaluator-work-order-202607221852-ADC3A5-34ff783e5e390922c4ac3e7c",
+  "prepared_at": "2026-07-30T08:30:45.341Z",
+  "task": {
+    "id": "202607221852-ADC3A5",
+    "revision": 13,
+    "objective": "Query context projections with SQLite FTS5 and BM25\n\nRF-14: use the existing FTS5 index for MATCH/BM25 search with filters, top-k, pagination, stable refs, snippets, truthful strategy output, and bounded live fallback.",
+    "acceptance_criteria": [
+      "bun run test:critical",
+      "bun run typecheck",
+      "- In scope: SQLite search API, MATCH/BM25 ranking, path/scope/kind filters, stable pagination, snippets/highlights, canonical dedupe, adapter/strategy receipts, recall fixtures, and p95 benchmark.\n- Out of scope: semantic ranking; live filesystem scan remains only a missing/stale-index fallback.",
+      "1. Add typed FTS query/filter/pagination APIs over the versioned projections.\n2. Route indexed context search through MATCH/BM25 and remove duplicate JS row plus filesystem scans.\n3. Keep a bounded explicit fallback for missing/stale/unindexed sources.\n4. Emit actual adapter, strategy, index digest, and fallback reasons.\n5. Build known-ref recall and scaled-corpus latency benchmarks.",
+      "1. Search the known-ref corpus. Expected: every target appears within its declared top-k and carries a stable canonical ref and snippet.\n2. Inspect indexed query execution. Expected: no full projection-row iteration or duplicate live result path.\n3. Remove or stale the index. Expected: JSON reports the bounded fallback and its reason.\n4. Compare p50/p95 against the 0.6.24 baseline on the same corpus. Expected: statistically supported improvement without recall regression.\n5. Run focused search/SQLite tests and typecheck."
+    ]
+  },
+  "evaluated_sha": "ac94e5127aa541efe96070ad536b1cfcc1faaa34",
+  "diff_base_sha": "5300e2fc75a17b15aaa0c0ff9fc1edbebadba163",
+  "blueprint_digest": "d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e",
+  "evaluator": {
+    "id": "recovery-context",
+    "profile": "EVALUATOR",
+    "prompt_module_path": ".agentplane/evaluators/recovery-context.md"
+  },
+  "authority": {
+    "sandbox": "read-only",
+    "writable_roots": [],
+    "allowed_tool_classes": [
+      "repository_read",
+      "git_read",
+      "run_checks",
+      "report_result"
+    ],
+    "external_side_effects": []
+  },
+  "result_contract": "sgr.evaluator_result.v1",
+  "evidence": [
+    {
+      "id": "task-document",
+      "kind": "task_document",
+      "path": ".agentplane/tasks/202607221852-ADC3A5/README.md",
+      "sha256": "sha256:417f3c44c4433fd5c4e30aad0e8affe05cba7cb1f91ca5aaf2b77afa83b43431",
+      "required": true
+    },
+    {
+      "id": "actual-diff",
+      "kind": "actual_diff",
+      "path": ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-083045341-recovery-context/evaluator-diff.patch",
+      "sha256": "sha256:0d3f41d0e72454101743446111af3561267f167d5b606f8000205bf54a84c1d5",
+      "required": true
+    },
+    {
+      "id": "observed-checks",
+      "kind": "observed_checks",
+      "path": ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-083045341-recovery-context/evaluator-observed-checks.json",
+      "sha256": "sha256:c29b15388bcf8a6869060872d5b325da38136aff4e9afc8e869956618983956c",
+      "required": true
+    },
+    {
+      "id": "blueprint",
+      "kind": "blueprint",
+      "path": ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-083045341-recovery-context/evaluator-blueprint.json",
+      "sha256": "sha256:6ef19bd12518d37775a559571033465b29eb00808b71cf3e7b9228bb17783686",
+      "required": true
+    },
+    {
+      "id": "policy-1",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.code.md",
+      "sha256": "sha256:3fec50dfe0db2f9495a3fa96f36d95fb34262033299d57f6f3775af4b7cc1486",
+      "required": true
+    },
+    {
+      "id": "policy-2",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/dod.core.md",
+      "sha256": "sha256:f6c11b8a2c55760c17af15f79fe13791b3e7bba4852fc7d311fc0657e490b0c7",
+      "required": true
+    },
+    {
+      "id": "policy-3",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/security.must.md",
+      "sha256": "sha256:96d01012e7ab67873bcb7a2cdd3818efa2c1fa500ee2eaf0e316f67e15bbcab2",
+      "required": true
+    },
+    {
+      "id": "policy-4",
+      "kind": "policy_module",
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "sha256": "sha256:12d3b942042c276d30593803ddcfe12b20dc794e3e8bfbd97b6ce59df13ba82b",
+      "required": true
+    }
+  ]
+}

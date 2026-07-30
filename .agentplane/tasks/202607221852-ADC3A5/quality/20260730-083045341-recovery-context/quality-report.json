@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "task_id": "202607221852-ADC3A5",
+  "evaluator_id": "recovery-context",
+  "evaluator_profile": "EVALUATOR",
+  "generated_at": "2026-07-30T08:30:45.571Z",
+  "provenance": "evaluator_supplied",
+  "verdict": "pass",
+  "summary": "EVALUATOR returned pass with 2 typed finding(s).",
+  "evaluated_sha": "ac94e5127aa541efe96070ad536b1cfcc1faaa34",
+  "blueprint_digest": "d1e3ca0318d6cf5a7b138bb1c2754a3e555a93a3f782af0113df153ba431de2e",
+  "findings": [
+    "pathMatchesScopes remains used internally by walkScopeFiles, so scope behavior is retained; only its public export was removed.",
+    "The updated head passes the focused FTS5/context suite, typecheck, hotspot baseline, and Knip baseline."
+  ],
+  "evidence_refs": [
+    ".agentplane/tasks/202607221852-ADC3A5/quality/20260730-083045341-recovery-context/evaluator-diff.patch"
+  ],
+  "missing_tests": [],
+  "hidden_assumptions": [
+    "No external consumer imports this internal context utility directly; the repository dependency analysis confirms no in-repository import remains."
+  ],
+  "residual_risks": []
+}
