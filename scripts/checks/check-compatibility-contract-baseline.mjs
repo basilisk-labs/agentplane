@@ -324,6 +324,7 @@ function validateReviewedCandidate({
     "202607260007-DQM6AW",
     "202607260532-9M7RNH",
     "202607281655-YMPY8Y",
+    "202607300150-MGCHE6",
   ];
   const expectedSourceTasks = [
     "202607221846-4VB97J",
@@ -345,6 +346,7 @@ function validateReviewedCandidate({
     "202607260532-9M7RNH",
     "202607281655-YMPY8Y",
     "202607291449-FTHNAR",
+    "202607300150-MGCHE6",
   ];
   assert(
     hashJson(candidate.source_tasks) === hashJson(expectedSourceTasks),
@@ -1117,6 +1119,9 @@ function validateReviewedCandidate({
       ],
       options: [
         { name: "expect-freshness-token", kind: "string", valueHint: "<sha256-token>" },
+        { name: "recover-diverged-head", kind: "boolean", valueHint: null, default: false },
+        { name: "expected-local-head", kind: "string", valueHint: "<full-sha>" },
+        { name: "expected-provider-head", kind: "string", valueHint: "<full-sha>" },
         { name: "json", kind: "boolean", valueHint: null, default: false },
       ],
     },
@@ -1294,7 +1299,26 @@ function validateReviewedCandidate({
     },
     {
       command: "pr conflict-rework",
+      name: "expected-local-head",
+      kind: "string",
+      valueHint: "<full-sha>",
+    },
+    {
+      command: "pr conflict-rework",
+      name: "expected-provider-head",
+      kind: "string",
+      valueHint: "<full-sha>",
+    },
+    {
+      command: "pr conflict-rework",
       name: "json",
+      kind: "boolean",
+      valueHint: null,
+      default: false,
+    },
+    {
+      command: "pr conflict-rework",
+      name: "recover-diverged-head",
       kind: "boolean",
       valueHint: null,
       default: false,
@@ -1548,8 +1572,26 @@ function validateReviewedCandidate({
     {
       kind: "option",
       command: "pr conflict-rework",
+      name: "expected-local-head",
+      source_task: "202607300150-MGCHE6",
+    },
+    {
+      kind: "option",
+      command: "pr conflict-rework",
+      name: "expected-provider-head",
+      source_task: "202607300150-MGCHE6",
+    },
+    {
+      kind: "option",
+      command: "pr conflict-rework",
       name: "json",
       source_task: "202607260007-DQM6AW",
+    },
+    {
+      kind: "option",
+      command: "pr conflict-rework",
+      name: "recover-diverged-head",
+      source_task: "202607300150-MGCHE6",
     },
     {
       kind: "option",

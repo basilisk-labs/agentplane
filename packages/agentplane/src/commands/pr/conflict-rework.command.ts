@@ -8,6 +8,7 @@ import {
   type TaskWorktreeCleanliness,
 } from "../shared/task-worktree-cleanliness.js";
 import { prepareConflictReworkPacket, type ConflictReworkPreparation } from "./conflict-rework.js";
+import { recoverDivergedConflictHead } from "./conflict-rework-recovery.js";
 import { resolvePrFlowStatus } from "./flow-status.js";
 
 function packetFailure(
@@ -51,6 +52,9 @@ export async function cmdPrConflictRework(opts: {
   rootOverride?: string;
   taskId: string;
   expectedFreshnessToken?: string | null;
+  recoverDivergedHead?: boolean;
+  expectedLocalHead?: string | null;
+  expectedProviderHead?: string | null;
   json: boolean;
 }): Promise<number> {
   try {
@@ -70,6 +74,35 @@ export async function cmdPrConflictRework(opts: {
           branch,
         })
       : { state: "not_present", branch: "", worktreePath: null, changedPaths: [] };
+    if (opts.recoverDivergedHead) {
+      const recovery = await recoverDivergedConflictHead({
+        gitRoot: ctx.resolvedProject.gitRoot,
+        taskId: opts.taskId,
+        report,
+        taskWorktree,
+        expectedLocalHead: opts.expectedLocalHead ?? "",
+        expectedProviderHead: opts.expectedProviderHead ?? "",
+      });
+      const output = createCliEmitter();
+      if (opts.json) {
+        output.json({ schema_version: 1, mode: "diverged_head_recovery", recovery });
+        return 0;
+      }
+      output.report(
+        [
+          { label: "task", value: recovery.task_id },
+          { label: "branch", value: recovery.branch },
+          { label: "archived_local_head", value: recovery.archived_local_head },
+          { label: "archive_ref", value: recovery.archive_ref },
+          { label: "adopted_provider_head", value: recovery.adopted_provider_head },
+          { label: "provider_tracking_ref", value: recovery.provider_tracking_ref },
+          { label: "next", value: recovery.next_command },
+          { label: "semantic_resolution", value: "not performed" },
+        ],
+        { header: infoMessage(`Recovered diverged PR head: ${opts.taskId}`) },
+      );
+      return 0;
+    }
     const preparation = await prepareConflictReworkPacket({
       gitRoot: ctx.resolvedProject.gitRoot,
       taskId: opts.taskId,

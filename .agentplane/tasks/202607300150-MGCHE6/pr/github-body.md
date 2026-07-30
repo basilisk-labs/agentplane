@@ -22,12 +22,19 @@ Provide a bounded CLI recovery route for branch_pr tasks whose local worktree he
 <details>
 <summary>Raw evidence</summary>
 
-- Updated: 2026-07-30T01:54:00.904Z
+- Updated: 2026-07-30T01:54:04.757Z
 - Branch: task/202607300150-MGCHE6/recover-diverged-task-pr-identities-safely
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
-No changes detected.
+ .../commands/pr/conflict-rework-recovery.test.ts   | 221 +++++++++++++++++++++
+ .../src/commands/pr/conflict-rework-recovery.ts    | 190 ++++++++++++++++++
+ .../src/commands/pr/conflict-rework.command.ts     |  33 +++
+ packages/agentplane/src/commands/pr/pr.command.ts  |   3 +
+ packages/agentplane/src/commands/pr/pr.spec.ts     |  73 ++++++-
+ .../baselines/v0.7-compatibility-candidate.json    |  69 ++++++-
+ .../check-compatibility-contract-baseline.mjs      |  42 ++++
+ 7 files changed, 623 insertions(+), 8 deletions(-)
 ```
 
 </details>

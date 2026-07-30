@@ -245,6 +245,9 @@ export const prFlowStatusSpec: CommandSpec<PrFlowStatusParsed> = {
 export type PrConflictReworkParsed = {
   taskId: string;
   expectedFreshnessToken: string | null;
+  recoverDivergedHead: boolean;
+  expectedLocalHead: string | null;
+  expectedProviderHead: string | null;
   json: boolean;
 };
 
@@ -252,7 +255,7 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
   id: ["pr", "conflict-rework"],
   group: "PR",
   summary:
-    "Prepare a bounded read-only semantic rework packet for a provider-reported merge conflict.",
+    "Prepare a bounded conflict packet, or explicitly recover a diverged local/provider task head without semantic resolution.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -260,6 +263,27 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
       name: "expect-freshness-token",
       valueHint: "<sha256-token>",
       description: "Fail closed unless the newly observed conflict packet matches this token.",
+    },
+    {
+      kind: "boolean",
+      name: "recover-diverged-head",
+      default: false,
+      description:
+        "Archive the exact local head and adopt the exact provider task head after explicit identity checks.",
+    },
+    {
+      kind: "string",
+      name: "expected-local-head",
+      valueHint: "<full-sha>",
+      description:
+        "Required with --recover-diverged-head. Exact local task-branch head to archive.",
+    },
+    {
+      kind: "string",
+      name: "expected-provider-head",
+      valueHint: "<full-sha>",
+      description:
+        "Required with --recover-diverged-head. Exact provider task-branch head to adopt.",
     },
     {
       kind: "boolean",
@@ -273,6 +297,10 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
       cmd: "agentplane pr conflict-rework 202602030608-F1Q8AB --json",
       why: "Read current provider conflict truth without changing any branch, worktree, PR, or queue state.",
     },
+    {
+      cmd: "agentplane pr conflict-rework 202602030608-F1Q8AB --recover-diverged-head --expected-local-head <sha> --expected-provider-head <sha>",
+      why: "Preserve an unpublished local head before adopting the exact conflicting provider head.",
+    },
   ],
   validateRaw: (raw) => {
     const token = raw.opts["expect-freshness-token"];
@@ -283,12 +311,55 @@ export const prConflictReworkSpec: CommandSpec<PrConflictReworkParsed> = {
         message: "Invalid value for --expect-freshness-token: empty.",
       });
     }
+    const recoverDivergedHead = raw.opts["recover-diverged-head"] === true;
+    const expectedLocalHead = raw.opts["expected-local-head"];
+    const expectedProviderHead = raw.opts["expected-provider-head"];
+    if (
+      recoverDivergedHead &&
+      (typeof expectedLocalHead !== "string" ||
+        !expectedLocalHead.trim() ||
+        typeof expectedProviderHead !== "string" ||
+        !expectedProviderHead.trim())
+    ) {
+      throw usageError({
+        spec: prConflictReworkSpec,
+        command: "pr conflict-rework",
+        message:
+          "--recover-diverged-head requires both --expected-local-head and --expected-provider-head.",
+      });
+    }
+    if (
+      !recoverDivergedHead &&
+      (typeof expectedLocalHead === "string" || typeof expectedProviderHead === "string")
+    ) {
+      throw usageError({
+        spec: prConflictReworkSpec,
+        command: "pr conflict-rework",
+        message: "Expected head options require --recover-diverged-head.",
+      });
+    }
+    if (recoverDivergedHead && typeof token === "string") {
+      throw usageError({
+        spec: prConflictReworkSpec,
+        command: "pr conflict-rework",
+        message: "--expect-freshness-token is only valid for read-only conflict packets.",
+      });
+    }
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
     expectedFreshnessToken:
       typeof raw.opts["expect-freshness-token"] === "string"
         ? raw.opts["expect-freshness-token"].trim()
+        : null,
+    recoverDivergedHead: raw.opts["recover-diverged-head"] === true,
+    expectedLocalHead:
+      typeof raw.opts["expected-local-head"] === "string"
+        ? raw.opts["expected-local-head"].trim()
+        : null,
+    expectedProviderHead:
+      typeof raw.opts["expected-provider-head"] === "string"
+        ? raw.opts["expected-provider-head"].trim()
         : null,
     json: raw.opts.json === true,
   }),
