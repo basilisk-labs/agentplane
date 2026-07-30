@@ -15,14 +15,13 @@ RF-17: replace arbitrary alphabetical first-50 reconciliation slices with reprod
 
 ## Verification
 
-- State: ok
+- State: needs_rework
 - Note:
 
 ```text
-Pass: deterministic task-bound candidates cover a canonical entity after the prior first-50 range;
-fixture proves exact label, alias, FTS graph/page, graph-neighbour evidence, stable ordering, refs,
-and digest. CURATOR remains the only identity decision owner. Checks: agentplane build; 42 focused
-tests; Prettier; ESLint; diff check.
+Rework: hosted compatibility ratchet fails because the approved v0.7 candidate predates RF-17's
+additive task-bound context contract. Preserve immutable v0.6.24 baseline; update only the reviewed
+candidate, strict candidate checker, and its pin test.
 ```
 - Canonical workflow state lives in the task README.
 
@@ -34,13 +33,16 @@ tests; Prettier; ESLint; diff check.
 - Head: computed live by `agentplane pr check` / `agentplane integrate`
 
 ```text
+ ...-cli.critical.agent-efficiency-baseline.test.ts |  37 +-
  .../src/commands/context/release-readiness.test.ts |   4 +-
  .../src/context/ingest-task-pack.test.ts           | 239 +++++++++-
  .../agentplane/src/context/ingest-task-pack.ts     |  78 +--
  .../agentplane/src/context/ingest-task-prompt.ts   |   5 +-
  packages/agentplane/src/context/ingest-task.ts     |   5 +-
  .../src/context/reconciliation-candidates.ts       | 526 +++++++++++++++++++++
- 6 files changed, 789 insertions(+), 68 deletions(-)
+ .../baselines/v0.7-compatibility-candidate.json    |  38 +-
+ .../check-compatibility-contract-baseline.mjs      |  39 +-
+ 9 files changed, 885 insertions(+), 86 deletions(-)
 ```
 
 </details>

@@ -183,12 +183,13 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
           "202607281655-YMPY8Y",
           "202607291449-FTHNAR",
           "202607300150-MGCHE6",
+          "202607221852-YP9QCH",
         ],
         candidate: {
-          surface_sha256: "fb5800bf34706aeff9d8e64d38bfed557b5e74c4467c9227ed930584602e6f34",
+          surface_sha256: "c35c4a49829e3a0376712e560334feb6bc2c7b178792fdb7aa18ecaeb0de67a6",
           section_digests: {
             agent_facing_context_contracts:
-              "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
+              "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
             cli_topology: "37eca778363f148c71cc35bed88c1f6c4b3f1def3e8c4b8f4ccd284adc0e4d9d",
             machine_output_contract:
               "dbff2a7806819a57a7d036fd087be05af0e0f35cdb4506226b8a38fcad75b6d1",
@@ -306,12 +307,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
       });
       expect(compatibilityCandidate.deltas).toContainEqual({
         section: "agent_facing_context_contracts",
-        source_tasks: ["202607221848-1HWR0R", "202607221849-8YYZ9X", "202607291449-FTHNAR"],
+        source_tasks: [
+          "202607221848-1HWR0R",
+          "202607221849-8YYZ9X",
+          "202607291449-FTHNAR",
+          "202607221852-YP9QCH",
+        ],
         from_sha256: "3dd1740625fb68fc6038d323a9320af5945a42ceb9fa2a6e2575e98e7f8182bf",
-        to_sha256: "b835f4b30a5622ca71710459604bbb9782163c60ed05bfed7ebd9a99b1651a52",
+        to_sha256: "e72a9bc93404e77819d767b2a466923300b6505b80cfa7f113e29ee35850bd0b",
         classification: "additive",
         summary:
-          "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, and a bounded deterministic-evidence recovery classification.",
+          "Adds a CLI-owned immutable task-creation receipt, typed EVALUATOR human-review escalation, bounded deterministic-evidence recovery classification, and source-driven canonical reconciliation candidates.",
         evidence: {
           contract_count: 4,
           unchanged_contract_paths: [
@@ -336,16 +342,17 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             },
             {
               path: "packages/agentplane/src/context/ingest-task-pack.ts",
-              change: "adds the CLI-owned immutable task-creation receipt",
+              change:
+                "adds the CLI-owned immutable task-creation receipt and source-driven canonical reconciliation candidates",
               before: {
                 normalized_bytes: 19_492,
                 normalized_sha256:
                   "66af4abcf7c1f9d58a90550ae116f1a9917b756140340e9552014cac28f52f63",
               },
               after: {
-                normalized_bytes: 20_630,
+                normalized_bytes: 19_551,
                 normalized_sha256:
-                  "e0a1b4c51b1467250b04e865e144a4b92ade9f3761cf9bd0f86dfec7ba9e6e77",
+                  "4930e3acdbaf99e41903faaf39705c5fa25b5df01538918455be449f48544a87",
               },
             },
           ],
@@ -355,6 +362,20 @@ describeCritical("critical: v0.7 compatibility and agent-efficiency baselines", 
             required_fields: ["task_id", "revision", "backend_id", "artifact_paths"],
             written_before_task_pack: true,
             agent_mutability: "cli_owned_read_only",
+          },
+          reconciliation_candidates: {
+            path: ".agentplane/tasks/<task-id>/canonical-reconciliation-candidates.json",
+            version: 1,
+            required_fields: [
+              "index",
+              "query_terms",
+              "candidate_groups",
+              "additional_search",
+              "candidate_digest",
+              "semantic_decision_owner",
+            ],
+            source_term_origins: ["markdown_heading", "path_basename", "structured_field"],
+            semantic_decision_owner: "CURATOR",
           },
         },
       });

@@ -2,23 +2,16 @@
   "base": "main",
   "branch": "task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can",
   "created_at": "2026-07-30T09:44:33.829Z",
-  "diffstat_sha256": "sha256:6cdb435c20ee0f61aa984adb64785f483232a3eb54e040a245ad10ce266fbafd",
-  "last_verified_at": "2026-07-30T10:00:51.850Z",
-  "last_verified_diffstat_sha256": "sha256:97e940bc5967c92a0c2f3429ce5ebf3c1ab3a8f281d9c1e4be0bbc01afecdc68",
+  "diffstat_sha256": "sha256:46563ffa6cab4e77771240466c47e0e723b12bf087065083b13d50849aa93fac",
+  "last_verified_at": "2026-07-30T10:10:52.504Z",
+  "last_verified_diffstat_sha256": "sha256:6cdb435c20ee0f61aa984adb64785f483232a3eb54e040a245ad10ce266fbafd",
   "pr_number": 4688,
   "pr_url": "https://github.com/basilisk-labs/agentplane/pull/4688",
-  "pre_merge_closure": {
-    "basis_commit": "f5b153ccdfdac3a7b9621d7ed84f080b986918e6",
-    "branch": "task/202607221852-YP9QCH/build-source-driven-canonical-reconciliation-can",
-    "pr_number": 4688,
-    "recorded_at": "2026-07-30T10:05:22.937Z",
-    "state": "closed_before_merge"
-  },
   "schema_version": 1,
   "status": "OPEN",
   "task_id": "202607221852-YP9QCH",
   "updated_at": "2026-07-30T09:44:58.527Z",
   "verify": {
-    "status": "pass"
+    "status": "fail"
   }
 }

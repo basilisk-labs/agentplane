@@ -1,0 +1,15 @@
+{
+  "details": null,
+  "digest": "sha256:9ae76ccf3e7362484df75fd44b168278e933698413f0fdc55eb8cdf71d772869",
+  "implementation_sha": "504f447745b95fd2de0083a207de7d72ad75b55b",
+  "kind": "task_verification_record",
+  "note": "Fresh final-head pass at 504f447745b9: deterministic candidates, post-first-50 fixture, CURATOR-only identity authority, deleted/unreadable-source suppression, exact digest, FTS/alias/page/graph evidence. Checks: agentplane build; 42 focused tests; Prettier; ESLint; diff check.",
+  "recorded_at": "2026-07-30T10:07:32.880Z",
+  "result": "ok",
+  "schema_version": 1,
+  "scope": "1. Rebuild candidates twice from the same source/index. Expected: identical ordering, reasons, scores, refs, and digest.\n2. Use fixtures whose correct entity is beyond the old first-50 slice. Expected: the source-driven candidate set includes it without scanning an arbitrary alphabetical prefix.\n3. Inspect semantic application. Expected: CLI supplies candidates/evidence only; CURATOR supplies the identity decision and rationale.\n4. Run reconciliation/context tests and report fixture accuracy.",
+  "scope_digest": "sha256:1ee0e13912c715c5168cc2acb390e543e1074f5d96a2692f2bd469ee40ef995d",
+  "task_id": "202607221852-YP9QCH",
+  "verification_command": "agentplane verify 202607221852-YP9QCH --ok --by TESTER",
+  "verifier": "TESTER"
+}
